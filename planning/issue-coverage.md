@@ -14,7 +14,7 @@ No PR is open. Every row is explicitly delivery-blocked by the current GitHub to
 | [#8](https://github.com/bloxwap/hig/issues/8) | `hig/m1-foundations` (no PR) | blocked: Contents 403 | Spacing/density/adaptive layout guidance; product/device comparison pending. |
 | [#9](https://github.com/bloxwap/hig/issues/9) | `hig/m1-foundations` (no PR) | blocked: Contents 403 | Motion/reduced-motion/cancellation guidance; native gesture certification pending. |
 | [#10](https://github.com/bloxwap/hig/issues/10) | `hig/m1-foundations` (no PR) | blocked: Contents 403 | Accessibility/localization standards and automated semantics; VoiceOver/TalkBack devices pending. |
-| [#11](https://github.com/bloxwap/hig/issues/11) | `hig/m1-foundations` (no PR) | blocked: Contents 403 | Pinned approved mark and individual web/native renderers; derived social assets/device parity pending. |
+| [#11](https://github.com/bloxwap/hig/issues/11) | `hig/m1-foundations` (no PR) | blocked: Contents 403 | Pinned mark, individual web/native renderers, generated favicon/OG with drift checks; device parity and host raster social image review pending. |
 | [#12](https://github.com/bloxwap/hig/issues/12) | `hig/m2-components` (no PR) | blocked: Contents 403 | Provider/state/cancellation contracts, SSR/hydration/StrictMode checks; physical review pending. |
 | [#13](https://github.com/bloxwap/hig/issues/13) | `hig/m2-components` (no PR) | blocked: Contents 403 | Actions/surfaces and keyboard/busy behavior; source/font/device parity pending. |
 | [#14](https://github.com/bloxwap/hig/issues/14) | `hig/m2-components` (no PR) | blocked: Contents 403 | Labeled fields/raw amounts; native IME/locale device observations pending. |

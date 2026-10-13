@@ -35,6 +35,7 @@ jobs:
       - name: Browser, visual and hydration gates
         run: node scripts/run-browser-gates.mjs
       - run: npm run release:dry-run -- --channel candidate
+      - run: npm run smoke:release-artifact -- candidate
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

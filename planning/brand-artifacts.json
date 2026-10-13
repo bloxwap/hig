@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "source": "packages/tokens/assets/bloxwap-icon.svg",
+  "sourceSha256": "a1f1cea3e2e6d7173b674d72225314cedb76ec1fd62b1fe5649d9e361bb4fea8",
+  "derivatives": [
+    "apps/docs/public/favicon.svg",
+    "fixtures/next/public/favicon.svg",
+    "apps/docs/public/og.svg"
+  ],
+  "geometry": "Copied from approved source; no independently redrawn logo",
+  "socialFormat": "SVG preview; host social crawlers requiring raster images must generate a PNG from this source"
+}

@@ -85,7 +85,7 @@
     "pr": null,
     "status": "blocked",
     "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
-    "localNotes": "Pinned approved mark and individual web/native renderers; derived social assets/device parity pending."
+    "localNotes": "Pinned mark, individual web/native renderers, generated favicon/OG with drift checks; device parity and host raster social image review pending."
   },
   {
     "issue": 12,
