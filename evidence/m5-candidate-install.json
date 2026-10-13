@@ -1,0 +1,19 @@
+{
+  "channel": "candidate",
+  "sourceCommit": "e9a459cd9c9bcfcad0df80bd06559ba1c174ca28",
+  "version": "0.1.0-candidate.shae9a459cd",
+  "packages": [
+    "@bloxwap/hig-contracts",
+    "@bloxwap/hig-feedback",
+    "@bloxwap/hig-react",
+    "@bloxwap/hig-tokens"
+  ],
+  "install": "clean temporary consumer",
+  "internalVersions": "matched",
+  "ssr": "passed",
+  "feedbackRoot": "passed",
+  "native": "Exact runtime separately verified in clean stable-version packed Metro consumer; no physical output claim",
+  "published": false,
+  "tagsCreated": false,
+  "releasesCreated": false
+}

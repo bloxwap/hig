@@ -1,0 +1,5 @@
+
+> bloxwap-hig-workspace@0.1.0 smoke:packed-examples
+> node scripts/packed-examples-smoke.mjs
+
+Packed examples: 206 web/native state/configuration modules against 5 installed tarballs; no workspace paths

@@ -1,0 +1,45 @@
+
+> bloxwap-hig-workspace@0.1.0 quality
+> node scripts/quality.mjs && node scripts/drift.mjs
+
+{
+  "exports": {
+    "contracts": 4,
+    "feedback": 17,
+    "native": 34,
+    "react": 25,
+    "tokens": 5
+  },
+  "sizes": {
+    "button": {
+      "raw": 1249,
+      "gzip": 709
+    },
+    "field": {
+      "raw": 708,
+      "gzip": 325
+    },
+    "nativeSwitch": {
+      "raw": 3435,
+      "gzip": 1384
+    },
+    "feedbackContract": {
+      "raw": 2857,
+      "gzip": 953
+    },
+    "docsJS": {
+      "raw": 901018,
+      "gzip": 208270
+    },
+    "docsCSS": {
+      "raw": 17445
+    },
+    "fonts": {
+      "raw": 592796
+    },
+    "nativeCues": {
+      "raw": 103618
+    }
+  }
+}
+Scoped anti-drift: passed

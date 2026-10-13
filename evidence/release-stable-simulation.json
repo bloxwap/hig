@@ -1,0 +1,299 @@
+{
+  "dryRun": true,
+  "published": false,
+  "tagsCreated": false,
+  "releasesCreated": false,
+  "channel": "stable-simulation",
+  "sourceCommit": "e9a459cd9c9bcfcad0df80bd06559ba1c174ca28",
+  "sourceVersion": "0.1.0",
+  "artifactVersion": "0.1.0",
+  "docsGuidelineVersion": "0.1.0",
+  "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
+  "artifacts": [
+    {
+      "package": "@bloxwap/hig-contracts",
+      "version": "0.1.0",
+      "file": "bloxwap-hig-contracts-0.1.0.tgz",
+      "bytes": 2064,
+      "sha256": "7bdb8751234f00909d05c0e9667e6f99bd266cf1ab9c9ae0f1f73660e8eddcaf",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/feedback.d.ts",
+        "dist/feedback.js",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "package.json"
+      ],
+      "optionalPeers": []
+    },
+    {
+      "package": "@bloxwap/hig-feedback",
+      "version": "0.1.0",
+      "file": "bloxwap-hig-feedback-0.1.0.tgz",
+      "bytes": 65375,
+      "sha256": "c728c3605b4b93ce0252a1cf3ed7253601b273d1859a22b662abdeb71d6b1748",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "assets/error.wav",
+        "assets/manifest.json",
+        "assets/success.wav",
+        "assets/tick.wav",
+        "assets/toggle.wav",
+        "dist/browser-haptic.d.ts",
+        "dist/browser-haptic.js",
+        "dist/contract.d.ts",
+        "dist/contract.js",
+        "dist/native.d.ts",
+        "dist/native.js",
+        "dist/preferences.d.ts",
+        "dist/preferences.js",
+        "dist/react.d.ts",
+        "dist/react.js",
+        "dist/web-haptic.d.ts",
+        "dist/web-haptic.js",
+        "dist/web-sound.d.ts",
+        "dist/web-sound.js",
+        "dist/web.d.ts",
+        "dist/web.js",
+        "package.json"
+      ],
+      "dependencies": {
+        "@bloxwap/hig-contracts": "0.1.0"
+      },
+      "optionalPeers": [
+        "react",
+        "@bloxwap/sfx",
+        "@bloxwap/haptic",
+        "expo-audio",
+        "expo-haptics"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-native",
+      "version": "0.1.0",
+      "file": "bloxwap-hig-native-0.1.0.tgz",
+      "bytes": 10211,
+      "sha256": "b11a90d97017f552b5da8c71e8315926c09187454c6202338675a66d8e799e80",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/brand.d.ts",
+        "dist/brand.js",
+        "dist/button.d.ts",
+        "dist/button.js",
+        "dist/checkbox.d.ts",
+        "dist/checkbox.js",
+        "dist/data.d.ts",
+        "dist/data.js",
+        "dist/field.d.ts",
+        "dist/field.js",
+        "dist/navigation.d.ts",
+        "dist/navigation.js",
+        "dist/overlay.d.ts",
+        "dist/overlay.js",
+        "dist/provider.d.ts",
+        "dist/provider.js",
+        "dist/radio-group.d.ts",
+        "dist/radio-group.js",
+        "dist/recipes.d.ts",
+        "dist/recipes.js",
+        "dist/select.d.ts",
+        "dist/select.js",
+        "dist/selection-types.d.ts",
+        "dist/selection-types.js",
+        "dist/selection.d.ts",
+        "dist/selection.js",
+        "dist/slider.d.ts",
+        "dist/slider.js",
+        "dist/status.d.ts",
+        "dist/status.js",
+        "dist/surface.d.ts",
+        "dist/surface.js",
+        "dist/switch.d.ts",
+        "dist/switch.js",
+        "package.json"
+      ],
+      "dependencies": {
+        "@bloxwap/hig-tokens": "0.1.0",
+        "@bloxwap/hig-contracts": "0.1.0"
+      },
+      "optionalPeers": [
+        "react-native-svg",
+        "@react-native-community/slider",
+        "react-native-safe-area-context"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-react",
+      "version": "0.1.0",
+      "file": "bloxwap-hig-react-0.1.0.tgz",
+      "bytes": 13639,
+      "sha256": "071b6ba7c99bf0f230d266d61a8ecc6e1003a91c21e82dc094e89f7a812e6d75",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/brand.d.ts",
+        "dist/brand.js",
+        "dist/button.d.ts",
+        "dist/button.js",
+        "dist/chart.d.ts",
+        "dist/chart.js",
+        "dist/data.d.ts",
+        "dist/data.js",
+        "dist/field.d.ts",
+        "dist/field.js",
+        "dist/navigation.d.ts",
+        "dist/navigation.js",
+        "dist/overlay.d.ts",
+        "dist/overlay.js",
+        "dist/provider.d.ts",
+        "dist/provider.js",
+        "dist/recipes.d.ts",
+        "dist/recipes.js",
+        "dist/selection.d.ts",
+        "dist/selection.js",
+        "dist/status.d.ts",
+        "dist/status.js",
+        "dist/styles.css",
+        "dist/surface.d.ts",
+        "dist/surface.js",
+        "package.json"
+      ],
+      "dependencies": {
+        "@bloxwap/hig-tokens": "0.1.0",
+        "@bloxwap/hig-contracts": "0.1.0"
+      },
+      "optionalPeers": [
+        "@bloxwap/chart",
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-dropdown-menu",
+        "@radix-ui/react-popover",
+        "@radix-ui/react-tooltip"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-tokens",
+      "version": "0.1.0",
+      "file": "bloxwap-hig-tokens-0.1.0.tgz",
+      "bytes": 5635,
+      "sha256": "2235cbcbae8f2ceaf05166760721616578bf5f4943af3a5485ea5a373ac71681",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "assets/bloxwap-icon.svg",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/manifest.json",
+        "dist/tokens.css",
+        "package.json"
+      ],
+      "optionalPeers": []
+    }
+  ],
+  "quality": {
+    "button": {
+      "raw": 1249,
+      "gzip": 709,
+      "inputs": [
+        "packages/contracts/dist/index.js",
+        "packages/react/dist/provider.js",
+        "packages/react/dist/button.js",
+        "button.js"
+      ]
+    },
+    "field": {
+      "raw": 708,
+      "gzip": 325,
+      "inputs": [
+        "packages/react/dist/field.js",
+        "field.js"
+      ]
+    },
+    "nativeSwitch": {
+      "raw": 3435,
+      "gzip": 1384,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/index.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/switch.js",
+        "nativeSwitch.js"
+      ]
+    },
+    "feedbackContract": {
+      "raw": 2857,
+      "gzip": 953,
+      "inputs": [
+        "packages/feedback/dist/contract.js",
+        "feedbackContract.js"
+      ]
+    },
+    "docsJS": {
+      "raw": 901018,
+      "gzip": 208270
+    },
+    "docsCSS": {
+      "raw": 17445
+    },
+    "fonts": {
+      "raw": 592796
+    },
+    "nativeCues": {
+      "raw": 103618
+    }
+  },
+  "publishable": false,
+  "blockers": [
+    {
+      "id": "task-policy",
+      "owner": "HIG maintainers",
+      "reason": "User explicitly prohibits npm publication, tags and releases; automation is dry-run only",
+      "status": "blocked"
+    },
+    {
+      "id": "repository-write",
+      "owner": "environment/GitHub credential owner",
+      "reason": "Contents write denied with HTTP 403; milestone branches/PRs cannot be published with current token/integration",
+      "status": "blocked"
+    },
+    {
+      "id": "source-audit",
+      "owner": "product monorepo maintainers",
+      "reason": "Referenced monorepo returns 404; authored OKLCH/fork/bundle baselines cannot be verified",
+      "status": "blocked",
+      "reviewBy": "2026-11-13"
+    },
+    {
+      "id": "native-fonts",
+      "owner": "Font/native maintainers",
+      "reason": "@bloxwap/font 0.1.2 has no published native manifest/static TTF npm interface; native registration/fidelity pending",
+      "status": "blocked",
+      "reviewBy": "2026-11-13"
+    },
+    {
+      "id": "physical-devices",
+      "owner": "HIG/native/haptic maintainers",
+      "reason": "No physical iOS/Android, VoiceOver/TalkBack, P3/font or sound/haptic latency/settings/interruption evidence; upstream haptic#9 remains open",
+      "status": "blocked",
+      "reviewBy": "2026-11-13"
+    },
+    {
+      "id": "owning-migrations",
+      "owner": "each adopting repository maintainers",
+      "reason": "User authorizes migration kits inside hig only, forbids pushes to other repos; real production migrations/builds/removal/deltas require owning work",
+      "status": "blocked",
+      "reviewBy": "2026-11-13"
+    },
+    {
+      "id": "upstream-feedback-gaps",
+      "owner": "SFX/Haptic maintainers",
+      "reason": "No per-root SFX voice handle/cancellation or imperative iOS async haptic API; explicit adapters/alternatives documented",
+      "status": "partial",
+      "reviewBy": "2026-11-13"
+    }
+  ],
+  "rollback": "No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback."
+}

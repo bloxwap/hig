@@ -1,0 +1,33 @@
+
+> bloxwap-hig-workspace@0.1.0 smoke:packed-native
+> node scripts/packed-native-smoke.mjs
+
+
+> bundle
+> expo export --platform android --platform ios --max-workers 2
+
+Starting Metro Bundler
+| (node:36055) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (761/761)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.7% (682/697)
+iOS Bundled 3121ms index.js (697 modules)
+Android Bundled 5249ms index.js (761 modules)
+
+› Assets (4):
+node_modules/@bloxwap/hig-feedback/assets/error.wav (30.2 kB)
+node_modules/@bloxwap/hig-feedback/assets/success.wav (54.5 kB)
+node_modules/@bloxwap/hig-feedback/assets/tick.wav (8.01 kB)
+node_modules/@bloxwap/hig-feedback/assets/toggle.wav (10.9 kB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-3c33ef0c8c7c61b4eff06260c9ba30c0.hbc (2.07 MB)
+
+› android bundles (1):
+_expo/static/js/android/index-9af646e8d71b1264149a428d7652aa28.hbc (2.08 MB)
+
+› Files (1):
+metadata.json (746 B)
+
+Exported: dist
+Packed native consumer exported both platforms from 4 independent tarballs
