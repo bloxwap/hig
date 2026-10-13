@@ -1,0 +1,923 @@
+{
+  "version": "0.1.0",
+  "examples": [
+    {
+      "name": "Button",
+      "slug": "button",
+      "entry": "button",
+      "family": "actions-surfaces",
+      "web": "<C.Button busy={busy} disabled={disabled}>Review order</C.Button>",
+      "native": "<C.Button busy={busy} disabled={disabled}>Review order</C.Button>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "IconButton",
+      "slug": "icon-button",
+      "entry": "button",
+      "family": "actions-surfaces",
+      "web": "<C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>",
+      "native": "<C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Link",
+      "slug": "link",
+      "entry": "button",
+      "family": "actions-surfaces",
+      "web": "<C.Link href='https://github.com/bloxwap/hig'>Read HIG guidelines</C.Link>",
+      "native": "<C.Link href='https://github.com/bloxwap/hig'>Read HIG guidelines</C.Link>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Text",
+      "slug": "text",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "web": "<C.Text>Review the amount and asset before confirming.</C.Text>",
+      "native": "<C.Text>Review the amount and asset before confirming.</C.Text>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Heading",
+      "slug": "heading",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "web": "<C.Heading>Order details</C.Heading>",
+      "native": "<C.Heading>Order details</C.Heading>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Stack",
+      "slug": "stack",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "web": "<C.Stack><C.Text>Available balance</C.Text><C.Usd value={1250.45}/></C.Stack>",
+      "native": "<C.Stack><C.Text>Available balance</C.Text><C.Usd value={1250.45}/></C.Stack>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Inline",
+      "slug": "inline",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "web": "<C.Inline><C.Badge>Demo</C.Badge><C.Text>Updated just now</C.Text></C.Inline>",
+      "native": "<C.Inline><C.Badge>Demo</C.Badge><C.Text>Updated just now</C.Text></C.Inline>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Surface",
+      "slug": "surface",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "web": "<C.Surface><C.Text>Keep related decisions together.</C.Text></C.Surface>",
+      "native": "<C.Surface><C.Text>Keep related decisions together.</C.Text></C.Surface>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Card",
+      "slug": "card",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "web": "<C.Card><C.Heading>Sample balance</C.Heading><C.Usd value={1250.45}/></C.Card>",
+      "native": "<C.Card><C.Heading>Sample balance</C.Heading><C.Usd value={1250.45}/></C.Card>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Separator",
+      "slug": "separator",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "web": "<C.Stack><C.Text>Order amount</C.Text><C.Separator/><C.Text>Host-provided terms</C.Text></C.Stack>",
+      "native": "<C.Stack><C.Text>Order amount</C.Text><C.Separator/><C.Text>Host-provided terms</C.Text></C.Stack>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Field",
+      "slug": "field",
+      "entry": "field",
+      "family": "fields",
+      "web": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.AmountInput value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
+      "native": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Label",
+      "slug": "label",
+      "entry": "field",
+      "family": "fields",
+      "web": "<C.Stack><C.Label htmlFor='sample-amount'>Amount</C.Label><C.Input id='sample-amount' value={amount} onChange={e=>setAmount(e.target.value)}/></C.Stack>",
+      "native": "<C.Stack><C.Label>Amount</C.Label><C.Input accessibilityLabel='Amount' value={amount} onChangeText={setAmount}/></C.Stack>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Input",
+      "slug": "input",
+      "entry": "field",
+      "family": "fields",
+      "web": "<C.Field label='Asset search' error={error}><C.Input value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
+      "native": "<C.Field label='Asset search' error={error}><C.Input value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "TextArea",
+      "slug": "text-area",
+      "entry": "field",
+      "family": "fields",
+      "web": "<C.Field label='Note' description='Optional, kept by the host'><C.TextArea value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
+      "native": "<C.Field label='Note' description='Optional, kept by the host'><C.TextArea value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "AmountInput",
+      "slug": "amount-input",
+      "entry": "field",
+      "family": "fields",
+      "web": "<C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
+      "native": "<C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "SearchInput",
+      "slug": "search-input",
+      "entry": "field",
+      "family": "fields",
+      "web": "<C.Field label='Search markets'><C.SearchInput value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
+      "native": "<C.Field label='Search markets'><C.SearchInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Checkbox",
+      "slug": "checkbox",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.Checkbox label='Show order details' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>",
+      "native": "<C.Checkbox label='Show order details' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Switch",
+      "slug": "switch",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>",
+      "native": "<C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "RadioGroup",
+      "slug": "radio-group",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.RadioGroup label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>",
+      "native": "<C.RadioGroup label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "SegmentedControl",
+      "slug": "segmented-control",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.SegmentedControl label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>",
+      "native": "<C.SegmentedControl label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Select",
+      "slug": "select",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.Select label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>",
+      "native": "<C.Select label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Slider",
+      "slug": "slider",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.Slider label='Volume preview' value={range} onValueChange={setRange} disabled={disabled}/>",
+      "native": "<C.Slider label='Volume preview' value={range} onValueChange={setRange} disabled={disabled}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Dialog",
+      "slug": "dialog",
+      "entry": "overlay",
+      "family": "overlays",
+      "web": "<C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided amount and terms.' trigger={<C.Button>Open review</C.Button>}><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog>",
+      "native": "<C.Stack><C.Button onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog></C.Stack>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "AlertDialog",
+      "slug": "alert-dialog",
+      "entry": "overlay",
+      "family": "overlays",
+      "web": "<C.AlertDialog open={open} onOpenChange={setOpen} title='Confirm cancellation' description='The host defines the actual consequence.' trigger={<C.Button intent='destructive'>Review cancellation</C.Button>}><C.Button intent='destructive' onClick={()=>{setMessage('Demo cancellation accepted');setOpen(false);}}>Confirm cancellation</C.Button></C.AlertDialog>",
+      "native": "<C.Stack><C.Button onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.AlertDialog></C.Stack>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Sheet",
+      "slug": "sheet",
+      "entry": "overlay",
+      "family": "overlays",
+      "web": "<C.Sheet open={open} onOpenChange={setOpen} title='Order details' description='Scrollable, explicit close action.' trigger={<C.Button>Open details</C.Button>}><C.Text>Terms supplied by host.</C.Text></C.Sheet>",
+      "native": "<C.Stack><C.Button onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Sheet></C.Stack>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Menu",
+      "slug": "menu",
+      "entry": "overlay",
+      "family": "overlays",
+      "web": "<C.Menu label='Market actions' items={[{label:'Show details',onSelect:()=>setMessage('Details selected')},{label:'Unavailable action',disabled:true,onSelect:()=>{}}]}/>",
+      "native": "<C.Menu label='Market actions' items={[{label:'Show details',onSelect:()=>setMessage('Details selected')},{label:'Unavailable action',disabled:true,onSelect:()=>{}}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Popover",
+      "slug": "popover",
+      "entry": "overlay",
+      "family": "overlays",
+      "web": "<C.Popover label='Precision help'><C.Text>Display rounding never changes order quantity.</C.Text></C.Popover>",
+      "native": "<C.HelpText>Precision help: display rounding never changes order quantity.</C.HelpText>",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Tooltip",
+      "slug": "tooltip",
+      "entry": "overlay",
+      "family": "overlays",
+      "web": "<C.Tooltip content='Copy the install command'><C.Button intent='secondary' onClick={()=>setMessage('Copy selected')}>Copy</C.Button></C.Tooltip>",
+      "native": "<C.HelpText>Copy help is persistent on touch; no hover requirement.</C.HelpText>",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Tabs",
+      "slug": "tabs",
+      "entry": "navigation",
+      "family": "navigation",
+      "web": "<C.Tabs label='Example modes' items={[{value:'preview',label:'Preview',content:<C.Text>Visible preview</C.Text>},{value:'code',label:'Code',content:<C.Text>Copyable code</C.Text>}]}/>",
+      "native": "<C.Tabs label='Example modes' items={[{value:'preview',label:'Preview',content:<C.Text>Visible preview</C.Text>},{value:'code',label:'Code',content:<C.Text>Copyable code</C.Text>}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Accordion",
+      "slug": "accordion",
+      "entry": "navigation",
+      "family": "navigation",
+      "web": "<C.Accordion title='Advanced options' open={open} onOpenChange={setOpen}><C.Text>Host-owned advanced settings.</C.Text></C.Accordion>",
+      "native": "<C.Accordion title='Advanced options' open={open} onOpenChange={setOpen}><C.Text>Host-owned advanced settings.</C.Text></C.Accordion>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Breadcrumb",
+      "slug": "breadcrumb",
+      "entry": "navigation",
+      "family": "navigation",
+      "web": "<C.Breadcrumb items={[{label:'Guidelines',href:'https://github.com/bloxwap/hig'},{label:'Components'}]}/>",
+      "native": "<C.BackButton onBack={()=>setMessage('Host back requested')}/>",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Navigation",
+      "slug": "navigation",
+      "entry": "navigation",
+      "family": "navigation",
+      "web": "<C.Navigation label='Sample navigation' items={[{label:'Overview',href:'#overview',active:true},{label:'Activity',href:'#activity'}]}/>",
+      "native": "<C.Navigation label='Sample navigation' items={[{id:'overview',label:'Overview',active:true,onNavigate:()=>setMessage('Overview requested')},{id:'activity',label:'Activity',onNavigate:()=>setMessage('Activity requested')}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Pagination",
+      "slug": "pagination",
+      "entry": "navigation",
+      "family": "navigation",
+      "web": "<C.Pagination page={range} total={100} onPageChange={setRange}/>",
+      "native": "<C.Pagination page={range} total={100} onPageChange={setRange}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Search",
+      "slug": "search",
+      "entry": "navigation",
+      "family": "navigation",
+      "web": "<C.Search query={amount} onQueryChange={setAmount} results={empty?[]:[{id:'btc',label:'Bitcoin (BTC)',onSelect:()=>setMessage('Bitcoin selected')}]} error={error}/>",
+      "native": "<C.Search query={amount} onQueryChange={setAmount} results={empty?[]:[{id:'btc',label:'Bitcoin (BTC)',onSelect:()=>setMessage('Bitcoin selected')}]} error={error}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Badge",
+      "slug": "badge",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Badge>Demo data</C.Badge>",
+      "native": "<C.Badge>Demo data</C.Badge>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Alert",
+      "slug": "alert",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Alert title={error?'Data unavailable':'Sample status'} severity={error?'error':'info'} action={<C.Button intent='secondary' onClick={()=>setMessage('Retry requested')}>Retry</C.Button>}><C.Text>{error??'Essential state stays visible with feedback off.'}</C.Text></C.Alert>",
+      "native": "<C.Alert title={error?'Data unavailable':'Sample status'} severity={error?'error':'info'} action={<C.Button intent='secondary' onPress={()=>setMessage('Retry requested')}>Retry</C.Button>}><C.Text>{error??'Essential state stays visible with feedback off.'}</C.Text></C.Alert>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Callout",
+      "slug": "callout",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Callout title='Display-only values'><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>",
+      "native": "<C.Callout title='Display-only values'><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Toast",
+      "slug": "toast",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Toast notices={notices} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>",
+      "native": "<C.Toast notices={notices} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Progress",
+      "slug": "progress",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Progress label='Loading markets' value={busy?undefined:40}/>",
+      "native": "<C.Progress label='Loading markets' value={busy?undefined:40}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Spinner",
+      "slug": "spinner",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Spinner label='Fetching prices'/>",
+      "native": "<C.Spinner label='Fetching prices'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Skeleton",
+      "slug": "skeleton",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Skeleton label='Loading balance'/>",
+      "native": "<C.Skeleton label='Loading balance'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "EmptyState",
+      "slug": "empty-state",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.EmptyState title='No open positions' description='Positions supplied by the host appear here.' action={<C.Button intent='secondary' onClick={()=>setMessage('Refresh requested')}>Refresh</C.Button>}/>",
+      "native": "<C.EmptyState title='No open positions' description='Positions supplied by the host appear here.' action={<C.Button intent='secondary' onPress={()=>setMessage('Refresh requested')}>Refresh</C.Button>}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Avatar",
+      "slug": "avatar",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.Avatar name='Demo account'/>",
+      "native": "<C.Avatar name='Demo account'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "StatusIndicator",
+      "slug": "status-indicator",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.StatusIndicator label='Market data' state={error?'offline':'stale'}/>",
+      "native": "<C.StatusIndicator label='Market data' state={error?'offline':'stale'}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "NumberReadout",
+      "slug": "number-readout",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.NumberReadout value={empty?null:67234.56} stale={!!error} options={{maximumFractionDigits:2}}/>",
+      "native": "<C.NumberReadout value={empty?null:67234.56} stale={!!error} options={{maximumFractionDigits:2}}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Usd",
+      "slug": "usd",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.Usd value={empty?null:1250.45} stale={!!error}/>",
+      "native": "<C.Usd value={empty?null:1250.45} stale={!!error}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Percent",
+      "slug": "percent",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.Percent value={empty?null:2.5}/>",
+      "native": "<C.Percent value={empty?null:2.5}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Metric",
+      "slug": "metric",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.Metric label='Sample equity' value={<C.Usd value={1250.45}/>}/>",
+      "native": "<C.Metric label='Sample equity' value={<C.Usd value={1250.45}/>}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Stat",
+      "slug": "stat",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.Stat label='Sample daily change' value={<C.Percent value={2.5}/>}/>",
+      "native": "<C.Stat label='Sample daily change' value={<C.Percent value={2.5}/>}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "List",
+      "slug": "list",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
+      "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Row",
+      "slug": "row",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.Row><C.Text>Bitcoin (BTC)</C.Text><C.Usd value={67234.56}/></C.Row>",
+      "native": "<C.Row><C.Text>Bitcoin (BTC)</C.Text><C.Usd value={67234.56}/></C.Row>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Table",
+      "slug": "table",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.Table caption='Sample positions' rows={rows} keyFor={r=>r.id} columns={[{key:'asset',label:'Asset',render:r=>r.label},{key:'price',label:'Price',render:r=><C.Usd value={r.value}/>} ]}/>",
+      "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "BrandMark",
+      "slug": "brand-mark",
+      "entry": "brand",
+      "family": "brand",
+      "web": "<C.BrandMark size={48} label='Bloxwap'/>",
+      "native": "<C.BrandMark size={48} label='Bloxwap'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "CheckIcon",
+      "slug": "check-icon",
+      "entry": "brand",
+      "family": "brand",
+      "web": "<C.IconButton label='Confirm selection'><C.CheckIcon/></C.IconButton>",
+      "native": "<C.IconButton label='Confirm selection'><C.CheckIcon/></C.IconButton>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "HIGProvider",
+      "slug": "h-i-g-provider",
+      "entry": "provider",
+      "family": "provider",
+      "web": "<C.Surface><C.Text>Density, locale and motion are scoped to this provider.</C.Text></C.Surface>",
+      "native": "<C.Surface><C.Text>Density, locale and motion are scoped to this provider.</C.Text></C.Surface>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "MarketRow",
+      "slug": "market-row",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>",
+      "native": "<C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "BalanceCard",
+      "slug": "balance-card",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.BalanceCard label='Sample balance' balance={empty?null:1250.45} stale={!!error}/>",
+      "native": "<C.BalanceCard label='Sample balance' balance={empty?null:1250.45} stale={!!error}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "TradeEntry",
+      "slug": "trade-entry",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>",
+      "native": "<C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "InstallCommand",
+      "slug": "install-command",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig-react@0.1.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig-react@0.1.0')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig-native@0.1.0' onCopy={()=>{setMessage('Host clipboard adapter requested');}}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "CodeWindow",
+      "slug": "code-window",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.CodeWindow language='TypeScript'>{'const rawAmount = decimalString;'}</C.CodeWindow>",
+      "native": "<C.CodeWindow language='TypeScript'>{'const rawAmount = decimalString;'}</C.CodeWindow>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "MarketingHero",
+      "slug": "marketing-hero",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>",
+      "native": "<C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "ActivityList",
+      "slug": "activity-list",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.ActivityList items={empty?[]:[{id:'1',label:'Demo review',status:'Awaiting host confirmation'}]}/>",
+      "native": "<C.ActivityList items={empty?[]:[{id:'1',label:'Demo review',status:'Awaiting host confirmation'}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "PriceChart",
+      "slug": "price-chart",
+      "entry": "chart",
+      "family": "chart",
+      "web": "<C.PriceChart summary='Sample Bitcoin candles; no live feed. Price values also available as text.' data={empty?[]:[{time:1700000000,open:67000,high:68000,low:66800,close:67500},{time:1700000060,open:67500,high:68100,low:67200,close:67900}]} height={240}/>",
+      "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    }
+  ]
+}

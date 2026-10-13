@@ -1,0 +1,585 @@
+{
+  "version": "0.1.0",
+  "api": {
+    "react": {
+      "BrandMark": {
+        "entry": "brand",
+        "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "CheckIcon": {
+        "entry": "brand",
+        "signature": "export declare function CheckIcon(): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "ButtonProps": {
+        "entry": "button",
+        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: Intent;\n    busy?: boolean;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+      },
+      "Button": {
+        "entry": "button",
+        "signature": "export declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLButtonElement>>;"
+      },
+      "IconButton": {
+        "entry": "button",
+        "signature": "export declare const IconButton: React.ForwardRefExoticComponent<Omit<ButtonProps, \"aria-label\"> & {\n    label: string;\n} & React.RefAttributes<HTMLButtonElement>>;"
+      },
+      "Link": {
+        "entry": "button",
+        "signature": "export declare const Link: React.ForwardRefExoticComponent<React.AnchorHTMLAttributes<HTMLAnchorElement> & React.RefAttributes<HTMLAnchorElement>>;"
+      },
+      "chartTheme": {
+        "entry": "chart",
+        "signature": "export declare const chartTheme: DeepPartial<ChartConfig>;"
+      },
+      "PriceChart": {
+        "entry": "chart",
+        "signature": "export declare function PriceChart({ summary, ...props }: ChartProps & {\n    summary: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "NumberProps": {
+        "entry": "data",
+        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n}"
+      },
+      "NumberReadout": {
+        "entry": "data",
+        "signature": "export declare function NumberReadout({ value, options, stale, label }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Usd": {
+        "entry": "data",
+        "signature": "export declare function Usd(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Percent": {
+        "entry": "data",
+        "signature": "export declare function Percent(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Metric": {
+        "entry": "data",
+        "signature": "export declare function Metric({ label, value }: {\n    label: string;\n    value: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Stat": {
+        "entry": "data",
+        "signature": "export declare const Stat: typeof Metric;"
+      },
+      "List": {
+        "entry": "data",
+        "signature": "export declare function List<T>({ items, keyFor, render, empty }: {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Row": {
+        "entry": "data",
+        "signature": "export declare function Row(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Column": {
+        "entry": "data",
+        "signature": "export interface Column<T> {\n    key: string;\n    label: string;\n    render: (row: T) => React.ReactNode;\n    sort?: 'ascending' | 'descending';\n    onSort?: () => void;\n}"
+      },
+      "Table": {
+        "entry": "data",
+        "signature": "export declare function Table<T>({ caption, rows, columns, keyFor }: {\n    caption: string;\n    rows: readonly T[];\n    columns: readonly Column<T>[];\n    keyFor: (row: T) => string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Field": {
+        "entry": "field",
+        "signature": "export declare function Field({ id: provided, label, description, error, required, disabled, children }: React.PropsWithChildren<{\n    id?: string;\n    label: string;\n    description?: string;\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Label": {
+        "entry": "field",
+        "signature": "export declare const Label: (props: React.LabelHTMLAttributes<HTMLLabelElement>) => import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Input": {
+        "entry": "field",
+        "signature": "export declare const Input: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
+      },
+      "TextArea": {
+        "entry": "field",
+        "signature": "export declare const TextArea: React.ForwardRefExoticComponent<React.TextareaHTMLAttributes<HTMLTextAreaElement> & React.RefAttributes<HTMLTextAreaElement>>;"
+      },
+      "AmountInput": {
+        "entry": "field",
+        "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<Omit<React.InputHTMLAttributes<HTMLInputElement>, \"type\"> & React.RefAttributes<HTMLInputElement>>;"
+      },
+      "SearchInput": {
+        "entry": "field",
+        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
+      },
+      "Tabs": {
+        "entry": "navigation",
+        "signature": "export declare function Tabs({ label, items, value, defaultValue, onValueChange }: {\n    label: string;\n    items: readonly {\n        value: string;\n        label: string;\n        content: React.ReactNode;\n        disabled?: boolean;\n    }[];\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (v: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Accordion": {
+        "entry": "navigation",
+        "signature": "export declare function Accordion({ title, children, open, onOpenChange }: React.PropsWithChildren<{\n    title: string;\n    open?: boolean;\n    onOpenChange?: (open: boolean) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Breadcrumb": {
+        "entry": "navigation",
+        "signature": "export declare function Breadcrumb({ items }: {\n    items: readonly {\n        label: string;\n        href?: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Navigation": {
+        "entry": "navigation",
+        "signature": "export declare function Navigation({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        href: string;\n        active?: boolean;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Pagination": {
+        "entry": "navigation",
+        "signature": "export declare function Pagination({ page, total, onPageChange }: {\n    page: number;\n    total: number;\n    onPageChange: (p: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Search": {
+        "entry": "navigation",
+        "signature": "export declare function Search({ query, onQueryChange, results, loading, error }: {\n    query: string;\n    onQueryChange: (s: string) => void;\n    results: readonly {\n        id: string;\n        label: string;\n        onSelect: () => void;\n    }[];\n    loading?: boolean;\n    error?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "DialogProps": {
+        "entry": "overlay",
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode;\n}"
+      },
+      "Dialog": {
+        "entry": "overlay",
+        "signature": "export declare function Dialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Sheet": {
+        "entry": "overlay",
+        "signature": "export declare const Sheet: typeof Dialog;"
+      },
+      "AlertDialog": {
+        "entry": "overlay",
+        "signature": "export declare function AlertDialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Menu": {
+        "entry": "overlay",
+        "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Popover": {
+        "entry": "overlay",
+        "signature": "export declare function Popover({ label, children }: React.PropsWithChildren<{\n    label: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Tooltip": {
+        "entry": "overlay",
+        "signature": "export declare function Tooltip({ content, children }: React.PropsWithChildren<{\n    content: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "HIGContext": {
+        "entry": "provider",
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n}"
+      },
+      "HIGProvider": {
+        "entry": "provider",
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "useHIG": {
+        "entry": "provider",
+        "signature": "export declare const useHIG: () => HIGContext;"
+      },
+      "useControllable": {
+        "entry": "provider",
+        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void): [T, (next: T) => void];"
+      },
+      "MarketRow": {
+        "entry": "recipes",
+        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "BalanceCard": {
+        "entry": "recipes",
+        "signature": "export declare function BalanceCard({ label, balance, stale }: {\n    label: string;\n    balance: number | null;\n    stale?: boolean;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "TradeEntry": {
+        "entry": "recipes",
+        "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "InstallCommand": {
+        "entry": "recipes",
+        "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "CodeWindow": {
+        "entry": "recipes",
+        "signature": "export declare function CodeWindow({ language, children }: React.PropsWithChildren<{\n    language: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "MarketingHero": {
+        "entry": "recipes",
+        "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "ActivityList": {
+        "entry": "recipes",
+        "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Choice": {
+        "entry": "selection",
+        "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
+      },
+      "Checkbox": {
+        "entry": "selection",
+        "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Switch": {
+        "entry": "selection",
+        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "ChoicesProps": {
+        "entry": "selection",
+        "signature": "export interface ChoicesProps {\n    label: string;\n    options: readonly Choice[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void;\n}"
+      },
+      "RadioGroup": {
+        "entry": "selection",
+        "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "SegmentedControl": {
+        "entry": "selection",
+        "signature": "export declare const SegmentedControl: typeof RadioGroup;"
+      },
+      "Select": {
+        "entry": "selection",
+        "signature": "export declare function Select({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Slider": {
+        "entry": "selection",
+        "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (value: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Badge": {
+        "entry": "status",
+        "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Alert": {
+        "entry": "status",
+        "signature": "export declare function Alert({ title, children, severity, action }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Callout": {
+        "entry": "status",
+        "signature": "export declare const Callout: typeof Alert;"
+      },
+      "Notice": {
+        "entry": "status",
+        "signature": "export interface Notice {\n    id: string;\n    message: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}"
+      },
+      "Toast": {
+        "entry": "status",
+        "signature": "export declare function Toast({ notices, onDismiss }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Progress": {
+        "entry": "status",
+        "signature": "export declare function Progress({ label, value, max }: {\n    label: string;\n    value?: number;\n    max?: number;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Spinner": {
+        "entry": "status",
+        "signature": "export declare function Spinner({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Skeleton": {
+        "entry": "status",
+        "signature": "export declare function Skeleton({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "EmptyState": {
+        "entry": "status",
+        "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Avatar": {
+        "entry": "status",
+        "signature": "export declare function Avatar({ name, src }: {\n    name: string;\n    src?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "StatusIndicator": {
+        "entry": "status",
+        "signature": "export declare function StatusIndicator({ label, state }: {\n    label: string;\n    state: 'online' | 'offline' | 'stale';\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Text": {
+        "entry": "surface",
+        "signature": "export declare function Text(props: React.HTMLAttributes<HTMLParagraphElement>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Heading": {
+        "entry": "surface",
+        "signature": "export declare function Heading({ level, ...props }: React.HTMLAttributes<HTMLHeadingElement> & {\n    level?: 1 | 2 | 3 | 4 | 5 | 6;\n}): React.DetailedReactHTMLElement<{\n    className: string;\n    defaultChecked?: boolean | undefined;\n    defaultValue?: string | number | readonly string[] | undefined;\n    suppressContentEditableWarning?: boolean | undefined;\n    suppressHydrationWarning?: boolean | undefined;\n    accessKey?: string | undefined;\n    autoCapitalize?: \"off\" | \"none\" | \"on\" | \"sentences\" | \"words\" | \"characters\" | undefined | (string & {});\n    autoFocus?: boolean | undefined;\n    contentEditable?: (boolean | \"true\" | \"false\") | \"inherit\" | \"plaintext-only\" | undefined;\n    contextMenu?: string | undefined;\n    dir?: string | undefined;\n    draggable?: (boolean | \"true\" | \"false\") | undefined;\n    enterKeyHint?: \"enter\" | \"done\" | \"go\" | \"next\" | \"previous\" | \"search\" | \"send\" | undefined;\n    hidden?: boolean | undefined;\n    id?: string | undefined;\n    lang?: string | undefined;\n    nonce?: string | undefined;\n    slot?: string | undefined;\n    spellCheck?: (boolean | \"true\" | \"false\") | undefined;\n    style?: React.CSSProperties | undefined;\n    tabIndex?: number | undefined;\n    title?: string | undefined;\n    translate?: \"yes\" | \"no\" | undefined;\n    radioGroup?: string | undefined;\n    role?: React.AriaRole | undefined;\n    about?: string | undefined;\n    content?: string | undefined;\n    datatype?: string | undefined;\n    inlist?: any;\n    prefix?: string | undefined;\n    property?: string | undefined;\n    rel?: string | undefined;\n    resource?: string | undefined;\n    rev?: string | undefined;\n    typeof?: string | undefined;\n    vocab?: string | undefined;\n    autoCorrect?: string | undefined;\n    autoSave?: string | undefined;\n    color?: string | undefined;\n    itemProp?: string | undefined;\n    itemScope?: boolean | undefined;\n    itemType?: string | undefined;\n    itemID?: string | undefined;\n    itemRef?: string | undefined;\n    results?: number | undefined;\n    security?: string | undefined;\n    unselectable?: \"on\" | \"off\" | undefined;\n    popover?: \"\" | \"auto\" | \"manual\" | \"hint\" | undefined;\n    popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined;\n    popoverTarget?: string | undefined;\n    inert?: boolean | undefined;\n    inputMode?: \"none\" | \"text\" | \"tel\" | \"url\" | \"email\" | \"numeric\" | \"decimal\" | \"search\" | undefined;\n    is?: string | undefined;\n    exportparts?: string | undefined;\n    part?: string | undefined;\n    \"aria-activedescendant\"?: string | undefined;\n    \"aria-atomic\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-autocomplete\"?: \"none\" | \"inline\" | \"list\" | \"both\" | undefined;\n    \"aria-braillelabel\"?: string | undefined;\n    \"aria-brailleroledescription\"?: string | undefined;\n    \"aria-busy\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-checked\"?: boolean | \"false\" | \"mixed\" | \"true\" | undefined;\n    \"aria-colcount\"?: number | undefined;\n    \"aria-colindex\"?: number | undefined;\n    \"aria-colindextext\"?: string | undefined;\n    \"aria-colspan\"?: number | undefined;\n    \"aria-controls\"?: string | undefined;\n    \"aria-current\"?: boolean | \"false\" | \"true\" | \"page\" | \"step\" | \"location\" | \"date\" | \"time\" | undefined;\n    \"aria-describedby\"?: string | undefined;\n    \"aria-description\"?: string | undefined;\n    \"aria-details\"?: string | undefined;\n    \"aria-disabled\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-dropeffect\"?: \"none\" | \"copy\" | \"execute\" | \"link\" | \"move\" | \"popup\" | undefined;\n    \"aria-errormessage\"?: string | undefined;\n    \"aria-expanded\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-flowto\"?: string | undefined;\n    \"aria-grabbed\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-haspopup\"?: boolean | \"false\" | \"true\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | undefined;\n    \"aria-hidden\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-invalid\"?: boolean | \"false\" | \"true\" | \"grammar\" | \"spelling\" | undefined;\n    \"aria-keyshortcuts\"?: string | undefined;\n    \"aria-label\"?: string | undefined;\n    \"aria-labelledby\"?: string | undefined;\n    \"aria-level\"?: number | undefined;\n    \"aria-live\"?: \"off\" | \"assertive\" | \"polite\" | undefined;\n    \"aria-modal\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-multiline\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-multiselectable\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-orientation\"?: \"horizontal\" | \"vertical\" | undefined;\n    \"aria-owns\"?: string | undefined;\n    \"aria-placeholder\"?: string | undefined;\n    \"aria-posinset\"?: number | undefined;\n    \"aria-pressed\"?: boolean | \"false\" | \"mixed\" | \"true\" | undefined;\n    \"aria-readonly\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-relevant\"?: \"additions\" | \"additions removals\" | \"additions text\" | \"all\" | \"removals\" | \"removals additions\" | \"removals text\" | \"text\" | \"text additions\" | \"text removals\" | undefined;\n    \"aria-required\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-roledescription\"?: string | undefined;\n    \"aria-rowcount\"?: number | undefined;\n    \"aria-rowindex\"?: number | undefined;\n    \"aria-rowindextext\"?: string | undefined;\n    \"aria-rowspan\"?: number | undefined;\n    \"aria-selected\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-setsize\"?: number | undefined;\n    \"aria-sort\"?: \"none\" | \"ascending\" | \"descending\" | \"other\" | undefined;\n    \"aria-valuemax\"?: number | undefined;\n    \"aria-valuemin\"?: number | undefined;\n    \"aria-valuenow\"?: number | undefined;\n    \"aria-valuetext\"?: string | undefined;\n    children?: React.ReactNode | undefined;\n    dangerouslySetInnerHTML?: {\n        __html: string | TrustedHTML;\n    } | undefined;\n    onCopy?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCopyCapture?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCut?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCutCapture?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onPaste?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onPasteCapture?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionEnd?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionEndCapture?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionStart?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionStartCapture?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionUpdate?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionUpdateCapture?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onFocus?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onFocusCapture?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onBlur?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onBlurCapture?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onChange?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onChangeCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onBeforeInput?: React.InputEventHandler<HTMLHeadingElement> | undefined;\n    onBeforeInputCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInput?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInputCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onReset?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onResetCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onSubmit?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onSubmitCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInvalid?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInvalidCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onLoad?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onError?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onErrorCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onKeyDown?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyDownCapture?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyPress?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyPressCapture?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyUp?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyUpCapture?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onAbort?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onAbortCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlay?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlayCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlayThrough?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlayThroughCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onDurationChange?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onDurationChangeCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEmptied?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEmptiedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEncrypted?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEncryptedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEnded?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEndedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedData?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedDataCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedMetadata?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedMetadataCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadStart?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadStartCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPause?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPauseCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlay?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlayCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlaying?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlayingCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onProgress?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onProgressCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onRateChange?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onRateChangeCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeeked?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeekedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeeking?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeekingCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onStalled?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onStalledCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSuspend?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSuspendCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onTimeUpdate?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onTimeUpdateCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onVolumeChange?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onVolumeChangeCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onWaiting?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onWaitingCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onAuxClick?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onAuxClickCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onClick?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onClickCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onContextMenu?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onContextMenuCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onDoubleClick?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onDoubleClickCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onDrag?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEnd?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEndCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEnter?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEnterCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragExit?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragExitCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragLeave?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragLeaveCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragOver?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragOverCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragStart?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragStartCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDrop?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDropCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onMouseDown?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseDownCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseEnter?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseLeave?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseMove?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseMoveCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOut?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOutCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOver?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOverCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseUp?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseUpCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onSelect?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSelectCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onTouchCancel?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchCancelCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchEnd?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchEndCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchMove?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchMoveCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchStart?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchStartCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onPointerDown?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerDownCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerMove?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerMoveCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerUp?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerUpCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerCancel?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerCancelCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerEnter?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerLeave?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOver?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOverCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOut?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOutCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onGotPointerCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onGotPointerCaptureCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onLostPointerCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onLostPointerCaptureCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onScroll?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onScrollCapture?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onScrollEnd?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onScrollEndCapture?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onWheel?: React.WheelEventHandler<HTMLHeadingElement> | undefined;\n    onWheelCapture?: React.WheelEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationStart?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationStartCapture?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationEnd?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationEndCapture?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationIteration?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationIterationCapture?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onToggle?: React.ToggleEventHandler<HTMLHeadingElement> | undefined;\n    onBeforeToggle?: React.ToggleEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionCancel?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionCancelCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionEnd?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionEndCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionRun?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionRunCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionStart?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionStartCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n}, HTMLElement>;"
+      },
+      "Stack": {
+        "entry": "surface",
+        "signature": "export declare function Stack(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Inline": {
+        "entry": "surface",
+        "signature": "export declare function Inline(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Surface": {
+        "entry": "surface",
+        "signature": "export declare function Surface(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Card": {
+        "entry": "surface",
+        "signature": "export declare const Card: typeof Surface;"
+      },
+      "Separator": {
+        "entry": "surface",
+        "signature": "export declare function Separator(props: React.HTMLAttributes<HTMLHRElement>): import(\"react/jsx-runtime\").JSX.Element;"
+      }
+    },
+    "native": {
+      "BrandMark": {
+        "entry": "brand",
+        "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "CheckIcon": {
+        "entry": "brand",
+        "signature": "export declare function CheckIcon(): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "ButtonProps": {
+        "entry": "button",
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode;\n    intent?: Intent;\n    busy?: boolean;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+      },
+      "Button": {
+        "entry": "button",
+        "signature": "export declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<View>>;"
+      },
+      "IconButton": {
+        "entry": "button",
+        "signature": "export declare function IconButton({ label, children, ...props }: ButtonProps & {\n    label: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Link": {
+        "entry": "button",
+        "signature": "export declare function Link({ href, children, onError }: React.PropsWithChildren<{\n    href: string;\n    onError?: (error: unknown) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "NumberProps": {
+        "entry": "data",
+        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n}"
+      },
+      "NumberReadout": {
+        "entry": "data",
+        "signature": "export declare function NumberReadout({ value, options, stale, label }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Usd": {
+        "entry": "data",
+        "signature": "export declare function Usd(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Percent": {
+        "entry": "data",
+        "signature": "export declare function Percent(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Metric": {
+        "entry": "data",
+        "signature": "export declare function Metric({ label, value }: {\n    label: string;\n    value: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Stat": {
+        "entry": "data",
+        "signature": "export declare const Stat: typeof Metric;"
+      },
+      "Row": {
+        "entry": "data",
+        "signature": "export declare function Row({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "List": {
+        "entry": "data",
+        "signature": "export declare function List<T>({ items, keyFor, render, empty }: {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Field": {
+        "entry": "field",
+        "signature": "export declare function Field({ label, description, error, required, disabled, children }: React.PropsWithChildren<{\n    label: string;\n    description?: string;\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Label": {
+        "entry": "field",
+        "signature": "export declare const Label: typeof Text;"
+      },
+      "Input": {
+        "entry": "field",
+        "signature": "export declare const Input: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+      },
+      "TextArea": {
+        "entry": "field",
+        "signature": "export declare const TextArea: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+      },
+      "AmountInput": {
+        "entry": "field",
+        "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+      },
+      "SearchInput": {
+        "entry": "field",
+        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+      },
+      "Tabs": {
+        "entry": "navigation",
+        "signature": "export declare function Tabs({ label, items, value, defaultValue, onValueChange }: {\n    label: string;\n    items: readonly {\n        value: string;\n        label: string;\n        content: React.ReactNode;\n        disabled?: boolean;\n    }[];\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (v: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Accordion": {
+        "entry": "navigation",
+        "signature": "export declare function Accordion({ title, children, open, onOpenChange }: React.PropsWithChildren<{\n    title: string;\n    open?: boolean;\n    onOpenChange?: (v: boolean) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Navigation": {
+        "entry": "navigation",
+        "signature": "export declare function Navigation({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        id: string;\n        active?: boolean;\n        onNavigate: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "BottomNavigation": {
+        "entry": "navigation",
+        "signature": "export declare const BottomNavigation: typeof Navigation;"
+      },
+      "Pagination": {
+        "entry": "navigation",
+        "signature": "export declare function Pagination({ page, total, onPageChange }: {\n    page: number;\n    total: number;\n    onPageChange: (p: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Search": {
+        "entry": "navigation",
+        "signature": "export declare function Search({ query, onQueryChange, results, loading, error }: {\n    query: string;\n    onQueryChange: (s: string) => void;\n    results: readonly {\n        id: string;\n        label: string;\n        onSelect: () => void;\n    }[];\n    loading?: boolean;\n    error?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "BackButton": {
+        "entry": "navigation",
+        "signature": "export declare function BackButton({ onBack }: {\n    onBack: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "DialogProps": {
+        "entry": "overlay",
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n}"
+      },
+      "Dialog": {
+        "entry": "overlay",
+        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Sheet": {
+        "entry": "overlay",
+        "signature": "export declare const Sheet: typeof Dialog;"
+      },
+      "AlertDialog": {
+        "entry": "overlay",
+        "signature": "export declare const AlertDialog: typeof Dialog;"
+      },
+      "Menu": {
+        "entry": "overlay",
+        "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "HelpText": {
+        "entry": "overlay",
+        "signature": "export declare function HelpText({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "HIGContext": {
+        "entry": "provider",
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n}"
+      },
+      "HIGProvider": {
+        "entry": "provider",
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "useHIG": {
+        "entry": "provider",
+        "signature": "export declare const useHIG: () => HIGContext;"
+      },
+      "useControllable": {
+        "entry": "provider",
+        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void): [T, (next: T) => void];"
+      },
+      "MarketRow": {
+        "entry": "recipes",
+        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "BalanceCard": {
+        "entry": "recipes",
+        "signature": "export declare function BalanceCard({ label, balance, stale }: {\n    label: string;\n    balance: number | null;\n    stale?: boolean;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "TradeEntry": {
+        "entry": "recipes",
+        "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "InstallCommand": {
+        "entry": "recipes",
+        "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "CodeWindow": {
+        "entry": "recipes",
+        "signature": "export declare function CodeWindow({ language, children }: React.PropsWithChildren<{\n    language: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "MarketingHero": {
+        "entry": "recipes",
+        "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "ActivityList": {
+        "entry": "recipes",
+        "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Choice": {
+        "entry": "selection",
+        "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
+      },
+      "Switch": {
+        "entry": "selection",
+        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Checkbox": {
+        "entry": "selection",
+        "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "ChoicesProps": {
+        "entry": "selection",
+        "signature": "export interface ChoicesProps {\n    label: string;\n    options: readonly Choice[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (v: string) => void;\n}"
+      },
+      "RadioGroup": {
+        "entry": "selection",
+        "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "SegmentedControl": {
+        "entry": "selection",
+        "signature": "export declare const SegmentedControl: typeof RadioGroup;"
+      },
+      "Select": {
+        "entry": "selection",
+        "signature": "export declare function Select(props: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Slider": {
+        "entry": "selection",
+        "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (v: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Badge": {
+        "entry": "status",
+        "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Alert": {
+        "entry": "status",
+        "signature": "export declare function Alert({ title, children, severity, action }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Callout": {
+        "entry": "status",
+        "signature": "export declare const Callout: typeof Alert;"
+      },
+      "Notice": {
+        "entry": "status",
+        "signature": "export interface Notice {\n    id: string;\n    message: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}"
+      },
+      "Toast": {
+        "entry": "status",
+        "signature": "export declare function Toast({ notices, onDismiss }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Spinner": {
+        "entry": "status",
+        "signature": "export declare function Spinner({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Progress": {
+        "entry": "status",
+        "signature": "export declare function Progress({ label, value, max }: {\n    label: string;\n    value?: number;\n    max?: number;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Skeleton": {
+        "entry": "status",
+        "signature": "export declare function Skeleton({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "EmptyState": {
+        "entry": "status",
+        "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Avatar": {
+        "entry": "status",
+        "signature": "export declare function Avatar({ name, source }: {\n    name: string;\n    source?: ImageSourcePropType;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "StatusIndicator": {
+        "entry": "status",
+        "signature": "export declare function StatusIndicator({ label, state }: {\n    label: string;\n    state: 'online' | 'offline' | 'stale';\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Text": {
+        "entry": "surface",
+        "signature": "export declare function Text({ style, ...props }: TextProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Heading": {
+        "entry": "surface",
+        "signature": "export declare function Heading({ style, ...props }: TextProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Stack": {
+        "entry": "surface",
+        "signature": "export declare function Stack({ style, ...props }: ViewProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Inline": {
+        "entry": "surface",
+        "signature": "export declare function Inline({ style, ...props }: ViewProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Surface": {
+        "entry": "surface",
+        "signature": "export declare function Surface({ style, ...props }: ViewProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Card": {
+        "entry": "surface",
+        "signature": "export declare const Card: typeof Surface;"
+      },
+      "Separator": {
+        "entry": "surface",
+        "signature": "export declare function Separator(): import(\"react/jsx-runtime\").JSX.Element;"
+      }
+    }
+  }
+}

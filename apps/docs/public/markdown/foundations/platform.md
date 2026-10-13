@@ -1,0 +1,29 @@
+# Foundation and platform rules · HIG 0.1.0
+
+## Color (#6)
+
+Dark is the only audited mode. Source values come from Font SDK tokens, with commit recorded in the inventory; monorepo OKLCH extraction remains blocked. Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values; iOS P3 channel objects require a host color-space bridge and are not RN CSS strings. Android and third-party images use sRGB. `evidence/contrast.json` records tested normal-text pairings. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+
+## Typography (#7)
+
+Pin @bloxwap/font 0.1.2. Vite: import `@bloxwap/font/css`; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Native requires approved static TTF faces, pinned provenance and a FontManifest registration mapping; published WOFF2/Next loaders are not native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
+
+## Geometry and layout (#8)
+
+Spaces 4/8/12/16/20/24/32/48; radius 6/8/10/14 and pill. Comfortable control/target 48; compact 36, reserved for pointer/keyboard dense layouts. Painted icons can be 16/20/24 while targets stay 48 on touch. Never expand adjacent invisible hit areas so they overlap. Use logical inline spacing, wrapping labels, safe-area insets, keyboard avoidance and a scrollable native sheet; preserve portrait/tablet rotation without locking orientation. Pro tables may scroll with column headers; app amount entry reflows. Elevation uses nested fills rather than unverified shadows. Layer order: document, sticky nav, contextual popover, modal, notification. Browser top layer handles modal stacking; native Modal remains platform-owned.
+
+## Motion and gestures (#9)
+
+Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. Press response ends on release/cancel; action executes on accepted activation, never press-in. Drag/scroll cancellation clears visual and feedback state. Interrupt transitions from current state instead of queuing. Reduced motion uses immediate state changes, static skeletons and unanimated numeric readouts. Outcome messages remain explicit. **Do** animate deliberate disclosure once; **don't** animate or play sound for every live-data update. Native candidate uses static transitions until cancellation/device animation evidence exists; motion preference is independent from sound/haptics.
+
+## Accessibility and localization (#10)
+
+Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic.
+
+Component review checklist: keyboard completion; labeled controls/errors; busy/disabled; focus restoration; narrow viewport; 200% text; long translations; Arabic/Hebrew RTL; mixed scripts; reduced motion; sound off; haptics off; unknown/stale/error values; VoiceOver/TalkBack on physical devices. Automated results and physical observations must be separate. Exception requires owner, affected surface, reason, alternative and expiry. No observed device evidence means pending, never pass.
+
+## Brand and icons (#11)
+
+Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import `@bloxwap/hig-tokens/mark.svg` on web; native geometry renderer follows in M2. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives and device visual comparison remain pending approval/evidence.
+
+Font-loading note: `@bloxwap/font/css` references all supported families/scripts, which may increase deployed asset bytes even with on-demand browser loading. The Latin web fixture instead uses two explicit @font-face rules with package asset URLs (Sans and Mono). Add only the scripts/italics used by each consumer. Do not assume a Latin-only fixture certifies mixed-script rendering.

@@ -1,0 +1,521 @@
+# Bloxwap HIG 0.1.0 candidate
+
+## ADR 001: platform renderers, shared contracts
+Source: docs/architecture/001-packages.md
+
+# ADR 001: platform renderers, shared contracts
+
+Status: accepted for candidate 0.1.0. Issues #4, #5. Evidence: `evidence/upstream-inventory.json`.
+
+```mermaid
+graph TD
+  Tokens[HIG tokens] --> Web[HIG React]
+  Tokens --> Native[HIG Native]
+  Contracts[HIG contracts] --> Web
+  Contracts --> Native
+  Contracts --> Feedback[optional feedback adapters]
+  Web --> Docs[docs and consumer fixtures]
+  Native --> Expo[Expo gallery]
+```
+
+`@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-feedback` owns optional adapter entry points. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
+
+Candidate validation matrix: Node 20.19+, TypeScript 5.9, React/DOM 19.1, RN 0.81.5, Expo 54, Vite 6.4. No Next.js or NativeWind runtime claim until consumer evidence exists. Use StyleSheet on RN and plain CSS on web; Tailwind may refer to `var(--hig-*)` without scanning HIG sources. Legacy NativeWind rem roots are unknown until monorepo audit. Never infer native sizes by replacing `rem` with `dp`.
+
+Prefer built-in semantic controls; modal/disclosure behavior must retain keyboard, focus restoration and descriptions. Optional chart entry imports the chart SDK only on the client. Libraries retain upstream licenses; extracted tokens and mark have commit provenance, no vendor engine source is copied. Font binaries remain owned by @bloxwap/font (OFL-1.1).
+
+Deprecation plan: inventory all live references, map variants to intent/density, run migration diff and consumer validation, switch a pilot behind a host flag, then delete unused copies. App comfortable targets and Pro compact rows are intentional. HIG cannot retire inaccessible monorepo copies. API/token/behavior changes follow semver; breaking accessibility behavior counts as breaking. Support upgrades require web, SSR and Metro evidence with a documented rollback before changing the matrix.
+
+
+## Attribution and provenance
+Source: docs/architecture/attribution.md
+
+# Attribution and provenance
+
+HIG code: MIT. @radix-ui/react-dialog, dropdown-menu, popover, tooltip: MIT, consumed as dependencies without copied engine code. @bloxwap/chart/sfx/haptic: independent upstream packages; optional integration only. @bloxwap/font: OFL-1.1, binaries stay in its pinned package. Brand SVG/geometry derives from Font docs, exact upstream commit in `evidence/upstream-inventory.json`; do not imply arbitrary trademark relicensing. Utility CheckIcon is original simple geometry. Full icons catalogs are excluded.
+
+
+## Candidate platform support · 0.1.0
+Source: docs/architecture/platform-matrix.md
+
+# Candidate platform support · 0.1.0
+
+| Area | DOM | RN | Evidence |
+| --- | --- | --- | --- |
+| Actions, surfaces, text, fields | Semantic DOM elements | Pressable/View/Text/TextInput | behavior tests, Vite/SSR/Metro |
+| Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser | contract tests; device gestures pending |
+| Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back | DOM focus/Escape test; native back test |
+| Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
+| Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
+| Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
+| Chart | optional lazy @bloxwap/chart canvas | numeric/list summary only | typed theme; physical gesture evidence pending |
+| Brand mark | individual SVG renderer/asset | optional react-native-svg | pinned geometry; device comparison pending |
+| Fonts | pinned Sans/Mono asset URLs | typed manifest and explicit system fallback | no native-font certification |
+
+SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
+
+Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution. ESM is supported; CommonJS consumer support is not claimed.
+
+
+## Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0
+Source: docs/components/actions-surfaces.md
+
+# Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0
+
+Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig-react/button` or `@bloxwap/hig-native/button` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+Button children, intent (primary/secondary/destructive/ghost), busy, disabled, fullWidth, suppressFeedback, forwarded ref. DOM onClick; RN onPress. Text/Heading accept platform text props. Stack/Inline/Surface accept platform layout props.
+
+## When to use and examples
+
+Use one primary review action. Do: busy protects host requests and displays Working. Don’t: use destructive red for every sell button.
+
+## States, interaction and accessibility
+
+DOM semantic button/anchor, forwarded focus, target min-height tied to density; RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+RN external Link uses Linking; routes belong to host. Native fontFamily only after registration. Decorative SVG hidden; IconButton label is mandatory.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## PriceChart (DOM only), chartTheme; native readout/list summary · HIG 0.1.0
+Source: docs/components/chart.md
+
+# PriceChart (DOM only), chartTheme; native readout/list summary · HIG 0.1.0
+
+Issue #20. Entry: `chart`. Import platform entries from `@bloxwap/hig-react/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig-native/data` for summary/readout/list alternatives. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+PriceChart data, summary, height, and chart SDK props. summary is mandatory; token chartTheme uses sRGB to preserve canvas compatibility.
+
+## When to use and examples
+
+Do: provide host-generated price/trend summary and lazy-load chart on demand. Don’t: play effects on ticks or present web canvas as RN.
+
+## States, interaction and accessibility
+
+@bloxwap/chart/react loads only on PriceChart render, in Suspense. Token theme covers surface/text/border/grid/crosshair/up/down/fonts; engine owns gestures and cleanup.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+RN canvas is unsupported in this candidate. Use NumberReadout/List plus host summaries. A native chart engine/WebView bridge needs a separate supported target and device lifecycle review, rather than an invented integration.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## Field, Label, Input, TextArea, AmountInput, SearchInput · HIG 0.1.0
+Source: docs/components/fields.md
+
+# Field, Label, Input, TextArea, AmountInput, SearchInput · HIG 0.1.0
+
+Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig-react/field` or `@bloxwap/hig-native/field` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+Field label, id (DOM), description, error, required, disabled; Input/TextArea expose native platform props and refs. AmountInput is text/decimal mode; value stays raw string.
+
+## When to use and examples
+
+Do: label Amount (BTC), describe available funds, keep 0,001 unchanged until host validates locale. Don’t: placeholder-only labels, Number(raw) on every keystroke, or strip IME text.
+
+## States, interaction and accessibility
+
+DOM label/id plus help/error aria-describedby; invalid state is explicit. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+RN decimal-pad has locale/platform differences; no implicit money parser. Host owns safe area and keyboard avoidance. IME/device input observations remain pending.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## NumberReadout, Usd, Percent, Metric/Stat, Row, List; DOM Table · HIG 0.1.0
+Source: docs/components/financial-data.md
+
+# NumberReadout, Usd, Percent, Metric/Stat, Row, List; DOM Table · HIG 0.1.0
+
+Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig-react/data` or `@bloxwap/hig-native/data` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty. Table caption/rows/columns/keyFor; optional host sorting callbacks.
+
+## When to use and examples
+
+Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted number into order quantity or announce every live tick.
+
+## States, interaction and accessibility
+
+Readouts are static and tabular, respecting reduced motion. Percent uses percent points (5 is 5%). DOM table caption/column headers/aria-sort and scroll region; RN FlatList labeled-row alternative with stable keys.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden parser. Exact financial strings remain host-owned. No heavy DataTable engine; optional virtualization/sorting belongs to host. Native list device performance pending.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0
+Source: docs/components/navigation.md
+
+# Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0
+
+Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig-react/navigation` or `@bloxwap/hig-native/navigation` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+Tabs label/items/value/defaultValue/onValueChange. Items include content and disabled. Navigation takes DOM hrefs or RN host callbacks. Search takes query/results/loading/error; no bundled search index/router.
+
+## When to use and examples
+
+Do: expose current location and keep deep-link ownership with host. Don’t: replace native back with a browser history dependency.
+
+## States, interaction and accessibility
+
+Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+Breadcrumb is DOM-specific; native host routes plus BackButton are supported alternatives. No fuzzy-search engine, command palette shortcut hijacking or native hardware-keyboard certification.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## Dialog, AlertDialog, Sheet, Menu; DOM Popover/Tooltip; RN HelpText · HIG 0.1.0
+Source: docs/components/overlays.md
+
+# Dialog, AlertDialog, Sheet, Menu; DOM Popover/Tooltip; RN HelpText · HIG 0.1.0
+
+Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/overlay` or `@bloxwap/hig-native/overlay` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+Dialog controlled open/onOpenChange, title, description, children; DOM trigger is a ref-capable single element. Menu label and {label,disabled,onSelect} items.
+
+## When to use and examples
+
+Do: repeat the order amount and give an explicit cancel action. Don’t: hide essential terms in hover help or execute confirm on open.
+
+## States, interaction and accessibility
+
+DOM Radix focus scopes restore trigger focus, trap modal focus, handle Escape and scroll locks. AlertDialog blocks outside-click dismissal. Menus use roving keyboard focus. Native Modal owns back and keyboard avoidance with scrollable content.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+Sheet currently uses accessible modal layout, no gesture-detent certification. RN focus restoration/VoiceOver nesting needs host/device validation. Native help is persistent text; no hover tooltip or anchored popover claim.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## MarketRow, BalanceCard, TradeEntry, ActivityList, InstallCommand, CodeWindow, MarketingHero · HIG 0.1.0
+Source: docs/components/recipes.md
+
+# MarketRow, BalanceCard, TradeEntry, ActivityList, InstallCommand, CodeWindow, MarketingHero · HIG 0.1.0
+
+Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig-react/recipes` or `@bloxwap/hig-native/recipes` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+All data/actions host-supplied. TradeEntry raw amount/onAmountChange/onConfirm/available/busy/error; opens review before submission. InstallCommand command/onCopy accepts async host clipboard adapter.
+
+## When to use and examples
+
+Do: compose primitives and explicit outcomes in comfortable app or compact Pro context. Don’t: put wallet/network/SDK services in core packages.
+
+## States, interaction and accessibility
+
+Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show balance, market, entry and feedback preference previews.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+M2 supplies visual recipes; M3 adds semantic feedback composition because #26 depends on #25. Product visual fidelity is provisional until inaccessible monorepo audit. Account/positions variants can compose these primitives without service coupling.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## Checkbox, RadioGroup, Switch, SegmentedControl, Select, Slider; Tabs in navigation · HIG 0.1.0
+Source: docs/components/selection.md
+
+# Checkbox, RadioGroup, Switch, SegmentedControl, Select, Slider; Tabs in navigation · HIG 0.1.0
+
+Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/selection` or `@bloxwap/hig-native/selection` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+checked/defaultChecked/onCheckedChange; value/defaultValue/onValueChange. Options are {value,label,disabled}. Slider min/max/step/value; label required.
+
+## When to use and examples
+
+Do: control selection from accepted host state. Don’t: emit a success cue on every render or repeated slider value.
+
+## States, interaction and accessibility
+
+Native HTML controls retain browser keyboard and selection semantics. RN Switch uses OS control; checkbox/radio use labeled Pressables with checked state. RN slider uses optional community backend; Select opens labeled native Modal choices.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+SegmentedControl is single-choice radio semantics, not navigation. Native picker alternative is deliberate. Slider drag cancellation/tactile rate evidence remains M3/device work; backend is an optional native peer.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## Badge, Alert/Callout, Toast, Progress, Spinner, Skeleton, EmptyState, Avatar, StatusIndicator · HIG 0.1.0
+Source: docs/components/status.md
+
+# Badge, Alert/Callout, Toast, Progress, Spinner, Skeleton, EmptyState, Avatar, StatusIndicator · HIG 0.1.0
+
+Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/status` or `@bloxwap/hig-native/status` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+## API and anatomy
+
+Alert title/severity/action; Toast notices with stable id/message/severity/action, onDismiss. Progress label/value/max; EmptyState title/description/action.
+
+## When to use and examples
+
+Do: keep critical failure inline with Retry; use toast for copied acknowledgement. Don’t: dismiss critical text on a timer or rely on audio for success.
+
+## States, interaction and accessibility
+
+Notifications deduplicate ids, show at most 3, and stay until explicit dismissal. DOM status/alert regions and RN live regions preserve visible messages. Skeleton and spinner are static under candidate motion policy.
+
+State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Platform mapping and limits
+
+Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.
+
+## Validation and citation
+
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+
+## Optional adapters and installation · HIG 0.1.0
+Source: docs/feedback/adapters.md
+
+# Optional adapters and installation · HIG 0.1.0
+
+Issues #22–#24. Base imports do not load adapters. Individual `web-sound`, `browser-haptic`, `web-haptic`, `native` and `react` entries preserve dependency boundaries. The composite `web` entry needs the Haptic package; sound-only consumers should import `web-sound`.
+
+## Web sound
+
+Install `@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@0.1.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
+
+The upstream engine is shared and does not expose per-root voice handles. HIG reference-counts its users and disposes the engine after its last default adapter. Muting/cancellation prevents pending playback; it cannot surgically stop an already-running voice for one root. A host that also owns the upstream global engine should inject/own the lifecycle rather than use the default HIG lifecycle. Full per-root active-voice cancellation is an explicit upstream API gap, not a claimed capability.
+
+## Browser and physical-tap haptics
+
+`createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
+
+For approved iOS physical action targets, install `@bloxwap/haptic@0.1.0` and wrap a single ref-capable HIG button in `HapticFeedbackTarget eligible`. The wrapper uses upstream `HapticTarget`, preserves the target/handler/ref, enables only the physical-tap route and disables debug audio/helper switch visibility. Thus browser vibration comes from the semantic adapter and is not duplicated by the wrapper. HIG preferences still gate the wrapper.
+
+**Do** pre-approve the target with `eligible` after disabled/busy/policy checks. **Don't** wrap an action whose eligibility is decided only by an async click callback, or promise a programmable iOS success/error pattern. The OS physical tick occurs before delegated handlers; a later preventDefault cannot retract that tick. That cancellation limitation, physical-tap intensity limits and device/VoiceOver checks remain upstream [haptic#9](https://github.com/bloxwap/haptic/issues/9) / [haptic#7](https://github.com/bloxwap/haptic/issues/7). No wrapper is required for basic actions.
+
+## Native audio
+
+Install the feedback package plus `expo-audio ~1.1.1` only in the native host setup. `expoAudioBackend(Audio)` supplies a thin playback bridge; `createNativeSoundAdapter(backend, assets)` accepts Metro asset ids. The Expo gallery imports only the four committed WAV cues. Configure ambient/silent-mode behavior with `playsInSilentMode:false`, no background playback and `doNotMix` interruption mode. Host AppState calls `setBackground`; backgrounding pauses cached players. Preload caches players once, seek restarts deliberate cues, concurrency is limited to one active cue, volume/mute are honored, missing cues are silent, and disposal pauses/removes every cached player.
+
+Regenerate with `npm run generate:cues`. `assets/manifest.json` pins package/recipe/export flags, 48kHz mono PCM16, durations, peaks/RMS, bytes and reviewed hashes. Noise recipes vary; do not assert regenerated WAV bytes are deterministic. Inspect duration/envelope/level tolerances and review the actual artifact hashes. Offline generation dependencies are dev-only; Metro never imports them or browser synthesis.
+
+## Native haptics
+
+Install `expo-haptics ~15.0.7` in the native host. `expoHapticBackend(Haptics)` bridges selection, impact light/medium/heavy and notification success/warning/error. `createNativeHapticAdapter` reports API availability separately from observation. Unsupported hardware, backgrounding, preferences and failed backend calls are no-ops that do not change primary actions. Android notification/impact approximation and OS suppression must be observed on devices before support is certified.
+
+
+## Semantic feedback · HIG 0.1.0
+Source: docs/feedback/contract.md
+
+# Semantic feedback · HIG 0.1.0
+
+Issues #21, #25. Types in `@bloxwap/hig-contracts/feedback` and `@bloxwap/hig-feedback` import without DOM, RN, React, audio, Expo or hardware APIs. Base renderers accept an optional `FeedbackSink`; no provider or feedback backend is required to perform an action.
+
+| Intent | Timing | Sound | Haptic | Cooldown |
+| --- | --- | --- | --- | --- |
+| press/release | gesture phases; visual response | silent | none | none |
+| cancel | discarded gesture/action; clears pending work | silent | cancel where possible | none |
+| activate | accepted button click/keyboard/native press, after host handler | tick | selection | 80ms |
+| selection/toggle | accepted state commit, never a render/repeated/rejected value | tick/toggle | selection | 80ms |
+| disclosure | accepted open/close | silent | none | 120ms |
+| success | host operation completion with stable operation id | success | notification success | 400ms |
+| warning | host outcome | silent | notification warning | 400ms |
+| error | host operation failure with visual recovery text | error | notification error | 400ms |
+| notification | nonessential transient acknowledgement | silent | none | 800ms |
+
+The exported `presets` table is authoritative. Each event has id, source, intent and origin. An async outcome uses the host operation id, not the button's interaction id; an accepted click does not imply order success. Optional native impact overrides map light/medium/heavy; browser physical-tap intensity cannot be programmed. Live price ticks and general navigation are silent.
+
+**Do** emit a success event after the host request resolves, alongside visible success text. **Don't** play a success sound on press-in, for a rejected controlled value, or on every market render. Busy/disabled/suppressed/cancelled events are rejected. Buttons compose the host handler before activation, honor default prevention, preserve refs and block nested activation propagation. Choice controls emit on committed changes only. Sliders use semantic steps and controller cooldown; no effect queue accumulates. A host cancellation before activation suppresses the request; a physical cue already delivered by the OS cannot be recalled.
+
+Preference precedence: host policy may forbid a channel; persisted user choices enable sound/haptics independently; component suppression can disable its request; OS/browser/backend capability decides whether output is attempted. Volume is clamped 0–1. Motion is a separate setting and OS reduced motion remains respected. Defaults are both channels off. No-feedback, sound-only, haptics-only, both, and host-injected adapter configurations use the same actions. Root/local `FeedbackProvider`s hold independent preference/controller state; a nested button emits one request.
+
+Deduplication uses source/id/intent; host stable outcome ids suppress repeated notifications. Cooldowns drop excess requests, never delay primary actions or queue a backlog. Seen/cadence maps are bounded. Exceptions thrown/rejected by backends and storage are caught. Disposal is idempotent and late startup/preload completions cannot revive disposed players. Capability `available` is API routing, while `observed` records actual physical evidence and remains false in this candidate.
+
+
+## Preferences, preview and device review · HIG 0.1.0
+Source: docs/feedback/preferences.md
+
+# Preferences, preview and device review · HIG 0.1.0
+
+`FeedbackProvider` accepts a stable `createController(preferences)` factory and optional storage adapter. `useFeedback` exposes preferences, update, sink and controller. `FeedbackPreferencesControl` is a render-prop control so DOM and RN use their own shipped Switch/Slider instead of importing another platform. Use a stable factory; mount/replay creates fresh adapters and unmount disposes them. React StrictMode lifecycle is tested.
+
+`jsonStorage` supports browser Storage or native AsyncStorage-shaped interfaces. It uses a versioned key; read legacy saved choices explicitly with a host adapter before writing the new key. `migratePreferences` preserves explicit false sound/haptic choices, legacy soundEnabled/hapticsEnabled, clamped volume and independent reducedMotion/motion. Corrupt/missing storage falls back to muted defaults. A delayed saved read cannot overwrite a newer user choice. Storage rejection leaves the live UI usable.
+
+Web and native fixtures include real independent sound, haptics, volume and motion controls, entry/selection/success preview and visible state. The web fixture persists localStorage; the native gallery persists AsyncStorage. Both wire lifecycle background state. Sound and haptic preferences are never encoded in wallet/trade logic. Native gallery sound import/package/Metro success is automated evidence, not audible/tactile observation.
+
+| Platform | Routing | Claimed observation |
+| --- | --- | --- |
+| Desktop Chrome/Firefox/WebKit | Web Audio after gesture; vibration only when API exists | Automated interaction; no hardware assertion |
+| iPhone Safari | optional pre-approved physical target; async haptic adapter unavailable | pending physical tap, VoiceOver, settings/OS review |
+| Android browser | browser vibration patterns when allowed | pending device output/intensity |
+| Native iOS/Android | Expo audio and selection/impact/notification bridges | pending physical output, latency and interruption review |
+| Simulator / Jest mocks | API/contract behavior only | never tactile certification |
+
+Device acceptance record must include HIG/package versions, device, OS/browser, date, observer and actual observations: default/muted channels; each independent combination; volume/silent-mode; latency; interruptions; background/foreground; repeated/nested activation; cancelled scroll/drag; disabled/busy; slider repeated values; iOS preset limits; accessibility helper tab/VoiceOver order; visible recovery with feedback off. Attach video/measurements where useful. Reuse upstream haptic certification rather than declaring simulator passes as hardware proof. Owner: HIG and owning app/haptic maintainers, assignment pending; exception expires 2026-11-13.
+
+
+## Foundation and platform rules · HIG 0.1.0
+Source: docs/foundations/platform.md
+
+# Foundation and platform rules · HIG 0.1.0
+
+## Color (#6)
+
+Dark is the only audited mode. Source values come from Font SDK tokens, with commit recorded in the inventory; monorepo OKLCH extraction remains blocked. Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values; iOS P3 channel objects require a host color-space bridge and are not RN CSS strings. Android and third-party images use sRGB. `evidence/contrast.json` records tested normal-text pairings. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+
+## Typography (#7)
+
+Pin @bloxwap/font 0.1.2. Vite: import `@bloxwap/font/css`; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Native requires approved static TTF faces, pinned provenance and a FontManifest registration mapping; published WOFF2/Next loaders are not native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
+
+## Geometry and layout (#8)
+
+Spaces 4/8/12/16/20/24/32/48; radius 6/8/10/14 and pill. Comfortable control/target 48; compact 36, reserved for pointer/keyboard dense layouts. Painted icons can be 16/20/24 while targets stay 48 on touch. Never expand adjacent invisible hit areas so they overlap. Use logical inline spacing, wrapping labels, safe-area insets, keyboard avoidance and a scrollable native sheet; preserve portrait/tablet rotation without locking orientation. Pro tables may scroll with column headers; app amount entry reflows. Elevation uses nested fills rather than unverified shadows. Layer order: document, sticky nav, contextual popover, modal, notification. Browser top layer handles modal stacking; native Modal remains platform-owned.
+
+## Motion and gestures (#9)
+
+Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. Press response ends on release/cancel; action executes on accepted activation, never press-in. Drag/scroll cancellation clears visual and feedback state. Interrupt transitions from current state instead of queuing. Reduced motion uses immediate state changes, static skeletons and unanimated numeric readouts. Outcome messages remain explicit. **Do** animate deliberate disclosure once; **don't** animate or play sound for every live-data update. Native candidate uses static transitions until cancellation/device animation evidence exists; motion preference is independent from sound/haptics.
+
+## Accessibility and localization (#10)
+
+Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic.
+
+Component review checklist: keyboard completion; labeled controls/errors; busy/disabled; focus restoration; narrow viewport; 200% text; long translations; Arabic/Hebrew RTL; mixed scripts; reduced motion; sound off; haptics off; unknown/stale/error values; VoiceOver/TalkBack on physical devices. Automated results and physical observations must be separate. Exception requires owner, affected surface, reason, alternative and expiry. No observed device evidence means pending, never pass.
+
+## Brand and icons (#11)
+
+Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import `@bloxwap/hig-tokens/mark.svg` on web; native geometry renderer follows in M2. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives and device visual comparison remain pending approval/evidence.
+
+Font-loading note: `@bloxwap/font/css` references all supported families/scripts, which may increase deployed asset bytes even with on-demand browser loading. The Latin web fixture instead uses two explicit @font-face rules with package asset URLs (Sans and Mono). Add only the scripts/italics used by each consumer. Do not assume a Latin-only fixture certifies mixed-script rendering.
+
+
+## Principles and content · HIG 0.1.0
+Source: docs/foundations/principles.md
+
+# Principles and content · HIG 0.1.0
+
+Issues #2, #3. Rules are candidate guidance anchored to SDK source and the public marketing surface; product-specific behavior requires the unavailable monorepo audit. Do not represent example trading actions as live product behavior.
+
+## Clear action hierarchy
+
+Offer one primary action per decision. In an amount-entry recipe, **do** label the next step “Review order” and show the asset and amount before host submission; **don't** say “Go” or execute a trade when a field receives focus. Secondary actions navigate or cancel. Destructive intent means irreversible removal/cancellation; buy/sell colors mean market direction and never imply safety. Bind pending state to the host request, block duplicate activation, retain a progress label. Disabled means unavailable; busy means an action is running. Give the reason nearby.
+
+## Touch before density
+
+Use comfortable 48-unit controls for mobile trade forms. **Do** stack amount, available balance, validation and primary action at narrow widths; **don't** squeeze a desktop order panel into a phone. Pro can use compact 36-unit controls with keyboard focus and separated targets. SDK code windows scroll horizontally; surrounding prose reflows. Marketing CTA and SDK install controls retain explicit labels, as observed in `bloxwap.com` and `font/apps/docs/app/global.css`.
+
+## State tells the truth
+
+Resting, hover, focus, pressed, selected, busy, disabled, empty, error, success, offline and stale are distinct states. **Do** retain the last value with a timestamp and “Data unavailable — retry”; **don't** display unknown as zero, silently imply a completed order, or announce every price tick. Errors name the failed action and recovery. Confirmations repeat host-provided consequences and offer cancel before commit. Essential information remains visible and accessible with feedback muted.
+
+## Content and precision
+
+Use sentence case and concrete verbs (“Copy install command”). **Do** display currency, precision and units supplied by the host; **don't** use a rounded display number as transaction input. Keep raw decimal strings in business logic. A percent component expects percent points, not an implicit ratio. Use localized display with explicit parsing policy; do not strip unfamiliar separators and submit a changed amount. Code uses Mono, body Sans, Pixel only as a decorative brand accent.
+
+## Composition and progressive disclosure
+
+Show common actions first, advanced options on deliberate disclosure. **Do** give a native sheet a visible close action and let Android back dismiss; **don't** rely on hover tooltips on touch. Navigation remains host-owned: HIG does not choose routes, wallets, order types, or trading outcomes. Use status/callout for persistent critical errors; toast only for nonessential acknowledgements.
+
+
+## Installation and citation · HIG 0.1.0
+Source: docs/installation.md
+
+# Installation and citation · HIG 0.1.0
+
+These are review candidates, not published npm packages. Use local dry-run tarballs or CI artifact downloads; do not assume `@bloxwap/hig-*` is available on the registry. Published-style imports in examples are tested against packed candidates. Version references identify a candidate until release gates are complete.
+
+## React / Vite
+
+Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs tarballs into an independent temporary consumer and builds the fixture. For a host app install tokens, contracts and React tarballs plus React/DOM 19.1. Import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once; import individual components such as `@bloxwap/hig-react/button`. Pin @bloxwap/font 0.1.2 and choose only the required families/scripts using asset URL @font-face rules. The included fixture has Sans and Mono only. Never copy font binaries or component folders.
+
+## SSR and Next client boundaries
+
+Run `npm run smoke:ssr`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream. A dedicated Next production fixture follows in M5; this candidate does not infer all Next versions from plain React SSR. Verify hydration, stable IDs and StrictMode before adopting a host version.
+
+## Expo / React Native
+
+Run `npm run smoke:packed-native` after packed artifacts are built, or `npm run start -w hig-native-fixture` for the device gallery. Matrix: React 19.1, RN 0.81.5, Expo 54, Metro as locked. Native consumers install tokens/contracts/native tarballs; optional feedback installs its tarball and explicit Expo backend peers. Slider and SVG peers are only needed by their family entries. Import `@bloxwap/hig-native/button`, not the DOM renderer. Dynamic Type remains enabled; native targets stay 48. Keyboard/safe-area/back behavior belongs to the native host and its supported OS.
+
+WOFF2 is not a native font asset. Supply pinned approved static TTFs and a typed FontManifest; register them before setting the native provider fontFamily. Until upstream supplies the manifest/assets, the gallery explicitly uses the system fallback and does not claim Bloxwap native typography certification.
+
+## Tokens only / plain CSS / Tailwind
+
+Install the tokens tarball alone and import CSS variables or typed tokens. No React/RN/audio peer is required. Plain HTML uses semantic `--hig-*` roles. Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. NativeWind integration remains unverified until the inaccessible monorepo rem-root mapping is audited.
+
+## Optional chart, sound and haptics
+
+Chart is DOM-only and lazy; install @bloxwap/chart 0.3.0 for that entry and supply a textual summary. Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
+
+## Stable citations and upgrades
+
+Cite “Bloxwap HIG 0.1.0 candidate, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. No publication, release or tag is performed by this implementation.
+
+
+## Documentation website and example ownership · HIG 0.1.0
+Source: docs/website.md
+
+# Documentation website and example ownership · HIG 0.1.0
+
+Issues #27–#30. The site uses Vite/React with generated static route shells instead of adding a second MDX content system. It retains the audited Fumadocs conventions (sidebar sections, search, breadcrumb, TOC, source/edit links, code/preview tabs, responsive nav) while consuming shipped HIG renderers. Markdown chapters remain the one normative source; published API declarations and the authored example manifest generate discoverable component pages. The docs framework decision limits runtime dependencies and keeps candidate hosting reproducible.
+
+Default base path `/hig/` targets GitHub Pages repository hosting. Build can set `HIG_BASE_PATH`; asset URLs use Vite's base. Generated index shells for every route support direct loads without host rewrite rules. Canonical URLs, title/description, sitemap and version context are emitted into static shells. A preview artifact is built locally; deployment requires separate hosting authorization.
+
+`planning/examples.json` owns sample bodies, states, density/platform metadata and a11y/feedback notes. `npm run generate:examples` emits real web/native preview functions from it. `npm run examples:check` generates all copyable code variants into compiled consumer fixtures. APIs are extracted from actual package declarations. Search indexes full Markdown and catalog names. `llms.txt` and Markdown exports come from the same chapters, never a second independently authored guide.
+
+Native examples are actual RN components in the Expo gallery. The website presents source/install/device-run links and explicit capability labels, not DOM renderings called native. Screenshots and videos from physical iOS/Android are pending; no fake QR or tactile certification. Native hover/canvas/table alternatives are labeled per entry.
+
+Playground configuration is bounded to comfortable app, compact Pro and docs presets, supported component states, locale/direction, independent feedback settings and reduced-motion demonstration. No arbitrary theme/icon-library/shadcn compatibility selector. Get Code reflects the selected component/platform/density/state; share URLs validate supported values. Live examples use sample host-owned data/actions and never submit orders or call a wallet.

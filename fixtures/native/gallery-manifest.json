@@ -1,0 +1,482 @@
+{
+  "version": "0.1.0",
+  "examples": [
+    {
+      "name": "Button",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "IconButton",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Link",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Text",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Heading",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Stack",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Inline",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Surface",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Card",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Separator",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Field",
+      "states": [
+        "default",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Label",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Input",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TextArea",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "AmountInput",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "SearchInput",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Checkbox",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Switch",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "RadioGroup",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "SegmentedControl",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Select",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Slider",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Dialog",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "AlertDialog",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Sheet",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Menu",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Popover",
+      "states": [
+        "default"
+      ],
+      "support": "alternative"
+    },
+    {
+      "name": "Tooltip",
+      "states": [
+        "default"
+      ],
+      "support": "alternative"
+    },
+    {
+      "name": "Tabs",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Accordion",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Breadcrumb",
+      "states": [
+        "default"
+      ],
+      "support": "alternative"
+    },
+    {
+      "name": "Navigation",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Pagination",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Search",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Badge",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Alert",
+      "states": [
+        "default",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Callout",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Toast",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Progress",
+      "states": [
+        "default",
+        "busy"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Spinner",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Skeleton",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "EmptyState",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Avatar",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "StatusIndicator",
+      "states": [
+        "default",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "NumberReadout",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Usd",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Percent",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Metric",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Stat",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "List",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Row",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Table",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "support": "alternative"
+    },
+    {
+      "name": "BrandMark",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "CheckIcon",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "HIGProvider",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "MarketRow",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "BalanceCard",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TradeEntry",
+      "states": [
+        "default",
+        "busy",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "InstallCommand",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "CodeWindow",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "MarketingHero",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ActivityList",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "PriceChart",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "support": "alternative"
+    }
+  ]
+}
