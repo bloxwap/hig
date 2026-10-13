@@ -31,7 +31,19 @@
       "types": "./dist/preferences.d.ts",
       "import": "./dist/preferences.js"
     },
-    "./assets/*": "./assets/*"
+    "./assets/*": "./assets/*",
+    "./web-sound": {
+      "types": "./dist/web-sound.d.ts",
+      "import": "./dist/web-sound.js"
+    },
+    "./browser-haptic": {
+      "types": "./dist/browser-haptic.d.ts",
+      "import": "./dist/browser-haptic.js"
+    },
+    "./web-haptic": {
+      "types": "./dist/web-haptic.d.ts",
+      "import": "./dist/web-haptic.js"
+    }
   },
   "dependencies": {
     "@bloxwap/hig-contracts": "0.1.0"
