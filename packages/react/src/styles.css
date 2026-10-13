@@ -41,3 +41,5 @@ table { border-collapse:collapse;width:100%; }th,td { padding:12px;text-align:st
 [data-severity='warning'] { border-inline-start:3px solid var(--hig-warning); }
 @media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled) {transform:none;} }
 [data-hig-motion='reduced'] .hig-button:active:not(:disabled) {transform:none;}
+.hig-button[role='tab'][aria-selected='false'] { background:var(--hig-nested); color:var(--hig-text); }
+input[type='range'] { accent-color:var(--hig-action); min-height:48px; width:100%; }

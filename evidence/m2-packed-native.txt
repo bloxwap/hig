@@ -1,0 +1,34 @@
+
+> bloxwap-hig-workspace@0.1.0 smoke:packed-native
+> node scripts/packed-native-smoke.mjs
+
+
+> bundle
+> expo export --platform android --platform ios --max-workers 2
+
+Starting Metro Bundler
+| (node:1880328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:1880329) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Android ./index.js ▓▓▓░░░░░░░░░░░░░ 22.1% (104/221)
+iOS ./index.js ░░░░░░░░░░░░░░░░  4.9% ( 31/140)
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.5% (404/551)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.8% (391/468)
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.4% (612/630)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 87.5% (578/619)
+Android Bundled 13292ms index.js (704 modules)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (706/706)
+iOS Bundled 14804ms index.js (706 modules)
+
+› android bundles (1):
+_expo/static/js/android/index-a981a90499db570f164020ff5ac5fcbb.hbc (1.97 MB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-a83d1f8f7687045a82c5fe626c06d19b.hbc (1.96 MB)
+
+› Files (1):
+metadata.json (244 B)
+
+Exported: dist
+Packed native consumer exported both platforms from 3 independent tarballs
