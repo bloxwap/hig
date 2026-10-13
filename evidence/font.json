@@ -1,0 +1,14 @@
+{
+  "package": "@bloxwap/font",
+  "version": "0.1.2",
+  "exports": [
+    "css",
+    "sans",
+    "mono",
+    "pixel",
+    "fonts/*"
+  ],
+  "manifest": "No published manifest export; typed FontManifest stub until pinned static face metadata exists",
+  "native": "WOFF2 not usable by Expo font. Require approved static TTF artifacts and registration.",
+  "web": "Published CSS and Next loaders; companions via unicode-range."
+}

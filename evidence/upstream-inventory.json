@@ -1,0 +1,69 @@
+{
+  "observedAt": "2026-10-13",
+  "sources": [
+    {
+      "repo": "font",
+      "commit": "269a0af63cf65c46492e48c4486717d68190b481",
+      "source": "https://github.com/bloxwap/font/tree/269a0af63cf65c46492e48c4486717d68190b481",
+      "files": 497,
+      "sourceBytes": 96413841,
+      "observation": "source only; screenshots/device baselines pending",
+      "owner": "font maintainers"
+    },
+    {
+      "repo": "sfx",
+      "commit": "dd154228d09e695ec29a0e3611eb7b5fb8a6ea4e",
+      "source": "https://github.com/bloxwap/sfx/tree/dd154228d09e695ec29a0e3611eb7b5fb8a6ea4e",
+      "files": 122,
+      "sourceBytes": 1710512,
+      "observation": "source only; screenshots/device baselines pending",
+      "owner": "sfx maintainers"
+    },
+    {
+      "repo": "haptic",
+      "commit": "e95a29e67365c0101b23bc83e9a7a547c2c0bb0e",
+      "source": "https://github.com/bloxwap/haptic/tree/e95a29e67365c0101b23bc83e9a7a547c2c0bb0e",
+      "files": 93,
+      "sourceBytes": 681569,
+      "observation": "source only; screenshots/device baselines pending",
+      "owner": "haptic maintainers"
+    },
+    {
+      "repo": "chart",
+      "commit": "e08198bcff27451defeca238e832d4be54be1896",
+      "source": "https://github.com/bloxwap/chart/tree/e08198bcff27451defeca238e832d4be54be1896",
+      "files": 518,
+      "sourceBytes": 5149471,
+      "observation": "source only; screenshots/device baselines pending",
+      "owner": "chart maintainers"
+    },
+    {
+      "repo": "hyperliquid",
+      "commit": "4a312a211cd04e187d680111f47d2a1b1dea5ef1",
+      "source": "https://github.com/bloxwap/hyperliquid/tree/4a312a211cd04e187d680111f47d2a1b1dea5ef1",
+      "files": 757,
+      "sourceBytes": 5822451,
+      "observation": "source only; screenshots/device baselines pending",
+      "owner": "hyperliquid maintainers"
+    },
+    {
+      "repo": "icons",
+      "commit": "6f6334f355ad5b7a85ab4f49302ab5d310dadc40",
+      "source": "https://github.com/bloxwap/icons/tree/6f6334f355ad5b7a85ab4f49302ab5d310dadc40",
+      "files": 20480,
+      "sourceBytes": 566110886,
+      "observation": "source only; screenshots/device baselines pending",
+      "owner": "icons maintainers"
+    }
+  ],
+  "blocked": [
+    {
+      "repo": "monorepo",
+      "reason": "API returned 404; token/UI/native/plain-ui forks unavailable"
+    },
+    {
+      "surface": "product/native baseline",
+      "reason": "Source/build credentials/devices unavailable; no fabricated deltas"
+    }
+  ]
+}

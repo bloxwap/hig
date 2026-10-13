@@ -1,0 +1,159 @@
+{
+  "version": "0.1.0",
+  "sources": [
+    {
+      "repo": "font",
+      "docsAssetBytes": {
+        "css": 117156,
+        "font": 83545680,
+        "audio": 0
+      },
+      "designPaths": [
+        "apps/docs/app",
+        "apps/docs/styles/tokens.css",
+        "apps/docs/components"
+      ],
+      "disposition": "consolidate shared palette/controls; retain SDK-specific interactive demo",
+      "platform": "responsive web; not RN",
+      "bundleBaseline": "not measured: clean production builds need each repository toolchain"
+    },
+    {
+      "repo": "sfx",
+      "docsAssetBytes": {
+        "css": 35759,
+        "font": 1009020,
+        "audio": 0
+      },
+      "designPaths": [
+        "apps/docs/app",
+        "apps/docs/styles/tokens.css",
+        "apps/docs/components"
+      ],
+      "disposition": "consolidate shared palette/controls; retain SDK-specific interactive demo",
+      "platform": "responsive web; not RN",
+      "bundleBaseline": "not measured: clean production builds need each repository toolchain"
+    },
+    {
+      "repo": "haptic",
+      "docsAssetBytes": {
+        "css": 28984,
+        "font": 116056,
+        "audio": 0
+      },
+      "designPaths": [
+        "apps/docs/app",
+        "apps/docs/styles/tokens.css",
+        "apps/docs/components"
+      ],
+      "disposition": "consolidate shared palette/controls; retain SDK-specific interactive demo",
+      "platform": "responsive web; not RN",
+      "bundleBaseline": "not measured: clean production builds need each repository toolchain"
+    },
+    {
+      "repo": "chart",
+      "docsAssetBytes": {
+        "css": 27446,
+        "font": 1009020,
+        "audio": 0
+      },
+      "designPaths": [
+        "apps/docs/app",
+        "apps/docs/styles/tokens.css",
+        "apps/docs/components"
+      ],
+      "disposition": "consolidate shared palette/controls; retain SDK-specific interactive demo",
+      "platform": "responsive web; not RN",
+      "bundleBaseline": "not measured: clean production builds need each repository toolchain"
+    },
+    {
+      "repo": "hyperliquid",
+      "docsAssetBytes": {
+        "css": 32728,
+        "font": 1009020,
+        "audio": 0
+      },
+      "designPaths": [
+        "apps/docs/app",
+        "apps/docs/styles/tokens.css",
+        "apps/docs/components"
+      ],
+      "disposition": "consolidate shared palette/controls; retain SDK-specific interactive demo",
+      "platform": "responsive web; not RN",
+      "bundleBaseline": "not measured: clean production builds need each repository toolchain"
+    }
+  ],
+  "exactDuplicateGroups": [
+    [
+      "font/apps/docs/source.config.ts",
+      "sfx/apps/docs/source.config.ts",
+      "haptic/apps/docs/source.config.ts",
+      "chart/apps/docs/source.config.ts"
+    ],
+    [
+      "font/apps/docs/public/icon.svg",
+      "font/apps/docs/public/logos/bloxwap-icon-green.svg",
+      "sfx/apps/docs/public/icon.svg",
+      "sfx/apps/docs/public/logos/bloxwap-icon-green.svg",
+      "haptic/apps/docs/public/logos/bloxwap-icon-green.svg",
+      "chart/apps/docs/public/logos/bloxwap-icon-green.svg",
+      "hyperliquid/apps/docs/public/logos/bloxwap-icon-green.svg"
+    ],
+    [
+      "font/apps/docs/lib/source.ts",
+      "sfx/apps/docs/lib/source.ts",
+      "chart/apps/docs/lib/source.ts"
+    ],
+    [
+      "font/apps/docs/app/sitemap.ts",
+      "sfx/apps/docs/app/sitemap.ts"
+    ],
+    [
+      "font/apps/docs/components/search.tsx",
+      "sfx/apps/docs/components/search.tsx",
+      "chart/apps/docs/components/search.tsx"
+    ],
+    [
+      "font/apps/docs/app/search.json/route.ts",
+      "sfx/apps/docs/app/search.json/route.ts",
+      "chart/apps/docs/app/search.json/route.ts"
+    ],
+    [
+      "font/apps/docs/public/logos/bloxwap-wordmark-white-greenx.svg",
+      "sfx/apps/docs/public/logos/bloxwap-wordmark-white-greenx.svg",
+      "haptic/apps/docs/public/logos/bloxwap-wordmark-white-greenx.svg",
+      "chart/apps/docs/public/logos/bloxwap-wordmark-white-greenx.svg"
+    ],
+    [
+      "font/apps/docs/public/logos/bloxwap-wordmark-white.svg",
+      "sfx/apps/docs/public/logos/bloxwap-wordmark-white.svg",
+      "chart/apps/docs/public/logos/bloxwap-wordmark-white.svg"
+    ],
+    [
+      "sfx/apps/docs/styles/tokens.generated.css",
+      "chart/apps/docs/styles/tokens.generated.css",
+      "hyperliquid/apps/docs/app/brand-tokens.css"
+    ],
+    [
+      "sfx/apps/docs/components/copy-button.tsx",
+      "chart/apps/docs/components/copy-button.tsx"
+    ],
+    [
+      "sfx/apps/docs/components/site-footer.tsx",
+      "chart/apps/docs/components/site-footer.tsx"
+    ],
+    [
+      "sfx/apps/docs/components/provider.tsx",
+      "haptic/apps/docs/components/provider.tsx",
+      "chart/apps/docs/components/provider.tsx"
+    ],
+    [
+      "sfx/apps/docs/app/docs/[[...slug]]/page.tsx",
+      "chart/apps/docs/app/docs/[[...slug]]/page.tsx"
+    ],
+    [
+      "chart/apps/docs/public/icon.svg",
+      "hyperliquid/apps/docs/public/logos/bloxwap-symbol.svg"
+    ]
+  ],
+  "delta": "no production consumer improvement claimed"
+}

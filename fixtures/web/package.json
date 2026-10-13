@@ -1,0 +1,11 @@
+{
+  "name": "hig-web-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@bloxwap/hig-tokens": "0.1.0",
+    "@bloxwap/hig-contracts": "0.1.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  }
+}

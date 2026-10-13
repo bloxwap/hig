@@ -1,0 +1,29 @@
+{
+  "name": "@bloxwap/hig-tokens",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "assets"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./css": "./dist/tokens.css",
+    "./manifest": "./dist/manifest.json",
+    "./mark.svg": "./assets/bloxwap-icon.svg"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloxwap/hig",
+    "directory": "packages/tokens"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Bloxwap HIG Gallery",
+    "slug": "bloxwap-hig-gallery",
+    "version": "0.1.0",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.bloxwap.hig.gallery"
+    }
+  }
+}

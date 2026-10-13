@@ -1,0 +1,94 @@
+{
+  "version": "0.1.0",
+  "observedAt": "2026-10-13",
+  "repositories": [
+    {
+      "name": "agent-cli",
+      "url": "https://github.com/bloxwap/agent-cli",
+      "applicability": "audit required; no runtime UI dependency by default",
+      "owner": "agent-cli maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "hig",
+      "url": "https://github.com/bloxwap/hig",
+      "applicability": "runtime/docs",
+      "owner": "hig maintainers (assignment pending)",
+      "status": "candidate in hig",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "hyperliquid",
+      "url": "https://github.com/bloxwap/hyperliquid",
+      "applicability": "runtime/docs",
+      "owner": "hyperliquid maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "sfx",
+      "url": "https://github.com/bloxwap/sfx",
+      "applicability": "runtime/docs",
+      "owner": "sfx maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "haptic",
+      "url": "https://github.com/bloxwap/haptic",
+      "applicability": "runtime/docs",
+      "owner": "haptic maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "font",
+      "url": "https://github.com/bloxwap/font",
+      "applicability": "runtime/docs",
+      "owner": "font maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "chart",
+      "url": "https://github.com/bloxwap/chart",
+      "applicability": "runtime/docs",
+      "owner": "chart maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": ".github",
+      "url": "https://github.com/bloxwap/.github",
+      "applicability": "audit required; no runtime UI dependency by default",
+      "owner": ".github maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "bloxwap.github.io",
+      "url": "https://github.com/bloxwap/bloxwap.github.io",
+      "applicability": "runtime/docs",
+      "owner": "bloxwap.github.io maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "icons",
+      "url": "https://github.com/bloxwap/icons",
+      "applicability": "audit required; no runtime UI dependency by default",
+      "owner": "icons maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "dimension-adapters",
+      "url": "https://github.com/bloxwap/dimension-adapters",
+      "applicability": "audit required; no runtime UI dependency by default",
+      "owner": "dimension-adapters maintainers (assignment pending)",
+      "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13"
+    }
+  ]
+}

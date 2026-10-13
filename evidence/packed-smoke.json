@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "packages": [
+    "@bloxwap/hig-contracts",
+    "@bloxwap/hig-tokens"
+  ],
+  "install": "clean temporary consumer from local tarballs",
+  "ssr": "passed",
+  "webBuild": "passed",
+  "native": "Metro smoke uses real RN peer workspace separately"
+}
