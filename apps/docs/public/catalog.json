@@ -1,0 +1,608 @@
+{
+  "version": "0.1.0",
+  "components": [
+    {
+      "name": "Button",
+      "route": "components/button",
+      "entry": "button",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ]
+    },
+    {
+      "name": "IconButton",
+      "route": "components/icon-button",
+      "entry": "button",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Link",
+      "route": "components/link",
+      "entry": "button",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Text",
+      "route": "components/text",
+      "entry": "surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Heading",
+      "route": "components/heading",
+      "entry": "surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Stack",
+      "route": "components/stack",
+      "entry": "surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Inline",
+      "route": "components/inline",
+      "entry": "surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Surface",
+      "route": "components/surface",
+      "entry": "surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Card",
+      "route": "components/card",
+      "entry": "surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Separator",
+      "route": "components/separator",
+      "entry": "surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Field",
+      "route": "components/field",
+      "entry": "field",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ]
+    },
+    {
+      "name": "Label",
+      "route": "components/label",
+      "entry": "field",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Input",
+      "route": "components/input",
+      "entry": "field",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ]
+    },
+    {
+      "name": "TextArea",
+      "route": "components/text-area",
+      "entry": "field",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "AmountInput",
+      "route": "components/amount-input",
+      "entry": "field",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ]
+    },
+    {
+      "name": "SearchInput",
+      "route": "components/search-input",
+      "entry": "field",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Checkbox",
+      "route": "components/checkbox",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Switch",
+      "route": "components/switch",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "RadioGroup",
+      "route": "components/radio-group",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "SegmentedControl",
+      "route": "components/segmented-control",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Select",
+      "route": "components/select",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Slider",
+      "route": "components/slider",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Dialog",
+      "route": "components/dialog",
+      "entry": "overlay",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "AlertDialog",
+      "route": "components/alert-dialog",
+      "entry": "overlay",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Sheet",
+      "route": "components/sheet",
+      "entry": "overlay",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Menu",
+      "route": "components/menu",
+      "entry": "overlay",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Popover",
+      "route": "components/popover",
+      "entry": "overlay",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "route": "components/tooltip",
+      "entry": "overlay",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Tabs",
+      "route": "components/tabs",
+      "entry": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Accordion",
+      "route": "components/accordion",
+      "entry": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Breadcrumb",
+      "route": "components/breadcrumb",
+      "entry": "navigation",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Navigation",
+      "route": "components/navigation",
+      "entry": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Pagination",
+      "route": "components/pagination",
+      "entry": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Search",
+      "route": "components/search",
+      "entry": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "Badge",
+      "route": "components/badge",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Alert",
+      "route": "components/alert",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ]
+    },
+    {
+      "name": "Callout",
+      "route": "components/callout",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Toast",
+      "route": "components/toast",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Progress",
+      "route": "components/progress",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy"
+      ]
+    },
+    {
+      "name": "Spinner",
+      "route": "components/spinner",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "route": "components/skeleton",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "EmptyState",
+      "route": "components/empty-state",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Avatar",
+      "route": "components/avatar",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "StatusIndicator",
+      "route": "components/status-indicator",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ]
+    },
+    {
+      "name": "NumberReadout",
+      "route": "components/number-readout",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "Usd",
+      "route": "components/usd",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "Percent",
+      "route": "components/percent",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "Metric",
+      "route": "components/metric",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Stat",
+      "route": "components/stat",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "List",
+      "route": "components/list",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "Row",
+      "route": "components/row",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Table",
+      "route": "components/table",
+      "entry": "data",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "BrandMark",
+      "route": "components/brand-mark",
+      "entry": "brand",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "CheckIcon",
+      "route": "components/check-icon",
+      "entry": "brand",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "HIGProvider",
+      "route": "components/h-i-g-provider",
+      "entry": "provider",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "MarketRow",
+      "route": "components/market-row",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "BalanceCard",
+      "route": "components/balance-card",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "TradeEntry",
+      "route": "components/trade-entry",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "error"
+      ]
+    },
+    {
+      "name": "InstallCommand",
+      "route": "components/install-command",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "CodeWindow",
+      "route": "components/code-window",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "MarketingHero",
+      "route": "components/marketing-hero",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "ActivityList",
+      "route": "components/activity-list",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "PriceChart",
+      "route": "components/price-chart",
+      "entry": "chart",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ]
+    }
+  ]
+}

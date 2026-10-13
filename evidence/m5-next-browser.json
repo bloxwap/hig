@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "framework": "Next 16.4.0 webpack",
+  "checks": [
+    "production server/client boundary",
+    "no hydration/page/console errors",
+    "raw locale amount retained",
+    "keyboard accepted action once",
+    "Bloxwap Sans loader compiled"
+  ],
+  "browser": "154.0.8037.97"
+}

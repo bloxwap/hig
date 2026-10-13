@@ -1,0 +1,18 @@
+{
+  "version": "0.1.0",
+  "browser": "154.0.8037.57",
+  "checks": [
+    "production /hig/ base",
+    "direct component deep link",
+    "mobile navigation/search",
+    "Pro density/live selection",
+    "matching Get Code",
+    "native gallery labeling",
+    "busy/default states",
+    "keyboard-capable previews",
+    "no overflow or page errors",
+    "axe serious/critical check"
+  ],
+  "violations": [],
+  "physicalNative": "not observed; runnable Expo gallery only"
+}

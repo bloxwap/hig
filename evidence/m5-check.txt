@@ -1,0 +1,149 @@
+
+> bloxwap-hig-workspace@0.1.0 check
+> npm run build && npm run lint && npm run typecheck && npm test
+
+
+> bloxwap-hig-workspace@0.1.0 build
+> npm run generate && node scripts/build.mjs && npm run build:docs
+
+
+> bloxwap-hig-workspace@0.1.0 generate
+> node scripts/generate.mjs && node scripts/generate-brand.mjs
+
+Brand favicon/OG derivatives generated from approved SVG
+vite v6.4.1 building for production...
+transforming...
+packages/feedback/dist/react.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/feedback/dist/react.js" was ignored.
+packages/feedback/dist/web-haptic.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/feedback/dist/web-haptic.js" was ignored.
+packages/react/dist/provider.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/provider.js" was ignored.
+packages/react/dist/recipes.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes.js" was ignored.
+packages/react/dist/selection.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/selection.js" was ignored.
+packages/react/dist/navigation.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/navigation.js" was ignored.
+packages/react/dist/button.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/button.js" was ignored.
+node_modules/@bloxwap/haptic/dist/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
+node_modules/@bloxwap/haptic/dist/index.js (2:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
+packages/react/dist/overlay.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/overlay.js" was ignored.
+packages/react/dist/field.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/field.js" was ignored.
+packages/react/dist/data.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/data.js" was ignored.
+node_modules/web-haptics/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/web-haptics/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popover/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tooltip/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" was ignored.
+node_modules/web-haptics/dist/chunk-4NSAIXAB.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/web-haptics/dist/chunk-4NSAIXAB.mjs" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+✓ 127 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                    0.34 kB │ gzip:  0.25 kB
+dist/assets/BloxwapMono-Variable-DhndyL8z.woff2  281.95 kB
+dist/assets/BloxwapSans-Variable-DmclqDx1.woff2  310.85 kB
+dist/assets/index-RQYZwx3n.css                     5.14 kB │ gzip:  1.69 kB
+dist/assets/index-KQUmtaMo.js                     14.62 kB │ gzip:  5.62 kB
+dist/assets/index-C3EQISf-.js                    250.51 kB │ gzip: 80.14 kB
+✓ built in 1.06s
+
+> bloxwap-hig-workspace@0.1.0 build:docs
+> node scripts/build-docs.mjs
+
+Docs: 88 routes; 63 components; 25 Markdown chapters
+vite v6.4.1 building for production...
+transforming...
+packages/react/dist/provider.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/provider.js" was ignored.
+packages/react/dist/button.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/button.js" was ignored.
+packages/react/dist/field.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/field.js" was ignored.
+packages/react/dist/selection.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/selection.js" was ignored.
+packages/react/dist/recipes.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes.js" was ignored.
+packages/react/dist/navigation.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/navigation.js" was ignored.
+packages/feedback/dist/react.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/feedback/dist/react.js" was ignored.
+packages/react/dist/overlay.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/overlay.js" was ignored.
+packages/react/dist/data.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/data.js" was ignored.
+node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tooltip/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popover/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/dist/index.mjs" was ignored.
+node_modules/@bloxwap/chart/dist/react/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/chart/dist/react/index.js" was ignored.
+node_modules/@radix-ui/react-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+✓ 226 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                    0.72 kB │ gzip:   0.42 kB
+dist/assets/BloxwapMono-Variable-DhndyL8z.woff2  281.95 kB
+dist/assets/BloxwapSans-Variable-DmclqDx1.woff2  310.85 kB
+dist/assets/index-D6VJRDeL.css                    17.45 kB │ gzip:   4.17 kB
+dist/assets/examples-BlA7oZ2P.js                  10.86 kB │ gzip:   3.66 kB
+dist/assets/index-KQUmtaMo.js                     14.62 kB │ gzip:   5.62 kB
+dist/assets/index-C_2E7W0y.js                    174.69 kB │ gzip:  56.09 kB
+dist/assets/code-BF1ZOF6h.js                     208.00 kB │ gzip:   7.72 kB
+dist/assets/index-Co60wrNK.js                    492.85 kB │ gzip: 135.18 kB
+✓ built in 1.65s
+Static route shells and sitemap: 90
+
+> bloxwap-hig-workspace@0.1.0 lint
+> eslint . && node scripts/check-drift.mjs
+
+Token and brand generation drift passed
+
+> bloxwap-hig-workspace@0.1.0 typecheck
+> tsc --noEmit
+
+
+> bloxwap-hig-workspace@0.1.0 test
+> npm run test:web && npm run test:native
+
+
+> bloxwap-hig-workspace@0.1.0 test:web
+> vitest run
+
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.4 /home/box/work/hig
+
+ ✓ tests/quality.test.ts (5 tests) 103ms
+ ✓ tests/release.test.ts (2 tests) 166ms
+ ✓ tests/tokens.test.ts (6 tests) 20ms
+ ✓ tests/docs.test.ts (3 tests) 11ms
+ ✓ tests/codemods.test.ts (3 tests) 17ms
+ ✓ tests/feedback-adapters.test.ts (8 tests) 9ms
+ ✓ tests/feedback.test.ts (8 tests) 7ms
+ ✓ tests/feedback-react.dom.test.tsx (4 tests) 171ms
+ ✓ tests/components.dom.test.tsx (11 tests) 288ms
+
+ Test Files  9 passed (9)
+      Tests  50 passed (50)
+   Start at  15:52:46
+   Duration  2.19s (transform 250ms, setup 0ms, collect 1.18s, tests 792ms, environment 618ms, prepare 537ms)
+
+
+> bloxwap-hig-workspace@0.1.0 test:native
+> jest --config jest.native.config.cjs
+
+PASS tests/native/components.test.cjs
+  ✓ native busy button exposes blocked action/progress state (17 ms)
+  ✓ native checkbox updates state on accepted activation (5 ms)
+  ✓ native controlled radio ignores repeated current values (3 ms)
+  ✓ native amount entry keeps raw decimal string and labeled error hint (2 ms)
+  ✓ native Modal handles Android back without DOM imports (8 ms)
+  ✓ native unknown financial values stay distinct from zero (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        1.004 s
+Ran all test suites.

@@ -1,0 +1,44 @@
+
+> bloxwap-hig-workspace@0.1.0 test
+> npm run test:web && npm run test:native
+
+
+> bloxwap-hig-workspace@0.1.0 test:web
+> vitest run
+
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.4 /home/box/work/hig
+
+ ✓ tests/feedback-react.dom.test.tsx (3 tests) 188ms
+ ✓ tests/components.dom.test.tsx (11 tests) 296ms
+ ✓ tests/release.test.ts (2 tests) 178ms
+ ✓ tests/quality.test.ts (5 tests) 98ms
+ ✓ tests/tokens.test.ts (6 tests) 21ms
+ ✓ tests/docs.test.ts (3 tests) 12ms
+ ✓ tests/feedback-adapters.test.ts (8 tests) 9ms
+ ✓ tests/codemods.test.ts (3 tests) 12ms
+ ✓ tests/feedback.test.ts (8 tests) 7ms
+
+ Test Files  9 passed (9)
+      Tests  49 passed (49)
+   Start at  15:21:56
+   Duration  2.36s (transform 278ms, setup 0ms, collect 1.30s, tests 822ms, environment 800ms, prepare 517ms)
+
+
+> bloxwap-hig-workspace@0.1.0 test:native
+> jest --config jest.native.config.cjs
+
+PASS tests/native/components.test.cjs
+  ✓ native busy button exposes blocked action/progress state (18 ms)
+  ✓ native checkbox updates state on accepted activation (5 ms)
+  ✓ native controlled radio ignores repeated current values (3 ms)
+  ✓ native amount entry keeps raw decimal string and labeled error hint (2 ms)
+  ✓ native Modal handles Android back without DOM imports (8 ms)
+  ✓ native unknown financial values stay distinct from zero
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        1.045 s, estimated 5 s
+Ran all test suites.

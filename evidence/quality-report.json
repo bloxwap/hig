@@ -1,0 +1,65 @@
+{
+  "version": "0.1.0",
+  "exports": {
+    "contracts": 4,
+    "feedback": 17,
+    "native": 34,
+    "react": 25,
+    "tokens": 5
+  },
+  "sizes": {
+    "button": {
+      "raw": 1249,
+      "gzip": 709,
+      "inputs": [
+        "packages/contracts/dist/index.js",
+        "packages/react/dist/provider.js",
+        "packages/react/dist/button.js",
+        "button.js"
+      ]
+    },
+    "field": {
+      "raw": 708,
+      "gzip": 325,
+      "inputs": [
+        "packages/react/dist/field.js",
+        "field.js"
+      ]
+    },
+    "nativeSwitch": {
+      "raw": 3435,
+      "gzip": 1384,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/index.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/switch.js",
+        "nativeSwitch.js"
+      ]
+    },
+    "feedbackContract": {
+      "raw": 2857,
+      "gzip": 953,
+      "inputs": [
+        "packages/feedback/dist/contract.js",
+        "feedbackContract.js"
+      ]
+    },
+    "docsJS": {
+      "raw": 901018,
+      "gzip": 208270
+    },
+    "docsCSS": {
+      "raw": 17445
+    },
+    "fonts": {
+      "raw": 592796
+    },
+    "nativeCues": {
+      "raw": 103618
+    }
+  },
+  "baseline": "Initial HIG candidate measurements; inaccessible product/Metro production baseline deltas not claimed",
+  "physicalDevices": "pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof"
+}

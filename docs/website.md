@@ -1,0 +1,11 @@
+# Documentation website and example ownership · HIG 0.1.0
+
+Issues #27–#30. The site uses Vite/React with generated static route shells instead of adding a second MDX content system. It retains the audited Fumadocs conventions (sidebar sections, search, breadcrumb, TOC, source/edit links, code/preview tabs, responsive nav) while consuming shipped HIG renderers. Markdown chapters remain the one normative source; published API declarations and the authored example manifest generate discoverable component pages. The docs framework decision limits runtime dependencies and keeps candidate hosting reproducible.
+
+Default base path `/hig/` targets GitHub Pages repository hosting. Build can set `HIG_BASE_PATH`; asset URLs use Vite's base. Generated index shells for every route support direct loads without host rewrite rules. Canonical URLs, title/description, sitemap and version context are emitted into static shells. A preview artifact is built locally; deployment requires separate hosting authorization.
+
+`planning/examples.json` owns sample bodies, states, density/platform metadata and a11y/feedback notes. `npm run generate:examples` emits real web/native preview functions from it. `npm run examples:check` generates all copyable code variants into compiled consumer fixtures. APIs are extracted from actual package declarations. Search indexes full Markdown and catalog names. `llms.txt` and Markdown exports come from the same chapters, never a second independently authored guide.
+
+Native examples are actual RN components in the Expo gallery. The website presents source/install/device-run links and explicit capability labels, not DOM renderings called native. Screenshots and videos from physical iOS/Android are pending; no fake QR or tactile certification. Native hover/canvas/table alternatives are labeled per entry.
+
+Playground configuration is bounded to comfortable app, compact Pro and docs presets, supported component states, locale/direction, independent feedback settings and reduced-motion demonstration. No arbitrary theme/icon-library/shadcn compatibility selector. Get Code reflects the selected component/platform/density/state; share URLs validate supported values. Live examples use sample host-owned data/actions and never submit orders or call a wallet.
