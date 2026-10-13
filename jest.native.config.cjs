@@ -1,0 +1,1 @@
+module.exports={preset:'jest-expo',testMatch:['<rootDir>/tests/native/**/*.test.cjs'],maxWorkers:2,moduleNameMapper:{'^@bloxwap/hig-(tokens|contracts)$':'<rootDir>/packages/$1/dist/index.js','^(\\.{1,2}/.*)\\.js$':'$1'},transformIgnorePatterns:['node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo.*|@expo.*/.*|react-native-svg|@bloxwap)/)']};

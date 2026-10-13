@@ -1,0 +1,83 @@
+{
+  "name": "@bloxwap/hig-native",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
+    },
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "import": "./dist/button.js"
+    },
+    "./surface": {
+      "types": "./dist/surface.d.ts",
+      "import": "./dist/surface.js"
+    },
+    "./field": {
+      "types": "./dist/field.d.ts",
+      "import": "./dist/field.js"
+    },
+    "./selection": {
+      "types": "./dist/selection.d.ts",
+      "import": "./dist/selection.js"
+    },
+    "./overlay": {
+      "types": "./dist/overlay.d.ts",
+      "import": "./dist/overlay.js"
+    },
+    "./navigation": {
+      "types": "./dist/navigation.d.ts",
+      "import": "./dist/navigation.js"
+    },
+    "./status": {
+      "types": "./dist/status.d.ts",
+      "import": "./dist/status.js"
+    },
+    "./data": {
+      "types": "./dist/data.d.ts",
+      "import": "./dist/data.js"
+    },
+    "./brand": {
+      "types": "./dist/brand.d.ts",
+      "import": "./dist/brand.js"
+    },
+    "./recipes": {
+      "types": "./dist/recipes.d.ts",
+      "import": "./dist/recipes.js"
+    }
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-native": "^0.81.5",
+    "react-native-svg": "15.12.1",
+    "@react-native-community/slider": "5.0.1"
+  },
+  "peerDependenciesMeta": {
+    "react-native-svg": {
+      "optional": true
+    },
+    "@react-native-community/slider": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@bloxwap/hig-tokens": "0.1.0",
+    "@bloxwap/hig-contracts": "0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloxwap/hig",
+    "directory": "packages/native"
+  }
+}

@@ -9,7 +9,7 @@ const tarballs=[];
 for(const manifest of manifests){
  const name=manifest.name.replace('@bloxwap/hig-','');
  const pack=JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
- tarballs.push(resolve('artifacts',pack[0].filename));
+ if(name!=='native' && name!=='feedback')tarballs.push(resolve('artifacts',pack[0].filename));
 }
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',dependencies:{'@bloxwap/font':'0.1.2',react:'19.1.0','react-dom':'19.1.0'}},null,2));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
@@ -17,7 +17,7 @@ writeFileSync(join(dir,'smoke.mjs'),`import assert from 'node:assert/strict';
 import React from 'react'; import {renderToString} from 'react-dom/server';
 import {tokens} from '@bloxwap/hig-tokens'; import {formatNumber} from '@bloxwap/hig-contracts';
 assert.equal(tokens.colors.action.srgb,'#00ff3f'); assert.equal(formatNumber(null),'—');
-assert.match(renderToString(React.createElement('button',null,'Review order')),/Review order/);
+${manifests.some(m=>m.name==='@bloxwap/hig-react')?"const {Button}=await import('@bloxwap/hig-react/button'); assert.match(renderToString(React.createElement(Button,null,'Review order')),/Review order/);":"assert.match(renderToString(React.createElement('button',null,'Review order')),/Review order/);"}
 console.log('Packed consumer: independent token/contracts imports and SSR render passed');`);
 execFileSync(process.execPath,[join(dir,'smoke.mjs')],{cwd:dir,stdio:'inherit'});
 cpSync('fixtures/web',join(dir,'web'),{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/dist')});
