@@ -1,0 +1,14 @@
+import {it,expect} from 'vitest';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {spawnSync} from 'node:child_process';
+import {join,resolve} from 'node:path';
+// @ts-expect-error Executable JavaScript gate tested through its public functions.
+import {checkExports,assertBudget,checkPlatformImports} from '../scripts/quality.mjs';
+// @ts-expect-error Executable anti-drift gate.
+import {driftViolations} from '../scripts/drift.mjs';
+it('fails invalid package exports',()=>{const directory=mkdtempSync(join(tmpdir(),'hig-invalid-export-'));writeFileSync(join(directory,'package.json'),JSON.stringify({name:'invalid',exports:{'.':'./missing.js'}}));expect(()=>checkExports(directory)).toThrow('Invalid export');});
+it('fails a deliberate budget regression',()=>{expect(()=>assertBudget('button',101,100)).toThrow('Budget regression');expect(()=>assertBudget('button',100,100)).not.toThrow();});
+it('fails cross-platform imports instead of silently skipping native checks',()=>{const directory=mkdtempSync(join(tmpdir(),'hig-invalid-platform-'));mkdirSync(join(directory,'dist'));writeFileSync(join(directory,'dist','button.js'),"import {View} from 'react-native';");expect(()=>checkPlatformImports(directory,'web')).toThrow('Invalid web platform import');});
+it('rejects copied tokens/obsolete imports and expired exceptions',()=>{const copied="import { Button } from '@workspace/ui/button'; const green='#00ff3f';";expect(driftViolations(copied,'surface.tsx',[])).toHaveLength(2);expect(driftViolations(copied,'surface.tsx',[{path:'surface.tsx',rule:'copied-palette',owner:'maintainer',reason:'approved',expires:'2000-01-01'}])).toHaveLength(2);});
+it('a deliberately stale generated token artifact fails the real anti-drift command',()=>{const directory=mkdtempSync(join(tmpdir(),'hig-stale-token-'));mkdirSync(join(directory,'packages/tokens'),{recursive:true});writeFileSync(join(directory,'packages/tokens/source.json'),readFileSync('packages/tokens/source.json'));const generator=resolve('scripts/generate.mjs');expect(spawnSync(process.execPath,[generator],{cwd:directory}).status).toBe(0);writeFileSync(join(directory,'packages/tokens/generated/tokens.css'),'stale');const check=spawnSync(process.execPath,[resolve('scripts/check-drift.mjs')],{cwd:directory,encoding:'utf8'});expect(check.status).not.toBe(0);expect(check.stderr).toContain('Stale generated artifact');});

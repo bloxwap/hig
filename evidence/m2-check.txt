@@ -1,0 +1,119 @@
+
+> bloxwap-hig-workspace@0.1.0 check
+> npm run build && npm run lint && npm run typecheck && npm test
+
+
+> bloxwap-hig-workspace@0.1.0 build
+> npm run generate && node scripts/build.mjs
+
+
+> bloxwap-hig-workspace@0.1.0 generate
+> node scripts/generate.mjs
+
+vite v6.4.1 building for production...
+transforming...
+packages/react/dist/button.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/button.js" was ignored.
+packages/react/dist/provider.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/provider.js" was ignored.
+packages/react/dist/navigation.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/navigation.js" was ignored.
+packages/react/dist/recipes.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes.js" was ignored.
+packages/react/dist/selection.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/selection.js" was ignored.
+packages/react/dist/field.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/field.js" was ignored.
+packages/react/dist/data.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/data.js" was ignored.
+packages/react/dist/overlay.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/overlay.js" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tooltip/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popover/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+✓ 113 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                    0.34 kB │ gzip:  0.25 kB
+dist/assets/BloxwapMono-Variable-DhndyL8z.woff2  281.95 kB
+dist/assets/BloxwapSans-Variable-DmclqDx1.woff2  310.85 kB
+dist/assets/index-D0wUMfNR.css                     5.11 kB │ gzip:  1.68 kB
+dist/assets/index-BRXQzq_Y.js                    231.53 kB │ gzip: 73.90 kB
+✓ built in 914ms
+
+> bloxwap-hig-workspace@0.1.0 lint
+> eslint . && node scripts/check-drift.mjs
+
+Token generation drift passed
+
+> bloxwap-hig-workspace@0.1.0 typecheck
+> tsc --noEmit
+
+
+> bloxwap-hig-workspace@0.1.0 test
+> npm run test:web && npm run test:native
+
+
+> bloxwap-hig-workspace@0.1.0 test:web
+> vitest run
+
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.4 /home/box/work/hig
+
+ ✓ tests/tokens.test.ts (6 tests) 15ms
+ ✓ tests/components.dom.test.tsx (11 tests) 243ms
+
+ Test Files  2 passed (2)
+      Tests  17 passed (17)
+   Start at  13:54:14
+   Duration  951ms (transform 128ms, setup 0ms, collect 280ms, tests 258ms, environment 304ms, prepare 128ms)
+
+
+> bloxwap-hig-workspace@0.1.0 test:native
+> jest --config jest.native.config.cjs
+
+  console.warn
+    SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/th3rdwave/react-native-safe-area-context
+
+       6 | export interface DialogProps {open:boolean;onOpenChange:(open:boolean)=>void;title:string;description:string;children:React.ReactNode}
+       7 | /** Modal handles native back; host owns safe-area integration and post-close focus restoration. */
+    >  8 | export function Dialog({open,onOpenChange,title,description,children}:DialogProps){return <Modal visible={open} transparent animationType='none' onRequestClose={()=>onOpenChange(false)} accessibilityViewIsModal><SafeAreaView style={{flex:1,backgroundColor:'#000b',justifyContent:'center'}}><KeyboardAvoidingView behavior={Platform.OS==='ios'?'padding':undefined} style={{maxHeight:'90%'}}><ScrollView contentContainerStyle={{padding:24,backgroundColor:colors.android.surface,borderRadius:14}}><Stack><Heading>{title}</Heading><Text>{description}</Text>{children}<Button intent='secondary' onPress={()=>onOpenChange(false)}>Close</Button></Stack></ScrollView></KeyboardAvoidingView></SafeAreaView></Modal>;}
+         |                                                                                                                                                                                                                     ^
+       9 | export const Sheet=Dialog;
+      10 | export const AlertDialog=Dialog;
+      11 | export function Menu({label,items}: {label:string;items:readonly {label:string;disabled?:boolean;onSelect:()=>void}[]}){const [open,setOpen]=React.useState(false);return <><Button intent='secondary' onPress={()=>setOpen(true)}>{label}</Button><Dialog open={open} onOpenChange={setOpen} title={label} description='Available actions'>{items.map((item,i)=><Button key={i} disabled={item.disabled} intent='secondary' onPress={()=>{item.onSelect();setOpen(false);}}>{item.label}</Button>)}</Dialog></>;}
+
+      at warn (node_modules/react-native/Libraries/Utilities/warnOnce.js:27:11)
+      at Object.warnOnce [as SafeAreaView] (node_modules/react-native/index.js:92:5)
+      at SafeAreaView (packages/native/src/overlay.tsx:8:213)
+      at Object.react-stack-bottom-frame (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13976:20)
+      at renderWithHooks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2866:22)
+      at updateFunctionComponent (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6006:19)
+      at beginWork (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:7474:18)
+      at runWithFiberInDEV (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:1574:13)
+      at performUnitOfWork (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10972:22)
+      at workLoopSync (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10816:41)
+      at renderRootSync (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10797:11)
+      at performWorkOnRoot (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10349:13)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2094:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:566:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:859:10)
+      at mount (tests/native/components.test.cjs:11:25)
+      at Object.<anonymous> (tests/native/components.test.cjs:16:98)
+
+PASS tests/native/components.test.cjs
+  ✓ native busy button exposes blocked action/progress state (14 ms)
+  ✓ native checkbox updates state on accepted activation (4 ms)
+  ✓ native controlled radio ignores repeated current values (2 ms)
+  ✓ native amount entry keeps raw decimal string and labeled error hint (2 ms)
+  ✓ native Modal handles Android back without DOM imports (27 ms)
+  ✓ native unknown financial values stay distinct from zero
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        0.712 s, estimated 1 s
+Ran all test suites.

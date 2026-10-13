@@ -1,0 +1,158 @@
+{
+  "version": "0.1.0",
+  "entries": [
+    {
+      "slug": "actions-surfaces",
+      "issue": 13,
+      "module": "button / surface",
+      "components": [
+        "Button",
+        "IconButton",
+        "Link",
+        "Text",
+        "Heading",
+        "Stack",
+        "Inline",
+        "Surface/Card",
+        "Separator"
+      ],
+      "docs": "docs/components/actions-surfaces.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "RN external Link uses Linking; routes belong to host. Native fontFamily only after registration. Decorative SVG hidden; IconButton label is mandatory."
+    },
+    {
+      "slug": "fields",
+      "issue": 14,
+      "module": "field",
+      "components": [
+        "Field",
+        "Label",
+        "Input",
+        "TextArea",
+        "AmountInput",
+        "SearchInput"
+      ],
+      "docs": "docs/components/fields.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "RN decimal-pad has locale/platform differences; no implicit money parser. Host owns safe area and keyboard avoidance. IME/device input observations remain pending."
+    },
+    {
+      "slug": "selection",
+      "issue": 15,
+      "module": "selection",
+      "components": [
+        "Checkbox",
+        "RadioGroup",
+        "Switch",
+        "SegmentedControl",
+        "Select",
+        "Slider; Tabs in navigation"
+      ],
+      "docs": "docs/components/selection.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "SegmentedControl is single-choice radio semantics, not navigation. Native picker alternative is deliberate. Slider drag cancellation/tactile rate evidence remains M3/device work; backend is an optional native peer."
+    },
+    {
+      "slug": "overlays",
+      "issue": 16,
+      "module": "overlay",
+      "components": [
+        "Dialog",
+        "AlertDialog",
+        "Sheet",
+        "Menu; DOM Popover/Tooltip; RN HelpText"
+      ],
+      "docs": "docs/components/overlays.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "Sheet currently uses accessible modal layout, no gesture-detent certification. RN focus restoration/VoiceOver nesting needs host/device validation. Native help is persistent text; no hover tooltip or anchored popover claim."
+    },
+    {
+      "slug": "navigation",
+      "issue": 17,
+      "module": "navigation",
+      "components": [
+        "Tabs",
+        "Accordion",
+        "Pagination",
+        "Navigation",
+        "Search; DOM Breadcrumb; RN BackButton/BottomNavigation"
+      ],
+      "docs": "docs/components/navigation.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "Breadcrumb is DOM-specific; native host routes plus BackButton are supported alternatives. No fuzzy-search engine, command palette shortcut hijacking or native hardware-keyboard certification."
+    },
+    {
+      "slug": "status",
+      "issue": 18,
+      "module": "status",
+      "components": [
+        "Badge",
+        "Alert/Callout",
+        "Toast",
+        "Progress",
+        "Spinner",
+        "Skeleton",
+        "EmptyState",
+        "Avatar",
+        "StatusIndicator"
+      ],
+      "docs": "docs/components/status.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence."
+    },
+    {
+      "slug": "financial-data",
+      "issue": 19,
+      "module": "data",
+      "components": [
+        "NumberReadout",
+        "Usd",
+        "Percent",
+        "Metric/Stat",
+        "Row",
+        "List; DOM Table"
+      ],
+      "docs": "docs/components/financial-data.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden parser. Exact financial strings remain host-owned. No heavy DataTable engine; optional virtualization/sorting belongs to host. Native list device performance pending."
+    },
+    {
+      "slug": "chart",
+      "issue": 20,
+      "module": "chart",
+      "components": [
+        "PriceChart (DOM only)",
+        "chartTheme; native readout/list summary"
+      ],
+      "docs": "docs/components/chart.md",
+      "web": "implemented",
+      "native": "unsupported canvas; use readout/list",
+      "remaining": "RN canvas is unsupported in this candidate. Use NumberReadout/List plus host summaries. A native chart engine/WebView bridge needs a separate supported target and device lifecycle review, rather than an invented integration."
+    },
+    {
+      "slug": "recipes",
+      "issue": 26,
+      "module": "recipes",
+      "components": [
+        "MarketRow",
+        "BalanceCard",
+        "TradeEntry",
+        "ActivityList",
+        "InstallCommand",
+        "CodeWindow",
+        "MarketingHero"
+      ],
+      "docs": "docs/components/recipes.md",
+      "web": "implemented",
+      "native": "implemented with documented alternatives",
+      "remaining": "M2 supplies visual recipes; M3 adds semantic feedback composition because #26 depends on #25. Product visual fidelity is provisional until inaccessible monorepo audit. Account/positions variants can compose these primitives without service coupling."
+    }
+  ]
+}

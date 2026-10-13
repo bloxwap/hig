@@ -1,0 +1,13 @@
+import React from 'react';
+import {Pressable,View} from 'react-native';
+import {useControllable} from './provider.js';
+import {Button} from './button.js';
+import {Text,Inline,Stack} from './surface.js';
+import {Field,SearchInput} from './field.js';
+export function Tabs({label,items,value,defaultValue,onValueChange}: {label:string;items:readonly {value:string;label:string;content:React.ReactNode;disabled?:boolean}[];value?:string;defaultValue?:string;onValueChange?:(v:string)=>void}){const [current,set]=useControllable(value,defaultValue??items[0]?.value??'',onValueChange);return <View><Inline accessibilityRole='tablist' accessibilityLabel={label}>{items.map(i=><Pressable key={i.value} accessibilityRole='tab' accessibilityState={{selected:current===i.value,disabled:!!i.disabled}} disabled={i.disabled} onPress={()=>set(i.value)} style={{minHeight:48,padding:12}}><Text>{i.label}</Text></Pressable>)}</Inline>{items.find(i=>i.value===current)?.content}</View>;}
+export function Accordion({title,children,open,onOpenChange}:React.PropsWithChildren<{title:string;open?:boolean;onOpenChange?:(v:boolean)=>void}>){const [current,set]=useControllable(open,false,onOpenChange);return <View><Button intent='secondary' accessibilityState={{expanded:current}} onPress={()=>set(!current)}>{title}</Button>{current&&children}</View>;}
+export function Navigation({label,items}: {label:string;items:readonly {label:string;id:string;active?:boolean;onNavigate:()=>void}[]}){return <Stack accessibilityLabel={label}>{items.map(i=><Button key={i.id} intent='secondary' accessibilityState={{selected:!!i.active}} onPress={i.onNavigate}>{i.label}</Button>)}</Stack>;}
+export const BottomNavigation=Navigation;
+export function Pagination({page,total,onPageChange}: {page:number;total:number;onPageChange:(p:number)=>void}){return <Inline><Button intent='secondary' disabled={page<=1} onPress={()=>onPageChange(page-1)}>Previous</Button><Text>Page {page} of {total}</Text><Button intent='secondary' disabled={page>=total} onPress={()=>onPageChange(page+1)}>Next</Button></Inline>;}
+export function Search({query,onQueryChange,results,loading,error}: {query:string;onQueryChange:(s:string)=>void;results:readonly {id:string;label:string;onSelect:()=>void}[];loading?:boolean;error?:string}){return <Stack><Field label='Search'><SearchInput value={query} onChangeText={onQueryChange}/></Field><Text accessibilityLiveRegion='polite'>{loading?'Searching…':error??(!results.length?'No results':'')}</Text>{!loading&&!error&&results.map(r=><Button intent='ghost' key={r.id} onPress={r.onSelect}>{r.label}</Button>)}</Stack>;}
+export function BackButton({onBack}: {onBack:()=>void}){return <Button intent='secondary' onPress={onBack}>Back</Button>;}

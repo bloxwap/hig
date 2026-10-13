@@ -1,0 +1,12 @@
+
+> bloxwap-hig-workspace@0.1.0 generate:cues
+> node scripts/export-cues.mjs
+
+file         duration ms  peak dBFS
+tick.wav              83      -15.2
+toggle.wav           114      -18.2
+success.wav          567      -15.5
+error.wav            314      -15.0
+
+Wrote 4 files to /home/box/work/hig/packages/feedback/assets
+Approved native cues: 4; 103618 bytes

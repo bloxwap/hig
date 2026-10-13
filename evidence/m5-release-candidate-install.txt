@@ -1,0 +1,5 @@
+
+> bloxwap-hig-workspace@0.1.0 smoke:release-artifact
+> node scripts/release-artifact-smoke.mjs candidate
+
+candidate: clean installed 4 staged artifacts, matching versions and SSR/feedback passed

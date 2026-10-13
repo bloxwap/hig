@@ -1,0 +1,5 @@
+
+> bloxwap-hig-workspace@0.1.0 examples:check
+> node scripts/check-examples.mjs
+
+Copyable examples: 198 web/native state modules typechecked against actual package exports

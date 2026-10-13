@@ -1,0 +1,2527 @@
+{
+  "version": "0.1.0",
+  "status": "review candidate · device validation pending",
+  "pages": [
+    {
+      "route": "guides/architecture/001-packages",
+      "title": "ADR 001: platform renderers, shared contracts",
+      "source": "docs/architecture/001-packages.md",
+      "html": "<h1 id=\"adr-001-platform-renderers-shared-contracts\">ADR 001: platform renderers, shared contracts</h1>\n<p>Status: accepted for candidate 0.1.0. Issues #4, #5. Evidence: <code>evidence/upstream-inventory.json</code>.</p>\n<pre><code class=\"language-mermaid\">graph TD\n  Tokens[HIG tokens] --&gt; Web[HIG React]\n  Tokens --&gt; Native[HIG Native]\n  Contracts[HIG contracts] --&gt; Web\n  Contracts --&gt; Native\n  Contracts --&gt; Feedback[optional feedback adapters]\n  Web --&gt; Docs[docs and consumer fixtures]\n  Native --&gt; Expo[Expo gallery]\n</code></pre>\n<p><code>@bloxwap/hig-tokens</code> owns palette, density, units and generation; <code>@bloxwap/hig-contracts</code> owns platform-neutral types and formatting. <code>@bloxwap/hig-react</code> and <code>@bloxwap/hig-native</code> own renderers. <code>@bloxwap/hig-feedback</code> owns optional adapter entry points. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.</p>\n<p>Candidate validation matrix: Node 20.19+, TypeScript 5.9, React/DOM 19.1, RN 0.81.5, Expo 54, Vite 6.4. Next 16.4.0 webpack is verified by M5 production/packed consumer checks. NativeWind remains unverified until source/rem-root evidence exists. Use StyleSheet on RN and plain CSS on web; Tailwind may refer to <code>var(--hig-*)</code> without scanning HIG sources. Legacy NativeWind rem roots are unknown until monorepo audit. Never infer native sizes by replacing <code>rem</code> with <code>dp</code>.</p>\n<p>Prefer built-in semantic controls; modal/disclosure behavior must retain keyboard, focus restoration and descriptions. Optional chart entry imports the chart SDK only on the client. Libraries retain upstream licenses; extracted tokens and mark have commit provenance, no vendor engine source is copied. Font binaries remain owned by @bloxwap/font (OFL-1.1).</p>\n<p>Deprecation plan: inventory all live references, map variants to intent/density, run migration diff and consumer validation, switch a pilot behind a host flag, then delete unused copies. App comfortable targets and Pro compact rows are intentional. HIG cannot retire inaccessible monorepo copies. API/token/behavior changes follow semver; breaking accessibility behavior counts as breaking. Support upgrades require web, SSR and Metro evidence with a documented rollback before changing the matrix.</p>\n",
+      "toc": [],
+      "section": "architecture"
+    },
+    {
+      "route": "guides/architecture/attribution",
+      "title": "Attribution and provenance",
+      "source": "docs/architecture/attribution.md",
+      "html": "<h1 id=\"attribution-and-provenance\">Attribution and provenance</h1>\n<p>HIG code: MIT. @radix-ui/react-dialog, dropdown-menu, popover, tooltip: MIT, consumed as dependencies without copied engine code. @bloxwap/chart/sfx/haptic: independent upstream packages; optional integration only. @bloxwap/font: OFL-1.1, binaries stay in its pinned package. Brand SVG/geometry derives from Font docs, exact upstream commit in <code>evidence/upstream-inventory.json</code>; do not imply arbitrary trademark relicensing. Utility CheckIcon is original simple geometry. Full icons catalogs are excluded.</p>\n<h2 id=\"generated-favicon-and-social-preview\">Generated favicon and social preview</h2>\n<p><code>npm run generate</code> derives unchanged SVG favicons and a 1200×630 SVG social preview from the approved mark. Source SHA256 and derivative paths are in <code>planning/brand-artifacts.json</code>; lint rejects stale outputs. The derived preview declares its lineage and omits the source credential metadata; unchanged source/favicons retain it. Hosts whose social crawlers require raster images must render a PNG from this same SVG instead of redrawing the mark. This preview uses a generic font rather than embedding the full font asset.</p>\n",
+      "toc": [
+        {
+          "label": "Generated favicon and social preview",
+          "id": "generated-favicon-and-social-preview"
+        }
+      ],
+      "section": "architecture"
+    },
+    {
+      "route": "guides/architecture/platform-matrix",
+      "title": "Candidate platform support · 0.1.0",
+      "source": "docs/architecture/platform-matrix.md",
+      "html": "<h1 id=\"candidate-platform-support-0-1-0\">Candidate platform support · 0.1.0</h1>\n<table>\n<thead>\n<tr>\n<th>Area</th>\n<th>DOM</th>\n<th>RN</th>\n<th>Evidence</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Actions, surfaces, text, fields</td>\n<td>Semantic DOM elements</td>\n<td>Pressable/View/Text/TextInput</td>\n<td>behavior tests, Vite/SSR/Metro</td>\n</tr>\n<tr>\n<td>Selection/range</td>\n<td>Built-in input/select</td>\n<td>OS Switch/community Slider, radio/check Pressables, Modal chooser</td>\n<td>contract tests; device gestures pending</td>\n</tr>\n<tr>\n<td>Dialog/sheet/menu</td>\n<td>Radix scoped primitives</td>\n<td>Modal and explicit close/back</td>\n<td>DOM focus/Escape test; native back test</td>\n</tr>\n<tr>\n<td>Tooltip/popover</td>\n<td>Radix hover/focus/anchored</td>\n<td>persistent HelpText/modal</td>\n<td>no RN hover claim</td>\n</tr>\n<tr>\n<td>Navigation/search</td>\n<td>href/callback adapters</td>\n<td>host route/back callbacks</td>\n<td>tab/search/disclosure contracts</td>\n</tr>\n<tr>\n<td>Financial lists/table</td>\n<td>semantic table/list</td>\n<td>FlatList labeled rows</td>\n<td>formatting and contract tests</td>\n</tr>\n<tr>\n<td>Chart</td>\n<td>optional lazy @bloxwap/chart canvas</td>\n<td>numeric/list summary only</td>\n<td>typed theme; physical gesture evidence pending</td>\n</tr>\n<tr>\n<td>Brand mark</td>\n<td>individual SVG renderer/asset</td>\n<td>optional react-native-svg</td>\n<td>pinned geometry; device comparison pending</td>\n</tr>\n<tr>\n<td>Fonts</td>\n<td>pinned Sans/Mono asset URLs</td>\n<td>typed manifest and explicit system fallback</td>\n<td>no native-font certification</td>\n</tr>\n</tbody></table>\n<p>SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.</p>\n<p>Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution. ESM is supported; CommonJS consumer support is not claimed.</p>\n",
+      "toc": [],
+      "section": "architecture"
+    },
+    {
+      "route": "guides/components/actions-surfaces",
+      "title": "Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0",
+      "source": "docs/components/actions-surfaces.md",
+      "html": "<h1 id=\"button-iconbutton-link-text-heading-stack-inline-surface-card-separator-hig-0-1-0\">Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0</h1>\n<p>Issue #13. Entry: <code>button / surface</code>. Import platform entries from <code>@bloxwap/hig-react/button</code> or <code>@bloxwap/hig-native/button</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>Button children, intent (primary/secondary/destructive/ghost), busy, disabled, fullWidth, suppressFeedback, forwarded ref. DOM onClick; RN onPress. Text/Heading accept platform text props. Stack/Inline/Surface accept platform layout props.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Use one primary review action. Do: busy protects host requests and displays Working. Don’t: use destructive red for every sell button.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>DOM semantic button/anchor, forwarded focus, target min-height tied to density; RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>RN external Link uses Linking; routes belong to host. Native fontFamily only after registration. Decorative SVG hidden; IconButton label is mandatory.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/chart",
+      "title": "PriceChart (DOM only), chartTheme; native readout/list summary · HIG 0.1.0",
+      "source": "docs/components/chart.md",
+      "html": "<h1 id=\"pricechart-dom-only-charttheme-native-readout-list-summary-hig-0-1-0\">PriceChart (DOM only), chartTheme; native readout/list summary · HIG 0.1.0</h1>\n<p>Issue #20. Entry: <code>chart</code>. Import platform entries from <code>@bloxwap/hig-react/chart</code> for the DOM canvas integration only. Native consumers use <code>@bloxwap/hig-native/data</code> for summary/readout/list alternatives. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>PriceChart data, summary, height, and chart SDK props. summary is mandatory; token chartTheme uses sRGB to preserve canvas compatibility.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: provide host-generated price/trend summary and lazy-load chart on demand. Don’t: play effects on ticks or present web canvas as RN.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>@bloxwap/chart/react loads only on PriceChart render, in Suspense. Token theme covers surface/text/border/grid/crosshair/up/down/fonts; engine owns gestures and cleanup.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>RN canvas is unsupported in this candidate. Use NumberReadout/List plus host summaries. A native chart engine/WebView bridge needs a separate supported target and device lifecycle review, rather than an invented integration.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/fields",
+      "title": "Field, Label, Input, TextArea, AmountInput, SearchInput · HIG 0.1.0",
+      "source": "docs/components/fields.md",
+      "html": "<h1 id=\"field-label-input-textarea-amountinput-searchinput-hig-0-1-0\">Field, Label, Input, TextArea, AmountInput, SearchInput · HIG 0.1.0</h1>\n<p>Issue #14. Entry: <code>field</code>. Import platform entries from <code>@bloxwap/hig-react/field</code> or <code>@bloxwap/hig-native/field</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>Field label, id (DOM), description, error, required, disabled; Input/TextArea expose native platform props and refs. AmountInput is text/decimal mode; value stays raw string.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: label Amount (BTC), describe available funds, keep 0,001 unchanged until host validates locale. Don’t: placeholder-only labels, Number(raw) on every keystroke, or strip IME text.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>DOM label/id plus help/error aria-describedby; invalid state is explicit. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>RN decimal-pad has locale/platform differences; no implicit money parser. Host owns safe area and keyboard avoidance. IME/device input observations remain pending.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/financial-data",
+      "title": "NumberReadout, Usd, Percent, Metric/Stat, Row, List; DOM Table · HIG 0.1.0",
+      "source": "docs/components/financial-data.md",
+      "html": "<h1 id=\"numberreadout-usd-percent-metric-stat-row-list-dom-table-hig-0-1-0\">NumberReadout, Usd, Percent, Metric/Stat, Row, List; DOM Table · HIG 0.1.0</h1>\n<p>Issue #19. Entry: <code>data</code>. Import platform entries from <code>@bloxwap/hig-react/data</code> or <code>@bloxwap/hig-native/data</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty. Table caption/rows/columns/keyFor; optional host sorting callbacks.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted number into order quantity or announce every live tick.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>Readouts are static and tabular, respecting reduced motion. Percent uses percent points (5 is 5%). DOM table caption/column headers/aria-sort and scroll region; RN FlatList labeled-row alternative with stable keys.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden parser. Exact financial strings remain host-owned. No heavy DataTable engine; optional virtualization/sorting belongs to host. Native list device performance pending.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/navigation",
+      "title": "Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0",
+      "source": "docs/components/navigation.md",
+      "html": "<h1 id=\"tabs-accordion-pagination-navigation-search-dom-breadcrumb-rn-backbutton-bottomnavigation-hig-0-1-0\">Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0</h1>\n<p>Issue #17. Entry: <code>navigation</code>. Import platform entries from <code>@bloxwap/hig-react/navigation</code> or <code>@bloxwap/hig-native/navigation</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>Tabs label/items/value/defaultValue/onValueChange. Items include content and disabled. Navigation takes DOM hrefs or RN host callbacks. Search takes query/results/loading/error; no bundled search index/router.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: expose current location and keep deep-link ownership with host. Don’t: replace native back with a browser history dependency.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>Breadcrumb is DOM-specific; native host routes plus BackButton are supported alternatives. No fuzzy-search engine, command palette shortcut hijacking or native hardware-keyboard certification.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/overlays",
+      "title": "Dialog, AlertDialog, Sheet, Menu; DOM Popover/Tooltip; RN HelpText · HIG 0.1.0",
+      "source": "docs/components/overlays.md",
+      "html": "<h1 id=\"dialog-alertdialog-sheet-menu-dom-popover-tooltip-rn-helptext-hig-0-1-0\">Dialog, AlertDialog, Sheet, Menu; DOM Popover/Tooltip; RN HelpText · HIG 0.1.0</h1>\n<p>Issue #16. Entry: <code>overlay</code>. Import platform entries from <code>@bloxwap/hig-react/overlay</code> or <code>@bloxwap/hig-native/overlay</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>Dialog controlled open/onOpenChange, title, description, children; DOM trigger is a ref-capable single element. Menu label and {label,disabled,onSelect} items.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: repeat the order amount and give an explicit cancel action. Don’t: hide essential terms in hover help or execute confirm on open.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>DOM Radix focus scopes restore trigger focus, trap modal focus, handle Escape and scroll locks. AlertDialog blocks outside-click dismissal. Menus use roving keyboard focus. Native Modal owns back and keyboard avoidance with scrollable content.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>Sheet currently uses accessible modal layout, no gesture-detent certification. RN focus restoration/VoiceOver nesting needs host/device validation. Native help is persistent text; no hover tooltip or anchored popover claim.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/recipes",
+      "title": "MarketRow, BalanceCard, TradeEntry, ActivityList, InstallCommand, CodeWindow, MarketingHero · HIG 0.1.0",
+      "source": "docs/components/recipes.md",
+      "html": "<h1 id=\"marketrow-balancecard-tradeentry-activitylist-installcommand-codewindow-marketinghero-hig-0-1-0\">MarketRow, BalanceCard, TradeEntry, ActivityList, InstallCommand, CodeWindow, MarketingHero · HIG 0.1.0</h1>\n<p>Issue #26. Entry: <code>recipes</code>. Import platform entries from <code>@bloxwap/hig-react/recipes</code> or <code>@bloxwap/hig-native/recipes</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>All data/actions host-supplied. TradeEntry raw amount/onAmountChange/onConfirm/available/busy/error; opens review before submission. InstallCommand command/onCopy accepts async host clipboard adapter.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: compose primitives and explicit outcomes in comfortable app or compact Pro context. Don’t: put wallet/network/SDK services in core packages.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show balance, market, entry and feedback preference previews.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>M2 supplies visual recipes; M3 adds semantic feedback composition because #26 depends on #25. Product visual fidelity is provisional until inaccessible monorepo audit. Account/positions variants can compose these primitives without service coupling.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/selection",
+      "title": "Checkbox, RadioGroup, Switch, SegmentedControl, Select, Slider; Tabs in navigation · HIG 0.1.0",
+      "source": "docs/components/selection.md",
+      "html": "<h1 id=\"checkbox-radiogroup-switch-segmentedcontrol-select-slider-tabs-in-navigation-hig-0-1-0\">Checkbox, RadioGroup, Switch, SegmentedControl, Select, Slider; Tabs in navigation · HIG 0.1.0</h1>\n<p>Issue #15. Entry: <code>selection</code>. Import platform entries from <code>@bloxwap/hig-react/selection</code> or <code>@bloxwap/hig-native/selection</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>checked/defaultChecked/onCheckedChange; value/defaultValue/onValueChange. Options are {value,label,disabled}. Slider min/max/step/value; label required.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: control selection from accepted host state. Don’t: emit a success cue on every render or repeated slider value.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>Native HTML controls retain browser keyboard and selection semantics. RN Switch uses OS control; checkbox/radio use labeled Pressables with checked state. RN slider uses optional community backend; Select opens labeled native Modal choices.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>SegmentedControl is single-choice radio semantics, not navigation. Native picker alternative is deliberate. Slider drag cancellation/tactile rate evidence remains M3/device work; backend is an optional native peer.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/components/status",
+      "title": "Badge, Alert/Callout, Toast, Progress, Spinner, Skeleton, EmptyState, Avatar, StatusIndicator · HIG 0.1.0",
+      "source": "docs/components/status.md",
+      "html": "<h1 id=\"badge-alert-callout-toast-progress-spinner-skeleton-emptystate-avatar-statusindicator-hig-0-1-0\">Badge, Alert/Callout, Toast, Progress, Spinner, Skeleton, EmptyState, Avatar, StatusIndicator · HIG 0.1.0</h1>\n<p>Issue #18. Entry: <code>status</code>. Import platform entries from <code>@bloxwap/hig-react/status</code> or <code>@bloxwap/hig-native/status</code> according to applicability below. Import <code>@bloxwap/hig-react/css</code> once on web; tokens CSS is a separate explicit import.</p>\n<h2 id=\"api-and-anatomy\">API and anatomy</h2>\n<p>Alert title/severity/action; Toast notices with stable id/message/severity/action, onDismiss. Progress label/value/max; EmptyState title/description/action.</p>\n<h2 id=\"when-to-use-and-examples\">When to use and examples</h2>\n<p>Do: keep critical failure inline with Retry; use toast for copied acknowledgement. Don’t: dismiss critical text on a timer or rely on audio for success.</p>\n<h2 id=\"states-interaction-and-accessibility\">States, interaction and accessibility</h2>\n<p>Notifications deduplicate ids, show at most 3, and stay until explicit dismissal. DOM status/alert regions and RN live regions preserve visible messages. Skeleton and spinner are static under candidate motion policy.</p>\n<p>State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.</p>\n<h2 id=\"platform-mapping-and-limits\">Platform mapping and limits</h2>\n<p>Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.</p>\n<h2 id=\"validation-and-citation\">Validation and citation</h2>\n<p>See <code>tests/components.dom.test.tsx</code>, <code>tests/native/components.test.cjs</code>, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.</p>\n",
+      "toc": [
+        {
+          "label": "API and anatomy",
+          "id": "api-and-anatomy"
+        },
+        {
+          "label": "When to use and examples",
+          "id": "when-to-use-and-examples"
+        },
+        {
+          "label": "States, interaction and accessibility",
+          "id": "states-interaction-and-accessibility"
+        },
+        {
+          "label": "Platform mapping and limits",
+          "id": "platform-mapping-and-limits"
+        },
+        {
+          "label": "Validation and citation",
+          "id": "validation-and-citation"
+        }
+      ],
+      "section": "components"
+    },
+    {
+      "route": "guides/feedback/adapters",
+      "title": "Optional adapters and installation · HIG 0.1.0",
+      "source": "docs/feedback/adapters.md",
+      "html": "<h1 id=\"optional-adapters-and-installation-hig-0-1-0\">Optional adapters and installation · HIG 0.1.0</h1>\n<p>Issues #22–#24. Base imports do not load adapters. Individual <code>web-sound</code>, <code>browser-haptic</code>, <code>web-haptic</code>, <code>native</code> and <code>react</code> entries preserve dependency boundaries. The composite <code>web</code> entry needs the Haptic package; sound-only consumers should import <code>web-sound</code>.</p>\n<h2 id=\"web-sound\">Web sound</h2>\n<p>Install <code>@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@0.1.0</code>. <code>createWebSoundAdapter()</code> loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. <code>@bloxwap/sfx/react</code> owns global preference helpers; using those alongside HIG would create competing preference owners.</p>\n<p>The upstream engine is shared and does not expose per-root voice handles. HIG reference-counts its users and disposes the engine after its last default adapter. Muting/cancellation prevents pending playback; it cannot surgically stop an already-running voice for one root. A host that also owns the upstream global engine should inject/own the lifecycle rather than use the default HIG lifecycle. Full per-root active-voice cancellation is an explicit upstream API gap, not a claimed capability.</p>\n<h2 id=\"browser-and-physical-tap-haptics\">Browser and physical-tap haptics</h2>\n<p><code>createBrowserHapticAdapter()</code> maps accepted semantic events to browser vibration when <code>navigator.vibrate</code> exists. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.</p>\n<p>For approved iOS physical action targets, install <code>@bloxwap/haptic@0.1.0</code> and wrap a single ref-capable HIG button in <code>HapticFeedbackTarget eligible</code>. The wrapper uses upstream <code>HapticTarget</code>, preserves the target/handler/ref, enables only the physical-tap route and disables debug audio/helper switch visibility. Thus browser vibration comes from the semantic adapter and is not duplicated by the wrapper. HIG preferences still gate the wrapper.</p>\n<p><strong>Do</strong> pre-approve the target with <code>eligible</code> after disabled/busy/policy checks. <strong>Don&#39;t</strong> wrap an action whose eligibility is decided only by an async click callback, or promise a programmable iOS success/error pattern. The OS physical tick occurs before delegated handlers; a later preventDefault cannot retract that tick. That cancellation limitation, physical-tap intensity limits and device/VoiceOver checks remain upstream <a href=\"https://github.com/bloxwap/haptic/issues/9\">haptic#9</a> / <a href=\"https://github.com/bloxwap/haptic/issues/7\">haptic#7</a>. No wrapper is required for basic actions.</p>\n<h2 id=\"native-audio\">Native audio</h2>\n<p>Install the feedback package plus <code>expo-audio ~1.1.1</code> only in the native host setup. <code>expoAudioBackend(Audio)</code> supplies a thin playback bridge; <code>createNativeSoundAdapter(backend, assets)</code> accepts Metro asset ids. The Expo gallery imports only the four committed WAV cues. Configure ambient/silent-mode behavior with <code>playsInSilentMode:false</code>, no background playback and <code>doNotMix</code> interruption mode. Host AppState calls <code>setBackground</code>; backgrounding pauses cached players. Preload caches players once, seek restarts deliberate cues, concurrency is limited to one active cue, volume/mute are honored, missing cues are silent, and disposal pauses/removes every cached player.</p>\n<p>Regenerate with <code>npm run generate:cues</code>. <code>assets/manifest.json</code> pins package/recipe/export flags, 48kHz mono PCM16, durations, peaks/RMS, bytes and reviewed hashes. Noise recipes vary; do not assert regenerated WAV bytes are deterministic. Inspect duration/envelope/level tolerances and review the actual artifact hashes. Offline generation dependencies are dev-only; Metro never imports them or browser synthesis.</p>\n<h2 id=\"native-haptics\">Native haptics</h2>\n<p>Install <code>expo-haptics ~15.0.7</code> in the native host. <code>expoHapticBackend(Haptics)</code> bridges selection, impact light/medium/heavy and notification success/warning/error. <code>createNativeHapticAdapter</code> reports API availability separately from observation. Unsupported hardware, backgrounding, preferences and failed backend calls are no-ops that do not change primary actions. Android notification/impact approximation and OS suppression must be observed on devices before support is certified.</p>\n",
+      "toc": [
+        {
+          "label": "Web sound",
+          "id": "web-sound"
+        },
+        {
+          "label": "Browser and physical-tap haptics",
+          "id": "browser-and-physical-tap-haptics"
+        },
+        {
+          "label": "Native audio",
+          "id": "native-audio"
+        },
+        {
+          "label": "Native haptics",
+          "id": "native-haptics"
+        }
+      ],
+      "section": "feedback"
+    },
+    {
+      "route": "guides/feedback/contract",
+      "title": "Semantic feedback · HIG 0.1.0",
+      "source": "docs/feedback/contract.md",
+      "html": "<h1 id=\"semantic-feedback-hig-0-1-0\">Semantic feedback · HIG 0.1.0</h1>\n<p>Issues #21, #25. Types in <code>@bloxwap/hig-contracts/feedback</code> and <code>@bloxwap/hig-feedback</code> import without DOM, RN, React, audio, Expo or hardware APIs. Base renderers accept an optional <code>FeedbackSink</code>; no provider or feedback backend is required to perform an action.</p>\n<table>\n<thead>\n<tr>\n<th>Intent</th>\n<th>Timing</th>\n<th>Sound</th>\n<th>Haptic</th>\n<th>Cooldown</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>press/release</td>\n<td>gesture phases; visual response</td>\n<td>silent</td>\n<td>none</td>\n<td>none</td>\n</tr>\n<tr>\n<td>cancel</td>\n<td>discarded gesture/action; clears pending work</td>\n<td>silent</td>\n<td>cancel where possible</td>\n<td>none</td>\n</tr>\n<tr>\n<td>activate</td>\n<td>accepted button click/keyboard/native press, after host handler</td>\n<td>tick</td>\n<td>selection</td>\n<td>80ms</td>\n</tr>\n<tr>\n<td>selection/toggle</td>\n<td>accepted state commit, never a render/repeated/rejected value</td>\n<td>tick/toggle</td>\n<td>selection</td>\n<td>80ms</td>\n</tr>\n<tr>\n<td>disclosure</td>\n<td>accepted open/close</td>\n<td>silent</td>\n<td>none</td>\n<td>120ms</td>\n</tr>\n<tr>\n<td>success</td>\n<td>host operation completion with stable operation id</td>\n<td>success</td>\n<td>notification success</td>\n<td>400ms</td>\n</tr>\n<tr>\n<td>warning</td>\n<td>host outcome</td>\n<td>silent</td>\n<td>notification warning</td>\n<td>400ms</td>\n</tr>\n<tr>\n<td>error</td>\n<td>host operation failure with visual recovery text</td>\n<td>error</td>\n<td>notification error</td>\n<td>400ms</td>\n</tr>\n<tr>\n<td>notification</td>\n<td>nonessential transient acknowledgement</td>\n<td>silent</td>\n<td>none</td>\n<td>800ms</td>\n</tr>\n</tbody></table>\n<p>The exported <code>presets</code> table is authoritative. Each event has id, source, intent and origin. An async outcome uses the host operation id, not the button&#39;s interaction id; an accepted click does not imply order success. Optional native impact overrides map light/medium/heavy; browser physical-tap intensity cannot be programmed. Live price ticks and general navigation are silent.</p>\n<p><strong>Do</strong> emit a success event after the host request resolves, alongside visible success text. <strong>Don&#39;t</strong> play a success sound on press-in, for a rejected controlled value, or on every market render. Busy/disabled/suppressed/cancelled events are rejected. Buttons compose the host handler before activation, honor default prevention, preserve refs and block nested activation propagation. Choice controls emit on committed changes only. Sliders use semantic steps and controller cooldown; no effect queue accumulates. A host cancellation before activation suppresses the request; a physical cue already delivered by the OS cannot be recalled.</p>\n<p>Preference precedence: host policy may forbid a channel; persisted user choices enable sound/haptics independently; component suppression can disable its request; OS/browser/backend capability decides whether output is attempted. Volume is clamped 0–1. Motion is a separate setting and OS reduced motion remains respected. Defaults are both channels off. No-feedback, sound-only, haptics-only, both, and host-injected adapter configurations use the same actions. Root/local <code>FeedbackProvider</code>s hold independent preference/controller state; a nested button emits one request.</p>\n<p>Deduplication uses source/id/intent; host stable outcome ids suppress repeated notifications. Cooldowns drop excess requests, never delay primary actions or queue a backlog. Seen/cadence maps are bounded. Exceptions thrown/rejected by backends and storage are caught. Disposal is idempotent and late startup/preload completions cannot revive disposed players. Capability <code>available</code> is API routing, while <code>observed</code> records actual physical evidence and remains false in this candidate.</p>\n",
+      "toc": [],
+      "section": "feedback"
+    },
+    {
+      "route": "guides/feedback/preferences",
+      "title": "Preferences, preview and device review · HIG 0.1.0",
+      "source": "docs/feedback/preferences.md",
+      "html": "<h1 id=\"preferences-preview-and-device-review-hig-0-1-0\">Preferences, preview and device review · HIG 0.1.0</h1>\n<p><code>FeedbackProvider</code> accepts a stable <code>createController(preferences)</code> factory and optional storage adapter. <code>useFeedback</code> exposes preferences, update, sink and controller. <code>FeedbackPreferencesControl</code> is a render-prop control so DOM and RN use their own shipped Switch/Slider instead of importing another platform. Use a stable factory; mount/replay creates fresh adapters and unmount disposes them. React StrictMode lifecycle is tested.</p>\n<p><code>jsonStorage</code> supports browser Storage or native AsyncStorage-shaped interfaces. It uses a versioned key; read legacy saved choices explicitly with a host adapter before writing the new key. <code>migratePreferences</code> preserves explicit false sound/haptic choices, legacy soundEnabled/hapticsEnabled, clamped volume and independent reducedMotion/motion. Corrupt/missing storage falls back to muted defaults. A delayed saved read cannot overwrite a newer user choice. Storage rejection leaves the live UI usable.</p>\n<p>Web and native fixtures include real independent sound, haptics, volume and motion controls, entry/selection/success preview and visible state. The web fixture persists localStorage; the native gallery persists AsyncStorage. Both wire lifecycle background state. Sound and haptic preferences are never encoded in wallet/trade logic. Native gallery sound import/package/Metro success is automated evidence, not audible/tactile observation.</p>\n<table>\n<thead>\n<tr>\n<th>Platform</th>\n<th>Routing</th>\n<th>Claimed observation</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Desktop Chrome/Firefox/WebKit</td>\n<td>Web Audio after gesture; vibration only when API exists</td>\n<td>Automated interaction; no hardware assertion</td>\n</tr>\n<tr>\n<td>iPhone Safari</td>\n<td>optional pre-approved physical target; async haptic adapter unavailable</td>\n<td>pending physical tap, VoiceOver, settings/OS review</td>\n</tr>\n<tr>\n<td>Android browser</td>\n<td>browser vibration patterns when allowed</td>\n<td>pending device output/intensity</td>\n</tr>\n<tr>\n<td>Native iOS/Android</td>\n<td>Expo audio and selection/impact/notification bridges</td>\n<td>pending physical output, latency and interruption review</td>\n</tr>\n<tr>\n<td>Simulator / Jest mocks</td>\n<td>API/contract behavior only</td>\n<td>never tactile certification</td>\n</tr>\n</tbody></table>\n<p>Device acceptance record must include HIG/package versions, device, OS/browser, date, observer and actual observations: default/muted channels; each independent combination; volume/silent-mode; latency; interruptions; background/foreground; repeated/nested activation; cancelled scroll/drag; disabled/busy; slider repeated values; iOS preset limits; accessibility helper tab/VoiceOver order; visible recovery with feedback off. Attach video/measurements where useful. Reuse upstream haptic certification rather than declaring simulator passes as hardware proof. Owner: HIG and owning app/haptic maintainers, assignment pending; exception expires 2026-11-13.</p>\n",
+      "toc": [],
+      "section": "feedback"
+    },
+    {
+      "route": "guides/foundations/platform",
+      "title": "Foundation and platform rules · HIG 0.1.0",
+      "source": "docs/foundations/platform.md",
+      "html": "<h1 id=\"foundation-and-platform-rules-hig-0-1-0\">Foundation and platform rules · HIG 0.1.0</h1>\n<h2 id=\"color-6\">Color (#6)</h2>\n<p>Dark is the only audited mode. Source values come from Font SDK tokens, with commit recorded in the inventory; monorepo OKLCH extraction remains blocked. Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in <code>@supports</code>. RN uses explicit hex values; iOS P3 channel objects require a host color-space bridge and are not RN CSS strings. Android and third-party images use sRGB. <code>evidence/contrast.json</code> records tested normal-text pairings. Border is decorative; meaningful control edges/focus must use tested text or focus tones. <strong>Do</strong> use onAction on green fills; <strong>don&#39;t</strong> put white body text on green.</p>\n<h2 id=\"typography-7\">Typography (#7)</h2>\n<p>Pin @bloxwap/font 0.1.2. Vite: import <code>@bloxwap/font/css</code>; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Native requires approved static TTF faces, pinned provenance and a FontManifest registration mapping; published WOFF2/Next loaders are not native assets. <strong>Do</strong> wait for registration before applying a custom native family; <strong>don&#39;t</strong> invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.</p>\n<h2 id=\"geometry-and-layout-8\">Geometry and layout (#8)</h2>\n<p>Spaces 4/8/12/16/20/24/32/48; radius 6/8/10/14 and pill. Comfortable control/target 48; compact 36, reserved for pointer/keyboard dense layouts. Painted icons can be 16/20/24 while targets stay 48 on touch. Never expand adjacent invisible hit areas so they overlap. Use logical inline spacing, wrapping labels, safe-area insets, keyboard avoidance and a scrollable native sheet; preserve portrait/tablet rotation without locking orientation. Pro tables may scroll with column headers; app amount entry reflows. Elevation uses nested fills rather than unverified shadows. Layer order: document, sticky nav, contextual popover, modal, notification. Browser top layer handles modal stacking; native Modal remains platform-owned.</p>\n<h2 id=\"motion-and-gestures-9\">Motion and gestures (#9)</h2>\n<p>Fast 180ms, base 260ms, slow 320ms; web easing <code>cubic-bezier(.22,1,.36,1)</code>. Press response ends on release/cancel; action executes on accepted activation, never press-in. Drag/scroll cancellation clears visual and feedback state. Interrupt transitions from current state instead of queuing. Reduced motion uses immediate state changes, static skeletons and unanimated numeric readouts. Outcome messages remain explicit. <strong>Do</strong> animate deliberate disclosure once; <strong>don&#39;t</strong> animate or play sound for every live-data update. Native candidate uses static transitions until cancellation/device animation evidence exists; motion preference is independent from sound/haptics.</p>\n<h2 id=\"accessibility-and-localization-10\">Accessibility and localization (#10)</h2>\n<p>Baseline: <a href=\"https://www.w3.org/TR/2024/REC-WCAG22-20241212/\">WCAG 2.2 AA, Recommendation 12 December 2024</a>. Normal text 4.5:1; large text and meaningful non-text UI 3:1. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic.</p>\n<p>Component review checklist: keyboard completion; labeled controls/errors; busy/disabled; focus restoration; narrow viewport; 200% text; long translations; Arabic/Hebrew RTL; mixed scripts; reduced motion; sound off; haptics off; unknown/stale/error values; VoiceOver/TalkBack on physical devices. Automated results and physical observations must be separate. Exception requires owner, affected surface, reason, alternative and expiry. No observed device evidence means pending, never pass.</p>\n<h2 id=\"brand-and-icons-11\">Brand and icons (#11)</h2>\n<p>Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import <code>@bloxwap/hig-tokens/mark.svg</code> on web; native geometry renderer follows in M2. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives and device visual comparison remain pending approval/evidence.</p>\n<p>Font-loading note: <code>@bloxwap/font/css</code> references all supported families/scripts, which may increase deployed asset bytes even with on-demand browser loading. The Latin web fixture instead uses two explicit @font-face rules with package asset URLs (Sans and Mono). Add only the scripts/italics used by each consumer. Do not assume a Latin-only fixture certifies mixed-script rendering.</p>\n",
+      "toc": [
+        {
+          "label": "Color (#6)",
+          "id": "color-6"
+        },
+        {
+          "label": "Typography (#7)",
+          "id": "typography-7"
+        },
+        {
+          "label": "Geometry and layout (#8)",
+          "id": "geometry-and-layout-8"
+        },
+        {
+          "label": "Motion and gestures (#9)",
+          "id": "motion-and-gestures-9"
+        },
+        {
+          "label": "Accessibility and localization (#10)",
+          "id": "accessibility-and-localization-10"
+        },
+        {
+          "label": "Brand and icons (#11)",
+          "id": "brand-and-icons-11"
+        }
+      ],
+      "section": "foundations"
+    },
+    {
+      "route": "guides/foundations/principles",
+      "title": "Principles and content · HIG 0.1.0",
+      "source": "docs/foundations/principles.md",
+      "html": "<h1 id=\"principles-and-content-hig-0-1-0\">Principles and content · HIG 0.1.0</h1>\n<p>Issues #2, #3. Rules are candidate guidance anchored to SDK source and the public marketing surface; product-specific behavior requires the unavailable monorepo audit. Do not represent example trading actions as live product behavior.</p>\n<h2 id=\"clear-action-hierarchy\">Clear action hierarchy</h2>\n<p>Offer one primary action per decision. In an amount-entry recipe, <strong>do</strong> label the next step “Review order” and show the asset and amount before host submission; <strong>don&#39;t</strong> say “Go” or execute a trade when a field receives focus. Secondary actions navigate or cancel. Destructive intent means irreversible removal/cancellation; buy/sell colors mean market direction and never imply safety. Bind pending state to the host request, block duplicate activation, retain a progress label. Disabled means unavailable; busy means an action is running. Give the reason nearby.</p>\n<h2 id=\"touch-before-density\">Touch before density</h2>\n<p>Use comfortable 48-unit controls for mobile trade forms. <strong>Do</strong> stack amount, available balance, validation and primary action at narrow widths; <strong>don&#39;t</strong> squeeze a desktop order panel into a phone. Pro can use compact 36-unit controls with keyboard focus and separated targets. SDK code windows scroll horizontally; surrounding prose reflows. Marketing CTA and SDK install controls retain explicit labels, as observed in <code>bloxwap.com</code> and <code>font/apps/docs/app/global.css</code>.</p>\n<h2 id=\"state-tells-the-truth\">State tells the truth</h2>\n<p>Resting, hover, focus, pressed, selected, busy, disabled, empty, error, success, offline and stale are distinct states. <strong>Do</strong> retain the last value with a timestamp and “Data unavailable — retry”; <strong>don&#39;t</strong> display unknown as zero, silently imply a completed order, or announce every price tick. Errors name the failed action and recovery. Confirmations repeat host-provided consequences and offer cancel before commit. Essential information remains visible and accessible with feedback muted.</p>\n<h2 id=\"content-and-precision\">Content and precision</h2>\n<p>Use sentence case and concrete verbs (“Copy install command”). <strong>Do</strong> display currency, precision and units supplied by the host; <strong>don&#39;t</strong> use a rounded display number as transaction input. Keep raw decimal strings in business logic. A percent component expects percent points, not an implicit ratio. Use localized display with explicit parsing policy; do not strip unfamiliar separators and submit a changed amount. Code uses Mono, body Sans, Pixel only as a decorative brand accent.</p>\n<h2 id=\"composition-and-progressive-disclosure\">Composition and progressive disclosure</h2>\n<p>Show common actions first, advanced options on deliberate disclosure. <strong>Do</strong> give a native sheet a visible close action and let Android back dismiss; <strong>don&#39;t</strong> rely on hover tooltips on touch. Navigation remains host-owned: HIG does not choose routes, wallets, order types, or trading outcomes. Use status/callout for persistent critical errors; toast only for nonessential acknowledgements.</p>\n",
+      "toc": [
+        {
+          "label": "Clear action hierarchy",
+          "id": "clear-action-hierarchy"
+        },
+        {
+          "label": "Touch before density",
+          "id": "touch-before-density"
+        },
+        {
+          "label": "State tells the truth",
+          "id": "state-tells-the-truth"
+        },
+        {
+          "label": "Content and precision",
+          "id": "content-and-precision"
+        },
+        {
+          "label": "Composition and progressive disclosure",
+          "id": "composition-and-progressive-disclosure"
+        }
+      ],
+      "section": "foundations"
+    },
+    {
+      "route": "guides/governance/adoption",
+      "title": "Organization adoption and governance (#36)",
+      "source": "docs/governance/adoption.md",
+      "html": "<h1 id=\"organization-adoption-and-governance-36\">Organization adoption and governance (#36)</h1>\n<p>The active-repo matrix is <code>planning/adoption.json</code>, dated 2026-10-13. It includes empty/no-UI/tooling repositories as well as SDK docs and product targets. A role owner and expiry are explicit; personal/team assignment and owning PR URLs remain pending, never fabricated. Product monorepo is an explicit inaccessible external target, even though it is absent from the visible org repo list.</p>\n<p>Every new repo chooses runtime, docs/marketing, brand/content-only or no-UI applicability. No-UI repos reference principles/content/brand rules without adding React/native/audio dependencies. Runtime repos use individual platform imports and CI package/behavior checks. SDK demos stay owned by their SDK. HIG owns token and component contracts; Font/SFX/Haptic/Chart own their engines/assets.</p>\n<p>Review/admission requires actual repeated usage evidence, minimal API, both platform mapping or reasoned alternative, complete states, accessible labels/focus/back/large text, muted operation, tests/examples/docs and migration/rollback. Remove a component only after consumers are inventoried and a deprecation window is observed. New palette/primitive copies are blocked by scoped anti-drift checks with owner/reason/expiry exceptions.</p>\n<p>Semver: token/type/geometry changes, action timing, accessible behavior and semantic cue maps are API changes. Breaking behavior requires a major; new compatible roles/exports a minor; verified fixes a patch. Deprecations retain old exports for a documented migration window and provide a codemod/checklist. Candidate artifacts and docs share commit provenance; stable publication stays gated by missing source audit/device/adoption evidence and is prohibited by this task.</p>\n<p>Completion review: all 36 issues need an owning implementation/validation link or explicit blocker; catalog entries need docs/code/platform/test coverage; source/bundle deltas must be measured; all active rows must have owner, version, status, residuals and dated exceptions. This matrix cannot be called migrated until owning-repo changes and device checks exist.</p>\n",
+      "toc": [],
+      "section": "governance"
+    },
+    {
+      "route": "guides/governance/quality",
+      "title": "Quality, budgets and evidence · HIG 0.1.0",
+      "source": "docs/governance/quality.md",
+      "html": "<h1 id=\"quality-budgets-and-evidence-hig-0-1-0\">Quality, budgets and evidence · HIG 0.1.0</h1>\n<p>Issues #31–#32. <code>npm run check</code> executes DOM and native suites with test counts. Native module mocks demonstrate roles/state/callback/lifecycle contracts; real packed Expo/Metro consumers demonstrate platform resolution. Neither is physical output or assistive-technology certification.</p>\n<p>Gates inspect actual generated package exports, platform imports, tokens/cue hashes, scoped anti-drift exceptions, packed consumer installs, every copyable example, SSR/hydration/StrictMode, docs static route/base paths, visual/browser states and measured gzip/assets. Negative tests deliberately introduce invalid exports, stale token output, budget regression, cross-platform imports and copied/obsolete tokens to prove failure paths.</p>\n<p>Budgets are regression limits from the initial candidate measurements, not claims of production savings:</p>\n<table>\n<thead>\n<tr>\n<th>Metric</th>\n<th>Measured initial</th>\n<th>Limit</th>\n<th>Reason</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Individual DOM Button gzip (React external)</td>\n<td>706 B</td>\n<td>850 B</td>\n<td>~20% API/behavior fix headroom, overlay/audio/chart excluded</td>\n</tr>\n<tr>\n<td>Individual AmountInput gzip</td>\n<td>325 B</td>\n<td>400 B</td>\n<td>Small labelled primitive, ~23% headroom</td>\n</tr>\n<tr>\n<td>Native Switch gzip (React/RN external)</td>\n<td>1,383 B</td>\n<td>1,700 B</td>\n<td>~23% headroom, verifies no Slider/SVG/overlay/feedback imports</td>\n</tr>\n<tr>\n<td>Platform-neutral feedback contract gzip</td>\n<td>962 B</td>\n<td>1,200 B</td>\n<td>~25% headroom without device engines</td>\n</tr>\n<tr>\n<td>Docs JS gzip, all lazy chunks</td>\n<td>204,877 B</td>\n<td>240,000 B</td>\n<td>~17% headroom; includes chart/code examples, not initial-load-only</td>\n</tr>\n<tr>\n<td>Docs CSS</td>\n<td>17,419 B</td>\n<td>22,000 B</td>\n<td>~26% headroom for responsive/documentation states</td>\n</tr>\n<tr>\n<td>Sans + Mono assets</td>\n<td>592,796 B</td>\n<td>600,000 B</td>\n<td>Pins two approved faces; new script/face requires explicit review</td>\n</tr>\n<tr>\n<td>Native four-cue WAV assets</td>\n<td>103,618 B</td>\n<td>110,000 B</td>\n<td>~6% headroom; no full engine/catalog assets</td>\n</tr>\n</tbody></table>\n<p>The actual build report is <code>evidence/quality-report.json</code>. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas are blocked by inaccessible source/toolchains; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.</p>\n<p>Exceptions require path/rule, owner, reason and expiry. Approved brand geometry is exempt from literal-palette detection until review; unrelated primitive/palette copies fail. New repositories should run scoped gates on migrated surfaces and keep dated residuals rather than blanket exemptions.</p>\n<p>Physical release review remains pending: iPhone Safari, Android Chrome, native iOS and Android, VoiceOver/TalkBack, large text/RTL, color/font fidelity, actual SFX/haptic output/latency/settings/interruption/background behavior. Coordinate upstream haptic#9. Release artifacts cannot change those “pending” rows into passes.</p>\n",
+      "toc": [],
+      "section": "governance"
+    },
+    {
+      "route": "guides/governance/release",
+      "title": "Release candidates, semver and rollback · HIG 0.1.0",
+      "source": "docs/governance/release.md",
+      "html": "<h1 id=\"release-candidates-semver-and-rollback-hig-0-1-0\">Release candidates, semver and rollback · HIG 0.1.0</h1>\n<p>Issue #32. This task&#39;s automation is <strong>dry-run only</strong>. It never invokes npm publication, GitHub release or git tag creation. Unsupported flags fail before artifact creation. No npm credentials are requested or used.</p>\n<pre><code class=\"language-sh\">npm ci\nnpm run check\nnpm run examples:check\nnpm run quality\nnpm run smoke:packed\nnpm run smoke:packed-native\nnpm run smoke:packed-next\nnpm run release:dry-run -- --channel candidate\nnpm run release:dry-run -- --channel stable-simulation\n</code></pre>\n<p>Candidate mode stages <code>0.1.0-candidate.sha&lt;commit&gt;</code> package metadata and matching internal dependency versions. Stable-simulation stages the coordinated source version. Runtime contract/docs source version and source commit are recorded explicitly; neither source files nor git refs are version-mutated by the dry run. Both produce local tarballs, checked export/types/CSS/assets/files/dependency manifests, hashes, changelog, copied docs artifact and provenance report. <code>npm pack --ignore-scripts</code> packs already validated outputs, never publishes. Physical claims remain pending in every report.</p>\n<p>CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/example/visual/accessibility/budget gates and uploads review artifacts. A provenance record identifies source commit, package/contract/docs versions and hashes; it is not an npm registry provenance attestation or a release. Artifact inspection checks exports, licenses, optional peers and only approved assets. No example app implementation is included in runtime packages.</p>\n<p>Publication gates remain blocked in <code>planning/release-blockers.json</code>: task policy, unavailable monorepo audit, native font metadata, physical devices/assistive technology, upstream feedback gaps and owning migrations. A dry run cannot turn these into passes. This task does not “publish v1” by renaming a candidate.</p>\n<p>Semver: breaking token meaning/appearance, typography scale, layout, accessibility/action behavior or semantic feedback mapping is major; compatible additions are minor; verified fixes patch. Deprecation names the alternative, migration codemod/checklist, owning consumers and a documented review window. Keep code/examples/API/citations at the same source commit; separate package prerelease identifiers are explicit in artifact metadata.</p>\n<p>Rollback for an owning pilot: keep the previous package artifacts and lockfile, disable the host feature flag, restore prior renderer/backend imports and rebuild. Keep saved feedback/business data backward-compatible; never erase prior choices. Remove old assets only after production and physical-device proof. A future published rollback would require separate release authorization and package provenance; this task performs none.</p>\n",
+      "toc": [],
+      "section": "governance"
+    },
+    {
+      "route": "guides/installation",
+      "title": "Installation and citation · HIG 0.1.0",
+      "source": "docs/installation.md",
+      "html": "<h1 id=\"installation-and-citation-hig-0-1-0\">Installation and citation · HIG 0.1.0</h1>\n<p>These are review candidates, not published npm packages. Use local dry-run tarballs or CI artifact downloads; do not assume <code>@bloxwap/hig-*</code> is available on the registry. Published-style imports in examples are tested against packed candidates. Version references identify a candidate until release gates are complete.</p>\n<h2 id=\"react-vite\">React / Vite</h2>\n<p>Run <code>npm ci &amp;&amp; npm run build &amp;&amp; npm run smoke:packed</code>. The smoke script installs tarballs into an independent temporary consumer and builds the fixture. For a host app install tokens, contracts and React tarballs plus React/DOM 19.1. Import <code>@bloxwap/hig-tokens/css</code> and <code>@bloxwap/hig-react/css</code> once; import individual components such as <code>@bloxwap/hig-react/button</code>. Pin @bloxwap/font 0.1.2 and choose only the required families/scripts using asset URL @font-face rules. The included fixture has Sans and Mono only. Never copy font binaries or component folders.</p>\n<h2 id=\"ssr-and-next-client-boundaries\">SSR and Next client boundaries</h2>\n<p>Run <code>npm run smoke:ssr</code>, <code>npm run build:next</code> and <code>npm run smoke:packed-next</code>. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry <code>use client</code> in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next&#39;s published Bloxwap font loaders remain owned upstream. Next 16.4.0 (webpack), React 19.1 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.</p>\n<h2 id=\"expo-react-native\">Expo / React Native</h2>\n<p>Run <code>npm run smoke:packed-native</code> after packed artifacts are built, or <code>npm run start -w hig-native-fixture</code> for the device gallery. Matrix: React 19.1, RN 0.81.5, Expo 54, Metro as locked. Native consumers install tokens/contracts/native tarballs; optional feedback installs its tarball and explicit Expo backend peers. Slider and SVG peers are only needed by their family entries. Import <code>@bloxwap/hig-native/button</code>, not the DOM renderer. Dynamic Type remains enabled; native targets stay 48. Keyboard/safe-area/back behavior belongs to the native host and its supported OS.</p>\n<p>WOFF2 is not a native font asset. Supply pinned approved static TTFs and a typed FontManifest; register them before setting the native provider fontFamily. Until upstream supplies the manifest/assets, the gallery explicitly uses the system fallback and does not claim Bloxwap native typography certification.</p>\n<h2 id=\"tokens-only-plain-css-tailwind\">Tokens only / plain CSS / Tailwind</h2>\n<p>Install the tokens tarball alone and import CSS variables or typed tokens. No React/RN/audio peer is required. Plain HTML uses semantic <code>--hig-*</code> roles. Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. NativeWind integration remains unverified until the inaccessible monorepo rem-root mapping is audited.</p>\n<h2 id=\"optional-chart-sound-and-haptics\">Optional chart, sound and haptics</h2>\n<p>Chart is DOM-only and lazy; install @bloxwap/chart 0.3.0 for that entry and supply a textual summary. Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.</p>\n<h2 id=\"stable-citations-and-upgrades\">Stable citations and upgrades</h2>\n<p>Cite “Bloxwap HIG 0.1.0 candidate, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. No publication, release or tag is performed by this implementation.</p>\n",
+      "toc": [
+        {
+          "label": "React / Vite",
+          "id": "react-vite"
+        },
+        {
+          "label": "SSR and Next client boundaries",
+          "id": "ssr-and-next-client-boundaries"
+        },
+        {
+          "label": "Expo / React Native",
+          "id": "expo-react-native"
+        },
+        {
+          "label": "Tokens only / plain CSS / Tailwind",
+          "id": "tokens-only-plain-css-tailwind"
+        },
+        {
+          "label": "Optional chart, sound and haptics",
+          "id": "optional-chart-sound-and-haptics"
+        },
+        {
+          "label": "Stable citations and upgrades",
+          "id": "stable-citations-and-upgrades"
+        }
+      ],
+      "section": "installation.md"
+    },
+    {
+      "route": "guides/migration/native",
+      "title": "Native application pilot (#35)",
+      "source": "docs/migration/native.md",
+      "html": "<h1 id=\"native-application-pilot-35\">Native application pilot (#35)</h1>\n<p>Owner: native app maintainers; assignment pending. Exception review: 2026-11-13. Real app source/build credentials and physical iPhone/Android access are absent; no application migration or tactile certification is claimed. No owning repo is pushed.</p>\n<p>Pilot: font registration → dp/sRGB token mapping → amount/selection/review sheet → visible async outcome → independent feedback settings. The Expo gallery proves candidate packaging and contract examples, not the owning app&#39;s native build.</p>\n<p>Checklist:</p>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Record actual RN/Expo/Metro/autolinking versions, source commit, old ui-native/token/font/audio wrappers, screenshots and native bundle/assets/latency baseline.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Obtain approved pinned static TTF faces and upstream manifest or supply reviewed typed FontManifest; register before setting family. Do not treat WOFF2 or an invented native family as success.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Map dp and legacy NativeWind rem roots explicitly. Keep Dynamic Type, 48 targets, logical RTL layout, safe areas, keyboard avoidance, native back and labelled fields/errors.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Preview native import codemods, using individual switch/checkbox/range entries; wire optional SVG/Slider/Expo audio/haptic peers only where used. Retain platform-specific descriptions and host callbacks.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Preserve raw financial strings, order/network logic, stable list identity and quiet live numbers. Use labelled list/readout native chart alternative unless a real supported native engine is reviewed.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Read old sound/haptic settings with a host migration adapter before writing v1 key. Keep explicit false choices, volume and motion independent; handle corrupt/missing storage conservatively.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Hook AppState/interruption/background and dispose cached players/listeners. Test muted channels, missing assets, backend rejection, repeated values, busy/disabled, canceled scroll/drag and unsupported hardware.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Build the real app for iOS and Android. Observe large text, long translations, Arabic/Hebrew RTL, VoiceOver/TalkBack, orientation, keyboard/sheets, reduced motion and every feedback combination on devices.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Record actual device/OS/settings and audible/tactile output, latency, silent-mode/interruption/background behavior. Reuse upstream haptic#9 review; simulator/mocks remain API evidence only.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Remove duplicated source/assets/backend wrappers after device builds confirm references and autolinking are gone; quantify before/after sizes with equal toolchain/data.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Link owning rollout PR and remaining version/exception work into the matrix.</li>\n</ul>\n<p>Rollback: host feature flag restores old renderer/backends and previous lockfile. Persisted business data and feedback choices retain old-compatible fields during staged rollout; avoid one-way preference deletion. Keep old static assets until both physical platforms pass.</p>\n",
+      "toc": [],
+      "section": "migration"
+    },
+    {
+      "route": "guides/migration/products",
+      "title": "App, Pro and marketing pilots (#33)",
+      "source": "docs/migration/products.md",
+      "html": "<h1 id=\"app-pro-and-marketing-pilots-33\">App, Pro and marketing pilots (#33)</h1>\n<p>Owner: product monorepo/application maintainers, assignment pending. Exception review: 2026-11-13. Source access and actual migration/build validation remain required. User forbids pushes to owning repos.</p>\n<table>\n<thead>\n<tr>\n<th>Surface</th>\n<th>Pilot and HIG mapping</th>\n<th>Preserve</th>\n<th>Owner work remaining</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>bloxwap.app</td>\n<td>Amount/field, review action, sheet/confirmation, account/feedback settings; comfortable 48 targets</td>\n<td>Raw amount/precision, wallet/network logic, busy protection, sheet descriptions, saved preferences and physical iOS tap eligibility</td>\n<td>Audit actual primitives/brand OKLCH, review import preview, migrate a host-flagged pilot, validate production/mobile/keyboard/feedback screenshots</td>\n</tr>\n<tr>\n<td>bloxwap.pro</td>\n<td>Compact nav/order entry, market rows, numbers/table and optional chart</td>\n<td>Keyboard order, desktop density, sort/precision, chart pan/zoom/crosshair, live updates remain quiet</td>\n<td>Confirm legacy variants, wire host router and chart theme, compare dense before/after captures and per-component/representative bundles</td>\n</tr>\n<tr>\n<td>bloxwap.com</td>\n<td>Hero/CTA/features, typography and plain CSS/tokens where appropriate</td>\n<td>Marketing content/links, metadata, static hosting and responsive CTA access</td>\n<td>Replace copied CSS/fonts only after consumers removed; build public site and compare representative pages/asset bytes</td>\n</tr>\n</tbody></table>\n<p>Checklist:</p>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Pin HIG candidate artifacts/contract version and record source commit/baseline screenshots, CSS/font/duplicate/bundle bytes.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Run import-only codemod preview; inspect every diff. Do map brand→primary and danger→destructive after intent review; don&#39;t blindly map sell to danger or apply shadcn variants unchanged.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Preserve existing raw financial/business state; host validation still owns parsing and submission. No request on focus/open.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Wire explicit CSS/fonts/provider, comfortable app versus compact Pro, labelled fields and confirmation title/description.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Bridge legacy feedback preferences explicitly; never replace saved false choices with new enabled defaults. Physical tick must be pre-approved; async iOS outcomes can be silent.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Build the owning production app; verify keyboard, mobile, long labels, 200% text, RTL, stale/offline/error, muted channels and busy protection.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Compare before/after at the same viewport/data/toolchain; record measured source/asset/bundle delta without guessed improvements.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Remove old copies/dependencies only after reference search and build/device proof. Link owning PR and residual surface work in adoption matrix.</li>\n</ul>\n<p>Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. This kit itself does not claim any origin migrated.</p>\n",
+      "toc": [],
+      "section": "migration"
+    },
+    {
+      "route": "guides/migration/sdk-docs",
+      "title": "Five SDK documentation pilots (#34)",
+      "source": "docs/migration/sdk-docs.md",
+      "html": "<h1 id=\"five-sdk-documentation-pilots-34\">Five SDK documentation pilots (#34)</h1>\n<p>Owner: each SDK repository&#39;s docs maintainers; assignment pending. Exception review: 2026-11-13. Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. No owning-repo PR/push/build is performed in this task.</p>\n<table>\n<thead>\n<tr>\n<th>Repository</th>\n<th>Shared presentation</th>\n<th>Distinctive feature to preserve</th>\n<th>Remaining owner validation</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>hyperliquid</td>\n<td>Font/tokens, shell/nav/search, code/install/copy/callout/forms/states</td>\n<td>Market playground and live SDK request handling</td>\n<td>Production/static export, query/deep links, market demo errors/loading, copy/search/mobile keyboard</td>\n</tr>\n<tr>\n<td>chart</td>\n<td>Same shell/controls plus HIG chart theme</td>\n<td>Chart preview, drawings/controls, pan/zoom/crosshair and WASM/worker paths</td>\n<td>Canvas/text summary, gesture responsiveness, base assets, chart-specific demos remain optional</td>\n</tr>\n<tr>\n<td>font</td>\n<td>Type roles, common controls/geometry and code windows</td>\n<td>Type tester, glyph coverage, variable axes and locale companions</td>\n<td>Font licensing/provenance, subsets/bytes, scripts/RTL/large text and tester functionality</td>\n</tr>\n<tr>\n<td>sfx</td>\n<td>Controls/presets/settings/docs states</td>\n<td>Sound board and recipe editor/export</td>\n<td>Trusted audio unlock, mute/volume, edited recipes, native WAV command docs and cleanup</td>\n</tr>\n<tr>\n<td>haptic</td>\n<td>Common controls and explicit capability labels</td>\n<td>Physical-target/platform demo and certification references</td>\n<td>Physical iOS/Android/VoiceOver evidence remains upstream haptic#9; no API-call-as-tactile-proof claims</td>\n</tr>\n</tbody></table>\n<p>Per-repo checklist:</p>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Pin source commit, HIG version and staged tarballs; capture before pages and duplicate CSS/primitive/font/audio/dependency/bundle baseline.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Inventory each existing apps/docs shell, static base path, metadata, search/index adapter, CSS/Next font loader and copy/install control.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Preview import mapping; preserve API props, router/search and SDK-specific business/demo logic. Plain HTML surfaces can use tokens/CSS alone.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Migrate one shared shell/control page behind a rollback flag; preserve Fumadocs conventions or host equivalent and existing deep-link/base URLs.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Execute that repo&#39;s production/static build and distinctive demo. Verify asset paths, keyboard/search/copy/mobile nav, loading/error/offline states, large text/RTL, and muted feedback.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Compare equivalent screenshots and measured CSS/font/runtime bytes. Remove old files only after references are gone and tests pass.</li>\n<li><input disabled=\"\" type=\"checkbox\"> Update five separate adoption rows with owning PR URL, validated version, current gaps and rollback commit. Do not combine them into an unsupported “all migrated” claim.</li>\n</ul>\n<p>Rollback: restore previous package lock/imports and shell flag per repo. Retain SDK demos and deep links. New shared HIG adoption must not change published SDK API examples.</p>\n",
+      "toc": [],
+      "section": "migration"
+    },
+    {
+      "route": "guides/website",
+      "title": "Documentation website and example ownership · HIG 0.1.0",
+      "source": "docs/website.md",
+      "html": "<h1 id=\"documentation-website-and-example-ownership-hig-0-1-0\">Documentation website and example ownership · HIG 0.1.0</h1>\n<p>Issues #27–#30. The site uses Vite/React with generated static route shells instead of adding a second MDX content system. It retains the audited Fumadocs conventions (sidebar sections, search, breadcrumb, TOC, source/edit links, code/preview tabs, responsive nav) while consuming shipped HIG renderers. Markdown chapters remain the one normative source; published API declarations and the authored example manifest generate discoverable component pages. The docs framework decision limits runtime dependencies and keeps candidate hosting reproducible.</p>\n<p>Default base path <code>/hig/</code> targets GitHub Pages repository hosting. Build can set <code>HIG_BASE_PATH</code>; asset URLs use Vite&#39;s base. Generated index shells for every route support direct loads without host rewrite rules. Canonical URLs, title/description, sitemap and version context are emitted into static shells. A preview artifact is built locally; deployment requires separate hosting authorization.</p>\n<p><code>planning/examples.json</code> owns sample bodies, states, density/platform metadata and a11y/feedback notes. <code>npm run generate:examples</code> emits real web/native preview functions from it. <code>npm run examples:check</code> generates all copyable code variants into compiled consumer fixtures. APIs are extracted from actual package declarations. Search indexes full Markdown and catalog names. <code>llms.txt</code> and Markdown exports come from the same chapters, never a second independently authored guide.</p>\n<p>Native examples are actual RN components in the Expo gallery. The website presents source/install/device-run links and explicit capability labels, not DOM renderings called native. Screenshots and videos from physical iOS/Android are pending; no fake QR or tactile certification. Native hover/canvas/table alternatives are labeled per entry.</p>\n<p>Playground configuration is bounded to comfortable app, compact Pro and docs presets, supported component states, locale/direction, independent feedback settings and reduced-motion demonstration. No arbitrary theme/icon-library/shadcn compatibility selector. Get Code reflects the selected component/platform/density/state; share URLs validate supported values. Live examples use sample host-owned data/actions and never submit orders or call a wallet.</p>\n",
+      "toc": [],
+      "section": "website.md"
+    },
+    {
+      "route": "components/button",
+      "title": "Button",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Button"
+    },
+    {
+      "route": "components/icon-button",
+      "title": "IconButton",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "IconButton"
+    },
+    {
+      "route": "components/link",
+      "title": "Link",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Link"
+    },
+    {
+      "route": "components/text",
+      "title": "Text",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Text"
+    },
+    {
+      "route": "components/heading",
+      "title": "Heading",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Heading"
+    },
+    {
+      "route": "components/stack",
+      "title": "Stack",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Stack"
+    },
+    {
+      "route": "components/inline",
+      "title": "Inline",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Inline"
+    },
+    {
+      "route": "components/surface",
+      "title": "Surface",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Surface"
+    },
+    {
+      "route": "components/card",
+      "title": "Card",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Card"
+    },
+    {
+      "route": "components/separator",
+      "title": "Separator",
+      "source": "docs/components/actions-surfaces.md",
+      "toc": [],
+      "section": "components",
+      "component": "Separator"
+    },
+    {
+      "route": "components/field",
+      "title": "Field",
+      "source": "docs/components/fields.md",
+      "toc": [],
+      "section": "components",
+      "component": "Field"
+    },
+    {
+      "route": "components/label",
+      "title": "Label",
+      "source": "docs/components/fields.md",
+      "toc": [],
+      "section": "components",
+      "component": "Label"
+    },
+    {
+      "route": "components/input",
+      "title": "Input",
+      "source": "docs/components/fields.md",
+      "toc": [],
+      "section": "components",
+      "component": "Input"
+    },
+    {
+      "route": "components/text-area",
+      "title": "TextArea",
+      "source": "docs/components/fields.md",
+      "toc": [],
+      "section": "components",
+      "component": "TextArea"
+    },
+    {
+      "route": "components/amount-input",
+      "title": "AmountInput",
+      "source": "docs/components/fields.md",
+      "toc": [],
+      "section": "components",
+      "component": "AmountInput"
+    },
+    {
+      "route": "components/search-input",
+      "title": "SearchInput",
+      "source": "docs/components/fields.md",
+      "toc": [],
+      "section": "components",
+      "component": "SearchInput"
+    },
+    {
+      "route": "components/checkbox",
+      "title": "Checkbox",
+      "source": "docs/components/selection.md",
+      "toc": [],
+      "section": "components",
+      "component": "Checkbox"
+    },
+    {
+      "route": "components/switch",
+      "title": "Switch",
+      "source": "docs/components/selection.md",
+      "toc": [],
+      "section": "components",
+      "component": "Switch"
+    },
+    {
+      "route": "components/radio-group",
+      "title": "RadioGroup",
+      "source": "docs/components/selection.md",
+      "toc": [],
+      "section": "components",
+      "component": "RadioGroup"
+    },
+    {
+      "route": "components/segmented-control",
+      "title": "SegmentedControl",
+      "source": "docs/components/selection.md",
+      "toc": [],
+      "section": "components",
+      "component": "SegmentedControl"
+    },
+    {
+      "route": "components/select",
+      "title": "Select",
+      "source": "docs/components/selection.md",
+      "toc": [],
+      "section": "components",
+      "component": "Select"
+    },
+    {
+      "route": "components/slider",
+      "title": "Slider",
+      "source": "docs/components/selection.md",
+      "toc": [],
+      "section": "components",
+      "component": "Slider"
+    },
+    {
+      "route": "components/dialog",
+      "title": "Dialog",
+      "source": "docs/components/overlays.md",
+      "toc": [],
+      "section": "components",
+      "component": "Dialog"
+    },
+    {
+      "route": "components/alert-dialog",
+      "title": "AlertDialog",
+      "source": "docs/components/overlays.md",
+      "toc": [],
+      "section": "components",
+      "component": "AlertDialog"
+    },
+    {
+      "route": "components/sheet",
+      "title": "Sheet",
+      "source": "docs/components/overlays.md",
+      "toc": [],
+      "section": "components",
+      "component": "Sheet"
+    },
+    {
+      "route": "components/menu",
+      "title": "Menu",
+      "source": "docs/components/overlays.md",
+      "toc": [],
+      "section": "components",
+      "component": "Menu"
+    },
+    {
+      "route": "components/popover",
+      "title": "Popover",
+      "source": "docs/components/overlays.md",
+      "toc": [],
+      "section": "components",
+      "component": "Popover"
+    },
+    {
+      "route": "components/tooltip",
+      "title": "Tooltip",
+      "source": "docs/components/overlays.md",
+      "toc": [],
+      "section": "components",
+      "component": "Tooltip"
+    },
+    {
+      "route": "components/tabs",
+      "title": "Tabs",
+      "source": "docs/components/navigation.md",
+      "toc": [],
+      "section": "components",
+      "component": "Tabs"
+    },
+    {
+      "route": "components/accordion",
+      "title": "Accordion",
+      "source": "docs/components/navigation.md",
+      "toc": [],
+      "section": "components",
+      "component": "Accordion"
+    },
+    {
+      "route": "components/breadcrumb",
+      "title": "Breadcrumb",
+      "source": "docs/components/navigation.md",
+      "toc": [],
+      "section": "components",
+      "component": "Breadcrumb"
+    },
+    {
+      "route": "components/navigation",
+      "title": "Navigation",
+      "source": "docs/components/navigation.md",
+      "toc": [],
+      "section": "components",
+      "component": "Navigation"
+    },
+    {
+      "route": "components/pagination",
+      "title": "Pagination",
+      "source": "docs/components/navigation.md",
+      "toc": [],
+      "section": "components",
+      "component": "Pagination"
+    },
+    {
+      "route": "components/search",
+      "title": "Search",
+      "source": "docs/components/navigation.md",
+      "toc": [],
+      "section": "components",
+      "component": "Search"
+    },
+    {
+      "route": "components/badge",
+      "title": "Badge",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Badge"
+    },
+    {
+      "route": "components/alert",
+      "title": "Alert",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Alert"
+    },
+    {
+      "route": "components/callout",
+      "title": "Callout",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Callout"
+    },
+    {
+      "route": "components/toast",
+      "title": "Toast",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Toast"
+    },
+    {
+      "route": "components/progress",
+      "title": "Progress",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Progress"
+    },
+    {
+      "route": "components/spinner",
+      "title": "Spinner",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Spinner"
+    },
+    {
+      "route": "components/skeleton",
+      "title": "Skeleton",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Skeleton"
+    },
+    {
+      "route": "components/empty-state",
+      "title": "EmptyState",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "EmptyState"
+    },
+    {
+      "route": "components/avatar",
+      "title": "Avatar",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "Avatar"
+    },
+    {
+      "route": "components/status-indicator",
+      "title": "StatusIndicator",
+      "source": "docs/components/status.md",
+      "toc": [],
+      "section": "components",
+      "component": "StatusIndicator"
+    },
+    {
+      "route": "components/number-readout",
+      "title": "NumberReadout",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "NumberReadout"
+    },
+    {
+      "route": "components/usd",
+      "title": "Usd",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "Usd"
+    },
+    {
+      "route": "components/percent",
+      "title": "Percent",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "Percent"
+    },
+    {
+      "route": "components/metric",
+      "title": "Metric",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "Metric"
+    },
+    {
+      "route": "components/stat",
+      "title": "Stat",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "Stat"
+    },
+    {
+      "route": "components/list",
+      "title": "List",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "List"
+    },
+    {
+      "route": "components/row",
+      "title": "Row",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "Row"
+    },
+    {
+      "route": "components/table",
+      "title": "Table",
+      "source": "docs/components/financial-data.md",
+      "toc": [],
+      "section": "components",
+      "component": "Table"
+    },
+    {
+      "route": "components/brand-mark",
+      "title": "BrandMark",
+      "source": "docs/foundations/platform.md",
+      "toc": [],
+      "section": "components",
+      "component": "BrandMark"
+    },
+    {
+      "route": "components/check-icon",
+      "title": "CheckIcon",
+      "source": "docs/foundations/platform.md",
+      "toc": [],
+      "section": "components",
+      "component": "CheckIcon"
+    },
+    {
+      "route": "components/h-i-g-provider",
+      "title": "HIGProvider",
+      "source": "docs/architecture/platform-matrix.md",
+      "toc": [],
+      "section": "components",
+      "component": "HIGProvider"
+    },
+    {
+      "route": "components/market-row",
+      "title": "MarketRow",
+      "source": "docs/components/recipes.md",
+      "toc": [],
+      "section": "components",
+      "component": "MarketRow"
+    },
+    {
+      "route": "components/balance-card",
+      "title": "BalanceCard",
+      "source": "docs/components/recipes.md",
+      "toc": [],
+      "section": "components",
+      "component": "BalanceCard"
+    },
+    {
+      "route": "components/trade-entry",
+      "title": "TradeEntry",
+      "source": "docs/components/recipes.md",
+      "toc": [],
+      "section": "components",
+      "component": "TradeEntry"
+    },
+    {
+      "route": "components/install-command",
+      "title": "InstallCommand",
+      "source": "docs/components/recipes.md",
+      "toc": [],
+      "section": "components",
+      "component": "InstallCommand"
+    },
+    {
+      "route": "components/code-window",
+      "title": "CodeWindow",
+      "source": "docs/components/recipes.md",
+      "toc": [],
+      "section": "components",
+      "component": "CodeWindow"
+    },
+    {
+      "route": "components/marketing-hero",
+      "title": "MarketingHero",
+      "source": "docs/components/recipes.md",
+      "toc": [],
+      "section": "components",
+      "component": "MarketingHero"
+    },
+    {
+      "route": "components/activity-list",
+      "title": "ActivityList",
+      "source": "docs/components/recipes.md",
+      "toc": [],
+      "section": "components",
+      "component": "ActivityList"
+    },
+    {
+      "route": "components/price-chart",
+      "title": "PriceChart",
+      "source": "docs/components/chart.md",
+      "toc": [],
+      "section": "components",
+      "component": "PriceChart"
+    }
+  ],
+  "catalog": [
+    {
+      "name": "Button",
+      "slug": "button",
+      "entry": "button",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/button",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "button",
+          "signature": "export declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLButtonElement>>;"
+        },
+        "native": {
+          "entry": "button",
+          "signature": "export declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<View>>;"
+        }
+      }
+    },
+    {
+      "name": "IconButton",
+      "slug": "icon-button",
+      "entry": "button",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/icon-button",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "button",
+          "signature": "export declare const IconButton: React.ForwardRefExoticComponent<Omit<ButtonProps, \"aria-label\"> & {\n    label: string;\n} & React.RefAttributes<HTMLButtonElement>>;"
+        },
+        "native": {
+          "entry": "button",
+          "signature": "export declare function IconButton({ label, children, ...props }: ButtonProps & {\n    label: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Link",
+      "slug": "link",
+      "entry": "button",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/link",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "button",
+          "signature": "export declare const Link: React.ForwardRefExoticComponent<React.AnchorHTMLAttributes<HTMLAnchorElement> & React.RefAttributes<HTMLAnchorElement>>;"
+        },
+        "native": {
+          "entry": "button",
+          "signature": "export declare function Link({ href, children, onError }: React.PropsWithChildren<{\n    href: string;\n    onError?: (error: unknown) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Text",
+      "slug": "text",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/text",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "surface",
+          "signature": "export declare function Text(props: React.HTMLAttributes<HTMLParagraphElement>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "surface",
+          "signature": "export declare function Text({ style, ...props }: TextProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Heading",
+      "slug": "heading",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/heading",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "surface",
+          "signature": "export declare function Heading({ level, ...props }: React.HTMLAttributes<HTMLHeadingElement> & {\n    level?: 1 | 2 | 3 | 4 | 5 | 6;\n}): React.DetailedReactHTMLElement<{\n    className: string;\n    defaultChecked?: boolean | undefined;\n    defaultValue?: string | number | readonly string[] | undefined;\n    suppressContentEditableWarning?: boolean | undefined;\n    suppressHydrationWarning?: boolean | undefined;\n    accessKey?: string | undefined;\n    autoCapitalize?: \"off\" | \"none\" | \"on\" | \"sentences\" | \"words\" | \"characters\" | undefined | (string & {});\n    autoFocus?: boolean | undefined;\n    contentEditable?: (boolean | \"true\" | \"false\") | \"inherit\" | \"plaintext-only\" | undefined;\n    contextMenu?: string | undefined;\n    dir?: string | undefined;\n    draggable?: (boolean | \"true\" | \"false\") | undefined;\n    enterKeyHint?: \"enter\" | \"done\" | \"go\" | \"next\" | \"previous\" | \"search\" | \"send\" | undefined;\n    hidden?: boolean | undefined;\n    id?: string | undefined;\n    lang?: string | undefined;\n    nonce?: string | undefined;\n    slot?: string | undefined;\n    spellCheck?: (boolean | \"true\" | \"false\") | undefined;\n    style?: React.CSSProperties | undefined;\n    tabIndex?: number | undefined;\n    title?: string | undefined;\n    translate?: \"yes\" | \"no\" | undefined;\n    radioGroup?: string | undefined;\n    role?: React.AriaRole | undefined;\n    about?: string | undefined;\n    content?: string | undefined;\n    datatype?: string | undefined;\n    inlist?: any;\n    prefix?: string | undefined;\n    property?: string | undefined;\n    rel?: string | undefined;\n    resource?: string | undefined;\n    rev?: string | undefined;\n    typeof?: string | undefined;\n    vocab?: string | undefined;\n    autoCorrect?: string | undefined;\n    autoSave?: string | undefined;\n    color?: string | undefined;\n    itemProp?: string | undefined;\n    itemScope?: boolean | undefined;\n    itemType?: string | undefined;\n    itemID?: string | undefined;\n    itemRef?: string | undefined;\n    results?: number | undefined;\n    security?: string | undefined;\n    unselectable?: \"on\" | \"off\" | undefined;\n    popover?: \"\" | \"auto\" | \"manual\" | \"hint\" | undefined;\n    popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined;\n    popoverTarget?: string | undefined;\n    inert?: boolean | undefined;\n    inputMode?: \"none\" | \"text\" | \"tel\" | \"url\" | \"email\" | \"numeric\" | \"decimal\" | \"search\" | undefined;\n    is?: string | undefined;\n    exportparts?: string | undefined;\n    part?: string | undefined;\n    \"aria-activedescendant\"?: string | undefined;\n    \"aria-atomic\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-autocomplete\"?: \"none\" | \"inline\" | \"list\" | \"both\" | undefined;\n    \"aria-braillelabel\"?: string | undefined;\n    \"aria-brailleroledescription\"?: string | undefined;\n    \"aria-busy\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-checked\"?: boolean | \"false\" | \"mixed\" | \"true\" | undefined;\n    \"aria-colcount\"?: number | undefined;\n    \"aria-colindex\"?: number | undefined;\n    \"aria-colindextext\"?: string | undefined;\n    \"aria-colspan\"?: number | undefined;\n    \"aria-controls\"?: string | undefined;\n    \"aria-current\"?: boolean | \"false\" | \"true\" | \"page\" | \"step\" | \"location\" | \"date\" | \"time\" | undefined;\n    \"aria-describedby\"?: string | undefined;\n    \"aria-description\"?: string | undefined;\n    \"aria-details\"?: string | undefined;\n    \"aria-disabled\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-dropeffect\"?: \"none\" | \"copy\" | \"execute\" | \"link\" | \"move\" | \"popup\" | undefined;\n    \"aria-errormessage\"?: string | undefined;\n    \"aria-expanded\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-flowto\"?: string | undefined;\n    \"aria-grabbed\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-haspopup\"?: boolean | \"false\" | \"true\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | undefined;\n    \"aria-hidden\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-invalid\"?: boolean | \"false\" | \"true\" | \"grammar\" | \"spelling\" | undefined;\n    \"aria-keyshortcuts\"?: string | undefined;\n    \"aria-label\"?: string | undefined;\n    \"aria-labelledby\"?: string | undefined;\n    \"aria-level\"?: number | undefined;\n    \"aria-live\"?: \"off\" | \"assertive\" | \"polite\" | undefined;\n    \"aria-modal\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-multiline\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-multiselectable\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-orientation\"?: \"horizontal\" | \"vertical\" | undefined;\n    \"aria-owns\"?: string | undefined;\n    \"aria-placeholder\"?: string | undefined;\n    \"aria-posinset\"?: number | undefined;\n    \"aria-pressed\"?: boolean | \"false\" | \"mixed\" | \"true\" | undefined;\n    \"aria-readonly\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-relevant\"?: \"additions\" | \"additions removals\" | \"additions text\" | \"all\" | \"removals\" | \"removals additions\" | \"removals text\" | \"text\" | \"text additions\" | \"text removals\" | undefined;\n    \"aria-required\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-roledescription\"?: string | undefined;\n    \"aria-rowcount\"?: number | undefined;\n    \"aria-rowindex\"?: number | undefined;\n    \"aria-rowindextext\"?: string | undefined;\n    \"aria-rowspan\"?: number | undefined;\n    \"aria-selected\"?: (boolean | \"true\" | \"false\") | undefined;\n    \"aria-setsize\"?: number | undefined;\n    \"aria-sort\"?: \"none\" | \"ascending\" | \"descending\" | \"other\" | undefined;\n    \"aria-valuemax\"?: number | undefined;\n    \"aria-valuemin\"?: number | undefined;\n    \"aria-valuenow\"?: number | undefined;\n    \"aria-valuetext\"?: string | undefined;\n    children?: React.ReactNode | undefined;\n    dangerouslySetInnerHTML?: {\n        __html: string | TrustedHTML;\n    } | undefined;\n    onCopy?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCopyCapture?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCut?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCutCapture?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onPaste?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onPasteCapture?: React.ClipboardEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionEnd?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionEndCapture?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionStart?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionStartCapture?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionUpdate?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onCompositionUpdateCapture?: React.CompositionEventHandler<HTMLHeadingElement> | undefined;\n    onFocus?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onFocusCapture?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onBlur?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onBlurCapture?: React.FocusEventHandler<HTMLHeadingElement> | undefined;\n    onChange?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onChangeCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onBeforeInput?: React.InputEventHandler<HTMLHeadingElement> | undefined;\n    onBeforeInputCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInput?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInputCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onReset?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onResetCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onSubmit?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onSubmitCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInvalid?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onInvalidCapture?: React.FormEventHandler<HTMLHeadingElement> | undefined;\n    onLoad?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onError?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onErrorCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onKeyDown?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyDownCapture?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyPress?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyPressCapture?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyUp?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onKeyUpCapture?: React.KeyboardEventHandler<HTMLHeadingElement> | undefined;\n    onAbort?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onAbortCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlay?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlayCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlayThrough?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onCanPlayThroughCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onDurationChange?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onDurationChangeCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEmptied?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEmptiedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEncrypted?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEncryptedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEnded?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onEndedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedData?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedDataCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedMetadata?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadedMetadataCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadStart?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onLoadStartCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPause?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPauseCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlay?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlayCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlaying?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onPlayingCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onProgress?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onProgressCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onRateChange?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onRateChangeCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeeked?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeekedCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeeking?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSeekingCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onStalled?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onStalledCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSuspend?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSuspendCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onTimeUpdate?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onTimeUpdateCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onVolumeChange?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onVolumeChangeCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onWaiting?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onWaitingCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onAuxClick?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onAuxClickCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onClick?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onClickCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onContextMenu?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onContextMenuCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onDoubleClick?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onDoubleClickCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onDrag?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEnd?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEndCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEnter?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragEnterCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragExit?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragExitCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragLeave?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragLeaveCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragOver?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragOverCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragStart?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDragStartCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDrop?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onDropCapture?: React.DragEventHandler<HTMLHeadingElement> | undefined;\n    onMouseDown?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseDownCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseEnter?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseLeave?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseMove?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseMoveCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOut?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOutCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOver?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseOverCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseUp?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onMouseUpCapture?: React.MouseEventHandler<HTMLHeadingElement> | undefined;\n    onSelect?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onSelectCapture?: React.ReactEventHandler<HTMLHeadingElement> | undefined;\n    onTouchCancel?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchCancelCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchEnd?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchEndCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchMove?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchMoveCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchStart?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onTouchStartCapture?: React.TouchEventHandler<HTMLHeadingElement> | undefined;\n    onPointerDown?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerDownCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerMove?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerMoveCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerUp?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerUpCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerCancel?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerCancelCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerEnter?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerLeave?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOver?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOverCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOut?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onPointerOutCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onGotPointerCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onGotPointerCaptureCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onLostPointerCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onLostPointerCaptureCapture?: React.PointerEventHandler<HTMLHeadingElement> | undefined;\n    onScroll?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onScrollCapture?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onScrollEnd?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onScrollEndCapture?: React.UIEventHandler<HTMLHeadingElement> | undefined;\n    onWheel?: React.WheelEventHandler<HTMLHeadingElement> | undefined;\n    onWheelCapture?: React.WheelEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationStart?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationStartCapture?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationEnd?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationEndCapture?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationIteration?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onAnimationIterationCapture?: React.AnimationEventHandler<HTMLHeadingElement> | undefined;\n    onToggle?: React.ToggleEventHandler<HTMLHeadingElement> | undefined;\n    onBeforeToggle?: React.ToggleEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionCancel?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionCancelCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionEnd?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionEndCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionRun?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionRunCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionStart?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n    onTransitionStartCapture?: React.TransitionEventHandler<HTMLHeadingElement> | undefined;\n}, HTMLElement>;"
+        },
+        "native": {
+          "entry": "surface",
+          "signature": "export declare function Heading({ style, ...props }: TextProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Stack",
+      "slug": "stack",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/stack",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "surface",
+          "signature": "export declare function Stack(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "surface",
+          "signature": "export declare function Stack({ style, ...props }: ViewProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Inline",
+      "slug": "inline",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/inline",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "surface",
+          "signature": "export declare function Inline(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "surface",
+          "signature": "export declare function Inline({ style, ...props }: ViewProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Surface",
+      "slug": "surface",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/surface",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "surface",
+          "signature": "export declare function Surface(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "surface",
+          "signature": "export declare function Surface({ style, ...props }: ViewProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Card",
+      "slug": "card",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/card",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "surface",
+          "signature": "export declare const Card: typeof Surface;"
+        },
+        "native": {
+          "entry": "surface",
+          "signature": "export declare const Card: typeof Surface;"
+        }
+      }
+    },
+    {
+      "name": "Separator",
+      "slug": "separator",
+      "entry": "surface",
+      "family": "actions-surfaces",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/separator",
+      "source": "docs/components/actions-surfaces.md",
+      "api": {
+        "react": {
+          "entry": "surface",
+          "signature": "export declare function Separator(props: React.HTMLAttributes<HTMLHRElement>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "surface",
+          "signature": "export declare function Separator(): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Field",
+      "slug": "field",
+      "entry": "field",
+      "family": "fields",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/field",
+      "source": "docs/components/fields.md",
+      "api": {
+        "react": {
+          "entry": "field",
+          "signature": "export declare function Field({ id: provided, label, description, error, required, disabled, children }: React.PropsWithChildren<{\n    id?: string;\n    label: string;\n    description?: string;\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "field",
+          "signature": "export declare function Field({ label, description, error, required, disabled, children }: React.PropsWithChildren<{\n    label: string;\n    description?: string;\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Label",
+      "slug": "label",
+      "entry": "field",
+      "family": "fields",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/label",
+      "source": "docs/components/fields.md",
+      "api": {
+        "react": {
+          "entry": "field",
+          "signature": "export declare const Label: (props: React.LabelHTMLAttributes<HTMLLabelElement>) => import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "field",
+          "signature": "export declare const Label: typeof Text;"
+        }
+      }
+    },
+    {
+      "name": "Input",
+      "slug": "input",
+      "entry": "field",
+      "family": "fields",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/input",
+      "source": "docs/components/fields.md",
+      "api": {
+        "react": {
+          "entry": "field",
+          "signature": "export declare const Input: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
+        },
+        "native": {
+          "entry": "field",
+          "signature": "export declare const Input: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        }
+      }
+    },
+    {
+      "name": "TextArea",
+      "slug": "text-area",
+      "entry": "field",
+      "family": "fields",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/text-area",
+      "source": "docs/components/fields.md",
+      "api": {
+        "react": {
+          "entry": "field",
+          "signature": "export declare const TextArea: React.ForwardRefExoticComponent<React.TextareaHTMLAttributes<HTMLTextAreaElement> & React.RefAttributes<HTMLTextAreaElement>>;"
+        },
+        "native": {
+          "entry": "field",
+          "signature": "export declare const TextArea: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        }
+      }
+    },
+    {
+      "name": "AmountInput",
+      "slug": "amount-input",
+      "entry": "field",
+      "family": "fields",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/amount-input",
+      "source": "docs/components/fields.md",
+      "api": {
+        "react": {
+          "entry": "field",
+          "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<Omit<React.InputHTMLAttributes<HTMLInputElement>, \"type\"> & React.RefAttributes<HTMLInputElement>>;"
+        },
+        "native": {
+          "entry": "field",
+          "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        }
+      }
+    },
+    {
+      "name": "SearchInput",
+      "slug": "search-input",
+      "entry": "field",
+      "family": "fields",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/search-input",
+      "source": "docs/components/fields.md",
+      "api": {
+        "react": {
+          "entry": "field",
+          "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
+        },
+        "native": {
+          "entry": "field",
+          "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        }
+      }
+    },
+    {
+      "name": "Checkbox",
+      "slug": "checkbox",
+      "entry": "selection",
+      "family": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/checkbox",
+      "source": "docs/components/selection.md",
+      "api": {
+        "react": {
+          "entry": "selection",
+          "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "checkbox",
+          "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Switch",
+      "slug": "switch",
+      "entry": "selection",
+      "family": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/switch",
+      "source": "docs/components/selection.md",
+      "api": {
+        "react": {
+          "entry": "selection",
+          "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "switch",
+          "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "RadioGroup",
+      "slug": "radio-group",
+      "entry": "selection",
+      "family": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/radio-group",
+      "source": "docs/components/selection.md",
+      "api": {
+        "react": {
+          "entry": "selection",
+          "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "radio-group",
+          "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "SegmentedControl",
+      "slug": "segmented-control",
+      "entry": "selection",
+      "family": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/segmented-control",
+      "source": "docs/components/selection.md",
+      "api": {
+        "react": {
+          "entry": "selection",
+          "signature": "export declare const SegmentedControl: typeof RadioGroup;"
+        },
+        "native": {
+          "entry": "radio-group",
+          "signature": "export declare const SegmentedControl: typeof RadioGroup;"
+        }
+      }
+    },
+    {
+      "name": "Select",
+      "slug": "select",
+      "entry": "selection",
+      "family": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/select",
+      "source": "docs/components/selection.md",
+      "api": {
+        "react": {
+          "entry": "selection",
+          "signature": "export declare function Select({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "select",
+          "signature": "export declare function Select(props: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Slider",
+      "slug": "slider",
+      "entry": "selection",
+      "family": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/slider",
+      "source": "docs/components/selection.md",
+      "api": {
+        "react": {
+          "entry": "selection",
+          "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (value: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "slider",
+          "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (v: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Dialog",
+      "slug": "dialog",
+      "entry": "overlay",
+      "family": "overlays",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/dialog",
+      "source": "docs/components/overlays.md",
+      "api": {
+        "react": {
+          "entry": "overlay",
+          "signature": "export declare function Dialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "overlay",
+          "signature": "export declare function Dialog({ open, onOpenChange, title, description, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "AlertDialog",
+      "slug": "alert-dialog",
+      "entry": "overlay",
+      "family": "overlays",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/alert-dialog",
+      "source": "docs/components/overlays.md",
+      "api": {
+        "react": {
+          "entry": "overlay",
+          "signature": "export declare function AlertDialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "overlay",
+          "signature": "export declare const AlertDialog: typeof Dialog;"
+        }
+      }
+    },
+    {
+      "name": "Sheet",
+      "slug": "sheet",
+      "entry": "overlay",
+      "family": "overlays",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/sheet",
+      "source": "docs/components/overlays.md",
+      "api": {
+        "react": {
+          "entry": "overlay",
+          "signature": "export declare const Sheet: typeof Dialog;"
+        },
+        "native": {
+          "entry": "overlay",
+          "signature": "export declare const Sheet: typeof Dialog;"
+        }
+      }
+    },
+    {
+      "name": "Menu",
+      "slug": "menu",
+      "entry": "overlay",
+      "family": "overlays",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/menu",
+      "source": "docs/components/overlays.md",
+      "api": {
+        "react": {
+          "entry": "overlay",
+          "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "overlay",
+          "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Popover",
+      "slug": "popover",
+      "entry": "overlay",
+      "family": "overlays",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/popover",
+      "source": "docs/components/overlays.md",
+      "api": {
+        "react": {
+          "entry": "overlay",
+          "signature": "export declare function Popover({ label, children }: React.PropsWithChildren<{\n    label: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": null
+      }
+    },
+    {
+      "name": "Tooltip",
+      "slug": "tooltip",
+      "entry": "overlay",
+      "family": "overlays",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/tooltip",
+      "source": "docs/components/overlays.md",
+      "api": {
+        "react": {
+          "entry": "overlay",
+          "signature": "export declare function Tooltip({ content, children }: React.PropsWithChildren<{\n    content: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": null
+      }
+    },
+    {
+      "name": "Tabs",
+      "slug": "tabs",
+      "entry": "navigation",
+      "family": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/tabs",
+      "source": "docs/components/navigation.md",
+      "api": {
+        "react": {
+          "entry": "navigation",
+          "signature": "export declare function Tabs({ label, items, value, defaultValue, onValueChange }: {\n    label: string;\n    items: readonly {\n        value: string;\n        label: string;\n        content: React.ReactNode;\n        disabled?: boolean;\n    }[];\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (v: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "navigation",
+          "signature": "export declare function Tabs({ label, items, value, defaultValue, onValueChange }: {\n    label: string;\n    items: readonly {\n        value: string;\n        label: string;\n        content: React.ReactNode;\n        disabled?: boolean;\n    }[];\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (v: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Accordion",
+      "slug": "accordion",
+      "entry": "navigation",
+      "family": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/accordion",
+      "source": "docs/components/navigation.md",
+      "api": {
+        "react": {
+          "entry": "navigation",
+          "signature": "export declare function Accordion({ title, children, open, onOpenChange }: React.PropsWithChildren<{\n    title: string;\n    open?: boolean;\n    onOpenChange?: (open: boolean) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "navigation",
+          "signature": "export declare function Accordion({ title, children, open, onOpenChange }: React.PropsWithChildren<{\n    title: string;\n    open?: boolean;\n    onOpenChange?: (v: boolean) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Breadcrumb",
+      "slug": "breadcrumb",
+      "entry": "navigation",
+      "family": "navigation",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/breadcrumb",
+      "source": "docs/components/navigation.md",
+      "api": {
+        "react": {
+          "entry": "navigation",
+          "signature": "export declare function Breadcrumb({ items }: {\n    items: readonly {\n        label: string;\n        href?: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": null
+      }
+    },
+    {
+      "name": "Navigation",
+      "slug": "navigation",
+      "entry": "navigation",
+      "family": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/navigation",
+      "source": "docs/components/navigation.md",
+      "api": {
+        "react": {
+          "entry": "navigation",
+          "signature": "export declare function Navigation({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        href: string;\n        active?: boolean;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "navigation",
+          "signature": "export declare function Navigation({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        id: string;\n        active?: boolean;\n        onNavigate: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Pagination",
+      "slug": "pagination",
+      "entry": "navigation",
+      "family": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/pagination",
+      "source": "docs/components/navigation.md",
+      "api": {
+        "react": {
+          "entry": "navigation",
+          "signature": "export declare function Pagination({ page, total, onPageChange }: {\n    page: number;\n    total: number;\n    onPageChange: (p: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "navigation",
+          "signature": "export declare function Pagination({ page, total, onPageChange }: {\n    page: number;\n    total: number;\n    onPageChange: (p: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Search",
+      "slug": "search",
+      "entry": "navigation",
+      "family": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/search",
+      "source": "docs/components/navigation.md",
+      "api": {
+        "react": {
+          "entry": "navigation",
+          "signature": "export declare function Search({ query, onQueryChange, results, loading, error }: {\n    query: string;\n    onQueryChange: (s: string) => void;\n    results: readonly {\n        id: string;\n        label: string;\n        onSelect: () => void;\n    }[];\n    loading?: boolean;\n    error?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "navigation",
+          "signature": "export declare function Search({ query, onQueryChange, results, loading, error }: {\n    query: string;\n    onQueryChange: (s: string) => void;\n    results: readonly {\n        id: string;\n        label: string;\n        onSelect: () => void;\n    }[];\n    loading?: boolean;\n    error?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Badge",
+      "slug": "badge",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/badge",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Alert",
+      "slug": "alert",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/alert",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function Alert({ title, children, severity, action }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function Alert({ title, children, severity, action }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Callout",
+      "slug": "callout",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/callout",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare const Callout: typeof Alert;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare const Callout: typeof Alert;"
+        }
+      }
+    },
+    {
+      "name": "Toast",
+      "slug": "toast",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/toast",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function Toast({ notices, onDismiss }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function Toast({ notices, onDismiss }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Progress",
+      "slug": "progress",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/progress",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function Progress({ label, value, max }: {\n    label: string;\n    value?: number;\n    max?: number;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function Progress({ label, value, max }: {\n    label: string;\n    value?: number;\n    max?: number;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Spinner",
+      "slug": "spinner",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/spinner",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function Spinner({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function Spinner({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Skeleton",
+      "slug": "skeleton",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/skeleton",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function Skeleton({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function Skeleton({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "EmptyState",
+      "slug": "empty-state",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/empty-state",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Avatar",
+      "slug": "avatar",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/avatar",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function Avatar({ name, src }: {\n    name: string;\n    src?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function Avatar({ name, source }: {\n    name: string;\n    source?: ImageSourcePropType;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "StatusIndicator",
+      "slug": "status-indicator",
+      "entry": "status",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/status-indicator",
+      "source": "docs/components/status.md",
+      "api": {
+        "react": {
+          "entry": "status",
+          "signature": "export declare function StatusIndicator({ label, state }: {\n    label: string;\n    state: 'online' | 'offline' | 'stale';\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "status",
+          "signature": "export declare function StatusIndicator({ label, state }: {\n    label: string;\n    state: 'online' | 'offline' | 'stale';\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "NumberReadout",
+      "slug": "number-readout",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/number-readout",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare function NumberReadout({ value, options, stale, label }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "data",
+          "signature": "export declare function NumberReadout({ value, options, stale, label }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Usd",
+      "slug": "usd",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/usd",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare function Usd(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "data",
+          "signature": "export declare function Usd(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Percent",
+      "slug": "percent",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/percent",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare function Percent(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "data",
+          "signature": "export declare function Percent(props: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Metric",
+      "slug": "metric",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/metric",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare function Metric({ label, value }: {\n    label: string;\n    value: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "data",
+          "signature": "export declare function Metric({ label, value }: {\n    label: string;\n    value: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Stat",
+      "slug": "stat",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/stat",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare const Stat: typeof Metric;"
+        },
+        "native": {
+          "entry": "data",
+          "signature": "export declare const Stat: typeof Metric;"
+        }
+      }
+    },
+    {
+      "name": "List",
+      "slug": "list",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/list",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare function List<T>({ items, keyFor, render, empty }: {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "data",
+          "signature": "export declare function List<T>({ items, keyFor, render, empty }: {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Row",
+      "slug": "row",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/row",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare function Row(props: React.HTMLAttributes<HTMLDivElement>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "data",
+          "signature": "export declare function Row({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "Table",
+      "slug": "table",
+      "entry": "data",
+      "family": "financial-data",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/table",
+      "source": "docs/components/financial-data.md",
+      "api": {
+        "react": {
+          "entry": "data",
+          "signature": "export declare function Table<T>({ caption, rows, columns, keyFor }: {\n    caption: string;\n    rows: readonly T[];\n    columns: readonly Column<T>[];\n    keyFor: (row: T) => string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": null
+      }
+    },
+    {
+      "name": "BrandMark",
+      "slug": "brand-mark",
+      "entry": "brand",
+      "family": "brand",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/brand-mark",
+      "source": "docs/foundations/platform.md",
+      "api": {
+        "react": {
+          "entry": "brand",
+          "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "brand",
+          "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "CheckIcon",
+      "slug": "check-icon",
+      "entry": "brand",
+      "family": "brand",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/check-icon",
+      "source": "docs/foundations/platform.md",
+      "api": {
+        "react": {
+          "entry": "brand",
+          "signature": "export declare function CheckIcon(): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "brand",
+          "signature": "export declare function CheckIcon(): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "HIGProvider",
+      "slug": "h-i-g-provider",
+      "entry": "provider",
+      "family": "provider",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/h-i-g-provider",
+      "source": "docs/architecture/platform-matrix.md",
+      "api": {
+        "react": {
+          "entry": "provider",
+          "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "provider",
+          "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "MarketRow",
+      "slug": "market-row",
+      "entry": "recipes",
+      "family": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/market-row",
+      "source": "docs/components/recipes.md",
+      "api": {
+        "react": {
+          "entry": "recipes",
+          "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "recipes",
+          "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "BalanceCard",
+      "slug": "balance-card",
+      "entry": "recipes",
+      "family": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/balance-card",
+      "source": "docs/components/recipes.md",
+      "api": {
+        "react": {
+          "entry": "recipes",
+          "signature": "export declare function BalanceCard({ label, balance, stale }: {\n    label: string;\n    balance: number | null;\n    stale?: boolean;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "recipes",
+          "signature": "export declare function BalanceCard({ label, balance, stale }: {\n    label: string;\n    balance: number | null;\n    stale?: boolean;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "TradeEntry",
+      "slug": "trade-entry",
+      "entry": "recipes",
+      "family": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/trade-entry",
+      "source": "docs/components/recipes.md",
+      "api": {
+        "react": {
+          "entry": "recipes",
+          "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "recipes",
+          "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "InstallCommand",
+      "slug": "install-command",
+      "entry": "recipes",
+      "family": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/install-command",
+      "source": "docs/components/recipes.md",
+      "api": {
+        "react": {
+          "entry": "recipes",
+          "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "recipes",
+          "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "CodeWindow",
+      "slug": "code-window",
+      "entry": "recipes",
+      "family": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/code-window",
+      "source": "docs/components/recipes.md",
+      "api": {
+        "react": {
+          "entry": "recipes",
+          "signature": "export declare function CodeWindow({ language, children }: React.PropsWithChildren<{\n    language: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "recipes",
+          "signature": "export declare function CodeWindow({ language, children }: React.PropsWithChildren<{\n    language: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "MarketingHero",
+      "slug": "marketing-hero",
+      "entry": "recipes",
+      "family": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/marketing-hero",
+      "source": "docs/components/recipes.md",
+      "api": {
+        "react": {
+          "entry": "recipes",
+          "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "recipes",
+          "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "ActivityList",
+      "slug": "activity-list",
+      "entry": "recipes",
+      "family": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/activity-list",
+      "source": "docs/components/recipes.md",
+      "api": {
+        "react": {
+          "entry": "recipes",
+          "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": {
+          "entry": "recipes",
+          "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        }
+      }
+    },
+    {
+      "name": "PriceChart",
+      "slug": "price-chart",
+      "entry": "chart",
+      "family": "chart",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "route": "components/price-chart",
+      "source": "docs/components/chart.md",
+      "api": {
+        "react": {
+          "entry": "chart",
+          "signature": "export declare function PriceChart({ summary, ...props }: ChartProps & {\n    summary: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        },
+        "native": null
+      }
+    }
+  ]
+}

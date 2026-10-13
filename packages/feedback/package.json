@@ -1,0 +1,80 @@
+{
+  "name": "@bloxwap/hig-feedback",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "assets",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/contract.d.ts",
+      "import": "./dist/contract.js"
+    },
+    "./web": {
+      "types": "./dist/web.d.ts",
+      "import": "./dist/web.js"
+    },
+    "./native": {
+      "types": "./dist/native.d.ts",
+      "import": "./dist/native.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./preferences": {
+      "types": "./dist/preferences.d.ts",
+      "import": "./dist/preferences.js"
+    },
+    "./assets/*": "./assets/*",
+    "./web-sound": {
+      "types": "./dist/web-sound.d.ts",
+      "import": "./dist/web-sound.js"
+    },
+    "./browser-haptic": {
+      "types": "./dist/browser-haptic.d.ts",
+      "import": "./dist/browser-haptic.js"
+    },
+    "./web-haptic": {
+      "types": "./dist/web-haptic.d.ts",
+      "import": "./dist/web-haptic.js"
+    }
+  },
+  "dependencies": {
+    "@bloxwap/hig-contracts": "0.1.0"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "@bloxwap/sfx": "0.1.0",
+    "@bloxwap/haptic": "0.1.0",
+    "expo-audio": "~1.1.1",
+    "expo-haptics": "~15.0.7"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "@bloxwap/sfx": {
+      "optional": true
+    },
+    "@bloxwap/haptic": {
+      "optional": true
+    },
+    "expo-audio": {
+      "optional": true
+    },
+    "expo-haptics": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloxwap/hig",
+    "directory": "packages/feedback"
+  }
+}
