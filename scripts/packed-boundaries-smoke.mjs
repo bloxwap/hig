@@ -1,0 +1,17 @@
+import {execFileSync} from 'node:child_process';
+import {mkdtempSync,writeFileSync,existsSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,resolve} from 'node:path';
+import assert from 'node:assert/strict';
+const directory=mkdtempSync(join(tmpdir(),'hig-boundaries-'));
+writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module'}));
+const tarball=name=>resolve(`artifacts/bloxwap-hig-${name}-0.1.0.tgz`);
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...['tokens','contracts','feedback'].map(tarball)],{cwd:directory,stdio:'pipe'});
+for(const peer of ['react','react-native','@bloxwap/sfx','@bloxwap/haptic','expo-audio','expo-haptics'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`root feedback unexpectedly installs ${peer}`);
+writeFileSync(join(directory,'root.mjs'),"import {FeedbackController} from '@bloxwap/hig-feedback';import {tokens} from '@bloxwap/hig-tokens';new FeedbackController().dispose();if(!tokens.colors.action)throw Error('Missing tokens');");
+execFileSync(process.execPath,[join(directory,'root.mjs')],{cwd:directory,stdio:'inherit'});
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',tarball('react'),'react@19.1.0','react-dom@19.1.0'],{cwd:directory,stdio:'pipe'});
+for(const peer of ['@radix-ui/react-dialog','@radix-ui/react-dropdown-menu','react-native','@bloxwap/chart','@bloxwap/sfx','@bloxwap/haptic'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`button unexpectedly installs ${peer}`);
+writeFileSync(join(directory,'button.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {Button} from '@bloxwap/hig-react/button';if(!renderToString(React.createElement(Button,null,'Review')).includes('Review'))throw Error('SSR failed');");
+execFileSync(process.execPath,[join(directory,'button.mjs')],{cwd:directory,stdio:'inherit'});
+console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR without Radix, native, chart or feedback engines');

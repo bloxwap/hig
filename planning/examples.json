@@ -853,7 +853,7 @@
       "entry": "recipes",
       "family": "recipes",
       "web": "<C.InstallCommand command='npm install @bloxwap/hig-react@0.1.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig-react@0.1.0')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig-native@0.1.0' onCopy={()=>{setMessage('Host clipboard adapter requested');}}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig-native@0.1.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"

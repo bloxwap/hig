@@ -1,5 +1,6 @@
 import React from 'react';
-import {Modal,KeyboardAvoidingView,Platform,ScrollView,SafeAreaView} from 'react-native';
+import {Modal,KeyboardAvoidingView,Platform,ScrollView} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {nativeColors as colors} from '@bloxwap/hig-tokens';
 import {Heading,Text,Stack} from './surface.js';
 import {Button} from './button.js';

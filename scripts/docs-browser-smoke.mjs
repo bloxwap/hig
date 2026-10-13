@@ -2,18 +2,25 @@ import {chromium} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
-const browser=await chromium.launch({executablePath:process.env.HIG_CHROME??'/usr/bin/google-chrome',args:['--no-sandbox','--disable-dev-shm-usage'],headless:true});
+const stage=process.argv[2]??'m4';
+const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),args:['--no-sandbox','--disable-dev-shm-usage'],headless:true});
+try{
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const origin=process.env.HIG_DOCS_PREVIEW_URL??'http://localhost:4174/hig/';
 await page.goto(origin,{waitUntil:'networkidle'});
-await page.screenshot({path:'evidence/m4-playground-desktop.png',fullPage:true});
+await page.screenshot({path:`evidence/${stage}-playground-desktop.png`,fullPage:true});
 await page.getByLabel('Pro',{exact:true}).check();
 assert.equal(await page.locator('[data-hig-density="compact"]').count(),1);
 await page.getByRole('combobox',{name:'Component',exact:true}).selectOption('Switch');
 await page.getByRole('switch',{name:'Preference preview',exact:true}).check();
 await page.getByText('Get code · Switch',{exact:true}).click();
 await page.waitForFunction(()=>document.querySelector('.get-code code')?.textContent.includes('density="compact"'));
+await page.getByRole('switch',{name:'Sound',exact:true}).check();
+await page.getByRole('switch',{name:'Haptics',exact:true}).check();
+await page.getByRole('switch',{name:'Motion',exact:true}).uncheck();
+await page.getByRole('slider',{name:/^Volume:/}).focus();await page.keyboard.press('Home');for(let i=0;i<42;i++)await page.keyboard.press('ArrowRight');
+await page.waitForFunction(()=>{const code=document.querySelector('.get-code code')?.textContent??'';return code.includes('createWebSoundAdapter()')&&code.includes('createBrowserHapticAdapter()')&&code.includes('"volume":0.42')&&code.includes('"motion":false');});
 await page.getByRole('combobox',{name:'Platform',exact:true}).selectOption('native');
 assert.equal(await page.getByText('Take the preview to your device.',{exact:true}).count(),1);
 assert.equal(await page.getByText('Native screenshots, VoiceOver/TalkBack and physical feedback observations are pending.',{exact:false}).count(),1);
@@ -39,10 +46,12 @@ const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','
 const violations=axe.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));
 assert.deepEqual(violations.filter(v=>v.impact==='critical'||v.impact==='serious'),[]);
 assert.deepEqual(errors,[]);
-await page.screenshot({path:'evidence/m4-component-mobile.png',fullPage:true});
+await page.screenshot({path:`evidence/${stage}-component-mobile.png`,fullPage:true});
 await page.setViewportSize({width:1440,height:1000});
-await page.screenshot({path:'evidence/m4-component-desktop.png',fullPage:true});
+await page.screenshot({path:`evidence/${stage}-component-desktop.png`,fullPage:true});
 await page.goto(origin,{waitUntil:'networkidle'});await page.setViewportSize({width:390,height:844});
-await page.screenshot({path:'evidence/m4-playground-mobile.png',fullPage:true});
-writeFileSync('evidence/m4-browser.json',JSON.stringify({version:'0.1.0',browser:await browser.version(),checks:['production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
-await browser.close();console.log('Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed');
+await page.screenshot({path:`evidence/${stage}-playground-mobile.png`,fullPage:true});
+writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),checks:['production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
+console.log('Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed');
+
+}finally{await browser.close();}

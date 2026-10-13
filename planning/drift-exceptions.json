@@ -1,0 +1,7 @@
+{
+  "version":"0.1.0",
+  "exceptions":[
+    {"path":"packages/react/src/brand.tsx","rule":"copied-palette","owner":"HIG brand maintainers","reason":"Approved exact mark geometry and fills from pinned Font SVG; tokenizing would change approved asset","expires":"2026-11-13"},
+    {"path":"packages/native/src/brand.tsx","rule":"copied-palette","owner":"HIG brand maintainers","reason":"Same approved exact native mark geometry/fills; SVG provenance retained in tokens assets","expires":"2026-11-13"}
+  ]
+}

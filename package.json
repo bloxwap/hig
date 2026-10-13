@@ -12,7 +12,7 @@
     "node": ">=22.22"
   },
   "scripts": {
-    "generate": "node scripts/generate.mjs",
+    "generate": "node scripts/generate.mjs && node scripts/generate-brand.mjs",
     "build": "npm run generate && node scripts/build.mjs && npm run build:docs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && node scripts/check-drift.mjs",
@@ -28,7 +28,14 @@
     "generate:examples": "node scripts/generate-examples.mjs",
     "build:docs": "node scripts/build-docs.mjs",
     "dev:docs": "vite apps/docs --host 0.0.0.0",
-    "examples:check": "node scripts/check-examples.mjs"
+    "examples:check": "node scripts/check-examples.mjs",
+    "build:next": "npm run build -w hig-next-fixture",
+    "quality": "node scripts/quality.mjs && node scripts/drift.mjs",
+    "smoke:packed-next": "node scripts/packed-next-smoke.mjs",
+    "release:dry-run": "node scripts/release-dry-run.mjs",
+    "smoke:packed-examples": "node scripts/packed-examples-smoke.mjs",
+    "smoke:packed-boundaries": "node scripts/packed-boundaries-smoke.mjs",
+    "smoke:release-artifact": "node scripts/release-artifact-smoke.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -44,6 +51,7 @@
     "@types/react": "19.1.16",
     "@types/react-dom": "19.1.9",
     "@types/react-test-renderer": "19.1.0",
+    "esbuild": "^0.25.12",
     "eslint": "9.39.1",
     "expo-audio": "~1.1.1",
     "expo-haptics": "~15.0.7",

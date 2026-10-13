@@ -8,7 +8,7 @@ Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs
 
 ## SSR and Next client boundaries
 
-Run `npm run smoke:ssr`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream. A dedicated Next production fixture follows in M5; this candidate does not infer all Next versions from plain React SSR. Verify hydration, stable IDs and StrictMode before adopting a host version.
+Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream. Next 16.4.0 (webpack), React 19.1 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
 
 ## Expo / React Native
 

@@ -1,0 +1,26 @@
+{
+  "button": {
+    "gzip": 850
+  },
+  "field": {
+    "gzip": 400
+  },
+  "nativeSwitch": {
+    "gzip": 1700
+  },
+  "feedbackContract": {
+    "gzip": 1200
+  },
+  "docsJS": {
+    "gzip": 240000
+  },
+  "docsCSS": {
+    "raw": 22000
+  },
+  "fonts": {
+    "raw": 600000
+  },
+  "nativeCues": {
+    "raw": 110000
+  }
+}

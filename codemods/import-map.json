@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "sources": {
+    "@/components/ui/button": {"entry":"button","exports":["Button","IconButton"]},
+    "@/components/ui/card": {"entry":"surface","exports":["Card","Surface"]},
+    "@/components/ui/input": {"entry":"field","exports":["Input"]},
+    "@/components/ui/textarea": {"entry":"field","exports":["TextArea"]},
+    "@workspace/ui/button": {"entry":"button","exports":["Button","IconButton","Link"]},
+    "@workspace/ui/card": {"entry":"surface","exports":["Card","Surface"]},
+    "@workspace/ui/input": {"entry":"field","exports":["Input","AmountInput","SearchInput"]},
+    "@workspace/ui-native/button": {"entry":"button","exports":["Button","IconButton"]},
+    "@workspace/ui-native/switch": {"entry":"switch","exports":["Switch"],"nativeOnly":true},
+    "@workspace/ui-native/checkbox": {"entry":"checkbox","exports":["Checkbox"],"nativeOnly":true}
+  }
+}

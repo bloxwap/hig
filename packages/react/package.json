@@ -65,20 +65,32 @@
   "peerDependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "@bloxwap/chart": "^0.3.0"
+    "@bloxwap/chart": "^0.3.0",
+    "@radix-ui/react-dialog": "1.1.15",
+    "@radix-ui/react-dropdown-menu": "2.1.16",
+    "@radix-ui/react-popover": "1.1.15",
+    "@radix-ui/react-tooltip": "1.2.8"
   },
   "peerDependenciesMeta": {
     "@bloxwap/chart": {
+      "optional": true
+    },
+    "@radix-ui/react-dialog": {
+      "optional": true
+    },
+    "@radix-ui/react-dropdown-menu": {
+      "optional": true
+    },
+    "@radix-ui/react-popover": {
+      "optional": true
+    },
+    "@radix-ui/react-tooltip": {
       "optional": true
     }
   },
   "dependencies": {
     "@bloxwap/hig-tokens": "0.1.0",
-    "@bloxwap/hig-contracts": "0.1.0",
-    "@radix-ui/react-dialog": "1.1.15",
-    "@radix-ui/react-dropdown-menu": "2.1.16",
-    "@radix-ui/react-popover": "1.1.15",
-    "@radix-ui/react-tooltip": "1.2.8"
+    "@bloxwap/hig-contracts": "0.1.0"
   },
   "repository": {
     "type": "git",

@@ -324,6 +324,10 @@
         "entry": "button",
         "signature": "export declare function Link({ href, children, onError }: React.PropsWithChildren<{\n    href: string;\n    onError?: (error: unknown) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "Checkbox": {
+        "entry": "checkbox",
+        "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
       "NumberProps": {
         "entry": "data",
         "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n}"
@@ -448,6 +452,14 @@
         "entry": "provider",
         "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void): [T, (next: T) => void];"
       },
+      "RadioGroup": {
+        "entry": "radio-group",
+        "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "SegmentedControl": {
+        "entry": "radio-group",
+        "signature": "export declare const SegmentedControl: typeof RadioGroup;"
+      },
       "MarketRow": {
         "entry": "recipes",
         "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
@@ -476,36 +488,24 @@
         "entry": "recipes",
         "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
-      "Choice": {
-        "entry": "selection",
-        "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
-      },
-      "Switch": {
-        "entry": "selection",
-        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
-      },
-      "Checkbox": {
-        "entry": "selection",
-        "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
-      },
-      "ChoicesProps": {
-        "entry": "selection",
-        "signature": "export interface ChoicesProps {\n    label: string;\n    options: readonly Choice[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (v: string) => void;\n}"
-      },
-      "RadioGroup": {
-        "entry": "selection",
-        "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
-      },
-      "SegmentedControl": {
-        "entry": "selection",
-        "signature": "export declare const SegmentedControl: typeof RadioGroup;"
-      },
       "Select": {
-        "entry": "selection",
+        "entry": "select",
         "signature": "export declare function Select(props: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "Choice": {
+        "entry": "selection-types",
+        "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
+      },
+      "CheckedProps": {
+        "entry": "selection-types",
+        "signature": "export interface CheckedProps {\n    label: string;\n    checked?: boolean;\n    defaultChecked?: boolean;\n    disabled?: boolean;\n    onCheckedChange?: (v: boolean) => void;\n}"
+      },
+      "ChoicesProps": {
+        "entry": "selection-types",
+        "signature": "export interface ChoicesProps {\n    label: string;\n    options: readonly Choice[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (v: string) => void;\n}"
+      },
       "Slider": {
-        "entry": "selection",
+        "entry": "slider",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (v: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Badge": {
@@ -579,6 +579,10 @@
       "Separator": {
         "entry": "surface",
         "signature": "export declare function Separator(): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "Switch": {
+        "entry": "switch",
+        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
       }
     }
   }

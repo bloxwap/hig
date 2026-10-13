@@ -5,90 +5,194 @@
     {
       "name": "agent-cli",
       "url": "https://github.com/bloxwap/agent-cli",
-      "applicability": "audit required; no runtime UI dependency by default",
+      "applicability": "no runtime UI (empty repository)",
       "owner": "agent-cli maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "No default branch/readme exists; apply HIG content/brand conventions when bootstrapped",
+      "migrationGuide": "docs/governance/adoption.md"
     },
     {
       "name": "hig",
       "url": "https://github.com/bloxwap/hig",
-      "applicability": "runtime/docs",
+      "applicability": "canonical guidelines/runtime/docs",
       "owner": "hig maintainers (assignment pending)",
       "status": "candidate in hig",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Review candidate; remote branch/PR writes and physical/source certification blocked",
+      "migrationGuide": "docs/governance/adoption.md"
     },
     {
       "name": "hyperliquid",
       "url": "https://github.com/bloxwap/hyperliquid",
-      "applicability": "runtime/docs",
+      "applicability": "SDK docs/interactive demos",
       "owner": "hyperliquid maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
+      "migrationGuide": "docs/migration/sdk-docs.md"
     },
     {
       "name": "sfx",
       "url": "https://github.com/bloxwap/sfx",
-      "applicability": "runtime/docs",
+      "applicability": "SDK docs/interactive demos",
       "owner": "sfx maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
+      "migrationGuide": "docs/migration/sdk-docs.md"
     },
     {
       "name": "haptic",
       "url": "https://github.com/bloxwap/haptic",
-      "applicability": "runtime/docs",
+      "applicability": "SDK docs/interactive demos",
       "owner": "haptic maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
+      "migrationGuide": "docs/migration/sdk-docs.md"
     },
     {
       "name": "font",
       "url": "https://github.com/bloxwap/font",
-      "applicability": "runtime/docs",
+      "applicability": "SDK docs/interactive demos",
       "owner": "font maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
+      "migrationGuide": "docs/migration/sdk-docs.md"
     },
     {
       "name": "chart",
       "url": "https://github.com/bloxwap/chart",
-      "applicability": "runtime/docs",
+      "applicability": "SDK docs/interactive demos",
       "owner": "chart maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
+      "migrationGuide": "docs/migration/sdk-docs.md"
     },
     {
       "name": ".github",
       "url": "https://github.com/bloxwap/.github",
-      "applicability": "audit required; no runtime UI dependency by default",
+      "applicability": "organization templates/content only",
       "owner": ".github maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "README only observed; reference versioned contribution/brand rules without runtime deps",
+      "migrationGuide": "docs/governance/adoption.md"
     },
     {
       "name": "bloxwap.github.io",
       "url": "https://github.com/bloxwap/bloxwap.github.io",
-      "applicability": "runtime/docs",
+      "applicability": "static docs/marketing hub",
       "owner": "bloxwap.github.io maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Root Pages site; shared brand/tokens/nav/search pilots require owning build validation",
+      "migrationGuide": "docs/governance/adoption.md"
     },
     {
       "name": "icons",
       "url": "https://github.com/bloxwap/icons",
-      "applicability": "audit required; no runtime UI dependency by default",
+      "applicability": "brand/icon asset source",
       "owner": "icons maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13"
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Do not import full catalog; upstream owns asset admission and provenance",
+      "migrationGuide": "docs/governance/adoption.md"
     },
     {
       "name": "dimension-adapters",
       "url": "https://github.com/bloxwap/dimension-adapters",
-      "applicability": "audit required; no runtime UI dependency by default",
+      "applicability": "no runtime UI; CLI/data adapters",
       "owner": "dimension-adapters maintainers (assignment pending)",
       "status": "guide only; owning repo changes outside authorization",
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "README adapter instructions; retain data/fees logic, use applicable content guidance only",
+      "migrationGuide": "docs/governance/adoption.md"
+    },
+    {
+      "name": "monorepo (external/inaccessible reference)",
+      "url": "https://github.com/bloxwap/monorepo",
+      "applicability": "app/Pro/marketing/native UI",
+      "owner": "product/native monorepo maintainers (assignment pending)",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "status": "blocked: referenced repository returns 404; user forbids owning repo pushes",
+      "remaining": "source audit, reviewed codemod/pilot changes, real builds/device evidence and measured deltas",
+      "exceptionExpires": "2026-11-13",
+      "migrationGuide": "docs/migration/products.md"
+    }
+  ],
+  "surfaces": [
+    {
+      "name": "bloxwap.app",
+      "repository": "monorepo (inaccessible)",
+      "owner": "product/native maintainers (assignment pending)",
+      "status": "guide/checklist only; owning migration not performed",
+      "guide": "docs/migration/products.md",
+      "owningPR": null,
+      "validatedVersion": null,
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "bloxwap.pro",
+      "repository": "monorepo (inaccessible)",
+      "owner": "product/native maintainers (assignment pending)",
+      "status": "guide/checklist only; owning migration not performed",
+      "guide": "docs/migration/products.md",
+      "owningPR": null,
+      "validatedVersion": null,
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "bloxwap.com",
+      "repository": "monorepo (inaccessible)",
+      "owner": "product/native maintainers (assignment pending)",
+      "status": "guide/checklist only; owning migration not performed",
+      "guide": "docs/migration/products.md",
+      "owningPR": null,
+      "validatedVersion": null,
+      "exceptionExpires": "2026-11-13"
+    },
+    {
+      "name": "React Native app",
+      "repository": "monorepo (inaccessible)",
+      "owner": "product/native maintainers (assignment pending)",
+      "status": "guide/checklist only; owning migration not performed",
+      "guide": "docs/migration/native.md",
+      "owningPR": null,
+      "validatedVersion": null,
       "exceptionExpires": "2026-11-13"
     }
-  ]
+  ],
+  "sourceDecisions": {
+    "agent-cli": "gh repo view: empty defaultBranchRef, README 404",
+    ".github": "main README # .github",
+    "dimension-adapters": "master README contains CLI/data-adapter tasks",
+    "bloxwap.github.io": "main README identifies root GitHub Pages docs site"
+  }
 }
