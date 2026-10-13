@@ -17,6 +17,19 @@ await page.keyboard.press('ArrowRight');
 assert.equal(await page.getByRole('tab',{name:'Code',exact:true}).getAttribute('aria-selected'),'true');
 assert.equal(await page.getByRole('button',{name:'Unavailable example',exact:true}).isDisabled(),true);
 assert.equal(await page.getByRole('button',{name:'Busy example',exact:false}).isDisabled(),true);
+if(stage==='m3'){
+ assert.equal(await page.evaluate(()=>performance.getEntriesByType('resource').some(r=>r.name.includes('bloxwap_sfx'))),false);
+ await page.getByRole('switch',{name:'Sound',exact:true}).check();
+ await page.getByRole('button',{name:'Review order',exact:true}).click();
+ await page.keyboard.press('Escape');
+ await page.waitForTimeout(300);
+ assert.equal(await page.getByRole('switch',{name:'Sound',exact:true}).isChecked(),true);
+ await page.reload({waitUntil:'networkidle'});
+ await page.getByRole('switch',{name:'Sound',exact:true}).waitFor();
+ await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bloxwap.hig.feedback.v1')??'{}').sound===true);
+ assert.equal(await page.getByRole('switch',{name:'Sound',exact:true}).isChecked(),true);
+ await page.getByRole('switch',{name:'Sound',exact:true}).uncheck();
+}
 const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
 const violations=axe.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));
 assert.deepEqual(violations.filter(v=>v.impact==='serious'||v.impact==='critical'),[]);

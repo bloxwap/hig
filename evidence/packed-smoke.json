@@ -2,6 +2,7 @@
   "version": "0.1.0",
   "packages": [
     "@bloxwap/hig-contracts",
+    "@bloxwap/hig-feedback",
     "@bloxwap/hig-native",
     "@bloxwap/hig-react",
     "@bloxwap/hig-tokens"
