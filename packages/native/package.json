@@ -55,19 +55,47 @@
     "./recipes": {
       "types": "./dist/recipes.d.ts",
       "import": "./dist/recipes.js"
+    },
+    "./switch": {
+      "types": "./dist/switch.d.ts",
+      "import": "./dist/switch.js"
+    },
+    "./checkbox": {
+      "types": "./dist/checkbox.d.ts",
+      "import": "./dist/checkbox.js"
+    },
+    "./radio-group": {
+      "types": "./dist/radio-group.d.ts",
+      "import": "./dist/radio-group.js"
+    },
+    "./select": {
+      "types": "./dist/select.d.ts",
+      "import": "./dist/select.js"
+    },
+    "./slider": {
+      "types": "./dist/slider.d.ts",
+      "import": "./dist/slider.js"
+    },
+    "./segmented-control": {
+      "types": "./dist/radio-group.d.ts",
+      "import": "./dist/radio-group.js"
     }
   },
   "peerDependencies": {
     "react": "^19.1.0",
     "react-native": "^0.81.5",
     "react-native-svg": "15.12.1",
-    "@react-native-community/slider": "5.0.1"
+    "@react-native-community/slider": "5.0.1",
+    "react-native-safe-area-context": "~5.6.0"
   },
   "peerDependenciesMeta": {
     "react-native-svg": {
       "optional": true
     },
     "@react-native-community/slider": {
+      "optional": true
+    },
+    "react-native-safe-area-context": {
       "optional": true
     }
   },

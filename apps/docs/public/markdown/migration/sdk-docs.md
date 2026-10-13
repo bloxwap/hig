@@ -1,0 +1,22 @@
+# Five SDK documentation pilots (#34)
+
+Owner: each SDK repository's docs maintainers; assignment pending. Exception review: 2026-11-13. Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. No owning-repo PR/push/build is performed in this task.
+
+| Repository | Shared presentation | Distinctive feature to preserve | Remaining owner validation |
+| --- | --- | --- | --- |
+| hyperliquid | Font/tokens, shell/nav/search, code/install/copy/callout/forms/states | Market playground and live SDK request handling | Production/static export, query/deep links, market demo errors/loading, copy/search/mobile keyboard |
+| chart | Same shell/controls plus HIG chart theme | Chart preview, drawings/controls, pan/zoom/crosshair and WASM/worker paths | Canvas/text summary, gesture responsiveness, base assets, chart-specific demos remain optional |
+| font | Type roles, common controls/geometry and code windows | Type tester, glyph coverage, variable axes and locale companions | Font licensing/provenance, subsets/bytes, scripts/RTL/large text and tester functionality |
+| sfx | Controls/presets/settings/docs states | Sound board and recipe editor/export | Trusted audio unlock, mute/volume, edited recipes, native WAV command docs and cleanup |
+| haptic | Common controls and explicit capability labels | Physical-target/platform demo and certification references | Physical iOS/Android/VoiceOver evidence remains upstream haptic#9; no API-call-as-tactile-proof claims |
+
+Per-repo checklist:
+- [ ] Pin source commit, HIG version and staged tarballs; capture before pages and duplicate CSS/primitive/font/audio/dependency/bundle baseline.
+- [ ] Inventory each existing apps/docs shell, static base path, metadata, search/index adapter, CSS/Next font loader and copy/install control.
+- [ ] Preview import mapping; preserve API props, router/search and SDK-specific business/demo logic. Plain HTML surfaces can use tokens/CSS alone.
+- [ ] Migrate one shared shell/control page behind a rollback flag; preserve Fumadocs conventions or host equivalent and existing deep-link/base URLs.
+- [ ] Execute that repo's production/static build and distinctive demo. Verify asset paths, keyboard/search/copy/mobile nav, loading/error/offline states, large text/RTL, and muted feedback.
+- [ ] Compare equivalent screenshots and measured CSS/font/runtime bytes. Remove old files only after references are gone and tests pass.
+- [ ] Update five separate adoption rows with owning PR URL, validated version, current gaps and rollback commit. Do not combine them into an unsupported “all migrated” claim.
+
+Rollback: restore previous package lock/imports and shell flag per repo. Retain SDK demos and deep links. New shared HIG adoption must not change published SDK API examples.

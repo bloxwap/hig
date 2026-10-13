@@ -11,7 +11,8 @@ for(const manifest of manifests){
  const pack=JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
  if(name!=='native')tarballs.push(resolve('artifacts',pack[0].filename));
 }
-writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',devDependencies:{vite:'6.4.1'},dependencies:{'@bloxwap/haptic':'0.1.0','@bloxwap/sfx':'0.1.0','@bloxwap/font':'0.1.2',react:'19.1.0','react-dom':'19.1.0'}},null,2));
+writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',devDependencies:{vite:'6.4.1'},dependencies:{...JSON.parse(readFileSync('fixtures/web/package.json','utf8')).dependencies,'@bloxwap/haptic':'0.1.0','@bloxwap/sfx':'0.1.0','@bloxwap/font':'0.1.2',react:'19.1.0','react-dom':'19.1.0'}},null,2));
+const consumerManifest=JSON.parse(readFileSync(join(dir,'package.json'),'utf8'));for(const key of Object.keys(consumerManifest.dependencies))if(key.startsWith('@bloxwap/hig-'))delete consumerManifest.dependencies[key];writeFileSync(join(dir,'package.json'),JSON.stringify(consumerManifest));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 writeFileSync(join(dir,'smoke.mjs'),`import assert from 'node:assert/strict';
 import React from 'react'; import {renderToString} from 'react-dom/server';

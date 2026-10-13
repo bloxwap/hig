@@ -1,0 +1,290 @@
+[
+  {
+    "issue": 1,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Roadmap and all milestone coverage; full adoption/device acceptance pending."
+  },
+  {
+    "issue": 2,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Pinned audit/catalog/baselines; monorepo 404 and product-origin evidence unavailable."
+  },
+  {
+    "issue": 3,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Practical HIG principles and paired do/don\u2019t examples."
+  },
+  {
+    "issue": 4,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Package architecture, canonical ownership and compatibility ADR."
+  },
+  {
+    "issue": 5,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Workspace, clean web/SSR/Next/Expo consumers; physical execution pending."
+  },
+  {
+    "issue": 6,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Typed semantic tokens and generated web/native colors; authored monorepo OKLCH/P3 comparison unavailable."
+  },
+  {
+    "issue": 7,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Published Font web integration; typed native manifest stub because upstream native exports are absent."
+  },
+  {
+    "issue": 8,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Spacing/density/adaptive layout guidance; product/device comparison pending."
+  },
+  {
+    "issue": 9,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Motion/reduced-motion/cancellation guidance; native gesture certification pending."
+  },
+  {
+    "issue": 10,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Accessibility/localization standards and automated semantics; VoiceOver/TalkBack devices pending."
+  },
+  {
+    "issue": 11,
+    "branch": "hig/m1-foundations",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Pinned approved mark and individual web/native renderers; derived social assets/device parity pending."
+  },
+  {
+    "issue": 12,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Provider/state/cancellation contracts, SSR/hydration/StrictMode checks; physical review pending."
+  },
+  {
+    "issue": 13,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Actions/surfaces and keyboard/busy behavior; source/font/device parity pending."
+  },
+  {
+    "issue": 14,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Labeled fields/raw amounts; native IME/locale device observations pending."
+  },
+  {
+    "issue": 15,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Selection/range/segmented controls with individual native entries; physical drag/AT review pending."
+  },
+  {
+    "issue": 16,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Radix overlays and native alternatives; advanced native detents/gesture/focus validation pending."
+  },
+  {
+    "issue": 17,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Navigation/disclosure/search and RTL behavior; native translated/hardware keyboard review pending."
+  },
+  {
+    "issue": 18,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Visible persistent status/notification/loading/empty states; native announcements pending."
+  },
+  {
+    "issue": 19,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Locale financial display/table/native list; production list performance/baseline pending."
+  },
+  {
+    "issue": 20,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Optional lazy chart and native readout alternative; native chart engine/product gestures unavailable."
+  },
+  {
+    "issue": 21,
+    "branch": "hig/m3-feedback",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Semantic event contract implemented and committed before adapters."
+  },
+  {
+    "issue": 22,
+    "branch": "hig/m3-feedback",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "SFX/Haptic web adapters and three desktop browser engines; upstream iOS/cancellation/hardware gaps explicit."
+  },
+  {
+    "issue": 23,
+    "branch": "hig/m3-feedback",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Versioned WAV pipeline and native audio adapter/Metro assets; physical playback observations pending."
+  },
+  {
+    "issue": 24,
+    "branch": "hig/m3-feedback",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Expo native haptic adapter/capability matrix; physical output/settings certification pending."
+  },
+  {
+    "issue": 25,
+    "branch": "hig/m3-feedback",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Presets/preferences/migration/isolation and copied configuration; hardware observations pending."
+  },
+  {
+    "issue": 26,
+    "branch": "hig/m2-components",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Web/native product/docs/marketing recipes and semantic feedback; production visual comparison pending."
+  },
+  {
+    "issue": 27,
+    "branch": "hig/m4-docs",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Generated responsive docs shell/catalog/search/static routes."
+  },
+  {
+    "issue": 28,
+    "branch": "hig/m4-docs",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "198 catalog states + eight configs compile from packed artifacts; physical native captures pending."
+  },
+  {
+    "issue": 29,
+    "branch": "hig/m4-docs",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Live preset/feedback playground and copied configuration verified."
+  },
+  {
+    "issue": 30,
+    "branch": "hig/m4-docs",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Versioned practical docs/API/install/migration/governance; NativeWind/product mappings unverified."
+  },
+  {
+    "issue": 31,
+    "branch": "hig/m5-release-adoption",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Read-only CI, 56 tests, packed/browser/visual/size/drift gates; physical and approved visual baseline gaps explicit."
+  },
+  {
+    "issue": 32,
+    "branch": "hig/m5-release-adoption",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Dry-run candidate/stable artifacts, coordinated versions/provenance/rollback; publishing prohibited."
+  },
+  {
+    "issue": 33,
+    "branch": "hig/m5-release-adoption",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Three product migration kits/codemod/checklists complete locally; owning repo implementation required."
+  },
+  {
+    "issue": 34,
+    "branch": "hig/m5-release-adoption",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Five distinct SDK migration kits complete locally; owners must migrate/build demos."
+  },
+  {
+    "issue": 35,
+    "branch": "hig/m5-release-adoption",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Native migration kit/codemod/checklist complete locally; owning app and devices required."
+  },
+  {
+    "issue": 36,
+    "branch": "hig/m5-release-adoption",
+    "pr": null,
+    "status": "blocked",
+    "reason": "GitHub Contents write denied (HTTP 403); branch and PR body remain local.",
+    "localNotes": "Org applicability/adoption/governance/anti-drift kit; named owner assignments and production adoption pending."
+  }
+]

@@ -2,16 +2,20 @@
 import React,{useState} from 'react';
 import * as Brand from '@bloxwap/hig-native/brand';
 import * as Button from '@bloxwap/hig-native/button';
+import * as Checkbox from '@bloxwap/hig-native/checkbox';
 import * as Data from '@bloxwap/hig-native/data';
 import * as Field from '@bloxwap/hig-native/field';
 import * as Navigation from '@bloxwap/hig-native/navigation';
 import * as Overlay from '@bloxwap/hig-native/overlay';
 import * as Provider from '@bloxwap/hig-native/provider';
+import * as RadioGroup from '@bloxwap/hig-native/radio-group';
 import * as Recipes from '@bloxwap/hig-native/recipes';
-import * as Selection from '@bloxwap/hig-native/selection';
+import * as Select from '@bloxwap/hig-native/select';
+import * as Slider from '@bloxwap/hig-native/slider';
 import * as Status from '@bloxwap/hig-native/status';
 import * as Surface from '@bloxwap/hig-native/surface';
-const C={...Brand,...Button,...Data,...Field,...Navigation,...Overlay,...Provider,...Recipes,...Selection,...Status,...Surface};
+import * as Switch from '@bloxwap/hig-native/switch';
+const C={...Brand,...Button,...Checkbox,...Data,...Field,...Navigation,...Overlay,...Provider,...RadioGroup,...Recipes,...Select,...Slider,...Status,...Surface,...Switch};
 export function Example({name,state='default'}:{name:string;state?:string}){const empty=state==='empty';const [checked,setChecked]=useState(false);const [value,setValue]=useState('buy');const [range,setRange]=useState(25);const [open,setOpen]=useState(false);const [amount,setAmount]=useState('0.01');const [message,setMessage]=useState('');const [notices,setNotices]=useState([{id:'1',message:'Demo copied',severity:'success' as const}]);const choices=[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}];const rows=empty?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];const busy=state==='busy',disabled=state==='disabled',error=state==='error'?'Data unavailable. Retry when connected.':undefined;
 function preview(){switch(name){case "Button":return <C.Button busy={busy} disabled={disabled}>Review order</C.Button>;
 case "IconButton":return <C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>;
@@ -71,9 +75,9 @@ case "HIGProvider":return <C.Surface><C.Text>Density, locale and motion are scop
 case "MarketRow":return <C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>;
 case "BalanceCard":return <C.BalanceCard label='Sample balance' balance={empty?null:1250.45} stale={!!error}/>;
 case "TradeEntry":return <C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>;
-case "InstallCommand":return <C.InstallCommand command='npm install @bloxwap/hig-native@0.1.0' onCopy={()=>{setMessage('Host clipboard adapter requested');}}/>;
+case "InstallCommand":return <C.InstallCommand command='npm install @bloxwap/hig-native@0.1.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>;
 case "CodeWindow":return <C.CodeWindow language='TypeScript'>{'const rawAmount = decimalString;'}</C.CodeWindow>;
 case "MarketingHero":return <C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>;
 case "ActivityList":return <C.ActivityList items={empty?[]:[{id:'1',label:'Demo review',status:'Awaiting host confirmation'}]}/>;
 case "PriceChart":return <C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>;
-default:return <C.Text>Platform example unavailable.</C.Text>;}}return <C.Stack>{preview()}{message&&<C.Text>{message}</C.Text>}</C.Stack>;}
+default:return <C.Text>Platform example unavailable.</C.Text>;}}return <C.Stack style={['List','Table','PriceChart','ActivityList'].includes(name)?{flex:1}:undefined}>{preview()}{message&&<C.Text>{message}</C.Text>}</C.Stack>;}
