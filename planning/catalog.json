@@ -1,0 +1,168 @@
+{
+  "version": "0.1.0",
+  "status": "candidate; reconcile unavailable monorepo usage before v1",
+  "families": [
+    {
+      "issue": 13,
+      "family": "actions-surfaces",
+      "web": "planned",
+      "native": "native renderers",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 14,
+      "family": "fields",
+      "web": "planned",
+      "native": "native text input",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 15,
+      "family": "selection",
+      "web": "planned",
+      "native": "native controls or labeled alternatives",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 16,
+      "family": "overlays",
+      "web": "planned",
+      "native": "Modal; no hover tooltip",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 17,
+      "family": "navigation",
+      "web": "planned",
+      "native": "host route adapters",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 18,
+      "family": "status",
+      "web": "planned",
+      "native": "inline live messages",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 19,
+      "family": "financial-data",
+      "web": "planned",
+      "native": "readouts and lists; no DOM table",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 20,
+      "family": "chart",
+      "web": "planned",
+      "native": "text/list summary; canvas unsupported",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    },
+    {
+      "issue": 26,
+      "family": "recipes",
+      "web": "planned",
+      "native": "host-owned actions",
+      "owner": "HIG maintainers",
+      "states": [
+        "rest",
+        "focus",
+        "pressed",
+        "busy",
+        "disabled",
+        "error",
+        "empty",
+        "large-text",
+        "reduced-motion"
+      ]
+    }
+  ]
+}

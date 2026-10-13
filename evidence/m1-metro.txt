@@ -1,0 +1,34 @@
+
+> bundle
+> expo export --platform android --platform ios
+
+Starting Metro Bundler
+| (node:1861738) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:1861739) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:1861745) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:1861747) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:1861752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:1861763) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Android fixtures/native/index.js ▓▓▓▓▓▓░░░░░░░░░░ 40.3% (221/348)
+iOS fixtures/native/index.js ▓▓░░░░░░░░░░░░░░ 15.7% ( 88/222)
+Android fixtures/native/index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.8% (554/569)
+iOS fixtures/native/index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (573/573)
+Android Bundled 7643ms fixtures/native/index.js (569 modules)
+iOS Bundled 8866ms fixtures/native/index.js (573 modules)
+
+› android bundles (1):
+_expo/static/js/android/index-e197aa067872a7a802dcea70f8bba5a2.hbc (1.73 MB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-547ac1fa0bfe92b30037a2621a6fe09b.hbc (1.72 MB)
+
+› Files (1):
+metadata.json (244 B)
+
+Exported: dist

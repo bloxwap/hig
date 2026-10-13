@@ -1,0 +1,46 @@
+{
+  "name": "bloxwap-hig-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "fixtures/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.22"
+  },
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "build": "npm run generate && node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && node scripts/check-drift.mjs",
+    "test": "vitest run",
+    "check": "npm run build && npm run lint && npm run typecheck && npm test",
+    "dev": "vite fixtures/web --host 0.0.0.0",
+    "smoke:ssr": "node fixtures/ssr/smoke.mjs",
+    "smoke:packed": "node scripts/packed-smoke.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@bloxwap/font": "0.1.2",
+    "@eslint/js": "9.39.1",
+    "@playwright/test": "^1.56.1",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "22.18.10",
+    "@types/react": "19.1.16",
+    "@types/react-dom": "19.1.9",
+    "eslint": "9.39.1",
+    "globals": "16.4.0",
+    "jsdom": "26.1.0",
+    "node": "22.22.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.1",
+    "vite": "6.4.1",
+    "vitest": "3.2.4"
+  }
+}

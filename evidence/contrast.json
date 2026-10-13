@@ -1,0 +1,49 @@
+{
+  "version": "0.1.0",
+  "space": "sRGB fallback",
+  "pairs": [
+    {
+      "fg": "text",
+      "bg": "background",
+      "ratio": 18.97,
+      "aa": true
+    },
+    {
+      "fg": "text",
+      "bg": "surface",
+      "ratio": 17.18,
+      "aa": true
+    },
+    {
+      "fg": "muted",
+      "bg": "surface",
+      "ratio": 6.94,
+      "aa": true
+    },
+    {
+      "fg": "faint",
+      "bg": "surface",
+      "ratio": 4.86,
+      "aa": true
+    },
+    {
+      "fg": "onAction",
+      "bg": "action",
+      "ratio": 14.5,
+      "aa": true
+    },
+    {
+      "fg": "negative",
+      "bg": "surface",
+      "ratio": 5.92,
+      "aa": true
+    },
+    {
+      "fg": "warning",
+      "bg": "surface",
+      "ratio": 9.67,
+      "aa": true
+    }
+  ],
+  "p3": "Not device-certified; use tested fallback if uncertain"
+}
