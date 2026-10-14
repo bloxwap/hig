@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "issue": 47,
+  "glossary": "docs/foundations/glossary.json",
+  "helper": {
+    "package": "@bloxwap/hig-contracts",
+    "function": "formatNumber",
+    "note": "Display only. Null/non-finite values render as —. Keep raw decimal strings in transaction logic."
+  },
+  "components": {
+    "NumberReadout": "Pass host precision via Intl options; locale comes from HIGProvider.",
+    "Usd": "ISO USD only (currency: 'USD'). Do not use for USDC collateral.",
+    "Percent": "Input is percent points: 5 means 5%. The component divides by 100 and forces style: 'percent'."
+  },
+  "rules": {
+    "displayIsNotArithmetic": true,
+    "unknownValue": "—",
+    "zeroValue": "0",
+    "percentInput": "percent-points",
+    "usdCurrencyCode": "USD",
+    "usdcCurrencyCode": null,
+    "usdcTicker": "USDC",
+    "leverageSuffix": "×",
+    "pnlSignDisplay": "exceptZero",
+    "compactDisplay": "short",
+    "fundingTimeZone": "UTC",
+    "displayTimeZone": "host-or-device, always named"
+  },
+  "locales": {
+    "en-US": {
+      "status": "approved",
+      "direction": "ltr",
+      "numberingSystem": "latn",
+      "decimal": ".",
+      "group": ",",
+      "hourCycle": "h12",
+      "currencyPlacement": "symbol-first",
+      "usdcPattern": "{amount} USDC",
+      "leverageExample": "10×",
+      "examples": {
+        "number": { "value": 1234.5, "options": {}, "formatted": "1,234.5" },
+        "price": { "value": 67234.56, "options": { "minimumFractionDigits": 2, "maximumFractionDigits": 2 }, "formatted": "67,234.56" },
+        "usd": { "value": 1234.5, "options": { "style": "currency", "currency": "USD" }, "formatted": "$1,234.50" },
+        "pnlPositive": { "value": 12.34, "options": { "style": "currency", "currency": "USD", "signDisplay": "exceptZero" }, "formatted": "+$12.34" },
+        "pnlNegative": { "value": -12.34, "options": { "style": "currency", "currency": "USD", "signDisplay": "exceptZero" }, "formatted": "-$12.34" },
+        "compactK": { "value": 1200, "options": { "notation": "compact", "compactDisplay": "short", "maximumFractionDigits": 1 }, "formatted": "1.2K" },
+        "compactM": { "value": 3400000, "options": { "notation": "compact", "compactDisplay": "short", "maximumFractionDigits": 1 }, "formatted": "3.4M" },
+        "percentPositive": { "value": 0.025, "options": { "style": "percent", "minimumFractionDigits": 1, "signDisplay": "exceptZero" }, "formatted": "+2.5%" },
+        "percentNegative": { "value": -0.025, "options": { "style": "percent", "minimumFractionDigits": 1, "signDisplay": "exceptZero" }, "formatted": "-2.5%" }
+      }
+    },
+    "de-DE": {
+      "status": "formatting-fixture",
+      "direction": "ltr",
+      "numberingSystem": "latn",
+      "decimal": ",",
+      "group": ".",
+      "hourCycle": "h23",
+      "currencyPlacement": "symbol-after",
+      "note": "Used in HIG number tests. Not an approved glossary locale.",
+      "examples": {
+        "number": { "value": 1234.5, "options": {}, "formatted": "1.234,5" },
+        "usd": { "value": 1234.5, "options": { "style": "currency", "currency": "USD" }, "formatted": "1.234,50 $" },
+        "pnlPositive": { "value": 12.34, "options": { "style": "currency", "currency": "USD", "signDisplay": "exceptZero" }, "formatted": "+12,34 $" },
+        "compactM": { "value": 3400000, "options": { "notation": "compact", "compactDisplay": "short", "maximumFractionDigits": 1 }, "formatted": "3,4 Mio." },
+        "percentPositive": { "value": 0.025, "options": { "style": "percent", "minimumFractionDigits": 1, "signDisplay": "exceptZero" }, "formatted": "+2,5 %" }
+      }
+    },
+    "ar-EG": {
+      "status": "formatting-fixture",
+      "direction": "rtl",
+      "numberingSystem": "arab",
+      "hourCycle": "h12",
+      "currencyPlacement": "symbol-after",
+      "note": "Used in HIG percent tests. RTL is a layout direction. Not an approved glossary locale. Preserve bidi isolates from Intl; do not strip them.",
+      "examples": {
+        "number": { "value": 1234.5, "options": {}, "formatted": "١٬٢٣٤٫٥" },
+        "percentPositive": { "value": 0.05, "options": { "style": "percent", "maximumFractionDigits": 3 }, "formatted": "٥٪؜" }
+      }
+    }
+  }
+}
