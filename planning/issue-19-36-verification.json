@@ -102,7 +102,7 @@
     {
       "issue": 30,
       "status": "partial",
-      "proof": "206 packed examples; packed Vite/SSR/Next/Metro consumers; tests/docs.test.ts",
+      "proof": "212 packed examples; packed Vite/SSR/Next/Metro consumers; tests/docs.test.ts",
       "remainingBlockers": [
         "NativeWind/rem-root integration remains outside the declared verified support matrix; the private product mapping needs an owning-repository integration/build before it can be documented as supported.",
         "The merged source audit reconciles 129 source files; approved product-specific migration mappings and NativeWind host integration/build remain owning-product work."
