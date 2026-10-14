@@ -20,3 +20,24 @@ Per-repo checklist:
 - [ ] Update five separate adoption rows with owning PR URL, validated version, current gaps and rollback commit. Do not combine them into an unsupported “all migrated” claim.
 
 Rollback: restore previous package lock/imports and shell flag per repo. Retain SDK demos and deep links. New shared HIG adoption must not change published SDK API examples.
+
+## Compact source comparison
+
+The October 14 review of the five local checkout revisions found the following
+presentation baseline. These are source line counts, including product-specific
+styles, comments and formatting; they are not an estimate of removable CSS.
+
+| Site revision | Global CSS lines | Migration difference |
+| --- | ---: | --- |
+| [Hyperliquid 53159f1](https://github.com/bloxwap/hyperliquid/tree/53159f1/apps/docs) | 1,034 | Semantic color aliases and 160 ms interaction timing. |
+| [Chart 8c71c71](https://github.com/bloxwap/chart/tree/8c71c71/apps/docs) | 440 | Nunito/Maple Mono remain; preserve chart previews. |
+| [Font b406391](https://github.com/bloxwap/font/tree/b406391/apps/docs) | 703 | Hex neutrals, specimen typography and wrapping buttons. |
+| [SFX 217eacb](https://github.com/bloxwap/sfx/tree/217eacb/apps/docs) | 509 | Preserve sound-board and playback behavior. |
+| [Haptic b546223](https://github.com/bloxwap/haptic/tree/b546223/apps/docs) | 416 | Preserve platform capability and feedback demos. |
+
+Hyperliquid, Chart and SFX have byte-identical 172-line token snapshots;
+Haptic's declarations match with a different provenance comment. Chart, SFX
+and Haptic also repeat the same button and search recipes. Use the existing
+HIG token/component packages for shared behavior, and keep the written guide
+compact with **rule → token or recipe → exception** rather than duplicating the
+five implementations.

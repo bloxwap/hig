@@ -721,6 +721,27 @@ Per-repo checklist:
 
 Rollback: restore previous package lock/imports and shell flag per repo. Retain SDK demos and deep links. New shared HIG adoption must not change published SDK API examples.
 
+## Compact source comparison
+
+The October 14 review of the five local checkout revisions found the following
+presentation baseline. These are source line counts, including product-specific
+styles, comments and formatting; they are not an estimate of removable CSS.
+
+| Site revision | Global CSS lines | Migration difference |
+| --- | ---: | --- |
+| [Hyperliquid 53159f1](https://github.com/bloxwap/hyperliquid/tree/53159f1/apps/docs) | 1,034 | Semantic color aliases and 160 ms interaction timing. |
+| [Chart 8c71c71](https://github.com/bloxwap/chart/tree/8c71c71/apps/docs) | 440 | Nunito/Maple Mono remain; preserve chart previews. |
+| [Font b406391](https://github.com/bloxwap/font/tree/b406391/apps/docs) | 703 | Hex neutrals, specimen typography and wrapping buttons. |
+| [SFX 217eacb](https://github.com/bloxwap/sfx/tree/217eacb/apps/docs) | 509 | Preserve sound-board and playback behavior. |
+| [Haptic b546223](https://github.com/bloxwap/haptic/tree/b546223/apps/docs) | 416 | Preserve platform capability and feedback demos. |
+
+Hyperliquid, Chart and SFX have byte-identical 172-line token snapshots;
+Haptic's declarations match with a different provenance comment. Chart, SFX
+and Haptic also repeat the same button and search recipes. Use the existing
+HIG token/component packages for shared behavior, and keep the written guide
+compact with **rule → token or recipe → exception** rather than duplicating the
+five implementations.
+
 
 ## Documentation website and migration shell · HIG 0.1.0
 Source: docs/website.md
@@ -733,7 +754,9 @@ HIG uses Next.js static export and Fumadocs, matching the sibling SDK sites. SFX
 
 `apps/docs/source.config.ts` defines the MDX collection; `lib/source.ts` supplies the page tree. `app/docs/[[...slug]]` renders Fumadocs titles, TOCs, code, navigation and source/edit links. `components/provider.tsx` and `search.tsx` provide the dark theme and static Orama search at `search.json`. Fonts, palette and preview controls import the shipped Bloxwap font and HIG packages. Fumadocs owns the responsive navigation, accessible search dialog and document shell.
 
-Run `npm run build` before `npm run dev:docs` to build package declarations. `npm run build:docs` generates the collection, builds Next and copies its static export to `apps/docs/dist`. Preview with `node scripts/preview-docs.mjs` at `http://localhost:4174/hig/`. The default base path is `/hig`; override `NEXT_PUBLIC_BASE_PATH` without a trailing slash and `HIG_DOCS_ORIGIN` for another static host. Every canonical document lives under `/docs/`. Explicit static redirect documents retain the previous `/guides/*`, `/components/*` and `/catalog/` URLs, including their query and fragment. Sitemap, Markdown and LLM exports ship in the same artifact. No deployment is part of the build.
+Run `npm ci`, then `bun docs:dev` or `npm run docs:dev`. Turbo's terminal UI prepares package declarations, examples and guides before starting Next at `http://localhost:3905/`, with documents under `/docs/`. `npm run dev:docs` is an alias. Use `bun docs:dev --ui=stream` for plain terminal logs. `bun docs:check` and `bun docs:build` also prepare their required package outputs.
+
+`npm run build:docs` generates the collection, builds Next and copies its static export to `apps/docs/dist`. Preview with `bun docs:preview` at `http://localhost:4174/hig/`. The static build defaults to `/hig`, while development defaults to the host root; override `NEXT_PUBLIC_BASE_PATH` without a trailing slash and `HIG_DOCS_ORIGIN` for another host. Every canonical document lives under `/docs/`. Explicit static redirect documents retain the previous `/guides/*`, `/components/*` and `/catalog/` URLs, including their query and fragment. Sitemap, Markdown and LLM exports ship in the same artifact. No deployment is part of the build.
 
 The homepage retains the bounded playground: App/Pro/Docs presets, supported states, locale/direction contracts, independent sound/haptics/motion settings, volume, matching Get Code, and validated share configuration. Native examples are real RN components in the Expo gallery. Device screenshots, VoiceOver/TalkBack and physical feedback observations remain pending. Live examples use sample host-owned actions and never submit orders or call a wallet.
 

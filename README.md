@@ -2,6 +2,17 @@
 
 HIG **0.1.0 candidate**: a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. This is a review candidate, not a published or device-certified v1.
 
+## Local documentation
+
+Install the workspace with `npm ci`, then run `bun docs:dev` (or `npm run docs:dev`).
+Turbo prepares the packages and generated guides, then opens the docs task in its
+terminal UI at [localhost:3905](http://localhost:3905). Press `Ctrl+C` to stop;
+use `bun docs:dev --ui=stream` for plain logs. `bun docs:check`, `bun docs:build`,
+and `bun docs:preview` provide the matching docs commands. The static build and
+preview retain `/hig`; `NEXT_PUBLIC_BASE_PATH` overrides either mode explicitly.
+
+## Candidate validation
+
 ```sh
 npm ci
 npm run check

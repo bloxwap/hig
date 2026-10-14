@@ -1,0 +1,48 @@
+/* Shared SDK docs presentation, using the canonical HIG token package. */
+::selection {
+  background: color-mix(in srgb, var(--hig-action) 25%, transparent);
+  color: var(--hig-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--hig-focus);
+  outline-offset: 3px;
+}
+
+button[data-search-full] {
+  height: 2.25rem;
+  gap: var(--hig-space-sm);
+  padding: 0 var(--hig-space-xs) 0 var(--hig-space-md);
+  border: 0;
+  border-radius: 9999px;
+  background: var(--hig-surface);
+  color: var(--hig-muted);
+}
+
+button[data-search-full]:hover {
+  background: var(--hig-nested);
+  color: var(--hig-text);
+}
+
+button[data-search-full] kbd {
+  border: 0;
+  border-radius: 9999px;
+  background: var(--hig-nested);
+  color: var(--hig-text);
+  font-family: var(--font-bloxwap-mono), monospace;
+}
+
+#nd-sidebar div:has(> a[aria-label='GitHub']) {
+  border: 0;
+  background: none;
+}
+
+.page-nav > a {
+  border: 0;
+  background: var(--hig-surface);
+}
+
+.page-nav > a:hover {
+  background: var(--hig-nested);
+  color: var(--hig-action);
+}
