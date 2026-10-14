@@ -45,6 +45,7 @@ jobs:
           path: |
             evidence/
             artifacts/*.tgz
+            artifacts/visual/
             artifacts/release-candidate/
             apps/docs/dist/
             apps/docs/out/

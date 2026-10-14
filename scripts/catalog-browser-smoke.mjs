@@ -13,6 +13,7 @@ try{
  const entries=process.env.HIG_VISUAL_ONLY==='1'?catalog.filter(e=>baselineNames.has(e.name)):catalog;
  for(const entry of entries){
   await page.goto((process.env.HIG_DOCS_PREVIEW_URL??'http://localhost:4174/hig/')+'docs/'+entry.route+'/',{waitUntil:'networkidle'});
+  await page.evaluate(()=>document.fonts.ready);
   await page.locator('.example-frame').waitFor();
   for(const state of entry.states){
    await page.getByRole('combobox',{name:'Example state',exact:true}).selectOption(state);
@@ -21,7 +22,7 @@ try{
    assert.deepEqual(axe.violations,[],`${entry.name}/${state} accessibility`);assert.deepEqual(errors,[],`${entry.name}/${state} runtime`);
    const file=`artifacts/visual/${entry.slug}-${state}.png`;await page.locator('.example-frame').screenshot({path:file,animations:'disabled',caret:'hide'});
    let regression=null;
-   if(baselineNames.has(entry.name)){const baseline=`tests/visual-baselines/${entry.slug}-${state}.png`;if(process.env.HIG_UPDATE_VISUALS==='1'){writeFileSync(baseline,readFileSync(file));regression={updated:true};}else{assert.equal(existsSync(baseline),true,`Missing visual baseline: ${baseline}`);regression=compareVisual(readFileSync(file),readFileSync(baseline));}}
+   if(baselineNames.has(entry.name)){const baseline=`tests/visual-baselines/${entry.slug}-${state}.png`;if(process.env.HIG_UPDATE_VISUALS==='1'){writeFileSync(baseline,readFileSync(file));regression={updated:true};}else{assert.equal(existsSync(baseline),true,`Missing visual baseline: ${baseline}`);try{regression=compareVisual(readFileSync(file),readFileSync(baseline));}catch(error){mkdirSync('evidence/visual-actuals',{recursive:true});writeFileSync(`evidence/visual-actuals/${entry.slug}-${state}.png`,readFileSync(file));writeFileSync(`evidence/visual-actuals/${entry.slug}-${state}.txt`,String(error?.message??error));throw error;}}}
    results.push({name:entry.name,state,regression,render:'passed',accessibility:'no serious/critical axe findings',capture:file,behaviorTests:'Shared family contract tests; this capture alone is not full behavioral certification'});
   }
   console.log(`Catalog ${entry.name}: ${entry.states.length} states; ${results.length} captures passed`);
