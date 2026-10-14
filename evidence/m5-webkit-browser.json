@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
   "browser": "26.0",
-  "platform": "Linux Chrome automated; no physical-device claim",
+  "platform": "Linux webkit headless; no physical-device claim",
   "viewport": [
     390,
     844

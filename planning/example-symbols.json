@@ -62,7 +62,8 @@
     "Button": "button",
     "IconButton": "button",
     "Link": "button",
-    "HIGProvider": "provider"
+    "HIGProvider": "provider",
+    "AnimatedNumberReadout": "animated-number"
   },
   "native": {
     "MarketRow": "recipes",
@@ -125,6 +126,7 @@
     "Button": "button",
     "IconButton": "button",
     "Link": "button",
-    "HIGProvider": "provider"
+    "HIGProvider": "provider",
+    "AnimatedNumberReadout": "animated-number"
   }
 }

@@ -1,0 +1,34 @@
+{
+  "verifiedAt": "2026-10-14",
+  "baseCommit": "e48884e19626cf58df1a1f06c5b44900e9f468f6",
+  "webTests": 68,
+  "nativeRendererTests": 11,
+  "browserComponents": 64,
+  "browserStates": 102,
+  "packedExampleModules": 212,
+  "versionedVisualBaselines": 8,
+  "browserEngines": [
+    "Chromium",
+    "Firefox",
+    "WebKit"
+  ],
+  "nativeRuntime": {
+    "react": "19.1.0",
+    "rn": "0.81.5",
+    "renderer": "19.1.0",
+    "guard": "Exact runtime compatibility checked in clean isolated packed consumers"
+  },
+  "checks": [
+    "check",
+    "browserGates",
+    "packedNative",
+    "packedExamples",
+    "packedBoundaries",
+    "packedNext",
+    "releaseCandidate",
+    "releaseInstall",
+    "releaseStableSimulation"
+  ],
+  "hardware": "No physical device/iOS/actual audible or tactile output claimed. See native environment and issue-specific residuals.",
+  "publication": "No npm publish, tags, releases or production deployment."
+}

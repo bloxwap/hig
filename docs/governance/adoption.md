@@ -9,3 +9,7 @@ Review/admission requires actual repeated usage evidence, minimal API, both plat
 Semver: token/type/geometry changes, action timing, accessible behavior and semantic cue maps are API changes. Breaking behavior requires a major; new compatible roles/exports a minor; verified fixes a patch. Deprecations retain old exports for a documented migration window and provide a codemod/checklist. Candidate artifacts and docs share commit provenance; stable publication stays gated by missing source audit/device/adoption evidence and is prohibited by this task.
 
 Completion review: all 36 issues need an owning implementation/validation link or explicit blocker; catalog entries need docs/code/platform/test coverage; source/bundle deltas must be measured; all active rows must have owner, version, status, residuals and dated exceptions. This matrix cannot be called migrated until owning-repo changes and device checks exist.
+
+## Inventory refresh · 2026-10-13
+
+`planning/org-inventory-2026-10-13.json` records all active repositories visible to the current authenticated token; `planning/adoption.json` assigns an applicability and dated exception to each. This refresh adds tapsiren (workers/data services), taptradetv (product UI), and private organization profile content. Previously inaccessible product source is now readable; it is not copied into public docs. Named maintainers still need to accept ownership and provide migration PR/build/baseline evidence. An inventory decision or migration kit does not establish production adoption.

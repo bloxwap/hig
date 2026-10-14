@@ -1,9 +1,43 @@
 [
-  {"id":"task-policy","owner":"HIG maintainers","reason":"User explicitly prohibits npm publication, tags and releases; automation is dry-run only","status":"blocked"},
-  {"id":"repository-write","owner":"environment/GitHub credential owner","reason":"Contents write denied with HTTP 403; milestone branches/PRs cannot be published with current token/integration","status":"blocked"},
-  {"id":"source-audit","owner":"product monorepo maintainers","reason":"Referenced monorepo returns 404; authored OKLCH/fork/bundle baselines cannot be verified","status":"blocked","reviewBy":"2026-11-13"},
-  {"id":"native-fonts","owner":"Font/native maintainers","reason":"@bloxwap/font 0.1.2 has no published native manifest/static TTF npm interface; native registration/fidelity pending","status":"blocked","reviewBy":"2026-11-13"},
-  {"id":"physical-devices","owner":"HIG/native/haptic maintainers","reason":"No physical iOS/Android, VoiceOver/TalkBack, P3/font or sound/haptic latency/settings/interruption evidence; upstream haptic#9 remains open","status":"blocked","reviewBy":"2026-11-13"},
-  {"id":"owning-migrations","owner":"each adopting repository maintainers","reason":"User authorizes migration kits inside hig only, forbids pushes to other repos; real production migrations/builds/removal/deltas require owning work","status":"blocked","reviewBy":"2026-11-13"},
-  {"id":"upstream-feedback-gaps","owner":"SFX/Haptic maintainers","reason":"No per-root SFX voice handle/cancellation or imperative iOS async haptic API; explicit adapters/alternatives documented","status":"partial","reviewBy":"2026-11-13"}
+  {
+    "id": "task-policy",
+    "owner": "HIG maintainers",
+    "reason": "User explicitly prohibits npm publication, tags and releases; automation is dry-run only",
+    "status": "blocked"
+  },
+  {
+    "id": "source-audit",
+    "owner": "product monorepo maintainers",
+    "reason": "Private product source is readable with current credentials; reviewed production visual/build/bundle baselines and owning-repository adoption remain unperformed.",
+    "status": "blocked",
+    "reviewBy": "2026-11-13"
+  },
+  {
+    "id": "native-fonts",
+    "owner": "Font/native maintainers",
+    "reason": "@bloxwap/font 0.1.2 has no published native manifest/static TTF npm interface; native registration/fidelity pending",
+    "status": "blocked",
+    "reviewBy": "2026-11-13"
+  },
+  {
+    "id": "physical-devices",
+    "owner": "HIG/native/haptic maintainers",
+    "reason": "No physical iOS/Android, VoiceOver/TalkBack, P3/font or sound/haptic latency/settings/interruption evidence; upstream haptic#9 remains open",
+    "status": "blocked",
+    "reviewBy": "2026-11-13"
+  },
+  {
+    "id": "owning-migrations",
+    "owner": "each adopting repository maintainers",
+    "reason": "This task permits changes only in the HIG worktree; real production migrations/builds/removal/deltas require owning repository work.",
+    "status": "blocked",
+    "reviewBy": "2026-11-13"
+  },
+  {
+    "id": "upstream-feedback-gaps",
+    "owner": "SFX/Haptic maintainers",
+    "reason": "No per-root SFX voice handle/cancellation or imperative iOS async haptic API; explicit adapters/alternatives documented",
+    "status": "partial",
+    "reviewBy": "2026-11-13"
+  }
 ]

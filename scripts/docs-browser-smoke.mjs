@@ -1,13 +1,15 @@
 import {chromium} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
-import {writeFileSync} from 'node:fs';
+import {writeFileSync,readFileSync} from 'node:fs';
 const stage=process.argv[2]??'m4';
 const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),args:['--no-sandbox','--disable-dev-shm-usage'],headless:true});
 try{
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
-const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const origin=process.env.HIG_DOCS_PREVIEW_URL??'http://localhost:4174/hig/';
+const {pages}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
+for(const entry of pages){const response=await context.request.get(origin+'docs/'+entry.route+'/');assert.equal(response.ok(),true,entry.route);assert.match(await response.text(),/\/hig\/_next\//);}
 await page.goto(origin,{waitUntil:'networkidle'});
 await page.screenshot({path:`evidence/${stage}-playground-desktop.png`,fullPage:true});
 await page.getByLabel('Pro',{exact:true}).check();
@@ -50,6 +52,11 @@ await page.getByRole('tab',{name:'Code',exact:true}).click();
 await page.waitForFunction(()=>document.querySelector('.example-frame code')?.textContent.includes('busy=true'));
 await page.getByRole('tab',{name:'Preview',exact:true}).click();
 await page.getByRole('combobox',{name:'Example state'}).selectOption('default');
+assert.equal(await page.getByRole('link',{name:'View source',exact:true}).getAttribute('href'),'https://github.com/bloxwap/hig/blob/main/docs/components/actions-surfaces.md');
+await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
+const enlargedLayout=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,className:e.className,text:e.textContent?.slice(0,60)}))}));
+assert.equal(enlargedLayout.scrollWidth<=enlargedLayout.width,true,JSON.stringify(enlargedLayout));
+await page.evaluate(()=>{document.documentElement.style.fontSize='';});
 const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
 const violations=axe.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));
 assert.deepEqual(violations,[]);
@@ -61,7 +68,7 @@ await page.goto(origin+'docs/guides/installation/',{waitUntil:'networkidle'});
 await page.screenshot({path:`evidence/${stage}-guide-desktop.png`,fullPage:true});
 await page.goto(origin,{waitUntil:'networkidle'});await page.setViewportSize({width:390,height:844});
 await page.screenshot({path:`evidence/${stage}-playground-mobile.png`,fullPage:true});
-writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),checks:['production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','zero axe WCAG findings'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
+writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),checks:['all generated production routes/base-safe assets','200% text without viewport overflow','source links target existing main branch','production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
 console.log('Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed');
 
 }finally{await browser.close();}

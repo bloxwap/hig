@@ -6,13 +6,20 @@
     844
   ],
   "reducedMotion": true,
-  "executedStates": 99,
-  "components": 63,
+  "executedStates": 102,
+  "components": 64,
+  "availableComponents": 64,
+  "scope": "full shipped state matrix",
   "physicalNative": "pending; typed/runnable native examples are separate from browser captures",
   "results": [
     {
       "name": "Button",
       "state": "default",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/button-default.png",
@@ -21,6 +28,11 @@
     {
       "name": "Button",
       "state": "busy",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/button-busy.png",
@@ -29,6 +41,11 @@
     {
       "name": "Button",
       "state": "disabled",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/button-disabled.png",
@@ -37,6 +54,7 @@
     {
       "name": "IconButton",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/icon-button-default.png",
@@ -45,6 +63,7 @@
     {
       "name": "IconButton",
       "state": "busy",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/icon-button-busy.png",
@@ -53,6 +72,7 @@
     {
       "name": "IconButton",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/icon-button-disabled.png",
@@ -61,6 +81,7 @@
     {
       "name": "Link",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/link-default.png",
@@ -69,6 +90,7 @@
     {
       "name": "Text",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/text-default.png",
@@ -77,6 +99,7 @@
     {
       "name": "Heading",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/heading-default.png",
@@ -85,6 +108,7 @@
     {
       "name": "Stack",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/stack-default.png",
@@ -93,6 +117,7 @@
     {
       "name": "Inline",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/inline-default.png",
@@ -101,6 +126,7 @@
     {
       "name": "Surface",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/surface-default.png",
@@ -109,6 +135,7 @@
     {
       "name": "Card",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/card-default.png",
@@ -117,6 +144,7 @@
     {
       "name": "Separator",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/separator-default.png",
@@ -125,6 +153,11 @@
     {
       "name": "Field",
       "state": "default",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/field-default.png",
@@ -133,6 +166,11 @@
     {
       "name": "Field",
       "state": "error",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/field-error.png",
@@ -141,6 +179,7 @@
     {
       "name": "Label",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/label-default.png",
@@ -149,6 +188,11 @@
     {
       "name": "Input",
       "state": "default",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/input-default.png",
@@ -157,6 +201,11 @@
     {
       "name": "Input",
       "state": "disabled",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/input-disabled.png",
@@ -165,6 +214,11 @@
     {
       "name": "Input",
       "state": "error",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/input-error.png",
@@ -173,6 +227,7 @@
     {
       "name": "TextArea",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/text-area-default.png",
@@ -181,6 +236,7 @@
     {
       "name": "TextArea",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/text-area-disabled.png",
@@ -189,6 +245,7 @@
     {
       "name": "AmountInput",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/amount-input-default.png",
@@ -197,6 +254,7 @@
     {
       "name": "AmountInput",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/amount-input-disabled.png",
@@ -205,6 +263,7 @@
     {
       "name": "AmountInput",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/amount-input-error.png",
@@ -213,6 +272,7 @@
     {
       "name": "SearchInput",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/search-input-default.png",
@@ -221,6 +281,7 @@
     {
       "name": "SearchInput",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/search-input-disabled.png",
@@ -229,6 +290,7 @@
     {
       "name": "Checkbox",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/checkbox-default.png",
@@ -237,6 +299,7 @@
     {
       "name": "Checkbox",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/checkbox-disabled.png",
@@ -245,6 +308,7 @@
     {
       "name": "Switch",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/switch-default.png",
@@ -253,6 +317,7 @@
     {
       "name": "Switch",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/switch-disabled.png",
@@ -261,6 +326,7 @@
     {
       "name": "RadioGroup",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/radio-group-default.png",
@@ -269,6 +335,7 @@
     {
       "name": "RadioGroup",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/radio-group-disabled.png",
@@ -277,6 +344,7 @@
     {
       "name": "SegmentedControl",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/segmented-control-default.png",
@@ -285,6 +353,7 @@
     {
       "name": "SegmentedControl",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/segmented-control-disabled.png",
@@ -293,6 +362,7 @@
     {
       "name": "Select",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/select-default.png",
@@ -301,6 +371,7 @@
     {
       "name": "Select",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/select-disabled.png",
@@ -309,6 +380,7 @@
     {
       "name": "Slider",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/slider-default.png",
@@ -317,6 +389,7 @@
     {
       "name": "Slider",
       "state": "disabled",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/slider-disabled.png",
@@ -325,6 +398,7 @@
     {
       "name": "Dialog",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/dialog-default.png",
@@ -333,6 +407,7 @@
     {
       "name": "AlertDialog",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/alert-dialog-default.png",
@@ -341,6 +416,7 @@
     {
       "name": "Sheet",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/sheet-default.png",
@@ -349,6 +425,7 @@
     {
       "name": "Menu",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/menu-default.png",
@@ -357,6 +434,7 @@
     {
       "name": "Popover",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/popover-default.png",
@@ -365,6 +443,7 @@
     {
       "name": "Tooltip",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/tooltip-default.png",
@@ -373,6 +452,7 @@
     {
       "name": "Tabs",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/tabs-default.png",
@@ -381,6 +461,7 @@
     {
       "name": "Accordion",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/accordion-default.png",
@@ -389,6 +470,7 @@
     {
       "name": "Breadcrumb",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/breadcrumb-default.png",
@@ -397,6 +479,7 @@
     {
       "name": "Navigation",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/navigation-default.png",
@@ -405,6 +488,7 @@
     {
       "name": "Pagination",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/pagination-default.png",
@@ -413,6 +497,7 @@
     {
       "name": "Search",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/search-default.png",
@@ -421,6 +506,7 @@
     {
       "name": "Search",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/search-error.png",
@@ -429,6 +515,7 @@
     {
       "name": "Search",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/search-empty.png",
@@ -437,6 +524,7 @@
     {
       "name": "Badge",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/badge-default.png",
@@ -445,6 +533,7 @@
     {
       "name": "Alert",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/alert-default.png",
@@ -453,6 +542,7 @@
     {
       "name": "Alert",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/alert-error.png",
@@ -461,6 +551,7 @@
     {
       "name": "Callout",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/callout-default.png",
@@ -469,6 +560,7 @@
     {
       "name": "Toast",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/toast-default.png",
@@ -477,6 +569,7 @@
     {
       "name": "Progress",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/progress-default.png",
@@ -485,6 +578,7 @@
     {
       "name": "Progress",
       "state": "busy",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/progress-busy.png",
@@ -493,6 +587,7 @@
     {
       "name": "Spinner",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/spinner-default.png",
@@ -501,6 +596,7 @@
     {
       "name": "Skeleton",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/skeleton-default.png",
@@ -509,6 +605,7 @@
     {
       "name": "EmptyState",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/empty-state-default.png",
@@ -517,6 +614,7 @@
     {
       "name": "Avatar",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/avatar-default.png",
@@ -525,6 +623,7 @@
     {
       "name": "StatusIndicator",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/status-indicator-default.png",
@@ -533,6 +632,7 @@
     {
       "name": "StatusIndicator",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/status-indicator-error.png",
@@ -541,6 +641,7 @@
     {
       "name": "NumberReadout",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/number-readout-default.png",
@@ -549,6 +650,7 @@
     {
       "name": "NumberReadout",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/number-readout-error.png",
@@ -557,14 +659,43 @@
     {
       "name": "NumberReadout",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/number-readout-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
     {
+      "name": "AnimatedNumberReadout",
+      "state": "default",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/animated-number-readout-default.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "AnimatedNumberReadout",
+      "state": "error",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/animated-number-readout-error.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "AnimatedNumberReadout",
+      "state": "empty",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/animated-number-readout-empty.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
       "name": "Usd",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/usd-default.png",
@@ -573,6 +704,7 @@
     {
       "name": "Usd",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/usd-error.png",
@@ -581,6 +713,7 @@
     {
       "name": "Usd",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/usd-empty.png",
@@ -589,6 +722,7 @@
     {
       "name": "Percent",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/percent-default.png",
@@ -597,6 +731,7 @@
     {
       "name": "Percent",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/percent-empty.png",
@@ -605,6 +740,7 @@
     {
       "name": "Metric",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/metric-default.png",
@@ -613,6 +749,7 @@
     {
       "name": "Stat",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/stat-default.png",
@@ -621,6 +758,7 @@
     {
       "name": "List",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/list-default.png",
@@ -629,6 +767,7 @@
     {
       "name": "List",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/list-empty.png",
@@ -637,6 +776,7 @@
     {
       "name": "Row",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/row-default.png",
@@ -645,6 +785,7 @@
     {
       "name": "Table",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/table-default.png",
@@ -653,6 +794,7 @@
     {
       "name": "Table",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/table-empty.png",
@@ -661,6 +803,7 @@
     {
       "name": "BrandMark",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/brand-mark-default.png",
@@ -669,6 +812,7 @@
     {
       "name": "CheckIcon",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/check-icon-default.png",
@@ -677,6 +821,7 @@
     {
       "name": "HIGProvider",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/h-i-g-provider-default.png",
@@ -685,6 +830,7 @@
     {
       "name": "MarketRow",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/market-row-default.png",
@@ -693,6 +839,7 @@
     {
       "name": "MarketRow",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/market-row-empty.png",
@@ -701,6 +848,7 @@
     {
       "name": "BalanceCard",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/balance-card-default.png",
@@ -709,6 +857,7 @@
     {
       "name": "BalanceCard",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/balance-card-error.png",
@@ -717,6 +866,7 @@
     {
       "name": "BalanceCard",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/balance-card-empty.png",
@@ -725,6 +875,7 @@
     {
       "name": "TradeEntry",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/trade-entry-default.png",
@@ -733,6 +884,7 @@
     {
       "name": "TradeEntry",
       "state": "busy",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/trade-entry-busy.png",
@@ -741,6 +893,7 @@
     {
       "name": "TradeEntry",
       "state": "error",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/trade-entry-error.png",
@@ -749,6 +902,7 @@
     {
       "name": "InstallCommand",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/install-command-default.png",
@@ -757,6 +911,7 @@
     {
       "name": "CodeWindow",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/code-window-default.png",
@@ -765,6 +920,7 @@
     {
       "name": "MarketingHero",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/marketing-hero-default.png",
@@ -773,6 +929,7 @@
     {
       "name": "ActivityList",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/activity-list-default.png",
@@ -781,6 +938,7 @@
     {
       "name": "ActivityList",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/activity-list-empty.png",
@@ -789,6 +947,7 @@
     {
       "name": "PriceChart",
       "state": "default",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/price-chart-default.png",
@@ -797,6 +956,7 @@
     {
       "name": "PriceChart",
       "state": "empty",
+      "regression": null,
       "render": "passed",
       "accessibility": "no axe WCAG findings",
       "capture": "artifacts/visual/price-chart-empty.png",

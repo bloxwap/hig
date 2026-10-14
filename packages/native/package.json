@@ -83,6 +83,10 @@
     "./gesture-sheet": {
       "types": "./dist/gesture-sheet.d.ts",
       "import": "./dist/gesture-sheet.js"
+    },
+    "./animated-number": {
+      "types": "./dist/animated-number.d.ts",
+      "import": "./dist/animated-number.js"
     }
   },
   "peerDependencies": {

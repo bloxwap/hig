@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "browser": "141.0.7390.37",
+  "checks": [
+    "all generated production routes/base-safe assets",
+    "200% text without viewport overflow",
+    "source links target existing main branch",
+    "production /hig/ base",
+    "direct component deep link",
+    "mobile navigation/search",
+    "Pro density/live selection",
+    "matching Get Code including enabled adapters/volume/motion",
+    "native gallery labeling",
+    "busy/default states",
+    "keyboard-capable previews",
+    "no overflow or page errors",
+    "axe serious/critical check"
+  ],
+  "violations": [],
+  "physicalNative": "not observed; runnable Expo gallery only"
+}

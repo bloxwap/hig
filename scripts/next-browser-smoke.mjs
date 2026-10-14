@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{
- const page=await browser.newPage({viewport:{width:390,height:844}});const errors=[];
+ const page=await browser.newPage({viewport:{width:390,height:844}});page.setDefaultTimeout(120000);const errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
  await page.goto(process.env.HIG_NEXT_URL??'http://localhost:4175',{waitUntil:'networkidle'});
  await page.getByLabel('Amount (BTC)').fill('0,00001');

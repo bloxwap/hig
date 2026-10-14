@@ -242,5 +242,7 @@
     ".github": "main README # .github",
     "dimension-adapters": "master README contains CLI/data-adapter tasks",
     "bloxwap.github.io": "main README identifies root GitHub Pages docs site"
-  }
+  },
+  "inventoryEvidence": "planning/org-inventory-2026-10-13.json",
+  "inventoryScope": "All repositories visible to the authenticated token on 2026-10-13; not a claim about repositories hidden from that token."
 }

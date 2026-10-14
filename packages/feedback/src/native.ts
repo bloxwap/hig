@@ -6,10 +6,10 @@ export type CueAssets=Readonly<Partial<Record<'tick'|'toggle'|'success'|'error',
 /** Host provides packaged Metro asset ids and lifecycle hooks; no browser audio at module load. */
 export function createNativeSoundAdapter(backend:NativeAudioBackend,assets:CueAssets):FeedbackAdapter & {preload:()=>Promise<void>} {
  const players=new Map<string,NativePlayer>();let dead=false,epoch=0;let configured:Promise<void>|undefined;
- const preload=async()=>{if(dead)return;configured??=backend.configure?.()??Promise.resolve();await configured;if(dead)return;for(const [name,asset] of Object.entries(assets))if(asset!=null&&!players.has(name))players.set(name,backend.create(asset));};
+ const preload=async()=>{if(dead)return;configured??=backend.configure?.()??Promise.resolve();try{await configured;}catch(error){configured=undefined;throw error;}if(dead)return;for(const [name,asset] of Object.entries(assets))if(asset!=null&&!players.has(name))players.set(name,backend.create(asset));};
  const cancel=()=>{epoch++;for(const player of players.values())try{player.pause();}catch{/* Continue cleaning other players. */}};
  return {capability:{available:true,mechanism:'native-audio',observed:false,reason:'Backend supplied; playback latency/silent mode/interruption observations pending'},preload,
- async play(event:FeedbackEvent,prefs:FeedbackPreferences){if(dead||!prefs.sound||prefs.volume<=0)return;const cue=presets[event.intent].sound;if(!cue||assets[cue]==null)return;const generation=epoch;await preload();if(dead||generation!==epoch)return;const player=players.get(cue);if(!player)return;cancel();const requested=epoch;player.volume=prefs.volume;await player.seekTo(0);if(!dead&&requested===epoch)player.play();},cancel,
+ async play(event:FeedbackEvent,prefs:FeedbackPreferences){if(dead||!prefs.sound||prefs.volume<=0)return;const cue=presets[event.intent].sound;if(!cue||assets[cue]==null)return;cancel();const generation=epoch;await preload();if(dead||generation!==epoch)return;const player=players.get(cue);if(!player)return;const requested=epoch;player.volume=prefs.volume;await player.seekTo(0);if(!dead&&requested===epoch)player.play();},cancel,
  dispose(){if(dead)return;dead=true;cancel();for(const player of players.values())try{player.remove();}catch{/* Release all remaining players. */}players.clear();}
  };
 }

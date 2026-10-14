@@ -1,0 +1,9 @@
+{
+  "host": "Linux-6.12.94+-x86_64-with-glibc2.41",
+  "physicalDevices": "none; Linux VM",
+  "iosRuntime": "Xcode/iOS simulator and physical iOS hardware unavailable on Linux",
+  "androidKVM": {
+    "errno": 13,
+    "message": "[Errno 13] Permission denied: '/dev/kvm'"
+  }
+}

@@ -36,3 +36,8 @@ h1,h2,h3,p { margin-top:0; }
 @media(max-width:760px) { .hero { padding-top:48px;margin-inline:24px; }.hero h1 { font-size:3rem; }.hero-description { font-size:1rem; }.hero-actions { gap:20px; }.playground { margin-inline:24px;grid-template-columns:1fr;border-radius:20px; }.configuration { border-inline-end:0;border-bottom:1px solid var(--hig-nested);gap:16px; }.configuration .small { margin-bottom:0; }.preview-toolbar { padding:20px 24px;flex-wrap:wrap; }.product-preview,.component-stage,.get-code { padding:24px; }.portfolio-grid { margin-bottom:16px;gap:16px; }.portfolio-grid .hig-surface>span { font-size:1.5rem; }.market-panel .hig-row { flex-wrap:wrap; }.principle-grid { margin-inline:24px;grid-template-columns:1fr;gap:28px; }.native-panel h2 { font-size:1.6rem; } }
 
 .docs-recipe-preview { display:flex;flex-direction:column;gap:20px; }.docs-recipe-preview h2 { margin-bottom:0; }.docs-recipe-preview .hig-surface { background:var(--hig-surface); }.docs-recipe-preview p { line-height:1.7; }
+/* Enlarged text keeps prose and interactive preview controls within their containers. */
+.component-demo [role='tablist'] { display:flex;flex-wrap:wrap;gap:8px; }
+.component-demo .hig-button { max-width:100%;white-space:normal;overflow-wrap:anywhere; }
+.code-toolbar { flex-wrap:wrap; }
+.prose { overflow-wrap:anywhere; }

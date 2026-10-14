@@ -16,3 +16,15 @@ describe('adapter lifecycle and preference bridges',()=>{
  it('migrates saved false choices, clamps volume and retains separate motion',()=>{expect(migratePreferences({soundEnabled:false,hapticsEnabled:true,volume:2,reducedMotion:true})).toEqual({...prefs,sound:false,volume:1});expect(migratePreferences({sound:'true',volume:NaN})).toEqual({version:1,sound:false,haptics:false,volume:.3,motion:true});});
  it('handles corrupt/missing storage and rejects stale reads',async()=>{const storage=jsonStorage({getItem:()=>'{bad',setItem:vi.fn()});expect(await storage.read()).toBeUndefined();let revision=0,resolve!: (v:unknown)=>void;const apply=vi.fn();const pending=loadPreferences({read:()=>new Promise(r=>{resolve=r;}),write:()=>{}},()=>revision,apply);revision++;resolve({sound:true});await pending;expect(apply).not.toHaveBeenCalled();});
 });
+it('keeps only the latest native request while configure or seek is pending',async()=>{
+ let configured!:()=>void;let sought!:()=>void;const play=vi.fn(),pause=vi.fn();
+ const sound=createNativeSoundAdapter({configure:()=>new Promise<void>(r=>{configured=r;}),create:()=>({play,pause,seekTo:()=>new Promise<void>(r=>{sought=r;}),remove:vi.fn(),volume:1})},{tick:1});
+ const first=sound.play({...event,id:'first'},prefs);const second=sound.play({...event,id:'second'},prefs);configured();await first;
+ await Promise.resolve();sought();await second;expect(play).toHaveBeenCalledOnce();
+ const third=sound.play({...event,id:'third'},prefs);await Promise.resolve();await Promise.resolve();sound.cancel?.();sought();await third;expect(play).toHaveBeenCalledOnce();
+});
+it('retries failed native configuration and isolates pause/remove failures during disposal',async()=>{
+ const configure=vi.fn().mockRejectedValueOnce(Error('interruption')).mockResolvedValue(undefined);const remove=vi.fn(()=>{throw Error('released');}),play=vi.fn();
+ const sound=createNativeSoundAdapter({configure,create:()=>({play,pause:()=>{throw Error('paused');},seekTo:async()=>{},remove,volume:1})},{tick:1,toggle:2});
+ await expect(sound.preload()).rejects.toThrow('interruption');await sound.play(event,prefs);expect(play).toHaveBeenCalledOnce();expect(()=>sound.dispose?.()).not.toThrow();expect(remove).toHaveBeenCalledTimes(2);
+});

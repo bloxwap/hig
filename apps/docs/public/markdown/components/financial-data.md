@@ -4,7 +4,7 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig-react/data`
 
 ## API and anatomy
 
-Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty. Table caption/rows/columns/keyFor; optional host sorting callbacks.
+Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty/label/loading/error/onRetry/onLoadMore. Loading suppresses a misleading empty message, keeps existing rows visible, and disables pagination/retry until ready. Error text remains visible with optional host retry. Native uses FlatList virtualization; stable host keys preserve identity during live updates. Table caption/rows/columns/keyFor; optional host sorting callbacks.
 
 ## When to use and examples
 
@@ -12,7 +12,7 @@ Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted n
 
 ## States, interaction and accessibility
 
-Readouts are static and tabular, respecting reduced motion. Percent uses percent points (5 is 5%). DOM table caption/column headers/aria-sort and scroll region; RN FlatList labeled-row alternative with stable keys.
+Readouts are static and tabular, respecting reduced motion. Percent uses percent points (5 is 5%), with localized percent placement/digits and a single native text readout. Intl options control precision/trailing zeros/sign; percent style is enforced. Unknown/nonfinite values stay —. DOM table caption/column headers/aria-sort and scroll region; RN FlatList labeled-row alternative with stable keys.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -23,3 +23,7 @@ Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden pa
 ## Validation and citation
 
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+## Optional number motion
+
+`AnimatedNumberReadout` lives in the separate `animated-number` entry on both platforms. It fades the final localized reading on a deliberate value change, using Web Animations or the RN native opacity driver. It never interpolates financial values or adds a live region. Reduced motion, unknown values and changes less than 250 ms apart use the static final reading; pending motion is canceled on replacement/unmount. No animation engine is imported by the ordinary `data` entry. Example: `import {AnimatedNumberReadout} from '@bloxwap/hig-react/animated-number'` (or `hig-native/animated-number`), then `<AnimatedNumberReadout value={price} label="Price" options={{style:'currency',currency:'USD'}} />`. The same gallery manifest contains runnable examples for both renderers.
