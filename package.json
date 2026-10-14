@@ -42,7 +42,8 @@
     "smoke:packed-examples": "node scripts/packed-examples-smoke.mjs",
     "smoke:packed-boundaries": "node scripts/packed-boundaries-smoke.mjs",
     "smoke:release-artifact": "node scripts/release-artifact-smoke.mjs",
-    "generate:fonts": "python3 scripts/generate-native-fonts.py"
+    "generate:fonts": "python3 scripts/generate-native-fonts.py",
+    "generate:glossary": "node scripts/generate-glossary.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
