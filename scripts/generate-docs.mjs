@@ -1,4 +1,4 @@
-import {readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,readdirSync,rmSync} from 'node:fs';
 import {marked} from 'marked';
 import ts from 'typescript';
 import {exampleCode,examples} from './example-code.mjs';
@@ -17,3 +17,17 @@ for(const p of pages.filter(p=>!p.component)){const target=`apps/docs/public/mar
 writeFileSync('apps/docs/public/llms.txt',`# Bloxwap HIG ${version} candidate\n\n${pages.filter(p=>!p.component).map(p=>`## ${p.title}\nSource: ${p.source}\n\n${p.markdown}`).join('\n\n')}`);
 writeFileSync('apps/docs/public/catalog.json',JSON.stringify({version,components:catalog.map(({name,route,entry,nativeSupport,states})=>({name,route,entry,nativeSupport,states}))},null,2)+'\n');
 console.log(`Docs: ${pages.length} routes; ${catalog.length} components; ${sourcefiles.length} Markdown chapters`);
+// Generated Fumadocs collection. docs/ remains the only authored guide source.
+const contentRoot='apps/docs/content/docs';
+rmSync(contentRoot,{recursive:true,force:true});
+const write=(path,text)=>{mkdirSync(path.slice(0,path.lastIndexOf('/')),{recursive:true});writeFileSync(path,text);};
+for(const page of pages){
+ const entry=catalog.find(e=>e.route===page.route);
+ const markdown=entry?`React and React Native ${entry.nativeSupport}. Physical-device review pending.\n\n## API reference\n\n\`\`\`ts\n${entry.api.react?.signature??'See source declarations.'}\n\`\`\`\n\n### React Native API\n\n\`\`\`ts\n${entry.api.native?.signature??'See documented native alternative.'}\n\`\`\`\n\n${entry.a11y}. Feedback: ${entry.feedback}.\n\n[Read the normative usage guide](/docs/guides/${entry.source.slice(5,-3)})` : page.markdown.replace(/^# .+\n/,'');
+ // .md uses CommonMark rather than interpreting guide prose as JSX.
+ write(`${contentRoot}/${page.route}.md`,`---\ntitle: ${JSON.stringify(page.title.replace(/ · HIG.*$/,''))}\n---\n\n${markdown}\n`);
+}
+write(`${contentRoot}/index.mdx`,'---\ntitle: Human interface guidelines\n---\n\nVersion 0.1.0 candidate.\n\n[Install HIG](/docs/guides/installation) · [Component catalog](/docs/catalog) · [Website and migration shell](/docs/guides/website)\n');
+write(`${contentRoot}/catalog.mdx`,`---\ntitle: Small pieces. Clear interfaces.\n---\n\n${catalog.map(e=>`- [${e.name}](/docs/${e.route}) — React · Native ${e.nativeSupport}`).join('\n')}\n`);
+write(`${contentRoot}/meta.json`,JSON.stringify({title:'HIG 0.1.0',pages:['index','catalog','guides','components']},null,2));
+for(const group of ['guides','components'])write(`${contentRoot}/${group}/meta.json`,JSON.stringify({title:group==='guides'?'Guidelines':'Components'},null,2));

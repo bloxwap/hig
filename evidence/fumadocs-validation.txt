@@ -1,0 +1,27 @@
+Local validation on Node 22.22.0; no publication, tagging or deployment.
+npm run check: PASS (build, lint, root + Fumadocs typecheck, web/native tests).
+✓ Compiled successfully in 4.7s
+  Generating static pages using 6 workers (0/94) ...
+  Generating static pages using 6 workers (23/94) 
+  Generating static pages using 6 workers (46/94) 
+  Generating static pages using 6 workers (70/94) 
+✓ Generating static pages using 6 workers (94/94) in 1476ms
+Token and brand generation drift passed
+ Test Files  9 passed (9)
+      Tests  51 passed (51)
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+npm run examples:check: PASS — 206 generated web/native code modules.
+npm run quality: PASS — see quality-report.json.
+npm run smoke:ssr: PASS — deterministic render.
+node scripts/run-browser-gates.mjs: PASS
+Browser m5: interaction/accessibility/screenshots passed
+Browser m5: interaction/accessibility/screenshots passed
+Browser m5: interaction/accessibility/screenshots passed
+Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed
+Catalog visual/axe/runtime: 63 components, 99 states passed
+Next hydration/keyboard/raw-amount browser check passed
+Final docs browser rerun after metadata correction: PASS, including clicking static search results and mobile navigation.
+Export: 25 normative Markdown chapters, 63 generated component/API pages, docs index/catalog, static search, llms.txt, Markdown downloads, sitemap, 89 legacy redirects.
+Screenshots: fumadocs-{playground,component,catalog}-{desktop,mobile}.png and fumadocs-guide-desktop.png.
+Native physical observations remain pending; browser tests do not certify device feedback.

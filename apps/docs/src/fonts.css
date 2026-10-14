@@ -1,4 +1,1 @@
-/* Pinned upstream font assets. Latin-only fixture, no per-repo binary copies. */
-@font-face { font-family: 'Bloxwap Sans'; src: url('@bloxwap/font/fonts/BloxwapSans/BloxwapSans-Variable.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: 'Bloxwap Mono'; src: url('@bloxwap/font/fonts/BloxwapMono/BloxwapMono-Variable.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
-body { margin: 0; font-family: 'Bloxwap Sans', system-ui, sans-serif; background: var(--hig-background); color: var(--hig-text); }
+body { margin: 0; font-family: var(--font-bloxwap-sans),system-ui,sans-serif; }

@@ -17,7 +17,9 @@ export async function qualityReport(){
   assertBudget(name,gzip,budgets[name].gzip);
   if(name==='nativeSwitch'&&sizes[name].inputs.some(p=>/slider|svg|overlay|feedback|sfx|haptic|chart|react-dom/.test(p)))throw Error('Single native Switch imports unrelated runtime');
  }
- const assets=readdirSync('apps/docs/dist/assets').map(name=>({name,bytes:readFileSync(`apps/docs/dist/assets/${name}`)}));
+ const assetRoot='apps/docs/dist/_next/static';
+ function files(dir){return readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(`${dir}/${e.name}`):[`${dir}/${e.name}`]);}
+ const assets=files(assetRoot).map(name=>({name,bytes:readFileSync(name)}));
  sizes.docsJS={raw:assets.filter(a=>a.name.endsWith('.js')).reduce((s,a)=>s+a.bytes.length,0),gzip:assets.filter(a=>a.name.endsWith('.js')).reduce((s,a)=>s+gzipSync(a.bytes).length,0)};
  sizes.docsCSS={raw:assets.filter(a=>a.name.endsWith('.css')).reduce((s,a)=>s+a.bytes.length,0)};
  sizes.fonts={raw:assets.filter(a=>a.name.endsWith('.woff2')).reduce((s,a)=>s+a.bytes.length,0)};

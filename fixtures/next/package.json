@@ -1,1 +1,18 @@
-{"name":"hig-next-fixture","private":true,"type":"module","scripts":{"build":"next build --webpack","start":"next start -p 4175"},"dependencies":{"next":"16.4.0","react":"19.1.0","react-dom":"19.1.0","@bloxwap/font":"0.1.2","@bloxwap/hig-react":"0.1.0","@bloxwap/hig-tokens":"0.1.0","@bloxwap/hig-contracts":"0.1.0"}}
+{
+  "name": "hig-next-fixture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build --webpack",
+    "start": "next start -p 4175"
+  },
+  "dependencies": {
+    "next": "16.4.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "@bloxwap/font": "0.1.2",
+    "@bloxwap/hig-react": "0.1.0",
+    "@bloxwap/hig-tokens": "0.1.0",
+    "@bloxwap/hig-contracts": "0.1.0"
+  }
+}
