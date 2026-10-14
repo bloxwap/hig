@@ -2,7 +2,7 @@
   {
     "issue": 1,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Roadmap requires #19\u2013#36, actual owning-product/SDK/native adoption, authorized publication/releases, approved owners and physical device certification; those are outside this task or prohibited.",
     "localNotes": "Roadmap reconciled against actual merged deliveries and live issue bodies.",
@@ -14,7 +14,7 @@
   {
     "issue": 2,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Actual production product before/after parity and deployed bundle baselines remain unbuilt in owning repositories. Representative authenticated source React and Android/iOS Metro before/after consumers are measured, not production migration savings. Pro returned HTTP 200 with an empty rendered body. Named migration-owner/applicability approval remains pending.",
     "localNotes": "Authenticated audit of 129 monorepo sources, duplicate/asset totals, all 15 accessible organization repositories and product-origin captures; representative single-control source bundles measured. Representative source Android/iOS Hermes before/after consumers are also measured.",
@@ -26,7 +26,7 @@
   {
     "issue": 3,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "satisfied",
     "reason": "All issue acceptance criteria covered by implementation and software verification; no hardware claim required.",
     "localNotes": "Product/docs/marketing/native principles with paired examples and concrete commit-pinned component sources.",
@@ -38,7 +38,7 @@
   {
     "issue": 4,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "satisfied",
     "reason": "All issue acceptance criteria covered by implementation and software verification; no hardware claim required.",
     "localNotes": "Canonical package ownership, dependency-first clean build, individual exports and independent consumer/platform boundary checks.",
@@ -50,7 +50,7 @@
   {
     "issue": 5,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native iOS/Android runtime execution remains unobserved. Linux cannot run iOS hardware. Own API 35 emulator attempts failed (KVM EACCES, software CPU-thread hang/offline adb). Resumed port-5582 emulator briefly reported boot_completed=1 but shell queries stalled and adb became offline; no fixture execution or hierarchy was obtained. Metro exports and Expo web do not substitute for OS execution.",
     "localNotes": "Clean build/tests, SSR and packed web/Next/Android/iOS Metro consumers; Expo web added as a separate renderer check.",
@@ -62,7 +62,7 @@
   {
     "issue": 6,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Physical iOS Display-P3 and Android display comparison remains unperformed. Authored source palette, alpha/space conversion, contrast and browser/native consumer imports are now software-verified.",
     "localNotes": "Authored OKLCH/P3 provenance restored; native space/alpha conversion, generated CSS and contrast gates.",
@@ -74,7 +74,7 @@
   {
     "issue": 7,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Actual native font rasterization, OS text scaling, script fallback and keyboard/device layout remain unobserved. Static faces, hashes, registration and Expo-web font loading are implemented; generated native samples are not device typography certification.",
     "localNotes": "15 reproducible static native faces from pinned @bloxwap/font sources, hash/selected-face byte gates and explicit Expo registration.",
@@ -86,7 +86,7 @@
   {
     "issue": 8,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native orientation/tablet safe-area/on-screen keyboard and OS large-text layout observations require a booted native target or physical device; owning-product parity/density approval remains pending.",
     "localNotes": "16-unit source rem roots, density/radius/spacing reconciliation, 320px/200% DOM reflow and native per-root RTL layout.",
@@ -98,7 +98,7 @@
   {
     "issue": 9,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native drag/scroll cancellation, gesture animation interruption and OS motion observations remain unperformed. Optional Gorhom sheet detents/reduced-motion/cancellation lifecycle configuration is implemented and software-tested; the actual native engine still requires a booted target.",
     "localNotes": "Reduced-motion pointer cancellation and native OS-preference subscription checks; static native alternatives and source motion catalog reconciled.",
@@ -110,7 +110,7 @@
   {
     "issue": 10,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Real VoiceOver/TalkBack reference-flow completion and native OS large-text/RTL navigation/announcement behavior remain unobserved; automated axe, keyboard, RN tree semantics and Expo web are separate evidence.",
     "localNotes": "Zero automated WCAG axe findings in expanded web flows and Expo web; native state/role/focus requests and explicit observation limits.",
@@ -122,7 +122,7 @@
   {
     "issue": 11,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "satisfied",
     "reason": "All issue acceptance criteria covered by implementation and software verification; no hardware claim required.",
     "localNotes": "Pinned vector provenance, native geometry at 16/20/24/32, decorative semantics, individual imports, generated PNG/SVG OG and binary drift checks.",
@@ -134,7 +134,7 @@
   {
     "issue": 12,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "satisfied",
     "reason": "All issue acceptance criteria covered by implementation and software verification; no hardware claim required.",
     "localNotes": "Scoped provider updates/direction/motion, controlled state, cancellation, forwarded native Text/Heading refs, focus APIs, clean SSR/Next/Metro and optional backend boundaries.",
@@ -146,7 +146,7 @@
   {
     "issue": 13,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native large-text/mixed-script layout, native assistive-technology activation and approved app/Pro visual parity require native/owning-product review. Web reflow, keyboard, busy/disabled, registered font APIs and native target/geometry contracts are verified.",
     "localNotes": "Busy/disabled/canceled activation, 48-unit native target and registered static font weight semantics; web long-label/keyboard/reflow checks.",
@@ -158,7 +158,7 @@
   {
     "issue": 14,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Real IME composition, native decimal keyboard/keyboard avoidance, screen-reader helper/error recovery and on-device selection/autofill behavior remain unobserved. Browser composition events are synthetic and do not certify OS IME.",
     "localNotes": "Required DOM validation, visible labels/helper/error associations, raw negative decimal/locale precision and synthetic composition checks.",
@@ -170,7 +170,7 @@
   {
     "issue": 15,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native accessibility increment/decrement, physical drag cancellation and native controlled slider behavior still need a booted Android/iOS target; web keyboard/range and RN state/disabled/rejection semantics are covered by automation.",
     "localNotes": "Disabled backend guards, role/state/values and RN-web ARIA/keyboard range support; rejection/dedup examples.",
@@ -182,7 +182,7 @@
   {
     "issue": 16,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native nested overlay focus/restoration, OS back/keyboard/safe-area/orientation flows and real VoiceOver/TalkBack remain unobserved. Initial/return focus requests and optional Gorhom detents, controlled dismissal/rejection, native back and keyboard/safe-area wiring are implemented and mocked/Metro-tested; actual gestures/worklets require native runtime validation.",
     "localNotes": "Nested DOM modal focus/keyboard, Android back handlers, native title/trigger focus requests and Android keyboard avoidance/handled taps.",
@@ -194,7 +194,7 @@
   {
     "issue": 17,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native screen-reader order, translated large-text layout, hardware-keyboard focus restoration and actual route/back/deep-link restoration need owning host/native runtime validation. DOM routing adapters, current-location/disclosure/search/RTL behavior and native applicability/examples are implemented.",
     "localNotes": "Translated RTL tabs, disabled skipping, current location, disclosure/search keyboard and recovery; native RTL layouts and applicability matrix.",
@@ -206,7 +206,7 @@
   {
     "issue": 18,
     "branch": "hig/issues-1-18-verification",
-    "pr": null,
+    "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
     "reason": "Native live-announcement ordering, repeated-outcome suppression under actual assistive technology and native large-text/reduced-motion recovery require native runtime observations. Persistent bursts/dedup/dismiss/retry and no-feedback operation are software-verified.",
     "localNotes": "Undismissed notification bursts no longer lose old/critical messages; dedup, dismissal, retry and no-feedback/native semantics tests.",
