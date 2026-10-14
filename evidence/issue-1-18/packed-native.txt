@@ -1,0 +1,59 @@
+
+> bloxwap-hig-workspace@0.1.0 smoke:packed-native
+> node scripts/packed-native-smoke.mjs
+
+
+> bundle
+> expo export --platform android --platform ios --max-workers 2
+
+Starting Metro Bundler
+Android Bundled 2930ms index.js (775 modules)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 87.2% (619/663)
+iOS Bundled 4642ms index.js (663 modules)
+
+› Assets (7):
+node_modules/@bloxwap/hig-feedback/assets/error.wav (30.2 kB)
+node_modules/@bloxwap/hig-feedback/assets/success.wav (54.5 kB)
+node_modules/@bloxwap/hig-feedback/assets/tick.wav (8.01 kB)
+node_modules/@bloxwap/hig-feedback/assets/toggle.wav (10.9 kB)
+node_modules/@bloxwap/hig-tokens/assets/fonts/BloxwapMono.ttf (385 kB)
+node_modules/@bloxwap/hig-tokens/assets/fonts/BloxwapSans-SemiBold.ttf (447 kB)
+node_modules/@bloxwap/hig-tokens/assets/fonts/BloxwapSans.ttf (446 kB)
+
+› android bundles (1):
+_expo/static/js/android/index-e08a9633cc2ad86705f026454c242c75.hbc (2.1 MB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-cdc830c1b0b72ed00a6186296b85fe9e.hbc (2.09 MB)
+
+› Files (1):
+metadata.json (1.12 kB)
+
+Exported: dist
+
+> bundle
+> expo export --platform android --platform ios --max-workers 2 --output-dir dist-gesture
+
+Starting Metro Bundler
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.1% (1075/1091)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (1120/1120)
+Android Bundled 3965ms index.js (1091 modules)
+iOS Bundled 7262ms index.js (1120 modules)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (1120/1120)
+
+› Assets (2):
+node_modules/@bloxwap/hig-tokens/assets/fonts/BloxwapSans-SemiBold.ttf (447 kB)
+node_modules/@bloxwap/hig-tokens/assets/fonts/BloxwapSans.ttf (446 kB)
+
+› android bundles (1):
+_expo/static/js/android/index-59ea0fbb95115a092f5775d26d9f220a.hbc (3.25 MB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-117953f1840d435ee12ac83c1020de72.hbc (3.24 MB)
+
+› Files (1):
+metadata.json (494 B)
+
+Exported: dist-gesture
+Packed optional gesture-sheet consumer exported Android/iOS with real Gorhom/Reanimated/Worklets peers
+Packed native consumer exported both platforms from 4 independent tarballs

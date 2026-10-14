@@ -1,0 +1,29 @@
+[
+  {
+    "host": "bloxwap.app",
+    "status": 200,
+    "url": "https://bloxwap.app/",
+    "title": "Bloxwap — The easiest way to trade.",
+    "visibleText": "Bloxwap site index\n\nBloxwap is a non-custodial, mobile-first trading app for Hyperliquid perpetual futures and 24/7 tokenized stocks, commodities and indices. If the page you asked for does not exist, these are the canonical entry points for this origin.\n\nHome — open a market and trade.\nDocumentation — fees, assets, guides, glossary and FAQ.\nDevelopers — the public read API, and why there is no trading API.\nOpenAPI specification — every endpoint, unauthenticated and read-only.\nllms.txt — the documentation corpus as plain markdown, in one fetch.\nsitemap.xml — every indexable URL on this origin.\nAbout · Contact · Privacy · Terms\nBloxwap — the easiest mobile app to trade Hyperliquid perpetuals (perps) and 24/7 tokenized stocks from your phone\n\nBloxwap is the easiest mobile app to trade Hyperliquid perps and 24/7 tokenized stocks. One-tap long or short, funded with Cash App or Bitcoin.\n\nBloxwap is the easiest mobile app to trade Hyperliquid perps — and 24/7 tokenized stocks — straight from your phone. It's one-tap: tap up to go long or tap down to go short, with no complicated order tickets. Fund with Cash App, Bitcoin, a debit card, or an on-ramp, and send funds gas-free. Bloxwap is n",
+    "screenshot": "before-bloxwap.app.png",
+    "kind": "live origin observation; source commit not inferred"
+  },
+  {
+    "host": "bloxwap.pro",
+    "status": 200,
+    "url": "https://bloxwap.pro/",
+    "title": "Bloxwap Pro — A sharper way to trade.",
+    "visibleText": "",
+    "screenshot": "before-bloxwap.pro.png",
+    "kind": "live origin observation; source commit not inferred"
+  },
+  {
+    "host": "bloxwap.com",
+    "status": 200,
+    "url": "https://bloxwap.com/",
+    "title": "Bloxwap — The easiest way to trade.",
+    "visibleText": "Docs\nBlog\nTrade\n\nIOS & ANDROID\n\nThe easiest way to trade.\n\nCrypto, stocks, gold, and indices from one app — with Trend and Swing signals that find you. One tap in, one tap out.\n\nTry the\nWeb App\n\nHOW WE HELP YOU WIN\n\nSignals.\n\nThree ways the market finds you — a live direction mark, a fully structured entry, and the daily brief on what's going on.\n\nBTC\nETH\nSOL\nTrend\n\nUP or DOWN — a live direction mark on every coin, right where you already look. Always on, nothing to configure.\n\nThe Setup\nToday · 7:00 AM ET\n\nCrypto leads overnight, tech lags into NVDA earnings, and inflation data lands before the open.\n\nOvernight\nBTC\nFlipped above the breakout\nUP\n+3.2%\nNVDA\nTrending lower into earnings\nDOWN\n−1.8%\nGOLD\nEntry, stop, and target attached\nSWING\n+0.6%\nSP500\nNo direction into the open\nWATCH\n+0.1%\nOn deck today\n8:30 AM\nCPI print — watch SP500 and GOLD\nAfter close\nNVDA earnings\nThe Setup\n\nThe daily report that shows you what's going on — what moved, what flipped, and what's on deck today, in one read.\n\nSOL\n5×\nLONG\n\nEntry 212.48 · Stop 205.30 · Target 226.84\n\nETH\n3×\nSHORT\n\nEntry 4,121 · Stop 4,288 · Target 3,786\n\nSwing\n\nFully structured breakout entries — direction, entry, stop, and target at",
+    "screenshot": "before-bloxwap.com.png",
+    "kind": "live origin observation; source commit not inferred"
+  }
+]

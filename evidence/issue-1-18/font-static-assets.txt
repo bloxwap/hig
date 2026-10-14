@@ -1,0 +1,2 @@
+apps/docs/assets/og/BloxwapSans-Black.ttf
+apps/docs/assets/og/BloxwapSans-SemiBold.ttf

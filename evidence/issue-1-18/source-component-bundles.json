@@ -1,0 +1,192 @@
+{
+  "sourceCommit": "d47cef4c40363184bdfda8d8c263ead108ef9ff6",
+  "bundler": "esbuild 0.25.12",
+  "excludedPeerEngines": [
+    "react",
+    "react/jsx-runtime",
+    "react-dom",
+    "react-native",
+    "react-native-reanimated",
+    "react-native-gesture-handler",
+    "expo-haptics",
+    "react-native-worklets"
+  ],
+  "scope": "Representative single-control source modules, minified ESM; peers excluded identically, no Tailwind CSS transform. Not deployed product or Metro/Hermes bundles and not an adoption saving claim.",
+  "results": [
+    {
+      "name": "sourceProButton",
+      "entry": ".local/monorepo/apps/pro/src/components/ui/button.tsx",
+      "raw": 25757,
+      "gzip": 8321,
+      "inputs": [
+        ".local/source-baseline/node_modules/clsx/dist/clsx.mjs",
+        ".local/source-baseline/node_modules/tailwind-merge/dist/bundle-mjs.mjs",
+        ".local/monorepo/packages/ui/src/lib/utils.ts",
+        ".local/monorepo/apps/pro/src/components/ui/button.tsx"
+      ],
+      "externalImports": [
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        }
+      ]
+    },
+    {
+      "name": "sourceNativeButton",
+      "entry": ".local/monorepo/packages/ui-native/src/components/button.tsx",
+      "raw": 7400,
+      "gzip": 3204,
+      "inputs": [
+        ".local/monorepo/packages/ui-native/src/components/script-text.tsx",
+        ".local/monorepo/packages/ui-native/src/components/pressable.tsx",
+        ".local/monorepo/packages/tokens/src/colors.ts",
+        ".local/monorepo/packages/tokens/src/radii.ts",
+        ".local/monorepo/packages/tokens/src/type.ts",
+        ".local/monorepo/packages/tokens/src/spacing.ts",
+        ".local/monorepo/packages/tokens/src/motion.ts",
+        ".local/monorepo/packages/tokens/src/icons.ts",
+        ".local/monorepo/packages/tokens/src/font.ts",
+        ".local/monorepo/packages/tokens/src/oklch.ts",
+        ".local/monorepo/packages/tokens/src/native-colors.ts",
+        ".local/monorepo/packages/tokens/src/index.ts",
+        ".local/monorepo/packages/ui-native/src/hooks/use-haptics.ts",
+        ".local/monorepo/packages/ui-native/src/components/button.tsx"
+      ],
+      "externalImports": [
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react-native",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react-native",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react-native-gesture-handler",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react-native-reanimated",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "expo-haptics",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react-native",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        }
+      ]
+    },
+    {
+      "name": "higWebButton",
+      "entry": "packages/react/src/button.tsx",
+      "raw": 1288,
+      "gzip": 729,
+      "inputs": [
+        "packages/contracts/dist/index.js",
+        "packages/react/src/provider.tsx",
+        "packages/react/src/button.tsx"
+      ],
+      "externalImports": [
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        }
+      ]
+    },
+    {
+      "name": "higNativeButton",
+      "entry": "packages/native/src/button.tsx",
+      "raw": 4789,
+      "gzip": 1895,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/index.js",
+        "packages/native/src/provider.tsx",
+        "packages/native/src/button.tsx"
+      ],
+      "externalImports": [
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react-native",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react-native",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        }
+      ]
+    }
+  ]
+}

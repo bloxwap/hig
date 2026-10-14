@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
   "mode": "dark",
-  "provenance": "font/apps/docs/styles/tokens.css; monorepo inaccessible; authored OKLCH unavailable",
+  "provenance": "bloxwap/monorepo@d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/tokens/src/colors.ts; HIG semantic intent/density aliases documented in docs/foundations/source-reconciliation.md",
   "colors": {
     "background": {
       "srgb": "#0a0a0a",
@@ -9,19 +9,24 @@
         0.04,
         0.04,
         0.04
-      ]
+      ],
+      "oklch": "oklch(0.145 0 0)"
     },
     "surface": {
-      "srgb": "#171717"
+      "srgb": "#171717",
+      "oklch": "oklch(0.205 0 0)"
     },
     "nested": {
-      "srgb": "#262626"
+      "srgb": "#262626",
+      "oklch": "oklch(0.269 0 0)"
     },
     "text": {
-      "srgb": "#fafafa"
+      "srgb": "#fafafa",
+      "oklch": "oklch(0.985 0 0)"
     },
     "muted": {
-      "srgb": "#a1a1a1"
+      "srgb": "#a1a1a1",
+      "oklch": "oklch(0.708 0 0)"
     },
     "faint": {
       "srgb": "#858585"

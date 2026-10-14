@@ -20,11 +20,11 @@ graph TD
 
 `@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-feedback` owns optional adapter entry points. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
 
-Candidate validation matrix: Node 20.19+, TypeScript 5.9, React/DOM 19.1, RN 0.81.5, Expo 54, Vite 6.4. Next 16.4.0 webpack is verified by M5 production/packed consumer checks. NativeWind remains unverified until source/rem-root evidence exists. Use StyleSheet on RN and plain CSS on web; Tailwind may refer to `var(--hig-*)` without scanning HIG sources. Legacy NativeWind rem roots are unknown until monorepo audit. Never infer native sizes by replacing `rem` with `dp`.
+Candidate validation matrix: Node 22.22+, TypeScript 5.9, React/DOM 19.1, RN 0.81.5, Expo 54, Vite 6.4. Next 16.4.0 webpack is verified by M5 production/packed consumer checks. NativeWind styling remains outside the supported StyleSheet consumer path. Use StyleSheet on RN and plain CSS on web; Tailwind may refer to `var(--hig-*)` without scanning HIG sources. The pinned monorepo source now documents web/native rem roots of 16; see source reconciliation. Never infer native sizes by replacing `rem` with `dp`.
 
 Prefer built-in semantic controls; modal/disclosure behavior must retain keyboard, focus restoration and descriptions. Optional chart entry imports the chart SDK only on the client. Libraries retain upstream licenses; extracted tokens and mark have commit provenance, no vendor engine source is copied. Font binaries remain owned by @bloxwap/font (OFL-1.1).
 
-Deprecation plan: inventory all live references, map variants to intent/density, run migration diff and consumer validation, switch a pilot behind a host flag, then delete unused copies. App comfortable targets and Pro compact rows are intentional. HIG cannot retire inaccessible monorepo copies. API/token/behavior changes follow semver; breaking accessibility behavior counts as breaking. Support upgrades require web, SSR and Metro evidence with a documented rollback before changing the matrix.
+Deprecation plan: inventory all live references, map variants to intent/density, run migration diff and consumer validation, switch a pilot behind a host flag, then delete unused copies. App comfortable targets and Pro compact rows are intentional. HIG cannot retire owning-repository copies within this hig-only change. API/token/behavior changes follow semver; breaking accessibility behavior counts as breaking. Support upgrades require web, SSR and Metro evidence with a documented rollback before changing the matrix.
 
 
 ## Attribution and provenance
@@ -48,17 +48,17 @@ Source: docs/architecture/platform-matrix.md
 | --- | --- | --- | --- |
 | Actions, surfaces, text, fields | Semantic DOM elements | Pressable/View/Text/TextInput | behavior tests, Vite/SSR/Metro |
 | Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser | contract tests; device gestures pending |
-| Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back | DOM focus/Escape test; native back test |
+| Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
 | Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
 | Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
 | Chart | optional lazy @bloxwap/chart canvas | numeric/list summary only | typed theme; physical gesture evidence pending |
 | Brand mark | individual SVG renderer/asset | optional react-native-svg | pinned geometry; device comparison pending |
-| Fonts | pinned Sans/Mono asset URLs | typed manifest and explicit system fallback | no native-font certification |
+| Fonts | pinned Sans/Mono asset URLs | hash-pinned static faces, typed manifest, explicit weight registration and host script fallback | Expo-web loading/byte/hash gates; no physical native-font certification |
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution. ESM is supported; CommonJS consumer support is not claimed.
 
 
 ## Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0
@@ -138,7 +138,7 @@ Do: label Amount (BTC), describe available funds, keep 0,001 unchanged until hos
 
 ## States, interaction and accessibility
 
-DOM label/id plus help/error aria-describedby; invalid state is explicit. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.
+DOM label/id plus help/error aria-describedby; invalid state is explicit. Field required propagates to Input/TextArea for browser required semantics and form validation; explicit input props can override required. A disabled Field keeps its controls disabled even if a child requests otherwise. Native amount keyboardType and search returnKeyType remain host-overridable defaults for locale/negative-entry and submit flows. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -220,7 +220,7 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 
 ## API and anatomy
 
-Dialog controlled open/onOpenChange, title, description, children; DOM trigger is a ref-capable single element. Menu label and {label,disabled,onSelect} items.
+Dialog controlled open/onOpenChange, title, description, children; native initialFocusRef/returnFocusRef accept live focus targets, default initial focus requests the title. Native return focus is scheduled after the static Modal closes and canceled on reopen/unmount; host provides the trigger ref. DOM trigger is a ref-capable single element. Menu label and {label,disabled,onSelect} items.
 
 ## When to use and examples
 
@@ -234,7 +234,7 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 
 ## Platform mapping and limits
 
-Sheet currently uses accessible modal layout, no gesture-detent certification. RN focus restoration/VoiceOver nesting needs host/device validation. Native help is persistent text; no hover tooltip or anchored popover claim.
+Basic Sheet uses static Modal layout. The separate optional `@bloxwap/hig-native/gesture-sheet` entry provides GestureSheet with sorted snapPoints, initialIndex, dismissible, safe-area/keyboard configuration, reduced-motion mapping, native back, scoped listener cleanup and controlled dismissal deduplication. Rejected controlled closes re-present after host state settles. See `fixtures/native/gesture-sheet.tsx` and `index-gesture.js` for the real separate consumer; packed smoke compiles both Android/iOS entry points. Hosts provide GestureHandlerRootView, SafeAreaProvider and BottomSheetModalProvider. Required optional peers are Gorhom 5.2.14, Reanimated 4.1.1, Worklets 0.5.1 and Gesture Handler 2.28.0, pinned to Expo 54 bundledNativeModules rather than the newer monorepo native runtime. Backend configuration follows [Gorhom usage](https://gorhom.dev/react-native-bottom-sheet/modal/usage) and [props](https://gorhom.dev/react-native-bottom-sheet/props). Mocked wiring and Metro compilation are not gesture-detent or TalkBack certification. RN initial/return focus API requests are implemented and unit-tested; actual VoiceOver/TalkBack restoration and nesting still need native runtime validation. Native help is persistent text; no hover tooltip or anchored popover claim.
 
 ## Validation and citation
 
@@ -318,7 +318,7 @@ Do: keep critical failure inline with Retry; use toast for copied acknowledgemen
 
 ## States, interaction and accessibility
 
-Notifications deduplicate ids, show at most 3, and stay until explicit dismissal. DOM status/alert regions and RN live regions preserve visible messages. Skeleton and spinner are static under candidate motion policy.
+Notifications deduplicate ids and preserve every message until explicit dismissal, including bursts larger than three. Host delivery queues may limit arrivals, but the renderer never silently removes an undismissed message. A single coalesced announcement reports each changed burst, prioritizing errors; unchanged rerenders do not repeat it. DOM and Expo web use one live region while every notification remains visible. Native Android uses explicit announcement delivery, and inline Android status uses live-region metadata; iOS announces changed inline content explicitly. Actual VoiceOver/TalkBack timing remains unobserved. Skeleton and spinner are static under candidate motion policy.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -420,11 +420,11 @@ Source: docs/foundations/platform.md
 
 ## Color (#6)
 
-Dark is the only audited mode. Source values come from Font SDK tokens, with commit recorded in the inventory; monorepo OKLCH extraction remains blocked. Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values; iOS P3 channel objects require a host color-space bridge and are not RN CSS strings. Android and third-party images use sRGB. `evidence/contrast.json` records tested normal-text pairings. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values; iOS Display-P3 hosts use the generated iosDisplayP3 channel hex map; hosts using sRGB retain ios/Android values. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
 
 ## Typography (#7)
 
-Pin @bloxwap/font 0.1.2. Vite: import `@bloxwap/font/css`; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Native requires approved static TTF faces, pinned provenance and a FontManifest registration mapping; published WOFF2/Next loaders are not native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
+Pin @bloxwap/font 0.1.2. Vite: import `@bloxwap/font/css`; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Run the pinned native font generator and register its static TTF faces from the optional tokens/fonts export; the generated manifest records weight/family/source hashes. Published WOFF2/Next loaders are not directly native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
 
 ## Geometry and layout (#8)
 
@@ -442,7 +442,7 @@ Component review checklist: keyboard completion; labeled controls/errors; busy/d
 
 ## Brand and icons (#11)
 
-Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import `@bloxwap/hig-tokens/mark.svg` on web; native geometry renderer follows in M2. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives and device visual comparison remain pending approval/evidence.
+Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import `@bloxwap/hig-tokens/mark.svg` on web; both web and RN geometry renderers are available from their brand entries. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives have source provenance and drift checks. Physical device visual comparison remains unperformed.
 
 Font-loading note: `@bloxwap/font/css` references all supported families/scripts, which may increase deployed asset bytes even with on-demand browser loading. The Latin web fixture instead uses two explicit @font-face rules with package asset URLs (Sans and Mono). Add only the scripts/italics used by each consumer. Do not assume a Latin-only fixture certifies mixed-script rendering.
 
@@ -452,7 +452,7 @@ Source: docs/foundations/principles.md
 
 # Principles and content · HIG 0.1.0
 
-Issues #2, #3. Rules are candidate guidance anchored to SDK source and the public marketing surface; product-specific behavior requires the unavailable monorepo audit. Do not represent example trading actions as live product behavior.
+Issues #2, #3. Rules are candidate guidance anchored to SDK source and the public marketing surface; the pinned monorepo audit and live-origin snapshots are in `evidence/issue-1-18/`. Do not represent example trading actions as live product behavior.
 
 ## Clear action hierarchy
 
@@ -473,6 +473,46 @@ Use sentence case and concrete verbs (“Copy install command”). **Do** displa
 ## Composition and progressive disclosure
 
 Show common actions first, advanced options on deliberate disclosure. **Do** give a native sheet a visible close action and let Android back dismiss; **don't** rely on hover tooltips on touch. Navigation remains host-owned: HIG does not choose routes, wallets, order types, or trading outcomes. Use status/callout for persistent critical errors; toast only for nonessential acknowledgements.
+
+## Concrete source and pattern references
+
+The preceding rules map to Bloxwap-owned examples, without treating host demo outcomes as submitted trades:
+
+- Clear action hierarchy: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/ui-native/src/components/button.tsx), [HIG pattern](../components/actions-surfaces.md). Source primary/secondary/destructive variants, busy activation policy and semibold labels.
+- Touch before density: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/tokens/src/spacing.ts), [HIG pattern](../components/recipes.md). Source spacing aliases and 16-unit root; marketing CTA before-capture is before-bloxwap.com.png.
+- State tells the truth: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/ui-native/src/components/toast.tsx), [HIG pattern](../components/status.md). Source notification severity and persistent readable outcomes; HIG preserves undismissed bursts.
+- Content and precision: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/ui-native/src/components/number-format.ts), [HIG pattern](../components/fields.md). Source display formatting stays separate from raw amount input and host arithmetic.
+- Composition and progressive disclosure: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/ui-native/src/components/sheet.tsx), [HIG pattern](../components/overlays.md). Source back/dismissal and safe-area behavior; basic HIG Modal alternative has an explicit close action.
+
+
+## Pinned source reconciliation · HIG 0.1.0
+Source: docs/foundations/source-reconciliation.md
+
+# Pinned source reconciliation · HIG 0.1.0
+
+Issues #2, #6–#9, #11–#18. See `evidence/issue-1-18/monorepo-sha.txt` for the exact monorepo commit and `monorepo-source-fetch.json` for all 129 audited paths. This supersedes the earlier 404 source-access limitation; it does not turn old unperformed product/device checks into passes.
+
+The audit covers tokens, shared web/native primitives, plain-ui and app/Pro-owned controls. `monorepo-audit.json` records byte-identical duplicate groups, source bytes, repository asset totals and explicit source component dispositions. The existing catalog/platform matrix defines the HIG destination families. The authenticated organization inventory now includes monorepo, .github-private, taptradetv and tapsiren; their complete observed trees and explicit applicability decisions are recorded in new-repositories.json and planning/adoption.json. Named owner approval remains an organizational blocker, not a fabricated assignment. Confetti, signal strength, animated number backends and overlay layering internals stay optional host integrations; they are not silently added to base imports. Migration owners remain the owning product teams; HIG cannot claim their source forks have been deleted.
+
+## Tokens and platform units
+
+`packages/tokens/upstream-palette.json` preserves the complete authored semantic OKLCH palette and brand sRGB/P3 channels. `sourceColors` exports web strings plus converted Android sRGB and iOS Display-P3 channel values; generated CSS exposes authored `--hig-source-*` variables. The HIG surface, nested, text and muted roles now retain their corresponding authored OKLCH values and tested sRGB fallback. Brand green and blue preserve upstream P3 channels. HIG focus green, market sell red, warning gold, opaque border and faint text are intentional intent/accessibility mappings rather than mislabeled exact source copies; direction remains distinct from destructive intent.
+
+Native views default to sRGB and use `nativeColors.android`/`ios`. A host that explicitly configures RN iOS default color space as Display-P3 must use `nativeColors.iosDisplayP3` throughout, including converted third-party sRGB assets. Never send CSS functions to native views or use P3 channel hex in an sRGB host. These are mathematical conversion checks, not physical wide-gamut display certification.
+
+Source `spacing.ts` and `type.ts` explicitly set both rem roots to 16; native spacing md=12 and base type=16 match HIG. Radius 6/8/10/14 and motion 180/260/320 ms also match. HIG caption line-height 18, title 30 and display 52 intentionally provide readable role leading versus the stock utility steps. Comfortable 48-unit native targets and compact 36-pixel desktop targets remain distinct; compact native buttons still retain 48-unit hit targets. Source native sheets use optional Gorhom/Reanimated gesture backends, 320 ms card transitions and separate 500 ms opening motion. HIG's basic Sheet stays a static, scrollable Modal alternative. The isolated gesture-sheet entry now supplies an optional Gorhom adapter with detents, cancellation delegation, native back, safe-area/keyboard configuration, reduced-motion mapping and focus requests. Its mocked lifecycle and real Metro imports are software-verified; actual worklet, pan interruption and assistive-technology behavior still require a booted native target.
+
+## Native font generation and registration
+
+Install `fonttools[woff]==4.61.1` and `brotli==1.2.0`, then run `npm run generate:fonts` before native consumer commands. `scripts/generate-native-fonts.py` derives static faces exclusively from the installed `@bloxwap/font@0.1.2` variable WOFF2 files, verifying all four input hashes before writing. It adapts the monorepo's generator and preserves its naming/weight metadata. The generated manifest contains input/output SHA256, PostScript names, Expo registration keys, weights, scripts and byte counts; OFL attribution ships beside the faces. Generated TTF files are build outputs, not per-repository committed binary copies. Local tarballs include them through `@bloxwap/hig-tokens/fonts/*`; consumers register only needed faces.
+
+The Expo fixture registers Sans Regular/SemiBold and Mono Regular through `expo-font`, waits for loading, exposes failure visibly and passes explicit 400/600 family keys to the native provider. Text, headings and buttons select registered static weight families, avoiding an invalid variable family name or synthesized weight. Expo web uses feedback.web.ts browser adapters; Android/iOS retain the native backend. Korean/Simplified Chinese Regular/SemiBold faces can be registered by host locale policy; other scripts use an explicit host/system fallback. Pixel remains a scoped web accent, not a native body-font requirement. Font registration in Expo web and Metro builds does not certify native rasterization, native Dynamic Type, or multilingual physical-device layout.
+
+## Observation boundaries
+
+Headless browser synthetic composition checks preserve raw negative/decimal locale strings without formatting or precision loss; real on-screen IME composition is a separate device check. Browser 200% root text, narrow width and RTL checks exercise DOM reflow, not OS text scaling. Jest inspects RN roles, states and handlers with native modules mocked; Expo web exercises RN web rendering; neither is TalkBack. Android emulator installation, startup and any observed OS semantics are reported separately in `evidence/issue-1-18/`. Physical iOS/Android, tactile output and real VoiceOver/TalkBack observations remain unperformed on this Linux VM.
+
+The root build now compiles contracts/tokens before feedback and platform renderers, so clean builds cannot rely on stale dist output. The expanded browser flow runs in Chromium/Firefox/WebKit under 320-pixel width, translated RTL tabs and 200% root text. It checks required validation, synthetic composition/raw precision, keyboard range/radio/menu/search, nested focus restoration, persistence/retry and zero automated axe WCAG findings. The Expo-web gallery separately checks registered faces, Modal picker, labels and range keyboard values. The native Slider web backend needs explicit ARIA min/max/now and keyboard actions; native OS builds retain adjustable role/state/value semantics. Checkbox/radio/tab web aliases likewise preserve native-renderer state in RN web. None of these observations is labeled as TalkBack. Quality gates verify every generated native face hash and cap the three selected fixture faces at 1.4 MB; optional CJK/other weight faces are available but are not imported by the default fixture.
 
 
 ## Organization adoption and governance (#36)
@@ -573,7 +613,7 @@ WOFF2 is not a native font asset. Supply pinned approved static TTFs and a typed
 
 ## Tokens only / plain CSS / Tailwind
 
-Install the tokens tarball alone and import CSS variables or typed tokens. No React/RN/audio peer is required. Plain HTML uses semantic `--hig-*` roles. Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. NativeWind integration remains unverified until the inaccessible monorepo rem-root mapping is audited.
+Install the tokens tarball alone and import CSS variables or typed tokens. No React/RN/audio peer is required. Plain HTML uses semantic `--hig-*` roles. Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. The audited monorepo web/native rem roots are both 16; HIG supports StyleSheet rather than claiming a verified NativeWind consumer. See the source-reconciliation chapter for native font generation and registration.
 
 ## Optional chart, sound and haptics
 

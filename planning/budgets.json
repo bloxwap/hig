@@ -22,5 +22,8 @@
   },
   "nativeCues": {
     "raw": 110000
+  },
+  "nativeFonts": {
+    "raw": 1400000
   }
 }

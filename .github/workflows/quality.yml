@@ -20,8 +20,9 @@ jobs:
           node-version: '22.22.0'
           cache: npm
       - run: npm ci
-      - name: Build, lint, types and tests (including Fumadocs export)
-        run: npm run check
+      - run: python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
+      - run: npm run generate:fonts
+      - run: npm run check
       - run: npm run examples:check
       - run: npm run quality
       - run: npm run smoke:ssr

@@ -1,0 +1,1 @@
+Generated 15 static faces from pinned @bloxwap/font 0.1.2

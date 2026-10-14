@@ -13,10 +13,10 @@ try{
   for(const state of entry.states){
    await page.getByRole('combobox',{name:'Example state',exact:true}).selectOption(state);
    const axe=await new AxeBuilder({page}).include('.example-frame').withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
-   const serious=axe.violations.filter(v=>v.impact==='critical'||v.impact==='serious').map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}));
+   const serious=axe.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}));
    assert.deepEqual(serious,[],`${entry.name}/${state} accessibility`);assert.deepEqual(errors,[],`${entry.name}/${state} runtime`);
    const file=`artifacts/visual/${entry.slug}-${state}.png`;await page.locator('.example-frame').screenshot({path:file});
-   results.push({name:entry.name,state,render:'passed',accessibility:'no serious/critical axe findings',capture:file,behaviorTests:'Shared family contract tests; this capture alone is not full behavioral certification'});
+   results.push({name:entry.name,state,render:'passed',accessibility:'no axe WCAG findings',capture:file,behaviorTests:'Shared family contract tests; this capture alone is not full behavioral certification'});
   }
   if(results.length%10===0)console.log(`Catalog captures: ${results.length}`);
  }

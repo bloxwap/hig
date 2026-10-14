@@ -1,0 +1,20 @@
+{
+  "1": "Roadmap requires #19\u2013#36, actual owning-product/SDK/native adoption, authorized publication/releases, approved owners and physical device certification; those are outside this task or prohibited.",
+  "2": "Actual production product before/after parity and deployed bundle baselines remain unbuilt in owning repositories. Representative authenticated source React and Android/iOS Metro before/after consumers are measured, not production migration savings. Pro returned HTTP 200 with an empty rendered body. Named migration-owner/applicability approval remains pending.",
+  "3": null,
+  "4": null,
+  "5": "Native iOS/Android runtime execution remains unobserved. Linux cannot run iOS hardware. Own API 35 emulator attempts failed (KVM EACCES, software CPU-thread hang/offline adb). Resumed port-5582 emulator briefly reported boot_completed=1 but shell queries stalled and adb became offline; no fixture execution or hierarchy was obtained. Metro exports and Expo web do not substitute for OS execution.",
+  "6": "Physical iOS Display-P3 and Android display comparison remains unperformed. Authored source palette, alpha/space conversion, contrast and browser/native consumer imports are now software-verified.",
+  "7": "Actual native font rasterization, OS text scaling, script fallback and keyboard/device layout remain unobserved. Static faces, hashes, registration and Expo-web font loading are implemented; generated native samples are not device typography certification.",
+  "8": "Native orientation/tablet safe-area/on-screen keyboard and OS large-text layout observations require a booted native target or physical device; owning-product parity/density approval remains pending.",
+  "9": "Native drag/scroll cancellation, gesture animation interruption and OS motion observations remain unperformed. Optional Gorhom sheet detents/reduced-motion/cancellation lifecycle configuration is implemented and software-tested; the actual native engine still requires a booted target.",
+  "10": "Real VoiceOver/TalkBack reference-flow completion and native OS large-text/RTL navigation/announcement behavior remain unobserved; automated axe, keyboard, RN tree semantics and Expo web are separate evidence.",
+  "11": null,
+  "12": null,
+  "13": "Native large-text/mixed-script layout, native assistive-technology activation and approved app/Pro visual parity require native/owning-product review. Web reflow, keyboard, busy/disabled, registered font APIs and native target/geometry contracts are verified.",
+  "14": "Real IME composition, native decimal keyboard/keyboard avoidance, screen-reader helper/error recovery and on-device selection/autofill behavior remain unobserved. Browser composition events are synthetic and do not certify OS IME.",
+  "15": "Native accessibility increment/decrement, physical drag cancellation and native controlled slider behavior still need a booted Android/iOS target; web keyboard/range and RN state/disabled/rejection semantics are covered by automation.",
+  "16": "Native nested overlay focus/restoration, OS back/keyboard/safe-area/orientation flows and real VoiceOver/TalkBack remain unobserved. Initial/return focus requests and optional Gorhom detents, controlled dismissal/rejection, native back and keyboard/safe-area wiring are implemented and mocked/Metro-tested; actual gestures/worklets require native runtime validation.",
+  "17": "Native screen-reader order, translated large-text layout, hardware-keyboard focus restoration and actual route/back/deep-link restoration need owning host/native runtime validation. DOM routing adapters, current-location/disclosure/search/RTL behavior and native applicability/examples are implemented.",
+  "18": "Native live-announcement ordering, repeated-outcome suppression under actual assistive technology and native large-text/reduced-motion recovery require native runtime observations. Persistent bursts/dedup/dismiss/retry and no-feedback operation are software-verified."
+}

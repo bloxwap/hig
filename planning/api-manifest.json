@@ -232,7 +232,7 @@
       },
       "Alert": {
         "entry": "status",
-        "signature": "export declare function Alert({ title, children, severity, action }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Alert({ title, children, severity, action, announce }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Callout": {
         "entry": "status",
@@ -366,7 +366,7 @@
       },
       "Label": {
         "entry": "field",
-        "signature": "export declare const Label: typeof Text;"
+        "signature": "export declare const Label: React.ForwardRefExoticComponent<import(\"react-native\").TextProps & React.RefAttributes<import(\"react-native\").Text>>;"
       },
       "Input": {
         "entry": "field",
@@ -383,6 +383,14 @@
       "SearchInput": {
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+      },
+      "GestureSheetProps": {
+        "entry": "gesture-sheet",
+        "signature": "export interface GestureSheetProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    /** Sorted increasing detents; percentages resolve against current container geometry. */\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    dismissible?: boolean;\n    returnFocusRef?: React.RefObject<View | null>;\n}"
+      },
+      "GestureSheet": {
+        "entry": "gesture-sheet",
+        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, snapPoints, initialIndex, dismissible, returnFocusRef }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -414,11 +422,11 @@
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | null>;\n    returnFocusRef?: React.RefObject<View | null>;\n}"
       },
       "Dialog": {
         "entry": "overlay",
-        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children, initialFocusRef, returnFocusRef }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Sheet": {
         "entry": "overlay",
@@ -438,11 +446,11 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>;\n}"
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
@@ -514,7 +522,7 @@
       },
       "Alert": {
         "entry": "status",
-        "signature": "export declare function Alert({ title, children, severity, action }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Alert({ title, children, severity, action, announce }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Callout": {
         "entry": "status",
@@ -554,11 +562,11 @@
       },
       "Text": {
         "entry": "surface",
-        "signature": "export declare function Text({ style, ...props }: TextProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare const Text: React.ForwardRefExoticComponent<TextProps & React.RefAttributes<RNText>>;"
       },
       "Heading": {
         "entry": "surface",
-        "signature": "export declare function Heading({ style, ...props }: TextProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare const Heading: React.ForwardRefExoticComponent<TextProps & React.RefAttributes<RNText>>;"
       },
       "Stack": {
         "entry": "surface",

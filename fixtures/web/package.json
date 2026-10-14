@@ -3,17 +3,17 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@bloxwap/hig-tokens": "0.1.0",
-    "@bloxwap/hig-contracts": "0.1.0",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "@bloxwap/hig-react": "0.1.0",
-    "@bloxwap/hig-feedback": "0.1.0",
-    "@bloxwap/sfx": "0.1.0",
     "@bloxwap/haptic": "0.1.0",
+    "@bloxwap/hig-contracts": "0.1.0",
+    "@bloxwap/hig-feedback": "0.1.0",
+    "@bloxwap/hig-react": "0.1.0",
+    "@bloxwap/hig-tokens": "0.1.0",
+    "@bloxwap/sfx": "0.1.0",
     "@radix-ui/react-dialog": "1.1.15",
     "@radix-ui/react-dropdown-menu": "2.1.16",
     "@radix-ui/react-popover": "1.1.15",
-    "@radix-ui/react-tooltip": "1.2.8"
+    "@radix-ui/react-tooltip": "1.2.8",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   }
 }

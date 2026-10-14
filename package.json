@@ -35,7 +35,8 @@
     "release:dry-run": "node scripts/release-dry-run.mjs",
     "smoke:packed-examples": "node scripts/packed-examples-smoke.mjs",
     "smoke:packed-boundaries": "node scripts/packed-boundaries-smoke.mjs",
-    "smoke:release-artifact": "node scripts/release-artifact-smoke.mjs"
+    "smoke:release-artifact": "node scripts/release-artifact-smoke.mjs",
+    "generate:fonts": "python3 scripts/generate-native-fonts.py"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -44,6 +45,7 @@
     "@bloxwap/haptic": "^0.1.0",
     "@bloxwap/sfx": "^0.1.0",
     "@eslint/js": "9.39.1",
+    "@gorhom/bottom-sheet": "5.2.14",
     "@playwright/test": "^1.56.1",
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "14.6.1",
@@ -51,6 +53,7 @@
     "@types/react": "19.1.16",
     "@types/react-dom": "19.1.9",
     "@types/react-test-renderer": "19.1.0",
+    "babel-preset-expo": "54.0.12",
     "esbuild": "^0.25.12",
     "eslint": "9.39.1",
     "expo-audio": "~1.1.1",
@@ -64,7 +67,12 @@
     "node-web-audio-api": "^2.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "2.28.0",
+    "react-native-reanimated": "4.1.1",
+    "react-native-worklets": "0.5.1",
     "react-test-renderer": "19.2.0",
+    "sharp": "^0.35.5",
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.1",
     "vite": "6.4.1",

@@ -8,6 +8,9 @@
     },
     "android": {
       "package": "com.bloxwap.hig.gallery"
+    },
+    "web": {
+      "bundler": "metro"
     }
   }
 }

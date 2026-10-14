@@ -145,6 +145,54 @@
       "remaining": "source audit, reviewed codemod/pilot changes, real builds/device evidence and measured deltas",
       "exceptionExpires": "2026-11-13",
       "migrationGuide": "docs/migration/products.md"
+    },
+    {
+      "name": "monorepo",
+      "url": "https://github.com/bloxwap/monorepo",
+      "applicability": "product web/native/docs/marketing surfaces",
+      "owner": "monorepo maintainers (named assignment pending)",
+      "status": "audited applicability; owning repo changes outside this hig-only task",
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
+      "migrationGuide": "docs/governance/adoption.md"
+    },
+    {
+      "name": ".github-private",
+      "url": "https://github.com/bloxwap/.github-private",
+      "applicability": "organization profile/governance; no runtime UI in observed tree",
+      "owner": ".github-private maintainers (named assignment pending)",
+      "status": "audited applicability; owning repo changes outside this hig-only task",
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
+      "migrationGuide": "docs/governance/adoption.md"
+    },
+    {
+      "name": "taptradetv",
+      "url": "https://github.com/bloxwap/taptradetv",
+      "applicability": "streaming/auction/contest web apps and shared UI",
+      "owner": "taptradetv maintainers (named assignment pending)",
+      "status": "audited applicability; owning repo changes outside this hig-only task",
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
+      "migrationGuide": "docs/governance/adoption.md"
+    },
+    {
+      "name": "tapsiren",
+      "url": "https://github.com/bloxwap/tapsiren",
+      "applicability": "strategy services/tooling; review seven UI-like paths before classifying runtime UI",
+      "owner": "tapsiren maintainers (named assignment pending)",
+      "status": "audited applicability; owning repo changes outside this hig-only task",
+      "exceptionExpires": "2026-11-13",
+      "packageVersion": "0.1.0 candidate",
+      "owningPR": null,
+      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
+      "migrationGuide": "docs/governance/adoption.md"
     }
   ],
   "surfaces": [

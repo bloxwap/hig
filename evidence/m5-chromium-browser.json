@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "browser": "154.0.8037.97",
+  "browser": "141.0.7390.37",
   "platform": "Linux Chrome automated; no physical-device claim",
   "viewport": [
     390,
@@ -11,7 +11,7 @@
     "modal Escape",
     "keyboard tabs",
     "no horizontal viewport overflow",
-    "axe AA serious/critical check"
+    "zero axe WCAG findings"
   ],
   "violations": []
 }
