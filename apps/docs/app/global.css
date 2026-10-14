@@ -5,6 +5,7 @@
 @import '@bloxwap/hig-react/css';
 @import '../src/fonts.css';
 @import '../src/site.css';
+@import '../styles/shell.css';
 @theme inline {--font-sans:var(--font-bloxwap-sans),sans-serif;--font-mono:var(--font-bloxwap-mono),monospace;}
 :root,.dark {--color-fd-background:var(--hig-background);--color-fd-foreground:var(--hig-text);--color-fd-primary:var(--hig-action);--color-fd-muted-foreground:var(--hig-muted);--color-fd-card:var(--hig-surface);--color-fd-border:var(--hig-nested);}
 #nd-page{max-width:64rem} .component-demo{min-width:0} small{font-size:.7rem;color:var(--hig-muted)}

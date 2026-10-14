@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "//#docs:prepare": {
+      "cache": false
+    },
+    "hig-docs#dev": {
+      "dependsOn": ["//#docs:prepare"],
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["NEXT_PUBLIC_BASE_PATH", "HIG_DOCS_ORIGIN"]
+    }
+  }
+}
