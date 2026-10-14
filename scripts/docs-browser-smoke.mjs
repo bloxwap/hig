@@ -12,7 +12,7 @@ const {pages}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
 for(const entry of pages){const response=await context.request.get(origin+'docs/'+entry.route+'/');assert.equal(response.ok(),true,entry.route);assert.match(await response.text(),/\/hig\/_next\//);}
 await page.goto(origin,{waitUntil:'networkidle'});
 await page.evaluate(()=>document.fonts.ready);
-assert.equal(await page.evaluate(()=>{const control=document.querySelector('.hig-button');const configured=getComputedStyle(document.documentElement).getPropertyValue('--font-bloxwap-sans').trim().split(',')[0].replaceAll('\"','').trim();return !!control&&!!configured&&getComputedStyle(control).fontFamily.replaceAll('\"','').includes(configured);}),true,'HIG controls must use the shipped Next Bloxwap face, not the host fallback font');
+assert.equal(await page.evaluate(()=>{const control=document.querySelector('.hig-button');const configured=getComputedStyle(document.documentElement).getPropertyValue('--font-bloxwap-sans').trim().split(',')[0].replaceAll('"','').trim();return !!control&&!!configured&&getComputedStyle(control).fontFamily.replaceAll('"','').includes(configured);}),true,'HIG controls must use the shipped Next Bloxwap face, not the host fallback font');
 await page.screenshot({path:`evidence/${stage}-playground-desktop.png`,fullPage:true});
 await page.getByLabel('Pro',{exact:true}).check();
 assert.equal(await page.locator('[data-hig-density="compact"]').count(),1);
