@@ -15,14 +15,14 @@
   {
     "id": "native-fonts",
     "owner": "Font/native maintainers",
-    "reason": "@bloxwap/font 0.1.2 has no published native manifest/static TTF npm interface; native registration/fidelity pending",
+    "reason": "HIG now generates pinned native TTFs from Font 0.1.2 and checks asset hashes; physical glyph/locale/Dynamic Type fidelity and a canonical upstream native distribution remain pending.",
     "status": "blocked",
     "reviewBy": "2026-11-13"
   },
   {
     "id": "physical-devices",
     "owner": "HIG/native/haptic maintainers",
-    "reason": "No physical iOS/Android, VoiceOver/TalkBack, P3/font or sound/haptic latency/settings/interruption evidence; upstream haptic#9 remains open",
+    "reason": "Physical iOS/Android, VoiceOver/TalkBack, color/font/audio/haptic observations are unavailable. Android emulator/Expo Go attempts stalled and are stopped by explicit user instruction; device/emulator certification needs physical or functioning KVM hardware.",
     "status": "blocked",
     "reviewBy": "2026-11-13"
   },

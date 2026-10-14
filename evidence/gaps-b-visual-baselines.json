@@ -16,7 +16,9 @@
       "name": "Button",
       "state": "default",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -27,7 +29,9 @@
       "name": "Button",
       "state": "busy",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -38,7 +42,9 @@
       "name": "Button",
       "state": "disabled",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -49,7 +55,9 @@
       "name": "Field",
       "state": "default",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -60,7 +68,9 @@
       "name": "Field",
       "state": "error",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -71,7 +81,9 @@
       "name": "Input",
       "state": "default",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -82,7 +94,9 @@
       "name": "Input",
       "state": "disabled",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -93,7 +107,9 @@
       "name": "Input",
       "state": "error",
       "regression": {
-        "updated": true
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",

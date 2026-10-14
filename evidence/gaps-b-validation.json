@@ -1,8 +1,8 @@
 {
   "verifiedAt": "2026-10-14",
-  "baseCommit": "e48884e19626cf58df1a1f06c5b44900e9f468f6",
-  "webTests": 68,
-  "nativeRendererTests": 11,
+  "baseCommit": "7e3efeb5f24faf11080916cd48f06d1702aca784",
+  "webTests": 73,
+  "nativeRendererTests": 28,
   "browserComponents": 64,
   "browserStates": 102,
   "packedExampleModules": 212,
@@ -30,5 +30,6 @@
     "releaseStableSimulation"
   ],
   "hardware": "No physical device/iOS/actual audible or tactile output claimed. See native environment and issue-specific residuals.",
-  "publication": "No npm publish, tags, releases or production deployment."
+  "publication": "No npm publish, tags, releases or production deployment.",
+  "verificationScope": "Fresh rebased npm run check and eight-baseline browser gate; full packed/browser/release gates are reverified by PR CI. Previous full local runs are retained as historical evidence."
 }

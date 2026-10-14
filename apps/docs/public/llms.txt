@@ -160,7 +160,7 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig-react/data`
 
 ## API and anatomy
 
-Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty. Table caption/rows/columns/keyFor; optional host sorting callbacks.
+Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty/label/loading/error/onRetry/onLoadMore. Loading suppresses a misleading empty message, keeps existing rows visible, and disables pagination/retry until ready. Error text remains visible with optional host retry. Native uses FlatList virtualization; stable host keys preserve identity during live updates. Table caption/rows/columns/keyFor; optional host sorting callbacks.
 
 ## When to use and examples
 
@@ -168,7 +168,7 @@ Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted n
 
 ## States, interaction and accessibility
 
-Readouts are static and tabular, respecting reduced motion. Percent uses percent points (5 is 5%). DOM table caption/column headers/aria-sort and scroll region; RN FlatList labeled-row alternative with stable keys.
+Readouts are static and tabular, respecting reduced motion. Percent uses percent points (5 is 5%), with localized percent placement/digits and a single native text readout. Intl options control precision/trailing zeros/sign; percent style is enforced. Unknown/nonfinite values stay —. DOM table caption/column headers/aria-sort and scroll region; RN FlatList labeled-row alternative with stable keys.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -179,6 +179,10 @@ Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden pa
 ## Validation and citation
 
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+## Optional number motion
+
+`AnimatedNumberReadout` lives in the separate `animated-number` entry on both platforms. It fades the final localized reading on a deliberate value change, using Web Animations or the RN native opacity driver. It never interpolates financial values or adds a live region. Reduced motion, unknown values and changes less than 250 ms apart use the static final reading; pending motion is canceled on replacement/unmount. No animation engine is imported by the ordinary `data` entry. Example: `import {AnimatedNumberReadout} from '@bloxwap/hig-react/animated-number'` (or `hig-native/animated-number`), then `<AnimatedNumberReadout value={price} label="Price" options={{style:'currency',currency:'USD'}} />`. The same gallery manifest contains runnable examples for both renderers.
 
 
 ## Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0
@@ -362,6 +366,12 @@ Regenerate with `npm run generate:cues`. `assets/manifest.json` pins package/rec
 
 Install `expo-haptics ~15.0.7` in the native host. `expoHapticBackend(Haptics)` bridges selection, impact light/medium/heavy and notification success/warning/error. `createNativeHapticAdapter` reports API availability separately from observation. Unsupported hardware, backgrounding, preferences and failed backend calls are no-ops that do not change primary actions. Android notification/impact approximation and OS suppression must be observed on devices before support is certified.
 
+## Simulated lifecycle regression evidence
+
+The Linux tests inject native player and haptic backends. Pending configure/seek requests are superseded by the newest request; cancellation, backgrounding, zero volume and disposal stop pending playback. Failed configuration can retry. Explicit impact intent reaches the native backend even for an otherwise silent press preset. Pause/remove failures cannot prevent other cached players from being released. These tests establish dispatch/lifecycle behavior, not observed sound, tactile output, latency or OS audio-session behavior.
+
+Menu disclosure and dismissal are intentionally silent. Web/native Menu commits emit a single selection intent after the host handler; a host can cancel that effect with the selection event's `preventDefault()`. Native accordion disclosure emits one silent disclosure intent rather than duplicate activation/selection effects. The Linux three-engine fixture also checks switch, range, menu selection and canceled menu actions with injected adapters.
+
 
 ## Semantic feedback · HIG 0.1.0
 Source: docs/feedback/contract.md
@@ -530,6 +540,10 @@ Semver: token/type/geometry changes, action timing, accessible behavior and sema
 
 Completion review: all 36 issues need an owning implementation/validation link or explicit blocker; catalog entries need docs/code/platform/test coverage; source/bundle deltas must be measured; all active rows must have owner, version, status, residuals and dated exceptions. This matrix cannot be called migrated until owning-repo changes and device checks exist.
 
+## Inventory refresh · 2026-10-13
+
+`planning/org-inventory-2026-10-13.json` records all active repositories visible to the current authenticated token; `planning/adoption.json` assigns an applicability and dated exception to each. This refresh adds tapsiren (workers/data services), taptradetv (product UI), and private organization profile content. Previously inaccessible product source is now readable; it is not copied into public docs. Named maintainers still need to accept ownership and provide migration PR/build/baseline evidence. An inventory decision or migration kit does not establish production adoption.
+
 
 ## Quality, budgets and evidence · HIG 0.1.0
 Source: docs/governance/quality.md
@@ -553,11 +567,15 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Sans + Mono assets | 592,796 B | 600,000 B | Pins two approved faces; new script/face requires explicit review |
 | Native four-cue WAV assets | 103,618 B | 110,000 B | ~6% headroom; no full engine/catalog assets |
 
-The actual build report is `evidence/quality-report.json`. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas are blocked by inaccessible source/toolchains; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
+The actual build report is `evidence/quality-report.json`. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
 
 Exceptions require path/rule, owner, reason and expiry. Approved brand geometry is exempt from literal-palette detection until review; unrelated primitive/palette copies fail. New repositories should run scoped gates on migrated surfaces and keep dated residuals rather than blanket exemptions.
 
 Physical release review remains pending: iPhone Safari, Android Chrome, native iOS and Android, VoiceOver/TalkBack, large text/RTL, color/font fidelity, actual SFX/haptic output/latency/settings/interruption/background behavior. Coordinate upstream haptic#9. Release artifacts cannot change those “pending” rows into passes.
+
+## Versioned visual regressions
+
+The catalog browser gate captures and runs axe on every shipped state. Button, Field and Input additionally compare eight versioned mobile/reduced-motion screenshots in `tests/visual-baselines/`. Geometry changes fail; pixel changes above 2% fail after a 24-channel-value antialias tolerance. `tests/visual.test.ts` deliberately changes geometry and pixels to prove the gate fails. Baselines record current candidate rendering, not approved product parity or native-device fidelity. Review an intentional change using CI captures, then run `HIG_UPDATE_VISUALS=1 node scripts/catalog-browser-smoke.mjs` against the production docs preview and commit the reviewed baseline images.
 
 
 ## Release candidates, semver and rollback · HIG 0.1.0
@@ -599,11 +617,11 @@ These are review candidates, not published npm packages. Use local dry-run tarba
 
 ## React / Vite
 
-Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs tarballs into an independent temporary consumer and builds the fixture. For a host app install tokens, contracts and React tarballs plus React/DOM 19.1. Import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once; import individual components such as `@bloxwap/hig-react/button`. Pin @bloxwap/font 0.1.2 and choose only the required families/scripts using asset URL @font-face rules. The included fixture has Sans and Mono only. Never copy font binaries or component folders.
+Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs tarballs into an independent temporary consumer and builds the fixture. For a host app install tokens, contracts and React tarballs plus React/DOM 19.2. Import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once; import individual components such as `@bloxwap/hig-react/button`. Pin @bloxwap/font 0.1.2 and choose only the required families/scripts using asset URL @font-face rules. The included fixture has Sans and Mono only. Never copy font binaries or component folders.
 
 ## SSR and Next client boundaries
 
-Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream. Next 16.4.0 (webpack), React 19.1 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
+Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream. Next 16.4.0 (webpack), React 19.2 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
 
 ## Expo / React Native
 
@@ -622,6 +640,8 @@ Chart is DOM-only and lazy; install @bloxwap/chart 0.3.0 for that entry and supp
 ## Stable citations and upgrades
 
 Cite “Bloxwap HIG 0.1.0 candidate, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. No publication, release or tag is performed by this implementation.
+
+The native fixture pins React **19.1.0**, matching the RN 0.81.5 renderer exactly. Web/Next/Fumadocs fixtures use React 19.2.0. Metro explicitly resolves every native `react`/`react/*` import to the native fixture's version so shared-workspace code cannot load web React. Quality and packed-native checks compare the installed version to RN's actual renderer guard; a successful Metro bundle alone does not prove runtime compatibility.
 
 
 ## Native application pilot (#35)
