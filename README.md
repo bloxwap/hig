@@ -11,6 +11,10 @@ use `bun docs:dev --ui=stream` for plain logs. `bun docs:check`, `bun docs:build
 and `bun docs:preview` provide the matching docs commands. The static build and
 preview retain `/hig`; `NEXT_PUBLIC_BASE_PATH` overrides either mode explicitly.
 
+The [published documentation](https://bloxwap.github.io/hig/) updates automatically
+after pushes to `main`. The Documentation workflow builds and checks the static
+site, then deploys it to GitHub Pages. Pull requests build without deploying.
+
 ## Candidate validation
 
 ```sh
