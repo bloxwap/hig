@@ -1,5 +1,6 @@
 // Generated from planning/examples.json.
 import React,{useState} from 'react';
+import * as AnimatedNumber from '@bloxwap/hig-native/animated-number';
 import * as Brand from '@bloxwap/hig-native/brand';
 import * as Button from '@bloxwap/hig-native/button';
 import * as Checkbox from '@bloxwap/hig-native/checkbox';
@@ -15,7 +16,7 @@ import * as Slider from '@bloxwap/hig-native/slider';
 import * as Status from '@bloxwap/hig-native/status';
 import * as Surface from '@bloxwap/hig-native/surface';
 import * as Switch from '@bloxwap/hig-native/switch';
-const C={...Brand,...Button,...Checkbox,...Data,...Field,...Navigation,...Overlay,...Provider,...RadioGroup,...Recipes,...Select,...Slider,...Status,...Surface,...Switch};
+const C={...AnimatedNumber,...Brand,...Button,...Checkbox,...Data,...Field,...Navigation,...Overlay,...Provider,...RadioGroup,...Recipes,...Select,...Slider,...Status,...Surface,...Switch};
 export function Example({name,state='default'}:{name:string;state?:string}){const empty=state==='empty';const [checked,setChecked]=useState(false);const [value,setValue]=useState('buy');const [range,setRange]=useState(25);const [open,setOpen]=useState(false);const [amount,setAmount]=useState('0.01');const [message,setMessage]=useState('');const [notices,setNotices]=useState([{id:'1',message:'Demo copied',severity:'success' as const}]);const choices=[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}];const rows=empty?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];const busy=state==='busy',disabled=state==='disabled',error=state==='error'?'Data unavailable. Retry when connected.':undefined;
 function preview(){switch(name){case "Button":return <C.Button busy={busy} disabled={disabled}>Review order</C.Button>;
 case "IconButton":return <C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>;
@@ -62,6 +63,7 @@ case "EmptyState":return <C.EmptyState title='No open positions' description='Po
 case "Avatar":return <C.Avatar name='Demo account'/>;
 case "StatusIndicator":return <C.StatusIndicator label='Market data' state={error?'offline':'stale'}/>;
 case "NumberReadout":return <C.NumberReadout value={empty?null:67234.56} stale={!!error} options={{maximumFractionDigits:2}}/>;
+case "AnimatedNumberReadout":return <><C.AnimatedNumberReadout label="Sample price" value={empty?null:range} stale={!!error}/><C.Slider label="Sample price" value={range} onValueChange={setRange}/></>;
 case "Usd":return <C.Usd value={empty?null:1250.45} stale={!!error}/>;
 case "Percent":return <C.Percent value={empty?null:2.5}/>;
 case "Metric":return <C.Metric label='Sample equity' value={<C.Usd value={1250.45}/>}/>;

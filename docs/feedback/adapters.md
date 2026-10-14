@@ -25,3 +25,9 @@ Regenerate with `npm run generate:cues`. `assets/manifest.json` pins package/rec
 ## Native haptics
 
 Install `expo-haptics ~15.0.7` in the native host. `expoHapticBackend(Haptics)` bridges selection, impact light/medium/heavy and notification success/warning/error. `createNativeHapticAdapter` reports API availability separately from observation. Unsupported hardware, backgrounding, preferences and failed backend calls are no-ops that do not change primary actions. Android notification/impact approximation and OS suppression must be observed on devices before support is certified.
+
+## Simulated lifecycle regression evidence
+
+The Linux tests inject native player and haptic backends. Pending configure/seek requests are superseded by the newest request; cancellation, backgrounding, zero volume and disposal stop pending playback. Failed configuration can retry. Explicit impact intent reaches the native backend even for an otherwise silent press preset. Pause/remove failures cannot prevent other cached players from being released. These tests establish dispatch/lifecycle behavior, not observed sound, tactile output, latency or OS audio-session behavior.
+
+Menu disclosure and dismissal are intentionally silent. Web/native Menu commits emit a single selection intent after the host handler; a host can cancel that effect with the selection event's `preventDefault()`. Native accordion disclosure emits one silent disclosure intent rather than duplicate activation/selection effects. The Linux three-engine fixture also checks switch, range, menu selection and canceled menu actions with injected adapters.

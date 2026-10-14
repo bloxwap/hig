@@ -656,6 +656,22 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "AnimatedNumberReadout",
+      "slug": "animated-number-readout",
+      "entry": "animated-number",
+      "family": "financial-data",
+      "web": "<><C.AnimatedNumberReadout label=\"Sample price\" value={empty?null:range} stale={!!error}/><C.Slider label=\"Sample price\" value={range} onValueChange={setRange}/></>",
+      "native": "<><C.AnimatedNumberReadout label=\"Sample price\" value={empty?null:range} stale={!!error}/><C.Slider label=\"Sample price\" value={range} onValueChange={setRange}/></>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "a11y": "Final localized reading stays accessible; optional opacity motion respects reduced motion; rapid updates bypass animation and never emit feedback.",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
       "name": "Usd",
       "slug": "usd",
       "entry": "data",

@@ -341,6 +341,15 @@
       "support": "renderer"
     },
     {
+      "name": "AnimatedNumberReadout",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Usd",
       "states": [
         "default",

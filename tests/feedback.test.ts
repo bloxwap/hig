@@ -10,3 +10,11 @@ describe('semantic feedback contract before adapters',()=>{
  it('keeps outcome ids separate from interaction and isolates throw/reject',()=>{const s=adapter();s.play=vi.fn(()=>{throw Error('audio unavailable');});const h=adapter();h.play=vi.fn(()=>Promise.reject(Error('hardware unavailable')));const c=new FeedbackController({sound:s,haptics:h,preferences:{sound:true,haptics:true}});expect(()=>c.emit(event('success','operation-1'))).not.toThrow();expect(s.play).toHaveBeenCalledOnce();expect(h.play).toHaveBeenCalledOnce();});
  it('honors policy, volume/mute and lifecycle without tactile claims',()=>{const s=adapter();const c=new FeedbackController({sound:s,preferences:{sound:true,volume:2},policy:{sound:false}});expect(c.getPreferences().volume).toBe(1);expect(c.getCapabilities().sound.observed).toBe(false);c.emit(event());expect(s.play).not.toHaveBeenCalled();c.dispose();c.dispose();expect(s.dispose).toHaveBeenCalledOnce();c.emit(event('success'));expect(s.play).not.toHaveBeenCalled();});
 });
+it('cancels pending sound when volume becomes zero and dispatches explicit native impact',()=>{
+ const sound=adapter(),haptics=adapter();const controller=new FeedbackController({sound,haptics,preferences:{sound:true,haptics:true}});
+ controller.updatePreferences({volume:0});expect(sound.cancel).toHaveBeenCalledOnce();
+ controller.emit({...event('press'),impact:'heavy'});expect(haptics.play).toHaveBeenCalledOnce();expect(sound.play).not.toHaveBeenCalled();
+});
+it.each([-1,0,NaN,Infinity])('bounds invalid remembered-event capacities without blocking actions (%s)',maxRemembered=>{
+ const sound=adapter();const controller=new FeedbackController({sound,maxRemembered,preferences:{sound:true}});controller.emit(event());controller.emit(event());expect(sound.play).toHaveBeenCalledOnce();
+});

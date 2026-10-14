@@ -11,3 +11,6 @@
 .brand{display:inline-flex;align-items:center;gap:.75rem}.brand img{flex:none}.docs-version{padding:1rem;font-size:.75rem;color:var(--hig-muted)}
 #nd-page h1{font-size:clamp(1.875rem,3vw,2.5rem);font-weight:700;letter-spacing:-.035em;line-height:1.2}
 #nd-page .prose{line-height:1.75}#nd-sidebar a[data-active='true']{color:var(--hig-action)}
+
+.hig-button { font-family:var(--font-bloxwap-sans),system-ui,sans-serif; }
+.hig-number { font-family:var(--font-bloxwap-mono),monospace; }

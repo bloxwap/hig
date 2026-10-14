@@ -60,7 +60,11 @@
       "types": "./dist/chart.d.ts",
       "import": "./dist/chart.js"
     },
-    "./css": "./dist/styles.css"
+    "./css": "./dist/styles.css",
+    "./animated-number": {
+      "types": "./dist/animated-number.d.ts",
+      "import": "./dist/animated-number.js"
+    }
   },
   "peerDependencies": {
     "react": "^19.1.0",

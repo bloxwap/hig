@@ -2,6 +2,10 @@
   "version": "0.1.0",
   "api": {
     "react": {
+      "AnimatedNumberReadout": {
+        "entry": "animated-number",
+        "signature": "export declare function AnimatedNumberReadout({ duration, ...props }: NumberProps & {\n    duration?: number;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
@@ -58,9 +62,13 @@
         "entry": "data",
         "signature": "export declare const Stat: typeof Metric;"
       },
+      "ListProps": {
+        "entry": "data",
+        "signature": "export interface ListProps<T> {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n    label?: string;\n    loading?: boolean;\n    error?: string;\n    onRetry?: () => void;\n    onLoadMore?: () => void;\n}"
+      },
       "List": {
         "entry": "data",
-        "signature": "export declare function List<T>({ items, keyFor, render, empty }: {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function List<T>({ items, keyFor, render, empty, label, loading, error, onRetry, onLoadMore }: ListProps<T>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Row": {
         "entry": "data",
@@ -140,7 +148,7 @@
       },
       "Menu": {
         "entry": "overlay",
-        "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: (event: Event) => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Popover": {
         "entry": "overlay",
@@ -164,7 +172,7 @@
       },
       "useControllable": {
         "entry": "provider",
-        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void): [T, (next: T) => void];"
+        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent): [T, (next: T) => void];"
       },
       "MarketRow": {
         "entry": "recipes",
@@ -300,6 +308,10 @@
       }
     },
     "native": {
+      "AnimatedNumberReadout": {
+        "entry": "animated-number",
+        "signature": "export declare function AnimatedNumberReadout({ duration, ...props }: NumberProps & {\n    duration?: number;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
@@ -356,9 +368,13 @@
         "entry": "data",
         "signature": "export declare function Row({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "ListProps": {
+        "entry": "data",
+        "signature": "export interface ListProps<T> {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n    label?: string;\n    loading?: boolean;\n    error?: string;\n    onRetry?: () => void;\n    onLoadMore?: () => void;\n}"
+      },
       "List": {
         "entry": "data",
-        "signature": "export declare function List<T>({ items, keyFor, render, empty }: {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function List<T>({ items, keyFor, render, empty, label, loading, error, onRetry, onLoadMore }: ListProps<T>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Field": {
         "entry": "field",
@@ -438,7 +454,7 @@
       },
       "Menu": {
         "entry": "overlay",
-        "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: () => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Menu({ label, items }: {\n    label: string;\n    items: readonly {\n        label: string;\n        disabled?: boolean;\n        onSelect: (event: GestureResponderEvent) => void;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "HelpText": {
         "entry": "overlay",
@@ -458,7 +474,7 @@
       },
       "useControllable": {
         "entry": "provider",
-        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void): [T, (next: T) => void];"
+        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent): [T, (next: T) => void];"
       },
       "RadioGroup": {
         "entry": "radio-group",

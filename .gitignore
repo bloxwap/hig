@@ -13,3 +13,6 @@ apps/docs/out/
 *.tsbuildinfo
 .local/
 packages/tokens/assets/fonts/*.ttf
+
+.validation-tmp/
+*.log

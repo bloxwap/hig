@@ -1,0 +1,167 @@
+{
+  "observedAt": "2026-10-14",
+  "scope": "HIG issues 19\u201336; Linux software verification only; no npm publication/tags/releases/production deployments or owning-repository writes",
+  "branch": "hig/gaps-b",
+  "fullySatisfied": [
+    21,
+    25,
+    27,
+    29
+  ],
+  "issues": [
+    {
+      "issue": 19,
+      "status": "partial",
+      "proof": "tests/data.dom.test.tsx; tests/native/components.test.cjs; docs/components/financial-data.md; optional animated-number entries on web/native, reduced-motion/cancellation/rapid-update tests and shared runnable examples",
+      "remainingBlockers": [
+        "Physical iOS/Android list scrolling, large text, VoiceOver/TalkBack and touch performance are unobserved; the 10,000-row test verifies FlatList configuration, not device throughput.",
+        "Approved production list/number baseline and before/after performance comparisons require owning-product validation; optional opacity motion is now implemented and software-tested in HIG.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 20,
+      "status": "partial",
+      "proof": "tests/components.dom.test.tsx; docs/components/chart.md; packed import boundaries",
+      "remainingBlockers": [
+        "Chart engine/native rendering and product pan/zoom/crosshair certification belong to the chart and product repos; HIG provides optional DOM integration and native readout/list alternative.",
+        "Physical chart gestures and native device observations are unavailable on this Linux VM."
+      ]
+    },
+    {
+      "issue": 21,
+      "status": "satisfied",
+      "proof": "tests/feedback.test.ts; tests/feedback-react.dom.test.tsx; tests/components.dom.test.tsx; accepted/canceled web/native menu selections and quiet native accordion disclosure",
+      "remainingBlockers": []
+    },
+    {
+      "issue": 22,
+      "status": "partial",
+      "proof": "scripts/feedback-browser-smoke.mjs; scripts/browser-smoke.mjs; tests/feedback-adapters.test.ts; accepted/canceled web/native menu selections and quiet native accordion disclosure",
+      "remainingBlockers": [
+        "Physical iPhone Safari tap haptics, Android Chrome vibration and OS/browser settings observations cannot be made on this Linux VM.",
+        "Upstream SFX voice cancellation and iOS haptic physical-target constraints remain owned by SFX/Haptic agents; headless dispatch does not prove physical output.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 23,
+      "status": "partial",
+      "proof": "tests/feedback-adapters.test.ts; packed native Metro export; cue manifest/hash quality gate",
+      "remainingBlockers": [
+        "Physical iOS/Android playback latency, silent-mode/volume behavior, audio-session interruptions and background/foreground observations are unavailable; Metro builds and injected players are not playback evidence.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 24,
+      "status": "partial",
+      "proof": "tests/feedback-adapters.test.ts; tests/feedback.test.ts; native renderer tests and Metro exports",
+      "remainingBlockers": [
+        "Actual iPhone/Android tactile output, OS suppression, unsupported hardware and canceled scroll/drag behavior require physical devices; injected Expo backends and renderer tests are simulations.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 25,
+      "status": "satisfied",
+      "proof": "tests/feedback.test.ts; tests/feedback-react.dom.test.tsx; tests/feedback-adapters.test.ts; docs browser persisted preferences; accepted/canceled web/native menu selections and quiet native accordion disclosure",
+      "remainingBlockers": []
+    },
+    {
+      "issue": 26,
+      "status": "partial",
+      "proof": "catalog recipe captures/axe; packed examples; fixtures/web and fixtures/native",
+      "remainingBlockers": [
+        "Approved visual comparison against app, Pro, marketing and SDK production designs requires owning-product review; local recipe captures do not establish production parity.",
+        "Physical native recipe/gesture/assistive-technology review remains unobserved.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 27,
+      "status": "satisfied",
+      "proof": "scripts/docs-browser-smoke.mjs; tests/docs.test.ts; production static-route build",
+      "remainingBlockers": []
+    },
+    {
+      "issue": 28,
+      "status": "partial",
+      "proof": "scripts/catalog-browser-smoke.mjs; packed examples; packed native export",
+      "remainingBlockers": [
+        "Native gallery iOS/Android OS runtime execution and recorded platform captures remain unobserved; Metro exports and Expo web are headless evidence, not native-device execution.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 29,
+      "status": "satisfied",
+      "proof": "scripts/docs-browser-smoke.mjs; packed configuration examples",
+      "remainingBlockers": []
+    },
+    {
+      "issue": 30,
+      "status": "partial",
+      "proof": "212 packed examples; packed Vite/SSR/Next/Metro consumers; tests/docs.test.ts",
+      "remainingBlockers": [
+        "NativeWind/rem-root integration remains outside the declared verified support matrix; the private product mapping needs an owning-repository integration/build before it can be documented as supported.",
+        "The merged source audit reconciles 129 source files; approved product-specific migration mappings and NativeWind host integration/build remain owning-product work."
+      ]
+    },
+    {
+      "issue": 31,
+      "status": "partial",
+      "proof": "npm run check; quality and negative gate tests; three-engine browsers/axe; catalog captures; eight versioned state PNG baselines and deliberate geometry/pixel regression test",
+      "remainingBlockers": [
+        "Physical iPhone Safari, Android Chrome, native iOS/Android and VoiceOver/TalkBack evidence is unavailable.",
+        "Versioned visual baselines represent current HIG candidate rendering; approved product/native fidelity and production before/after bundle/source deltas still require maintainer/owning-product review.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 32,
+      "status": "partial",
+      "proof": "candidate and stable-simulation dry runs; artifact smoke; packed boundary checks",
+      "remainingBlockers": [
+        "npm publication, tags and releases are explicitly prohibited by this task; only candidate/stable-simulation artifacts can be generated.",
+        "Stable publication remains gated by physical/catalog review and approved production audit baseline deltas."
+      ]
+    },
+    {
+      "issue": 33,
+      "status": "partial",
+      "proof": "tests/codemods.test.ts; docs/migration/products.md; planning/adoption.json",
+      "remainingBlockers": [
+        "Representative migrations, production builds, reviewed before/after visuals, dependency/source removal and measured deltas in app/Pro/marketing are owning-monorepo work; this task permits HIG-directory changes only."
+      ]
+    },
+    {
+      "issue": 34,
+      "status": "partial",
+      "proof": "docs/migration/sdk-docs.md; migrations/; planning/adoption.json",
+      "remainingBlockers": [
+        "Each Hyperliquid/Chart/Font/SFX/Haptic docs owner must provide its migration PR, production build, preserved distinctive demo, asset-path/accessibility checks and source/bundle deltas. HIG migration kits do not constitute those migrations; parallel repo agents own four of these."
+      ]
+    },
+    {
+      "issue": 35,
+      "status": "partial",
+      "proof": "docs/migration/native.md; tests/codemods.test.ts; planning/adoption.json",
+      "remainingBlockers": [
+        "Owning mobile-app migrations, native dependency/autolinking changes, real iOS/Android builds, duplicate removal and size/latency measurements remain outside this worktree.",
+        "Physical Dynamic Type, RTL/long translations, VoiceOver/TalkBack, reduced motion and observed sound/haptics require devices; no hardware observations are fabricated.",
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+      ]
+    },
+    {
+      "issue": 36,
+      "status": "partial",
+      "proof": "tests/docs.test.ts inventory completeness; scripts/drift.mjs; docs/governance/adoption.md",
+      "remainingBlockers": [
+        "Named owners must accept the dated exceptions and link actual migrations/validated HIG versions for all applicable repos and product/native/SDK surfaces, including newly inventoried taptradetv.",
+        "The inventory covers all repos visible to this token on 2026-10-13; it cannot certify hidden repos or organization-wide production adoption."
+      ]
+    }
+  ],
+  "pr": "https://github.com/bloxwap/hig/pull/44"
+}

@@ -9,4 +9,5 @@ config.resolver.resolveRequest=(context,name,platform)=>{
  if(roots[base])return context.resolveRequest(context,resolve(roots[base],name.slice(base.length+1)||'index.js'),platform);
  return context.resolveRequest(context,name,platform);
 };
+config.resolver.blockList=[...(Array.isArray(config.resolver.blockList)?config.resolver.blockList:config.resolver.blockList?[config.resolver.blockList]:[]),/[/\\]\.validation-tmp[/\\]android[/\\]/];
 module.exports=config;

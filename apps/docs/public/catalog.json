@@ -431,6 +431,17 @@
       ]
     },
     {
+      "name": "AnimatedNumberReadout",
+      "route": "components/animated-number-readout",
+      "entry": "animated-number",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
       "name": "Usd",
       "route": "components/usd",
       "entry": "data",

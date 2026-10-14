@@ -1,3 +1,4 @@
+import {verifyNativeReact} from './native-compatibility.mjs';
 import {execFileSync} from 'node:child_process';
 import {mkdtempSync,writeFileSync,readFileSync,cpSync,readdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
@@ -10,6 +11,7 @@ cpSync('fixtures/native',dir,{recursive:true,filter:s=>!s.includes('/node_module
 writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
 const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')).map(n=>resolve('artifacts',n));
 execFileSync('npm',['install','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
+console.log('Native runtime versions',verifyNativeReact(dir));
 execFileSync('npm',['run','bundle','--','--max-workers','2'],{cwd:dir,stdio:'inherit'});
 writeFileSync(join(dir,'index.js'),readFileSync('fixtures/native/index-gesture.js'));
 execFileSync('npm',['run','bundle','--','--max-workers','2','--output-dir','dist-gesture'],{cwd:dir,stdio:'inherit'});

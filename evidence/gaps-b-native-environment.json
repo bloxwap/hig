@@ -1,0 +1,19 @@
+{
+  "host": "Linux-6.12.94+-x86_64-with-glibc2.41",
+  "physicalDevices": "none; Linux VM",
+  "iosRuntime": "Xcode/iOS simulator and physical iOS hardware unavailable on Linux",
+  "androidKVM": {
+    "errno": 13,
+    "message": "[Errno 13] Permission denied: '/dev/kvm'"
+  },
+  "deviceAndEmulatorValidation": {
+    "status": "blocked",
+    "requires": "Physical iOS/Android or a functioning KVM-backed Android host; unavailable on this VM",
+    "attempts": [
+      "Software emulator on port 5582 briefly returned boot_completed=1; Expo Go install failed with package-service Broken pipe (32); shell/logcat calls stalled and adb went offline.",
+      "Privileged KVM retries on ports 5582 and 5584 did not provide a responsive Android/console target."
+    ],
+    "stopReason": "User explicitly instructed stopping emulator/Expo Go validation on 2026-10-14.",
+    "scope": "Headless native Jest/typechecks/Metro Android+iOS exports retained. No native OS/TalkBack/device/gallery execution or physical audio/haptics claimed."
+  }
+}

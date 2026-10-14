@@ -1,6 +1,8 @@
 import {spawn,execFileSync} from 'node:child_process';
 import {setTimeout as delay} from 'node:timers/promises';
-const webPort=process.env.HIG_WEB_PORT??'4173',docsPort=process.env.HIG_DOCS_PORT??'4174',nextPort=process.env.HIG_NEXT_PORT??'4175';
+const portBase=Number(process.env.HIG_BROWSER_PORT_BASE??4173);
+const webPort=process.env.HIG_WEB_PORT??String(portBase),docsPort=process.env.HIG_DOCS_PORT??String(portBase+1),nextPort=process.env.HIG_NEXT_PORT??String(portBase+2);
+process.env.HIG_DOCS_PORT=docsPort;process.env.HIG_EXPO_PORT??=String(portBase+3);
 process.env.HIG_PREVIEW_URL=`http://localhost:${webPort}`;process.env.HIG_DOCS_PREVIEW_URL=`http://localhost:${docsPort}/hig/`;process.env.HIG_NEXT_URL=`http://localhost:${nextPort}`;
 const servers=[];
 function start(args){const child=spawn(process.execPath,args,{stdio:'inherit',env:process.env});servers.push(child);return child;}
@@ -16,5 +18,5 @@ try{
  for(const engine of ['chromium','firefox','webkit'])execFileSync(process.execPath,['scripts/browser-smoke.mjs','m5'],{stdio:'inherit',env:{...process.env,HIG_BROWSER:engine}});
  execFileSync(process.execPath,['scripts/expo-web-browser-smoke.mjs'],{stdio:'inherit'});
  execFileSync(process.execPath,['scripts/acceptance-browser-smoke.mjs'],{stdio:'inherit'});
- for(const script of ['docs-browser-smoke','catalog-browser-smoke','next-browser-smoke'])execFileSync(process.execPath,[`scripts/${script}.mjs`,'m5'],{stdio:'inherit'});
+ for(const script of ['feedback-browser-smoke','docs-browser-smoke','catalog-browser-smoke','next-browser-smoke'])execFileSync(process.execPath,[`scripts/${script}.mjs`,'m5'],{stdio:'inherit'});
 }finally{for(const child of servers)child.kill('SIGTERM');}

@@ -4,7 +4,7 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "stable-simulation",
-  "sourceCommit": "e9a459cd9c9bcfcad0df80bd06559ba1c174ca28",
+  "sourceCommit": "2456e72751c1bda39d7f0f1986b818f39625860f",
   "sourceVersion": "0.1.0",
   "artifactVersion": "0.1.0",
   "docsGuidelineVersion": "0.1.0",
@@ -31,8 +31,8 @@
       "package": "@bloxwap/hig-feedback",
       "version": "0.1.0",
       "file": "bloxwap-hig-feedback-0.1.0.tgz",
-      "bytes": 65375,
-      "sha256": "c728c3605b4b93ce0252a1cf3ed7253601b273d1859a22b662abdeb71d6b1748",
+      "bytes": 65459,
+      "sha256": "e98698ec6e5665440e596bd06c37ade96c9f2e7bfcd747cf5deabf6c177017d4",
       "files": [
         "LICENSE",
         "README.md",
@@ -74,11 +74,13 @@
       "package": "@bloxwap/hig-native",
       "version": "0.1.0",
       "file": "bloxwap-hig-native-0.1.0.tgz",
-      "bytes": 10211,
-      "sha256": "b11a90d97017f552b5da8c71e8315926c09187454c6202338675a66d8e799e80",
+      "bytes": 11167,
+      "sha256": "ca42e56c52d08250401a6b56cf4cc4fd8b932a100229757834829ea285fd89fd",
       "files": [
         "LICENSE",
         "README.md",
+        "dist/animated-number.d.ts",
+        "dist/animated-number.js",
         "dist/brand.d.ts",
         "dist/brand.js",
         "dist/button.d.ts",
@@ -129,11 +131,13 @@
       "package": "@bloxwap/hig-react",
       "version": "0.1.0",
       "file": "bloxwap-hig-react-0.1.0.tgz",
-      "bytes": 13639,
-      "sha256": "071b6ba7c99bf0f230d266d61a8ecc6e1003a91c21e82dc094e89f7a812e6d75",
+      "bytes": 14598,
+      "sha256": "3e6119bcceafe7de45ba6e934d56ce306897fa3ec926a37f0b15463f0092f62a",
       "files": [
         "LICENSE",
         "README.md",
+        "dist/animated-number.d.ts",
+        "dist/animated-number.js",
         "dist/brand.d.ts",
         "dist/brand.js",
         "dist/button.d.ts",
@@ -212,8 +216,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 3435,
-      "gzip": 1384,
+      "raw": 3439,
+      "gzip": 1388,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -224,19 +228,19 @@
       ]
     },
     "feedbackContract": {
-      "raw": 2857,
-      "gzip": 953,
+      "raw": 2951,
+      "gzip": 996,
       "inputs": [
         "packages/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
     "docsJS": {
-      "raw": 901018,
-      "gzip": 208270
+      "raw": 2111564,
+      "gzip": 589664
     },
     "docsCSS": {
-      "raw": 17445
+      "raw": 95153
     },
     "fonts": {
       "raw": 592796
@@ -254,15 +258,9 @@
       "status": "blocked"
     },
     {
-      "id": "repository-write",
-      "owner": "environment/GitHub credential owner",
-      "reason": "Contents write denied with HTTP 403; milestone branches/PRs cannot be published with current token/integration",
-      "status": "blocked"
-    },
-    {
       "id": "source-audit",
       "owner": "product monorepo maintainers",
-      "reason": "Referenced monorepo returns 404; authored OKLCH/fork/bundle baselines cannot be verified",
+      "reason": "Private product source is readable with current credentials; reviewed production visual/build/bundle baselines and owning-repository adoption remain unperformed.",
       "status": "blocked",
       "reviewBy": "2026-11-13"
     },
@@ -283,7 +281,7 @@
     {
       "id": "owning-migrations",
       "owner": "each adopting repository maintainers",
-      "reason": "User authorizes migration kits inside hig only, forbids pushes to other repos; real production migrations/builds/removal/deltas require owning work",
+      "reason": "This task permits changes only in the HIG worktree; real production migrations/builds/removal/deltas require owning repository work.",
       "status": "blocked",
       "reviewBy": "2026-11-13"
     },
