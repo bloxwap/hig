@@ -1,7 +1,9 @@
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0  157M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-HTTP/2 200 
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  157M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/2 200
 accept-ranges: bytes
 content-disposition: attachment
 content-security-policy: default-src 'none'

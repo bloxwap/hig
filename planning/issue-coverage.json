@@ -16,8 +16,8 @@
     "branch": "hig/issues-1-18-verification",
     "pr": null,
     "status": "partial",
-    "reason": "Representative production React/Metro bundle baselines and product before/after parity remain unbuilt in owning repositories. Pro origin returned HTTP 200 with an empty rendered body in the captured observation. Named migration-owner/applicability approval is still pending; repository/source and accessible live-origin audits are now recorded.",
-    "localNotes": "Authenticated audit of 129 monorepo sources, duplicate/asset totals, all 15 accessible organization repositories and product-origin captures; representative single-control source bundles measured.",
+    "reason": "Actual production product before/after parity and deployed bundle baselines remain unbuilt in owning repositories. Representative authenticated source React and Android/iOS Metro before/after consumers are measured, not production migration savings. Pro returned HTTP 200 with an empty rendered body. Named migration-owner/applicability approval remains pending.",
+    "localNotes": "Authenticated audit of 129 monorepo sources, duplicate/asset totals, all 15 accessible organization repositories and product-origin captures; representative single-control source bundles measured. Representative source Android/iOS Hermes before/after consumers are also measured.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
@@ -52,7 +52,7 @@
     "branch": "hig/issues-1-18-verification",
     "pr": null,
     "status": "partial",
-    "reason": "Native iOS/Android runtime execution remains unobserved. Linux cannot run iOS hardware; installed Android API 35 emulator did not finish boot (KVM EACCES, software-emulation CPU-thread hang/offline adb and unsuccessful single-core retry). Metro Android/iOS exports and Expo web do not substitute for OS execution.",
+    "reason": "Native iOS/Android runtime execution remains unobserved. Linux cannot run iOS hardware. Own API 35 emulator attempts failed (KVM EACCES, software CPU-thread hang/offline adb). Resumed port-5582 emulator briefly reported boot_completed=1 but shell queries stalled and adb became offline; no fixture execution or hierarchy was obtained. Metro exports and Expo web do not substitute for OS execution.",
     "localNotes": "Clean build/tests, SSR and packed web/Next/Android/iOS Metro consumers; Expo web added as a separate renderer check.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
@@ -100,7 +100,7 @@
     "branch": "hig/issues-1-18-verification",
     "pr": null,
     "status": "partial",
-    "reason": "Native drag/scroll cancellation, interruptible gesture-sheet animation and OS motion observations remain unperformed; HIG currently documents static native alternatives, not a certified animation/detent adapter.",
+    "reason": "Native drag/scroll cancellation, gesture animation interruption and OS motion observations remain unperformed. Optional Gorhom sheet detents/reduced-motion/cancellation lifecycle configuration is implemented and software-tested; the actual native engine still requires a booted target.",
     "localNotes": "Reduced-motion pointer cancellation and native OS-preference subscription checks; static native alternatives and source motion catalog reconciled.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
@@ -184,7 +184,7 @@
     "branch": "hig/issues-1-18-verification",
     "pr": null,
     "status": "partial",
-    "reason": "Native nested overlay focus/restoration (initial/return focus API requests are now implemented and mocked tests pass; OS behavior still unobserved), OS back/keyboard/safe-area/orientation flows and real VoiceOver/TalkBack remain unobserved. Basic native Sheet is a Modal alternative; advanced gesture/detent/reanimated behavior remains host-owned and unimplemented in HIG.",
+    "reason": "Native nested overlay focus/restoration, OS back/keyboard/safe-area/orientation flows and real VoiceOver/TalkBack remain unobserved. Initial/return focus requests and optional Gorhom detents, controlled dismissal/rejection, native back and keyboard/safe-area wiring are implemented and mocked/Metro-tested; actual gestures/worklets require native runtime validation.",
     "localNotes": "Nested DOM modal focus/keyboard, Android back handlers, native title/trigger focus requests and Android keyboard avoidance/handled taps.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"

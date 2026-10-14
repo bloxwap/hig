@@ -4,6 +4,7 @@
   "textScale": "200% root font size",
   "checks": [
     "required validation",
+    "pointer cancellation and reduced-motion press transform",
     "synthetic composition and negative locale raw precision",
     "range Home/End/step",
     "radio keyboard",

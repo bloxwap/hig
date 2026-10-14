@@ -1,4 +1,4 @@
-import {chromium,firefox,webkit} from '@playwright/test';
+import {chromium,firefox,webkit,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
@@ -21,8 +21,8 @@ for(const [engine,launcher] of Object.entries({chromium,firefox,webkit})){
   await page.getByRole('switch',{name:'RTL'}).check();await page.getByRole('tab',{name:'الملخص'}).focus();await page.keyboard.press('ArrowLeft');assert.equal(await page.getByRole('tab',{name:'التفاصيل'}).getAttribute('aria-selected'),'true');await page.keyboard.press('End');assert.equal(await page.getByRole('tab',{name:'التفاصيل'}).getAttribute('aria-selected'),'true');
   await page.getByRole('button',{name:'Open outer'}).click();await page.getByRole('button',{name:'Open nested'}).click();assert.equal(await page.getByRole('alertdialog').count(),1);
   await page.keyboard.press('Tab');assert.equal(await page.getByRole('alertdialog').evaluate(el=>el.contains(document.activeElement)),true);
-  await page.keyboard.press('Escape');assert.equal(await page.getByRole('alertdialog').count(),0);assert.equal(await page.getByRole('button',{name:'Open nested'}).evaluate(el=>el===document.activeElement),true);
-  await page.keyboard.press('Escape');assert.equal(await page.getByRole('dialog').count(),0);assert.equal(await page.getByRole('button',{name:'Open outer'}).evaluate(el=>el===document.activeElement),true);
+  await page.keyboard.press('Escape');assert.equal(await page.getByRole('alertdialog').count(),0);await expect(page.getByRole('button',{name:'Open nested'})).toBeFocused();
+  await page.keyboard.press('Escape');assert.equal(await page.getByRole('dialog').count(),0);await expect(page.getByRole('button',{name:'Open outer'})).toBeFocused();
   assert.equal(await page.getByRole('button',{name:'Retry oldest'}).count(),1);await page.getByRole('button',{name:'Retry oldest'}).click();await page.getByRole('button',{name:'Dismiss Outcome 4'}).click();assert.equal(await page.getByRole('button',{name:/Dismiss Outcome/}).count(),4);assert.equal(await page.getByRole('alert').count(),1);
   await page.getByRole('button',{name:'Actions',exact:true}).click();await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');assert.equal(await page.getByRole('menu').count(),0);
   await page.getByRole('searchbox').fill('test');await page.getByRole('button',{name:'Search result'}).click();assert.equal(await page.getByRole('searchbox').inputValue(),'');

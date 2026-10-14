@@ -1,0 +1,7 @@
+2026-10-14 resume: used this checkout's adb to connect localhost:5583 (existing emulator port 5582).
+adb connect: connected; devices initially listed localhost:5583 device.
+shell getprop sys.boot_completed returned 1 after a stalled query.
+The subsequent dumpsys activity query stalled; package enumeration returned adb: device offline.
+No HIG native fixture execution, UI hierarchy, TalkBack service or accessibility focus behavior was obtained.
+The existing emulator was not killed or modified. Own prior install/boot logs remain separately recorded.
+Linux has no available physical iOS/Android devices; none are claimed as tested.

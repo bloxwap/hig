@@ -11,7 +11,7 @@
     "modal Escape",
     "keyboard tabs",
     "no horizontal viewport overflow",
-    "axe AA serious/critical check"
+    "zero axe WCAG findings"
   ],
   "violations": []
 }

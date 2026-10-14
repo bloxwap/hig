@@ -28,7 +28,7 @@ export async function qualityReport(){
  sizes.nativeFonts={raw:['BloxwapSans.ttf','BloxwapSans-SemiBold.ttf','BloxwapMono.ttf'].reduce((sum,asset)=>sum+readFileSync(`packages/tokens/assets/fonts/${asset}`).length,0),scope:'Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded'};
  sizes.nativeCues={raw:checkCueHashes()};
  for(const name of ['docsJS','docsCSS','fonts','nativeFonts','nativeCues']){const rule=budgets[name];for(const metric of Object.keys(rule))assertBudget(`${name}.${metric}`,sizes[name][metric],rule[metric]);}
- const report={version:'0.1.0',exports,sizes,baseline:'Initial HIG candidate measurements; inaccessible product/Metro production baseline deltas not claimed',physicalDevices:'pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof'};
+ const report={version:'0.1.0',exports,sizes,baseline:'HIG candidate measurements; representative authenticated source React/Metro baselines in evidence/issue-1-18; deployed production deltas not claimed',physicalDevices:'pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof'};
  writeFileSync('evidence/quality-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({exports,sizes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,{raw:v.raw,gzip:v.gzip}]))},null,2));return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))await qualityReport();

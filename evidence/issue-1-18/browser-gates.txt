@@ -3,7 +3,7 @@
 > expo export --platform web
 
 Starting Metro Bundler
-Web Bundled 867ms fixtures/native/index.js (432 modules)
+Web Bundled 322ms fixtures/native/index.js (433 modules)
 
 › Assets (3):
 ../../packages/tokens/assets/fonts/BloxwapMono.d10a10f64f01c1907bffd11256064057.ttf (385 kB)
@@ -11,8 +11,8 @@ Web Bundled 867ms fixtures/native/index.js (432 modules)
 ../../packages/tokens/assets/fonts/BloxwapSans.67427cbcc12df8f692d77896391a1346.ttf (446 kB)
 
 › web bundles (2):
-_expo/static/js/web/index-79fc2a7b6475136aa849e1ae30435e96.js (737 kB)
-_expo/static/js/web/index-8ef6a2a94c445edc079834f8f01306fa.js (16.7 kB)
+_expo/static/js/web/index-253f8c030e51ec6bfda7b78b13b60fe5.js (16.7 kB)
+_expo/static/js/web/index-4ec39f18ca6e07c3b3cf0a6073de5c16.js (740 kB)
 
 › Files (2):
 index.html (1.19 kB)
@@ -28,17 +28,17 @@ Exported: dist
 > next build --webpack
 
 ▲ Next.js 16.4.0 (webpack)
-✓ Running next.config.mjs took 37ms
+✓ Running next.config.mjs took 13ms
 - Experiments (use with caution):
   · cpus: 2
 
   Creating an optimized production build ...
-✓ Compiled successfully in 3.3s
+✓ Compiled successfully in 1234ms
   Running TypeScript ...
-  Finished TypeScript in 3.0s ...
+  Finished TypeScript in 1301ms ...
   Collecting page data using 2 workers ...
   Generating static pages using 2 workers (0/3) ...
-✓ Generating static pages using 2 workers (3/3) in 962ms
+✓ Generating static pages using 2 workers (3/3) in 461ms
   Finalizing page optimization ...
   Collecting build traces ...
 
@@ -49,13 +49,12 @@ Route (app)
 
 ○  (Static)  prerendered as static content
 
-  ➜  Local:   http://127.0.0.1:4283/
-  ➜  Local:   http://127.0.0.1:4284/hig/
+  ➜  Local:   http://127.0.0.1:4293/
 ▲ Next.js 16.4.0
-- Local:         http://127.0.0.1:4285
-- Network:       http://127.0.0.1:4285
-✓ Ready in 354ms
-✓ Running next.config.mjs took 37ms
+- Local:         http://127.0.0.1:4295
+- Network:       http://127.0.0.1:4295
+✓ Ready in 134ms
+✓ Running next.config.mjs took 14ms
 Browser m5: interaction/accessibility/screenshots passed
 Browser m5: interaction/accessibility/screenshots passed
 Browser m5: interaction/accessibility/screenshots passed

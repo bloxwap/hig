@@ -5,44 +5,45 @@
 Packed consumer: independent token/contracts imports and SSR render passed
 vite v6.4.1 building for production...
 transforming...
-node_modules/@bloxwap/hig-feedback/dist/react.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-feedback/dist/react.js" was ignored.
-node_modules/@bloxwap/hig-feedback/dist/web-haptic.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-feedback/dist/web-haptic.js" was ignored.
 node_modules/@bloxwap/hig-react/dist/provider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/provider.js" was ignored.
-node_modules/@bloxwap/hig-react/dist/button.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/button.js" was ignored.
-node_modules/@bloxwap/hig-react/dist/recipes.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/recipes.js" was ignored.
-node_modules/@bloxwap/hig-react/dist/selection.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/selection.js" was ignored.
-node_modules/@bloxwap/hig-react/dist/navigation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/navigation.js" was ignored.
 node_modules/@bloxwap/hig-react/dist/field.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/field.js" was ignored.
+node_modules/@bloxwap/hig-react/dist/selection.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/selection.js" was ignored.
 node_modules/@bloxwap/hig-react/dist/overlay.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/overlay.js" was ignored.
-node_modules/@bloxwap/haptic/dist/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
-node_modules/@bloxwap/haptic/dist/index.js (2:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
-node_modules/@bloxwap/hig-react/dist/data.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/data.js" was ignored.
+node_modules/@bloxwap/hig-react/dist/button.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/button.js" was ignored.
+node_modules/@bloxwap/hig-react/dist/status.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/status.js" was ignored.
+node_modules/@bloxwap/hig-react/dist/navigation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/navigation.js" was ignored.
+node_modules/@bloxwap/hig-feedback/dist/web-haptic.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-feedback/dist/web-haptic.js" was ignored.
+node_modules/@bloxwap/hig-feedback/dist/react.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-feedback/dist/react.js" was ignored.
+node_modules/@bloxwap/hig-react/dist/recipes.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/recipes.js" was ignored.
 node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-popover/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-tooltip/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" was ignored.
-node_modules/web-haptics/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/web-haptics/dist/index.mjs" was ignored.
-node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@bloxwap/haptic/dist/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
+node_modules/@bloxwap/haptic/dist/index.js (2:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
+node_modules/@bloxwap/hig-react/dist/data.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/hig-react/dist/data.js" was ignored.
 node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/dist/index.mjs" was ignored.
 node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/web-haptics/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/web-haptics/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
 node_modules/web-haptics/dist/chunk-4NSAIXAB.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/web-haptics/dist/chunk-4NSAIXAB.mjs" was ignored.
 node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
-node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
-✓ 129 modules transformed.
+✓ 130 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                                    0.41 kB │ gzip:  0.28 kB
+dist/index.html                                    0.41 kB │ gzip:  0.27 kB
 dist/acceptance.html                               0.44 kB │ gzip:  0.29 kB
 dist/assets/BloxwapMono-Variable-DhndyL8z.woff2  281.95 kB
 dist/assets/BloxwapSans-Variable-DmclqDx1.woff2  310.85 kB
-dist/assets/status-B-WIu-2H.css                    6.71 kB │ gzip:  2.00 kB
-dist/assets/acceptance-BYQd6OTb.js                 2.76 kB │ gzip:  1.36 kB
+dist/assets/status-YXeYPhEM.css                    6.85 kB │ gzip:  2.06 kB
+dist/assets/acceptance-Be4yEpVd.js                 2.76 kB │ gzip:  1.36 kB
 dist/assets/index-KQUmtaMo.js                     14.62 kB │ gzip:  5.62 kB
-dist/assets/main-Chg_NPZ3.js                      23.16 kB │ gzip:  8.48 kB
-dist/assets/status-DCHWe_l0.js                   278.85 kB │ gzip: 89.35 kB
-✓ built in 2.51s
+dist/assets/main-2efdeeRw.js                      23.16 kB │ gzip:  8.48 kB
+dist/assets/status-BO9I-M6l.js                   280.14 kB │ gzip: 89.73 kB
+✓ built in 1.25s
 Packed artifacts: 4; no publication performed

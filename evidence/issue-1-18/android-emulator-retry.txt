@@ -48,7 +48,7 @@ INFO         | Storing crashdata in: /tmp/android-box/emu-crash-37.2.12.db, dete
 INFO         | No consent for crashreport b94db708-a1a1-4fa7-8cd5-70ef66861cba, deleting.
 INFO         | Initializing gfxstream backend
 INFO         | startOpenglesRendererImpl: gpu info
-INFO         | 
+INFO         |
 INFO         | SharedLibrary::open for [libX11]
 WARNING      | Could not open libX11.so, try libX11.so.6
 INFO         | SharedLibrary::open for [libX11.so.6]
@@ -58,7 +58,7 @@ INFO         | SharedLibrary::open for [libX11-xcb.so.1]
 INFO         | Graphics Adapter Vendor Google (Google Inc.)
 INFO         | Graphics Adapter Android Emulator OpenGL ES Translator (Google SwiftShader)
 INFO         | Graphics API Version OpenGL ES 3.0 (OpenGL ES 3.0 SwiftShader 4.0.0.1)
-INFO         | Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_standard_derivatives GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 
+INFO         | Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_standard_derivatives GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888
 INFO         | Graphics Device Extensions N/A
 INFO         | Sending adb public key [QAAAADfB2IR5O6Mdu/esuWh2bPU56uLujoNRtSMvXD65li7v62Af8QRfuPAZ+ezUrbwLzdkbjCcmNlrymHpdPYEubbOL6jXe8X8NCGaH6DgJKke4hacFKCAErp/ls8NYnBYJK37RHDDX+A1p7aJNNjOxAYmyjUxSrZjc99JBA9aCJwcGo0O3nOosj0CgpZ+s+FRXSHHU7ZMBC9lWhsytyNOEu5v9d7P/AvhL9Xpqqo+OZIgz7Sv4q7zZ4WM8c2jS8GqN3d6XbLSkNHhIrI9TAqWZuEEFfko6eC6bVdxTw8RVx+QDtSfJz37CPlfQEPXqSSRDB3MpK+9dJlkUoRMT+BI4laTqhxW2gVRRHgA/+xhK7kIStcomGCLta4nMqoRK5pS1O88cKS4ZjBywdk+UJSEDirfCxa206KLCWG5/E4FzS7SYFF8O8OyqQoiTqfcCsVCE0JXj3rcLFgJY8HnxHmeGdBJ+ER5Xe2Oq+2/RL5l4QPZrNS7lbF0hH7FkvYDg/vMO+AUulGt0zxdl6vgoTzxcsN5sGNhb7Xfu0lLZZYZ4R8V37zvWcb0SrgafMCa1pUZxogg6wUBzaplY9m2wn4JgwEhFSV2c4o2RXrAjTNkNX/SGKLEg3SXu5Lakq7qFybyZJtmE2vSvvj4dhIkmuOFdQQFcpRz1sZDfu1fFUSoh5gNrR0C4hAEAAQA= box@unknown]
 INFO         | Userspace boot properties:
@@ -104,7 +104,7 @@ WARNING      | Using fallback path for the emulator registration directory.
 INFO         | Advertising in: /tmp/hig-par/wt-hig-a/.local/android/user/avd/running/pid_119078.ini
 INFO         | Activated packet streamer for bluetooth emulation
 INFO         | Successfully initialized netsim WiFi
-INFO         | Setting display: 0 configuration to: 320x640, dpi: 160x160 
+INFO         | Setting display: 0 configuration to: 320x640, dpi: 160x160
 INFO         | setDisplayActiveConfig: id:0, 320x640
 INFO         | emulatorSetupEnvironment: Environment scene is not required
 USER_INFO    | Emulator is performing a full startup. This may take upto two minutes, or more.

@@ -1,11 +1,11 @@
 {
   "version": "0.1.0",
   "exports": {
-    "contracts": 4,
+    "contracts": 6,
     "feedback": 17,
-    "native": 34,
+    "native": 36,
     "react": 25,
-    "tokens": 5
+    "tokens": 6
   },
   "sizes": {
     "button": {
@@ -19,16 +19,16 @@
       ]
     },
     "field": {
-      "raw": 708,
-      "gzip": 325,
+      "raw": 789,
+      "gzip": 347,
       "inputs": [
         "packages/react/dist/field.js",
         "field.js"
       ]
     },
     "nativeSwitch": {
-      "raw": 3435,
-      "gzip": 1384,
+      "raw": 2323,
+      "gzip": 1205,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -47,19 +47,23 @@
       ]
     },
     "docsJS": {
-      "raw": 2096471,
-      "gzip": 586959
+      "raw": 2103743,
+      "gzip": 587834
     },
     "docsCSS": {
-      "raw": 94942
+      "raw": 96650
     },
     "fonts": {
       "raw": 592796
+    },
+    "nativeFonts": {
+      "raw": 1278880,
+      "scope": "Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded"
     },
     "nativeCues": {
       "raw": 103618
     }
   },
-  "baseline": "Initial HIG candidate measurements; inaccessible product/Metro production baseline deltas not claimed",
+  "baseline": "HIG candidate measurements; representative authenticated source React/Metro baselines in evidence/issue-1-18; deployed production deltas not claimed",
   "physicalDevices": "pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof"
 }
