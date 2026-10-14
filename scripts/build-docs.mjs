@@ -1,11 +1,12 @@
 import {execFileSync} from 'node:child_process';
-import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,cpSync,rmSync} from 'node:fs';
 execFileSync(process.execPath,['scripts/generate-examples.mjs'],{stdio:'inherit'});
 execFileSync(process.execPath,['scripts/generate-docs.mjs'],{stdio:'inherit'});
-execFileSync('npx',['vite','build','apps/docs'],{stdio:'inherit'});
-const {pages,version}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
-const shell=readFileSync('apps/docs/dist/index.html','utf8');const base=process.env.HIG_BASE_PATH??'/hig/';const origin=process.env.HIG_DOCS_ORIGIN??'https://bloxwap.github.io';
-const routes=[...pages,{route:'catalog',title:'Component catalog'}];
-for(const page of routes){const dir=`apps/docs/dist/${page.route}`;mkdirSync(dir,{recursive:true});writeFileSync(`${dir}/index.html`,shell.replace(/<title>.*?<\/title>/,`<title>${page.title.replaceAll('&','&amp;').replaceAll('<','&lt;')} · Bloxwap HIG ${version}</title>`).replace(/<link rel="canonical" href="[^"]*">/,`<link rel="canonical" href="${origin}${base}${page.route}/">`));}
-writeFileSync('apps/docs/dist/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['',...routes.map(p=>p.route+'/')].map(route=>`<url><loc>${origin}${base}${route}</loc></url>`).join('')}</urlset>`);
-console.log(`Static route shells and sitemap: ${routes.length+1}`);
+execFileSync('npm',['run','build','-w','hig-docs'],{stdio:'inherit'});
+// Static hosting has no redirect engine: export explicit legacy redirect documents.
+const {pages}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
+const base=(process.env.NEXT_PUBLIC_BASE_PATH??'/hig');
+for(const {route} of [...pages,{route:'catalog'}]){const target=`${base}/docs/${route}/`;const dir=`apps/docs/out/${route}`;mkdirSync(dir,{recursive:true});writeFileSync(`${dir}/index.html`,`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Moved · Bloxwap HIG</title><link rel="canonical" href="${target}"><meta http-equiv="refresh" content="0;url=${target}"></head><body><a href="${target}">Continue to documentation</a><script>location.replace(${JSON.stringify(target)}+location.search+location.hash)</script></body></html>`);}
+const origin=process.env.HIG_DOCS_ORIGIN??'https://bloxwap.github.io';
+writeFileSync('apps/docs/out/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['','docs/',...pages.map(p=>`docs/${p.route}/`),'docs/catalog/'].map(route=>`<url><loc>${origin}${base}/${route}</loc></url>`).join('')}</urlset>`);
+rmSync('apps/docs/dist',{recursive:true,force:true});cpSync('apps/docs/out','apps/docs/dist',{recursive:true});

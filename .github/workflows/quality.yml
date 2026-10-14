@@ -20,7 +20,8 @@ jobs:
           node-version: '22.22.0'
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - name: Build, lint, types and tests (including Fumadocs export)
+        run: npm run check
       - run: npm run examples:check
       - run: npm run quality
       - run: npm run smoke:ssr
@@ -45,5 +46,6 @@ jobs:
             artifacts/*.tgz
             artifacts/release-candidate/
             apps/docs/dist/
+            apps/docs/out/
           retention-days: 14
 # No npm publish, git tag, release API, deployment or write permissions.

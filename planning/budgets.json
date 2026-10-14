@@ -12,10 +12,10 @@
     "gzip": 1200
   },
   "docsJS": {
-    "gzip": 240000
+    "gzip": 650000
   },
   "docsCSS": {
-    "raw": 22000
+    "raw": 110000
   },
   "fonts": {
     "raw": 600000
