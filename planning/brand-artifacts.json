@@ -5,8 +5,9 @@
   "derivatives": [
     "apps/docs/public/favicon.svg",
     "fixtures/next/public/favicon.svg",
-    "apps/docs/public/og.svg"
+    "apps/docs/public/og.svg",
+    "apps/docs/public/og.png"
   ],
   "geometry": "Copied from approved source; no independently redrawn logo",
-  "socialFormat": "SVG preview; host social crawlers requiring raster images must generate a PNG from this source"
+  "socialFormat": "1200×630 PNG and SVG generated from the same approved source; no physical display certification"
 }

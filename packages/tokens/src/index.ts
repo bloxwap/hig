@@ -2,7 +2,7 @@
 export const tokens = {
   "version": "0.1.0",
   "mode": "dark",
-  "provenance": "font/apps/docs/styles/tokens.css; monorepo inaccessible; authored OKLCH unavailable",
+  "provenance": "bloxwap/monorepo@d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/tokens/src/colors.ts; HIG semantic intent/density aliases documented in docs/foundations/source-reconciliation.md",
   "colors": {
     "background": {
       "srgb": "#0a0a0a",
@@ -10,19 +10,24 @@ export const tokens = {
         0.04,
         0.04,
         0.04
-      ]
+      ],
+      "oklch": "oklch(0.145 0 0)"
     },
     "surface": {
-      "srgb": "#171717"
+      "srgb": "#171717",
+      "oklch": "oklch(0.205 0 0)"
     },
     "nested": {
-      "srgb": "#262626"
+      "srgb": "#262626",
+      "oklch": "oklch(0.269 0 0)"
     },
     "text": {
-      "srgb": "#fafafa"
+      "srgb": "#fafafa",
+      "oklch": "oklch(0.985 0 0)"
     },
     "muted": {
-      "srgb": "#a1a1a1"
+      "srgb": "#a1a1a1",
+      "oklch": "oklch(0.708 0 0)"
     },
     "faint": {
       "srgb": "#858585"
@@ -150,6 +155,162 @@ export const tokens = {
     }
   }
 } as const;
+// Small native bindings keep a basic control from retaining color-space/provenance metadata.
+export const nativeSrgb = {
+  "background": "#0a0a0a",
+  "surface": "#171717",
+  "nested": "#262626",
+  "text": "#fafafa",
+  "muted": "#a1a1a1",
+  "faint": "#858585",
+  "border": "#3a3a3a",
+  "action": "#00ff3f",
+  "onAction": "#0a0a0a",
+  "focus": "#00ff3f",
+  "buy": "#00ff3f",
+  "sell": "#ff5c5c",
+  "positive": "#00ff3f",
+  "negative": "#ff5c5c",
+  "warning": "#f5b300",
+  "info": "#35b5ff"
+} as const;
+export const nativeMetrics = {
+  "space": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 20,
+    "xxl": 24,
+    "xxxl": 32,
+    "section": 48
+  },
+  "radius": {
+    "sm": 6,
+    "md": 8,
+    "lg": 10,
+    "xl": 14,
+    "pill": 9999
+  },
+  "density": {
+    "comfortable": {
+      "control": 48,
+      "target": 48,
+      "gap": 12
+    },
+    "compact": {
+      "control": 36,
+      "target": 36,
+      "gap": 8
+    }
+  },
+  "motion": {
+    "fast": 180,
+    "base": 260,
+    "slow": 320
+  }
+} as const;
+export const sourceColors = {
+  "web": {
+    "background": "oklch(0.145 0 0)",
+    "foreground": "oklch(0.985 0 0)",
+    "card": "oklch(0.205 0 0)",
+    "card-foreground": "oklch(0.985 0 0)",
+    "popover": "oklch(0.205 0 0)",
+    "popover-foreground": "oklch(0.985 0 0)",
+    "primary": "oklch(0.922 0 0)",
+    "primary-foreground": "oklch(0.205 0 0)",
+    "secondary": "oklch(0.269 0 0)",
+    "secondary-foreground": "oklch(0.985 0 0)",
+    "muted": "oklch(0.269 0 0)",
+    "muted-foreground": "oklch(0.708 0 0)",
+    "accent": "oklch(0.269 0 0)",
+    "accent-foreground": "oklch(0.985 0 0)",
+    "destructive": "oklch(0.704 0.191 22.216)",
+    "border": "oklch(1 0 0 / 10%)",
+    "input": "oklch(1 0 0 / 15%)",
+    "ring": "oklch(0.556 0 0)",
+    "chart-1": "oklch(0.488 0.243 264.376)",
+    "chart-2": "oklch(0.696 0.17 162.48)",
+    "chart-3": "oklch(0.769 0.188 70.08)",
+    "chart-4": "oklch(0.627 0.265 303.9)",
+    "chart-5": "oklch(0.645 0.246 16.439)",
+    "sidebar": "oklch(0.205 0 0)",
+    "sidebar-foreground": "oklch(0.985 0 0)",
+    "sidebar-primary": "oklch(0.488 0.243 264.376)",
+    "sidebar-primary-foreground": "oklch(0.985 0 0)",
+    "sidebar-accent": "oklch(0.269 0 0)",
+    "sidebar-accent-foreground": "oklch(0.985 0 0)",
+    "sidebar-border": "oklch(1 0 0 / 10%)",
+    "sidebar-ring": "oklch(0.556 0 0)"
+  },
+  "android": {
+    "background": "#0a0a0a",
+    "foreground": "#fafafa",
+    "card": "#171717",
+    "card-foreground": "#fafafa",
+    "popover": "#171717",
+    "popover-foreground": "#fafafa",
+    "primary": "#e5e5e5",
+    "primary-foreground": "#171717",
+    "secondary": "#262626",
+    "secondary-foreground": "#fafafa",
+    "muted": "#262626",
+    "muted-foreground": "#a1a1a1",
+    "accent": "#262626",
+    "accent-foreground": "#fafafa",
+    "destructive": "#ff6467",
+    "border": "rgba(255, 255, 255, 0.1)",
+    "input": "rgba(255, 255, 255, 0.15)",
+    "ring": "#737373",
+    "chart-1": "#1447e6",
+    "chart-2": "#00bc7d",
+    "chart-3": "#fe9a00",
+    "chart-4": "#ad46ff",
+    "chart-5": "#ff2056",
+    "sidebar": "#171717",
+    "sidebar-foreground": "#fafafa",
+    "sidebar-primary": "#1447e6",
+    "sidebar-primary-foreground": "#fafafa",
+    "sidebar-accent": "#262626",
+    "sidebar-accent-foreground": "#fafafa",
+    "sidebar-border": "rgba(255, 255, 255, 0.1)",
+    "sidebar-ring": "#737373"
+  },
+  "iosDisplayP3": {
+    "background": "#0a0a0a",
+    "foreground": "#fafafa",
+    "card": "#171717",
+    "card-foreground": "#fafafa",
+    "popover": "#171717",
+    "popover-foreground": "#fafafa",
+    "primary": "#e5e5e5",
+    "primary-foreground": "#171717",
+    "secondary": "#262626",
+    "secondary-foreground": "#fafafa",
+    "muted": "#262626",
+    "muted-foreground": "#a1a1a1",
+    "accent": "#262626",
+    "accent-foreground": "#fafafa",
+    "destructive": "#ee6e6c",
+    "border": "rgba(255, 255, 255, 0.1)",
+    "input": "rgba(255, 255, 255, 0.15)",
+    "ring": "#737373",
+    "chart-1": "#2346dd",
+    "chart-2": "#44b982",
+    "chart-3": "#f09e0f",
+    "chart-4": "#a14dfd",
+    "chart-5": "#eb3d5b",
+    "sidebar": "#171717",
+    "sidebar-foreground": "#fafafa",
+    "sidebar-primary": "#2346dd",
+    "sidebar-primary-foreground": "#fafafa",
+    "sidebar-accent": "#262626",
+    "sidebar-accent-foreground": "#fafafa",
+    "sidebar-border": "rgba(255, 255, 255, 0.1)",
+    "sidebar-ring": "#737373"
+  }
+} as const;
 export const nativeColors = {
   "android": {
     "background": "#0a0a0a",
@@ -186,6 +347,24 @@ export const nativeColors = {
     "negative": "#ff5c5c",
     "warning": "#f5b300",
     "info": "#35b5ff"
+  },
+  "iosDisplayP3": {
+    "background": "#0a0a0a",
+    "surface": "#171717",
+    "nested": "#262626",
+    "text": "#fafafa",
+    "muted": "#a1a1a1",
+    "faint": "#858585",
+    "border": "#3a3a3a",
+    "action": "#00ff3d",
+    "onAction": "#0a0a0a",
+    "focus": "#00ff3d",
+    "buy": "#00ff3d",
+    "sell": "#ec6762",
+    "positive": "#00ff3d",
+    "negative": "#ec6762",
+    "warning": "#ebb63e",
+    "info": "#2eb8ff"
   },
   "iosP3": {
     "background": {

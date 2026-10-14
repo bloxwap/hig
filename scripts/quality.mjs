@@ -23,8 +23,11 @@ export async function qualityReport(){
  sizes.docsJS={raw:assets.filter(a=>a.name.endsWith('.js')).reduce((s,a)=>s+a.bytes.length,0),gzip:assets.filter(a=>a.name.endsWith('.js')).reduce((s,a)=>s+gzipSync(a.bytes).length,0)};
  sizes.docsCSS={raw:assets.filter(a=>a.name.endsWith('.css')).reduce((s,a)=>s+a.bytes.length,0)};
  sizes.fonts={raw:assets.filter(a=>a.name.endsWith('.woff2')).reduce((s,a)=>s+a.bytes.length,0)};
+ const fontManifest=JSON.parse(readFileSync('packages/tokens/assets/fonts/manifest.json','utf8'));
+ for(const [asset,hash] of Object.entries(fontManifest.outputs)){if(createHash('sha256').update(readFileSync(`packages/tokens/assets/fonts/${asset}`)).digest('hex')!==hash)throw Error(`Native font drift: ${asset}`);}
+ sizes.nativeFonts={raw:['BloxwapSans.ttf','BloxwapSans-SemiBold.ttf','BloxwapMono.ttf'].reduce((sum,asset)=>sum+readFileSync(`packages/tokens/assets/fonts/${asset}`).length,0),scope:'Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded'};
  sizes.nativeCues={raw:checkCueHashes()};
- for(const name of ['docsJS','docsCSS','fonts','nativeCues']){const rule=budgets[name];for(const metric of Object.keys(rule))assertBudget(`${name}.${metric}`,sizes[name][metric],rule[metric]);}
+ for(const name of ['docsJS','docsCSS','fonts','nativeFonts','nativeCues']){const rule=budgets[name];for(const metric of Object.keys(rule))assertBudget(`${name}.${metric}`,sizes[name][metric],rule[metric]);}
  const report={version:'0.1.0',exports,sizes,baseline:'Initial HIG candidate measurements; inaccessible product/Metro production baseline deltas not claimed',physicalDevices:'pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof'};
  writeFileSync('evidence/quality-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({exports,sizes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,{raw:v.raw,gzip:v.gzip}]))},null,2));return report;
 }

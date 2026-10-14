@@ -15,9 +15,141 @@
       "aa": true
     },
     {
+      "fg": "text",
+      "bg": "nested",
+      "ratio": 14.5,
+      "aa": true
+    },
+    {
+      "fg": "muted",
+      "bg": "background",
+      "ratio": 7.66,
+      "aa": true
+    },
+    {
       "fg": "muted",
       "bg": "surface",
       "ratio": 6.94,
+      "aa": true
+    },
+    {
+      "fg": "muted",
+      "bg": "nested",
+      "ratio": 5.86,
+      "aa": true
+    },
+    {
+      "fg": "negative",
+      "bg": "background",
+      "ratio": 6.54,
+      "aa": true
+    },
+    {
+      "fg": "negative",
+      "bg": "surface",
+      "ratio": 5.92,
+      "aa": true
+    },
+    {
+      "fg": "negative",
+      "bg": "nested",
+      "ratio": 5,
+      "aa": true
+    },
+    {
+      "fg": "warning",
+      "bg": "background",
+      "ratio": 10.68,
+      "aa": true
+    },
+    {
+      "fg": "warning",
+      "bg": "surface",
+      "ratio": 9.67,
+      "aa": true
+    },
+    {
+      "fg": "warning",
+      "bg": "nested",
+      "ratio": 8.17,
+      "aa": true
+    },
+    {
+      "fg": "info",
+      "bg": "background",
+      "ratio": 8.68,
+      "aa": true
+    },
+    {
+      "fg": "info",
+      "bg": "surface",
+      "ratio": 7.86,
+      "aa": true
+    },
+    {
+      "fg": "info",
+      "bg": "nested",
+      "ratio": 6.63,
+      "aa": true
+    },
+    {
+      "fg": "positive",
+      "bg": "background",
+      "ratio": 14.5,
+      "aa": true
+    },
+    {
+      "fg": "positive",
+      "bg": "surface",
+      "ratio": 13.13,
+      "aa": true
+    },
+    {
+      "fg": "positive",
+      "bg": "nested",
+      "ratio": 11.08,
+      "aa": true
+    },
+    {
+      "fg": "buy",
+      "bg": "background",
+      "ratio": 14.5,
+      "aa": true
+    },
+    {
+      "fg": "buy",
+      "bg": "surface",
+      "ratio": 13.13,
+      "aa": true
+    },
+    {
+      "fg": "buy",
+      "bg": "nested",
+      "ratio": 11.08,
+      "aa": true
+    },
+    {
+      "fg": "sell",
+      "bg": "background",
+      "ratio": 6.54,
+      "aa": true
+    },
+    {
+      "fg": "sell",
+      "bg": "surface",
+      "ratio": 5.92,
+      "aa": true
+    },
+    {
+      "fg": "sell",
+      "bg": "nested",
+      "ratio": 5,
+      "aa": true
+    },
+    {
+      "fg": "faint",
+      "bg": "background",
+      "ratio": 5.37,
       "aa": true
     },
     {
@@ -33,16 +165,49 @@
       "aa": true
     },
     {
-      "fg": "negative",
-      "bg": "surface",
-      "ratio": 5.92,
+      "fg": "onAction",
+      "bg": "negative",
+      "ratio": 6.54,
       "aa": true
     },
     {
-      "fg": "warning",
-      "bg": "surface",
-      "ratio": 9.67,
+      "fg": "onAction",
+      "bg": "warning",
+      "ratio": 10.68,
       "aa": true
+    },
+    {
+      "fg": "onAction",
+      "bg": "info",
+      "ratio": 8.68,
+      "aa": true
+    },
+    {
+      "fg": "onAction",
+      "bg": "positive",
+      "ratio": 14.5,
+      "aa": true
+    },
+    {
+      "fg": "onAction",
+      "bg": "buy",
+      "ratio": 14.5,
+      "aa": true
+    },
+    {
+      "fg": "onAction",
+      "bg": "sell",
+      "ratio": 6.54,
+      "aa": true
+    }
+  ],
+  "unsupportedPairings": [
+    {
+      "fg": "faint",
+      "bg": "nested",
+      "ratio": 4.1,
+      "aa": false,
+      "alternative": "muted on nested (approved normal-text pair)"
     }
   ],
   "p3": "Not device-certified; use tested fallback if uncertain"

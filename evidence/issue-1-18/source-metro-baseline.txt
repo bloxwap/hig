@@ -1,0 +1,54 @@
+Starting Metro Bundler
+Android ./index.js ░░░░░░░░░░░░░░░░  4.6% ( 3/14)
+iOS ./index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+| (node:268167) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:268173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.0% (1010/1015)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (1016/1016)
+Android Bundled 6874ms index.js (1015 modules)
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.0% (1010/1015)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (1016/1016)
+iOS Bundled 9634ms index.js (1016 modules)
+
+› Assets (2):
+../../packages/tokens/assets/fonts/BloxwapSans-SemiBold.ttf (447 kB)
+../../packages/tokens/assets/fonts/BloxwapSans.ttf (446 kB)
+
+› android bundles (1):
+_expo/static/js/android/index-de0f7898e4ab5d1c00930af8906595e9.hbc (3.03 MB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-2c62a875212c95b653b443d17531f145.hbc (3.02 MB)
+
+› Files (1):
+metadata.json (494 B)
+
+Exported: before
+Starting Metro Bundler
+Android ./index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+iOS ./index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+| (node:268973) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:268979) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (600/600)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (602/602)
+Android Bundled 3735ms index.js (600 modules)
+iOS Bundled 5423ms index.js (602 modules)
+
+› Assets (2):
+../../packages/tokens/assets/fonts/BloxwapSans-SemiBold.ttf (447 kB)
+../../packages/tokens/assets/fonts/BloxwapSans.ttf (446 kB)
+
+› android bundles (1):
+_expo/static/js/android/index-b4bfddf0c8c9050b97af11d4370c5d59.hbc (1.77 MB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-e1cccaee18bf2e3559783197a0bad085.hbc (1.76 MB)
+
+› Files (1):
+metadata.json (494 B)
+
+Exported: hig

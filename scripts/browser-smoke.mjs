@@ -35,7 +35,7 @@ if(stage==='m3'||stage==='m5'){
 }
 const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
 const violations=axe.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));
-assert.deepEqual(violations.filter(v=>v.impact==='serious'||v.impact==='critical'),[]);
+assert.deepEqual(violations,[]);
 assert.deepEqual(errors,[]);
 assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
 await page.getByRole('tab',{name:'Preview',exact:true}).click();
@@ -43,7 +43,7 @@ await page.screenshot({path:`evidence/${label}-web-mobile.png`,fullPage:true});
 await page.setViewportSize({width:1440,height:1000});
 await page.getByLabel('Pro',{exact:true}).check();
 await page.screenshot({path:`evidence/${label}-web-pro.png`,fullPage:true});
-writeFileSync(`evidence/${label}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),platform:'Linux Chrome automated; no physical-device claim',viewport:[390,844],checks:['no page errors','modal Escape','keyboard tabs','no horizontal viewport overflow','axe AA serious/critical check'],violations},null,2)+'\n');
+writeFileSync(`evidence/${label}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),platform:'Linux Chrome automated; no physical-device claim',viewport:[390,844],checks:['no page errors','modal Escape','keyboard tabs','no horizontal viewport overflow','zero axe WCAG findings'],violations},null,2)+'\n');
 console.log(`Browser ${stage}: interaction/accessibility/screenshots passed`);
 
 }finally{await browser.close();}

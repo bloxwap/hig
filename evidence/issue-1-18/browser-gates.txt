@@ -1,0 +1,69 @@
+
+> bundle:web
+> expo export --platform web
+
+Starting Metro Bundler
+Web Bundled 867ms fixtures/native/index.js (432 modules)
+
+› Assets (3):
+../../packages/tokens/assets/fonts/BloxwapMono.d10a10f64f01c1907bffd11256064057.ttf (385 kB)
+../../packages/tokens/assets/fonts/BloxwapSans-SemiBold.e7632d4087046644273cf0489854f189.ttf (447 kB)
+../../packages/tokens/assets/fonts/BloxwapSans.67427cbcc12df8f692d77896391a1346.ttf (446 kB)
+
+› web bundles (2):
+_expo/static/js/web/index-79fc2a7b6475136aa849e1ae30435e96.js (737 kB)
+_expo/static/js/web/index-8ef6a2a94c445edc079834f8f01306fa.js (16.7 kB)
+
+› Files (2):
+index.html (1.19 kB)
+metadata.json (49 B)
+
+Exported: dist
+
+> bloxwap-hig-workspace@0.1.0 build:next
+> npm run build -w hig-next-fixture
+
+
+> build
+> next build --webpack
+
+▲ Next.js 16.4.0 (webpack)
+✓ Running next.config.mjs took 37ms
+- Experiments (use with caution):
+  · cpus: 2
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.3s
+  Running TypeScript ...
+  Finished TypeScript in 3.0s ...
+  Collecting page data using 2 workers ...
+  Generating static pages using 2 workers (0/3) ...
+✓ Generating static pages using 2 workers (3/3) in 962ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+  ➜  Local:   http://127.0.0.1:4283/
+  ➜  Local:   http://127.0.0.1:4284/hig/
+▲ Next.js 16.4.0
+- Local:         http://127.0.0.1:4285
+- Network:       http://127.0.0.1:4285
+✓ Ready in 354ms
+✓ Running next.config.mjs took 37ms
+Browser m5: interaction/accessibility/screenshots passed
+Browser m5: interaction/accessibility/screenshots passed
+Browser m5: interaction/accessibility/screenshots passed
+Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed
+Catalog captures: 10
+Catalog captures: 20
+Catalog captures: 40
+Catalog captures: 50
+Catalog captures: 60
+Catalog visual/axe/runtime: 63 components, 99 states passed
+Next hydration/keyboard/raw-amount browser check passed

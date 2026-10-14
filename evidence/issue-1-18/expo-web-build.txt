@@ -1,0 +1,31 @@
+
+> bundle:web
+> expo export --platform web
+
+Starting Metro Bundler
+| (node:192609) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:192610) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:192617) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:192623) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:192611) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Web Bundled 1615ms fixtures/native/index.js (432 modules)
+
+› Assets (3):
+../../packages/tokens/assets/fonts/BloxwapMono.d10a10f64f01c1907bffd11256064057.ttf (385 kB)
+../../packages/tokens/assets/fonts/BloxwapSans-SemiBold.e7632d4087046644273cf0489854f189.ttf (447 kB)
+../../packages/tokens/assets/fonts/BloxwapSans.67427cbcc12df8f692d77896391a1346.ttf (446 kB)
+
+› web bundles (2):
+_expo/static/js/web/index-79fc2a7b6475136aa849e1ae30435e96.js (737 kB)
+_expo/static/js/web/index-8ef6a2a94c445edc079834f8f01306fa.js (16.7 kB)
+
+› Files (2):
+index.html (1.19 kB)
+metadata.json (49 B)
+
+Exported: dist

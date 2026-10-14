@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "browser": "154.0.8037.97",
+  "browser": "141.0.7390.37",
   "checks": [
     "production /hig/ base",
     "direct component deep link",
@@ -11,7 +11,7 @@
     "busy/default states",
     "keyboard-capable previews",
     "no overflow or page errors",
-    "axe serious/critical check"
+    "zero axe WCAG findings"
   ],
   "violations": [],
   "physicalNative": "not observed; runnable Expo gallery only"

@@ -79,6 +79,10 @@
     "./segmented-control": {
       "types": "./dist/radio-group.d.ts",
       "import": "./dist/radio-group.js"
+    },
+    "./gesture-sheet": {
+      "types": "./dist/gesture-sheet.d.ts",
+      "import": "./dist/gesture-sheet.js"
     }
   },
   "peerDependencies": {
@@ -86,7 +90,11 @@
     "react-native": "^0.81.5",
     "react-native-svg": "15.12.1",
     "@react-native-community/slider": "5.0.1",
-    "react-native-safe-area-context": "~5.6.0"
+    "react-native-safe-area-context": "~5.6.0",
+    "@gorhom/bottom-sheet": "^5.2.14",
+    "react-native-reanimated": "^4.1.1",
+    "react-native-worklets": "^0.5.1",
+    "react-native-gesture-handler": "^2.28.0"
   },
   "peerDependenciesMeta": {
     "react-native-svg": {
@@ -96,6 +104,18 @@
       "optional": true
     },
     "react-native-safe-area-context": {
+      "optional": true
+    },
+    "@gorhom/bottom-sheet": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-worklets": {
+      "optional": true
+    },
+    "react-native-gesture-handler": {
       "optional": true
     }
   },

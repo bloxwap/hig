@@ -12,7 +12,7 @@ Do: keep critical failure inline with Retry; use toast for copied acknowledgemen
 
 ## States, interaction and accessibility
 
-Notifications deduplicate ids, show at most 3, and stay until explicit dismissal. DOM status/alert regions and RN live regions preserve visible messages. Skeleton and spinner are static under candidate motion policy.
+Notifications deduplicate ids and preserve every message until explicit dismissal, including bursts larger than three. Host delivery queues may limit arrivals, but the renderer never silently removes an undismissed message. DOM status/alert regions and RN live regions preserve visible messages. Skeleton and spinner are static under candidate motion policy.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 

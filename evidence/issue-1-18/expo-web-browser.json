@@ -1,0 +1,16 @@
+{
+  "browser": "141.0.7390.37",
+  "renderer": "Expo 54 / react-native-web; not Android or iOS",
+  "checks": [
+    "registered Sans Regular/SemiBold loaded",
+    "native Modal picker selection",
+    "raw locale decimal precision",
+    "labeled form input",
+    "sound disabled operation and preference updates",
+    "axe WCAG analysis",
+    "no runtime errors"
+  ],
+  "violations": [],
+  "errors": [],
+  "limits": "RN web semantics do not certify Android accessibility nodes, TalkBack, VoiceOver, native IME or Dynamic Type"
+}

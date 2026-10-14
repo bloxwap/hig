@@ -1,0 +1,321 @@
+{
+  "commit": "d47cef4c40363184bdfda8d8c263ead108ef9ff6",
+  "reference": "https://github.com/bloxwap/monorepo/tree/d47cef4c40363184bdfda8d8c263ead108ef9ff6",
+  "sourceFiles": 129,
+  "exactDuplicateGroups": [
+    [
+      "packages/tokens/theme.generated.css",
+      "packages/ui/src/styles/tokens.generated.css"
+    ]
+  ],
+  "sourceBytes": {
+    "apps/app": 70055,
+    "apps/pro": 14565,
+    "packages/plain-ui": 142819,
+    "packages/tokens": 73672,
+    "packages/ui-native": 108599,
+    "packages/ui": 42613
+  },
+  "assetBytesFromGitTree": {
+    ".ttf": 54370420,
+    ".css": 101510,
+    ".wav": 573592,
+    ".woff2": 77888
+  },
+  "dispositions": [
+    {
+      "source": "apps/app/src/components/ui/__tests__/badge.test.tsx",
+      "family": "badge.test",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/__tests__/button.test.tsx",
+      "family": "button.test",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/__tests__/drawer.test.tsx",
+      "family": "drawer.test",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/__tests__/haptic-tap.test.tsx",
+      "family": "haptic-tap.test",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/__tests__/segmented.test.tsx",
+      "family": "segmented.test",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/badge.tsx",
+      "family": "badge",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/button.tsx",
+      "family": "button",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/dialog.tsx",
+      "family": "dialog",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/drawer.tsx",
+      "family": "drawer",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/genesis-badge-check.tsx",
+      "family": "genesis-badge-check",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/genesis-badge.tsx",
+      "family": "genesis-badge",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/haptic-tap.tsx",
+      "family": "haptic-tap",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/label.tsx",
+      "family": "label",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/notification-card.tsx",
+      "family": "notification-card",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/number.tsx",
+      "family": "number",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/scramble-label.tsx",
+      "family": "scramble-label",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/segmented.tsx",
+      "family": "segmented",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/signal-strength.tsx",
+      "family": "signal-strength",
+      "disposition": "host-owned optional product effect/internal backend; preserve at host, no base HIG dependency",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/app/src/components/ui/toggle-switch.tsx",
+      "family": "toggle-switch",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/pro/src/components/ui/button.tsx",
+      "family": "button",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/pro/src/components/ui/input.tsx",
+      "family": "input",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/pro/src/components/ui/panel.tsx",
+      "family": "panel",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/pro/src/components/ui/reveal.tsx",
+      "family": "reveal",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/pro/src/components/ui/segmented.tsx",
+      "family": "segmented",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/pro/src/components/ui/slider.tsx",
+      "family": "slider",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "apps/pro/src/components/ui/switch.tsx",
+      "family": "switch",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/brand-mark.tsx",
+      "family": "brand-mark",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/button.tsx",
+      "family": "button",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/confetti.tsx",
+      "family": "confetti",
+      "disposition": "host-owned optional product effect/internal backend; preserve at host, no base HIG dependency",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/empty-state.tsx",
+      "family": "empty-state",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/field.tsx",
+      "family": "field",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/number-format.ts",
+      "family": "number-format",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/number-motion.ts",
+      "family": "number-motion",
+      "disposition": "host-owned optional product effect/internal backend; preserve at host, no base HIG dependency",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/number.tsx",
+      "family": "number",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/overlay-layer.ts",
+      "family": "overlay-layer",
+      "disposition": "host-owned optional product effect/internal backend; preserve at host, no base HIG dependency",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/pressable.tsx",
+      "family": "pressable",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/script-text.tsx",
+      "family": "script-text",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/sheet.tsx",
+      "family": "sheet",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/signal-strength.tsx",
+      "family": "signal-strength",
+      "disposition": "host-owned optional product effect/internal backend; preserve at host, no base HIG dependency",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui-native/src/components/toast.tsx",
+      "family": "toast",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/brand-wordmark.tsx",
+      "family": "brand-wordmark",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/chart.test.ts",
+      "family": "chart.test",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/chart.tsx",
+      "family": "chart",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/dialog.tsx",
+      "family": "dialog",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/popover.tsx",
+      "family": "popover",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/select.tsx",
+      "family": "select",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/sonner.tsx",
+      "family": "sonner",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    },
+    {
+      "source": "packages/ui/src/components/switch.tsx",
+      "family": "switch",
+      "disposition": "consolidate into HIG documented platform family",
+      "owner": "bloxwap/hig maintainers; owning product migration remains host-owned"
+    }
+  ],
+  "limits": [
+    "Files with different wrappers can still be design duplicates; byte identity only.",
+    "Git tree asset totals are repository bytes, not shipped production bundles.",
+    "Product deployment before/after and representative production React/Metro bundle builds still require owning-repo toolchain and deployment access.",
+    "No root LICENSE in monorepo; Bloxwap-owned adaptations retain exact provenance; do not infer third-party permissions."
+  ]
+}

@@ -11,4 +11,7 @@ writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
 const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')).map(n=>resolve('artifacts',n));
 execFileSync('npm',['install','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 execFileSync('npm',['run','bundle','--','--max-workers','2'],{cwd:dir,stdio:'inherit'});
+writeFileSync(join(dir,'index.js'),readFileSync('fixtures/native/index-gesture.js'));
+execFileSync('npm',['run','bundle','--','--max-workers','2','--output-dir','dist-gesture'],{cwd:dir,stdio:'inherit'});
+console.log('Packed optional gesture-sheet consumer exported Android/iOS with real Gorhom/Reanimated/Worklets peers');
 console.log(`Packed native consumer exported both platforms from ${tarballs.length} independent tarballs`);

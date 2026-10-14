@@ -1,0 +1,22 @@
+{
+  "browser": "26.0",
+  "viewport": 320,
+  "textScale": "200% root font size",
+  "checks": [
+    "required validation",
+    "synthetic composition and negative locale raw precision",
+    "range Home/End/step",
+    "radio keyboard",
+    "RTL translated tabs and disabled skip",
+    "nested modal Tab/Escape and focus restoration",
+    "notification burst/dismiss/retry",
+    "menu keyboard",
+    "search recovery",
+    "current location",
+    "no overflow",
+    "zero axe WCAG violations",
+    "no runtime errors"
+  ],
+  "limits": "Synthetic composition does not certify real OS IME; browser text scaling is not native Dynamic Type; no physical assistive technology observation",
+  "violations": []
+}

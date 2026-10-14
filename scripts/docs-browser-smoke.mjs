@@ -52,7 +52,7 @@ await page.getByRole('tab',{name:'Preview',exact:true}).click();
 await page.getByRole('combobox',{name:'Example state'}).selectOption('default');
 const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
 const violations=axe.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));
-assert.deepEqual(violations.filter(v=>v.impact==='critical'||v.impact==='serious'),[]);
+assert.deepEqual(violations,[]);
 assert.deepEqual(errors,[]);
 await page.screenshot({path:`evidence/${stage}-component-mobile.png`,fullPage:true});
 await page.setViewportSize({width:1440,height:1000});
@@ -61,7 +61,7 @@ await page.goto(origin+'docs/guides/installation/',{waitUntil:'networkidle'});
 await page.screenshot({path:`evidence/${stage}-guide-desktop.png`,fullPage:true});
 await page.goto(origin,{waitUntil:'networkidle'});await page.setViewportSize({width:390,height:844});
 await page.screenshot({path:`evidence/${stage}-playground-mobile.png`,fullPage:true});
-writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),checks:['production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
+writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),checks:['production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','zero axe WCAG findings'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
 console.log('Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed');
 
 }finally{await browser.close();}

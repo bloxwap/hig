@@ -4,7 +4,7 @@ import {render,screen,cleanup,fireEvent} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {Button} from '../packages/react/src/button';
 import {HIGProvider} from '../packages/react/src/provider';
-import {Field,AmountInput} from '../packages/react/src/field';
+import {Field,AmountInput,TextArea} from '../packages/react/src/field';
 import {Switch,RadioGroup,Slider} from '../packages/react/src/selection';
 import {Tabs} from '../packages/react/src/navigation';
 import {Dialog} from '../packages/react/src/overlay';
@@ -24,3 +24,9 @@ describe('DOM behavior contracts',()=>{
  it('deduplicates notifications and keeps dismiss accessible',async()=>{const dismiss=vi.fn();render(<Toast notices={[{id:'1',message:'Copied',severity:'success'},{id:'1',message:'Copied',severity:'success'}]} onDismiss={dismiss}/>);expect(screen.getAllByRole('status')).toHaveLength(1);await userEvent.click(screen.getByRole('button',{name:'Dismiss Copied'}));expect(dismiss).toHaveBeenCalledWith('1');});
  it('does not mistake percent points for a ratio',()=>{render(<Percent value={5}/>);expect(screen.getByText('5').parentElement?.textContent).toBe('5%');});
 });
+
+it('propagates required form semantics while allowing explicit overrides',()=>{const {rerender}=render(<Field label='Amount' required><AmountInput/></Field>);const input=screen.getByRole('textbox') as HTMLInputElement;expect(input.required).toBe(true);expect(input.checkValidity()).toBe(false);rerender(<Field label='Note' required><TextArea required={false}/></Field>);expect((screen.getByRole('textbox') as HTMLTextAreaElement).required).toBe(false);});
+it('preserves every undismissed notification through a burst and retry',async()=>{const retry=vi.fn(),dismiss=vi.fn();const notices=Array.from({length:5},(_,i)=>({id:String(i),message:`Outcome ${i}`,severity:'error' as const,action:i===0?<Button onClick={retry}>Retry</Button>:undefined}));render(<Toast notices={notices} onDismiss={dismiss}/>);expect(screen.getAllByRole('alert')).toHaveLength(1);for(const n of notices)expect(screen.getAllByText(n.message).length).toBeGreaterThan(0);await userEvent.click(screen.getByRole('button',{name:'Retry'}));expect(retry).toHaveBeenCalledOnce();expect(screen.getAllByText('Outcome 0').length).toBeGreaterThan(0);});
+
+it('disabled fields cannot be re-enabled by a child and amount input keeps host keyboard mode',()=>{render(<Field label='Amount' disabled><AmountInput disabled={false} inputMode='text'/></Field>);const input=screen.getByRole('textbox') as HTMLInputElement;expect(input.disabled).toBe(true);expect(input.inputMode).toBe('text');});
+it('announces a burst once and preserves pending critical text through rapid dismissal',async()=>{const notices=[{id:'critical',message:'Failed operation',severity:'error' as const},{id:'info',message:'Copied',severity:'info' as const}];const {rerender}=render(<Toast notices={notices} onDismiss={()=>{}}/>);rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);await new Promise(resolve=>setTimeout(resolve,40));expect(screen.getByRole('alert').textContent).toBe('Failed operation');rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);expect(screen.getAllByRole('alert')).toHaveLength(1);});
