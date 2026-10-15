@@ -297,23 +297,32 @@
     },
     {
       "name": "tapsiren",
-      "applicability": "strategy services and workers; one Next worker page (workers/tapsiren) with a local Button fork",
+      "applicability": "decided 2026-10-15 (#60): workers/tapsiren is a public, brand-facing marketing page (custom domains tapsiren.com and preview.tapsiren.com, OG/Twitter share card, CTAs to the Bloxwap Telegram and Discord), adopted as a docs or marketing site; strategy services, fly apps and tools have no UI",
       "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
-      "higVersion": "none",
-      "status": "pending classification of the worker page",
-      "mergedPRs": [],
+      "higVersion": "0.1.0-candidate.sha872906a9",
+      "status": "migrated (public marketing page on HIG tokens CSS, Bloxwap fonts and HIG Link/button; OG card on HIG colours and Bloxwap TTFs)",
+      "mergedPRs": [
+        "https://github.com/bloxwap/tapsiren/pull/399"
+      ],
       "openPRs": [],
-      "validation": "Tree audit 2026-10-15: only workers/tapsiren app/, components/ and packages/icons are UI",
+      "validation": "tapsiren#399 PR CI green on 6cc14fd (HIG drift, Build, ESLint, preview deploy), merged as 81d33eb and deployed to tapsiren.com by the Production workflow. Automated (local, bun 1.3.0): install --frozen-lockfile, lint, tsc, bun test lib 3/3, next build; vendored tarballs byte-identical to a fresh HIG 872906a9 candidate build; scoped drift on workers/tapsiren/{app,components,lib} passed (8 files, 0 dated exceptions) and flags a planted palette. Browser (Playwright Chromium against tapsiren.com, 1440/390): 0px overflow, Bloxwap Sans/Mono loaded, CTAs are <a> with HIG button paint and the HIG focus ring, /api/og 200 PNG; evidence in workers/tapsiren/docs/hig-adoption/",
       "exceptions": [
         {
-          "scope": "workers/tapsiren",
-          "reason": "public vs internal tooling decision pending",
+          "scope": "workers/tapsiren/vendor/bloxwap-hig/*.tgz",
+          "reason": "HIG not on npm; checksummed candidate tarballs",
+          "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/56"
+        },
+        {
+          "scope": "workers/tapsiren/public/tap-siren-mark.svg and favicon.ico",
+          "reason": "product mark still drawn in the old cyan; recolouring the mark is a brand decision outside the drift scope",
           "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/60"
         }
       ],
-      "remaining": "Classify and adopt or except (#60)",
+      "remaining": "Decide the product mark/favicon colour (dated exception, expires 2027-01-15); swap vendored tarballs for npm (#56)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/tapsiren",
       "exceptionExpires": "2027-01-15"
