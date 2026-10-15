@@ -1,0 +1,165 @@
+{
+  "auditIssues" : [
+    {
+      "component" : "Button",
+      "detail" : "The accessibilityLabel of this RCTViewComponentView duplicates information that is available in the traits.",
+      "element" : "9:Component: Button",
+      "summary" : "Label duplicates traits",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 262144)"
+    }
+  ],
+  "results" : [
+    {
+      "auditIssues" : 1,
+      "buttons" : 6,
+      "component" : "Button",
+      "sliders" : 0,
+      "staticTexts" : 26,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Text",
+      "sliders" : 0,
+      "staticTexts" : 34,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 6,
+      "component" : "Select",
+      "sliders" : 0,
+      "staticTexts" : 26,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Field",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 2
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "AmountInput",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 2
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Checkbox",
+      "sliders" : 0,
+      "staticTexts" : 26,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Switch",
+      "sliders" : 0,
+      "staticTexts" : 26,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "RadioGroup",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "SegmentedControl",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Slider",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Tabs",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 6,
+      "component" : "Alert",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 6,
+      "component" : "Toast",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "NumberReadout",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "AnimatedNumberReadout",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 6,
+      "component" : "MarketRow",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "BalanceCard",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 6,
+      "component" : "TradeEntry",
+      "sliders" : 0,
+      "staticTexts" : 32,
+      "textFields" : 2
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 6,
+      "component" : "EmptyState",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 1
+    }
+  ]
+}

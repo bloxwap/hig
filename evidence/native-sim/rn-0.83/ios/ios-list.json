@@ -1,0 +1,26 @@
+{
+  "elapsedSeconds" : 69.594510078430176,
+  "firstRowVisible" : true,
+  "samples" : [
+    {
+      "afterSwipes" : 6,
+      "firstVisible" : "Verification row 97",
+      "visibleCount" : 18
+    },
+    {
+      "afterSwipes" : 12,
+      "firstVisible" : "Verification row 201",
+      "visibleCount" : 17
+    },
+    {
+      "afterSwipes" : 18,
+      "firstVisible" : "Verification row 303",
+      "visibleCount" : 18
+    },
+    {
+      "afterSwipes" : 24,
+      "firstVisible" : "Verification row 406",
+      "visibleCount" : 17
+    }
+  ]
+}

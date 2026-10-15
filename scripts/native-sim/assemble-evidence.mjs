@@ -1,11 +1,13 @@
 // Copies raw iOS Simulator / Android emulator outputs into evidence/native-sim/ with
 // downscaled captures, compact hierarchy dumps and a run summary used by native-sim.json.
-// Usage: node scripts/native-sim/assemble-evidence.mjs <ios-out> <android-out>
+// Usage: node scripts/native-sim/assemble-evidence.mjs <ios-out> <android-out> [--out <evidence-dir>]
+// --out defaults to evidence/native-sim (the RN 0.81.5 runs); the RN 0.83 runs use evidence/native-sim/rn-0.83 (#68).
 import {readdirSync,readFileSync,writeFileSync,mkdirSync,existsSync,copyFileSync,rmSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import sharp from 'sharp';
-const [iosOut,androidOut]=process.argv.slice(2).map(p=>resolve(p));
-const root=resolve('evidence/native-sim');
+const argv=process.argv.slice(2),outAt=argv.indexOf('--out');
+const root=resolve(outAt>=0?argv[outAt+1]:'evidence/native-sim');
+const [iosOut,androidOut]=(outAt>=0?argv.filter((_,i)=>i!==outAt&&i!==outAt+1):argv).map(p=>resolve(p));
 for(const platform of ['ios','android','gesture'])rmSync(join(root,platform),{recursive:true,force:true});
 const json=file=>JSON.parse(readFileSync(file,'utf8'));
 async function captures(from,to){mkdirSync(to,{recursive:true});let n=0;for(const file of readdirSync(from).filter(f=>f.endsWith('.png')).sort()){await sharp(join(from,file)).resize({width:420}).png({compressionLevel:9,palette:true}).toFile(join(to,file));n++;}return n;}

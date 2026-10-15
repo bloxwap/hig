@@ -1,0 +1,170 @@
+{
+  "issue": 68,
+  "observedAt": "2026-10-15",
+  "question": "Do @bloxwap/hig-native and @bloxwap/hig-feedback pass the same simulator/emulator checks on React Native 0.83 as on 0.81.5?",
+  "answer": "Every check passes on both versions (iOS 15/15 steps, Android 18/18 steps, GestureSheet 8/8 lines identical). Four observed differences each have a linked issue: #86 (Android per-app Arabic locale not RTL), #87 (Android Slider action labels), #88 (iOS audit no longer flags TextInput Dynamic Type), #89 (expo-audio didJustFinish count).",
+  "evidenceKinds": {
+    "automated": "CI: npm run smoke:packed-native and npm run smoke:packed-native -- --profile rn-0.83 export both packed consumers for Android and iOS with Metro; React renderer, Expo native module and declared-peer guards (scripts/native-compatibility.mjs)",
+    "iOS Simulator": "Release build of the packed candidate driven by XCUITest (scripts/native-sim/run-ios.sh, run-gesture.sh). Xcode accessibility audits and XCUITest actions are not a VoiceOver user run.",
+    "Android emulator": "Release APK of the packed candidate driven by instrumentation with UiAutomation as the accessibility client, uiautomator and TalkBack enabled (scripts/native-sim/run-android.sh, run-gesture.sh). Not a Voice Access, Switch Access or TalkBack speech observation.",
+    "physical hardware": "none; nothing here is a physical-device, speaker, vibration or VoiceOver observation (#55)"
+  },
+  "environment": {
+    "host": "macOS 27.2 (Apple silicon), Xcode 27.2, JDK 17, Android SDK emulator",
+    "iosSimulator": "iPhone 16 Pro, iOS 26.5 (23F77); a simulator created for this run, shut down and deleted afterwards",
+    "androidEmulator": "Medium_Phone_API_35, google/sdk_gphone64_arm64/emu64a:15/AE3A.240806.036 (read-only instance on console port 5120, shut down afterwards), 1260x2736 override at 480dpi (420dp wide); the AVD keeps hw.keyboard=yes and run-android.sh sets show_ime_with_hard_keyboard so the on-screen IME appears"
+  },
+  "candidate": {
+    "version": "0.1.0-candidate.shab4fb82c1",
+    "sourceCommit": "b4fb82c (branch hig/rn-0.83-certification; contains the #68 peer ranges). Later commits on the branch change only scripts, tests, docs and evidence, not package sources.",
+    "tarballs": [
+      "bloxwap-hig-contracts",
+      "bloxwap-hig-feedback",
+      "bloxwap-hig-native",
+      "bloxwap-hig-native-fonts",
+      "bloxwap-hig-tokens"
+    ],
+    "consumption": "scripts/native-sim/prepare-app.sh <app> <udid> <profile>: fixtures/native copied to a scratch app whose package.json comes from scripts/native-consumer.mjs; only the packed tarballs are installed; no workspace aliases",
+    "published": false
+  },
+  "stacks": {
+    "rn-0.83": {
+      "expo": "55.0.31",
+      "react-native": "0.83.10",
+      "react": "19.2.0",
+      "expo-audio": "55.0.18",
+      "expo-haptics": "55.0.18",
+      "expo-asset": "55.0.20",
+      "expo-font": "55.0.8",
+      "react-native-svg": "15.15.3",
+      "@react-native-community/slider": "5.1.2",
+      "react-native-safe-area-context": "5.6.2",
+      "react-native-reanimated": "4.2.1",
+      "react-native-worklets": "0.7.4",
+      "react-native-gesture-handler": "2.30.1",
+      "@gorhom/bottom-sheet": "5.2.14",
+      "architecture": "New Architecture (Fabric), Hermes, Release"
+    },
+    "rn-0.81 (control)": {
+      "expo": "54.0.37",
+      "react-native": "0.81.5",
+      "react": "19.1.0",
+      "expo-audio": "1.1.1",
+      "expo-haptics": "15.0.8",
+      "expo-asset": "12.0.13",
+      "expo-font": "14.0.12",
+      "react-native-svg": "15.12.1",
+      "@react-native-community/slider": "5.0.1",
+      "react-native-safe-area-context": "5.6.2",
+      "react-native-reanimated": "4.1.1",
+      "react-native-worklets": "0.5.1",
+      "react-native-gesture-handler": "2.28.0",
+      "@gorhom/bottom-sheet": "5.2.14",
+      "architecture": "New Architecture (Fabric), Hermes, Release"
+    }
+  },
+  "method": "Both apps were built from the same candidate tarballs and fixtures/native source; they differ only in the consumer profile (fixtures/native/profiles.json). Both ran the same run-ios.sh, run-android.sh and run-gesture.sh on the same simulator and emulator in one session, RN 0.83 first. scripts/native-sim/compare-runs.mjs compared step outcomes, result JSON (timing samples and process ids dropped) and captures (scripts/visual-diff.mjs, channel tolerance 24, 2% threshold).",
+  "checks": {
+    "ios": {
+      "steps": 15,
+      "sameOutcome": 15,
+      "resultFiles": 15,
+      "identicalResultFiles": 10,
+      "captures": 118,
+      "capturesOver2Percent": [
+        "ios-list-scrolled.png"
+      ]
+    },
+    "android": {
+      "steps": 18,
+      "sameOutcome": 18,
+      "resultFiles": 18,
+      "identicalResultFiles": 10,
+      "captures": 137,
+      "capturesOver2Percent": [
+        "android-feedback-diagnostics.png",
+        "android-list-scrolled.png",
+        "android-os-arabic-Button.png",
+        "android-os-arabic-Field.png",
+        "android-os-arabic-MarketRow.png",
+        "android-os-arabic-Select.png",
+        "android-os-arabic-Tabs.png",
+        "android-os-arabic-TradeEntry.png",
+        "android-os-arabic.png"
+      ]
+    },
+    "gestureSheet": {
+      "lines": 8,
+      "identical": true
+    }
+  },
+  "differences": [
+    {
+      "issue": 86,
+      "platform": "Android emulator",
+      "check": "snapshot os-arabic and galleryCaptures android-os-arabic (per-app locale ar-EG)",
+      "rn081": "OS RTL: true · HIG direction: rtl",
+      "rn083": "OS RTL: false · HIG direction: ltr; the 7 os-arabic captures differ by 14–21% (LTR layout)",
+      "cause": "RN 0.83 I18nUtil.isDevicePreferredLanguageRTL reads Locale.getAvailableLocales()[0] instead of Locale.getDefault() (unchanged in 0.84.1 and 0.85.3)",
+      "files": [
+        "android/android-os-arabic.json",
+        "android/captures/android-os-arabic*.png",
+        "control-rn-0.81.5/android/captures/android-os-arabic*.png"
+      ]
+    },
+    {
+      "issue": 87,
+      "platform": "Android emulator",
+      "check": "sliderAccessibilityActions",
+      "rn081": "actions scrollForward, scrollBackward (null label), setProgress",
+      "rn083": "same action ids with empty labels \"\"; values, set-progress, snapping, clamping and the disabled state are identical",
+      "cause": "RN 0.83 ReactAccessibilityDelegate.kt passes \"\" for an action without a label",
+      "files": [
+        "android/android-slider.json",
+        "control-rn-0.81.5/android/android-slider.json"
+      ],
+      "note": "Rerun on both versions with the harness that prints the action id for empty labels (scripts/native-sim/android/NativeVerificationTest.java); the first run printed the empty labels as \"\""
+    },
+    {
+      "issue": 88,
+      "platform": "iOS Simulator",
+      "check": "testGalleryCaptures Xcode accessibility audit",
+      "rn081": "189 findings: 68 \"Dynamic Type font sizes are unsupported\" (Amount (BTC) RCTUITextField), 119 \"Label not human-readable\", 2 \"Label duplicates traits\"",
+      "rn083": "121 findings: no Dynamic Type finding; the other 121 are identical; AX5 captures match within 2%",
+      "files": [
+        "ios/ios-gallery.json",
+        "control-rn-0.81.5/ios/ios-gallery.json"
+      ]
+    },
+    {
+      "issue": 89,
+      "platform": "Android emulator",
+      "check": "feedbackCalls",
+      "rn081": "two \"sound tick finished\" (didJustFinish) entries per tick; 20 log entries after the four toggles",
+      "rn083": "one per tick; 16 entries; the adapter calls (configure, play, haptic selection) are the same",
+      "files": [
+        "android/android-feedback.json",
+        "android/captures/android-feedback-diagnostics.png",
+        "control-rn-0.81.5/android/captures/android-feedback-diagnostics.png"
+      ]
+    }
+  ],
+  "notDifferences": [
+    {
+      "check": "listScrolling captures (iOS 6.18%, Android 6.94% of pixels)",
+      "reason": "Same rows visible and firstRowVisible true on both; the fling stops at a slightly different offset. Two extra iOS reruns per version: 4.42% (0.81.5 vs 0.81.5) and 4.46% (0.83 vs 0.83) against 4.16–4.48% across versions."
+    },
+    {
+      "check": "keyboardAvoidance Field imeBounds",
+      "reason": "The IME window is still animating when sampled (bottom edge beyond the 2736px screen). Extra Android reruns: top edge 2353/2502/2062 on 0.81.5 and 2513/2502/2513 on 0.83. inputAboveKeyboard true and overlapPx equal on every run."
+    },
+    {
+      "check": "Runtime diagnostics line",
+      "reason": "Reports RN 0.81.5 versus RN 0.83.10, as expected."
+    }
+  ],
+  "limits": [
+    "Physical iPhone/Android, VoiceOver, TalkBack speech, speakers and vibration are not covered (#55).",
+    "TalkBack keyboard-command flow (talkback-flow.sh) was not rerun; it records a negative tooling result on 0.81.5."
+  ]
+}

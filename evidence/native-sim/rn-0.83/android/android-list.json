@@ -1,0 +1,32 @@
+{
+ "firstRowVisible": true,
+ "scrollableFound": true,
+ "elapsedMs": 4936,
+ "samples": [
+  {
+   "afterScrolls": 8,
+   "performed": true,
+   "firstVisible": "Verification row 91"
+  },
+  {
+   "afterScrolls": 16,
+   "performed": true,
+   "firstVisible": "Verification row 185"
+  },
+  {
+   "afterScrolls": 24,
+   "performed": true,
+   "firstVisible": "Verification row 279"
+  },
+  {
+   "afterScrolls": 32,
+   "performed": true,
+   "firstVisible": "Verification row 373"
+  },
+  {
+   "afterScrolls": 40,
+   "performed": true,
+   "firstVisible": "Verification row 468"
+  }
+ ]
+}

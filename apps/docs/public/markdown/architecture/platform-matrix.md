@@ -12,6 +12,7 @@
 | Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
 | Chart | optional lazy @bloxwap/chart canvas | numeric/list summary only | typed theme; physical gesture evidence pending |
 | Brand mark | individual SVG renderer/asset | optional react-native-svg | pinned geometry; device comparison pending |
+| React Native versions | — | RN 0.81.5 / Expo 54 / React 19.1.0 and RN 0.83.10 / Expo 55 / React 19.2.0; peer ranges `react-native` `^0.81.5 \|\| ^0.83.10`, SDK-matched Expo, SVG, Slider and Worklets peers | CI packed Metro exports for both (`smoke:packed-native`, `--profile rn-0.83`); iOS Simulator and Android emulator gallery, interaction and GestureSheet runs on both with the same outcomes; differences tracked in #86–#89 (`evidence/native-sim/rn-0.83/`) |
 | Fonts | pinned Sans/Mono asset URLs | hash-pinned static faces, typed manifest, explicit weight registration and host script fallback | Expo-web loading/byte/hash gates; no physical native-font certification |
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.

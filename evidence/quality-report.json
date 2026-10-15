@@ -2,7 +2,8 @@
   "version": "0.1.0",
   "nativeRuntime": {
     "react": "19.1.0",
-    "renderer": "19.1.0"
+    "renderer": "19.1.0",
+    "reactNative": "0.81.5"
   },
   "exports": {
     "contracts": 6,
@@ -54,8 +55,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2206780,
-      "gzip": 615452
+      "raw": 2209116,
+      "gzip": 616204
     },
     "docsCSS": {
       "raw": 111070

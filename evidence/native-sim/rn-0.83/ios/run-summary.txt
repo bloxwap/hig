@@ -1,0 +1,15 @@
+testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS=Button,IconButton,Link,Text,Heading,Stack,Inline,Surface,Card,Separator,Field,Label,Input,TextArea,AmountInput,SearchInput,Checkbox,Switch,RadioGroup,SegmentedControl,Select,Slider,Dialog,AlertDialog,Sheet,Menu,Popover,Tooltip,Tabs,Accordion,Breadcrumb,Navigation,Pagination,Search,Badge,Alert,Callout,Toast,Progress,Spinner,Skeleton,EmptyState,Avatar,StatusIndicator,NumberReadout,AnimatedNumberReadout,Usd,Percent,Metric,Stat,List,Row,Table,BrandMark,CheckIcon,HIGProvider,MarketRow,BalanceCard,TradeEntry,InstallCommand,CodeWindow,MarketingHero,ActivityList,PriceChart TEST_RUNNER_HIG_PREFIX=ios -> exit 0
+testSnapshot TEST_RUNNER_HIG_NAME=baseline -> exit 0
+testSliderAccessibilityActions  -> exit 0
+testOverlays  -> exit 0
+testListScrolling  -> exit 0
+testFeedbackCalls  -> exit 0
+testKeyboardAvoidance  -> exit 0
+testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS=Button,Text,Select,Field,AmountInput,Checkbox,Switch,RadioGroup,SegmentedControl,Slider,Tabs,Alert,Toast,NumberReadout,AnimatedNumberReadout,MarketRow,BalanceCard,TradeEntry,EmptyState TEST_RUNNER_HIG_PREFIX=ios-rtl TEST_RUNNER_HIG_QUERY=&dir=rtl TEST_RUNNER_HIG_AUDIT=0 -> exit 0
+testSnapshot TEST_RUNNER_HIG_NAME=os-arabic TEST_RUNNER_HIG_LAUNCH_ARGS=-AppleLanguages|(ar)|-AppleLocale|ar_EG TEST_RUNNER_HIG_AUDIT=0 -> exit 0
+testSnapshot TEST_RUNNER_HIG_NAME=dynamic-type-ax5 -> exit 0
+testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS=Button,Text,Select,Field,AmountInput,Checkbox,Switch,RadioGroup,SegmentedControl,Slider,Tabs,Alert,Toast,NumberReadout,AnimatedNumberReadout,MarketRow,BalanceCard,TradeEntry,EmptyState TEST_RUNNER_HIG_PREFIX=ios-ax5 -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-text TEST_RUNNER_HIG_QUERY=component=Text&state=default TEST_RUNNER_HIG_SCROLL_TO=Review the amount TEST_RUNNER_HIG_MEASURE=BLOXWAP|한국어|Price: 67,234.56|Review the amount -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-switch TEST_RUNNER_HIG_QUERY=component=Switch&state=default TEST_RUNNER_HIG_SCROLL_TO=Preference preview TEST_RUNNER_HIG_MEASURE=Preference preview|Info tone preview -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-alert-error TEST_RUNNER_HIG_QUERY=component=Alert&state=error TEST_RUNNER_HIG_SCROLL_TO=Data unavailable TEST_RUNNER_HIG_MEASURE=Data unavailable -> exit 0
+testSnapshot TEST_RUNNER_HIG_NAME=reduce-motion TEST_RUNNER_HIG_QUERY=component=AnimatedNumberReadout&state=default&diag=1 TEST_RUNNER_HIG_AUDIT=0 -> exit 0

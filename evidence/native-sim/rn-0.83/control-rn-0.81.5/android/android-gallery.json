@@ -1,0 +1,325 @@
+{
+ "results": [
+  {
+   "component": "Button",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "IconButton",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Link",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Text",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Heading",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Stack",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Inline",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Surface",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Card",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Separator",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Field",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Label",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Input",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "TextArea",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "AmountInput",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "SearchInput",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Checkbox",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Switch",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "RadioGroup",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "SegmentedControl",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Select",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Slider",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Dialog",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "AlertDialog",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Sheet",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Menu",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Popover",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Tooltip",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Tabs",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Accordion",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Breadcrumb",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Navigation",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Pagination",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Search",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Badge",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Alert",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Callout",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Toast",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Progress",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Spinner",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Skeleton",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "EmptyState",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Avatar",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "StatusIndicator",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "NumberReadout",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "AnimatedNumberReadout",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Usd",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Percent",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Metric",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Stat",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "List",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Row",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Table",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "BrandMark",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "CheckIcon",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "HIGProvider",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "MarketRow",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "BalanceCard",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "TradeEntry",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "InstallCommand",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "CodeWindow",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "MarketingHero",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "ActivityList",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "PriceChart",
+   "windows": 1,
+   "auditIssues": 0
+  }
+ ],
+ "auditIssues": []
+}

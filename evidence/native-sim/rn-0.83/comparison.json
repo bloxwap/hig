@@ -1,0 +1,2883 @@
+{
+  "control": "RN 0.81.5 / Expo 54 run of the same candidate (assembled locally; results in control-rn-0.81.5/, captures compared before commit)",
+  "candidate": "RN 0.83.10 / Expo 55 run (this directory)",
+  "ios": {
+    "steps": {
+      "total": 15,
+      "same": 15,
+      "differing": []
+    },
+    "results": {
+      "files": 15,
+      "same": 10,
+      "differing": {
+        "ios-baseline.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.Runtime:",
+              "control": "Runtime: ios 26.5 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: ios 26.5 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        },
+        "ios-dynamic-type-ax5.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.Runtime:",
+              "control": "Runtime: ios 26.5 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: ios 26.5 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        },
+        "ios-gallery.json": {
+          "differences": 466,
+          "diffs": [
+            {
+              "path": "$.auditIssues[0].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTViewComponentView duplicates information that is available in the traits."
+            },
+            {
+              "path": "$.auditIssues[0].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "9:Component: Button"
+            },
+            {
+              "path": "$.auditIssues[0].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label duplicates traits"
+            },
+            {
+              "path": "$.auditIssues[0].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 262144)"
+            },
+            {
+              "path": "$.auditIssues[1].detail",
+              "control": "The accessibilityLabel of this RCTViewComponentView duplicates information that is available in the traits.",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[1].element",
+              "control": "9:Component: Button",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[1].summary",
+              "control": "Label duplicates traits",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[1].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 262144)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[2].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[3].component",
+              "control": "Button",
+              "candidate": "IconButton"
+            },
+            {
+              "path": "$.auditIssues[3].detail",
+              "control": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+              "candidate": "The accessibilityLabel of this RCTViewComponentView duplicates information that is available in the traits."
+            },
+            {
+              "path": "$.auditIssues[3].element",
+              "control": "48:$67,234.56",
+              "candidate": "9:Component: IconButton"
+            },
+            {
+              "path": "$.auditIssues[3].summary",
+              "control": "Label not human-readable",
+              "candidate": "Label duplicates traits"
+            },
+            {
+              "path": "$.auditIssues[3].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 8)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 262144)"
+            },
+            {
+              "path": "$.auditIssues[4].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[4].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[4].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[4].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[5].detail",
+              "control": "The accessibilityLabel of this RCTViewComponentView duplicates information that is available in the traits.",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[5].element",
+              "control": "9:Component: IconButton",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[5].summary",
+              "control": "Label duplicates traits",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[5].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 262144)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[6].component",
+              "control": "IconButton",
+              "candidate": "Link"
+            },
+            {
+              "path": "$.auditIssues[7].component",
+              "control": "IconButton",
+              "candidate": "Link"
+            },
+            {
+              "path": "$.auditIssues[8].component",
+              "control": "Link",
+              "candidate": "Text"
+            },
+            {
+              "path": "$.auditIssues[8].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[8].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[8].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[8].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[9].component",
+              "control": "Link",
+              "candidate": "Heading"
+            },
+            {
+              "path": "$.auditIssues[10].component",
+              "control": "Link",
+              "candidate": "Heading"
+            },
+            {
+              "path": "$.auditIssues[11].component",
+              "control": "Text",
+              "candidate": "Stack"
+            },
+            {
+              "path": "$.auditIssues[11].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[11].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[11].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[11].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[12].component",
+              "control": "Text",
+              "candidate": "Stack"
+            },
+            {
+              "path": "$.auditIssues[13].component",
+              "control": "Heading",
+              "candidate": "Stack"
+            },
+            {
+              "path": "$.auditIssues[13].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[13].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[13].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[13].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[14].component",
+              "control": "Heading",
+              "candidate": "Inline"
+            },
+            {
+              "path": "$.auditIssues[15].component",
+              "control": "Heading",
+              "candidate": "Inline"
+            },
+            {
+              "path": "$.auditIssues[16].component",
+              "control": "Stack",
+              "candidate": "Surface"
+            },
+            {
+              "path": "$.auditIssues[16].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[16].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[16].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[16].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[17].component",
+              "control": "Stack",
+              "candidate": "Surface"
+            },
+            {
+              "path": "$.auditIssues[17].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[18].component",
+              "control": "Stack",
+              "candidate": "Card"
+            },
+            {
+              "path": "$.auditIssues[19].component",
+              "control": "Stack",
+              "candidate": "Card"
+            },
+            {
+              "path": "$.auditIssues[19].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[20].component",
+              "control": "Inline",
+              "candidate": "Card"
+            },
+            {
+              "path": "$.auditIssues[20].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[20].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[20].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[20].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[21].component",
+              "control": "Inline",
+              "candidate": "Separator"
+            },
+            {
+              "path": "$.auditIssues[22].component",
+              "control": "Inline",
+              "candidate": "Separator"
+            },
+            {
+              "path": "$.auditIssues[23].component",
+              "control": "Surface",
+              "candidate": "Field"
+            },
+            {
+              "path": "$.auditIssues[23].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[23].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[23].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[23].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[24].component",
+              "control": "Surface",
+              "candidate": "Field"
+            },
+            {
+              "path": "$.auditIssues[24].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[25].component",
+              "control": "Surface",
+              "candidate": "Label"
+            },
+            {
+              "path": "$.auditIssues[25].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[26].component",
+              "control": "Card",
+              "candidate": "Label"
+            },
+            {
+              "path": "$.auditIssues[26].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[26].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[26].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[26].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[27].component",
+              "control": "Card",
+              "candidate": "Input"
+            },
+            {
+              "path": "$.auditIssues[28].component",
+              "control": "Card",
+              "candidate": "Input"
+            },
+            {
+              "path": "$.auditIssues[28].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[29].component",
+              "control": "Card",
+              "candidate": "TextArea"
+            },
+            {
+              "path": "$.auditIssues[29].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[30].component",
+              "control": "Separator",
+              "candidate": "TextArea"
+            },
+            {
+              "path": "$.auditIssues[30].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[30].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[30].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[30].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[31].component",
+              "control": "Separator",
+              "candidate": "AmountInput"
+            },
+            {
+              "path": "$.auditIssues[32].component",
+              "control": "Separator",
+              "candidate": "AmountInput"
+            },
+            {
+              "path": "$.auditIssues[33].component",
+              "control": "Field",
+              "candidate": "SearchInput"
+            },
+            {
+              "path": "$.auditIssues[33].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[33].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[33].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[33].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[34].component",
+              "control": "Field",
+              "candidate": "SearchInput"
+            },
+            {
+              "path": "$.auditIssues[34].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[34].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[34].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[34].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[35].component",
+              "control": "Field",
+              "candidate": "Checkbox"
+            },
+            {
+              "path": "$.auditIssues[36].component",
+              "control": "Field",
+              "candidate": "Checkbox"
+            },
+            {
+              "path": "$.auditIssues[37].component",
+              "control": "Label",
+              "candidate": "Switch"
+            },
+            {
+              "path": "$.auditIssues[37].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[37].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[37].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[37].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[38].component",
+              "control": "Label",
+              "candidate": "Switch"
+            },
+            {
+              "path": "$.auditIssues[38].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[38].element",
+              "control": "49:Amount",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[38].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[38].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[39].component",
+              "control": "Label",
+              "candidate": "RadioGroup"
+            },
+            {
+              "path": "$.auditIssues[40].component",
+              "control": "Label",
+              "candidate": "SegmentedControl"
+            },
+            {
+              "path": "$.auditIssues[40].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[41].component",
+              "control": "Input",
+              "candidate": "Select"
+            },
+            {
+              "path": "$.auditIssues[41].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[41].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[41].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[41].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[42].component",
+              "control": "Input",
+              "candidate": "Select"
+            },
+            {
+              "path": "$.auditIssues[42].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[42].element",
+              "control": "49:Asset search",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[42].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[42].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[43].component",
+              "control": "Input",
+              "candidate": "Slider"
+            },
+            {
+              "path": "$.auditIssues[44].component",
+              "control": "Input",
+              "candidate": "Slider"
+            },
+            {
+              "path": "$.auditIssues[45].component",
+              "control": "TextArea",
+              "candidate": "Dialog"
+            },
+            {
+              "path": "$.auditIssues[45].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[45].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[45].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[45].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[46].component",
+              "control": "TextArea",
+              "candidate": "Dialog"
+            },
+            {
+              "path": "$.auditIssues[46].detail",
+              "control": "User will not be able to change the font size of this RCTUITextView",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[46].element",
+              "control": "52:Note",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[46].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[46].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[47].component",
+              "control": "TextArea",
+              "candidate": "AlertDialog"
+            },
+            {
+              "path": "$.auditIssues[48].component",
+              "control": "TextArea",
+              "candidate": "AlertDialog"
+            },
+            {
+              "path": "$.auditIssues[49].component",
+              "control": "AmountInput",
+              "candidate": "Sheet"
+            },
+            {
+              "path": "$.auditIssues[49].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[49].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[49].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[49].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[50].component",
+              "control": "AmountInput",
+              "candidate": "Sheet"
+            },
+            {
+              "path": "$.auditIssues[50].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[50].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[50].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[50].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[51].component",
+              "control": "AmountInput",
+              "candidate": "Menu"
+            },
+            {
+              "path": "$.auditIssues[52].component",
+              "control": "AmountInput",
+              "candidate": "Menu"
+            },
+            {
+              "path": "$.auditIssues[53].component",
+              "control": "SearchInput",
+              "candidate": "Popover"
+            },
+            {
+              "path": "$.auditIssues[53].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[53].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[53].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[53].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[54].component",
+              "control": "SearchInput",
+              "candidate": "Popover"
+            },
+            {
+              "path": "$.auditIssues[54].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[54].element",
+              "control": "49:Search markets",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[54].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[54].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[55].component",
+              "control": "SearchInput",
+              "candidate": "Tooltip"
+            },
+            {
+              "path": "$.auditIssues[56].component",
+              "control": "SearchInput",
+              "candidate": "Tooltip"
+            },
+            {
+              "path": "$.auditIssues[57].component",
+              "control": "Checkbox",
+              "candidate": "Tabs"
+            },
+            {
+              "path": "$.auditIssues[57].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[57].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[57].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[57].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[58].component",
+              "control": "Checkbox",
+              "candidate": "Tabs"
+            },
+            {
+              "path": "$.auditIssues[58].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[59].component",
+              "control": "Checkbox",
+              "candidate": "Accordion"
+            },
+            {
+              "path": "$.auditIssues[59].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[60].component",
+              "control": "Switch",
+              "candidate": "Accordion"
+            },
+            {
+              "path": "$.auditIssues[60].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[60].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[60].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[60].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[61].component",
+              "control": "Switch",
+              "candidate": "Breadcrumb"
+            },
+            {
+              "path": "$.auditIssues[62].component",
+              "control": "Switch",
+              "candidate": "Breadcrumb"
+            },
+            {
+              "path": "$.auditIssues[63].component",
+              "control": "RadioGroup",
+              "candidate": "Navigation"
+            },
+            {
+              "path": "$.auditIssues[63].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[63].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[63].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[63].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[64].component",
+              "control": "RadioGroup",
+              "candidate": "Navigation"
+            },
+            {
+              "path": "$.auditIssues[64].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[65].component",
+              "control": "SegmentedControl",
+              "candidate": "Pagination"
+            },
+            {
+              "path": "$.auditIssues[65].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[65].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[65].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[65].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[66].component",
+              "control": "SegmentedControl",
+              "candidate": "Pagination"
+            },
+            {
+              "path": "$.auditIssues[66].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[67].component",
+              "control": "Select",
+              "candidate": "Search"
+            },
+            {
+              "path": "$.auditIssues[67].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[67].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[67].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[67].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[68].component",
+              "control": "Select",
+              "candidate": "Badge"
+            },
+            {
+              "path": "$.auditIssues[69].component",
+              "control": "Select",
+              "candidate": "Badge"
+            },
+            {
+              "path": "$.auditIssues[70].component",
+              "control": "Slider",
+              "candidate": "Alert"
+            },
+            {
+              "path": "$.auditIssues[70].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[70].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[70].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[70].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[71].component",
+              "control": "Slider",
+              "candidate": "Callout"
+            },
+            {
+              "path": "$.auditIssues[72].component",
+              "control": "Slider",
+              "candidate": "Toast"
+            },
+            {
+              "path": "$.auditIssues[72].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[73].component",
+              "control": "Dialog",
+              "candidate": "Progress"
+            },
+            {
+              "path": "$.auditIssues[73].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[73].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[73].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[73].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[74].component",
+              "control": "Dialog",
+              "candidate": "Progress"
+            },
+            {
+              "path": "$.auditIssues[74].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[75].component",
+              "control": "Dialog",
+              "candidate": "Spinner"
+            },
+            {
+              "path": "$.auditIssues[75].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[76].component",
+              "control": "AlertDialog",
+              "candidate": "Spinner"
+            },
+            {
+              "path": "$.auditIssues[76].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[76].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[76].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[76].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[77].component",
+              "control": "AlertDialog",
+              "candidate": "Skeleton"
+            },
+            {
+              "path": "$.auditIssues[78].component",
+              "control": "AlertDialog",
+              "candidate": "Skeleton"
+            },
+            {
+              "path": "$.auditIssues[79].component",
+              "control": "Sheet",
+              "candidate": "EmptyState"
+            },
+            {
+              "path": "$.auditIssues[79].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[79].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[79].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[79].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[80].component",
+              "control": "Sheet",
+              "candidate": "Avatar"
+            },
+            {
+              "path": "$.auditIssues[81].component",
+              "control": "Sheet",
+              "candidate": "Avatar"
+            },
+            {
+              "path": "$.auditIssues[82].component",
+              "control": "Menu",
+              "candidate": "StatusIndicator"
+            },
+            {
+              "path": "$.auditIssues[82].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[82].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[82].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[82].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[83].component",
+              "control": "Menu",
+              "candidate": "StatusIndicator"
+            },
+            {
+              "path": "$.auditIssues[83].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[84].component",
+              "control": "Menu",
+              "candidate": "NumberReadout"
+            },
+            {
+              "path": "$.auditIssues[84].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:67,234.56"
+            },
+            {
+              "path": "$.auditIssues[85].component",
+              "control": "Popover",
+              "candidate": "NumberReadout"
+            },
+            {
+              "path": "$.auditIssues[85].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[85].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[85].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[85].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[86].component",
+              "control": "Popover",
+              "candidate": "NumberReadout"
+            },
+            {
+              "path": "$.auditIssues[86].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[87].component",
+              "control": "Popover",
+              "candidate": "AnimatedNumberReadout"
+            },
+            {
+              "path": "$.auditIssues[87].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[88].component",
+              "control": "Tooltip",
+              "candidate": "AnimatedNumberReadout"
+            },
+            {
+              "path": "$.auditIssues[88].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[88].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[88].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[88].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[89].component",
+              "control": "Tooltip",
+              "candidate": "Usd"
+            },
+            {
+              "path": "$.auditIssues[90].component",
+              "control": "Tooltip",
+              "candidate": "Usd"
+            },
+            {
+              "path": "$.auditIssues[90].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[91].component",
+              "control": "Tabs",
+              "candidate": "Usd"
+            },
+            {
+              "path": "$.auditIssues[91].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[91].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[91].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[91].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[92].component",
+              "control": "Tabs",
+              "candidate": "Percent"
+            },
+            {
+              "path": "$.auditIssues[93].component",
+              "control": "Tabs",
+              "candidate": "Percent"
+            },
+            {
+              "path": "$.auditIssues[94].component",
+              "control": "Accordion",
+              "candidate": "Metric"
+            },
+            {
+              "path": "$.auditIssues[94].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[94].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[94].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[94].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[95].component",
+              "control": "Accordion",
+              "candidate": "Metric"
+            },
+            {
+              "path": "$.auditIssues[96].component",
+              "control": "Accordion",
+              "candidate": "Metric"
+            },
+            {
+              "path": "$.auditIssues[97].component",
+              "control": "Breadcrumb",
+              "candidate": "Stat"
+            },
+            {
+              "path": "$.auditIssues[97].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[97].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[97].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[97].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[98].component",
+              "control": "Breadcrumb",
+              "candidate": "Stat"
+            },
+            {
+              "path": "$.auditIssues[98].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[99].component",
+              "control": "Breadcrumb",
+              "candidate": "List"
+            },
+            {
+              "path": "$.auditIssues[99].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:67,234.56"
+            },
+            {
+              "path": "$.auditIssues[100].component",
+              "control": "Navigation",
+              "candidate": "Row"
+            },
+            {
+              "path": "$.auditIssues[100].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[100].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[100].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[100].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[101].component",
+              "control": "Navigation",
+              "candidate": "Row"
+            },
+            {
+              "path": "$.auditIssues[102].component",
+              "control": "Navigation",
+              "candidate": "Row"
+            },
+            {
+              "path": "$.auditIssues[103].component",
+              "control": "Pagination",
+              "candidate": "Table"
+            },
+            {
+              "path": "$.auditIssues[103].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[103].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:67,234.56"
+            },
+            {
+              "path": "$.auditIssues[103].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[103].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[104].component",
+              "control": "Pagination",
+              "candidate": "BrandMark"
+            },
+            {
+              "path": "$.auditIssues[105].component",
+              "control": "Pagination",
+              "candidate": "BrandMark"
+            },
+            {
+              "path": "$.auditIssues[106].component",
+              "control": "Search",
+              "candidate": "CheckIcon"
+            },
+            {
+              "path": "$.auditIssues[106].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[106].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[106].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[106].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[107].component",
+              "control": "Search",
+              "candidate": "CheckIcon"
+            },
+            {
+              "path": "$.auditIssues[107].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[107].element",
+              "control": "49:Search",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[107].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[107].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[108].component",
+              "control": "Search",
+              "candidate": "HIGProvider"
+            },
+            {
+              "path": "$.auditIssues[109].component",
+              "control": "Badge",
+              "candidate": "HIGProvider"
+            },
+            {
+              "path": "$.auditIssues[109].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[109].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[109].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[109].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[110].component",
+              "control": "Badge",
+              "candidate": "MarketRow"
+            },
+            {
+              "path": "$.auditIssues[110].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[111].component",
+              "control": "Badge",
+              "candidate": "MarketRow"
+            },
+            {
+              "path": "$.auditIssues[111].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[112].component",
+              "control": "Alert",
+              "candidate": "MarketRow"
+            },
+            {
+              "path": "$.auditIssues[112].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[112].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[112].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[112].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[113].component",
+              "control": "Alert",
+              "candidate": "BalanceCard"
+            },
+            {
+              "path": "$.auditIssues[114].component",
+              "control": "Callout",
+              "candidate": "BalanceCard"
+            },
+            {
+              "path": "$.auditIssues[114].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[114].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[114].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[114].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[115].component",
+              "control": "Callout",
+              "candidate": "BalanceCard"
+            },
+            {
+              "path": "$.auditIssues[115].element",
+              "control": "48:$1,250.45",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[116].component",
+              "control": "Toast",
+              "candidate": "InstallCommand"
+            },
+            {
+              "path": "$.auditIssues[116].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[116].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$1,250.45"
+            },
+            {
+              "path": "$.auditIssues[116].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[116].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[117].component",
+              "control": "Toast",
+              "candidate": "CodeWindow"
+            },
+            {
+              "path": "$.auditIssues[118].component",
+              "control": "Progress",
+              "candidate": "CodeWindow"
+            },
+            {
+              "path": "$.auditIssues[118].detail",
+              "control": "User will not be able to change the font size of this RCTUITextField",
+              "candidate": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable."
+            },
+            {
+              "path": "$.auditIssues[118].element",
+              "control": "49:Amount (BTC)",
+              "candidate": "48:$67,234.56"
+            },
+            {
+              "path": "$.auditIssues[118].summary",
+              "control": "Dynamic Type font sizes are unsupported",
+              "candidate": "Label not human-readable"
+            },
+            {
+              "path": "$.auditIssues[118].type",
+              "control": "XCUIAccessibilityAuditType(rawValue: 65536)",
+              "candidate": "XCUIAccessibilityAuditType(rawValue: 8)"
+            },
+            {
+              "path": "$.auditIssues[119].component",
+              "control": "Progress",
+              "candidate": "MarketingHero"
+            },
+            {
+              "path": "$.auditIssues[120].component",
+              "control": "Progress",
+              "candidate": "PriceChart"
+            },
+            {
+              "path": "$.auditIssues[120].element",
+              "control": "48:$67,234.56",
+              "candidate": "48:67,234.56"
+            },
+            {
+              "path": "$.auditIssues[121]",
+              "control": {
+                "component": "Spinner",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[122]",
+              "control": {
+                "component": "Spinner",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[123]",
+              "control": {
+                "component": "Spinner",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[124]",
+              "control": {
+                "component": "Skeleton",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[125]",
+              "control": {
+                "component": "Skeleton",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[126]",
+              "control": {
+                "component": "Skeleton",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[127]",
+              "control": {
+                "component": "EmptyState",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[128]",
+              "control": {
+                "component": "EmptyState",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[129]",
+              "control": {
+                "component": "Avatar",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[130]",
+              "control": {
+                "component": "Avatar",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[131]",
+              "control": {
+                "component": "Avatar",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[132]",
+              "control": {
+                "component": "StatusIndicator",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[133]",
+              "control": {
+                "component": "StatusIndicator",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[134]",
+              "control": {
+                "component": "StatusIndicator",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[135]",
+              "control": {
+                "component": "NumberReadout",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[136]",
+              "control": {
+                "component": "NumberReadout",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[137]",
+              "control": {
+                "component": "NumberReadout",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[138]",
+              "control": {
+                "component": "NumberReadout",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[139]",
+              "control": {
+                "component": "AnimatedNumberReadout",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[140]",
+              "control": {
+                "component": "AnimatedNumberReadout",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[141]",
+              "control": {
+                "component": "AnimatedNumberReadout",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[142]",
+              "control": {
+                "component": "Usd",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[143]",
+              "control": {
+                "component": "Usd",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[144]",
+              "control": {
+                "component": "Usd",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[145]",
+              "control": {
+                "component": "Usd",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[146]",
+              "control": {
+                "component": "Percent",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[147]",
+              "control": {
+                "component": "Percent",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[148]",
+              "control": {
+                "component": "Percent",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[149]",
+              "control": {
+                "component": "Metric",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[150]",
+              "control": {
+                "component": "Metric",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[151]",
+              "control": {
+                "component": "Metric",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[152]",
+              "control": {
+                "component": "Metric",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[153]",
+              "control": {
+                "component": "Stat",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[154]",
+              "control": {
+                "component": "Stat",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[155]",
+              "control": {
+                "component": "Stat",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[156]",
+              "control": {
+                "component": "List",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[157]",
+              "control": {
+                "component": "Row",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[158]",
+              "control": {
+                "component": "Row",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[159]",
+              "control": {
+                "component": "Row",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[160]",
+              "control": {
+                "component": "Row",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[161]",
+              "control": {
+                "component": "Table",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[162]",
+              "control": {
+                "component": "BrandMark",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[163]",
+              "control": {
+                "component": "BrandMark",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[164]",
+              "control": {
+                "component": "BrandMark",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[165]",
+              "control": {
+                "component": "CheckIcon",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[166]",
+              "control": {
+                "component": "CheckIcon",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[167]",
+              "control": {
+                "component": "CheckIcon",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[168]",
+              "control": {
+                "component": "HIGProvider",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[169]",
+              "control": {
+                "component": "HIGProvider",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[170]",
+              "control": {
+                "component": "HIGProvider",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[171]",
+              "control": {
+                "component": "MarketRow",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[172]",
+              "control": {
+                "component": "MarketRow",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[173]",
+              "control": {
+                "component": "MarketRow",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[174]",
+              "control": {
+                "component": "MarketRow",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[175]",
+              "control": {
+                "component": "BalanceCard",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[176]",
+              "control": {
+                "component": "BalanceCard",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[177]",
+              "control": {
+                "component": "BalanceCard",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[178]",
+              "control": {
+                "component": "BalanceCard",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[179]",
+              "control": {
+                "component": "TradeEntry",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[180]",
+              "control": {
+                "component": "TradeEntry",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[181]",
+              "control": {
+                "component": "InstallCommand",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[182]",
+              "control": {
+                "component": "InstallCommand",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[183]",
+              "control": {
+                "component": "CodeWindow",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[184]",
+              "control": {
+                "component": "CodeWindow",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[185]",
+              "control": {
+                "component": "CodeWindow",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[186]",
+              "control": {
+                "component": "MarketingHero",
+                "detail": "User will not be able to change the font size of this RCTUITextField",
+                "element": "49:Amount (BTC)",
+                "summary": "Dynamic Type font sizes are unsupported",
+                "type": "XCUIAccessibilityAuditType(rawValue: 65536)"
+              }
+            },
+            {
+              "path": "$.auditIssues[187]",
+              "control": {
+                "component": "MarketingHero",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:$1,250.45",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.auditIssues[188]",
+              "control": {
+                "component": "PriceChart",
+                "detail": "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+                "element": "48:67,234.56",
+                "summary": "Label not human-readable",
+                "type": "XCUIAccessibilityAuditType(rawValue: 8)"
+              }
+            },
+            {
+              "path": "$.results[0].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[1].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[2].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[3].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[4].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[5].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[6].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[7].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[8].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[9].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[10].auditIssues",
+              "control": 4,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[11].auditIssues",
+              "control": 4,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[12].auditIssues",
+              "control": 4,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[13].auditIssues",
+              "control": 4,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[14].auditIssues",
+              "control": 4,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[15].auditIssues",
+              "control": 4,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[16].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[17].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[18].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[19].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[20].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[21].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[22].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[23].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[24].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[25].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[26].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[27].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[28].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[29].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[30].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[31].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[32].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[33].auditIssues",
+              "control": 3,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[34].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[35].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[36].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[37].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[38].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[39].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[40].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[41].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[42].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[43].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[44].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[45].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[46].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[47].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[48].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[49].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[51].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[53].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[54].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[55].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[56].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[57].auditIssues",
+              "control": 4,
+              "candidate": 3
+            },
+            {
+              "path": "$.results[58].auditIssues",
+              "control": 2,
+              "candidate": 0
+            },
+            {
+              "path": "$.results[59].auditIssues",
+              "control": 2,
+              "candidate": 1
+            },
+            {
+              "path": "$.results[60].auditIssues",
+              "control": 3,
+              "candidate": 2
+            },
+            {
+              "path": "$.results[61].auditIssues",
+              "control": 2,
+              "candidate": 1
+            }
+          ]
+        },
+        "ios-os-arabic.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.Runtime:",
+              "control": "Runtime: ios 26.5 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: ios 26.5 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        },
+        "ios-reduce-motion.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.Runtime:",
+              "control": "Runtime: ios 26.5 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: ios 26.5 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        }
+      }
+    },
+    "captures": {
+      "compared": 118,
+      "channelTolerance": 24,
+      "over2PercentChanged": {
+        "ios-list-scrolled.png": 6.18
+      },
+      "maxChangedPercent": 6.18
+    }
+  },
+  "android": {
+    "steps": {
+      "total": 18,
+      "same": 18,
+      "differing": []
+    },
+    "results": {
+      "files": 18,
+      "same": 10,
+      "differing": {
+        "android-baseline.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.runtime",
+              "control": "Runtime: android 35 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: android 35 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        },
+        "android-feedback.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.diagnosticsAfter",
+              "control": "Feedback calls: #15 sound tick finished 0.08s of 0.08s | #16 sound play:tick volume 0.30 dispatch Nms p95 Nms | #17 haptic selection called | #18 haptic selection resolved | #19 sound tick finished 0.09s of 0.08s | #20 sound tick finished 0.09s of 0.08s",
+              "candidate": "Feedback calls: #11 haptic selection resolved | #12 sound tick finished 0.08s of 0.08s | #13 sound play:tick volume 0.30 dispatch Nms p95 Nms | #14 haptic selection called | #15 haptic selection resolved | #16 sound tick finished 0.08s of 0.08s"
+            }
+          ]
+        },
+        "android-font-scale-200.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.runtime",
+              "control": "Runtime: android 35 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: android 35 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        },
+        "android-keyboard.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$[0].imeBounds",
+              "control": "0 2353 1260 3229",
+              "candidate": "0 2513 1260 3389"
+            }
+          ]
+        },
+        "android-os-arabic.json": {
+          "differences": 2,
+          "diffs": [
+            {
+              "path": "$.rtl",
+              "control": "OS RTL: true · HIG direction: rtl",
+              "candidate": "OS RTL: false · HIG direction: ltr"
+            },
+            {
+              "path": "$.runtime",
+              "control": "Runtime: android 35 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: android 35 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        },
+        "android-reduce-motion.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.runtime",
+              "control": "Runtime: android 35 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: android 35 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        },
+        "android-slider.json": {
+          "differences": 4,
+          "diffs": [
+            {
+              "path": "$.disabled.node.actions[0]",
+              "control": "scrollForward",
+              "candidate": "scrollForward (empty label)"
+            },
+            {
+              "path": "$.disabled.node.actions[1]",
+              "control": "scrollBackward",
+              "candidate": "scrollBackward (empty label)"
+            },
+            {
+              "path": "$.initial.actions[0]",
+              "control": "scrollForward",
+              "candidate": "scrollForward (empty label)"
+            },
+            {
+              "path": "$.initial.actions[1]",
+              "control": "scrollBackward",
+              "candidate": "scrollBackward (empty label)"
+            }
+          ]
+        },
+        "android-talkback.json": {
+          "differences": 1,
+          "diffs": [
+            {
+              "path": "$.runtime",
+              "control": "Runtime: android 35 · RN 0.81.5 · Hermes yes",
+              "candidate": "Runtime: android 35 · RN 0.83.10 · Hermes yes"
+            }
+          ]
+        }
+      }
+    },
+    "captures": {
+      "compared": 137,
+      "channelTolerance": 24,
+      "over2PercentChanged": {
+        "android-feedback-diagnostics.png": 3.4,
+        "android-list-scrolled.png": 6.94,
+        "android-os-arabic-Button.png": 19.41,
+        "android-os-arabic-Field.png": 16.14,
+        "android-os-arabic-MarketRow.png": 19.01,
+        "android-os-arabic-Select.png": 20.53,
+        "android-os-arabic-Tabs.png": 16.22,
+        "android-os-arabic-TradeEntry.png": 14.02,
+        "android-os-arabic.png": 21.01
+      },
+      "maxChangedPercent": 21.01
+    }
+  },
+  "gesture": {
+    "lines": 8,
+    "same": true,
+    "candidate": [
+      "iOS gesture build exit 0",
+      "iOS testGestureSheet exit 0",
+      "Android gesture build exit 0",
+      "Android sheet opened (title y=1500)",
+      "Android after drag up title y=463",
+      "Android after short drag title y=463 (still open: 1)",
+      "Android back closed sheet: yes",
+      "Android drag dismissed sheet: yes"
+    ]
+  }
+}

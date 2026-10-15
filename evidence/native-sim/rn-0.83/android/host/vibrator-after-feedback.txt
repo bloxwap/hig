@@ -1,0 +1,30 @@
+VibratorManagerService:
+  VibrationSettings:
+    vibrateOn = true
+    keyboardVibrationOn = true, default: true
+    vibrateInputDevices = false
+    VibrationIntensities:
+    VibrationConfig:
+      ignoreVibrationsOnWirelessCharger = false
+      requestVibrationParamsForUsages = [ALARM, RINGTONE, NOTIFICATION, COMMUNICATION_REQUEST]
+      requestVibrationParamsTimeoutMs = 50
+  VibrationScaler:
+    defaultVibrationAmplitude = 255
+  Vibrators:
+    Vibrator (id=1):
+      isVibrating = false
+      vibratorInfoLoadSuccessful = true
+      vibratorStateListener size = 0
+      VibratorInfo:
+  CurrentVibration:
+  NextVibration:
+  CurrentExternalVibration:
+  Recent vibrations:
+      10-15 10:54:12.450 |   effect |             finished | duration:    75ms | start: 10:54:12.472 | end: 10:54:12.525 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-15 10:54:13.667 |   effect |             finished | duration:    53ms | start: 10:54:13.669 | end: 10:54:13.720 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-15 10:54:14.885 |   effect |             finished | duration:    51ms | start: 10:54:14.885 | end: 10:54:14.937 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+  Aggregated vibration history:
+  VibratorControlService:
+    isVibratorControllerRegistered = false
+    hasPendingVibrationParamsRequest = false
+    Vibration parameters update history:

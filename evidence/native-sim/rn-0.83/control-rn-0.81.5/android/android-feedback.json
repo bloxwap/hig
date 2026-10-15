@@ -1,0 +1,8 @@
+{
+ "diagnosticsBefore": "Feedback calls: #1 sound configure called | #2 sound configure resolved",
+ "Sound-checked-before-0": false,
+ "Haptics-checked-before-1": false,
+ "Motion-checked-before-2": true,
+ "Motion-checked-before-3": false,
+ "diagnosticsAfter": "Feedback calls: #15 sound tick finished 0.08s of 0.08s | #16 sound play:tick volume 0.30 dispatch 2.7ms p95 9.8ms | #17 haptic selection called | #18 haptic selection resolved | #19 sound tick finished 0.09s of 0.08s | #20 sound tick finished 0.09s of 0.08s"
+}

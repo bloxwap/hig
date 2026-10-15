@@ -1,0 +1,42 @@
+Optional(Attributes: Application, pid: 5699, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, pid: 5699, label: 'Bloxwap HIG Gallery'
+    Window (Main), {{0.0, 0.0}, {402.0, 874.0}}
+      Other, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, {{0.0, 0.0}, {402.0, 874.0}}
+                    Other, {{24.0, 86.0}, {32.0, 32.0}}, label: 'Bloxwap'
+                    StaticText, {{24.0, 130.0}, {354.0, 30.0}}, label: 'Native HIG gallery'
+                      StaticText, {{24.0, 130.0}, {354.0, 30.0}}, label: 'Native HIG gallery'
+                    Button, {{24.0, 172.0}, {166.7, 48.0}}, label: 'Component: Table'
+                    Button, {{24.0, 232.0}, {196.7, 48.0}}, label: 'Example state: default'
+                    StaticText, {{24.0, 292.0}, {354.0, 24.0}}, label: '0.1.0 · pinned Bloxwap Sans static faces registered'
+                      StaticText, {{24.0, 292.0}, {354.0, 24.0}}, label: '0.1.0 · pinned Bloxwap Sans static faces registered'
+                    Other, {{24.0, 332.0}, {354.0, 484.0}}
+                      ScrollView, {{24.0, 332.0}, {354.0, 484.0}}
+                        Other, {{24.0, 332.0}, {354.0, 48.0}}
+                          Other, {{24.0, 332.0}, {354.0, 48.0}}
+                            StaticText, {{24.0, 344.0}, {85.0, 24.0}}, label: 'Bitcoin (BTC)'
+                              StaticText, {{24.0, 344.0}, {85.0, 24.0}}, label: 'Bitcoin (BTC)'
+                            StaticText, {{310.0, 344.0}, {68.0, 24.0}}, label: '67,234.56'
+                              StaticText, {{310.0, 344.0}, {68.0, 24.0}}, label: '67,234.56'
+                        Other, {{345.0, 332.0}, {30.0, 480.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                          Other, {{372.0, 771.0}, {3.0, 42.0}}
+                        Other, {{28.0, 783.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, {{27.0, 810.0}, {348.0, 3.0}}
+                        Other, {{345.0, 332.0}, {30.0, 480.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                          Other, {{372.0, 771.0}, {3.0, 42.0}}
+                        Other, {{28.0, 783.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, {{27.0, 810.0}, {348.0, 3.0}}
+Path to element:
+ →Application, pid: 5699, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, pid: 5699, label: 'Bloxwap HIG Gallery'
+  }
+)

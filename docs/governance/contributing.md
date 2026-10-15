@@ -52,7 +52,7 @@ A component or recipe enters the catalog only when all of the following hold:
 | Platform | Supported (tested in CI or recorded evidence) | Notes |
 | --- | --- | --- |
 | React DOM | React 19.2; Vite, SSR and Next 16.4 (webpack) packed consumers; Chromium, Firefox and WebKit | Other bundler or Next versions need checks in the host |
-| React Native | React 19.1, RN 0.81.5, Expo 54, Metro; iOS Simulator (iOS 26.5) and Android emulator (API 35) gallery runs | RN 0.83 is not certified yet (#68). Physical devices are pending (#55) |
+| React Native | RN 0.81.5 with Expo 54 and React 19.1.0; RN 0.83.10 with Expo 55 and React 19.2.0 (#68); Metro; packed Android/iOS exports in CI for both; iOS Simulator (iOS 26.5) and Android emulator (API 35) gallery runs for both | RN 0.82 and 0.84+ are not supported. On RN 0.83 Android a per-app RTL locale does not reach `I18nManager.isRTL`, so pass `direction` (#86). Physical devices are pending (#55) |
 | Tokens only | Plain CSS, Tailwind through host config, typed tokens | No React, RN or audio peers |
 | Feedback | Web: `@bloxwap/sfx` and `@bloxwap/haptic`. Native: Expo audio and haptics adapters | Essential outcomes must never depend on sound or haptics |
 

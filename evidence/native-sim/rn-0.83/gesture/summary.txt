@@ -1,0 +1,8 @@
+iOS gesture build exit 0
+iOS testGestureSheet exit 0
+Android gesture build exit 0
+Android sheet opened (title y=1500)
+Android after drag up title y=463
+Android after short drag title y=463 (still open: 1)
+Android back closed sheet: yes
+Android drag dismissed sheet: yes

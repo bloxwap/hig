@@ -1,0 +1,26 @@
+[
+ {
+  "component": "Field",
+  "inputFound": true,
+  "inputBoundsBeforeTap": "132 1540 1128 1684",
+  "imeShownAfterTap": true,
+  "inputFocused": true,
+  "inputType": 24578,
+  "inputBounds": "132 1540 1128 1684",
+  "imeBounds": "0 2513 1260 3389",
+  "inputAboveKeyboard": true,
+  "overlapPx": 0
+ },
+ {
+  "component": "TradeEntry",
+  "inputFound": true,
+  "inputBoundsBeforeTap": "132 1974 1128 2118",
+  "imeShownAfterTap": true,
+  "inputFocused": true,
+  "inputType": 24578,
+  "inputBounds": "132 1716 1128 1860",
+  "imeBounds": "0 1859 1260 2736",
+  "inputAboveKeyboard": true,
+  "overlapPx": 1
+ }
+]

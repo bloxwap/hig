@@ -1,0 +1,17 @@
+{
+  "auditIssues" : [
+    {
+      "component" : "dynamic-type-ax5",
+      "detail" : "The accessibilityLabel of this RCTViewComponentView duplicates information that is available in the traits.",
+      "element" : "9:Component: Button",
+      "summary" : "Label duplicates traits",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 262144)"
+    }
+  ],
+  "Feedback calls:" : "Feedback calls: #1 sound configure called | #2 sound configure resolved",
+  "Font scale:" : "Font scale: 3.57 (PixelRatio 3.57) · window 402x874 @3x",
+  "name" : "dynamic-type-ax5",
+  "OS reduce motion:" : "OS reduce motion: false · screen reader: false",
+  "OS RTL:" : "OS RTL: false · HIG direction: ltr",
+  "Runtime:" : "Runtime: ios 26.5 · RN 0.81.5 · Hermes yes"
+}
