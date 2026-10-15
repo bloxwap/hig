@@ -6,7 +6,7 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "contracts": 6,
+    "contracts": 8,
     "feedback": 17,
     "native": 38,
     "native-fonts": 4,
@@ -15,9 +15,10 @@
   },
   "sizes": {
     "button": {
-      "raw": 1249,
-      "gzip": 708,
+      "raw": 1335,
+      "gzip": 760,
       "inputs": [
+        "packages/contracts/dist/messages.js",
         "packages/contracts/dist/index.js",
         "packages/react/dist/provider.js",
         "packages/react/dist/button.js",
@@ -28,16 +29,20 @@
       "raw": 789,
       "gzip": 347,
       "inputs": [
+        "packages/contracts/dist/messages.js",
+        "packages/contracts/dist/index.js",
+        "packages/react/dist/provider.js",
         "packages/react/dist/field.js",
         "field.js"
       ]
     },
     "nativeSwitch": {
-      "raw": 3793,
-      "gzip": 1870,
+      "raw": 3819,
+      "gzip": 1883,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
+        "packages/contracts/dist/messages.js",
         "packages/native/dist/provider.js",
         "packages/native/dist/text-content.js",
         "packages/native/dist/surface.js",
@@ -55,11 +60,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2209116,
-      "gzip": 616204
+      "raw": 2230084,
+      "gzip": 622580
     },
     "docsCSS": {
-      "raw": 111070
+      "raw": 111309
     },
     "fonts": {
       "raw": 592796
