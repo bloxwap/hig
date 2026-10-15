@@ -100,7 +100,7 @@ input[type='range'] { accent-color:var(--hig-action); min-height:48px; width:100
 @keyframes hig-spin { to { transform:rotate(360deg); } }
 @keyframes hig-progress { to { background-position:-200% 0; } }
 @media(prefers-reduced-motion:reduce) {
-  .hig-spinner-indicator,.hig-progress progress { animation:none; }
+  .hig-spinner-indicator,.hig-progress progress:not([value]) { animation:none; }
   .hig-progress progress::-webkit-progress-bar { animation:none; }
   .hig-switch input::before { transition:none; }
 }
