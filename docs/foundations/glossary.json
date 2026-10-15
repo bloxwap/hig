@@ -1,0 +1,454 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "status": "locked-candidate",
+  "issue": 46,
+  "canonicalLocale": "en-US",
+  "source": "docs/foundations/glossary.json",
+  "rendered": "docs/foundations/glossary.md",
+  "consumers": "Translation agents must read this JSON. Do not scrape the rendered Markdown, product UI copy, or marketing pages for vocabulary.",
+  "requiredTermIds": [
+    "perp",
+    "leverage",
+    "margin",
+    "position",
+    "liquidation-price",
+    "funding",
+    "pnl",
+    "long",
+    "short",
+    "stop",
+    "take-profit",
+    "notional",
+    "builder-fee"
+  ],
+  "locales": [
+    {
+      "id": "en-US",
+      "bcp47": "en-US",
+      "status": "approved",
+      "direction": "ltr",
+      "role": "Canonical English. HIG defaultEnvironment and authored documentation locale."
+    }
+  ],
+  "pendingLocales": [
+    {
+      "id": "es",
+      "bcp47": "es",
+      "status": "todo",
+      "observedIn": "apps/app/messages/es.json in the product inventory",
+      "note": "No HIG-approved glossary translation. Do not guess."
+    },
+    {
+      "id": "fr",
+      "bcp47": "fr",
+      "status": "todo",
+      "observedIn": "apps/app/messages/fr.json in the product inventory",
+      "note": "No HIG-approved glossary translation. Do not guess."
+    },
+    {
+      "id": "ko",
+      "bcp47": "ko",
+      "status": "todo",
+      "observedIn": "apps/app/messages/ko.json in the product inventory",
+      "note": "No HIG-approved glossary translation. Do not guess."
+    },
+    {
+      "id": "ko-KR",
+      "bcp47": "ko-KR",
+      "status": "todo",
+      "observedIn": "Google Play store-screenshot locale in the product inventory",
+      "note": "No HIG-approved glossary translation. Do not guess."
+    },
+    {
+      "id": "zh-CN",
+      "bcp47": "zh-CN",
+      "status": "todo",
+      "observedIn": "apps/app/messages/zh-CN.json in the product inventory",
+      "note": "No HIG-approved glossary translation. Do not guess."
+    },
+    {
+      "id": "zh-Hans",
+      "bcp47": "zh-Hans",
+      "status": "todo",
+      "observedIn": "App Store screenshot locale in the product inventory",
+      "note": "No HIG-approved glossary translation. Do not guess."
+    }
+  ],
+  "notTranslationLocales": [
+    {
+      "id": "de-DE",
+      "role": "HIG Intl number-format fixture only. Not an approved translation locale."
+    },
+    {
+      "id": "ar-EG",
+      "role": "HIG Intl percent/numeral fixture only. RTL is a layout direction, not a glossary locale."
+    }
+  ],
+  "terms": [
+    {
+      "id": "perp",
+      "term": "perpetual",
+      "short": "perp",
+      "aliases": ["perps", "perpetual futures", "perpetual contract"],
+      "untranslated": "short-form",
+      "untranslatedForms": ["perp", "perps"],
+      "definition": "A derivative that tracks an asset’s price with no fixed expiry. Funding payments help keep the contract aligned with its underlying market. Stocks, commodities, indices and pre-IPO listings on Bloxwap are perps, not ownership of the underlying asset.",
+      "usageNotes": "Prefer “perp” in dense UI (market row, ticket). Use “perpetual” once in explanatory copy, then the short form. Never imply the trader owns the tracked stock, commodity or token.",
+      "do": [
+        "Label a Bitcoin market “BTC perp”.",
+        "Say “open a perp position” rather than “buy Bitcoin” when the instrument is a perpetual."
+      ],
+      "dont": [
+        "Don’t call a perp a spot purchase, share, or tokenized stock certificate.",
+        "Don’t invent an expiry date for a perp."
+      ],
+      "seeAlso": ["funding", "position", "leverage"],
+      "translations": {
+        "en-US": {
+          "term": "perpetual",
+          "short": "perp",
+          "definition": "A derivative that tracks an asset’s price with no fixed expiry. Funding payments help keep the contract aligned with its underlying market. Stocks, commodities, indices and pre-IPO listings on Bloxwap are perps, not ownership of the underlying asset."
+        }
+      }
+    },
+    {
+      "id": "leverage",
+      "term": "leverage",
+      "short": "leverage",
+      "aliases": ["lev"],
+      "untranslated": "never",
+      "untranslatedForms": [],
+      "definition": "Position size relative to the margin supporting it. At 10×, 100 USDC of margin supports 1,000 USDC of notional exposure. Leverage magnifies both gains and losses. Market-specific limits are set by Hyperliquid, not by HIG.",
+      "usageNotes": "Display as a multiplier with the multiplication sign (`10×`), never as a percent (`1000%`). Keep the `×` suffix untranslated. Limits and available leverage are host-supplied.",
+      "do": [
+        "Show selected leverage as `10×` next to size.",
+        "Repeat the selected leverage on the review step before the host submits."
+      ],
+      "dont": [
+        "Don’t write `10x leverage = safe`.",
+        "Don’t display leverage as `+1000%` or reuse percent styling."
+      ],
+      "seeAlso": ["margin", "notional", "liquidation-price"],
+      "translations": {
+        "en-US": {
+          "term": "leverage",
+          "short": "leverage",
+          "definition": "Position size relative to the margin supporting it. At 10×, 100 USDC of margin supports 1,000 USDC of notional exposure. Leverage magnifies both gains and losses. Market-specific limits are set by Hyperliquid, not by HIG."
+        }
+      }
+    },
+    {
+      "id": "margin",
+      "term": "margin",
+      "short": "margin",
+      "aliases": ["collateral", "cross margin", "isolated margin"],
+      "untranslated": "never",
+      "untranslatedForms": ["USDC"],
+      "definition": "USDC collateral used to open and maintain a leveraged position. If collateral falls below the maintenance requirement, Hyperliquid can liquidate the position. With cross margin, liquidation can consume the whole trading account, not only one position’s margin.",
+      "usageNotes": "Bloxwap trading collateral is USDC. Say “margin” for trading collateral; do not call it a deposit held by Bloxwap. Isolated vs cross is a host/protocol mode, not a HIG component.",
+      "do": [
+        "Label available collateral “Available margin (USDC)”.",
+        "Explain that cross margin can consume the trading account, not only the row’s margin."
+      ],
+      "dont": [
+        "Don’t call USDC margin a bank deposit or a Bloxwap-custodied balance.",
+        "Don’t display unknown margin as `0`."
+      ],
+      "seeAlso": ["usdc", "leverage", "liquidation-price", "position"],
+      "translations": {
+        "en-US": {
+          "term": "margin",
+          "short": "margin",
+          "definition": "USDC collateral used to open and maintain a leveraged position. If collateral falls below the maintenance requirement, Hyperliquid can liquidate the position. With cross margin, liquidation can consume the whole trading account, not only one position’s margin."
+        }
+      }
+    },
+    {
+      "id": "position",
+      "term": "position",
+      "short": "position",
+      "aliases": ["open position", "exposure"],
+      "untranslated": "never",
+      "untranslatedForms": [],
+      "definition": "Open long or short exposure in one market. A position has size, side, margin, leverage, entry, mark, notional, unrealized PnL and an estimated liquidation price. Closing requires a host-submitted order; HIG never executes a trade.",
+      "usageNotes": "One row per market/side as the host provides. Don’t merge unrelated markets into a single position label. Size stays a raw decimal string in business logic.",
+      "do": [
+        "Title a row “BTC long” with size, leverage and PnL as separate readouts.",
+        "Keep last-known position data and mark it stale when the host is offline."
+      ],
+      "dont": [
+        "Don’t say “position closed” until the host confirms the close fill.",
+        "Don’t treat a formatted size as the order quantity."
+      ],
+      "seeAlso": ["long", "short", "notional", "pnl"],
+      "translations": {
+        "en-US": {
+          "term": "position",
+          "short": "position",
+          "definition": "Open long or short exposure in one market. A position has size, side, margin, leverage, entry, mark, notional, unrealized PnL and an estimated liquidation price. Closing requires a host-submitted order; HIG never executes a trade."
+        }
+      }
+    },
+    {
+      "id": "liquidation-price",
+      "term": "liquidation price",
+      "short": "liq. price",
+      "aliases": ["liq price", "liquidation", "estimated liquidation price"],
+      "untranslated": "never",
+      "untranslatedForms": [],
+      "definition": "The estimated mark price at which the position no longer meets its maintenance margin and Hyperliquid may force-close it. The figure is an estimate; auto-deleveraging can also close positions, including profitable ones.",
+      "usageNotes": "Always present it as estimated and host-computed. Higher leverage generally leaves less room for an adverse move. Unknown estimates render as —.",
+      "do": [
+        "Label the readout “Est. liquidation price”.",
+        "Keep the estimate visible next to leverage when the trader changes size."
+      ],
+      "dont": [
+        "Don’t call the estimate a guaranteed stop.",
+        "Don’t omit “estimated” on first display in a risk-critical surface."
+      ],
+      "seeAlso": ["margin", "leverage", "stop"],
+      "translations": {
+        "en-US": {
+          "term": "liquidation price",
+          "short": "liq. price",
+          "definition": "The estimated mark price at which the position no longer meets its maintenance margin and Hyperliquid may force-close it. The figure is an estimate; auto-deleveraging can also close positions, including profitable ones."
+        }
+      }
+    },
+    {
+      "id": "funding",
+      "term": "funding",
+      "short": "funding",
+      "aliases": ["funding rate", "funding payment"],
+      "untranslated": "never",
+      "untranslatedForms": [],
+      "definition": "Periodic payments between long and short holders of a perpetual that help keep the contract aligned with its underlying market. Positive funding generally means longs pay shorts; negative funding means shorts pay longs. Funding is separate from exchange and builder fees.",
+      "usageNotes": "Show the rate and the next payment time. Compute from UTC; display in the user’s locale with an explicit time zone. Hyperliquid funding is hourly; the interval is protocol-owned, not a HIG constant to restyle as a calendar expiry.",
+      "do": [
+        "Label “Funding +0.0100% · next 16:00 UTC”.",
+        "Use a duration countdown (“in 12 min”) rather than a zone-less clock."
+      ],
+      "dont": [
+        "Don’t mix funding into the builder-fee line as if it were the same charge.",
+        "Don’t show a next-funding time without a time zone."
+      ],
+      "seeAlso": ["perp", "pnl", "long", "short"],
+      "translations": {
+        "en-US": {
+          "term": "funding",
+          "short": "funding",
+          "definition": "Periodic payments between long and short holders of a perpetual that help keep the contract aligned with its underlying market. Positive funding generally means longs pay shorts; negative funding means shorts pay longs. Funding is separate from exchange and builder fees."
+        }
+      }
+    },
+    {
+      "id": "pnl",
+      "term": "profit and loss",
+      "short": "PnL",
+      "aliases": ["P&L", "unrealized PnL", "realized PnL", "net PnL"],
+      "untranslated": "short-form",
+      "untranslatedForms": ["PnL"],
+      "definition": "Profit and loss on a position or account. Unrealized PnL marks an open position; realized PnL is locked in after closes. Net figures may include trading fees and available funding; the host must say which components are included.",
+      "usageNotes": "Keep the abbreviation PnL in every locale. Pair it with a signed, locale-formatted amount. Color is not a substitute for the sign. Zero is `0`, not empty; unknown is —.",
+      "do": [
+        "Show `PnL +$12.34` with `signDisplay: 'exceptZero'`.",
+        "Name the readout “Unrealized PnL” or “Net PnL” according to host data."
+      ],
+      "dont": [
+        "Don’t translate PnL into an unverified local acronym.",
+        "Don’t announce every live PnL tick to a screen reader."
+      ],
+      "seeAlso": ["position", "notional", "funding"],
+      "translations": {
+        "en-US": {
+          "term": "profit and loss",
+          "short": "PnL",
+          "definition": "Profit and loss on a position or account. Unrealized PnL marks an open position; realized PnL is locked in after closes. Net figures may include trading fees and available funding; the host must say which components are included."
+        }
+      }
+    },
+    {
+      "id": "long",
+      "term": "long",
+      "short": "long",
+      "aliases": ["UP"],
+      "untranslated": "never",
+      "untranslatedForms": [],
+      "definition": "A position that profits if the market price rises. Opening long buys the perp; closing long sells it. Product chrome may label the action UP; the canonical term remains long.",
+      "usageNotes": "Map UP/DOWN product labels to long/short in copy, APIs and accessibility names. Buy/sell color means direction, never safety. Don’t leave the canonical term untranslated just because the button says UP.",
+      "do": [
+        "Accessible name: “Long BTC”. Visible tap label may stay “UP” where the product uses it.",
+        "Pair long with a buy-direction token, not a success/destructive intent."
+      ],
+      "dont": [
+        "Don’t say “buy Bitcoin” when the action opens a BTC perp long.",
+        "Don’t use destructive red for every long close."
+      ],
+      "seeAlso": ["short", "position", "perp"],
+      "translations": {
+        "en-US": {
+          "term": "long",
+          "short": "long",
+          "definition": "A position that profits if the market price rises. Opening long buys the perp; closing long sells it. Product chrome may label the action UP; the canonical term remains long."
+        }
+      }
+    },
+    {
+      "id": "short",
+      "term": "short",
+      "short": "short",
+      "aliases": ["DOWN"],
+      "untranslated": "never",
+      "untranslatedForms": [],
+      "definition": "A position that profits if the market price falls. Opening short sells the perp; closing short buys it back. Product chrome may label the action DOWN; the canonical term remains short.",
+      "usageNotes": "Same mapping rules as long. Short is a market direction, not a destructive action. Closing a short is not “selling the asset”.",
+      "do": [
+        "Accessible name: “Short ETH”. Visible tap label may stay “DOWN” where the product uses it.",
+        "State “close short” for an exit, not “buy ETH”."
+      ],
+      "dont": [
+        "Don’t describe a short as borrowing stock or delivering the underlying.",
+        "Don’t treat DOWN as a glossary synonym that replaces short in docs or APIs."
+      ],
+      "seeAlso": ["long", "position", "perp"],
+      "translations": {
+        "en-US": {
+          "term": "short",
+          "short": "short",
+          "definition": "A position that profits if the market price falls. Opening short sells the perp; closing short buys it back. Product chrome may label the action DOWN; the canonical term remains short."
+        }
+      }
+    },
+    {
+      "id": "stop",
+      "term": "stop",
+      "short": "stop",
+      "aliases": ["stop loss", "stop-loss", "SL", "stop order"],
+      "untranslated": "short-form",
+      "untranslatedForms": ["SL"],
+      "definition": "A reduce-risk order that submits a close when the market reaches a trigger the trader set. It is not a guaranteed fill at that price and it is not the protocol liquidation price.",
+      "usageNotes": "Label the control “Stop”. If a compact badge uses SL, keep SL untranslated and expose “Stop” to assistive technology. Host owns trigger parsing and submission.",
+      "do": [
+        "Place stop beside take profit as optional risk controls on an open position.",
+        "Confirm the trigger price as a raw string before the host submits."
+      ],
+      "dont": [
+        "Don’t present a stop as insurance against liquidation.",
+        "Don’t reuse the estimated liquidation price as a silent stop."
+      ],
+      "seeAlso": ["take-profit", "liquidation-price", "position"],
+      "translations": {
+        "en-US": {
+          "term": "stop",
+          "short": "stop",
+          "definition": "A reduce-risk order that submits a close when the market reaches a trigger the trader set. It is not a guaranteed fill at that price and it is not the protocol liquidation price."
+        }
+      }
+    },
+    {
+      "id": "take-profit",
+      "term": "take profit",
+      "short": "take profit",
+      "aliases": ["TP", "take-profit"],
+      "untranslated": "short-form",
+      "untranslatedForms": ["TP"],
+      "definition": "An order that submits a close when the market reaches a favorable trigger the trader set. Like a stop, it is not a guaranteed fill at that price.",
+      "usageNotes": "Spell “take profit” in sentences. Compact badges may use TP; keep TP untranslated. Pair with stop; neither replaces a review step.",
+      "do": [
+        "Label the field “Take profit”.",
+        "Show both trigger and current mark so the trader can see distance."
+      ],
+      "dont": [
+        "Don’t hide take profit behind an unlabeled TP icon.",
+        "Don’t treat a take-profit fill as realized until the host confirms it."
+      ],
+      "seeAlso": ["stop", "pnl", "position"],
+      "translations": {
+        "en-US": {
+          "term": "take profit",
+          "short": "take profit",
+          "definition": "An order that submits a close when the market reaches a favorable trigger the trader set. Like a stop, it is not a guaranteed fill at that price."
+        }
+      }
+    },
+    {
+      "id": "notional",
+      "term": "notional",
+      "short": "notional",
+      "aliases": ["notional value", "position value"],
+      "untranslated": "never",
+      "untranslatedForms": [],
+      "definition": "Absolute position value in quote terms, typically mark × size. Notional is the exposure, not the margin posted. At 10×, 100 USDC margin corresponds to 1,000 USDC notional.",
+      "usageNotes": "Use “notional” in Pro/details; “position value” is allowed in first-run copy if it still means mark × size. Never display notional as if it were withdrawable balance.",
+      "do": [
+        "Show “Notional 1,000.00 USDC” separately from “Margin 100.00 USDC”.",
+        "Keep notional host-computed; HIG only formats the number."
+      ],
+      "dont": [
+        "Don’t label margin as notional or notional as available cash.",
+        "Don’t round notional for display and feed that figure back into an order."
+      ],
+      "seeAlso": ["leverage", "margin", "position"],
+      "translations": {
+        "en-US": {
+          "term": "notional",
+          "short": "notional",
+          "definition": "Absolute position value in quote terms, typically mark × size. Notional is the exposure, not the margin posted. At 10×, 100 USDC margin corresponds to 1,000 USDC notional."
+        }
+      }
+    },
+    {
+      "id": "builder-fee",
+      "term": "builder fee",
+      "short": "builder fee",
+      "aliases": ["builder-fee", "interface fee"],
+      "untranslated": "never",
+      "untranslatedForms": ["bps"],
+      "definition": "A fee added by an interface that routes orders to Hyperliquid, charged on each fill in addition to the exchange fee. Live rates, Genesis discounts and rebate math belong to the host fee schedule, not this glossary.",
+      "usageNotes": "Spell “builder fee”. Quote basis points as `bps` (untranslated) with a percent companion (`5 bps (0.05%)`) when showing a rate. Fees apply on open and close fills; funding is separate.",
+      "do": [
+        "Itemize “Builder fee” and “Exchange fee” on the review step.",
+        "Point at the host fee schedule for the current rate rather than hard-coding it in a component."
+      ],
+      "dont": [
+        "Don’t call the builder fee a spread, a spread markup, or Hyperliquid’s exchange fee.",
+        "Don’t bake a candidate rate into HIG component copy."
+      ],
+      "seeAlso": ["funding", "pnl"],
+      "translations": {
+        "en-US": {
+          "term": "builder fee",
+          "short": "builder fee",
+          "definition": "A fee added by an interface that routes orders to Hyperliquid, charged on each fill in addition to the exchange fee. Live rates, Genesis discounts and rebate math belong to the host fee schedule, not this glossary."
+        }
+      }
+    },
+    {
+      "id": "usdc",
+      "term": "USDC",
+      "short": "USDC",
+      "aliases": ["USD Coin"],
+      "untranslated": "always",
+      "untranslatedForms": ["USDC"],
+      "definition": "A stablecoin designed to track the US dollar. Bloxwap uses USDC for trading collateral and settlement. It is not the same ticker as USD for display purposes.",
+      "usageNotes": "Always keep `USDC` untranslated. Format the amount with the locale’s decimal/grouping rules, then place the ticker `USDC` — never a `$` or `currency: 'USD'` style. See the localization guide.",
+      "do": [
+        "Display `1,234.50 USDC`.",
+        "Use the Usd readout only for actual USD, not for USDC collateral."
+      ],
+      "dont": [
+        "Don’t localize USDC to “USD”, “US$”, or a local currency name.",
+        "Don’t pass `currency: 'USDC'` to Intl; it is not a reliable ISO 4217 code."
+      ],
+      "seeAlso": ["margin", "notional", "pnl"],
+      "translations": {
+        "en-US": {
+          "term": "USDC",
+          "short": "USDC",
+          "definition": "A stablecoin designed to track the US dollar. Bloxwap uses USDC for trading collateral and settlement. It is not the same ticker as USD for display purposes."
+        }
+      }
+    }
+  ]
+}

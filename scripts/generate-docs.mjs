@@ -1,7 +1,11 @@
 import {readFileSync,writeFileSync,mkdirSync,readdirSync,rmSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
 import {marked} from 'marked';
 import ts from 'typescript';
 import {exampleCode,examples} from './example-code.mjs';
+execFileSync(process.execPath,['scripts/generate-glossary.mjs'],{stdio:'inherit'});
+mkdirSync('apps/docs/public',{recursive:true});
+writeFileSync('apps/docs/public/localization.json',readFileSync('docs/foundations/localization.json'));
 const version='0.1.0';const pages=[];
 const groups=JSON.parse(readFileSync('apps/docs/src/component-groups.json','utf8'));
 for(const entry of examples)if(!groups.some(group=>group.family===entry.family))throw new Error(`Missing docs component group: ${entry.family}`);
