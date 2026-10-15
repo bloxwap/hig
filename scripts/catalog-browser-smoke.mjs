@@ -42,7 +42,7 @@ try{
   }
   console.log(`Catalog ${entry.name}: ${entry.states.length} states; ${results.length} captures passed`);
  }
- if(visualFailures.length){writeFileSync('evidence/visual-actuals/summary.txt',visualFailures.join('\n')+'\n');throw Error(`Visual pixel regression in ${visualFailures.length} baseline state(s):\n${visualFailures.join('\n')}`);}
+ if(visualFailures.length){mkdirSync('evidence/visual-actuals',{recursive:true});writeFileSync('evidence/visual-actuals/summary.txt',visualFailures.join('\n')+'\n');throw Error(`Visual pixel regression in ${visualFailures.length} baseline state(s):\n${visualFailures.join('\n')}`);}
  writeFileSync(process.env.HIG_VISUAL_ONLY==='1'?'evidence/gaps-b-visual-baselines.json':'evidence/m5-visual-catalog.json',JSON.stringify({version:'0.1.0',browser:await browser.version(),viewport:[390,844],reducedMotion:true,executedStates:results.length,components:entries.length,availableComponents:catalog.length,scope:process.env.HIG_VISUAL_ONLY==='1'?'representative baseline subset':'full shipped state matrix',physicalNative:'pending; typed/runnable native examples are separate from browser captures',results},null,2)+'\n');
  console.log(`Catalog visual/axe/runtime: ${entries.length} components, ${results.length} states passed`);
 }finally{await browser.close();}
