@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useCallback} from 'react';
-import {AccessibilityInfo,BackHandler,findNodeHandle,Text as RNText,View} from 'react-native';
+import {AccessibilityInfo,BackHandler,findNodeHandle,Platform,Text as RNText,View} from 'react-native';
 import {BottomSheetModal,BottomSheetScrollView,BottomSheetBackdrop,type BottomSheetBackdropProps} from '@gorhom/bottom-sheet';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ReduceMotion} from 'react-native-reanimated';
@@ -25,9 +25,12 @@ export function GestureSheet({open,onOpenChange,title,description,children,snapP
  const sheet=useRef<BottomSheetModal>(null),heading=useRef<RNText>(null),requested=useRef(false),focused=useRef(false),frame=useRef<number|null>(null);
  const latest=useRef({open,onOpenChange,returnFocusRef});latest.current={open,onOpenChange,returnFocusRef};
  const env=useHIG(),insets=useSafeAreaInsets();
- const focus=useCallback((node:View|RNText|null)=>{if(!node)return;try{const handle=findNodeHandle(node);if(handle!==null)AccessibilityInfo.setAccessibilityFocus(handle);}catch{/* Detached focus targets cannot prevent dismissal. */}},[]);
+ const focus=useCallback((node:View|RNText|null)=>{if(!node)return;try{const handle=findNodeHandle(node);if(handle!==null){AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(node,'viewHoverEnter');}}catch{/* Detached focus targets cannot prevent dismissal. */}},[]);
  const requestClose=useCallback(()=>{if(requested.current||!latest.current.open)return;requested.current=true;latest.current.onOpenChange(false);},[]);
- useEffect(()=>{requested.current=false;focused.current=false;if(open)sheet.current?.present();else sheet.current?.dismiss();},[open]);
+ // Gorhom 5 marks a never-presented modal DISMISSING on dismiss() and then skips its portal render, so the sheet
+ // never appeared on the iOS Simulator or Android emulator. Only dismiss what this component presented.
+ const presented=useRef(false);
+ useEffect(()=>{requested.current=false;focused.current=false;if(open){presented.current=true;sheet.current?.present();}else if(presented.current){presented.current=false;sheet.current?.dismiss();}},[open]);
  useEffect(()=>{if(!open)return;const subscription=BackHandler.addEventListener('hardwareBackPress',()=>{if(dismissible)requestClose();return true;});return()=>subscription.remove();},[open,dismissible,requestClose]);
  useEffect(()=>()=>{if(frame.current!==null)cancelAnimationFrame(frame.current);},[]);
  const backdrop=useCallback((props:BottomSheetBackdropProps)=><BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior={dismissible?'close':'none'}/>,[dismissible]);

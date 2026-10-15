@@ -267,8 +267,11 @@ final class NativeVerificationUITests: XCTestCase {
     r["fixtureLoaded"] = open.waitForExistence(timeout: 10)
     guard open.exists else { try write("ios-gesture-sheet.json", r); return }
     open.tap()
-    let title = app.staticTexts["Review details"]
+    Thread.sleep(forTimeInterval: 1.5)
+    try capture("ios-gesture-sheet-after-tap")
+    let title = app.staticTexts.matching(NSPredicate(format: "label == 'Review details'")).firstMatch
     r["openedAtFirstDetent"] = title.waitForExistence(timeout: 5)
+    guard title.exists else { try tree("ios-gesture-sheet-not-open"); try write("ios-gesture-sheet.json", r); return }
     Thread.sleep(forTimeInterval: 1)
     let y0 = title.frame.minY
     try capture("ios-gesture-sheet-50")

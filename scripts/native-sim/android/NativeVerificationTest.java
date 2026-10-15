@@ -132,8 +132,8 @@ public class NativeVerificationTest {
     return null;
   }
 
-  private AccessibilityNodeInfo byLabel(String text) { return waitFor(n -> label(n).equals(text), 5000); }
-  private AccessibilityNodeInfo byLabelPrefix(String text) { return waitFor(n -> label(n).startsWith(text), 5000); }
+  private AccessibilityNodeInfo byLabel(String text) { return waitFor(n -> label(n).equals(text), 12000); }
+  private AccessibilityNodeInfo byLabelPrefix(String text) { return waitFor(n -> label(n).startsWith(text), 12000); }
 
   private JSONObject node(AccessibilityNodeInfo n) throws Exception {
     JSONObject o = new JSONObject();
@@ -237,8 +237,10 @@ public class NativeVerificationTest {
     try (FileOutputStream s = new FileOutputStream(new File(out, "captures/" + name + ".png"))) { b.compress(Bitmap.CompressFormat.PNG, 100, s); }
   }
 
+  /** Polls up to 3s: TalkBack settles accessibility focus asynchronously after window changes. */
   private JSONObject focusInfo() throws Exception {
-    AccessibilityNodeInfo f = ua.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY);
+    AccessibilityNodeInfo f = null;
+    for (int i = 0; i < 20 && f == null; i++) { f = ua.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY); if (f == null) SystemClock.sleep(150); }
     return f == null ? new JSONObject().put("accessibilityFocus", JSONObject.NULL) : new JSONObject().put("accessibilityFocus", label(f)).put("class", String.valueOf(f.getClassName())).put("heading", f.isHeading());
   }
 
@@ -270,7 +272,8 @@ public class NativeVerificationTest {
   public void sliderAccessibilityActions() throws Exception {
     open("component=Slider&state=default");
     JSONObject r = new JSONObject();
-    AccessibilityNodeInfo slider = waitFor(n -> "Volume preview".contentEquals(label(n)) && n.getRangeInfo() != null, 6000);
+    // The adjustable element is the HIG wrapper (RN reports it as a SeekBar); the backend SeekBar is hidden.
+    AccessibilityNodeInfo slider = waitFor(n -> "Volume preview".contentEquals(label(n)) && n.isImportantForAccessibility() && (n.getRangeInfo() != null || String.valueOf(n.getClassName()).endsWith("SeekBar")), 12000);
     r.put("found", slider != null);
     if (slider != null) {
       r.put("initial", node(slider));
@@ -294,12 +297,13 @@ public class NativeVerificationTest {
       capture("android-slider-after-actions");
     }
     open("component=Slider&state=disabled");
-    AccessibilityNodeInfo disabled = waitFor(n -> "Volume preview".contentEquals(label(n)) && n.getRangeInfo() != null, 6000);
+    waitFor(n -> label(n).equals("Example state: disabled"), 12000);
+    AccessibilityNodeInfo disabled = waitFor(n -> "Volume preview".contentEquals(label(n)) && n.isImportantForAccessibility() && (n.getRangeInfo() != null || String.valueOf(n.getClassName()).endsWith("SeekBar")), 12000);
     if (disabled != null) {
       String before = label(byLabelPrefix("Volume preview: "));
       boolean ok = disabled.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
       settle(500);
-      r.put("disabled", new JSONObject().put("enabled", disabled.isEnabled()).put("performed", ok).put("labelBefore", before).put("labelAfter", label(byLabelPrefix("Volume preview: "))));
+      r.put("disabled", new JSONObject().put("enabled", disabled.isEnabled()).put("node", node(disabled)).put("performed", ok).put("labelBefore", before).put("labelAfter", label(byLabelPrefix("Volume preview: "))));
     }
     write("android-slider.json", r.toString(1));
   }
@@ -398,11 +402,17 @@ public class NativeVerificationTest {
         Rect before = new Rect();
         input.getBoundsInScreen(before);
         r.put("inputBoundsBeforeTap", before.flattenToString());
-        tap(before.centerX(), before.centerY());
-        settle(2000);
-        input.refresh();
         Rect ime = null;
-        for (AccessibilityWindowInfo w : ua.getWindows()) if (w.getType() == AccessibilityWindowInfo.TYPE_INPUT_METHOD) { ime = new Rect(); w.getBoundsInScreen(ime); }
+        for (int attempt = 0; attempt < 2 && ime == null; attempt++) {
+          tap(before.centerX(), before.centerY());
+          for (int i = 0; i < 20 && ime == null; i++) {
+            SystemClock.sleep(200);
+            for (AccessibilityWindowInfo w : ua.getWindows()) if (w.getType() == AccessibilityWindowInfo.TYPE_INPUT_METHOD) { ime = new Rect(); w.getBoundsInScreen(ime); }
+          }
+        }
+        settle(800);
+        input.refresh();
+        r.put("imeShownAfterTap", ime != null);
         Rect field = new Rect();
         input.getBoundsInScreen(field);
         r.put("inputFocused", input.isFocused()).put("inputType", input.getInputType()).put("inputBounds", field.flattenToString()).put("imeBounds", ime == null ? JSONObject.NULL : ime.flattenToString());

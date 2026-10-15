@@ -11,11 +11,16 @@ TB=com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBac
 shot() { adb exec-out screencap -p > "$OUT/$1.png"; }
 log() { echo "$*" | tee -a "$OUT/flow.txt"; }
 : > "$OUT/flow.txt"
+# A first-run notification-permission prompt would hold window focus and make queued key events ANR.
+for pkg in com.google.android.marvin.talkback $PKG; do adb shell pm grant $pkg android.permission.POST_NOTIFICATIONS 2>/dev/null; done
+adb shell am force-stop $PKG
 adb shell settings put secure enabled_accessibility_services $TB
 adb shell settings put secure accessibility_enabled 1
 sleep 6
 adb shell am start -a android.intent.action.VIEW -d "bloxwaphig://gallery?component=Dialog\&state=default" $PKG >/dev/null
-sleep 3; shot 01-dialog-example
+sleep 8; shot 01-dialog-example
+adb shell uiautomator dump /sdcard/tb.xml >/dev/null 2>&1; adb pull /sdcard/tb.xml "$OUT/start.xml" >/dev/null
+log "Gallery ready before keys: $(grep -c 'text="Open review order"' "$OUT/start.xml")"
 log "TalkBack enabled: $(adb shell settings get secure enabled_accessibility_services)"
 for i in $(seq 1 8); do
   adb shell input keycombination KEYCODE_ALT_LEFT KEYCODE_DPAD_RIGHT; sleep 1.2

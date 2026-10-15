@@ -17,7 +17,8 @@ TEST_RUNNER_HIG_OUT="$OUT" TEST_RUNNER_HIG_GESTURE=1 xcodebuild test-without-bui
   -only-testing:HIGNativeSimUITests/NativeVerificationUITests/testGestureSheet > "$OUT/ios-test.log" 2>&1; echo "iOS testGestureSheet exit $?" | tee -a "$OUT/summary.txt"
 (cd "$APP/android" && ./gradlew :app:createBundleReleaseJsAndAssets --rerun -PreactNativeArchitectures=arm64-v8a > "$OUT/android-build.log" 2>&1 && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a >> "$OUT/android-build.log" 2>&1); echo "Android gesture build exit $?" | tee -a "$OUT/summary.txt"
 adb install -r "$APP/android/app/build/outputs/apk/release/app-release.apk" >/dev/null
-adb shell am force-stop com.bloxwap.hig.gallery; adb shell monkey -p com.bloxwap.hig.gallery -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; sleep 5
+adb shell pm grant com.google.android.marvin.talkback android.permission.POST_NOTIFICATIONS 2>/dev/null
+adb shell am force-stop com.bloxwap.hig.gallery; adb shell am start -n com.bloxwap.hig.gallery/.MainActivity >/dev/null; sleep 6
 dump() { adb shell uiautomator dump /sdcard/g.xml >/dev/null 2>&1; adb pull /sdcard/g.xml "$OUT/android-$1.xml" >/dev/null; adb exec-out screencap -p > "$OUT/android-$1.png"; }
 center() { grep -o "text=\"$2\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]\"" "$OUT/android-$1.xml" | head -1 | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/' | awk '{print int(($1+$3)/2), int(($2+$4)/2)}'; }
 top() { grep -o "text=\"Review details\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]" "$OUT/android-$1.xml" | head -1 | sed -E 's/.*\[[0-9]+,([0-9]+)\]$/\1/'; }

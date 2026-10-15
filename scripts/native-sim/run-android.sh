@@ -53,8 +53,9 @@ run snapshot name reduce-motion query "component=AnimatedNumberReadout&state=def
 adb shell settings put global transition_animation_scale 1; adb shell settings put global animator_duration_scale 1
 # TalkBack (installed in the Google Play image): initial/return focus with a real screen reader running.
 TB=com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService
+adb shell pm grant com.google.android.marvin.talkback android.permission.POST_NOTIFICATIONS 2>/dev/null # avoid a first-run prompt holding focus
 adb shell settings put secure enabled_accessibility_services $TB; adb shell settings put secure accessibility_enabled 1
-sleep 6
+sleep 15
 run snapshot name talkback
 run overlayFocusAndBack prefix android-talkback
 adb shell settings delete secure enabled_accessibility_services; adb shell settings put secure accessibility_enabled 0
