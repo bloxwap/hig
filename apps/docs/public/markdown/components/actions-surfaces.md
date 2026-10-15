@@ -21,7 +21,7 @@ Use one primary review action. Do: busy protects host requests and displays Work
 
 ## States, interaction and accessibility
 
-DOM semantic button/anchor, forwarded focus, target min-height tied to density; RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
+DOM semantic button/anchor, forwarded focus, target min-height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 

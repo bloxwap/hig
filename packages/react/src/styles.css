@@ -1,7 +1,7 @@
-:root { --hig-control: 48px; --hig-gap: 12px; }
-[data-hig-density='compact'] { --hig-control: 36px; --hig-gap: 8px; }
+:root { --hig-control: 48px; --hig-button: 44px; --hig-gap: 12px; }
+[data-hig-density='compact'] { --hig-control: 36px; --hig-button: 36px; --hig-gap: 8px; }
 * { box-sizing: border-box; }
-.hig-button { min-height: var(--hig-control); max-width:100%; padding:8px 20px; border:1px solid transparent; border-radius:9999px; font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif); background:var(--hig-action); color:var(--hig-onAction); cursor:pointer; overflow-wrap:anywhere; }
+.hig-button { min-height: var(--hig-button); max-width:100%; padding:8px 20px; border:1px solid transparent; border-radius:9999px; font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif); background:var(--hig-action); color:var(--hig-onAction); cursor:pointer; overflow-wrap:anywhere; }
 .hig-button[data-intent='secondary'],.hig-button[data-intent='ghost'] { background:var(--hig-nested);color:var(--hig-text); }
 .hig-button[data-intent='destructive'] { background:var(--hig-negative);color:var(--hig-onAction); }
 .hig-button[data-full] { width:100%; }
@@ -14,7 +14,11 @@
 .hig-surface { padding:20px;border-radius:14px;background:var(--hig-surface);min-width:0; }
 .hig-text { font-size:1rem;line-height:1.5; }
 .hig-heading { line-height:1.25; }
-.hig-input { width:100%;min-height:var(--hig-control);border-radius:10px;border:1px solid var(--hig-muted);padding:12px;background:var(--hig-nested);color:var(--hig-text);font:inherit; }
+.hig-input { width:100%;min-height:var(--hig-control);border-radius:9999px;border:1px solid var(--hig-border);padding:11px 20px;background:var(--hig-surface);color:var(--hig-text);font:inherit; }
+.hig-input::placeholder { color:var(--hig-muted);opacity:1; }
+.hig-input:focus-visible { outline:0;border-color:var(--hig-faint);box-shadow:0 0 0 1px var(--hig-faint); }
+.hig-input[aria-invalid='true'] { border-color:var(--hig-negative); }
+textarea.hig-input { border-radius:var(--hig-radius-xl,14px); }
 .hig-field label,.hig-group legend { font-weight:600; }
 .hig-field p { margin:0;color:var(--hig-muted); }
 .hig-field [role='alert'] { color:var(--hig-negative); }
