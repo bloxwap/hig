@@ -22,6 +22,10 @@
     "./announcements": {
       "types": "./dist/announcements.d.ts",
       "import": "./dist/announcements.js"
+    },
+    "./messages": {
+      "types": "./dist/messages.d.ts",
+      "import": "./dist/messages.js"
     }
   },
   "repository": {

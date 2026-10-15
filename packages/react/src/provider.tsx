@@ -1,15 +1,21 @@
 "use client";
 import type {FeedbackSink,FeedbackIntent} from '@bloxwap/hig-contracts/feedback';
-import React,{createContext,useContext,useEffect,useState,useRef,useId} from 'react';
+import React,{createContext,useContext,useEffect,useMemo,useState,useRef,useId} from 'react';
 import {defaultEnvironment,type Environment} from '@bloxwap/hig-contracts';
-export interface HIGContext extends Environment { onAccepted?: (id:string)=>void; feedback?:FeedbackSink }
-const Context=createContext<HIGContext>(defaultEnvironment);
-export function HIGProvider({children,density='comfortable',locale='en-US',direction='ltr',reducedMotion,onAccepted,feedback}:React.PropsWithChildren<Partial<HIGContext>>){
+import {defaultMessages,resolveMessages,type HIGMessages} from '@bloxwap/hig-contracts/messages';
+export type {HIGMessages} from '@bloxwap/hig-contracts/messages';
+export interface HIGContext extends Environment { onAccepted?: (id:string)=>void; feedback?:FeedbackSink; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */ messages:Readonly<Partial<HIGMessages>> }
+export interface HIGProviderProps extends Partial<Omit<HIGContext,'messages'>> { /** Translations for HIG's built-in strings; omitted keys fall back to the enclosing provider, then English. */ messages?:Partial<HIGMessages> }
+const Context=createContext<HIGContext>({...defaultEnvironment,messages:{}});
+export function HIGProvider({children,density='comfortable',locale='en-US',direction='ltr',reducedMotion,onAccepted,feedback,messages}:React.PropsWithChildren<HIGProviderProps>){
+ const inherited=useContext(Context).messages;const resolved=useMemo(()=>resolveMessages(inherited,messages),[inherited,messages]);
  const [osReduced,setOSReduced]=useState(false);
  useEffect(()=>{const query=window.matchMedia?.('(prefers-reduced-motion: reduce)');if(!query)return;const update=()=>setOSReduced(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update);},[]);
- return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback}}><div data-hig-density={density} data-hig-motion={reducedMotion??osReduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
+ return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,messages:resolved}}><div data-hig-density={density} data-hig-motion={reducedMotion??osReduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
 }
 export const useHIG=()=>useContext(Context);
+/** Complete built-in copy for the nearest HIGProvider: host translations over the English defaults. */
+export function useMessages():HIGMessages{const overrides=useContext(Context).messages;return useMemo(()=>resolveMessages({...defaultMessages},overrides),[overrides]);}
 /** Controlled values never silently switch to internal state. */
 export function useControllable<T>(value:T|undefined,initial:T,onChange?: (value:T)=>void,intent:FeedbackIntent='selection'):[T,(next:T)=>void]{
  const [internal,setInternal]=useState(initial);const current=value===undefined?internal:value;

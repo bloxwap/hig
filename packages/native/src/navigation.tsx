@@ -1,6 +1,8 @@
 import React from 'react';
 import {Pressable,View} from 'react-native';
-import {useControllable} from './provider.js';
+import {formatNumber} from '@bloxwap/hig-contracts';
+import * as en from '@bloxwap/hig-contracts/messages';
+import {useControllable,useHIG} from './provider.js';
 import {Button} from './button.js';
 import {Text,Inline,Stack} from './surface.js';
 import {Field,SearchInput} from './field.js';
@@ -8,6 +10,6 @@ export function Tabs({label,items,value,defaultValue,onValueChange}: {label:stri
 export function Accordion({title,children,open,onOpenChange}:React.PropsWithChildren<{title:string;open?:boolean;onOpenChange?:(v:boolean)=>void}>){const [current,set]=useControllable(open,false,onOpenChange,'disclosure');return <View><Button intent='secondary' suppressFeedback accessibilityState={{expanded:current}} onPress={()=>set(!current)}>{title}</Button>{current&&children}</View>;}
 export function Navigation({label,items}: {label:string;items:readonly {label:string;id:string;active?:boolean;onNavigate:()=>void}[]}){return <Stack accessibilityLabel={label}>{items.map(i=><Button key={i.id} intent='secondary' accessibilityState={{selected:!!i.active}} onPress={i.onNavigate}>{i.label}</Button>)}</Stack>;}
 export const BottomNavigation=Navigation;
-export function Pagination({page,total,onPageChange}: {page:number;total:number;onPageChange:(p:number)=>void}){return <Inline><Button intent='secondary' disabled={page<=1} onPress={()=>onPageChange(page-1)}>Previous</Button><Text>Page {page} of {total}</Text><Button intent='secondary' disabled={page>=total} onPress={()=>onPageChange(page+1)}>Next</Button></Inline>;}
-export function Search({query,onQueryChange,results,loading,error}: {query:string;onQueryChange:(s:string)=>void;results:readonly {id:string;label:string;onSelect:()=>void}[];loading?:boolean;error?:string}){return <Stack><Field label='Search'><SearchInput value={query} onChangeText={onQueryChange}/></Field><Text accessibilityLiveRegion='polite'>{loading?'Searching…':error??(results.length?`${results.length} ${results.length===1?'result':'results'}`:'No results')}</Text>{!loading&&!error&&results.map(r=><Button intent='ghost' key={r.id} onPress={r.onSelect}>{r.label}</Button>)}</Stack>;}
-export function BackButton({onBack}: {onBack:()=>void}){return <Button intent='secondary' onPress={onBack}>Back</Button>;}
+export function Pagination({page,total,onPageChange}: {page:number;total:number;onPageChange:(p:number)=>void}){const {locale,messages}=useHIG();return <Inline><Button intent='secondary' disabled={page<=1} onPress={()=>onPageChange(page-1)}>{messages.previous??en.previous}</Button><Text>{(messages.pageOf??en.pageOf)(formatNumber(page,locale),formatNumber(total,locale))}</Text><Button intent='secondary' disabled={page>=total} onPress={()=>onPageChange(page+1)}>{messages.next??en.next}</Button></Inline>;}
+export function Search({query,onQueryChange,results,loading,error}: {query:string;onQueryChange:(s:string)=>void;results:readonly {id:string;label:string;onSelect:()=>void}[];loading?:boolean;error?:string}){const {locale,messages}=useHIG();return <Stack><Field label={messages.search??en.search}><SearchInput value={query} onChangeText={onQueryChange}/></Field><Text accessibilityLiveRegion='polite'>{loading?messages.searching??en.searching:error??(results.length?(messages.resultCount??en.resultCount)(results.length,locale):messages.noResults??en.noResults)}</Text>{!loading&&!error&&results.map(r=><Button intent='ghost' key={r.id} onPress={r.onSelect}>{r.label}</Button>)}</Stack>;}
+export function BackButton({onBack}: {onBack:()=>void}){const {messages}=useHIG();return <Button intent='secondary' onPress={onBack}>{messages.back??en.back}</Button>;}

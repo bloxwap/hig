@@ -10,7 +10,7 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. |
+| `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](../foundations/localization.md#built-in-component-strings). |
 | Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref (Menu and Select pass their own trigger). |
 | `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
 
