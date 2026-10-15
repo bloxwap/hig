@@ -825,15 +825,15 @@ Dark is the only audited mode. Source values retain the commit-pinned monorepo a
 
 ## Typography (#7)
 
-Pin @bloxwap/font 0.1.2. Vite: import `@bloxwap/font/css`; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Run the pinned native font generator and register its static TTF faces from the optional tokens/fonts export; the generated manifest records weight/family/source hashes. Published WOFF2/Next loaders are not directly native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
+Pin @bloxwap/font 0.1.2. Vite: import `@bloxwap/font/css`; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web CSS exposes the roles as `--hig-type-<role>-size`, `-line-height`, `-weight` and a `--hig-type-<role>` font shorthand, and the families as `--hig-font-sans`/`--hig-font-mono`. Those resolve the `@bloxwap/font` Next loader variables first and fall back to the literal `'Bloxwap Sans'`/`'Bloxwap Mono'` families, so HIG controls render the loaded face in both Next and plain `@font-face` hosts. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Run the pinned native font generator and register its static TTF faces from `@bloxwap/hig-native-fonts`; its typed manifest records weight/family/source hashes. Web hosts never install that package. Published WOFF2/Next loaders are not directly native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
 
 ## Geometry and layout (#8)
 
-Spaces 4/8/12/16/20/24/32/48; radius 6/8/10/14 and pill. Comfortable control/target 48; compact 36, reserved for pointer/keyboard dense layouts. Painted icons can be 16/20/24 while targets stay 48 on touch. Never expand adjacent invisible hit areas so they overlap. Use logical inline spacing, wrapping labels, safe-area insets, keyboard avoidance and a scrollable native sheet; preserve portrait/tablet rotation without locking orientation. Pro tables may scroll with column headers; app amount entry reflows. Elevation uses nested fills rather than unverified shadows. Layer order: document, sticky nav, contextual popover, modal, notification. Browser top layer handles modal stacking; native Modal remains platform-owned.
+Spaces 4/8/12/16/20/24/32/48; radius 6/8/10/14 and pill (`--hig-radius-sm`…`--hig-radius-xl`, `--hig-radius-pill`). Comfortable control/target 48 and gap 12; compact 36 and gap 8, reserved for pointer/keyboard dense layouts. CSS exposes each mode as `--hig-density-<mode>-<control|target|gap>`, and `--hig-density-control`, `--hig-density-target` and `--hig-density-gap` follow the nearest `[data-hig-density]`, which the React provider sets. Painted icons can be 16/20/24 while targets stay 48 on touch. Never expand adjacent invisible hit areas so they overlap. Use logical inline spacing, wrapping labels, safe-area insets, keyboard avoidance and a scrollable native sheet; preserve portrait/tablet rotation without locking orientation. Pro tables may scroll with column headers; app amount entry reflows. Elevation uses nested fills rather than unverified shadows. Layer order: document, sticky nav, contextual popover, modal, notification. Browser top layer handles modal stacking; native Modal remains platform-owned.
 
 ## Motion and gestures (#9)
 
-Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. Press response ends on release/cancel; action executes on accepted activation, never press-in. Drag/scroll cancellation clears visual and feedback state. Interrupt transitions from current state instead of queuing. Reduced motion uses immediate state changes, static skeletons and unanimated numeric readouts. Outcome messages remain explicit. **Do** animate deliberate disclosure once; **don't** animate or play sound for every live-data update. Native candidate uses static transitions until cancellation/device animation evidence exists; motion preference is independent from sound/haptics.
+Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. CSS exposes `--hig-motion-duration-<fast|base|slow>` and `--hig-motion-easing-standard`. The durations become 0ms under `prefers-reduced-motion: reduce` and inside `[data-hig-motion='reduced']`, which the React provider sets when the host or OS asks for reduced motion. Press response ends on release/cancel; action executes on accepted activation, never press-in. Drag/scroll cancellation clears visual and feedback state. Interrupt transitions from current state instead of queuing. Reduced motion uses immediate state changes, static skeletons and unanimated numeric readouts. Outcome messages remain explicit. **Do** animate deliberate disclosure once; **don't** animate or play sound for every live-data update. Native candidate uses static transitions until cancellation/device animation evidence exists; motion preference is independent from sound/haptics.
 
 ## Accessibility and localization (#10)
 
@@ -905,7 +905,7 @@ Source `spacing.ts` and `type.ts` explicitly set both rem roots to 16; native sp
 
 ## Native font generation and registration
 
-Install `fonttools[woff]==4.61.1` and `brotli==1.2.0`, then run `npm run generate:fonts` before native consumer commands. `scripts/generate-native-fonts.py` derives static faces exclusively from the installed `@bloxwap/font@0.1.2` variable WOFF2 files, verifying all four input hashes before writing. It adapts the monorepo's generator and preserves its naming/weight metadata. The generated manifest contains input/output SHA256, PostScript names, Expo registration keys, weights, scripts and byte counts; OFL attribution ships beside the faces. Generated TTF files are build outputs, not per-repository committed binary copies. Local tarballs include them through `@bloxwap/hig-tokens/fonts/*`; consumers register only needed faces.
+Install `fonttools[woff]==4.61.1` and `brotli==1.2.0`, then run `npm run generate:fonts` before native consumer commands. `scripts/generate-native-fonts.py` derives static faces exclusively from the installed `@bloxwap/font@0.1.2` variable WOFF2 files, verifying all four input hashes before writing. It adapts the monorepo's generator and preserves its naming/weight metadata. The generated manifest contains input/output SHA256, PostScript names, Expo registration keys, weights, scripts and byte counts; OFL attribution ships beside the faces. Generated TTF files are build outputs, not per-repository committed binary copies. Local tarballs include them through `@bloxwap/hig-native-fonts/fonts/*` (moved out of the web tokens package in #64); consumers register only needed faces.
 
 The Expo fixture registers Sans Regular/SemiBold and Mono Regular through `expo-font`, waits for loading, exposes failure visibly and passes explicit 400/600 family keys to the native provider. Text, headings and buttons select registered static weight families, avoiding an invalid variable family name or synthesized weight. Expo web uses feedback.web.ts browser adapters; Android/iOS retain the native backend. Korean/Simplified Chinese Regular/SemiBold faces can be registered by host locale policy; other scripts use an explicit host/system fallback. Pixel remains a scoped web accent, not a native body-font requirement. Font registration in Expo web and Metro builds does not certify native rasterization, native Dynamic Type, or multilingual physical-device layout.
 
@@ -1063,7 +1063,7 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 | Applicability | Install | Never add |
 | --- | --- | --- |
 | Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font` | Copied component folders or token CSS |
-| Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
+| Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
 | Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font` | A local `.btn` layer, a palette copy, `vendor/hig` |
 | Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
 | No UI | Nothing; README and content conventions only | Any HIG runtime dependency |
@@ -1155,8 +1155,10 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Native Switch gzip (React/RN external) | 1,383 B; 1,849 B after #67 | 2,200 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track. ~19% headroom; verifies no Slider/SVG/overlay/feedback imports |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
-| Docs CSS | 17,419 B | 22,000 B | ~26% headroom for responsive/documentation states |
+| Docs CSS | 110,618 B (with token roles, #66) | 115,000 B | ~4% headroom; raised from 110,000 B when `@bloxwap/hig-tokens/css` gained radius/type/motion/density/font roles |
 | Sans + Mono assets | 592,796 B | 600,000 B | Pins two approved faces; new script/face requires explicit review |
+| Native fixture faces from `@bloxwap/hig-native-fonts` (Sans 400/600, Mono 400) | 1,278,880 B | 1,400,000 B | Only the three registered faces; optional CJK and other weights stay unloaded. Every generated face hash is checked |
+| Font binaries in web/shared tarballs (tokens, contracts, react, feedback, native) | 0 files | 0 files | Native faces ship only in `@bloxwap/hig-native-fonts` (#64); `release:dry-run` fails otherwise and records `packedSizes` |
 | Native four-cue WAV assets | 103,618 B | 110,000 B | ~6% headroom; no full engine/catalog assets |
 
 The actual build report is `evidence/quality-report.json`. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
@@ -1222,11 +1224,13 @@ These are review candidates, not published npm packages. Use local dry-run tarba
 
 ## React / Vite
 
-Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs tarballs into an independent temporary consumer and builds the fixture. For a host app install tokens, contracts and React tarballs plus React/DOM 19.2. Import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once; import individual components such as `@bloxwap/hig-react/button`. Pin @bloxwap/font 0.1.2 and choose only the required families/scripts using asset URL @font-face rules. The included fixture has Sans and Mono only. Never copy font binaries or component folders.
+Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs tarballs into an independent temporary consumer and builds the fixture. For a host app install tokens, contracts and React tarballs plus React/DOM 19.2. Import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once; import individual components such as `@bloxwap/hig-react/button`. Pin @bloxwap/font 0.1.2 and choose only the required families/scripts using asset URL @font-face rules named `'Bloxwap Sans'` and `'Bloxwap Mono'`; HIG controls read `--hig-font-sans`/`--hig-font-mono`, which fall back to those literal families. The included fixture has Sans and Mono only, and its browser smoke checks that `.hig-button` and `.hig-number` render loaded Bloxwap faces. Never copy font binaries or component folders.
 
 ## SSR and Next client boundaries
 
-Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream. Next 16.4.0 (webpack), React 19.2 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
+Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream.
+
+Fonts in Next: put the `@bloxwap/font` loader variables on `<html>`, for example `<html className={`${BloxwapSans.variable} ${BloxwapMono.variable}`}>`. The loaders register hashed family names, so HIG never matches a literal `'Bloxwap Sans'` there. Instead `--hig-font-sans` and `--hig-font-mono` in `@bloxwap/hig-tokens/css` resolve `var(--font-bloxwap-sans)` and `var(--font-bloxwap-mono)` first and fall back to the literal families. No bridge CSS is needed. If a host keeps its own variable names, override the roles on `:root` after importing the tokens CSS: `:root { --hig-font-sans: var(--my-sans), 'Bloxwap Sans', system-ui, sans-serif; }`. The variables must be defined on `<html>` (not `<body>`), because the roles resolve on `:root`. `npm run smoke:packed-next` serves the packed consumer and checks, in Chromium, that `.hig-button` and `.hig-number` compute to a loaded Bloxwap face (`document.fonts.check` plus the `FontFace` status). Next 16.4.0 (webpack), React 19.2 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
 
 ## Expo / React Native
 
@@ -1238,11 +1242,30 @@ Install Expo native peers with `npx expo install` (for example `expo-asset ~12.0
 
 Simulator/emulator verification: `scripts/native-sim/` builds the packed candidate gallery as real Release apps and drives them with XCUITest (iOS Simulator) and UiAutomation instrumentation, uiautomator and TalkBack (Android emulator). Results and residual physical-hardware limits are in `evidence/native-sim/`.
 
-WOFF2 is not a native font asset. `@bloxwap/hig-tokens/fonts/*` ships 15 static Bloxwap Sans/Mono TTFs generated reproducibly from pinned Font 0.1.2 sources, plus a typed FontManifest. Register them with expo-font before setting the native provider fontFamily, as the gallery does. Rasterization on physical displays remains part of #55. Moving these faces out of the web tokens package is tracked in #64. New repositories follow `docs/governance/new-repository.md`.
+WOFF2 is not a native font asset. `@bloxwap/hig-native-fonts` ships 15 static Bloxwap Sans/Mono (plus Korean and Simplified Chinese Sans) TTFs generated reproducibly from pinned Font 0.1.2 sources, with a typed `fontManifest` export and `@bloxwap/hig-native-fonts/manifest`. Install it alongside the tokens, contracts and native tarballs, then `require('@bloxwap/hig-native-fonts/fonts/BloxwapSans.ttf')` and register the faces with expo-font before setting the native provider fontFamily, as the gallery does. `@bloxwap/hig-tokens` no longer contains font binaries (#64); see [native font migration](migration/native.md#native-fonts-moved-out-of-hig-tokens). Rasterization on physical displays remains part of #55. New repositories follow `docs/governance/new-repository.md`.
 
 ## Tokens only / plain CSS / Tailwind
 
-Install the tokens tarball alone and import CSS variables or typed tokens. No React/RN/audio peer is required. Plain HTML uses semantic `--hig-*` roles. Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. The audited monorepo web/native rem roots are both 16; HIG supports StyleSheet rather than claiming a verified NativeWind consumer. See the source-reconciliation chapter for native font generation and registration.
+Install the tokens tarball alone and import CSS variables or typed tokens. No React/RN/audio peer is required. Plain HTML uses semantic `--hig-*` roles.
+
+`@bloxwap/hig-tokens/css` defines every role a plain CSS host needs, so nobody has to read the manifest or generate role files:
+
+| Roles | Example | Values |
+| --- | --- | --- |
+| Color | `--hig-surface`, `--hig-action` | sRGB, then OKLCH/P3 in `@supports` |
+| Space | `--hig-space-md` | `xs`–`xxxl`, `section`, in rem |
+| Font | `--hig-font-sans`, `--hig-font-mono` | `@bloxwap/font` Next variable, then literal family |
+| Radius | `--hig-radius-md`, `--hig-radius-pill` | `sm` `md` `lg` `xl` in rem; `pill` 9999px |
+| Type | `--hig-type-body-size`, `--hig-type-body-line-height`, `--hig-type-body-weight`, `--hig-type-body` | `caption` `label` `body` `title` `display`; the bare role is a `font` shorthand in Sans |
+| Motion | `--hig-motion-duration-base`, `--hig-motion-easing-standard` | `fast` `base` `slow` ms; 0ms under `prefers-reduced-motion: reduce` or `[data-hig-motion='reduced']` |
+| Density | `--hig-density-control`, `--hig-density-compact-gap` | `control` `target` `gap` per mode; the unprefixed roles follow `[data-hig-density='compact']` |
+
+```css
+@import '@bloxwap/hig-tokens/css';
+.card { border-radius: var(--hig-radius-lg); padding: var(--hig-space-lg); font: var(--hig-type-body); }
+.card h2 { font: var(--hig-type-title); }
+.card button { min-height: var(--hig-density-control); transition: background var(--hig-motion-duration-fast) var(--hig-motion-easing-standard); }
+``` Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. The audited monorepo web/native rem roots are both 16; HIG supports StyleSheet rather than claiming a verified NativeWind consumer. See the source-reconciliation chapter for native font generation and registration.
 
 ## Optional chart, sound and haptics
 
@@ -1266,7 +1289,7 @@ Pilot: font registration → dp/sRGB token mapping → amount/selection/review s
 
 Checklist:
 - [ ] Record actual RN/Expo/Metro/autolinking versions, source commit, old ui-native/token/font/audio wrappers, screenshots and native bundle/assets/latency baseline.
-- [ ] Obtain approved pinned static TTF faces and upstream manifest or supply reviewed typed FontManifest; register before setting family. Do not treat WOFF2 or an invented native family as success.
+- [ ] Register the pinned static TTF faces from `@bloxwap/hig-native-fonts` and its typed `fontManifest`; register before setting family. Do not treat WOFF2 or an invented native family as success.
 - [ ] Map dp and legacy NativeWind rem roots explicitly. Keep Dynamic Type, 48 targets, logical RTL layout, safe areas, keyboard avoidance, native back and labelled fields/errors.
 - [ ] Preview native import codemods, using individual switch/checkbox/range entries; wire optional SVG/Slider/Expo audio/haptic peers only where used. Retain platform-specific descriptions and host callbacks.
 - [ ] Preserve raw financial strings, order/network logic, stable list identity and quiet live numbers. Use labelled list/readout native chart alternative unless a real supported native engine is reviewed.
@@ -1276,6 +1299,21 @@ Checklist:
 - [ ] Record actual device/OS/settings and audible/tactile output, latency, silent-mode/interruption/background behavior. Reuse upstream haptic#9 review; simulator/mocks remain API evidence only.
 - [ ] Remove duplicated source/assets/backend wrappers after device builds confirm references and autolinking are gone; quantify before/after sizes with equal toolchain/data.
 - [ ] Link owning rollout PR and remaining version/exception work into the matrix.
+
+## Native fonts moved out of hig-tokens
+
+Issue #64. Up to `0.1.0-candidate.sha7c67a07c`, `@bloxwap/hig-tokens` shipped the 15 static TTFs under `@bloxwap/hig-tokens/fonts/*`. Web-only consumers never served them, but they made up most of the tarball. They now live in `@bloxwap/hig-native-fonts`. The bytes, file names, registration keys and SHA-256 hashes are unchanged.
+
+| Before | After |
+| --- | --- |
+| `require('@bloxwap/hig-tokens/fonts/BloxwapSans.ttf')` | `require('@bloxwap/hig-native-fonts/fonts/BloxwapSans.ttf')` |
+| `@bloxwap/hig-tokens/fonts/manifest.json` | `@bloxwap/hig-native-fonts/manifest`, or the typed `fontManifest` export |
+| `@bloxwap/hig-tokens/fonts/OFL.txt` | `@bloxwap/hig-native-fonts/fonts/OFL.txt` |
+
+- **Expo / React Native:** add the `bloxwap-hig-native-fonts-*.tgz` tarball next to tokens, contracts and native (with a matching `overrides` entry when vendoring), then replace the import prefix. `nativeFont(fontManifest, 'BloxwapSans', 600)` from `@bloxwap/hig-contracts` returns the registration key. Hashes you already pinned stay valid.
+- **Satori / OG images in web repositories:** these also read static TTFs (bloxwap/chart's OG card is one). Install `@bloxwap/hig-native-fonts` as a build-time dependency for that script only, or read the TTF from `@bloxwap/font` if it ships one. Never copy the faces into the repository.
+- **Web-only hosts:** remove nothing. They keep loading fonts from `@bloxwap/font`, and their tokens tarball shrinks. `npm run release:dry-run` fails if any web or shared tarball contains `.ttf`, `.otf` or `.woff*` files, and it records the packed sizes in `packedSizes` in the release report.
+- **Coordination:** monorepo#4540 loads the faces from `@bloxwap/hig-tokens`. Rebase it on a candidate that includes this change, and switch it to the new prefix when it does.
 
 Rollback: host feature flag restores old renderer/backends and previous lockfile. Persisted business data and feedback choices retain old-compatible fields during staged rollout; avoid one-way preference deletion. Keep old static assets until both physical platforms pass.
 

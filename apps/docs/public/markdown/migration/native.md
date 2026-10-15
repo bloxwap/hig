@@ -6,7 +6,7 @@ Pilot: font registration → dp/sRGB token mapping → amount/selection/review s
 
 Checklist:
 - [ ] Record actual RN/Expo/Metro/autolinking versions, source commit, old ui-native/token/font/audio wrappers, screenshots and native bundle/assets/latency baseline.
-- [ ] Obtain approved pinned static TTF faces and upstream manifest or supply reviewed typed FontManifest; register before setting family. Do not treat WOFF2 or an invented native family as success.
+- [ ] Register the pinned static TTF faces from `@bloxwap/hig-native-fonts` and its typed `fontManifest`; register before setting family. Do not treat WOFF2 or an invented native family as success.
 - [ ] Map dp and legacy NativeWind rem roots explicitly. Keep Dynamic Type, 48 targets, logical RTL layout, safe areas, keyboard avoidance, native back and labelled fields/errors.
 - [ ] Preview native import codemods, using individual switch/checkbox/range entries; wire optional SVG/Slider/Expo audio/haptic peers only where used. Retain platform-specific descriptions and host callbacks.
 - [ ] Preserve raw financial strings, order/network logic, stable list identity and quiet live numbers. Use labelled list/readout native chart alternative unless a real supported native engine is reviewed.
@@ -16,5 +16,20 @@ Checklist:
 - [ ] Record actual device/OS/settings and audible/tactile output, latency, silent-mode/interruption/background behavior. Reuse upstream haptic#9 review; simulator/mocks remain API evidence only.
 - [ ] Remove duplicated source/assets/backend wrappers after device builds confirm references and autolinking are gone; quantify before/after sizes with equal toolchain/data.
 - [ ] Link owning rollout PR and remaining version/exception work into the matrix.
+
+## Native fonts moved out of hig-tokens
+
+Issue #64. Up to `0.1.0-candidate.sha7c67a07c`, `@bloxwap/hig-tokens` shipped the 15 static TTFs under `@bloxwap/hig-tokens/fonts/*`. Web-only consumers never served them, but they made up most of the tarball. They now live in `@bloxwap/hig-native-fonts`. The bytes, file names, registration keys and SHA-256 hashes are unchanged.
+
+| Before | After |
+| --- | --- |
+| `require('@bloxwap/hig-tokens/fonts/BloxwapSans.ttf')` | `require('@bloxwap/hig-native-fonts/fonts/BloxwapSans.ttf')` |
+| `@bloxwap/hig-tokens/fonts/manifest.json` | `@bloxwap/hig-native-fonts/manifest`, or the typed `fontManifest` export |
+| `@bloxwap/hig-tokens/fonts/OFL.txt` | `@bloxwap/hig-native-fonts/fonts/OFL.txt` |
+
+- **Expo / React Native:** add the `bloxwap-hig-native-fonts-*.tgz` tarball next to tokens, contracts and native (with a matching `overrides` entry when vendoring), then replace the import prefix. `nativeFont(fontManifest, 'BloxwapSans', 600)` from `@bloxwap/hig-contracts` returns the registration key. Hashes you already pinned stay valid.
+- **Satori / OG images in web repositories:** these also read static TTFs (bloxwap/chart's OG card is one). Install `@bloxwap/hig-native-fonts` as a build-time dependency for that script only, or read the TTF from `@bloxwap/font` if it ships one. Never copy the faces into the repository.
+- **Web-only hosts:** remove nothing. They keep loading fonts from `@bloxwap/font`, and their tokens tarball shrinks. `npm run release:dry-run` fails if any web or shared tarball contains `.ttf`, `.otf` or `.woff*` files, and it records the packed sizes in `packedSizes` in the release report.
+- **Coordination:** monorepo#4540 loads the faces from `@bloxwap/hig-tokens`. Rebase it on a candidate that includes this change, and switch it to the new prefix when it does.
 
 Rollback: host feature flag restores old renderer/backends and previous lockfile. Persisted business data and feedback choices retain old-compatible fields during staged rollout; avoid one-way preference deletion. Keep old static assets until both physical platforms pass.

@@ -9,7 +9,7 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 | Applicability | Install | Never add |
 | --- | --- | --- |
 | Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font` | Copied component folders or token CSS |
-| Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
+| Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
 | Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font` | A local `.btn` layer, a palette copy, `vendor/hig` |
 | Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
 | No UI | Nothing; README and content conventions only | Any HIG runtime dependency |

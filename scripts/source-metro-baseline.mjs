@@ -13,7 +13,7 @@ writeFileSync(join(directory,'app.json'),JSON.stringify({expo:{name:'HIG source 
 copyFileSync('babel.config.cjs',join(directory,'babel.config.cjs'));
 if(!existsSync(join(directory,'node_modules')))symlinkSync(resolve('node_modules'),join(directory,'node_modules'),'dir');
 writeFileSync(join(directory,'metro.config.cjs'),`const {getDefaultConfig}=require('expo/metro-config');const path=require('node:path');const config=getDefaultConfig(__dirname);config.watchFolders=[${JSON.stringify(root)}];config.resolver.nodeModulesPaths=[${JSON.stringify(resolve('node_modules'))}];config.resolver.resolveRequest=(context,name,platform)=>{if(name==='@workspace/tokens'||name.startsWith('@workspace/tokens/'))return {type:'sourceFile',filePath:path.join(${JSON.stringify(resolve('.local/monorepo/packages/tokens/src'))},(name==='@workspace/tokens'?'index':name.slice('@workspace/tokens/'.length))+'.ts')};return context.resolveRequest(context,name,platform);};module.exports=config;`);
-const faces=`{'Bloxwap Sans 400':require('@bloxwap/hig-tokens/fonts/BloxwapSans.ttf'),'Bloxwap Sans 600':require('@bloxwap/hig-tokens/fonts/BloxwapSans-SemiBold.ttf')}`;
+const faces=`{'Bloxwap Sans 400':require('@bloxwap/hig-native-fonts/fonts/BloxwapSans.ttf'),'Bloxwap Sans 600':require('@bloxwap/hig-native-fonts/fonts/BloxwapSans-SemiBold.ttf')}`;
 const results=[];
 function files(path){return readdirSync(path,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(join(path,e.name)):[join(path,e.name)]);}
 for(const stage of ['before','hig']){

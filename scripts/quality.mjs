@@ -25,9 +25,9 @@ export async function qualityReport(){
  sizes.docsJS={raw:assets.filter(a=>a.name.endsWith('.js')).reduce((s,a)=>s+a.bytes.length,0),gzip:assets.filter(a=>a.name.endsWith('.js')).reduce((s,a)=>s+gzipSync(a.bytes).length,0)};
  sizes.docsCSS={raw:assets.filter(a=>a.name.endsWith('.css')).reduce((s,a)=>s+a.bytes.length,0)};
  sizes.fonts={raw:assets.filter(a=>a.name.endsWith('.woff2')).reduce((s,a)=>s+a.bytes.length,0)};
- const fontManifest=JSON.parse(readFileSync('packages/tokens/assets/fonts/manifest.json','utf8'));
- for(const [asset,hash] of Object.entries(fontManifest.outputs)){if(createHash('sha256').update(readFileSync(`packages/tokens/assets/fonts/${asset}`)).digest('hex')!==hash)throw Error(`Native font drift: ${asset}`);}
- sizes.nativeFonts={raw:['BloxwapSans.ttf','BloxwapSans-SemiBold.ttf','BloxwapMono.ttf'].reduce((sum,asset)=>sum+readFileSync(`packages/tokens/assets/fonts/${asset}`).length,0),scope:'Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded'};
+ const fontManifest=JSON.parse(readFileSync('packages/native-fonts/fonts/manifest.json','utf8'));
+ for(const [asset,hash] of Object.entries(fontManifest.outputs)){if(createHash('sha256').update(readFileSync(`packages/native-fonts/fonts/${asset}`)).digest('hex')!==hash)throw Error(`Native font drift: ${asset}`);}
+ sizes.nativeFonts={raw:['BloxwapSans.ttf','BloxwapSans-SemiBold.ttf','BloxwapMono.ttf'].reduce((sum,asset)=>sum+readFileSync(`packages/native-fonts/fonts/${asset}`).length,0),scope:'Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded'};
  sizes.nativeCues={raw:checkCueHashes()};
  for(const name of ['docsJS','docsCSS','fonts','nativeFonts','nativeCues']){const rule=budgets[name];for(const metric of Object.keys(rule))assertBudget(`${name}.${metric}`,sizes[name][metric],rule[metric]);}
  const report={version:'0.1.0',nativeRuntime,exports,sizes,baseline:'HIG candidate measurements; representative authenticated source React/Metro baselines in evidence/issue-1-18; deployed production deltas not claimed',physicalDevices:'pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof'};

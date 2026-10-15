@@ -22,9 +22,14 @@ for(const name of readdirSync('packages')){
  const packed=JSON.parse(execFileSync('npm',['pack',stage,'--ignore-scripts','--json','--pack-destination',output],{encoding:'utf8'}))[0];const bytes=readFileSync(join(output,packed.filename));
  artifacts.push({package:manifest.name,version:artifactVersion,file:packed.filename,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),files:packed.files.map(f=>f.path),dependencies:manifest.dependencies,optionalPeers:Object.keys(manifest.peerDependenciesMeta??{})});
 }
+// Web consumers load fonts from @bloxwap/font; native faces ship only in @bloxwap/hig-native-fonts (#64).
+const fontFile=/\.(?:ttf|otf|woff2?)$/i;
+for(const artifact of artifacts.filter(a=>a.package!=='@bloxwap/hig-native-fonts'))if(artifact.files.some(f=>fontFile.test(f)))throw Error(`Font binary in web/shared package ${artifact.package}`);
+const tokensArtifact=artifacts.find(a=>a.package==='@bloxwap/hig-tokens'),nativeFontsArtifact=artifacts.find(a=>a.package==='@bloxwap/hig-native-fonts');
+const packedSizes={webTokens:{file:tokensArtifact.file,bytes:tokensArtifact.bytes,fontFiles:0},nativeFonts:{file:nativeFontsArtifact.file,bytes:nativeFontsArtifact.bytes,fontFiles:nativeFontsArtifact.files.filter(f=>fontFile.test(f)).length}};
 const blockers=JSON.parse(readFileSync('planning/release-blockers.json','utf8'));
 cpSync('apps/docs/dist',join(output,'docs'),{recursive:true});
-const release={dryRun:true,published:false,tagsCreated:false,releasesCreated:false,channel,sourceCommit:commit,sourceVersion,artifactVersion,docsGuidelineVersion:sourceVersion,versionPolicy:'Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.',artifacts,quality:report.sizes,publishable:false,blockers,rollback:'No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback.'};
+const release={dryRun:true,published:false,tagsCreated:false,releasesCreated:false,channel,sourceCommit:commit,sourceVersion,artifactVersion,docsGuidelineVersion:sourceVersion,versionPolicy:'Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.',artifacts,packedSizes,quality:report.sizes,publishable:false,blockers,rollback:'No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback.'};
 writeFileSync(join(output,'report.json'),JSON.stringify(release,null,2)+'\n');
 writeFileSync('evidence/release-dry-run.json',JSON.stringify(release,null,2)+'\n');
 writeFileSync(join(output,'CHANGELOG.md'),`# ${artifactVersion} (${channel}, dry run)\n\nSource: ${commit}; HIG contract/docs ${sourceVersion}.\n\nSemantic tokens and separate renderers; optional feedback; docs/playground/gallery; migration/quality governance. No npm publication, release, tag or deployment.\n\nStable publication is blocked by task policy and pending source/device/adoption evidence.\n`);

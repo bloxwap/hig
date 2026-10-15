@@ -11,6 +11,7 @@
     "@bloxwap/hig-contracts": "0.1.0",
     "@bloxwap/hig-feedback": "0.1.0",
     "@bloxwap/hig-native": "0.1.0",
+    "@bloxwap/hig-native-fonts": "0.1.0",
     "@bloxwap/hig-tokens": "0.1.0",
     "@bloxwap/sfx": "0.1.0",
     "@expo/metro-runtime": "~6.1.2",
