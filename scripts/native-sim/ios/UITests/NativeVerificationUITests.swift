@@ -294,4 +294,28 @@ final class NativeVerificationUITests: XCTestCase {
     try tree("ios-gesture-sheet")
     try write("ios-gesture-sheet.json", r)
   }
+
+  /// Landscape layout and overlay flow (XCUIDevice rotates the Simulator).
+  func testOrientation() throws {
+    var r: [String: Any] = [:]
+    XCUIDevice.shared.orientation = .landscapeLeft
+    defer { XCUIDevice.shared.orientation = .portrait }
+    open("component=Dialog&state=default")
+    Thread.sleep(forTimeInterval: 1)
+    r["windowFrame"] = NSCoder.string(for: app.windows.firstMatch.frame)
+    try capture("ios-landscape-dialog-example")
+    let trigger = app.buttons["Open review order"]
+    r["triggerHittable"] = trigger.waitForExistence(timeout: 5) && trigger.isHittable
+    if trigger.exists { trigger.tap() }
+    let close = app.buttons["Close"]
+    r["closeVisible"] = close.waitForExistence(timeout: 5)
+    r["closeHittable"] = close.exists && close.isHittable
+    try capture("ios-landscape-dialog-open")
+    if close.exists { close.tap() }
+    Thread.sleep(forTimeInterval: 0.8)
+    r["closed"] = !app.buttons["Close"].exists
+    open("component=TradeEntry&state=default")
+    try capture("ios-landscape-tradeentry")
+    try write("ios-orientation.json", r)
+  }
 }

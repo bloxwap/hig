@@ -20,6 +20,7 @@
     "web": {
       "bundler": "metro"
     },
-    "scheme": "bloxwaphig"
+    "scheme": "bloxwaphig",
+    "orientation": "default"
   }
 }

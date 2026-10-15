@@ -38,9 +38,13 @@ shot 04-after-back
 adb shell uiautomator dump /sdcard/tb.xml >/dev/null 2>&1; adb pull /sdcard/tb.xml "$OUT/after-back.xml" >/dev/null
 log "Dialog closed after Back: $([ "$(grep -c 'text="Close"' "$OUT/after-back.xml")" = 0 ] && echo yes || echo no)"
 adb shell settings delete secure enabled_accessibility_services; adb shell settings put secure accessibility_enabled 0
-# Landscape layout (user rotation 1) with the gallery's TradeEntry.
-adb shell settings put system accelerometer_rotation 0; adb shell settings put system user_rotation 1
-adb shell am start -a android.intent.action.VIEW -d "bloxwaphig://gallery?component=TradeEntry\&state=default" $PKG >/dev/null
-sleep 3; shot 05-landscape-tradeentry
-adb shell settings put system user_rotation 0
-log "Landscape capture: 05-landscape-tradeentry.png"
+# Landscape: user-rotation settings did not rotate this emulator; the console rotate command does.
+adb shell settings put system accelerometer_rotation 1; adb emu rotate; sleep 4
+adb shell am start -a android.intent.action.VIEW -d "bloxwaphig://gallery?component=Dialog\&state=default" $PKG >/dev/null; sleep 4
+adb shell uiautomator dump /sdcard/tb.xml >/dev/null 2>&1; adb pull /sdcard/tb.xml "$OUT/landscape-dialog-example.xml" >/dev/null; shot 05-landscape-dialog-example
+read -r X Y <<<"$(grep -o 'text="Open review order"[^>]*bounds="\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]"' "$OUT/landscape-dialog-example.xml" | sed -E 's/.*\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]"/\1 \2 \3 \4/' | awk '{print int(($1+$3)/2), int(($2+$4)/2)}')"
+adb shell input tap "$X" "$Y"; sleep 2; adb shell uiautomator dump /sdcard/tb.xml >/dev/null 2>&1; adb pull /sdcard/tb.xml "$OUT/landscape-dialog-open.xml" >/dev/null; shot 06-landscape-dialog-open
+log "Landscape dialog opened: $(grep -c 'text="Close"' "$OUT/landscape-dialog-open.xml")"
+adb shell input keyevent KEYCODE_BACK; sleep 2; adb shell uiautomator dump /sdcard/tb.xml >/dev/null 2>&1; adb pull /sdcard/tb.xml "$OUT/landscape-after-back.xml" >/dev/null
+log "Landscape dialog closed by Back: $([ "$(grep -c 'text="Close"' "$OUT/landscape-after-back.xml")" = 0 ] && echo yes || echo no)"
+adb emu rotate; adb emu rotate; adb emu rotate; sleep 3; adb shell settings put system accelerometer_rotation 0
