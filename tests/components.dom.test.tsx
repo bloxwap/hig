@@ -8,7 +8,9 @@ import {Field,AmountInput,TextArea} from '../packages/react/src/field';
 import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/react/src/selection';
 import {Tabs} from '../packages/react/src/navigation';
 import {Dialog} from '../packages/react/src/overlay';
-import {Toast} from '../packages/react/src/status';
+import {Toast,Callout} from '../packages/react/src/status';
+import {InstallCommand} from '../packages/react/src/recipes';
+import {readFileSync} from 'node:fs';
 import {Percent} from '../packages/react/src/data';
 afterEach(cleanup);
 describe('DOM behavior contracts',()=>{
@@ -20,6 +22,28 @@ describe('DOM behavior contracts',()=>{
  it('lets native radio keyboard semantics select one value',async()=>{function Example(){const [value,set]=useState('buy');return <RadioGroup label='Side' value={value} onValueChange={set} options={[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}]}/>;}render(<Example/>);await userEvent.click(screen.getByLabelText('Sell'));expect((screen.getByLabelText('Sell') as HTMLInputElement).checked).toBe(true);expect((screen.getByLabelText('Buy') as HTMLInputElement).checked).toBe(false);});
  it('keeps segmented choices focusable and rejects disabled changes',async()=>{const change=vi.fn();const options=[{value:'app',label:'App'},{value:'pro',label:'Pro',disabled:true},{value:'docs',label:'Docs'}];const {rerender}=render(<SegmentedControl label='Surface preset' options={options} defaultValue='app' onValueChange={change}/>);expect(screen.getByRole('group',{name:'Surface preset'})).toBeTruthy();await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('radio',{name:'App'}));await userEvent.click(screen.getByRole('radio',{name:'Pro'}));expect(change).not.toHaveBeenCalled();await userEvent.click(screen.getByRole('radio',{name:'Docs'}));expect((screen.getByRole('radio',{name:'Docs'}) as HTMLInputElement).checked).toBe(true);expect(change).toHaveBeenCalledExactlyOnceWith('docs');rerender(<SegmentedControl label='Surface preset' options={options} defaultValue='app' onValueChange={change} disabled/>);await userEvent.click(screen.getByRole('radio',{name:'App'}));expect(change).toHaveBeenCalledTimes(1);});
  it('deduplicates unchanged range values',()=>{const change=vi.fn();render(<Slider label='Volume' value={20} onValueChange={change}/>);fireEvent.change(screen.getByRole('slider'),{target:{value:'20'}});expect(change).not.toHaveBeenCalled();fireEvent.change(screen.getByRole('slider'),{target:{value:'30'}});expect(change).toHaveBeenCalledWith(30);});
+ it('gives InstallCommand inside Tabs one tab stop: the panel yields to its focusable first content (#69)',async()=>{
+  render(<><Tabs label='Package manager' items={[{value:'npm',label:'npm',content:<InstallCommand command='npm install @bloxwap/chart' onCopy={()=>{}}/>},{value:'text',label:'Notes',content:'Plain notes'}]}/><button type='button'>After</button></>);
+  const panel=screen.getByRole('tabpanel');const pre=panel.querySelector('pre')!;
+  await vi.waitFor(()=>expect(panel.hasAttribute('tabindex')).toBe(false));
+  await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('tab',{name:'npm'}));
+  await userEvent.tab();expect(document.activeElement).toBe(pre);
+  await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('button',{name:'Copy install command'}));
+  await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('button',{name:'After'}));
+  await userEvent.tab({shift:true});await userEvent.tab({shift:true});await userEvent.tab({shift:true});expect(document.activeElement).toBe(screen.getByRole('tab',{name:'npm'}));
+  // A panel that starts with plain text keeps its own stop so its content is reachable.
+  await userEvent.keyboard('{ArrowRight}');const notes=screen.getByRole('tabpanel');expect(notes.textContent).toBe('Plain notes');
+  await vi.waitFor(()=>expect(notes.getAttribute('tabindex')).toBe('0'));
+  await userEvent.tab();expect(document.activeElement).toBe(notes);
+ });
+ it('keeps a panel tab stop when text precedes a focusable control',async()=>{render(<Tabs label='Docs' items={[{value:'a',label:'Intro',content:<p>Read first <a href='#more'>more</a></p>}]}/>);const panel=screen.getByRole('tabpanel');await new Promise(r=>setTimeout(r,0));expect(panel.getAttribute('tabindex')).toBe('0');});
+ it('renders documented Callout note and tip severities with ReactNode titles (#69)',()=>{
+  render(<><Callout title={<>Use <code>createChart</code></>} severity='note' announce={false}><p>Body</p></Callout><Callout title='Tip' severity='tip' announce={false}>Shortcut</Callout></>);
+  const note=screen.getByText('createChart').closest('section')!;expect(note.getAttribute('data-severity')).toBe('note');expect(note.querySelector('strong')?.textContent).toBe('Use createChart');expect(note.querySelector('strong code')).toBeTruthy();
+  expect(screen.getByText('Tip').closest('section')!.getAttribute('data-severity')).toBe('tip');
+  const css=readFileSync('packages/react/src/styles.css','utf8');
+  for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']])expect(css).toMatch(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{[^}]*var\\(--hig-${role}\\)`));
+ });
  it('moves tabs with keyboard and exposes only selected panel',async()=>{render(<Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/>);screen.getByRole('tab',{name:'Preview'}).focus();await userEvent.keyboard('{ArrowRight}');expect(screen.getByRole('tab',{name:'Code'}).getAttribute('aria-selected')).toBe('true');expect(screen.getByRole('tabpanel').textContent).toBe('Code body');});
  it('dismisses modal with Escape and restores trigger focus',async()=>{function Example(){const [open,set]=useState(false);return <Dialog open={open} onOpenChange={set} title='Review' description='Verify amount' trigger={<Button>Open review</Button>}><Button>Confirm</Button></Dialog>;}render(<Example/>);await userEvent.click(screen.getByText('Open review'));expect(screen.getByRole('dialog').getAttribute('aria-describedby')).toBeTruthy();await userEvent.keyboard('{Escape}');expect(screen.queryByRole('dialog')).toBeNull();expect(document.activeElement).toBe(screen.getByText('Open review'));});
  it('deduplicates notifications and keeps dismiss accessible',async()=>{const dismiss=vi.fn();render(<Toast notices={[{id:'1',message:'Copied',severity:'success'},{id:'1',message:'Copied',severity:'success'}]} onDismiss={dismiss}/>);expect(screen.getAllByRole('status')).toHaveLength(1);await userEvent.click(screen.getByRole('button',{name:'Dismiss Copied'}));expect(dismiss).toHaveBeenCalledWith('1');});

@@ -530,7 +530,7 @@
       "slug": "callout",
       "entry": "status",
       "family": "status",
-      "web": "<C.Callout title='Display-only values'><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>",
+      "web": "<C.Callout severity='tip' announce={false} title={<>Display-only <code>value</code> strings</>}><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>",
       "native": "<C.Callout title='Display-only values'><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>",
       "nativeSupport": "renderer",
       "states": [

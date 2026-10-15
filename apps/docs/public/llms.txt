@@ -246,7 +246,7 @@ Do: expose current location and keep deep-link ownership with host. Don’t: rep
 
 ## States, interaction and accessibility
 
-Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
+Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Only the selected tab is in the Tab order. The active DOM panel is a tab stop only when its first content is not focusable. When the panel starts with a focusable element, such as the `InstallCommand` `pre`, that element is the single stop after the tab list. Panels that start with text keep `tabIndex=0` so their content stays reachable. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -355,7 +355,7 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
 | Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
-| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. |
 
 ## When to use and examples
 
@@ -391,7 +391,8 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Alert` | `title`, `severity`, and an optional recovery `action`. Native severity sets the accent border role (info → `info`, success → `positive`, warning → `warning`, error → `negative`); `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the accent edge from a token role on web and native: info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own edge colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |
@@ -1169,7 +1170,7 @@ Physical release review remains pending: iPhone Safari, Android Chrome, native i
 
 ## Versioned visual regressions
 
-The catalog browser gate captures and runs axe on every shipped state. Button, Field and Input additionally compare eight versioned mobile/reduced-motion screenshots in `tests/visual-baselines/`. Geometry changes fail; pixel changes above 2% fail after a 24-channel-value antialias tolerance. `tests/visual.test.ts` deliberately changes geometry and pixels to prove the gate fails. Baselines record current candidate rendering, not approved product parity or native-device fidelity. Review an intentional change using CI captures, then run `HIG_UPDATE_VISUALS=1 node scripts/catalog-browser-smoke.mjs` against the production docs preview and commit the reviewed baseline images.
+The catalog browser gate captures and runs axe on every shipped state. Button, Field and Input additionally compare eight versioned mobile/reduced-motion screenshots in `tests/visual-baselines/`, and Slider compares two keyboard-focused captures (comfortable and compact density). Geometry changes fail; pixel changes above 2% fail after a 24-channel-value antialias tolerance. `tests/visual.test.ts` deliberately changes geometry and pixels to prove the gate fails. Baselines record current candidate rendering, not approved product parity or native-device fidelity. Review an intentional change using CI captures, then run `HIG_UPDATE_VISUALS=1 node scripts/catalog-browser-smoke.mjs` against the production docs preview and commit the reviewed baseline images.
 
 
 ## Release candidates, semver and rollback · HIG 0.1.0
