@@ -1,0 +1,100 @@
+{
+  "version": "0.1.0",
+  "issue": "bloxwap/hig#66",
+  "kind": "automated browser (headless Playwright); no physical-device claim",
+  "platform": "darwin arm64",
+  "consumer": "plain HTML + CSS, only the packed @bloxwap/hig-tokens tarball installed, no script, no manifest read",
+  "stylesheet": "@import ./node_modules/@bloxwap/hig-tokens/dist/tokens.css (exports[\"./css\"])",
+  "roles": {
+    "radius": [
+      "sm",
+      "md",
+      "lg",
+      "xl",
+      "pill"
+    ],
+    "type": [
+      "caption",
+      "label",
+      "body",
+      "title",
+      "display"
+    ],
+    "motion": [
+      "fast",
+      "base",
+      "slow"
+    ],
+    "density": [
+      "control",
+      "target",
+      "gap"
+    ]
+  },
+  "checks": [
+    "radius roles compute to source.json px",
+    "type size/line-height/weight longhands and font shorthand (Bloxwap Sans first)",
+    "motion durations and standard easing",
+    "motion durations 0s under prefers-reduced-motion: reduce and [data-hig-motion=reduced]",
+    "density control/target/gap follow [data-hig-density=compact]",
+    "only page, consumer CSS and token CSS requested"
+  ],
+  "results": [
+    {
+      "engine": "chromium",
+      "browser": "141.0.7390.37",
+      "reducedMotion": "no-preference",
+      "scopes": [
+        "default",
+        "compact",
+        "reduced"
+      ],
+      "fetched": [
+        "/",
+        "/app.css",
+        "/node_modules/@bloxwap/hig-tokens/dist/tokens.css"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "browser": "141.0.7390.37",
+      "reducedMotion": "reduce",
+      "scopes": [
+        "os-reduced"
+      ],
+      "fetched": [
+        "/",
+        "/app.css",
+        "/node_modules/@bloxwap/hig-tokens/dist/tokens.css"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "browser": "26.0",
+      "reducedMotion": "no-preference",
+      "scopes": [
+        "default",
+        "compact",
+        "reduced"
+      ],
+      "fetched": [
+        "/",
+        "/app.css",
+        "/node_modules/@bloxwap/hig-tokens/dist/tokens.css"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "browser": "26.0",
+      "reducedMotion": "reduce",
+      "scopes": [
+        "os-reduced"
+      ],
+      "fetched": [
+        "/",
+        "/app.css",
+        "/node_modules/@bloxwap/hig-tokens/dist/tokens.css"
+      ]
+    }
+  ]
+}

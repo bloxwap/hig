@@ -63,7 +63,7 @@ First run against current `main` heads on 2026-10-15, scanning `apps/docs` (auto
 
 - hyperliquid and haptic pass.
 - sfx flags the brand-mark fill in `lib/og-card.tsx`. That needs an exception like HIG's own brand marks.
-- chart flags `styles/hig-roles.generated.css`, tracked upstream in #66.
+- chart flags `styles/hig-roles.generated.css`, tracked upstream in #66; [chart#54](https://github.com/bloxwap/chart/pull/54) deletes it.
 - font flags its own font binaries, which belong under `canonical`.
 - agent-cli flags `vendor/hig/tokens.css`, its import, and committed TTFs (#58).
 

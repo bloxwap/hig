@@ -10,6 +10,7 @@ npm run quality
 npm run smoke:packed
 npm run smoke:packed-native
 npm run smoke:packed-next
+npm run smoke:packed-css
 npm run release:dry-run -- --channel candidate
 npm run release:dry-run -- --channel stable-simulation
 ```

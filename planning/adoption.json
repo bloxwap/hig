@@ -86,7 +86,9 @@
         "https://github.com/bloxwap/chart/pull/52",
         "https://github.com/bloxwap/chart/pull/53"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/chart/pull/54"
+      ],
       "validation": "CI green on bff4476; independent verifier: docs build (30 pages, 1530 links), lint, typecheck, 1869/1869 tests at 100% coverage, docs:test browser suite; 9 copied files removed (904,638 B) (docs/hig-adoption/hig-7c67a07/)",
       "exceptions": [
         {
@@ -104,7 +106,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/66"
         }
       ],
-      "remaining": "Drop workarounds after #63 and #66; npm (#56)",
+      "remaining": "Drop workarounds after #63 and #66 (chart#54 removes the generated role file); npm (#56)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/chart",
       "exceptionExpires": "2026-11-13"
@@ -499,11 +501,13 @@
         "https://github.com/bloxwap/chart/pull/52",
         "https://github.com/bloxwap/chart/pull/53"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/chart/pull/54"
+      ],
       "validatedVersion": "0.1.0-candidate.sha7c67a07c",
       "validation": "CI green on bff4476; independent verifier: docs build (30 pages, 1530 links), lint, typecheck, 1869/1869 tests at 100% coverage, docs:test browser suite; 9 copied files removed (904,638 B) (docs/hig-adoption/hig-7c67a07/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
-      "remaining": "Drop workarounds after #63 and #66; npm (#56)",
+      "remaining": "Drop workarounds after #63 and #66 (chart#54 removes the generated role file); npm (#56)",
       "exceptionExpires": "2026-11-13",
       "guide": "docs/migration/sdk-docs.md"
     },
