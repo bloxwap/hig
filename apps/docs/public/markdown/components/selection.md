@@ -20,13 +20,13 @@ Do: control selection from accepted host state. Don’t: emit a success cue on e
 
 ## States, interaction and accessibility
 
-Native HTML controls retain browser keyboard and selection semantics. RN Switch uses OS control; checkbox/radio use labeled Pressables with checked state. RN slider uses optional community backend; Select opens labeled native Modal choices.
+Native HTML controls retain browser keyboard and selection semantics. RN Switch renders the OS track inside one labeled 48dp switch row (the row is the accessibility element and touch target); checkbox/radio use labeled Pressables with checked state. RN slider uses the optional community backend for the visual track and touch drag; a plain 48dp adjustable View owns the label, value and increment/decrement actions (5% steps) on iOS and Android because the backend's iOS Fabric view ignores accessibility increments and its Android SeekBar node measures 18dp. The backend's native track height (18dp Android, 40pt iOS) still bounds direct touch drag; hosts needing a larger drag area should pad around the control. Select opens labeled native Modal choices and returns focus to its trigger.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
 ## Platform mapping and limits
 
-SegmentedControl is single-choice radio semantics, not navigation. Native picker alternative is deliberate. Slider drag cancellation/tactile rate evidence remains M3/device work; backend is an optional native peer.
+SegmentedControl is single-choice radio semantics, not navigation. Native picker alternative is deliberate. Accessibility increment/decrement, set-progress and disabled rejection are verified on the iOS Simulator and Android emulator (`evidence/native-sim/`); tactile drag feel and haptic rate remain physical-device work; backend is an optional native peer.
 
 ## Validation and citation
 

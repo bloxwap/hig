@@ -462,11 +462,11 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string;\n}"
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, monoFontFamily }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",

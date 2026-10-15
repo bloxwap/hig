@@ -168,7 +168,7 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 
 ## Platform mapping and limits
 
-RN decimal-pad has locale/platform differences; no implicit money parser. Host owns safe area and keyboard avoidance. IME/device input observations remain pending.
+RN decimal-pad has locale/platform differences; no implicit money parser. Host owns safe area and keyboard avoidance: on Android 15 edge-to-edge (Expo 54) the window no longer resizes for the IME, so wrap scrollable forms in `KeyboardAvoidingView behavior='padding'` on Android and use `automaticallyAdjustKeyboardInsets` on the iOS ScrollView, as the native gallery does. iOS Simulator and Android emulator runs show the AmountInput decimal pad and the focused field kept above the keyboard (`evidence/native-sim/`); physical IME composition and hardware-keyboard behavior remain device observations.
 
 ## Validation and citation
 
@@ -273,7 +273,7 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 | Component | Key props and behavior |
 | --- | --- |
 | `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. |
-| Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref. |
+| Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref (Menu and Select pass their own trigger). |
 | `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
 
 Native return focus is scheduled after the static Modal closes and canceled on reopen or unmount.
@@ -290,7 +290,7 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 
 ## Platform mapping and limits
 
-Basic Sheet uses static Modal layout. The separate optional `@bloxwap/hig-native/gesture-sheet` entry provides GestureSheet with sorted snapPoints, initialIndex, dismissible, safe-area/keyboard configuration, reduced-motion mapping, native back, scoped listener cleanup and controlled dismissal deduplication. Rejected controlled closes re-present after host state settles. See `fixtures/native/gesture-sheet.tsx` and `index-gesture.js` for the real separate consumer; packed smoke compiles both Android/iOS entry points. Hosts provide GestureHandlerRootView, SafeAreaProvider and BottomSheetModalProvider. Required optional peers are Gorhom 5.2.14, Reanimated 4.1.1, Worklets 0.5.1 and Gesture Handler 2.28.0, pinned to Expo 54 bundledNativeModules rather than the newer monorepo native runtime. Backend configuration follows [Gorhom usage](https://gorhom.dev/react-native-bottom-sheet/modal/usage) and [props](https://gorhom.dev/react-native-bottom-sheet/props). Mocked wiring and Metro compilation are not gesture-detent or TalkBack certification. RN initial/return focus API requests are implemented and unit-tested; actual VoiceOver/TalkBack restoration and nesting still need native runtime validation. Native help is persistent text; no hover tooltip or anchored popover claim.
+Basic Sheet uses static Modal layout. The separate optional `@bloxwap/hig-native/gesture-sheet` entry provides GestureSheet with sorted snapPoints, initialIndex, dismissible, safe-area/keyboard configuration, reduced-motion mapping, native back, scoped listener cleanup and controlled dismissal deduplication. Rejected controlled closes re-present after host state settles. See `fixtures/native/gesture-sheet.tsx` and `index-gesture.js` for the real separate consumer; packed smoke compiles both Android/iOS entry points. Hosts provide GestureHandlerRootView, SafeAreaProvider and BottomSheetModalProvider. Required optional peers are Gorhom 5.2.14, Reanimated 4.1.1, Worklets 0.5.1 and Gesture Handler 2.28.0, pinned to Expo 54 bundledNativeModules rather than the newer monorepo native runtime. Backend configuration follows [Gorhom usage](https://gorhom.dev/react-native-bottom-sheet/modal/usage) and [props](https://gorhom.dev/react-native-bottom-sheet/props). Mocked wiring and Metro compilation are not gesture-detent or TalkBack certification. With TalkBack on the Android emulator, opening Dialog/AlertDialog/Sheet/Menu moves accessibility focus to the heading and Back closes the overlay; without a `returnFocusRef` TalkBack falls back to the first screen element, so hosts should pass the trigger. VoiceOver does not run in the iOS Simulator, so VoiceOver focus restoration remains a physical-device observation (`evidence/native-sim/`). Native help is persistent text; no hover tooltip or anchored popover claim.
 
 ## Validation and citation
 
@@ -323,7 +323,7 @@ Do: compose primitives and explicit outcomes in comfortable app or compact Pro c
 
 ## States, interaction and accessibility
 
-Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show balance, market, entry and feedback preference previews.
+Native CodeWindow and InstallCommand render code in the provider's `monoFontFamily` (for example the registered `BloxwapMonoRegular`; platform monospace otherwise) and keep code left-to-right inside RTL roots. Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show balance, market, entry and feedback preference previews.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -361,13 +361,13 @@ Do: control selection from accepted host state. Don’t: emit a success cue on e
 
 ## States, interaction and accessibility
 
-Native HTML controls retain browser keyboard and selection semantics. RN Switch uses OS control; checkbox/radio use labeled Pressables with checked state. RN slider uses optional community backend; Select opens labeled native Modal choices.
+Native HTML controls retain browser keyboard and selection semantics. RN Switch renders the OS track inside one labeled 48dp switch row (the row is the accessibility element and touch target); checkbox/radio use labeled Pressables with checked state. RN slider uses the optional community backend for the visual track and touch drag; a plain 48dp adjustable View owns the label, value and increment/decrement actions (5% steps) on iOS and Android because the backend's iOS Fabric view ignores accessibility increments and its Android SeekBar node measures 18dp. The backend's native track height (18dp Android, 40pt iOS) still bounds direct touch drag; hosts needing a larger drag area should pad around the control. Select opens labeled native Modal choices and returns focus to its trigger.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
 ## Platform mapping and limits
 
-SegmentedControl is single-choice radio semantics, not navigation. Native picker alternative is deliberate. Slider drag cancellation/tactile rate evidence remains M3/device work; backend is an optional native peer.
+SegmentedControl is single-choice radio semantics, not navigation. Native picker alternative is deliberate. Accessibility increment/decrement, set-progress and disabled rejection are verified on the iOS Simulator and Android emulator (`evidence/native-sim/`); tactile drag feel and haptic rate remain physical-device work; backend is an optional native peer.
 
 ## Validation and citation
 
@@ -1015,6 +1015,10 @@ Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. T
 ## Expo / React Native
 
 Run `npm run smoke:packed-native` after packed artifacts are built, or `npm run start -w hig-native-fixture` for the device gallery. Matrix: React 19.1, RN 0.81.5, Expo 54, Metro as locked. Native consumers install tokens/contracts/native tarballs; optional feedback installs its tarball and explicit Expo backend peers. Slider and SVG peers are only needed by their family entries. Import `@bloxwap/hig-native/button`, not the DOM renderer. Dynamic Type remains enabled; native targets stay 48. Keyboard/safe-area/back behavior belongs to the native host and its supported OS.
+
+Install Expo native peers with `npx expo install` (for example `expo-asset ~12.0.13` and `expo-constants ~18.0.14` alongside `expo-font`/`expo-audio`). Expo 54 autolinking links the copy resolved from the app root; a hoisted SDK 57 `expo-asset` pulled by `expo-audio`'s `*` peer compiles away and the app fails at launch with `Cannot find native module 'ExpoAsset'` (observed on the iOS Simulator). `verifyExpoNativeModules` in `scripts/native-compatibility.mjs` guards the fixture and packed consumer. `HIGProvider` follows the OS layout direction (`I18nManager.isRTL`) unless `direction` is passed.
+
+Simulator/emulator verification: `scripts/native-sim/` builds the packed candidate gallery as real Release apps and drives them with XCUITest (iOS Simulator) and UiAutomation instrumentation, uiautomator and TalkBack (Android emulator). Results and residual physical-hardware limits are in `evidence/native-sim/`.
 
 WOFF2 is not a native font asset. Supply pinned approved static TTFs and a typed FontManifest; register them before setting the native provider fontFamily. Until upstream supplies the manifest/assets, the gallery explicitly uses the system fallback and does not claim Bloxwap native typography certification.
 
