@@ -30,3 +30,4 @@ export function nativeFont(manifest: FontManifest, family: string, weight: numbe
  if (!face) throw new Error(`Register a pinned ${family} ${weight} ${script} native face`);
  return face.registration??face.family;
 }
+export {defaultMessages,resolveMessages,type HIGMessages} from './messages.js';

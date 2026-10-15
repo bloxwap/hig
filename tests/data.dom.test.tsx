@@ -16,7 +16,7 @@ it('formats percent points with locale placement, precision and unknown states',
 it('retains zero, negative, tiny, large, trailing zeros and stale display without live announcements',()=>{
  const values=[0,-1234.5,1e-8,1e20];render(<>{values.map(value=><NumberReadout key={value} value={value} options={{minimumFractionDigits:8,maximumFractionDigits:8}}/>)}<NumberReadout value={null} stale/></>);
  for(const value of values)expect(screen.getByText(new Intl.NumberFormat('en-US',{minimumFractionDigits:8,maximumFractionDigits:8}).format(value))).toBeTruthy();
- expect(screen.getByText('(stale)')).toBeTruthy();expect(document.querySelector('[aria-live]')).toBeNull();
+ expect(screen.getByText('— (stale)')).toBeTruthy();expect(document.querySelector('[aria-live]')).toBeNull();
 });
 it('sorts host-owned rows from a keyboard header while preserving table semantics',async()=>{
  function Example(){const [descending,set]=useState(false);const rows=[{id:'a',value:1},{id:'b',value:2}].sort((a,b)=>descending?b.value-a.value:a.value-b.value);return <Table caption='Positions' rows={rows} keyFor={r=>r.id} columns={[{key:'value',label:'Balance',sort:descending?'descending':'ascending',onSort:()=>set(!descending),render:r=>r.value}]}/>;}

@@ -1,9 +1,11 @@
 "use client";
 import React,{createContext,useContext,useId,forwardRef} from 'react';
+import {useMessages} from './provider.js';
+import * as en from '@bloxwap/hig-contracts/messages';
 const Context=createContext<{id:string;description?:string;invalid?:boolean;disabled?:boolean;required?:boolean}>({id:''});
 export function Field({id:provided,label,description,error,required,disabled,children}:React.PropsWithChildren<{id?:string;label:string;description?:string;error?:string;required?:boolean;disabled?:boolean}>){
- const generated=useId();const id=provided??generated;const ids=[description&&`${id}-help`,error&&`${id}-error`].filter(Boolean).join(' ')||undefined;
- return <Context.Provider value={{id,description:ids,invalid:!!error,disabled,required}}><div className='hig-field'><label htmlFor={id}>{label}{required?' (required)':''}</label>{children}{description&&<p id={`${id}-help`}>{description}</p>}{error&&<p id={`${id}-error`} role='alert'>{error}</p>}</div></Context.Provider>;
+ const generated=useId();const messages=useMessages();const id=provided??generated;const ids=[description&&`${id}-help`,error&&`${id}-error`].filter(Boolean).join(' ')||undefined;
+ return <Context.Provider value={{id,description:ids,invalid:!!error,disabled,required}}><div className='hig-field'><label htmlFor={id}>{required?(messages.required??en.required)(label):label}</label>{children}{description&&<p id={`${id}-help`}>{description}</p>}{error&&<p id={`${id}-error`} role='alert'>{error}</p>}</div></Context.Provider>;
 }
 export const Label=(props:React.LabelHTMLAttributes<HTMLLabelElement>)=><label {...props}/>;
 export const Input=forwardRef<HTMLInputElement,React.InputHTMLAttributes<HTMLInputElement>>(function Input(props,ref){const field=useContext(Context);return <input id={field.id||undefined} aria-describedby={field.description} aria-invalid={field.invalid||undefined} required={field.required} {...props} disabled={!!field.disabled||props.disabled} ref={ref} className={`hig-input ${props.className??''}`}/>;});

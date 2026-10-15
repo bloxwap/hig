@@ -16,7 +16,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: Intent;\n    busy?: boolean;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: Intent;\n    busy?: boolean;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean; /** Busy suffix override; `''` hides the suffix. Defaults to the provider's `messages.busy`. */\n    busyLabel?: string;\n}"
       },
       "Button": {
         "entry": "button",
@@ -132,7 +132,7 @@
       },
       "Dialog": {
         "entry": "overlay",
-        "signature": "export declare function Dialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Dialog({ open, onOpenChange, title, description, trigger, children, closeLabel }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Sheet": {
         "entry": "overlay",
@@ -140,11 +140,11 @@
       },
       "AlertDialog": {
         "entry": "overlay",
-        "signature": "export declare function AlertDialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function AlertDialog({ open, onOpenChange, title, description, trigger, children, closeLabel }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode;\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode; /** Overrides `messages.close` (`messages.cancel` for AlertDialog). */\n    closeLabel?: string;\n}"
       },
       "Menu": {
         "entry": "overlay",
@@ -152,7 +152,7 @@
       },
       "Popover": {
         "entry": "overlay",
-        "signature": "export declare function Popover({ label, children }: React.PropsWithChildren<{\n    label: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Popover({ label, children, closeLabel }: React.PropsWithChildren<{\n    label: string; /** Overrides `messages.close`. */\n    closeLabel?: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Tooltip": {
         "entry": "overlay",
@@ -160,15 +160,23 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink; /** Host overrides for built-in strings (#62); components fall back to the English export for missing keys. */\n    messages: Partial<HIGMessages>;\n}"
+      },
+      "HIGProviderProps": {
+        "entry": "provider",
+        "signature": "export type HIGProviderProps = React.PropsWithChildren<Partial<Omit<HIGContext, 'messages'>> & {\n    messages?: Partial<HIGMessages>;\n}>;"
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, messages }: HIGProviderProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
         "signature": "export declare const useHIG: () => HIGContext;"
+      },
+      "useMessages": {
+        "entry": "provider",
+        "signature": "export declare const useMessages: () => Partial<HIGMessages>;"
       },
       "useControllable": {
         "entry": "provider",
@@ -252,7 +260,7 @@
       },
       "Toast": {
         "entry": "status",
-        "signature": "export declare function Toast({ notices, onDismiss }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void; /** Overrides `messages.dismiss`. */\n    dismissLabel?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Progress": {
         "entry": "status",
@@ -322,7 +330,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode;\n    intent?: Intent;\n    busy?: boolean;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode;\n    intent?: Intent;\n    busy?: boolean;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean; /** Busy suffix override; `''` hides the suffix (for example when the host shows a spinner). Defaults to the provider's `messages.busy`. */\n    busyLabel?: string;\n}"
       },
       "Button": {
         "entry": "button",
@@ -402,11 +410,11 @@
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
-        "signature": "export interface GestureSheetProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    /** Sorted increasing detents; percentages resolve against current container geometry. */\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    dismissible?: boolean;\n    returnFocusRef?: React.RefObject<View | null>;\n}"
+        "signature": "export interface GestureSheetProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    /** Sorted increasing detents; percentages resolve against current container geometry. */\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    dismissible?: boolean;\n    returnFocusRef?: React.RefObject<View | null>;\n    /** Overrides `messages.close`. */\n    closeLabel?: string;\n}"
       },
       "GestureSheet": {
         "entry": "gesture-sheet",
-        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, snapPoints, initialIndex, dismissible, returnFocusRef }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, snapPoints, initialIndex, dismissible, returnFocusRef, closeLabel }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -434,15 +442,15 @@
       },
       "BackButton": {
         "entry": "navigation",
-        "signature": "export declare function BackButton({ onBack }: {\n    onBack: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function BackButton({ onBack, label }: {\n    onBack: () => void; /** Overrides `messages.back`. */\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | null>;\n    returnFocusRef?: React.RefObject<View | null>;\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | null>;\n    returnFocusRef?: React.RefObject<View | null>; /** Overrides `messages.close`. */\n    closeLabel?: string;\n}"
       },
       "Dialog": {
         "entry": "overlay",
-        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children, initialFocusRef, returnFocusRef }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children, initialFocusRef, returnFocusRef, closeLabel }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Sheet": {
         "entry": "overlay",
@@ -462,15 +470,23 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Host overrides for built-in strings (#62); components fall back to the English export for missing keys. */\n    messages: Partial<HIGMessages>;\n}"
+      },
+      "HIGProviderProps": {
+        "entry": "provider",
+        "signature": "export type HIGProviderProps = React.PropsWithChildren<Partial<Omit<HIGContext, 'messages'>> & {\n    messages?: Partial<HIGMessages>;\n}>;"
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, messages }: HIGProviderProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
         "signature": "export declare const useHIG: () => HIGContext;"
+      },
+      "useMessages": {
+        "entry": "provider",
+        "signature": "export declare const useMessages: () => Partial<HIGMessages>;"
       },
       "useControllable": {
         "entry": "provider",
@@ -558,7 +574,7 @@
       },
       "Toast": {
         "entry": "status",
-        "signature": "export declare function Toast({ notices, onDismiss }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void; /** Overrides `messages.dismiss`. */\n    dismissLabel?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Spinner": {
         "entry": "status",

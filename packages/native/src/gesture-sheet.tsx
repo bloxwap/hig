@@ -7,6 +7,7 @@ import {nativeSrgb,nativeMetrics as tokens} from '@bloxwap/hig-tokens';
 import {useHIG} from './provider.js';
 import {Heading,Text,Stack} from './surface.js';
 import {Button} from './button.js';
+import * as en from '@bloxwap/hig-contracts/messages';
 
 export interface GestureSheetProps {
  open:boolean;
@@ -19,9 +20,11 @@ export interface GestureSheetProps {
  initialIndex?:number;
  dismissible?:boolean;
  returnFocusRef?:React.RefObject<View|null>;
+ /** Overrides `messages.close`. */
+ closeLabel?:string;
 }
 /** Optional backend: host supplies GestureHandlerRootView, SafeAreaProvider and BottomSheetModalProvider. */
-export function GestureSheet({open,onOpenChange,title,description,children,snapPoints,initialIndex=0,dismissible=true,returnFocusRef}:GestureSheetProps){
+export function GestureSheet({open,onOpenChange,title,description,children,snapPoints,initialIndex=0,dismissible=true,returnFocusRef,closeLabel}:GestureSheetProps){
  const sheet=useRef<BottomSheetModal>(null),heading=useRef<RNText>(null),requested=useRef(false),focused=useRef(false),frame=useRef<number|null>(null);
  const latest=useRef({open,onOpenChange,returnFocusRef});latest.current={open,onOpenChange,returnFocusRef};
  const env=useHIG(),insets=useSafeAreaInsets();
@@ -36,5 +39,5 @@ export function GestureSheet({open,onOpenChange,title,description,children,snapP
  const backdrop=useCallback((props:BottomSheetBackdropProps)=><BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior={dismissible?'close':'none'}/>,[dismissible]);
   // Gorhom defaults the sheet container to one accessible "Bottom Sheet" adjustable element, which on the iOS Simulator
  // hid the title, input and Close button inside it from XCUITest/VoiceOver; expose the children instead.
- return <BottomSheetModal ref={sheet} accessible={false} accessibilityLabel={title} index={initialIndex} snapPoints={[...snapPoints]} enableDynamicSizing={false} enableDismissOnClose stackBehavior='push' enablePanDownToClose={dismissible} topInset={insets.top} bottomInset={insets.bottom} keyboardBehavior='interactive' keyboardBlurBehavior='restore' android_keyboardInputMode='adjustResize' overrideReduceMotion={env.reducedMotion?ReduceMotion.Always:ReduceMotion.System} backdropComponent={backdrop} backgroundStyle={{backgroundColor:nativeSrgb.surface,borderRadius:tokens.radius.xl}} handleIndicatorStyle={{backgroundColor:nativeSrgb.muted}} onChange={index=>{if(index>=0){if(!focused.current){focused.current=true;focus(heading.current);}}else requestClose();}} onDismiss={()=>{requestClose();if(frame.current!==null)cancelAnimationFrame(frame.current);frame.current=requestAnimationFrame(()=>{frame.current=null;if(latest.current.open){requested.current=false;focused.current=false;sheet.current?.present();}else focus(latest.current.returnFocusRef?.current??null);});}}><BottomSheetScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{padding:tokens.space.xl,paddingBottom:tokens.space.xl+insets.bottom}}><Stack><Heading ref={heading}>{title}</Heading><Text>{description}</Text>{children}<Button intent='secondary' onPress={requestClose}>Close</Button></Stack></BottomSheetScrollView></BottomSheetModal>;
+ return <BottomSheetModal ref={sheet} accessible={false} accessibilityLabel={title} index={initialIndex} snapPoints={[...snapPoints]} enableDynamicSizing={false} enableDismissOnClose stackBehavior='push' enablePanDownToClose={dismissible} topInset={insets.top} bottomInset={insets.bottom} keyboardBehavior='interactive' keyboardBlurBehavior='restore' android_keyboardInputMode='adjustResize' overrideReduceMotion={env.reducedMotion?ReduceMotion.Always:ReduceMotion.System} backdropComponent={backdrop} backgroundStyle={{backgroundColor:nativeSrgb.surface,borderRadius:tokens.radius.xl}} handleIndicatorStyle={{backgroundColor:nativeSrgb.muted}} onChange={index=>{if(index>=0){if(!focused.current){focused.current=true;focus(heading.current);}}else requestClose();}} onDismiss={()=>{requestClose();if(frame.current!==null)cancelAnimationFrame(frame.current);frame.current=requestAnimationFrame(()=>{frame.current=null;if(latest.current.open){requested.current=false;focused.current=false;sheet.current?.present();}else focus(latest.current.returnFocusRef?.current??null);});}}><BottomSheetScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{padding:tokens.space.xl,paddingBottom:tokens.space.xl+insets.bottom}}><Stack><Heading ref={heading}>{title}</Heading><Text>{description}</Text>{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??(env.messages.close??en.close)}</Button></Stack></BottomSheetScrollView></BottomSheetModal>;
 }

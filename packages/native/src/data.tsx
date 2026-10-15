@@ -4,8 +4,9 @@ import {formatNumber} from '@bloxwap/hig-contracts';
 import {useHIG} from './provider.js';
 import {Text,Surface} from './surface.js';
 import {Button} from './button.js';
+import * as en from '@bloxwap/hig-contracts/messages';
 export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;stale?:boolean;label?:string;/** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */maxFontSizeMultiplier?:number}
-export function NumberReadout({value,options,stale,label,maxFontSizeMultiplier}:NumberProps){const {locale}=useHIG();const reading=formatNumber(value,locale,options);return <Text accessibilityLabel={label?`${label}: ${reading}${stale?' (stale)':''}`:undefined} maxFontSizeMultiplier={maxFontSizeMultiplier} style={{fontVariant:['tabular-nums']}}>{reading}{stale?' (stale)':''}</Text>;}
+export function NumberReadout({value,options,stale,label,maxFontSizeMultiplier}:NumberProps){const {locale,messages}=useHIG();const reading=formatNumber(value,locale,options);const shown=stale?(messages.staleValue??en.staleValue)(reading):reading;return <Text accessibilityLabel={label?(messages.labelledValue??en.labelledValue)(label,shown):undefined} maxFontSizeMultiplier={maxFontSizeMultiplier} style={{fontVariant:['tabular-nums']}}>{shown}</Text>;}
 export function Usd(props:NumberProps){return <NumberReadout {...props} options={{style:'currency',currency:'USD',...props.options}}/>;}
 export function Percent(props:NumberProps){return <NumberReadout {...props} value={props.value==null?props.value:props.value/100} options={{maximumFractionDigits:Math.max(3,props.options?.minimumFractionDigits??0),...props.options,style:'percent'}}/>;}
 export function Metric({label,value}: {label:string;value:React.ReactNode}){return <Surface><Text>{label}</Text>{value}</Surface>;}
@@ -13,6 +14,6 @@ export const Stat=Metric;
 export function Row({children}:React.PropsWithChildren){return <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',gap:12,paddingVertical:12}}>{children}</View>;}
 /** Native alternative to dense DOM tables: virtualized labeled rows. */
 export interface ListProps<T> {items:readonly T[];keyFor:(item:T)=>string;render:(item:T)=>React.ReactNode;empty?:string;label?:string;loading?:boolean;error?:string;onRetry?:()=>void;onLoadMore?:()=>void}
-export function List<T>({items,keyFor,render,empty='No items',label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){return <FlatList data={items} accessibilityLabel={label} accessibilityState={{busy:loading}} keyExtractor={keyFor} renderItem={({item})=><View>{render(item)}</View>}
- ListEmptyComponent={!loading&&!error?<Text>{empty}</Text>:null}
- ListFooterComponent={<View>{loading&&<Text accessibilityLiveRegion='polite'>Loading items</Text>}{error&&<View><Text accessibilityRole='alert'>{error}</Text>{onRetry&&<Button disabled={loading} onPress={onRetry}>Retry</Button>}</View>}{onLoadMore&&<Button disabled={loading} onPress={onLoadMore}>Load more</Button>}</View>}/>;}
+export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){const {messages}=useHIG();return <FlatList data={items} accessibilityLabel={label} accessibilityState={{busy:loading}} keyExtractor={keyFor} renderItem={({item})=><View>{render(item)}</View>}
+ ListEmptyComponent={!loading&&!error?<Text>{empty??(messages.noItems??en.noItems)}</Text>:null}
+ ListFooterComponent={<View>{loading&&<Text accessibilityLiveRegion='polite'>{(messages.loadingItems??en.loadingItems)}</Text>}{error&&<View><Text accessibilityRole='alert'>{error}</Text>{onRetry&&<Button disabled={loading} onPress={onRetry}>{(messages.retry??en.retry)}</Button>}</View>}{onLoadMore&&<Button disabled={loading} onPress={onLoadMore}>{(messages.loadMore??en.loadMore)}</Button>}</View>}/>;}

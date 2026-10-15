@@ -26,3 +26,8 @@ it('never dismisses a sheet it has not presented (Gorhom DISMISSING state blocke
  expect(backend.methods.dismiss).toHaveBeenCalledTimes(1);
 });
 it('sheet content stays individually reachable by screen readers (iOS Simulator: Gorhom grouped it as one "Bottom Sheet" element)',()=>{const node=mount({open:true,onOpenChange:jest.fn()});expect(node.props.accessible).toBe(false);expect(node.props.accessibilityLabel).toBe('Review');});
+it('sheet Close follows provider messages and the closeLabel override (#62)',()=>{const texts=()=>root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function').map(n=>JSON.stringify(n.findAll(c=>typeof c.props.children==='string').map(c=>c.props.children)));
+ act(()=>{root=create(React.createElement(HIGProvider,{reducedMotion:true,direction:'rtl',messages:{close:'إغلاق'}},React.createElement(GestureSheet,{title:'T',description:'D',snapPoints:['50%'],open:true,onOpenChange:jest.fn()},null)));});
+ expect(texts().join()).toContain('إغلاق');expect(texts().join()).not.toContain('Close');
+ act(()=>root.update(React.createElement(HIGProvider,{reducedMotion:true,messages:{close:'Fermer'}},React.createElement(GestureSheet,{title:'T',description:'D',snapPoints:['50%'],open:true,onOpenChange:jest.fn(),closeLabel:'Terminé'},null))));
+ expect(texts().join()).toContain('Terminé');expect(texts().join()).not.toContain('Fermer');});

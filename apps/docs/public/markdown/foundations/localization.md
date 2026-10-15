@@ -59,6 +59,55 @@ Funding and expiries: compute the next payment from UTC (Hyperliquid funding is 
 
 Leverage is a multiplier with the untranslated `×` suffix (`10×`, via `formatLeverage`), never `1000%` or percent styling. Percentages use the glossary’s rate terms (funding, builder fee as `5 bps (0.05%)`) and `Percent` for percent-point values (`+2.5%`, `-2.5%`). Keep `bps` untranslated.
 
+## Built-in component strings
+
+Issue #62. HIG renders a few strings of its own: Close, Dismiss, the busy suffix, landmark names, empty and loading states, and recipe copy. All of them come from the typed `HIGMessages` contract in `@bloxwap/hig-contracts`, with English defaults (`defaultMessages`). Pass translations to `HIGProvider` on web and native:
+
+```tsx
+import {HIGProvider} from '@bloxwap/hig-react/provider'; // or @bloxwap/hig-native/provider
+<HIGProvider locale='fr-FR' messages={{close: 'Fermer', dismiss: 'Ignorer', busy: 'En cours',
+  dismissNotice: (message, dismiss) => `${dismiss} : ${message}`}}>
+```
+
+- `messages` is partial. Missing keys inherit from an outer `HIGProvider`, then from English. One root provider can carry the app's catalog, and nested providers can override a few keys.
+- Function keys receive host values (asset, page, label), so a translation can reorder them. Don't concatenate translated fragments around them.
+- Component overrides win over the provider:
+  - `closeLabel`: Dialog, AlertDialog, Popover, native Dialog and GestureSheet.
+  - `busyLabel`: Button. `''` hides the suffix but keeps `aria-busy`/`accessibilityState.busy`, for hosts that show a spinner.
+  - `dismissLabel`: Toast.
+  - `label`: native BackButton, Spinner and Skeleton.
+  - `empty`: List.
+- Visible text and the accessible name come from the same key, so they stay in sync. The busy suffix is part of the button's name, and the Toast dismiss name embeds the visible `dismiss` label.
+- HIG ships English only. Product translations belong to the host and must use the [glossary](glossary.json) for trading terms.
+- Tests:
+  - `tests/localization-literals.test.ts` fails if a new hard-coded user-facing literal appears in `packages/react/src` or `packages/native/src`.
+  - `tests/localization.dom.test.tsx` and `tests/native/localization.test.cjs` render French, Korean and Arabic (RTL) test strings.
+
+| Key | English default | Used by | Per-component override |
+| --- | --- | --- | --- |
+| `close` | Close | Dialog, Sheet, Popover, native Dialog/Menu/Select, GestureSheet | `closeLabel` |
+| `cancel` | Cancel | web AlertDialog | `closeLabel` |
+| `dismiss` | Dismiss | Toast dismiss button (visible) | `dismissLabel` |
+| `dismissNotice(message, dismiss)` | `${dismiss} ${message}` | Toast dismiss accessible name | via `dismissLabel` |
+| `busy` | Working | busy Button suffix after ` · `; empty string hides it | `busyLabel` |
+| `required(label)` | `${label} (required)` | Field label and native input name | — |
+| `labelledValue(label, value)` | `${label}: ${value}` | readout names, StatusIndicator, native Select trigger | — |
+| `staleValue(value)` | `${value} (stale)` | stale readouts | — |
+| `notifications` | Notifications | Toast region name | — |
+| `breadcrumb / pagination` | Breadcrumb / Pagination | navigation landmark names | — |
+| `previous / next / pageOf(page, total)` | Previous / Next / `Page ${page} of ${total}` | Pagination | — |
+| `search / searching / noResults / resultCount(count)` | Search / Searching… / No results / `N result(s)` | Search | — |
+| `back` | Back | native BackButton | `label` |
+| `loading / loadingContent / loadingItems / loadingChart` | Loading / Loading content / Loading items / Loading chart… | Spinner, Skeleton, List, PriceChart | `label` on Spinner/Skeleton |
+| `retry / loadMore / noItems / noRows` | Retry / Load more / No items / No rows | List, Table | `empty` on List |
+| `availableActions / choose / chooseOne` | Available actions / Choose / Choose one option. | native Menu and Select sheets | — |
+| `inProgress / progressValue(value, max)` | In progress / `${value} of ${max}` | native Progress accessibility value | — |
+| `statusState(state)` | online / offline / stale | StatusIndicator | — |
+| `copyInstallCommand / copied / copyFailed` | Copy install command / Copied / Copy failed… | InstallCommand | — |
+| `noActivity` | No activity yet | ActivityList | — |
+| `tradeHeading(asset) / amountLabel(asset) / availableBalance(available)` | `Review ${asset} order` / `Amount (${asset})` / `Available: ${available}` | TradeEntry | — |
+| `reviewOrder / confirmOrderTitle / confirmOrderDescription(amount, asset) / confirmOrder / orderUnavailable` | Review order / Confirm order / … / Confirm order / Order unavailable | TradeEntry | — |
+
 ## RTL and text expansion
 
 Logical inline spacing, wrapping labels, no fixed-height clipping of translated text, Dynamic Type stays on. Plan for ~30–40% expansion (German/Finnish) and 200% text. Directional arrows mirror in RTL; brand, check marks and financial direction (`+`/`−`, buy/sell) do not. Preserve bidi isolates that Intl inserts around signed currency in Arabic. Mixed-script punctuation needs the required font scripts; a Latin-only fixture does not certify them.
