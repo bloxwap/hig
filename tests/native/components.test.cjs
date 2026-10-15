@@ -168,3 +168,10 @@ it('native overlay focus requests also send viewHoverEnter on Android so TalkBac
   expect(hover).toHaveBeenLastCalledWith(trigger.current,'viewHoverEnter');
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});handle.mockRestore();focus.mockRestore();hover.mockRestore();raf.mockRestore();}
 });
+it('native switch keeps react-native-web semantics on Expo web (no nested interactive controls)',()=>{
+ const RN=require('react-native');const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'web',configurable:true});
+ try{const {Switch}=require('../../packages/native/src/switch');const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:jest.fn()}));
+  expect(tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function')).toHaveLength(0);
+  expect(tree.findByType(RN.Switch).props.accessibilityLabel).toBe('Sound');
+ }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
+});
