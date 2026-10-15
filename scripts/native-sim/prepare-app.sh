@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds the packed-candidate native gallery as real iOS Simulator and Android emulator apps.
-# Usage: scripts/native-sim/prepare-app.sh <app-dir> <simulator-udid>
+# Usage: [HIG_NATIVE_PROFILE=rn-0.83] scripts/native-sim/prepare-app.sh <app-dir> <simulator-udid>
 # Requires artifacts/release-candidate/*.tgz (npm run release:dry-run -- --channel candidate),
 # Xcode with an iOS Simulator runtime, JDK 17 and the Android SDK. Nothing is published.
 set -euo pipefail
@@ -8,8 +8,10 @@ HIG="$(cd "$(dirname "$0")/../.." && pwd -P)"
 APP="$1"; UDID="$2"
 mkdir -p "$APP"; APP="$(cd "$APP" && pwd -P)"
 rsync -a --exclude node_modules --exclude dist --exclude .expo "$HIG/fixtures/native/" "$APP/"
-node -e "const fs=require('fs');const p='$APP/package.json';const m=JSON.parse(fs.readFileSync(p));for(const k of Object.keys(m.dependencies))if(k.startsWith('@bloxwap/hig-'))delete m.dependencies[k];m.type='commonjs';fs.writeFileSync(p,JSON.stringify(m,null,2));"
-(cd "$APP" && npm install --no-audit --no-fund $(ls "$HIG"/artifacts/release-candidate/bloxwap-hig-{contracts,feedback,native,tokens}-*.tgz))
+# HIG_NATIVE_PROFILE=rn-0.83 builds the gallery on fixtures/native/profiles/rn-0.83.json (uncertified; installs past HIG peers).
+PROFILE="${HIG_NATIVE_PROFILE:-}"
+node -e "const fs=require('fs');const p='$APP/package.json';const m=JSON.parse(fs.readFileSync(p));for(const k of Object.keys(m.dependencies))if(k.startsWith('@bloxwap/hig-'))delete m.dependencies[k];if('$PROFILE')Object.assign(m.dependencies,JSON.parse(fs.readFileSync('$HIG/fixtures/native/profiles/$PROFILE.json','utf8')).dependencies);m.type='commonjs';fs.writeFileSync(p,JSON.stringify(m,null,2));"
+(cd "$APP" && npm install --no-audit --no-fund ${PROFILE:+--legacy-peer-deps} $(ls "$HIG"/artifacts/release-candidate/bloxwap-hig-{contracts,feedback,native,tokens}-*.tgz))
 node --input-type=module -e "import {verifyNativeReact,verifyExpoNativeModules} from '$HIG/scripts/native-compatibility.mjs';console.log(verifyNativeReact('$APP'),verifyExpoNativeModules('$APP'))"
 (cd "$APP" && CI=1 npx expo prebuild --no-install) # idempotent; applies app.json changes
 # Xcode 27 rejects pod resource targets below iOS 15.

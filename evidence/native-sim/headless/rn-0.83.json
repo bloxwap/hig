@@ -1,0 +1,35 @@
+{
+  "issue": 68,
+  "date": "2026-10-15",
+  "profile": "fixtures/native/profiles/rn-0.83.json (React Native 0.83.10, React 19.2.0, Expo 55.0.31, Reanimated 4.2.1, Worklets 0.7.4)",
+  "host": "Linux x86_64 VM without KVM or macOS: no Android emulator, no iOS Simulator",
+  "certification": "not certified; HIG peer ranges stay on React Native ^0.81.5 / Expo 54",
+  "headless": {
+    "nativeJest": "npm run test:native-rn083 -> jest-expo 55.0.22 on RN 0.83.10: 2 suites, 47 tests passed",
+    "typecheck": "tsc -p packages/native/tsconfig.json --noEmit against react-native 0.83.10 types: passed",
+    "packedConsumer": {
+      "command": "npm run smoke:packed-native-rn083",
+      "reactRendererGuard": "{ react: '19.2.0', renderer: '19.2.0' } (RN 0.83 renderer: reconcilerVersion; its runtime isomorphic React check was removed)",
+      "expoNativeModuleGuard": "passed against expo@55.0.31 bundledNativeModules.json",
+      "uncertifiedPeers": {
+        "@bloxwap/hig-feedback": ["expo-audio", "expo-haptics"],
+        "@bloxwap/hig-native": ["@react-native-community/slider", "react-native", "react-native-svg", "react-native-worklets"]
+      },
+      "metroExport": "Android 766 modules, iOS 768 modules (gallery); Android 1127, iOS 1126 (gesture-sheet entry): exported"
+    },
+    "androidReleaseBuild": {
+      "command": "npx expo prebuild --platform android --no-install && ./gradlew assembleRelease -PreactNativeArchitectures=x86_64 (JDK 17.0.20.1, Android SDK 36, Gradle 9.0.0, newArchEnabled=true, Hermes)",
+      "result": "BUILD SUCCESSFUL in 15m 27s (609 tasks)",
+      "apkBytes": 32770287,
+      "apkSha256": "0568a78262d7e24b3ec35c1cbf46a70dc52023b992f43ad6c5bbe5dc499e3299",
+      "dexContains": ["Lcom/bloxwap/hig/HIGAdjustableView;", "Lcom/bloxwap/hig/HIGPackage;"],
+      "nativeLibraries": ["libreanimated.so", "libworklets.so", "libgesturehandler.so", "libreact_codegen_RNCSlider.so", "libreact_codegen_rnsvg.so", "libreact_codegen_safeareacontext.so", "libexpo-modules-core.so", "libhermesvm.so"]
+    },
+    "iosBuild": "blocked: requires macOS/Xcode"
+  },
+  "deviceChecks": {
+    "status": "blocked",
+    "reason": "No KVM on this host (Android emulator cannot boot) and no macOS (no iOS Simulator). The 0.81.5 baseline checks in evidence/native-sim/native-sim.json have not been repeated on RN 0.83.",
+    "toRun": "HIG_NATIVE_PROFILE=rn-0.83 scripts/native-sim/prepare-app.sh <app> <udid>, then scripts/native-sim/run-ios.sh and run-android.sh, then compare with the 0.81.5 results; widen peers only after they pass or each difference has its own issue"
+  }
+}

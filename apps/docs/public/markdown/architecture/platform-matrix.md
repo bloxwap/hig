@@ -16,4 +16,6 @@
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
+React Native 0.83 / Expo 55 is a candidate profile, not a certified peer. In CI it passes native Jest, the typecheck and the packed Android/iOS export. A headless Android release build also passed (`evidence/native-sim/headless/rn-0.83.json`). The simulator and emulator gallery runs are pending, and peers stay at RN `^0.81.5` until they pass (#68).
+
 Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.

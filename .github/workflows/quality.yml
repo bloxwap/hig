@@ -28,6 +28,9 @@ jobs:
       - run: npm run smoke:ssr
       - run: npm run smoke:packed
       - run: npm run smoke:packed-native
+      # RN 0.83 / Expo 55 candidate profile (#68): native Jest + typecheck, then packed Android/iOS export.
+      - run: npm run test:native-rn083
+      - run: npm run smoke:packed-native-rn083
       - run: npm run smoke:packed-boundaries
       - run: npm run smoke:packed-fumadocs
       - run: npm run smoke:packed-examples
