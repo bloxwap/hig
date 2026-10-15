@@ -238,9 +238,13 @@
         "entry": "status",
         "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "AlertSeverity": {
+        "entry": "status",
+        "signature": "export type AlertSeverity = 'info' | 'success' | 'warning' | 'error' | 'note' | 'tip';"
+      },
       "Alert": {
         "entry": "status",
-        "signature": "export declare function Alert({ title, children, severity, action, announce }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Alert({ title, children, severity, action, announce }: React.PropsWithChildren<{\n    title: React.ReactNode;\n    severity?: AlertSeverity;\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Callout": {
         "entry": "status",
@@ -540,13 +544,17 @@
         "entry": "status",
         "signature": "export type AccentRole = typeof accentRoles[number];"
       },
+      "AlertSeverity": {
+        "entry": "status",
+        "signature": "export type AlertSeverity = keyof typeof severityRole;"
+      },
       "Badge": {
         "entry": "status",
         "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Alert": {
         "entry": "status",
-        "signature": "export declare function Alert({ title, children, severity, tone, action, announce }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    tone?: AccentRole;\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Alert({ title, children, severity, tone, action, announce }: React.PropsWithChildren<{\n    title: React.ReactNode;\n    severity?: AlertSeverity;\n    tone?: AccentRole;\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Callout": {
         "entry": "status",

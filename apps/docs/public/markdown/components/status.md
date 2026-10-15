@@ -10,7 +10,8 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Alert` | `title`, `severity`, and an optional recovery `action`. Native severity sets the accent border role (info → `info`, success → `positive`, warning → `warning`, error → `negative`); `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the accent edge from a token role on web and native: info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own edge colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |

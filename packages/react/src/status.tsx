@@ -3,7 +3,10 @@ import React,{useEffect,useRef,useState} from 'react';
 import {notificationDelta} from '@bloxwap/hig-contracts/announcements';
 import {Button} from './button.js';
 export function Badge({children}:React.PropsWithChildren){return <span className='hig-badge'>{children}</span>;}
-export function Alert({title,children,severity='info',action,announce=true}:React.PropsWithChildren<{title:string;severity?:'info'|'success'|'warning'|'error';action?:React.ReactNode;announce?:boolean}>){return <section className='hig-surface' data-severity={severity} role={announce?(severity==='error'?'alert':'status'):undefined}><strong>{title}</strong>{children}{action}</section>;}
+/** `note` and `tip` are documentation callout severities: note uses the `info` token role and tip the `positive` role, like info and success. */
+export type AlertSeverity='info'|'success'|'warning'|'error'|'note'|'tip';
+/** Severity sets the accent edge from a token role (info/note → info, success/tip → positive, warning → warning, error → negative). The title may be any inline node, such as text with a code span. */
+export function Alert({title,children,severity='info',action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;action?:React.ReactNode;announce?:boolean}>){return <section className='hig-surface' data-severity={severity} role={announce?(severity==='error'?'alert':'status'):undefined}><strong>{title}</strong>{children}{action}</section>;}
 export const Callout=Alert;
 export interface Notice {id:string;message:string;severity:'info'|'success'|'warning'|'error';action?:React.ReactNode}
 /** Persistent until dismissed; host deduplicates ids, critical messages remain inline. */

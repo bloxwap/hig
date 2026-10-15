@@ -51,7 +51,7 @@ case "Pagination":return <C.Pagination page={range} total={100} onPageChange={se
 case "Search":return <C.Search query={amount} onQueryChange={setAmount} results={empty?[]:[{id:'btc',label:'Bitcoin (BTC)',onSelect:()=>setMessage('Bitcoin selected')}]} error={error}/>;
 case "Badge":return <C.Badge>Demo data</C.Badge>;
 case "Alert":return <C.Alert title={error?'Data unavailable':'Sample status'} severity={error?'error':'info'} action={<C.Button intent='secondary' onClick={()=>setMessage('Retry requested')}>Retry</C.Button>}><C.Text>{error??'Essential state stays visible with feedback off.'}</C.Text></C.Alert>;
-case "Callout":return <C.Callout title='Display-only values'><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>;
+case "Callout":return <C.Callout severity='tip' announce={false} title={<>Display-only <code>value</code> strings</>}><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>;
 case "Toast":return <C.Toast notices={notices} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>;
 case "Progress":return <C.Progress label='Loading markets' value={busy?undefined:40}/>;
 case "Spinner":return <C.Spinner label='Fetching prices'/>;
