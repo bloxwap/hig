@@ -6,11 +6,11 @@ import {useControllable,useHIG} from './provider.js';
 import {Button,Link} from './button.js';
 import {SearchInput,Field} from './field.js';
 const focusable='a[href],area[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),iframe,audio[controls],video[controls],summary,[contenteditable]:not([contenteditable="false"]),[tabindex]:not([tabindex="-1"])';
-const content='img,svg,canvas,video,picture,progress,meter,input,select,textarea';
+const contentSelector='img,svg,canvas,video,picture,progress,meter,input,select,textarea';
 /** True when the panel's first visible content is itself focusable (for example an InstallCommand `pre`), so the panel needs no tab stop of its own. */
 function startsWithFocusable(panel:HTMLElement):boolean{
  const walker=panel.ownerDocument.createTreeWalker(panel,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{acceptNode:node=>{const el=node as Element;return node.nodeType===1&&(el.hasAttribute('hidden')||el.hasAttribute('inert')||el.getAttribute('aria-hidden')==='true')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}});
- for(let node=walker.nextNode();node;node=walker.nextNode()){if(node.nodeType===1){const el=node as Element;if(el.matches(focusable))return true;if(el.matches(content))return false;}else if(node.textContent?.trim())return false;}
+ for(let node=walker.nextNode();node;node=walker.nextNode()){if(node.nodeType===1){const el=node as Element;if(el.matches(focusable))return true;if(el.matches(contentSelector))return false;}else if(node.textContent?.trim())return false;}
  return false;
 }
 export function Tabs({label,items,value,defaultValue,onValueChange}: {label:string;items:readonly {value:string;label:string;content:React.ReactNode;disabled?:boolean}[];value?:string;defaultValue?:string;onValueChange?:(v:string)=>void}){
