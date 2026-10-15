@@ -53,7 +53,7 @@
       "entry": "surface",
       "family": "actions-surfaces",
       "web": "<C.Text>Review the amount and asset before confirming.</C.Text>",
-      "native": "<C.Text>Review the amount and asset before confirming.</C.Text>",
+      "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>한국어 · 中文</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -257,7 +257,7 @@
       "entry": "selection",
       "family": "selection",
       "web": "<C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>",
-      "native": "<C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>",
+      "native": "<C.Stack><C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/><C.Switch label='Info tone preview' tone='info' checked={!checked} onCheckedChange={next=>setChecked(!next)} disabled={disabled}/></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default",

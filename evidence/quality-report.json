@@ -1,16 +1,20 @@
 {
   "version": "0.1.0",
+  "nativeRuntime": {
+    "react": "19.1.0",
+    "renderer": "19.1.0"
+  },
   "exports": {
     "contracts": 6,
     "feedback": 17,
-    "native": 36,
-    "react": 25,
+    "native": 38,
+    "react": 27,
     "tokens": 6
   },
   "sizes": {
     "button": {
       "raw": 1249,
-      "gzip": 709,
+      "gzip": 708,
       "inputs": [
         "packages/contracts/dist/index.js",
         "packages/react/dist/provider.js",
@@ -27,31 +31,33 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 2323,
-      "gzip": 1205,
+      "raw": 3747,
+      "gzip": 1850,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
         "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
         "packages/native/dist/surface.js",
+        "packages/native/dist/roles.js",
         "packages/native/dist/switch.js",
         "nativeSwitch.js"
       ]
     },
     "feedbackContract": {
-      "raw": 2857,
-      "gzip": 953,
+      "raw": 2951,
+      "gzip": 996,
       "inputs": [
         "packages/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
     "docsJS": {
-      "raw": 2103743,
-      "gzip": 587834
+      "raw": 2193927,
+      "gzip": 609406
     },
     "docsCSS": {
-      "raw": 96650
+      "raw": 108549
     },
     "fonts": {
       "raw": 592796

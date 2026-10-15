@@ -22,7 +22,7 @@ export function Example({name,state='default'}:{name:string;state?:string}){cons
 function preview(){switch(name){case "Button":return <C.Button busy={busy} disabled={disabled}>Review order</C.Button>;
 case "IconButton":return <C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>;
 case "Link":return <C.Link href='https://github.com/bloxwap/hig'>Read HIG guidelines</C.Link>;
-case "Text":return <C.Text>Review the amount and asset before confirming.</C.Text>;
+case "Text":return <C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>한국어 · 中文</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>;
 case "Heading":return <C.Heading>Order details</C.Heading>;
 case "Stack":return <C.Stack><C.Text>Available balance</C.Text><C.Usd value={1250.45}/></C.Stack>;
 case "Inline":return <C.Inline><C.Badge>Demo</C.Badge><C.Text>Updated just now</C.Text></C.Inline>;
@@ -36,7 +36,7 @@ case "TextArea":return <C.Field label='Note' description='Optional, kept by the 
 case "AmountInput":return <C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
 case "SearchInput":return <C.Field label='Search markets'><C.SearchInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
 case "Checkbox":return <C.Checkbox label='Show order details' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>;
-case "Switch":return <C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>;
+case "Switch":return <C.Stack><C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/><C.Switch label='Info tone preview' tone='info' checked={!checked} onCheckedChange={next=>setChecked(!next)} disabled={disabled}/></C.Stack>;
 case "RadioGroup":return <C.RadioGroup label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>;
 case "SegmentedControl":return <C.SegmentedControl label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>;
 case "Select":return <C.Select label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>;

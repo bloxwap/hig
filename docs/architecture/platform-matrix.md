@@ -3,7 +3,9 @@
 | Area | DOM | RN | Evidence |
 | --- | --- | --- | --- |
 | Actions, surfaces, text, fields | Semantic DOM elements | Pressable/View/Text/TextInput | behavior tests, Vite/SSR/Metro |
-| Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser | contract tests; device gestures pending |
+| Native text scaling and script tracking | Browser zoom; no cap | `Text`/`Heading`/`NumberReadout` `maxFontSizeMultiplier` (prop or HIGProvider default); Korean/Chinese runs at companion spacing via `script` and `letterSpacingByScript` | native Jest (#67); iOS AX5 and Android 200% gallery captures pending |
+| Native colour roles | CSS severity/data attributes | `Switch` `tone`, `Alert` `severity`/`tone` take token roles only; raw colours fall back | native Jest (#67) |
+| Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser; Android Slider adds `ACTION_SET_PROGRESS` through the autolinked `HIGAdjustableView` (plain View without native linking) | contract tests; module compiled in a headless Android release build (#71); emulator set-progress run pending |
 | Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
 | Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
