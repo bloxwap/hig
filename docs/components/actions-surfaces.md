@@ -10,14 +10,14 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Button`, `IconButton` | `children`, `intent`, `busy`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. |
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
 
 ## When to use and examples
 
-Use one primary review action. Do: busy protects host requests and displays Working. Don’t: use destructive red for every sell button.
+Use one primary review action. Do: busy protects host requests and displays the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 
 ## States, interaction and accessibility
 

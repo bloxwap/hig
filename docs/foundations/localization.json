@@ -14,6 +14,18 @@
     "Usd": "ISO USD only (currency: 'USD'). Do not use for USDC collateral.",
     "Percent": "Input is percent points: 5 means 5%. The component divides by 100 and forces style: 'percent'."
   },
+  "messages": {
+    "issue": 62,
+    "package": "@bloxwap/hig-contracts/messages",
+    "type": "HIGMessages",
+    "defaults": "defaultMessages",
+    "provider": "HIGProvider messages",
+    "hook": "useMessages",
+    "componentProps": ["closeLabel", "cancelLabel", "dismissLabel", "busyLabel"],
+    "approvedLocales": ["en-US"],
+    "note": "English defaults only. Hosts supply translations; HIG never guesses them. Visible text and accessible names come from the same key.",
+    "keys": ["close", "cancel", "dismiss", "dismissNotice", "busy", "notifications", "loading", "loadingContent", "loadingItems", "loadingChart", "noItems", "noRows", "retry", "loadMore", "stale", "required", "breadcrumb", "pagination", "previous", "next", "pageOf", "search", "searching", "noResults", "resultCount", "back", "menuDescription", "choose", "chooseOne", "inProgress", "progressValue", "copied", "copyFailed", "copyInstallCommand", "reviewAssetOrder", "amountInAsset", "availableAmount", "reviewOrder", "confirmOrder", "confirmOrderDescription", "orderUnavailable", "noActivity", "statusOnline", "statusOffline", "statusStale"]
+  },
   "rules": {
     "displayIsNotArithmetic": true,
     "unknownValue": "—",

@@ -26,3 +26,8 @@ it('never dismisses a sheet it has not presented (Gorhom DISMISSING state blocke
  expect(backend.methods.dismiss).toHaveBeenCalledTimes(1);
 });
 it('sheet content stays individually reachable by screen readers (iOS Simulator: Gorhom grouped it as one "Bottom Sheet" element)',()=>{const node=mount({open:true,onOpenChange:jest.fn()});expect(node.props.accessible).toBe(false);expect(node.props.accessibilityLabel).toBe('Review');});
+it('sheet Close follows HIGProvider messages, closeLabel and RTL',()=>{const {Text:RNText}=require('react-native');const label=()=>root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function').map(b=>b.findAllByType(RNText).map(t=>[].concat(t.props.children).join('')).join(''));const close=jest.fn();
+ act(()=>{root=create(React.createElement(HIGProvider,{reducedMotion:true,direction:'rtl',locale:'ar-EG',messages:{close:'إغلاق'}},React.createElement(GestureSheet,{title:'مراجعة',description:'تحقق',snapPoints:['50%'],open:true,onOpenChange:close},null)));});
+ expect(label()).toEqual(['إغلاق']);act(()=>root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(close).toHaveBeenCalledWith(false);
+ act(()=>{root.update(React.createElement(HIGProvider,{reducedMotion:true,direction:'rtl',locale:'ar-EG',messages:{close:'إغلاق'}},React.createElement(GestureSheet,{title:'مراجعة',description:'تحقق',snapPoints:['50%'],open:true,onOpenChange:close,closeLabel:'تم'},null)));});
+ expect(label()).toEqual(['تم']);});
