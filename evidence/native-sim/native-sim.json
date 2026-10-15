@@ -27,8 +27,8 @@
     "sourceCommit": "1172b6a (branch hig/native-sim-verification, pre-squash)",
     "usedFor": "all iOS Simulator and Android emulator gallery/interaction/TalkBack runs",
     "followUp": {
-      "version": "0.1.0-candidate.shad8cd24d4",
-      "sourceCommit": "d8cd24d (pre-squash)",
+      "version": "0.1.0",
+      "sourceCommit": "2456e72 (pre-squash)",
       "usedFor": "GestureSheet runs on both targets and Android OS-setting snapshots (baseline, os-arabic, font-scale-200, reduce-motion) rerun with longer diagnostics waits; differs from 1172b6a only in GestureSheet accessibility"
     },
     "dryRun": true,
@@ -384,8 +384,7 @@
         "Gallery ready before keys: 1",
         "TalkBack enabled: com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService",
         "Dialog open after Alt+Enter: 0",
-        "Dialog closed after Back: yes",
-        "Landscape capture: 05-landscape-tradeentry.png"
+        "Dialog closed after Back: not applicable (the dialog never opened; TalkBack did not act on the injected Alt+Right/Alt+Enter)"
       ]
     },
     "sliderAccessibilityActions": {
@@ -570,6 +569,25 @@
       },
       "androidScanner": {},
       "note": "iOS \"Label not human-readable\" flags currency readouts such as \"$1,250.45\" (heuristic; VoiceOver pronunciation needs a device); \"Label duplicates traits\" is the gallery Select value \"Button\"; \"Dynamic Type font sizes are unsupported\" flags React Native TextInput, which scales by fontScale rather than adjustsFontForContentSizeCategory (AX5 captures show the input text scaling)"
+    },
+    "orientation": {
+      "android": {
+        "kind": "Android emulator",
+        "method": "adb emu rotate with accelerometer rotation enabled (user-rotation settings did not rotate this emulator)",
+        "displayAfterRotate": "2736x1260 px",
+        "dialogOpenedInLandscape": true,
+        "closeVisible": true,
+        "closedByBack": true,
+        "tradeEntryReflowed": true,
+        "restoredToPortrait": true,
+        "candidate": "0.1.0-candidate.shad8cd24d4"
+      },
+      "ios": {
+        "kind": "iOS Simulator",
+        "method": "XCUIDevice.shared.orientation = .landscapeLeft on the headless Simulator (testOrientation)",
+        "result": "not observed: XCUITest reported a landscape window frame (874x402) and the Dialog flow passed, but captures show the gallery still laid out in portrait, including after the fixture allowed rotation (app.json orientation default). The cause was not isolated (headless Simulator rotation vs. Expo root view controller).",
+        "candidate": "0.1.0-candidate.sha3a71ec9a"
+      }
     },
     "gestureSheet": {
       "ios": {

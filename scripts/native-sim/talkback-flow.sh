@@ -36,7 +36,8 @@ log "Dialog open after Alt+Enter: $(grep -c 'text="Close"' "$OUT/after-activate.
 adb shell input keyevent KEYCODE_BACK; sleep 2
 shot 04-after-back
 adb shell uiautomator dump /sdcard/tb.xml >/dev/null 2>&1; adb pull /sdcard/tb.xml "$OUT/after-back.xml" >/dev/null
-log "Dialog closed after Back: $([ "$(grep -c 'text="Close"' "$OUT/after-back.xml")" = 0 ] && echo yes || echo no)"
+OPENED="$(grep -c 'text="Close"' "$OUT/after-activate.xml")"
+log "Dialog closed after Back: $([ "$OPENED" = 0 ] && echo 'not applicable (never opened)' || ([ "$(grep -c 'text="Close"' "$OUT/after-back.xml")" = 0 ] && echo yes || echo no))"
 adb shell settings delete secure enabled_accessibility_services; adb shell settings put secure accessibility_enabled 0
 # Landscape: user-rotation settings did not rotate this emulator; the console rotate command does.
 adb shell settings put system accelerometer_rotation 1; adb emu rotate; sleep 4

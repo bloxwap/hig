@@ -139,7 +139,7 @@
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "owning-product density/parity approval (governance). Physical hardware only: physical tablet, notch and rotation hardware.",
+    "reason": "owning-product density/parity approval (governance). iOS landscape re-layout was not observed (the gallery stayed portrait when XCUITest rotated the headless Simulator). Physical hardware only: physical tablet, notch and rotation hardware.",
     "localNotes": "16-unit source rem roots, density/radius/spacing reconciliation, 320px/200% DOM reflow and native per-root RTL layout.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
@@ -155,14 +155,15 @@
         "safe-area insets (status bar, home indicator) in captures",
         "on-screen decimal keypad keeps the focused amount field visible on both targets with host keyboard avoidance (Android 15 edge-to-edge no longer resizes for the IME)",
         "48dp targets: fixed Switch (47x27dp track) and Slider (18dp SeekBar) to 48dp accessibility elements",
-        "Android landscape capture"
+        "Android emulator landscape: TradeEntry reflows and a Dialog opens and closes by Back after rotation"
       ],
       "physicalHardwareOnly": [
         "physical tablet, notch and rotation hardware"
       ],
       "otherResiduals": [],
       "outOfScope": [
-        "owning-product density/parity approval (governance)."
+        "owning-product density/parity approval (governance).",
+        "iOS landscape re-layout was not observed (the gallery stayed portrait when XCUITest rotated the headless Simulator)."
       ],
       "softwareAcceptanceMet": true
     }
@@ -349,7 +350,7 @@
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Physical hardware only: VoiceOver focus restoration on a physical iPhone; physical orientation changes and hardware back gestures.",
+    "reason": "iOS orientation flow not observed: the gallery stayed portrait when XCUITest rotated the headless iOS Simulator (cause not isolated). Physical hardware only: VoiceOver focus restoration on a physical iPhone; physical orientation changes and hardware back gestures.",
     "localNotes": "Nested DOM modal focus/keyboard, Android back handlers, native title/trigger focus requests and Android keyboard avoidance/handled taps.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
@@ -364,16 +365,24 @@
         "Dialog, AlertDialog, Sheet and Menu open, isolate the background and close by Close (iOS) and Android Back",
         "TalkBack focus moves to the overlay heading and returns to the trigger (Menu/Select own their trigger; examples pass returnFocusRef)",
         "keyboard avoidance and safe areas in captures",
-        "GestureSheet detents/back observed after fixing its first-open bug"
+        "GestureSheet detents/back observed after fixing its first-open bug",
+        "Android emulator landscape: Dialog opens, stays reachable and closes by Back after rotation"
       ],
       "physicalHardwareOnly": [
         "VoiceOver focus restoration on a physical iPhone",
         "physical orientation changes and hardware back gestures"
       ],
-      "otherResiduals": [],
+      "otherResiduals": [
+        "iOS orientation flow not observed: the gallery stayed portrait when XCUITest rotated the headless iOS Simulator (cause not isolated)."
+      ],
       "outOfScope": [],
-      "softwareAcceptanceMet": true
-    }
+      "softwareAcceptanceMet": false
+    },
+    "remainingBlockers": [
+      "iOS orientation flow not observed: the gallery stayed portrait when XCUITest rotated the headless iOS Simulator (cause not isolated).",
+      "Physical hardware only: VoiceOver focus restoration on a physical iPhone",
+      "Physical hardware only: physical orientation changes and hardware back gestures"
+    ]
   },
   {
     "issue": 17,
