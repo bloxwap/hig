@@ -4,13 +4,15 @@
     "slug": "bloxwap-hig-gallery",
     "version": "0.1.0",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bloxwap.hig.gallery"
     },
     "android": {
       "package": "com.bloxwap.hig.gallery"
     },
     "web": {
       "bundler": "metro"
-    }
+    },
+    "scheme": "bloxwaphig"
   }
 }

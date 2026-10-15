@@ -66,3 +66,13 @@ it('native menu disclosure is quiet and one accepted selection follows the actio
  act(()=>tree.findAllByType(Button).find(b=>b.props.children==='Select').props.onPress(event()));expect(order).toEqual(['action','feedback']);expect(emit.mock.calls[0][0].intent).toBe('selection');
  act(()=>tree.findAllByType(Button).find(b=>b.props.children==='Actions').props.onPress(event()));act(()=>tree.findAllByType(Button).find(b=>b.props.children==='Cancel').props.onPress(event()));expect(emit).toHaveBeenCalledTimes(1);
 });
+it('native button keeps adjacent text children in one wrapping Text run (iOS Simulator regression)',()=>{
+ // Select/MarketRow pass `{label}: {value}` and `{name} ({symbol})`; split runs rendered "Bitcoin ( BTC" with ")" wrapped alone.
+ const {Text}=require('react-native');const {Select}=require('../../packages/native/src/select');const {MarketRow}=require('../../packages/native/src/recipes');
+ const select=mount(React.createElement(Select,{label:'Component',options:[{value:'button',label:'Button'}],value:'button',onValueChange:jest.fn()}));
+ expect(select.findAllByType(Text).map(t=>t.props.children)).toContain('Component: Button');
+ const row=mount(React.createElement(MarketRow,{symbol:'BTC',name:'Bitcoin',price:1,change:1,onSelect:jest.fn()}));
+ expect(row.findAllByType(Text).map(t=>t.props.children)).toContain('Bitcoin (BTC)');
+ const icon=mount(React.createElement(Button,null,'Copy ',3,React.createElement(Text,{testID:'icon'},'*'),' items'));
+ expect(icon.findAllByType(Text).map(t=>t.props.children)).toEqual(['Copy 3','*',' items']);
+});
