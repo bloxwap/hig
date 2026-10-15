@@ -125,3 +125,10 @@ it('native iOS slider handles VoiceOver increment/decrement actions in 5% steps 
  if(root)act(()=>root.unmount());const disabled=jest.fn();const t2=mount(React.createElement(Slider,{label:'Volume',value:100,disabled:true,onValueChange:disabled}));
  act(()=>t2.findAll(n=>n.props.onAccessibilityAction)[0].props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));expect(disabled).not.toHaveBeenCalled();
 });
+it('native code recipes use the registered mono face and stay LTR inside RTL roots (simulator capture regression)',()=>{
+ const {Text,StyleSheet}=require('react-native');const {HIGProvider}=require('../../packages/native/src/provider');const {CodeWindow,InstallCommand}=require('../../packages/native/src/recipes');
+ const tree=mount(React.createElement(HIGProvider,{direction:'rtl',fontFamily:'BloxwapSansRegular',monoFontFamily:'BloxwapMonoRegular'},React.createElement(CodeWindow,{language:'TypeScript'},'a >= b'),React.createElement(InstallCommand,{command:'npm i x',onCopy:jest.fn()})));
+ const style=text=>StyleSheet.flatten(tree.findAllByType(Text).find(t=>t.props.children===text).props.style);
+ for(const text of ['a >= b','npm i x'])expect(style(text)).toMatchObject({fontFamily:'BloxwapMonoRegular',writingDirection:'ltr'});
+ expect(style('TypeScript')).toMatchObject({fontFamily:'BloxwapSansRegular',writingDirection:'rtl'});
+});

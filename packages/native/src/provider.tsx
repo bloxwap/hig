@@ -2,13 +2,13 @@ import type {FeedbackSink,FeedbackIntent} from '@bloxwap/hig-contracts/feedback'
 import React,{createContext,useContext,useEffect,useState,useRef,useId} from 'react';
 import {AccessibilityInfo,I18nManager} from 'react-native';
 import {defaultEnvironment,type Environment} from '@bloxwap/hig-contracts';
-export interface HIGContext extends Environment {onAccepted?:(id:string)=>void;feedback?:FeedbackSink;fontFamily?:string;fontFamilies?:Readonly<Record<string,string>>}
+export interface HIGContext extends Environment {onAccepted?:(id:string)=>void;feedback?:FeedbackSink;fontFamily?:string;fontFamilies?:Readonly<Record<string,string>>;/** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */monoFontFamily?:string}
 const Context=createContext<HIGContext>({...defaultEnvironment,direction:I18nManager.isRTL?'rtl':'ltr'});
 /** Direction defaults to the OS layout direction (I18nManager) so HIG roots never force LTR inside an RTL app. */
-export function HIGProvider({children,density='comfortable',locale='en-US',direction=I18nManager.isRTL?'rtl':'ltr',reducedMotion,onAccepted,feedback,fontFamily,fontFamilies}:React.PropsWithChildren<Partial<HIGContext>>){
+export function HIGProvider({children,density='comfortable',locale='en-US',direction=I18nManager.isRTL?'rtl':'ltr',reducedMotion,onAccepted,feedback,fontFamily,fontFamilies,monoFontFamily}:React.PropsWithChildren<Partial<HIGContext>>){
  const [osReduced,setOSReduced]=useState(false);
  useEffect(()=>{let alive=true;void AccessibilityInfo.isReduceMotionEnabled().then(v=>{if(alive)setOSReduced(v);}).catch(()=>{});const sub=AccessibilityInfo.addEventListener('reduceMotionChanged',setOSReduced);return()=>{alive=false;sub.remove();};},[]);
- return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,fontFamily,fontFamilies}}>{children}</Context.Provider>;
+ return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,fontFamily,fontFamilies,monoFontFamily}}>{children}</Context.Provider>;
 }
 export const useHIG=()=>useContext(Context);
 export function useControllable<T>(value:T|undefined,initial:T,onChange?: (value:T)=>void,intent:FeedbackIntent='selection'):[T,(next:T)=>void]{
