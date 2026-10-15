@@ -8,7 +8,9 @@ import {Field,AmountInput,TextArea} from '../packages/react/src/field';
 import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/react/src/selection';
 import {Tabs} from '../packages/react/src/navigation';
 import {Dialog} from '../packages/react/src/overlay';
-import {Toast} from '../packages/react/src/status';
+import {Toast,Callout,Alert} from '../packages/react/src/status';
+import {InstallCommand} from '../packages/react/src/recipes';
+import {readFileSync} from 'node:fs';
 import {Percent} from '../packages/react/src/data';
 afterEach(cleanup);
 describe('DOM behavior contracts',()=>{
@@ -31,3 +33,26 @@ it('preserves every undismissed notification through a burst and retry',async()=
 
 it('disabled fields cannot be re-enabled by a child and amount input keeps host keyboard mode',()=>{render(<Field label='Amount' disabled><AmountInput disabled={false} inputMode='text'/></Field>);const input=screen.getByRole('textbox') as HTMLInputElement;expect(input.disabled).toBe(true);expect(input.inputMode).toBe('text');});
 it('announces a burst once and preserves pending critical text through rapid dismissal',async()=>{const notices=[{id:'critical',message:'Failed operation',severity:'error' as const},{id:'info',message:'Copied',severity:'info' as const}];const {rerender}=render(<Toast notices={notices} onDismiss={()=>{}}/>);rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);await new Promise(resolve=>setTimeout(resolve,40));expect(screen.getByRole('alert').textContent).toBe('Failed operation');rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);expect(screen.getAllByRole('alert')).toHaveLength(1);});
+describe('Web component polish (#69)',()=>{
+ it('gives InstallCommand inside Tabs one tab stop, and keeps text-only panels focusable',async()=>{
+  render(<><Tabs label='Install' items={[{value:'npm',label:'npm',content:<InstallCommand command='npm i @bloxwap/hig-react' onCopy={()=>{}}/>},{value:'pnpm',label:'pnpm',content:<InstallCommand command='pnpm add @bloxwap/hig-react' onCopy={()=>{}}/>}]}/><Tabs label='Notes' items={[{value:'a',label:'About',content:'Plain text body'}]}/></>);
+  const [installPanel,textPanel]=screen.getAllByRole('tabpanel');
+  expect(installPanel.hasAttribute('tabindex')).toBe(false);expect(textPanel.getAttribute('tabindex')).toBe('0');
+  screen.getByRole('tab',{name:'npm'}).focus();
+  await userEvent.tab();expect(document.activeElement?.tagName).toBe('PRE');expect(document.activeElement?.textContent).toBe('npm i @bloxwap/hig-react');
+  await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('button',{name:'Copy install command'}));
+  await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('tab',{name:'About'}));
+  await userEvent.tab();expect(document.activeElement).toBe(textPanel);
+  screen.getByRole('tab',{name:'npm'}).focus();await userEvent.keyboard('{ArrowRight}');
+  const pnpmPanel=screen.getAllByRole('tabpanel')[0];expect(pnpmPanel.id).toMatch(/pnpm$/);expect(pnpmPanel.hasAttribute('tabindex')).toBe(false);
+  await userEvent.tab();expect(document.activeElement?.textContent).toBe('pnpm add @bloxwap/hig-react');
+ });
+ it('colours note and tip callouts, accepts a ReactNode title and stays out of live regions',()=>{
+  render(<><Callout severity='note' title={<><code>tick</code> size</>}><p>Prices snap to the tick.</p></Callout><Callout severity='tip'><p>No title.</p></Callout><Alert severity='warning' title='Stale'>Retry</Alert></>);
+  const note=screen.getByText('tick').closest('section')!;expect(note.dataset.severity).toBe('note');expect(note.querySelector('strong')?.textContent).toBe('tick size');expect(note.getAttribute('role')).toBeNull();
+  const tip=screen.getByText('No title.').closest('section')!;expect(tip.dataset.severity).toBe('tip');expect(tip.querySelector('strong')).toBeNull();
+  expect(screen.getByRole('status').dataset.severity).toBe('warning');
+  const css=readFileSync('packages/react/src/styles.css','utf8');
+  for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']]){const rule=severity==='note'||severity==='info'?/\[data-severity\] \{ border-inline-start:3px solid var\(--hig-info\)/:new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{ border-inline-start-color:var\\(--hig-${role}\\)`);expect(css,`${severity} uses --hig-${role}`).toMatch(rule);}
+ });
+});

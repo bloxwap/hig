@@ -246,7 +246,7 @@ Do: expose current location and keep deep-link ownership with host. Don’t: rep
 
 ## States, interaction and accessibility
 
-Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
+Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. On DOM the active panel is a tab stop only when its content does not start with a focusable element, so a panel that opens with an `InstallCommand` or `CodeWindow` (focusable `pre`) or a button adds no second, empty tab stop. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -355,7 +355,7 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. |
 | Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
-| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. On web the keyboard focus ring wraps the thumb inside the input box, so it never overlaps the label at either density, even if the host collapses the field gap; forced-colours mode uses an inset `Highlight` outline. |
 
 ## When to use and examples
 
@@ -391,10 +391,26 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Alert` | `title`, `severity`, and an optional recovery `action`. Native severity sets the accent border role (info → `info`, success → `positive`, warning → `warning`, error → `negative`); `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Alert` | `title` (string or ReactNode, optional), `severity`, and an optional recovery `action`. Announces as `status` (`alert` for `error`) unless `announce={false}`. Native severity sets the accent border role (see Severities); `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Callout` | Same props as `Alert` for static guidance such as documentation notes. Not a live region unless `announce` is set. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |
+
+### Severities
+
+Every severity colours the inline-start edge from a token role, so hosts do not add their own edges (#69):
+
+| `severity` | Use | Edge token |
+| --- | --- | --- |
+| `info` (default) | Neutral information | `--hig-info` |
+| `note` | Documentation note (GitHub `> [!NOTE]`/`[!IMPORTANT]`) | `--hig-info` |
+| `tip` | Documentation tip (`> [!TIP]`) | `--hig-positive` |
+| `success` | Completed outcome | `--hig-positive` |
+| `warning` | Recoverable risk (`> [!WARNING]`) | `--hig-warning` |
+| `error` | Failure needing action (`> [!CAUTION]`) | `--hig-negative` |
+
+Colour is never the only signal: keep a title or leading text that names the severity in the reader's language. Native uses the same roles for its accent border and accepts the same ReactNode titles.
 
 ## When to use and examples
 

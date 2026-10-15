@@ -241,3 +241,4 @@ it('native Android slider falls back to a plain adjustable View when HIGAdjustab
   }finally{Object.defineProperty(RN.Platform,'OS',descriptor);RN.UIManager.hasViewManagerConfig=original;}
  });
 });
+it('native Callout accepts note/tip, a ReactNode title and stays silent by default (#69)',()=>{const {Callout,Alert}=require('../../packages/native/src/status');const {Text}=require('react-native');const tree=mount(React.createElement(React.Fragment,null,React.createElement(Callout,{severity:'tip',title:React.createElement(Text,null,'Tick size')},React.createElement(Text,null,'Snap prices.')),React.createElement(Alert,{severity:'error',title:'Failed'})));const regions=tree.findAll(n=>typeof n.type==='string'&&n.props.accessibilityLiveRegion!==undefined).map(n=>n.props.accessibilityLiveRegion);expect(regions).toEqual(['none',require('react-native').Platform.OS==='ios'?'none':'assertive']);expect(JSON.stringify(root.toJSON())).toContain('Tick size');});

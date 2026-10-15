@@ -41,8 +41,10 @@ table { border-collapse:collapse;width:100%; }th,td { padding:12px;text-align:st
 .hig-badge { padding:4px 10px;border-radius:9999px;background:var(--hig-nested); }
 .hig-avatar { display:inline-grid;place-items:center;width:40px;height:40px;border-radius:9999px;background:var(--hig-nested); }
 .hig-skeleton { min-height:48px;background:var(--hig-nested);border-radius:10px; }
-[data-severity='error'] { border-inline-start:3px solid var(--hig-negative); }
-[data-severity='warning'] { border-inline-start:3px solid var(--hig-warning); }
+[data-severity] { border-inline-start:3px solid var(--hig-info); }
+[data-severity='error'] { border-inline-start-color:var(--hig-negative); }
+[data-severity='warning'] { border-inline-start-color:var(--hig-warning); }
+[data-severity='success'],[data-severity='tip'] { border-inline-start-color:var(--hig-positive); }
 @media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled) {transform:none;} }
 [data-hig-motion='reduced'] .hig-button:active:not(:disabled) {transform:none;}
 .hig-button[role='tab'][aria-selected='false'] { background:var(--hig-nested); color:var(--hig-text); }
@@ -86,6 +88,10 @@ input[type='range'] { accent-color:var(--hig-action); min-height:48px; width:100
 .hig-range::-moz-range-track { height:4px; border-radius:9999px; background:var(--hig-border); }
 .hig-range::-moz-range-progress { height:4px; border-radius:9999px; background:var(--hig-action); }
 .hig-range::-moz-range-thumb { width:18px; height:18px; border:0; border-radius:50%; background:var(--hig-action); box-shadow:0 0 0 3px var(--hig-surface); }
+/* The focus ring wraps the thumb inside the input box, so it never paints over the label above, whatever gap the host sets (#69). */
+.hig-range:focus-visible { outline:0; }
+.hig-range:focus-visible::-webkit-slider-thumb { box-shadow:0 0 0 3px var(--hig-surface),0 0 0 5px var(--hig-focus); }
+.hig-range:focus-visible::-moz-range-thumb { box-shadow:0 0 0 3px var(--hig-surface),0 0 0 5px var(--hig-focus); }
 [dir='rtl'] .hig-range::-webkit-slider-runnable-track { background:linear-gradient(to left,var(--hig-action) var(--hig-range-fill),var(--hig-border) var(--hig-range-fill)); }
 
 .hig-progress { display:flex; flex-direction:column; gap:.75rem; width:100%; line-height:1.5; }
@@ -115,4 +121,5 @@ input[type='range'] { accent-color:var(--hig-action); min-height:48px; width:100
   .hig-choice input,.hig-select select,.hig-range { appearance:auto; -webkit-appearance:auto; }
   .hig-choice input::before,.hig-select::after { display:none; }
   .hig-segment input:checked + span { outline:2px solid Highlight; outline-offset:-2px; }
+  .hig-range:focus-visible { outline:2px solid Highlight; outline-offset:-2px; }
 }

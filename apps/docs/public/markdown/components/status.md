@@ -10,10 +10,26 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Alert` | `title`, `severity`, and an optional recovery `action`. Native severity sets the accent border role (info → `info`, success → `positive`, warning → `warning`, error → `negative`); `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Alert` | `title` (string or ReactNode, optional), `severity`, and an optional recovery `action`. Announces as `status` (`alert` for `error`) unless `announce={false}`. Native severity sets the accent border role (see Severities); `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Callout` | Same props as `Alert` for static guidance such as documentation notes. Not a live region unless `announce` is set. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |
+
+### Severities
+
+Every severity colours the inline-start edge from a token role, so hosts do not add their own edges (#69):
+
+| `severity` | Use | Edge token |
+| --- | --- | --- |
+| `info` (default) | Neutral information | `--hig-info` |
+| `note` | Documentation note (GitHub `> [!NOTE]`/`[!IMPORTANT]`) | `--hig-info` |
+| `tip` | Documentation tip (`> [!TIP]`) | `--hig-positive` |
+| `success` | Completed outcome | `--hig-positive` |
+| `warning` | Recoverable risk (`> [!WARNING]`) | `--hig-warning` |
+| `error` | Failure needing action (`> [!CAUTION]`) | `--hig-negative` |
+
+Colour is never the only signal: keep a title or leading text that names the severity in the reader's language. Native uses the same roles for its accent border and accepts the same ReactNode titles.
 
 ## When to use and examples
 

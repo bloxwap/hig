@@ -20,7 +20,7 @@ Do: expose current location and keep deep-link ownership with host. Don’t: rep
 
 ## States, interaction and accessibility
 
-Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
+Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. On DOM the active panel is a tab stop only when its content does not start with a focusable element, so a panel that opens with an `InstallCommand` or `CodeWindow` (focusable `pre`) or a button adds no second, empty tab stop. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 

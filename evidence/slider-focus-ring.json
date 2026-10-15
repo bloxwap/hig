@@ -1,0 +1,114 @@
+{
+  "version": "0.1.0",
+  "issue": 69,
+  "check": "keyboard-focused Slider ring paints no focus-colour pixel inside the label box",
+  "results": [
+    {
+      "engine": "chromium",
+      "density": "comfortable",
+      "host": "default",
+      "ringPixels": 114,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 62,
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
+      "capture": "artifacts/visual/slider-focus-comfortable-chromium.png"
+    },
+    {
+      "engine": "chromium",
+      "density": "compact",
+      "host": "default",
+      "ringPixels": 114,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 58,
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
+      "capture": "artifacts/visual/slider-focus-compact-chromium.png"
+    },
+    {
+      "engine": "chromium",
+      "density": "compact",
+      "host": "tight",
+      "ringPixels": 114,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 50,
+      "regression": null,
+      "capture": "artifacts/visual/slider-focus-compact-tight-chromium.png"
+    },
+    {
+      "engine": "firefox",
+      "density": "comfortable",
+      "host": "default",
+      "ringPixels": 117,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 62,
+      "regression": null,
+      "capture": "artifacts/visual/slider-focus-comfortable-firefox.png"
+    },
+    {
+      "engine": "firefox",
+      "density": "compact",
+      "host": "default",
+      "ringPixels": 117,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 58,
+      "regression": null,
+      "capture": "artifacts/visual/slider-focus-compact-firefox.png"
+    },
+    {
+      "engine": "firefox",
+      "density": "compact",
+      "host": "tight",
+      "ringPixels": 117,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 50,
+      "regression": null,
+      "capture": "artifacts/visual/slider-focus-compact-tight-firefox.png"
+    },
+    {
+      "engine": "webkit",
+      "density": "comfortable",
+      "host": "default",
+      "ringPixels": 116,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 62,
+      "regression": null,
+      "capture": "artifacts/visual/slider-focus-comfortable-webkit.png"
+    },
+    {
+      "engine": "webkit",
+      "density": "compact",
+      "host": "default",
+      "ringPixels": 116,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 58,
+      "regression": null,
+      "capture": "artifacts/visual/slider-focus-compact-webkit.png"
+    },
+    {
+      "engine": "webkit",
+      "density": "compact",
+      "host": "tight",
+      "ringPixels": 116,
+      "labelOverlap": 0,
+      "labelBottom": 48,
+      "inputTop": 50,
+      "regression": null,
+      "capture": "artifacts/visual/slider-focus-compact-tight-webkit.png"
+    }
+  ]
+}

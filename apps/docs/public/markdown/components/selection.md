@@ -12,7 +12,7 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. |
 | Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
-| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. On web the keyboard focus ring wraps the thumb inside the input box, so it never overlaps the label at either density, even if the host collapses the field gap; forced-colours mode uses an inset `Highlight` outline. |
 
 ## When to use and examples
 
