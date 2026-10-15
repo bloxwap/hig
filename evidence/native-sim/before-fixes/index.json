@@ -24,6 +24,12 @@
       "kind": "Android emulator",
       "defect": "environment: with the AVD's hardware-keyboard profile Gboard shows only a collapsed toolbar, so keyboard avoidance could not be observed; the run was repeated with hw.keyboard=no",
       "fix": "harness: AVD hw.keyboard=no during the run (restored afterwards)"
+    },
+    {
+      "file": "ios-dialog-forced-portrait.json",
+      "kind": "iOS Simulator (XCUITest, candidate 0.1.0-candidate.sha3a71ec9a)",
+      "defect": "With the host in landscape (window 874x402), opening the native Dialog rotated the interface to portrait (window 402x874, xcodebuild log: 'Interface orientation changed to Portrait') and back after Close; React Native's iOS Modal defaults supportedOrientations to portrait. Capture: ios-landscape-dialog-forced-portrait.png",
+      "fix": "Dialog passes supportedOrientations for every orientation (packages/native/src/overlay.tsx); covered by tests/native/components.test.cjs"
     }
   ],
   "alsoObservedInRunLogs": [

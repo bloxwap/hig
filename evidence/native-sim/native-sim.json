@@ -116,34 +116,34 @@
     "nativeExecution": {
       "ios": {
         "galleryExamples": 64,
-        "runtime": "Runtime: ios 26.5 · RN 0.81.5 · Hermes yes"
+        "runtime": "Runtime: ios 26.5 \u00b7 RN 0.81.5 \u00b7 Hermes yes"
       },
       "android": {
         "galleryExamples": 64,
-        "runtime": "Runtime: android 35 · RN 0.81.5 · Hermes yes"
+        "runtime": "Runtime: android 35 \u00b7 RN 0.81.5 \u00b7 Hermes yes"
       }
     },
     "fontRasterization": "Bloxwap Sans regular/semibold and Bloxwap Mono registered through expo-font and rendered in every capture; mixed-script fallback, tabular digits and mono code ligatures in the diagnostics captures (ios-baseline.png, android-baseline.png)",
     "color": "Native sRGB tokens render pixel-exact in simulator/emulator captures (#0a0a0a background, #171717 surface, #262626 nested, #00ff3f action, #fafafa text, #a1a1a1 muted sampled from ios-Button.png and android-Button.png). Captures are sRGB framebuffers; Display-P3 panel output was not observable.",
     "dynamicTypeAndFontScale": {
-      "ios": "Font scale: 3.57 (PixelRatio 3.57) · window 402x874 @3x",
+      "ios": "Font scale: 3.57 (PixelRatio 3.57) \u00b7 window 402x874 @3x",
       "iosAx5AuditIssueTypes": {
         "Label duplicates traits": 1
       },
-      "android": "Font scale: 2.00 (PixelRatio 2.00) · window 420x912 @3x",
+      "android": "Font scale: 2.00 (PixelRatio 2.00) \u00b7 window 420x912 @3x",
       "androidFont200ScannerIssues": 0
     },
     "rtl": {
-      "iosOsArabic": "OS RTL: true · HIG direction: rtl",
-      "androidOsArabic": "OS RTL: true · HIG direction: rtl",
+      "iosOsArabic": "OS RTL: true \u00b7 HIG direction: rtl",
+      "androidOsArabic": "OS RTL: true \u00b7 HIG direction: rtl",
       "higDirectionRtlCaptures": {
         "ios": 18,
         "android": 18
       }
     },
     "reducedMotion": {
-      "ios": "OS reduce motion: true · screen reader: false",
-      "android": "OS reduce motion: true · screen reader: false"
+      "ios": "OS reduce motion: true \u00b7 screen reader: false",
+      "android": "OS reduce motion: true \u00b7 screen reader: false"
     },
     "keyboardAvoidance": {
       "ios": [
@@ -584,9 +584,17 @@
       },
       "ios": {
         "kind": "iOS Simulator",
-        "method": "XCUIDevice.shared.orientation = .landscapeLeft on the headless Simulator (testOrientation)",
-        "result": "not observed: XCUITest reported a landscape window frame (874x402) and the Dialog flow passed, but captures show the gallery still laid out in portrait, including after the fixture allowed rotation (app.json orientation default). The cause was not isolated (headless Simulator rotation vs. Expo root view controller).",
-        "candidate": "0.1.0-candidate.sha3a71ec9a"
+        "method": "XCUIDevice.shared.orientation = .landscapeLeft on the headless Simulator (testOrientation); window frames read through XCUITest before opening, while open and after closing the Dialog",
+        "windowFrame": "874x402",
+        "windowFrameDialogOpen": "874x402",
+        "windowFrameAfterClose": "874x402",
+        "dialogOpenedInLandscape": true,
+        "closeHittable": true,
+        "closed": true,
+        "tradeEntryReflowed": true,
+        "result": "observed: the gallery lays out in landscape (window 874x402); the native Dialog opens and stays in landscape (window 874x402 while open), Close is hittable and closes it (window still 874x402), and TradeEntry reflows to the landscape width. Captures are stored rotated upright; XCUIScreen returns the Simulator framebuffer in portrait orientation, which the earlier run misread as a portrait layout.",
+        "beforeFix": "before-fixes/ios-dialog-forced-portrait.json: on candidate sha3a71ec9a the Dialog forced the interface to portrait while open (window 402x874; xcodebuild log 'Interface orientation changed to Portrait') because React Native's iOS Modal defaults supportedOrientations to portrait",
+        "candidate": "0.1.0-candidate.shadb892cc3"
       }
     },
     "gestureSheet": {
