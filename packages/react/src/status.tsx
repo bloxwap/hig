@@ -23,9 +23,9 @@ export function Toast({notices,onDismiss}: {notices:readonly Notice[];onDismiss:
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <aside aria-label='Notifications'>{unique.map(n=><Alert announce={false} key={n.id} title={n.message} severity={n.severity} action={<>{n.action}<Button intent='ghost' aria-label={`Dismiss ${n.message}`} onClick={()=>onDismiss(n.id)}>Dismiss</Button></>}/>)}<span className='hig-sr-only' role={announcement.severity==='error'?'alert':'status'} aria-atomic='true'>{announcement.message}</span></aside>;
 }
-export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){return <label>{label}<progress aria-label={label} value={value} max={max}/></label>;}
-export function Spinner({label='Loading'}: {label?:string}){return <span role='status'>{label}…</span>;}
+export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
+export function Spinner({label='Loading'}: {label?:string}){return <span className='hig-spinner' role='status'><span className='hig-spinner-indicator' aria-hidden='true'/>{label}…</span>;}
 export function Skeleton({label='Loading content'}: {label?:string}){return <div className='hig-skeleton' aria-label={label} role='status'/>;}
 export function EmptyState({title,description,action}: {title:string;description:string;action?:React.ReactNode}){return <section className='hig-surface'><h3>{title}</h3><p>{description}</p>{action}</section>;}
 export function Avatar({name,src}: {name:string;src?:string}){return src?<img className='hig-avatar' alt={name} src={src}/>:<span className='hig-avatar' role='img' aria-label={name}>{name.slice(0,2)}</span>;}
-export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){return <span data-state={state}>{label}: {state}</span>;}
+export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){return <span className='hig-status-indicator' data-state={state}>{label}: {state}</span>;}

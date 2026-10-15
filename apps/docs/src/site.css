@@ -43,3 +43,9 @@
 .component-demo .hig-button { max-width:100%;white-space:normal;overflow-wrap:anywhere; }
 .code-toolbar { flex-wrap:wrap; }
 .prose { overflow-wrap:anywhere; }
+
+/* Settings controls share the same rhythm as the component examples. */
+.configuration .hig-segmented-control { display:block; }
+.configuration .hig-segment span { min-height:36px; font-size:.8125rem; }
+.configuration .hig-switch { flex-direction:row-reverse; justify-content:space-between; gap:1rem; }
+.configuration .hig-slider { gap:0; }
