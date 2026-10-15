@@ -310,10 +310,14 @@ final class NativeVerificationUITests: XCTestCase {
     let close = app.buttons["Close"]
     r["closeVisible"] = close.waitForExistence(timeout: 5)
     r["closeHittable"] = close.exists && close.isHittable
+    // RN's iOS Modal defaults to portrait; a landscape window frame here proves the overlay kept the host orientation.
+    r["windowFrameDialogOpen"] = NSCoder.string(for: app.windows.firstMatch.frame)
+    r["closeFrameDialogOpen"] = close.exists ? NSCoder.string(for: close.frame) : ""
     try capture("ios-landscape-dialog-open")
     if close.exists { close.tap() }
     Thread.sleep(forTimeInterval: 0.8)
     r["closed"] = !app.buttons["Close"].exists
+    r["windowFrameAfterClose"] = NSCoder.string(for: app.windows.firstMatch.frame)
     open("component=TradeEntry&state=default")
     try capture("ios-landscape-tradeentry")
     try write("ios-orientation.json", r)
