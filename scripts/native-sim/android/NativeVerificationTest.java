@@ -445,11 +445,12 @@ public class NativeVerificationTest {
     String name = arg("name", "snapshot");
     open(arg("query", "component=Button&state=default&diag=1"));
     settle(600);
+    // Cold starts after settings changes are slow on the emulator; wait for the OS preference promises to resolve.
+    AccessibilityNodeInfo runtime = waitFor(n -> label(n).startsWith("Runtime:"), 15000);
+    AccessibilityNodeInfo motion = waitFor(n -> label(n).startsWith("OS reduce motion:") && !label(n).contains("null"), 15000);
+    AccessibilityNodeInfo scale = waitFor(n -> label(n).startsWith("Font scale:"), 3000);
+    AccessibilityNodeInfo rtl = waitFor(n -> label(n).startsWith("OS RTL:"), 3000);
     JSONObject r = new JSONObject().put("name", name).put("diagnostics", diagnostics());
-    AccessibilityNodeInfo runtime = waitFor(n -> label(n).startsWith("Runtime:"), 2000);
-    AccessibilityNodeInfo scale = waitFor(n -> label(n).startsWith("Font scale:"), 2000);
-    AccessibilityNodeInfo rtl = waitFor(n -> label(n).startsWith("OS RTL:"), 2000);
-    AccessibilityNodeInfo motion = waitFor(n -> label(n).startsWith("OS reduce motion:"), 2000);
     r.put("runtime", runtime == null ? JSONObject.NULL : label(runtime)).put("fontScale", scale == null ? JSONObject.NULL : label(scale)).put("rtl", rtl == null ? JSONObject.NULL : label(rtl)).put("motion", motion == null ? JSONObject.NULL : label(motion));
     write("trees/android-" + name + ".json", tree().toString(1));
     capture("android-" + name);

@@ -1,0 +1,24 @@
+[
+  {
+    "component" : "Field",
+    "decimalKeyPresent" : true,
+    "inputAboveKeyboard" : true,
+    "inputFound" : true,
+    "inputFrame" : "{{45, 520}, {312, 46}}",
+    "inputFrameBeforeTap" : "{{45, 547}, {312, 46}}",
+    "keyboardFrame" : "{{0, 583}, {402, 233}}",
+    "keyboardShown" : true,
+    "keyboardType" : 12
+  },
+  {
+    "component" : "TradeEntry",
+    "decimalKeyPresent" : true,
+    "inputAboveKeyboard" : true,
+    "inputFound" : true,
+    "inputFrame" : "{{45, 396}, {312, 46}}",
+    "inputFrameBeforeTap" : "{{45, 396}, {312, 46}}",
+    "keyboardFrame" : "{{0, 583}, {402, 233}}",
+    "keyboardShown" : true,
+    "keyboardType" : 12
+  }
+]

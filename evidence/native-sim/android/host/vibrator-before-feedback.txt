@@ -1,0 +1,47 @@
+VibratorManagerService:
+  VibrationSettings:
+    vibrateOn = true
+    keyboardVibrationOn = true, default: true
+    vibrateInputDevices = false
+    VibrationIntensities:
+    VibrationConfig:
+      ignoreVibrationsOnWirelessCharger = false
+      requestVibrationParamsForUsages = [ALARM, RINGTONE, NOTIFICATION, COMMUNICATION_REQUEST]
+      requestVibrationParamsTimeoutMs = 50
+  VibrationScaler:
+    defaultVibrationAmplitude = 255
+  Vibrators:
+    Vibrator (id=1):
+      isVibrating = false
+      vibratorInfoLoadSuccessful = true
+      vibratorStateListener size = 0
+      VibratorInfo:
+  CurrentVibration:
+  NextVibration:
+  CurrentExternalVibration:
+  Recent vibrations:
+      10-14 21:36:22.831 |   effect |             finished | duration:    54ms | start: 21:36:22.832 | end: 21:36:22.885 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:36:52.225 |   effect |             finished | duration:    54ms | start: 21:36:52.225 | end: 21:36:52.279 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:36:55.517 |   effect |             finished | duration:    55ms | start: 21:36:55.520 | end: 21:36:55.572 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:37:02.969 |   effect |             finished | duration:   206ms | start: 21:37:03.124 | end: 21:37:03.175 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:37:52.741 |   effect |             finished | duration:    53ms | start: 21:37:52.743 | end: 21:37:52.794 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:37:55.968 |   effect |             finished | duration:    55ms | start: 21:37:55.972 | end: 21:37:56.023 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:38:00.566 |   effect |             finished | duration:    58ms | start: 21:38:00.569 | end: 21:38:00.624 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+  Aggregated vibration history:
+      10-14 20:49:38.822 |   effect | cancelled_superseded | duration:     3ms | start: 20:49:38.822 | end: 20:49:38.825 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 20:49:41.978 |   effect |             finished | duration:    52ms | start: 20:49:41.980 | end: 20:49:42.031 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 20:49:44.848 |   effect |             finished | duration:    51ms | start: 20:49:44.849 | end: 20:49:44.899 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 20:53:24.247 |   effect |             finished | duration:    56ms | start: 20:53:24.252 | end: 20:53:24.303 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 20:53:27.498 |   effect |             finished | duration:    64ms | start: 20:53:27.500 | end: 20:53:27.562 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 20:53:30.526 |   effect |             finished | duration:    54ms | start: 20:53:30.527 | end: 20:53:30.580 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:10:34.705 |   effect | cancelled_superseded | duration:    39ms | start: 21:10:34.707 | end: 21:10:34.744 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:10:34.740 |   effect |             finished | duration:    86ms | start: 21:10:34.750 | end: 21:10:34.827 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:10:36.476 |   effect |             finished | duration:    57ms | start: 21:10:36.478 | end: 21:10:36.533 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:20:23.803 |   effect |             finished | duration:    55ms | start: 21:20:23.805 | end: 21:20:23.857 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:20:27.996 |   effect |             finished | duration:    59ms | start: 21:20:28.001 | end: 21:20:28.055 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:36:21.976 |   effect |             finished | duration:    75ms | start: 21:36:21.986 | end: 21:36:22.051 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+      10-14 21:36:22.318 |   effect |             finished | duration:    54ms | start: 21:36:22.319 | end: 21:36:22.371 | scale:     NONE (adaptive=1.00) | flags:    0 | usage: TOUCH | com.bloxwap.hig.gallery (uid=10207, deviceId=0) | reason: null | played: [Step=0ms(amplitude=0.00),Step=50ms(amplitude=0.12)] | original: null
+  VibratorControlService:
+    isVibratorControllerRegistered = false
+    hasPendingVibrationParamsRequest = false
+    Vibration parameters update history:

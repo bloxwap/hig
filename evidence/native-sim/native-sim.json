@@ -1,0 +1,597 @@
+{
+  "observedAt": "2026-10-14",
+  "evidenceKinds": {
+    "automated": "Jest/Vitest unit tests, XCUITest and UiAutomation instrumentation assertions, Xcode accessibility audits, scanner-style Android checks",
+    "iOS Simulator": "Release build of the packed candidate on a booted iOS Simulator; screenshots via XCUIScreen; hierarchy via XCUIApplication.debugDescription",
+    "Android emulator": "Release APK of the packed candidate on the Android emulator; screenshots via UiAutomation/screencap; hierarchy via UiAutomation node dumps and uiautomator",
+    "physical hardware": "none available; nothing in this file is a physical-device, tactile, speaker or VoiceOver observation"
+  },
+  "environment": {
+    "host": "macOS 27.2 (Apple M3 Max), Xcode 27.2 (27B5019j), JDK 17, Android SDK emulator",
+    "iosSimulator": {
+      "device": "iPhone 16 Pro (dedicated simulator \"HIG Native iPhone 16 Pro\", 061B087F-1BF5-4548-AA37-BD2355667D01)",
+      "runtime": "iOS 26.5 (23F77)",
+      "display": "402x874 pt @3x"
+    },
+    "androidEmulator": {
+      "avd": "Medium_Phone_API_35",
+      "image": "Android 15 (API 35) Google Play arm64-v8a, sdk_gphone64_arm64",
+      "display": "1260x2736 override (420 dp wide) @3x",
+      "hardwareKeyboard": "disabled for the run (hw.keyboard=no) so the on-screen IME appears; restored afterwards",
+      "talkback": "com.google.android.marvin.talkback (preinstalled in the Play image)"
+    },
+    "stack": "Expo SDK 54 (prebuild, Release), React Native 0.81.5 New Architecture/Fabric, Hermes, React 19.1.0"
+  },
+  "candidate": {
+    "version": "0.1.0-candidate.sha1172b6a3",
+    "sourceCommit": "1172b6a (branch hig/native-sim-verification, pre-squash)",
+    "usedFor": "all iOS Simulator and Android emulator gallery/interaction/TalkBack runs",
+    "followUp": {
+      "version": "0.1.0-candidate.shad8cd24d4",
+      "sourceCommit": "d8cd24d (pre-squash)",
+      "usedFor": "GestureSheet runs on both targets and Android OS-setting snapshots (baseline, os-arabic, font-scale-200, reduce-motion) rerun with longer diagnostics waits; differs from 1172b6a only in GestureSheet accessibility"
+    },
+    "dryRun": true,
+    "published": false,
+    "tarballs": [
+      "bloxwap-hig-contracts",
+      "bloxwap-hig-feedback",
+      "bloxwap-hig-native",
+      "bloxwap-hig-tokens"
+    ],
+    "consumption": "fixtures/native copied to a scratch app with only the packed tarballs installed (scripts/native-sim/prepare-app.sh); no workspace aliases"
+  },
+  "defectsFixed": [
+    {
+      "defect": "Release launch crashed: Cannot find native module 'ExpoAsset' (hoisted expo-asset/expo-constants 57 not linked by Expo 54)",
+      "where": "fixtures/native/package.json, scripts/native-compatibility.mjs",
+      "test": "tests/native-compatibility.test.ts"
+    },
+    {
+      "defect": "Button split adjacent text children into gapped fragments (Select/MarketRow labels)",
+      "where": "packages/native/src/button.tsx",
+      "test": "tests/native/components.test.cjs"
+    },
+    {
+      "defect": "Switch (47x27dp track) and Slider (18dp SeekBar) were the actionable nodes, below 48dp",
+      "where": "packages/native/src/switch.tsx, slider.tsx",
+      "test": "tests/native/components.test.cjs"
+    },
+    {
+      "defect": "iOS VoiceOver increment/decrement left the slider unchanged (community slider drops onAccessibilityAction on Fabric)",
+      "where": "packages/native/src/slider.tsx",
+      "test": "tests/native/components.test.cjs"
+    },
+    {
+      "defect": "HIGProvider forced direction ltr under an RTL (Arabic) OS locale",
+      "where": "packages/native/src/provider.tsx",
+      "test": "tests/native/components.test.cjs"
+    },
+    {
+      "defect": "TalkBack ignored overlay focus requests; Menu/Select did not return focus to their trigger",
+      "where": "packages/native/src/overlay.tsx, select.tsx, gesture-sheet.tsx; planning/examples.json",
+      "test": "tests/native/components.test.cjs"
+    },
+    {
+      "defect": "Search and InstallCommand exposed empty live-region accessibility elements",
+      "where": "packages/native/src/navigation.tsx, recipes.tsx",
+      "test": "tests/native/components.test.cjs"
+    },
+    {
+      "defect": "Native CodeWindow/InstallCommand code used the body face and followed RTL direction",
+      "where": "packages/native/src/recipes.tsx, provider.tsx (monoFontFamily)",
+      "test": "tests/native/components.test.cjs"
+    },
+    {
+      "defect": "GestureSheet never presented on first open (dismiss() before present() leaves Gorhom DISMISSING)",
+      "where": "packages/native/src/gesture-sheet.tsx",
+      "test": "tests/native/gesture-sheet.test.cjs"
+    },
+    {
+      "defect": "Presented GestureSheet exposed one \"Bottom Sheet\" element hiding its content from VoiceOver/XCUITest",
+      "where": "packages/native/src/gesture-sheet.tsx",
+      "test": "tests/native/gesture-sheet.test.cjs"
+    },
+    {
+      "defect": "Gallery lacked host keyboard avoidance (Android 15 edge-to-edge IME covered the focused field); gallery forced LTR; gesture fixture white-on-white",
+      "where": "fixtures/native/App.tsx, gesture-sheet.tsx; docs/components/fields.md",
+      "test": "emulator/simulator keyboard checks; tests/native-verification.test.ts for the harness"
+    }
+  ],
+  "beforeFixes": "before-fixes/index.json",
+  "harness": {
+    "deepLinks": "bloxwaphig://gallery?component=&state=&dir=&diag=&rows= (fixtures/native/native-verification.ts)",
+    "scripts": [
+      "scripts/native-sim/prepare-app.sh",
+      "scripts/native-sim/run-ios.sh",
+      "scripts/native-sim/run-android.sh",
+      "scripts/native-sim/talkback-flow.sh",
+      "scripts/native-sim/run-gesture.sh",
+      "scripts/native-sim/assemble-evidence.mjs"
+    ],
+    "iosUITests": "scripts/native-sim/ios (XcodeGen spec + XCUITest)",
+    "androidInstrumentation": "scripts/native-sim/android/NativeVerificationTest.java"
+  },
+  "results": {
+    "nativeExecution": {
+      "ios": {
+        "galleryExamples": 64,
+        "runtime": "Runtime: ios 26.5 · RN 0.81.5 · Hermes yes"
+      },
+      "android": {
+        "galleryExamples": 64,
+        "runtime": "Runtime: android 35 · RN 0.81.5 · Hermes yes"
+      }
+    },
+    "fontRasterization": "Bloxwap Sans regular/semibold and Bloxwap Mono registered through expo-font and rendered in every capture; mixed-script fallback, tabular digits and mono code ligatures in the diagnostics captures (ios-baseline.png, android-baseline.png)",
+    "color": "Native sRGB tokens render pixel-exact in simulator/emulator captures (#0a0a0a background, #171717 surface, #262626 nested, #00ff3f action, #fafafa text, #a1a1a1 muted sampled from ios-Button.png and android-Button.png). Captures are sRGB framebuffers; Display-P3 panel output was not observable.",
+    "dynamicTypeAndFontScale": {
+      "ios": "Font scale: 3.57 (PixelRatio 3.57) · window 402x874 @3x",
+      "iosAx5AuditIssueTypes": {
+        "Label duplicates traits": 1
+      },
+      "android": "Font scale: 2.00 (PixelRatio 2.00) · window 420x912 @3x",
+      "androidFont200ScannerIssues": 0
+    },
+    "rtl": {
+      "iosOsArabic": "OS RTL: true · HIG direction: rtl",
+      "androidOsArabic": "OS RTL: true · HIG direction: rtl",
+      "higDirectionRtlCaptures": {
+        "ios": 18,
+        "android": 18
+      }
+    },
+    "reducedMotion": {
+      "ios": "OS reduce motion: true · screen reader: false",
+      "android": "OS reduce motion: true · screen reader: false"
+    },
+    "keyboardAvoidance": {
+      "ios": [
+        {
+          "component": "Field",
+          "decimalKeyPresent": true,
+          "inputAboveKeyboard": true,
+          "inputFound": true,
+          "inputFrame": "{{45, 520}, {312, 46}}",
+          "inputFrameBeforeTap": "{{45, 547}, {312, 46}}",
+          "keyboardFrame": "{{0, 583}, {402, 233}}",
+          "keyboardShown": true,
+          "keyboardType": 12
+        },
+        {
+          "component": "TradeEntry",
+          "decimalKeyPresent": true,
+          "inputAboveKeyboard": true,
+          "inputFound": true,
+          "inputFrame": "{{45, 396}, {312, 46}}",
+          "inputFrameBeforeTap": "{{45, 396}, {312, 46}}",
+          "keyboardFrame": "{{0, 583}, {402, 233}}",
+          "keyboardShown": true,
+          "keyboardType": 12
+        }
+      ],
+      "android": [
+        {
+          "component": "Field",
+          "inputFound": true,
+          "inputBoundsBeforeTap": "132 1540 1128 1684",
+          "imeShownAfterTap": true,
+          "inputFocused": true,
+          "inputType": 24578,
+          "inputBounds": "132 1540 1128 1684",
+          "imeBounds": "0 1953 1260 2829",
+          "inputAboveKeyboard": true,
+          "overlapPx": 0
+        },
+        {
+          "component": "TradeEntry",
+          "inputFound": true,
+          "inputBoundsBeforeTap": "132 1974 1128 2118",
+          "imeShownAfterTap": true,
+          "inputFocused": true,
+          "inputType": 24578,
+          "inputBounds": "132 1716 1128 1860",
+          "imeBounds": "0 2231 1260 3108",
+          "inputAboveKeyboard": true,
+          "overlapPx": 0
+        }
+      ]
+    },
+    "overlays": {
+      "ios": [
+        {
+          "closedByCloseButton": true,
+          "closeVisible": true,
+          "component": "Dialog",
+          "galleryHeadingReachableWhileOpen": false,
+          "titleVisible": true,
+          "triggerFound": true,
+          "triggerHittableAfterClose": true,
+          "auditIssuesWhileOpen": 0
+        },
+        {
+          "closedByCloseButton": true,
+          "closeVisible": true,
+          "component": "AlertDialog",
+          "galleryHeadingReachableWhileOpen": false,
+          "titleVisible": true,
+          "triggerFound": true,
+          "triggerHittableAfterClose": true,
+          "auditIssuesWhileOpen": 0
+        },
+        {
+          "closedByCloseButton": true,
+          "closeVisible": true,
+          "component": "Sheet",
+          "galleryHeadingReachableWhileOpen": false,
+          "titleVisible": true,
+          "triggerFound": true,
+          "triggerHittableAfterClose": true,
+          "auditIssuesWhileOpen": 0
+        },
+        {
+          "closedByCloseButton": true,
+          "closeVisible": true,
+          "component": "Menu",
+          "galleryHeadingReachableWhileOpen": false,
+          "titleVisible": true,
+          "triggerFound": true,
+          "triggerHittableAfterClose": true,
+          "auditIssuesWhileOpen": 0
+        }
+      ],
+      "androidBack": [
+        {
+          "component": "Dialog",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": null
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": null
+          }
+        },
+        {
+          "component": "AlertDialog",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": null
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": null
+          }
+        },
+        {
+          "component": "Sheet",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": null
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": null
+          }
+        },
+        {
+          "component": "Menu",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": null
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": null
+          }
+        }
+      ],
+      "androidTalkBack": [
+        {
+          "component": "Dialog",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": "Review order",
+            "class": "android.view.View",
+            "heading": true
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": "Open review order",
+            "class": "android.widget.Button",
+            "heading": false
+          }
+        },
+        {
+          "component": "AlertDialog",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": "Confirm cancellation",
+            "class": "android.view.View",
+            "heading": true
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": "Open confirm cancellation",
+            "class": "android.widget.Button",
+            "heading": false
+          }
+        },
+        {
+          "component": "Sheet",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": "Order details",
+            "class": "android.view.View",
+            "heading": true
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": "Open order details",
+            "class": "android.widget.Button",
+            "heading": false
+          }
+        },
+        {
+          "component": "Menu",
+          "triggerFound": true,
+          "triggerClick": true,
+          "openedCloseVisible": true,
+          "windowsWhileOpen": 1,
+          "focusAfterOpen": {
+            "accessibilityFocus": "Market actions",
+            "class": "android.view.View",
+            "heading": true
+          },
+          "closedByBack": true,
+          "appStillForeground": true,
+          "focusAfterBack": {
+            "accessibilityFocus": "Market actions",
+            "class": "android.widget.Button",
+            "heading": false
+          }
+        }
+      ],
+      "talkbackKeyboardFlow": [
+        "Gallery ready before keys: 1",
+        "TalkBack enabled: com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService",
+        "Dialog open after Alt+Enter: 0",
+        "Dialog closed after Back: yes",
+        "Landscape capture: 05-landscape-tradeentry.png"
+      ]
+    },
+    "sliderAccessibilityActions": {
+      "ios": {
+        "disabled": {
+          "isEnabled": false,
+          "labelAfter": "Volume preview: 84",
+          "labelBefore": "Volume preview: 84",
+          "result": "failed AXAction 2004 (increment): Error kAXErrorCannotComplete performing AXAction kAXIncrementAction_iOS on element AX element pid: 63763, elementOrHash.elementID: 4469115904.25"
+        },
+        "elementType": "rawValue 1",
+        "found": true,
+        "initialLabel": "Volume preview: 25",
+        "initialValue": "25%",
+        "steps": [
+          {
+            "accessibilityValue": "30%",
+            "action": "accessibilityIncrement",
+            "result": "performed AXAction 2004 (increment)",
+            "visibleLabel": "Volume preview: 30"
+          },
+          {
+            "accessibilityValue": "35%",
+            "action": "accessibilityIncrement",
+            "result": "performed AXAction 2004 (increment)",
+            "visibleLabel": "Volume preview: 35"
+          },
+          {
+            "accessibilityValue": "30%",
+            "action": "accessibilityDecrement",
+            "result": "performed AXAction 2005 (decrement)",
+            "visibleLabel": "Volume preview: 30"
+          },
+          {
+            "accessibilityValue": "84%",
+            "action": "touch drag toward 80%",
+            "visibleLabel": "Volume preview: 84"
+          }
+        ],
+        "traits": 8589938688
+      },
+      "android": {
+        "found": true,
+        "initialLabel": "Volume preview: 25",
+        "steps": [
+          {
+            "action": "scrollForward(increment)",
+            "performed": false,
+            "range": 30,
+            "visibleLabel": "Volume preview: 30"
+          },
+          {
+            "action": "scrollForward(increment)",
+            "performed": false,
+            "range": 35,
+            "visibleLabel": "Volume preview: 35"
+          },
+          {
+            "action": "scrollBackward(decrement)",
+            "performed": false,
+            "range": 30,
+            "visibleLabel": "Volume preview: 30"
+          },
+          {
+            "action": "setProgress(80)",
+            "performed": false,
+            "range": 30,
+            "visibleLabel": "Volume preview: 30"
+          }
+        ],
+        "disabled": {
+          "enabled": false,
+          "node": {
+            "class": "android.widget.SeekBar",
+            "contentDescription": "Volume preview",
+            "bounds": "72 958 1188 1102",
+            "dp": "372x48",
+            "focusable": true,
+            "enabled": false,
+            "range": "0.0..100.0 now 30.0",
+            "actions": [
+              "scrollForward",
+              "scrollBackward"
+            ],
+            "children": [
+              {
+                "class": "android.widget.SeekBar",
+                "stateDescription": "30%",
+                "bounds": "72 1003 1188 1057",
+                "dp": "372x18",
+                "focusable": true,
+                "enabled": false,
+                "important": false,
+                "range": "0.0..100.0 now 30.0"
+              }
+            ]
+          },
+          "performed": false,
+          "labelBefore": "Volume preview: 30",
+          "labelAfter": "Volume preview: 30"
+        }
+      }
+    },
+    "listScrolling": {
+      "ios": {
+        "elapsedSeconds": 69.88303196430206,
+        "firstRowVisible": true,
+        "samples": [
+          {
+            "afterSwipes": 6,
+            "firstVisible": "Verification row 97",
+            "visibleCount": 18
+          },
+          {
+            "afterSwipes": 12,
+            "firstVisible": "Verification row 198",
+            "visibleCount": 17
+          },
+          {
+            "afterSwipes": 18,
+            "firstVisible": "Verification row 301",
+            "visibleCount": 18
+          },
+          {
+            "afterSwipes": 24,
+            "firstVisible": "Verification row 402",
+            "visibleCount": 18
+          }
+        ]
+      },
+      "android": {
+        "firstRowVisible": true,
+        "scrollableFound": true,
+        "elapsedMs": 6660,
+        "samples": [
+          {
+            "afterScrolls": 8,
+            "performed": false,
+            "firstVisible": "Verification row 9"
+          },
+          {
+            "afterScrolls": 16,
+            "performed": false,
+            "firstVisible": "Verification row 49"
+          },
+          {
+            "afterScrolls": 24,
+            "performed": false,
+            "firstVisible": "Verification row 99"
+          },
+          {
+            "afterScrolls": 32,
+            "performed": false,
+            "firstVisible": "Verification row 119"
+          },
+          {
+            "afterScrolls": 40,
+            "performed": false,
+            "firstVisible": "Verification row 139"
+          }
+        ]
+      },
+      "androidFrameStats": "not captured: the app process had exited before dumpsys gfxinfo ran",
+      "androidVirtualizedListHint": "logcat: VirtualizedList 'large list that is slow to update' (dt 718 ms) on the emulator for the 2,000-row list"
+    },
+    "sfx": {
+      "ios": "Feedback calls: #11 sound play:tick volume 0.30 | #12 sound tick finished 0.08s of 0.08s | #13 haptic selection called | #14 haptic selection resolved | #15 sound play:tick volume 0.30 | #16 sound tick finished 0.08s of 0.08s",
+      "android": "Feedback calls: #9 sound tick finished 0.09s of 0.08s | #10 haptic selection called | #11 sound play:tick volume 0.30 | #12 haptic selection resolved | #13 sound tick finished 0.09s of 0.08s | #14 sound tick finished 0.09s of 0.08s",
+      "androidAudioFocusRequests": 11,
+      "note": "expo-audio players reported playback completion (didJustFinish) through the simulator/emulator audio path; nothing was listened to and silent-switch/interruption behavior is not simulated"
+    },
+    "haptics": {
+      "iosSimulator": "expo-haptics selectionAsync resolved through the HIG adapter (recorded call); the Simulator has no Taptic Engine: unsupported-hardware path, no tactile output",
+      "androidEmulator": "VibratorManagerService history records the gallery effects (vibrator-after-feedback.txt); the emulator has no motor",
+      "androidVibrationEffectsAddedByFeedbackTest": 1
+    },
+    "accessibilityAudits": {
+      "iosXcodeAudit": {
+        "Dynamic Type font sizes are unsupported": 68,
+        "Label duplicates traits": 2,
+        "Label not human-readable": 122
+      },
+      "androidScanner": {},
+      "note": "iOS \"Label not human-readable\" flags currency readouts such as \"$1,250.45\" (heuristic; VoiceOver pronunciation needs a device); \"Label duplicates traits\" is the gallery Select value \"Button\"; \"Dynamic Type font sizes are unsupported\" flags React Native TextInput, which scales by fontScale rather than adjustsFontForContentSizeCategory (AX5 captures show the input text scaling)"
+    },
+    "gestureSheet": {
+      "ios": {
+        "dismissedByDrag": true,
+        "expandedToSecondDetent": true,
+        "fixtureLoaded": true,
+        "openedAtFirstDetent": true,
+        "stillOpenAfterShortDrag": true,
+        "titleYAfterDragUp": 183.8000030517578,
+        "triggerHittableAfterDismiss": true
+      },
+      "summary": [
+        "iOS gesture build exit 0",
+        "iOS testGestureSheet exit 0",
+        "Android gesture build exit 0",
+        "Android sheet opened (title y=1500)",
+        "Android after drag up title y=463",
+        "Android after short drag title y=463 (still open: 1)",
+        "Android back closed sheet: yes",
+        "Android drag dismissed sheet: yes"
+      ]
+    },
+    "talkbackInputAttempts": "TalkBack keyboard commands (Alt+Right/Alt+Enter via adb input keycombination) and touch exploration via injected adb taps were not handled by TalkBack on the emulator (injected input bypassed it: a single tap activated controls), so TalkBack observations are focus behavior read through UiAutomation while TalkBack ran plus accessibility actions equivalent to its double-tap/volume-key commands. See android/talkback-flow/flow.txt."
+  }
+}

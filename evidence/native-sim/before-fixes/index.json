@@ -1,0 +1,38 @@
+{
+  "note": "Observations of defects before their fixes on this branch; kept so the regressions behind the new tests are inspectable. iOS Simulator and Android emulator only.",
+  "items": [
+    {
+      "file": "ios-launch-expoasset-crash-blank.png",
+      "kind": "iOS Simulator",
+      "defect": "Release launch rendered blank; device log: Unhandled JS Exception: Cannot find native module 'ExpoAsset' (hoisted expo-asset 57 is not an Expo SDK 54 pod)",
+      "fix": "fixtures/native pins expo-asset ~12.0.13 and expo-constants ~18.0.14; verifyExpoNativeModules guard"
+    },
+    {
+      "file": "ios-button-label-fragments.png",
+      "kind": "iOS Simulator",
+      "defect": "Button split adjacent text children: \"Component : Button\" and \"Bitcoin ( BTC\" with a lone \")\" line (the system Open-in prompt overlays the capture)",
+      "fix": "labelRuns() in packages/native/src/button.tsx"
+    },
+    {
+      "file": "ios-slider-increment-ignored.json",
+      "kind": "iOS Simulator (XCUITest AX actions 2004/2005)",
+      "defect": "accessibility increment/decrement performed but the slider stayed at 25",
+      "fix": "adjustable wrapper owns slider semantics (packages/native/src/slider.tsx)"
+    },
+    {
+      "file": "android-ime-collapsed-hardware-keyboard-profile.png",
+      "kind": "Android emulator",
+      "defect": "environment: with the AVD's hardware-keyboard profile Gboard shows only a collapsed toolbar, so keyboard avoidance could not be observed; the run was repeated with hw.keyboard=no",
+      "fix": "harness: AVD hw.keyboard=no during the run (restored afterwards)"
+    }
+  ],
+  "alsoObservedInRunLogs": [
+    "Android emulator (hw.keyboard=no): the on-screen IME covered the focused lower TradeEntry field (field bottom 2118px vs IME top 1859px) because Android 15 edge-to-edge no longer resizes the window; fixed by gallery keyboard avoidance and documented in docs/components/fields.md",
+    "Android UiAutomation audit: Switch track 47x27dp and Slider SeekBar 18dp were the actionable nodes",
+    "Android per-app Arabic locale: I18nManager.isRTL true while HIG Stack/Inline forced direction ltr",
+    "TalkBack: overlay focus fell back to the first screen element after Back (setAccessibilityFocus ignored)",
+    "iOS audit: empty live-region elements in Search and InstallCommand",
+    "GestureSheet never presented (Gorhom log: handlePresent/handlePortalRender with status DISMISSING after an initial dismiss())",
+    "iOS: presented GestureSheet exposed a single 'Bottom Sheet' element hiding its title/input/Close"
+  ]
+}

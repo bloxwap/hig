@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Drives a TalkBack reference flow on the Android emulator with TalkBack's keyboard commands
-# (Alt+Right next item, Alt+Enter activate, Back) and records screenshots plus the focused node,
-# then captures landscape layout. Usage: ANDROID_SERIAL=emulator-5580 talkback-flow.sh <out-dir>
+# Attempts a TalkBack reference flow on the Android emulator with TalkBack's keyboard commands
+# (Alt+Right next item, Alt+Enter activate, Back) and records screenshots and hierarchy dumps, then
+# captures landscape layout. Observed 2026-10-14: TalkBack did not act on adb-injected key combos (or
+# injected taps), so this records a negative result; focus behavior is verified by run-android.sh. Usage: ANDROID_SERIAL=emulator-5580 talkback-flow.sh <out-dir>
 # Emulator observation only: TalkBack speech is not captured and no physical touch is involved.
 set -uo pipefail
 OUT="$(mkdir -p "$1/talkback-flow" && cd "$1/talkback-flow" && pwd -P)"

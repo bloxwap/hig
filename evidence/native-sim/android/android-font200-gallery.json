@@ -1,0 +1,95 @@
+{
+ "results": [
+  {
+   "component": "Button",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Select",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Field",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "AmountInput",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Checkbox",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Switch",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "RadioGroup",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "SegmentedControl",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Slider",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Tabs",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Alert",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Toast",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "NumberReadout",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "AnimatedNumberReadout",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "MarketRow",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "BalanceCard",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "TradeEntry",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "EmptyState",
+   "windows": 1,
+   "auditIssues": 0
+  }
+ ],
+ "auditIssues": []
+}

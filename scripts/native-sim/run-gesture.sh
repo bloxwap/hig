@@ -5,7 +5,9 @@
 # Usage: run-gesture.sh <app-dir> <udid> <xctestrun> <out-dir>   (ANDROID_SERIAL selects the emulator)
 set -uo pipefail
 APP="$(cd "$1" && pwd -P)"; UDID="$2"; XCTESTRUN="$3"; OUT="$(mkdir -p "$4/gesture" && cd "$4/gesture" && pwd -P)"
-export PATH="${ANDROID_HOME:-$HOME/Library/Android/sdk}/platform-tools:$PATH" JAVA_HOME="${JAVA_HOME_17:-/opt/homebrew/opt/openjdk@17}"
+export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"; export PATH="$ANDROID_HOME/platform-tools:$PATH" JAVA_HOME="${JAVA_HOME_17:-/opt/homebrew/opt/openjdk@17}"
+# A freshly booted or loaded emulator can show a system "isn't responding" dialog; choose Wait so it cannot cover the app.
+clear_anr() { for _ in 1 2 3; do adb shell uiautomator dump /sdcard/anr.xml >/dev/null 2>&1; local b; b="$(adb shell cat /sdcard/anr.xml | grep -o 'text="Wait"[^>]*bounds="\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]"' | sed -E 's/.*\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]"/\1 \2 \3 \4/')"; [ -z "$b" ] && return; read -r a c d e <<<"$b"; adb shell input tap $(((a+d)/2)) $(((c+e)/2)); sleep 3; done; }
 cp "$APP/index.js" "$OUT/index.gallery.js.bak"; cp "$APP/index-gesture.js" "$APP/index.js"
 restore() { cp "$OUT/index.gallery.js.bak" "$APP/index.js"; }
 trap restore EXIT
@@ -18,7 +20,7 @@ TEST_RUNNER_HIG_OUT="$OUT" TEST_RUNNER_HIG_GESTURE=1 xcodebuild test-without-bui
 (cd "$APP/android" && ./gradlew :app:createBundleReleaseJsAndAssets --rerun -PreactNativeArchitectures=arm64-v8a > "$OUT/android-build.log" 2>&1 && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a >> "$OUT/android-build.log" 2>&1); echo "Android gesture build exit $?" | tee -a "$OUT/summary.txt"
 adb install -r "$APP/android/app/build/outputs/apk/release/app-release.apk" >/dev/null
 adb shell pm grant com.google.android.marvin.talkback android.permission.POST_NOTIFICATIONS 2>/dev/null
-adb shell am force-stop com.bloxwap.hig.gallery; adb shell am start -n com.bloxwap.hig.gallery/.MainActivity >/dev/null; sleep 6
+adb shell cmd statusbar collapse; adb shell am force-stop com.bloxwap.hig.gallery; clear_anr; adb shell am start -n com.bloxwap.hig.gallery/.MainActivity >/dev/null; sleep 6; clear_anr
 dump() { adb shell uiautomator dump /sdcard/g.xml >/dev/null 2>&1; adb pull /sdcard/g.xml "$OUT/android-$1.xml" >/dev/null; adb exec-out screencap -p > "$OUT/android-$1.png"; }
 center() { grep -o "text=\"$2\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]\"" "$OUT/android-$1.xml" | head -1 | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/' | awk '{print int(($1+$3)/2), int(($2+$4)/2)}'; }
 top() { grep -o "text=\"Review details\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]" "$OUT/android-$1.xml" | head -1 | sed -E 's/.*\[[0-9]+,([0-9]+)\]$/\1/'; }
