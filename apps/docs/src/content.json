@@ -1600,7 +1600,7 @@
       "api": {
         "react": {
           "entry": "selection",
-          "signature": "export declare const SegmentedControl: typeof RadioGroup;"
+          "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
         },
         "native": {
           "entry": "radio-group",
