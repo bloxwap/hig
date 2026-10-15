@@ -5,7 +5,14 @@
     "version": "0.1.0",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bloxwap.hig.gallery"
+      "bundleIdentifier": "com.bloxwap.hig.gallery",
+      "infoPlist": {
+        "CFBundleLocalizations": [
+          "en",
+          "ar"
+        ],
+        "CFBundleDevelopmentRegion": "en"
+      }
     },
     "android": {
       "package": "com.bloxwap.hig.gallery"

@@ -10,7 +10,7 @@ SUBSET="Button,Select,Field,AmountInput,Checkbox,Switch,RadioGroup,SegmentedCont
 xcrun simctl install "$UDID" "$APP"
 run() { # run <test> [ENV=VALUE ...]
   local test="$1"; shift
-  env "$@" TEST_RUNNER_HIG_OUT="$OUT" xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$UDID" \
+  env "$@" TEST_RUNNER_HIG_OUT="$OUT" xcodebuild test-without-building -collect-test-diagnostics never -xctestrun "$XCTESTRUN" -destination "id=$UDID" \
     -only-testing:"HIGNativeSimUITests/NativeVerificationUITests/$test" -resultBundlePath "$OUT/xcresult/$test-$(date +%s).xcresult" \
     > "$OUT/logs/$test-$(date +%s).log" 2>&1
   echo "$test $* -> exit $?" | tee -a "$OUT/logs/summary.txt"

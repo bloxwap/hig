@@ -112,3 +112,16 @@ it('native provider follows the OS RTL layout direction by default (Android emul
   }finally{Object.defineProperty(RN.I18nManager,'isRTL',{value:original,configurable:true});}
  });
 });
+it('native iOS slider handles VoiceOver increment/decrement actions in 5% steps (iOS Simulator regression)',()=>{
+ // RN Fabric only forwards accessibilityIncrement/Decrement to onAccessibilityAction; without it VoiceOver swipes did nothing.
+ const {Platform}=require('react-native');expect(Platform.OS).toBe('ios');
+ const {Slider}=require('../../packages/native/src/slider');const change=jest.fn();
+ const tree=mount(React.createElement(Slider,{label:'Volume',defaultValue:25,onValueChange:change}));
+ const slider=()=>tree.findAll(n=>n.props.accessibilityRole==='adjustable'&&n.props.onAccessibilityAction)[0];
+ expect(slider().props.accessibilityActions.map(a=>a.name)).toEqual(['increment','decrement']);
+ act(()=>slider().props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));expect(slider().props.accessibilityValue.now).toBe(30);
+ act(()=>slider().props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));act(()=>slider().props.onAccessibilityAction({nativeEvent:{actionName:'decrement'}}));
+ expect(change.mock.calls.map(c=>c[0])).toEqual([30,35,30]);
+ if(root)act(()=>root.unmount());const disabled=jest.fn();const t2=mount(React.createElement(Slider,{label:'Volume',value:100,disabled:true,onValueChange:disabled}));
+ act(()=>t2.findAll(n=>n.props.onAccessibilityAction)[0].props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));expect(disabled).not.toHaveBeenCalled();
+});

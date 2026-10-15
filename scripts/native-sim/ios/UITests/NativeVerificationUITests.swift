@@ -9,20 +9,21 @@ import XCTest
 /// accessibility increment/decrement action (what VoiceOver's swipe up/down sends) through
 /// XCTest's accessibility client. Private API: used for simulator verification only.
 enum AXAdjust {
-  typealias Factory = @convention(c) (AnyObject, Selector, Int) -> AnyObject
-  typealias Perform = @convention(c) (AnyObject, Selector, Int, AnyObject, AnyObject?, UnsafeMutablePointer<NSError?>?) -> Bool
+  typealias Factory = @convention(c) (AnyObject, Selector, Int) -> AnyObject?
+  typealias Perform = @convention(c) (AnyObject, Selector, AnyObject, AnyObject, AnyObject?, UnsafeMutablePointer<NSError?>?) -> Bool
   static func perform(_ element: XCUIElement, increment: Bool) -> String {
-    guard let actionClass = NSClassFromString("XCUIAccessibilityAction"), let clientClass = NSClassFromString("XCAXClient_iOS") as? NSObject.Type else { return "unavailable: classes" }
+    guard let actionClass = NSClassFromString("XCUIAccessibilityAction") else { return "unavailable: action class" }
     let factory = NSSelectorFromString(increment ? "incrementActionForPlatform:" : "decrementActionForPlatform:")
     guard let factoryMethod = class_getClassMethod(actionClass, factory) else { return "unavailable: factory" }
-    let action = unsafeBitCast(method_getImplementation(factoryMethod), to: Factory.self)(actionClass, factory, 2)
-    guard let number = (action as? NSObject)?.value(forKey: "actionNumber") as? Int else { return "unavailable: action number" }
-    guard let client = clientClass.perform(NSSelectorFromString("sharedClient"))?.takeUnretainedValue() as? NSObject else { return "unavailable: client" }
+    // The factory accepts automation platforms 2-5 (iOS = 2) and maps increment/decrement to AX actions 2004/2005.
+    guard let action = unsafeBitCast(method_getImplementation(factoryMethod), to: Factory.self)(actionClass, factory, 2), !(action is AnyClass) else { return "unavailable: action" }
+    let number = increment ? "2004 (increment)" : "2005 (decrement)"
+    guard let client = XCUIDevice.shared.value(forKey: "accessibilityInterface") as? NSObject else { return "unavailable: client" }
     guard let snapshot = try? element.snapshot(), let target = (snapshot as AnyObject).value(forKey: "accessibilityElement") as AnyObject? else { return "unavailable: element" }
     let selector = NSSelectorFromString("performAction:onElement:value:error:")
     guard let method = class_getInstanceMethod(type(of: client), selector) else { return "unavailable: perform" }
     var error: NSError?
-    let ok = unsafeBitCast(method_getImplementation(method), to: Perform.self)(client, selector, number, target, nil, &error)
+    let ok = unsafeBitCast(method_getImplementation(method), to: Perform.self)(client, selector, action, target, nil, &error)
     return ok ? "performed AXAction \(number)" : "failed AXAction \(number): \(error?.localizedDescription ?? "unknown")"
   }
 }
@@ -116,9 +117,12 @@ final class NativeVerificationUITests: XCTestCase {
       Thread.sleep(forTimeInterval: 0.6)
       steps.append(["action": increment ? "accessibilityIncrement" : "accessibilityDecrement", "result": result, "accessibilityValue": slider.value as? String ?? "", "visibleLabel": label("Volume preview: ") ?? ""])
     }
-    slider.adjust(toNormalizedSliderPosition: 0.8)
+    // Touch drag of the native track (XCUITest adjust() only accepts .slider typed elements).
+    if slider.elementType == .slider { slider.adjust(toNormalizedSliderPosition: 0.8) } else {
+      slider.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.5)).press(forDuration: 0.2, thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)))
+    }
     Thread.sleep(forTimeInterval: 0.5)
-    steps.append(["action": "adjust(0.8)", "accessibilityValue": slider.value as? String ?? "", "visibleLabel": label("Volume preview: ") ?? ""])
+    steps.append(["action": "touch drag toward 80%", "accessibilityValue": slider.value as? String ?? "", "visibleLabel": label("Volume preview: ") ?? ""])
     r["steps"] = steps
     try capture("ios-slider-after-actions")
     open("component=Slider&state=disabled")
