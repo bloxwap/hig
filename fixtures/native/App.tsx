@@ -7,7 +7,7 @@ import {FeedbackProvider,useFeedback} from '@bloxwap/hig-feedback/react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jsonStorage} from '@bloxwap/hig-feedback/preferences';
 import {createController} from './feedback';
-import {HIGProvider} from '@bloxwap/hig-native/provider';
+import {HIGProvider,useHIG} from '@bloxwap/hig-native/provider';
 import {TradeEntry,BalanceCard,MarketRow,InstallCommand,CodeWindow} from '@bloxwap/hig-native/recipes';
 import {Switch} from '@bloxwap/hig-native/switch';
 import {Slider} from '@bloxwap/hig-native/slider';
@@ -20,7 +20,8 @@ import gallery from './gallery-manifest.json';
 import {BrandMark} from '@bloxwap/hig-native/brand';
 import {parseGalleryRoute,feedbackLog,type GalleryRoute} from './native-verification';
 /** Verification-only readout of what the OS reports; shown with ?diag=1. */
-function Diagnostics({direction}:{direction:'ltr'|'rtl'}){
+function Diagnostics(){
+ const {direction}=useHIG();
  const {width,height,scale,fontScale}=useWindowDimensions();const [reduced,setReduced]=useState<boolean|null>(null),[reader,setReader]=useState<boolean|null>(null),[log,setLog]=useState(feedbackLog.entries());
  useEffect(()=>{let alive=true;void AccessibilityInfo.isReduceMotionEnabled().then(v=>{if(alive)setReduced(v);});void AccessibilityInfo.isScreenReaderEnabled().then(v=>{if(alive)setReader(v);});const subs=[AccessibilityInfo.addEventListener('reduceMotionChanged',setReduced),AccessibilityInfo.addEventListener('screenReaderChanged',setReader)];const off=feedbackLog.subscribe(()=>setLog(feedbackLog.entries()));return()=>{alive=false;subs.forEach(s=>s.remove());off();};},[]);
  const rn=Platform.constants.reactNativeVersion;const hermes=typeof (globalThis as {HermesInternal?:unknown}).HermesInternal==='object';
@@ -28,11 +29,11 @@ function Diagnostics({direction}:{direction:'ltr'|'rtl'}){
 }
 // Host keyboard avoidance: Android 15 edge-to-edge no longer resizes for the IME, and iOS needs keyboard insets.
 function Gallery(){
- const [component,setComponent]=useState('Button'),[exampleState,setExampleState]=useState('default'),[direction,setDirection]=useState<'ltr'|'rtl'>('ltr'),[diagnostics,setDiagnostics]=useState(false),[rows,setRows]=useState(0),[amount,setAmount]=useState('0.01'),[status,setStatus]=useState('Demo only; no trade is submitted.');
+ const [component,setComponent]=useState('Button'),[exampleState,setExampleState]=useState('default'),[direction,setDirection]=useState<'ltr'|'rtl'|undefined>(undefined),[diagnostics,setDiagnostics]=useState(false),[rows,setRows]=useState(0),[amount,setAmount]=useState('0.01'),[status,setStatus]=useState('Demo only; no trade is submitted.');
  const {preferences,update,sink,controller}=useFeedback();
  useEffect(()=>{const apply=(route:GalleryRoute|null)=>{if(!route)return;if(route.component&&gallery.examples.some(e=>e.name===route.component)){setComponent(route.component);setExampleState(route.state??'default');}if(route.direction)setDirection(route.direction);if(route.diagnostics!==undefined)setDiagnostics(route.diagnostics);setRows(route.rows??0);};void Linking.getInitialURL().then(url=>apply(parseGalleryRoute(url))).catch(()=>{});const sub=Linking.addEventListener('url',({url})=>apply(parseGalleryRoute(url)));return()=>sub.remove();},[]);
  useEffect(()=>{controller()?.setBackground(AppState.currentState!=='active');const sub=AppState.addEventListener('change',state=>controller()?.setBackground(state!=='active'));return()=>sub.remove();},[controller]);
- const header=<Stack><BrandMark label='Bloxwap'/><Heading>Native HIG gallery</Heading><Select label='Component' options={gallery.examples.map(e=>({value:e.name,label:e.name}))} value={component} onValueChange={v=>{setComponent(v);setExampleState('default');}}/><Select label='Example state' options={(gallery.examples.find(e=>e.name===component)?.states??['default']).map(v=>({value:v,label:v}))} value={exampleState} onValueChange={setExampleState}/><Text>0.1.0 · pinned Bloxwap Sans static faces registered</Text>{diagnostics&&<Diagnostics direction={direction}/>}</Stack>;
+ const header=<Stack><BrandMark label='Bloxwap'/><Heading>Native HIG gallery</Heading><Select label='Component' options={gallery.examples.map(e=>({value:e.name,label:e.name}))} value={component} onValueChange={v=>{setComponent(v);setExampleState('default');}}/><Select label='Example state' options={(gallery.examples.find(e=>e.name===component)?.states??['default']).map(v=>({value:v,label:v}))} value={exampleState} onValueChange={setExampleState}/><Text>0.1.0 · pinned Bloxwap Sans static faces registered</Text>{diagnostics&&<Diagnostics/>}</Stack>;
  const longRows=React.useMemo(()=>Array.from({length:rows},(_,i)=>({id:String(i+1),label:`Verification row ${i+1}`,value:60000+i*1.25})),[rows]);
  // rows=N swaps in a long list for scroll verification; the generated example keeps its single row.
  const example=component==='List'&&rows>0?<List label='Verification rows' items={longRows} keyFor={r=>r.id} render={r=><Row><Text>{r.label}</Text><NumberReadout value={r.value}/></Row>}/>:<Example key={component} name={component} state={exampleState}/>;

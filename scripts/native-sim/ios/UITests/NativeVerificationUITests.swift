@@ -10,7 +10,7 @@ import XCTest
 /// XCTest's accessibility client. Private API: used for simulator verification only.
 enum AXAdjust {
   typealias Factory = @convention(c) (AnyObject, Selector, Int) -> AnyObject?
-  typealias Perform = @convention(c) (AnyObject, Selector, AnyObject, AnyObject, AnyObject?, UnsafeMutablePointer<NSError?>?) -> Bool
+  typealias Perform = @convention(c) (AnyObject, Selector, AnyObject, AnyObject, AnyObject?, AutoreleasingUnsafeMutablePointer<NSError?>?) -> Bool
   static func perform(_ element: XCUIElement, increment: Bool) -> String {
     guard let actionClass = NSClassFromString("XCUIAccessibilityAction") else { return "unavailable: action class" }
     let factory = NSSelectorFromString(increment ? "incrementActionForPlatform:" : "decrementActionForPlatform:")

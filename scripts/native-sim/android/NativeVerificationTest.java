@@ -192,22 +192,22 @@ public class NativeVerificationTest {
   }
 
   /** Automated scanner-style checks: unlabeled actionable nodes and touch targets below 48dp. */
-  private void audit(AccessibilityNodeInfo n, JSONArray issues, String component) throws Exception {
+  private void audit(AccessibilityNodeInfo n, JSONArray issues, String component, Rect clip) throws Exception {
     if (n == null) return;
     Rect r = new Rect();
     n.getBoundsInScreen(r);
     boolean actionable = n.isClickable() || n.isCheckable() || n.isEditable() || n.getRangeInfo() != null;
-    // Skip nodes hidden from screen readers and nodes cut by the viewport edge (their visible bounds are partial).
-    Rect window = new Rect();
-    if (n.getWindow() != null) n.getWindow().getBoundsInScreen(window);
-    boolean clipped = !window.isEmpty() && (r.bottom >= window.bottom - 2 || r.top <= window.top + 2);
+    // Skip nodes hidden from screen readers and nodes cut by a scroll viewport or window edge (partial bounds).
+    boolean clipped = clip != null && (r.bottom >= clip.bottom - 2 || r.top <= clip.top + 2);
     if (actionable && n.isVisibleToUser() && n.isEnabled() && n.isImportantForAccessibility() && !clipped) {
       String l = label(n);
       if (l.isEmpty() && n.getHintText() == null && !hasLabelledDescendant(n)) issues.put(new JSONObject().put("component", component).put("issue", "unlabeled actionable node").put("class", String.valueOf(n.getClassName())).put("bounds", r.flattenToString()));
       int w = Math.round(r.width() / density), h = Math.round(r.height() / density);
       if (w < 48 || h < 48) issues.put(new JSONObject().put("component", component).put("issue", "touch target below 48dp").put("label", l).put("class", String.valueOf(n.getClassName())).put("dp", w + "x" + h));
     }
-    for (int i = 0; i < n.getChildCount(); i++) audit(n.getChild(i), issues, component);
+    Rect childClip = clip;
+    if (n.isScrollable() || clip == null) { childClip = new Rect(r); }
+    for (int i = 0; i < n.getChildCount(); i++) audit(n.getChild(i), issues, component, childClip);
   }
 
   private boolean hasLabelledDescendant(AccessibilityNodeInfo n) {
@@ -260,7 +260,7 @@ public class NativeVerificationTest {
       write("trees/" + prefix + "-" + component + ".json", t.toString(1));
       capture(prefix + "-" + component);
       int before = issues.length();
-      for (AccessibilityNodeInfo root : roots()) audit(root, issues, component);
+      for (AccessibilityNodeInfo root : roots()) audit(root, issues, component, null);
       results.put(new JSONObject().put("component", component).put("windows", t.length()).put("auditIssues", issues.length() - before));
     }
     write(prefix + "-gallery.json", new JSONObject().put("results", results).put("auditIssues", issues).toString(1));
@@ -406,7 +406,9 @@ public class NativeVerificationTest {
         Rect field = new Rect();
         input.getBoundsInScreen(field);
         r.put("inputFocused", input.isFocused()).put("inputType", input.getInputType()).put("inputBounds", field.flattenToString()).put("imeBounds", ime == null ? JSONObject.NULL : ime.flattenToString());
-        r.put("inputAboveKeyboard", ime == null ? JSONObject.NULL : field.bottom <= ime.top);
+        // 2px tolerance for dp-to-px rounding at the viewport/IME edge.
+        r.put("inputAboveKeyboard", ime == null ? JSONObject.NULL : field.bottom <= ime.top + 2);
+        r.put("overlapPx", ime == null ? JSONObject.NULL : Math.max(0, field.bottom - ime.top));
         capture("android-keyboard-" + component);
         ua.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK);
         settle(600);

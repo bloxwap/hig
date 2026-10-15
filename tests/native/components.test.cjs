@@ -94,10 +94,11 @@ it('native switch exposes one labeled 48dp row target and toggles from the row (
  expect(hidden.length).toBeGreaterThan(0);expect(hidden[0].props.pointerEvents).toBe('none');
  act(()=>row.props.onPress());expect(change).toHaveBeenCalledWith(true);
 });
-it('native slider reserves a 48dp touch target (Android emulator 18dp SeekBar regression)',()=>{
+it('native slider exposes a 48dp adjustable accessibility element (Android emulator 18dp SeekBar regression)',()=>{
  const {Slider}=require('../../packages/native/src/slider');const {StyleSheet}=require('react-native');
- const tree=mount(React.createElement(Slider,{label:'Volume',value:20}));const slider=tree.findAll(n=>n.props.onValueChange&&n.props.minimumValue===0)[0];
- expect(StyleSheet.flatten(slider.props.style).minHeight).toBe(48);
+ const tree=mount(React.createElement(Slider,{label:'Volume',value:20}));const element=tree.findAll(n=>n.props.accessibilityRole==='adjustable'&&n.props.accessible)[0];
+ expect(StyleSheet.flatten(element.props.style).minHeight).toBe(48);
+ const backend=tree.findAll(n=>n.props.onValueChange&&n.props.minimumValue===0)[0];expect(backend.props.importantForAccessibility).toBe('no-hide-descendants');
 });
 it('native provider follows the OS RTL layout direction by default (Android emulator Arabic-locale regression)',()=>{
  // With an Arabic per-app locale I18nManager.isRTL was true, yet HIG Stack/Inline forced direction:"ltr".
@@ -147,4 +148,23 @@ it('native Menu and Select return focus to their own trigger on close (Android T
   expect(tree.findByType(rn.Modal).props.visible).toBe(false);
   expect(focus).toHaveBeenLastCalledWith('trigger-handle');
  }}finally{handle.mockRestore();focus.mockRestore();raf.mockRestore();}
+});
+it('native InstallCommand hides its empty status region from VoiceOver until a copy outcome exists (iOS audit regression)',async()=>{
+ const {Text}=require('react-native');const {InstallCommand}=require('../../packages/native/src/recipes');
+ const tree=mount(React.createElement(InstallCommand,{command:'npm i x',onCopy:()=>Promise.resolve()}));
+ const status=()=>tree.findAllByType(Text).find(t=>t.props.accessibilityLiveRegion==='polite');
+ expect(status().props.accessibilityElementsHidden).toBe(true);
+ await act(async()=>{tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented(){return false;}});});
+ expect(status().props.children).toBe('Copied');expect(status().props.accessibilityElementsHidden).toBe(false);
+});
+it('native overlay focus requests also send viewHoverEnter on Android so TalkBack moves focus (emulator regression)',()=>{
+ // focusNative reads Platform.OS per call, so the shared registry can be switched to Android for this test.
+ const RN=require('react-native');const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});
+ const handle=jest.spyOn(RN,'findNodeHandle').mockImplementation(node=>node?42:null);const focus=jest.spyOn(RN.AccessibilityInfo,'setAccessibilityFocus').mockImplementation(()=>{});const hover=jest.spyOn(RN.AccessibilityInfo,'sendAccessibilityEvent').mockImplementation(()=>{});const raf=jest.spyOn(global,'requestAnimationFrame').mockImplementation(cb=>{cb(0);return 1;});
+ try{const trigger={current:{_nativeTag:5}};const props={open:true,onOpenChange:jest.fn(),title:'Review',description:'Verify',returnFocusRef:trigger};
+  const tree=mount(React.createElement(Dialog,props,null));
+  act(()=>tree.findByType(RN.Modal).props.onShow());expect(focus).toHaveBeenCalledWith(42);expect(hover).toHaveBeenLastCalledWith(expect.anything(),'viewHoverEnter');
+  act(()=>root.update(React.createElement(Dialog,{...props,open:false},null)));
+  expect(hover).toHaveBeenLastCalledWith(trigger.current,'viewHoverEnter');
+ }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});handle.mockRestore();focus.mockRestore();hover.mockRestore();raf.mockRestore();}
 });
