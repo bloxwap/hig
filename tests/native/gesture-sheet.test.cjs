@@ -25,3 +25,4 @@ it('never dismisses a sheet it has not presented (Gorhom DISMISSING state blocke
  act(()=>root.update(React.createElement(HIGProvider,{reducedMotion:true},React.createElement(GestureSheet,{title:'Review',description:'Verify amount',snapPoints:['50%','90%'],open:false,onOpenChange:close},null))));
  expect(backend.methods.dismiss).toHaveBeenCalledTimes(1);
 });
+it('sheet content stays individually reachable by screen readers (iOS Simulator: Gorhom grouped it as one "Bottom Sheet" element)',()=>{const node=mount({open:true,onOpenChange:jest.fn()});expect(node.props.accessible).toBe(false);expect(node.props.accessibilityLabel).toBe('Review');});
