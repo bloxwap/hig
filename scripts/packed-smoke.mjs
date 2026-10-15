@@ -16,8 +16,8 @@ const consumerManifest=JSON.parse(readFileSync(join(dir,'package.json'),'utf8'))
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 writeFileSync(join(dir,'smoke.mjs'),`import assert from 'node:assert/strict';
 import React from 'react'; import {renderToString} from 'react-dom/server';
-import {tokens} from '@bloxwap/hig-tokens'; import {formatNumber} from '@bloxwap/hig-contracts';
-assert.equal(tokens.colors.action.srgb,'#00ff3f'); assert.equal(formatNumber(null),'—');
+import {tokens} from '@bloxwap/hig-tokens'; import {formatNumber,formatLeverage,formatTicker} from '@bloxwap/hig-contracts';
+assert.equal(tokens.colors.action.srgb,'#00ff3f'); assert.equal(formatNumber(null),'—'); assert.equal(formatLeverage(10),'10×'); assert.equal(formatTicker(1,'USDC'),'1\u00a0USDC');
 ${manifests.some(m=>m.name==='@bloxwap/hig-react')?"const {Button}=await import('@bloxwap/hig-react/button'); assert.match(renderToString(React.createElement(Button,null,'Review order')),/Review order/);":"assert.match(renderToString(React.createElement('button',null,'Review order')),/Review order/);"}
 console.log('Packed consumer: independent token/contracts imports and SSR render passed');`);
 execFileSync(process.execPath,[join(dir,'smoke.mjs')],{cwd:dir,stdio:'inherit'});

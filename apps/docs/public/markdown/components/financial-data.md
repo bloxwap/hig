@@ -18,7 +18,7 @@ Loading keeps existing rows visible, suppresses a misleading empty message, and 
 
 ## When to use and examples
 
-Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted number into order quantity or announce every live tick.
+Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted number into order quantity or announce every live tick. Locale display, USD vs USDC, signed PnL and compact notation follow the [localization guide](../foundations/localization.md). Vocabulary follows the [glossary](../foundations/glossary.md).
 
 ## States, interaction and accessibility
 
