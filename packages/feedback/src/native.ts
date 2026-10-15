@@ -3,13 +3,18 @@ import {presets} from './contract.js';
 export interface NativePlayer {play:()=>void;pause:()=>void;seekTo:(seconds:number)=>Promise<void>;remove:()=>void;volume:number}
 export interface NativeAudioBackend {create:(asset:unknown)=>NativePlayer;configure?:()=>Promise<void>}
 export type CueAssets=Readonly<Partial<Record<'tick'|'toggle'|'success'|'error',unknown>>>;
-/** Host provides packaged Metro asset ids and lifecycle hooks; no browser audio at module load. */
+/** Host provides packaged Metro asset ids and lifecycle hooks; no browser audio at module load.
+ * After preload() settles, play() dispatches synchronously: no bridge round trip (configure, seek) precedes player.play(). */
 export function createNativeSoundAdapter(backend:NativeAudioBackend,assets:CueAssets):FeedbackAdapter & {preload:()=>Promise<void>} {
- const players=new Map<string,NativePlayer>();let dead=false,epoch=0;let configured:Promise<void>|undefined;
- const preload=async()=>{if(dead)return;configured??=backend.configure?.()??Promise.resolve();try{await configured;}catch(error){configured=undefined;throw error;}if(dead)return;for(const [name,asset] of Object.entries(assets))if(asset!=null&&!players.has(name))players.set(name,backend.create(asset));};
- const cancel=()=>{epoch++;for(const player of players.values())try{player.pause();}catch{/* Continue cleaning other players. */}};
+ const players=new Map<string,NativePlayer>();let dead=false,ready=false,epoch=0;let configured:Promise<void>|undefined;let active:NativePlayer|undefined;
+ const preload=async()=>{if(dead)return;configured??=backend.configure?.()??Promise.resolve();try{await configured;}catch(error){configured=undefined;throw error;}if(dead)return;for(const [name,asset] of Object.entries(assets))if(asset!=null&&!players.has(name))players.set(name,backend.create(asset));ready=true;};
+ const stopActive=()=>{const previous=active;active=undefined;if(previous)try{previous.pause();}catch{/* A failed pause cannot block the next cue. */}};
+ // One active cue: stop the previous player, restart this one and play without awaiting the seek; native players apply calls in order.
+ const dispatch=(player:NativePlayer,volume:number)=>{if(active!==player)stopActive();active=player;player.volume=volume;try{void player.seekTo(0).catch(()=>{});}catch{/* Playing from the current position beats dropping the cue. */}player.play();};
+ const cancel=()=>{epoch++;active=undefined;for(const player of players.values())try{player.pause();}catch{/* Continue cleaning other players. */}};
  return {capability:{available:true,mechanism:'native-audio',observed:false,reason:'Backend supplied; playback latency/silent mode/interruption observations pending'},preload,
- async play(event:FeedbackEvent,prefs:FeedbackPreferences){if(dead||!prefs.sound||prefs.volume<=0)return;const cue=presets[event.intent].sound;if(!cue||assets[cue]==null)return;cancel();const generation=epoch;await preload();if(dead||generation!==epoch)return;const player=players.get(cue);if(!player)return;const requested=epoch;player.volume=prefs.volume;await player.seekTo(0);if(!dead&&requested===epoch)player.play();},cancel,
+ play(event:FeedbackEvent,prefs:FeedbackPreferences){if(dead||!prefs.sound||prefs.volume<=0)return;const cue=presets[event.intent].sound;if(!cue||assets[cue]==null)return;const generation=++epoch;const cached=ready?players.get(cue):undefined;if(cached)return dispatch(cached,prefs.volume);stopActive();
+  return preload().then(()=>{const player=players.get(cue);if(!dead&&generation===epoch&&player)dispatch(player,prefs.volume);});},cancel,
  dispose(){if(dead)return;dead=true;cancel();for(const player of players.values())try{player.remove();}catch{/* Release all remaining players. */}players.clear();}
  };
 }
