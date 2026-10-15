@@ -8,8 +8,9 @@
     "contracts": 6,
     "feedback": 17,
     "native": 38,
-    "react": 27,
-    "tokens": 6
+    "native-fonts": 4,
+    "react": 41,
+    "tokens": 5
   },
   "sizes": {
     "button": {
@@ -32,7 +33,7 @@
     },
     "nativeSwitch": {
       "raw": 3747,
-      "gzip": 1850,
+      "gzip": 1849,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -53,11 +54,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2193927,
-      "gzip": 609406
+      "raw": 2205989,
+      "gzip": 615153
     },
     "docsCSS": {
-      "raw": 108549
+      "raw": 110489
     },
     "fonts": {
       "raw": 592796

@@ -4,6 +4,7 @@
     "@bloxwap/hig-contracts",
     "@bloxwap/hig-feedback",
     "@bloxwap/hig-native",
+    "@bloxwap/hig-native-fonts",
     "@bloxwap/hig-react",
     "@bloxwap/hig-tokens"
   ],

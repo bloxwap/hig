@@ -130,10 +130,6 @@
         "entry": "navigation",
         "signature": "export declare function Search({ query, onQueryChange, results, loading, error }: {\n    query: string;\n    onQueryChange: (s: string) => void;\n    results: readonly {\n        id: string;\n        label: string;\n        onSelect: () => void;\n    }[];\n    loading?: boolean;\n    error?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
-      "DialogProps": {
-        "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode;\n}"
-      },
       "Dialog": {
         "entry": "overlay",
         "signature": "export declare function Dialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
@@ -145,6 +141,10 @@
       "AlertDialog": {
         "entry": "overlay",
         "signature": "export declare function AlertDialog({ open, onOpenChange, title, description, trigger, children }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "DialogProps": {
+        "entry": "overlay",
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode;\n}"
       },
       "Menu": {
         "entry": "overlay",
@@ -175,31 +175,31 @@
         "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent): [T, (next: T) => void];"
       },
       "MarketRow": {
-        "entry": "recipes",
+        "entry": "recipes/market-row",
         "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "BalanceCard": {
-        "entry": "recipes",
+        "entry": "recipes/balance-card",
         "signature": "export declare function BalanceCard({ label, balance, stale }: {\n    label: string;\n    balance: number | null;\n    stale?: boolean;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "TradeEntry": {
-        "entry": "recipes",
+        "entry": "recipes/trade-entry",
         "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "InstallCommand": {
-        "entry": "recipes",
+        "entry": "recipes/install-command",
         "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "CodeWindow": {
-        "entry": "recipes",
+        "entry": "recipes/code-window",
         "signature": "export declare function CodeWindow({ language, children }: React.PropsWithChildren<{\n    language: string;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "MarketingHero": {
-        "entry": "recipes",
+        "entry": "recipes/marketing-hero",
         "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "ActivityList": {
-        "entry": "recipes",
+        "entry": "recipes/activity-list",
         "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Choice": {
@@ -512,37 +512,33 @@
         "entry": "recipes",
         "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
-      "accentRoles": {
-        "entry": "roles",
-        "signature": "export declare const accentRoles: readonly [\"action\", \"positive\", \"negative\", \"warning\", \"info\", \"buy\", \"sell\"];"
-      },
-      "AccentRole": {
-        "entry": "roles",
-        "signature": "export type AccentRole = typeof accentRoles[number];"
-      },
-      "roleColor": {
-        "entry": "roles",
-        "signature": "export declare function roleColor(role: unknown, fallback: AccentRole): string;"
-      },
       "Select": {
         "entry": "select",
         "signature": "export declare function Select(props: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Choice": {
-        "entry": "selection-types",
+        "entry": "selection",
         "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
       },
       "CheckedProps": {
-        "entry": "selection-types",
+        "entry": "selection",
         "signature": "export interface CheckedProps {\n    label: string;\n    checked?: boolean;\n    defaultChecked?: boolean;\n    disabled?: boolean;\n    onCheckedChange?: (v: boolean) => void;\n}"
       },
       "ChoicesProps": {
-        "entry": "selection-types",
+        "entry": "selection",
         "signature": "export interface ChoicesProps {\n    label: string;\n    options: readonly Choice[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (v: string) => void;\n}"
+      },
+      "Switch": {
+        "entry": "switch",
+        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, tone, onCheckedChange }: SwitchProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Slider": {
         "entry": "slider",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (v: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "AccentRole": {
+        "entry": "status",
+        "signature": "export type AccentRole = typeof accentRoles[number];"
       },
       "Badge": {
         "entry": "status",
@@ -636,9 +632,13 @@
         "entry": "switch",
         "signature": "export interface SwitchProps extends CheckedProps {\n    tone?: AccentRole;\n}"
       },
-      "Switch": {
-        "entry": "switch",
-        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, tone, onCheckedChange }: SwitchProps): import(\"react/jsx-runtime\").JSX.Element;"
+      "accentRoles": {
+        "entry": "roles",
+        "signature": "export declare const accentRoles: readonly [\"action\", \"positive\", \"negative\", \"warning\", \"info\", \"buy\", \"sell\"];"
+      },
+      "roleColor": {
+        "entry": "roles",
+        "signature": "export declare function roleColor(role: unknown, fallback: AccentRole): string;"
       },
       "plainText": {
         "entry": "text-content",

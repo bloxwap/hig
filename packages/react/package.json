@@ -56,6 +56,34 @@
       "types": "./dist/recipes.d.ts",
       "import": "./dist/recipes.js"
     },
+    "./recipes/market-row": {
+      "types": "./dist/recipes/market-row.d.ts",
+      "import": "./dist/recipes/market-row.js"
+    },
+    "./recipes/balance-card": {
+      "types": "./dist/recipes/balance-card.d.ts",
+      "import": "./dist/recipes/balance-card.js"
+    },
+    "./recipes/trade-entry": {
+      "types": "./dist/recipes/trade-entry.d.ts",
+      "import": "./dist/recipes/trade-entry.js"
+    },
+    "./recipes/install-command": {
+      "types": "./dist/recipes/install-command.d.ts",
+      "import": "./dist/recipes/install-command.js"
+    },
+    "./recipes/code-window": {
+      "types": "./dist/recipes/code-window.d.ts",
+      "import": "./dist/recipes/code-window.js"
+    },
+    "./recipes/marketing-hero": {
+      "types": "./dist/recipes/marketing-hero.d.ts",
+      "import": "./dist/recipes/marketing-hero.js"
+    },
+    "./recipes/activity-list": {
+      "types": "./dist/recipes/activity-list.d.ts",
+      "import": "./dist/recipes/activity-list.js"
+    },
     "./chart": {
       "types": "./dist/chart.d.ts",
       "import": "./dist/chart.js"
@@ -70,10 +98,10 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "@bloxwap/chart": "^0.3.0",
-    "@radix-ui/react-dialog": "1.1.15",
-    "@radix-ui/react-dropdown-menu": "2.1.16",
-    "@radix-ui/react-popover": "1.1.15",
-    "@radix-ui/react-tooltip": "1.2.8"
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-tooltip": "^1.2.8"
   },
   "peerDependenciesMeta": {
     "@bloxwap/chart": {
