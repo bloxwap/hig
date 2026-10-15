@@ -1,1 +1,8 @@
-{"kind":"iOS Simulator","method":"XCUIDevice.shared.orientation = .landscapeLeft on the headless Simulator (testOrientation)","result":"not observed: XCUITest reported a landscape window frame (874x402) and the Dialog flow passed, but captures show the gallery still laid out in portrait, including after the fixture allowed rotation (app.json orientation default). The cause was not isolated (headless Simulator rotation vs. Expo root view controller).","candidate":"0.1.0-candidate.sha3a71ec9a"}
+{
+  "kind": "iOS Simulator",
+  "device": "iPhone 16 Pro, iOS 26.5, Xcode 27.2",
+  "candidate": "0.1.0-candidate.shadb892cc3",
+  "method": "XCUIDevice.shared.orientation = .landscapeLeft on the headless Simulator (testOrientation); window frames read through XCUITest before opening, while open and after closing the Dialog",
+  "result": "observed: the gallery lays out in landscape (window 874x402); the native Dialog opens and stays in landscape (window 874x402 while open), Close is hittable and closes it (window still 874x402), and TradeEntry reflows to the landscape width. Captures are stored rotated upright; XCUIScreen returns the Simulator framebuffer in portrait orientation, which the earlier run misread as a portrait layout.",
+  "beforeFix": "before-fixes/ios-dialog-forced-portrait.json: on candidate sha3a71ec9a the Dialog forced the interface to portrait while open (window 402x874; xcodebuild log 'Interface orientation changed to Portrait') because React Native's iOS Modal defaults supportedOrientations to portrait"
+}

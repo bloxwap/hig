@@ -1,7 +1,10 @@
 {
   "closed" : true,
+  "closeFrameDialogOpen" : "{{24, 234}, {78.666671752929688, 48}}",
   "closeHittable" : true,
   "closeVisible" : true,
   "triggerHittable" : true,
-  "windowFrame" : "{{0, 0}, {874, 402}}"
+  "windowFrame" : "{{0, 0}, {874, 402}}",
+  "windowFrameAfterClose" : "{{0, 0}, {874, 402}}",
+  "windowFrameDialogOpen" : "{{0, 0}, {874, 402}}"
 }
