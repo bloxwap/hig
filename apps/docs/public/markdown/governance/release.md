@@ -18,8 +18,21 @@ Candidate mode stages `0.1.0-candidate.sha<commit>` package metadata and matchin
 
 CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/example/visual/accessibility/budget gates and uploads review artifacts. A provenance record identifies source commit, package/contract/docs versions and hashes; it is not an npm registry provenance attestation or a release. Artifact inspection checks exports, licenses, optional peers and only approved assets. No example app implementation is included in runtime packages.
 
-Publication gates remain blocked in `planning/release-blockers.json`: task policy, unavailable monorepo audit, native font metadata, physical devices/assistive technology, upstream feedback gaps and owning migrations. A dry run cannot turn these into passes. This task does not “publish v1” by renaming a candidate.
+Publication gates are tracked in `planning/release-blockers.json`:
 
-Semver: breaking token meaning/appearance, typography scale, layout, accessibility/action behavior or semantic feedback mapping is major; compatible additions are minor; verified fixes patch. Deprecation names the alternative, migration codemod/checklist, owning consumers and a documented review window. Keep code/examples/API/citations at the same source commit; separate package prerelease identifiers are explicit in artifact metadata.
+- npm credentials are not configured on the release machine (#56).
+- Physical devices and assistive technology (#55).
+- Upstream feedback gaps (#70).
+- Owning product migrations that are still open (#33, #35).
+
+A dry run cannot turn these into passes, and renaming a candidate does not publish v1.
+
+Semver:
+
+- **Major:** breaking changes to token meaning or appearance, typography scale, layout, accessibility or action behaviour, or semantic feedback mapping.
+- **Minor:** compatible additions.
+- **Patch:** verified fixes.
+
+Deprecation names the alternative, a migration codemod or checklist, and the owning consumers from `planning/adoption.json`. A deprecated export keeps working for at least one minor release and 30 days, and is removed only in the next major release after consumer PRs are merged or have dated exceptions (see the contribution chapter). Keep code/examples/API/citations at the same source commit; separate package prerelease identifiers are explicit in artifact metadata.
 
 Rollback for an owning pilot: keep the previous package artifacts and lockfile, disable the host feature flag, restore prior renderer/backend imports and rebuild. Keep saved feedback/business data backward-compatible; never erase prior choices. Remove old assets only after production and physical-device proof. A future published rollback would require separate release authorization and package provenance; this task performs none.

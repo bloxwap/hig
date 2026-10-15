@@ -1,248 +1,560 @@
 {
   "version": "0.1.0",
-  "observedAt": "2026-10-13",
+  "observedAt": "2026-10-15",
+  "inventoryEvidence": "planning/org-inventory-2026-10-15.json",
+  "inventoryScope": "All 15 repositories visible to the authenticated token on 2026-10-15 (gh repo list bloxwap); none archived.",
+  "policy": "Owners are recorded as repository maintainer roles until #57 records named owners. Every exception has scope, reason, owner, expiry (at most 180 days) and a tracking issue. Statuses link only merged or open PRs that exist.",
   "repositories": [
     {
-      "name": "agent-cli",
-      "url": "https://github.com/bloxwap/agent-cli",
-      "applicability": "no runtime UI (empty repository)",
-      "owner": "agent-cli maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "No default branch/readme exists; apply HIG content/brand conventions when bootstrapped",
-      "migrationGuide": "docs/governance/adoption.md"
-    },
-    {
       "name": "hig",
+      "applicability": "canonical guidelines, tokens, React/React Native renderers, feedback contract and docs",
+      "owner": "bloxwap/hig maintainers (named assignment pending, #57)",
+      "higVersion": "0.1.0 (source of truth); candidates built per commit",
+      "status": "canonical source; not published to npm",
+      "mergedPRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/39",
+        "https://github.com/bloxwap/hig/pull/41",
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/43",
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/48",
+        "https://github.com/bloxwap/hig/pull/49",
+        "https://github.com/bloxwap/hig/pull/50",
+        "https://github.com/bloxwap/hig/pull/51",
+        "https://github.com/bloxwap/hig/pull/52",
+        "https://github.com/bloxwap/hig/pull/53",
+        "https://github.com/bloxwap/hig/pull/54"
+      ],
+      "openPRs": [],
+      "validation": "npm run check, packed web/SSR/Next/Metro consumers, three-engine browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
+      "exceptions": [
+        {
+          "scope": "npm publication",
+          "reason": "npm credentials are not configured on the release machine; dry-run artifacts only",
+          "owner": "HIG maintainers",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/56"
+        },
+        {
+          "scope": "physical-device certification",
+          "reason": "no physical iPhone/Android, VoiceOver/TalkBack, speaker or haptic hardware observations yet",
+          "owner": "HIG/native/haptic maintainers",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/55"
+        }
+      ],
+      "remaining": "Publish to npm (#56); physical-device certification (#55); package fixes #62–#71",
+      "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
-      "applicability": "canonical guidelines/runtime/docs",
-      "owner": "hig maintainers (assignment pending)",
-      "status": "candidate in hig",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Review candidate; remote branch/PR writes and physical/source certification blocked",
-      "migrationGuide": "docs/governance/adoption.md"
+      "exceptionExpires": "2027-01-15"
     },
     {
       "name": "hyperliquid",
+      "applicability": "SDK docs and interactive demos (apps/docs)",
+      "owner": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
+      "higVersion": "0.1.0-candidate.sha7c67a07c",
+      "status": "migrated (docs consume vendored HIG packages)",
+      "mergedPRs": [
+        "https://github.com/bloxwap/hyperliquid/pull/179",
+        "https://github.com/bloxwap/hyperliquid/pull/180"
+      ],
+      "openPRs": [],
+      "validation": "CI green on 4eec557; independent verifier: bun run check, docs build (13 pages, 1168 links), Playwright 8/8, unmocked mainnet playground; export total -888,353 B, 9 copied files to 0 (apps/docs/design-review/hig-packages/)",
+      "exceptions": [
+        {
+          "scope": "vendor/bloxwap-hig/*.tgz",
+          "reason": "HIG not on npm; checksummed candidate tarballs",
+          "owner": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/56"
+        }
+      ],
+      "remaining": "Swap vendored tarballs for npm (#56); HIG Callout lacks note/tip severities (#69)",
+      "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/hyperliquid",
-      "applicability": "SDK docs/interactive demos",
-      "owner": "hyperliquid maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
-      "migrationGuide": "docs/migration/sdk-docs.md"
-    },
-    {
-      "name": "sfx",
-      "url": "https://github.com/bloxwap/sfx",
-      "applicability": "SDK docs/interactive demos",
-      "owner": "sfx maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
-      "migrationGuide": "docs/migration/sdk-docs.md"
-    },
-    {
-      "name": "haptic",
-      "url": "https://github.com/bloxwap/haptic",
-      "applicability": "SDK docs/interactive demos",
-      "owner": "haptic maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
-      "migrationGuide": "docs/migration/sdk-docs.md"
-    },
-    {
-      "name": "font",
-      "url": "https://github.com/bloxwap/font",
-      "applicability": "SDK docs/interactive demos",
-      "owner": "font maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
-      "migrationGuide": "docs/migration/sdk-docs.md"
+      "exceptionExpires": "2027-01-15"
     },
     {
       "name": "chart",
+      "applicability": "SDK docs and chart demo (apps/docs)",
+      "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
+      "higVersion": "0.1.0-candidate.sha7c67a07c",
+      "status": "migrated (docs consume vendored HIG packages)",
+      "mergedPRs": [
+        "https://github.com/bloxwap/chart/pull/52",
+        "https://github.com/bloxwap/chart/pull/53"
+      ],
+      "openPRs": [],
+      "validation": "CI green on bff4476; independent verifier: docs build (30 pages, 1530 links), lint, typecheck, 1869/1869 tests at 100% coverage, docs:test browser suite; 9 copied files removed (904,638 B) (docs/hig-adoption/hig-7c67a07/)",
+      "exceptions": [
+        {
+          "scope": ".npmrc legacy-peer-deps=true",
+          "reason": "@bloxwap/hig-react exact Radix peer pins conflict with Fumadocs",
+          "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
+          "expires": "2026-11-13",
+          "tracking": "https://github.com/bloxwap/hig/issues/63"
+        },
+        {
+          "scope": "apps/docs/styles/hig-roles.generated.css (copied-token-definition)",
+          "reason": "token CSS lacks radius/type/motion/density roles",
+          "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/66"
+        }
+      ],
+      "remaining": "Drop workarounds after #63 and #66; npm (#56)",
+      "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/chart",
-      "applicability": "SDK docs/interactive demos",
-      "owner": "chart maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Run repository-specific migration checklist and production/demo/accessibility validation; preserve SDK API",
-      "migrationGuide": "docs/migration/sdk-docs.md"
+      "exceptionExpires": "2026-11-13"
     },
     {
-      "name": ".github",
-      "url": "https://github.com/bloxwap/.github",
-      "applicability": "organization templates/content only",
-      "owner": ".github maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "README only observed; reference versioned contribution/brand rules without runtime deps",
-      "migrationGuide": "docs/governance/adoption.md"
+      "name": "font",
+      "applicability": "font source (canonical owner of Bloxwap font binaries) and SDK docs (apps/docs)",
+      "owner": "bloxwap/font maintainers (named assignment pending, #57)",
+      "higVersion": "0.1.0-candidate.sha7c67a07c",
+      "status": "migrated (docs consume vendored HIG packages)",
+      "mergedPRs": [
+        "https://github.com/bloxwap/font/pull/10",
+        "https://github.com/bloxwap/font/pull/11"
+      ],
+      "openPRs": [],
+      "validation": "CI green on 44b8a002 (72 Playwright checks across Chromium/Firefox/WebKit); independent verifier: lint, typecheck, unit 7/7, docs build (27 HTML, 52 @font-face), Playwright 48/48, mutation check (evidence/hig-34/)",
+      "exceptions": [
+        {
+          "scope": "vendor/bloxwap-hig/*.tgz",
+          "reason": "HIG not on npm",
+          "owner": "bloxwap/font maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/56"
+        }
+      ],
+      "remaining": "Font binaries in apps/docs are canonical to this repo (declare under canonical in hig-drift.json); npm (#56)",
+      "migrationGuide": "docs/migration/sdk-docs.md",
+      "url": "https://github.com/bloxwap/font",
+      "exceptionExpires": "2027-01-15"
     },
     {
-      "name": "bloxwap.github.io",
-      "url": "https://github.com/bloxwap/bloxwap.github.io",
-      "applicability": "static docs/marketing hub",
-      "owner": "bloxwap.github.io maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Root Pages site; shared brand/tokens/nav/search pilots require owning build validation",
-      "migrationGuide": "docs/governance/adoption.md"
+      "name": "sfx",
+      "applicability": "sound engine owner and SDK docs (apps/docs)",
+      "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
+      "higVersion": "0.1.0-candidate.sha7c67a07c",
+      "status": "migrated (docs consume vendored HIG packages)",
+      "mergedPRs": [
+        "https://github.com/bloxwap/sfx/pull/45",
+        "https://github.com/bloxwap/sfx/pull/50"
+      ],
+      "openPRs": [],
+      "validation": "CI green on fb1da5c (docs smoke 9/9 across three engines); independent verifier: lint, typecheck, docs:check, coverage 183/183, docs build, 18 pages probe; 8 files removed (904,457 B) (evidence/hig/docs-package-migration/)",
+      "exceptions": [
+        {
+          "scope": "apps/docs/lib/og-card.tsx (copied-palette)",
+          "reason": "approved brand-mark fill in the social card, same as HIG brand marks",
+          "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/36"
+        },
+        {
+          "scope": "HIG font-family bridge in apps/docs",
+          "reason": "HIG control CSS uses literal family names the Next loader never registers",
+          "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/65"
+        }
+      ],
+      "remaining": "Drop bridge after #65; Radix duplication (#63); upstream voice cancellation (#70); npm (#56)",
+      "migrationGuide": "docs/migration/sdk-docs.md",
+      "url": "https://github.com/bloxwap/sfx",
+      "exceptionExpires": "2027-01-15"
     },
     {
-      "name": "icons",
-      "url": "https://github.com/bloxwap/icons",
-      "applicability": "brand/icon asset source",
-      "owner": "icons maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Do not import full catalog; upstream owns asset admission and provenance",
-      "migrationGuide": "docs/governance/adoption.md"
-    },
-    {
-      "name": "dimension-adapters",
-      "url": "https://github.com/bloxwap/dimension-adapters",
-      "applicability": "no runtime UI; CLI/data adapters",
-      "owner": "dimension-adapters maintainers (assignment pending)",
-      "status": "guide only; owning repo changes outside authorization",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "README adapter instructions; retain data/fees logic, use applicable content guidance only",
-      "migrationGuide": "docs/governance/adoption.md"
-    },
-    {
-      "name": "monorepo (external/inaccessible reference)",
-      "url": "https://github.com/bloxwap/monorepo",
-      "applicability": "app/Pro/marketing/native UI",
-      "owner": "product/native monorepo maintainers (assignment pending)",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "status": "blocked: referenced repository returns 404; user forbids owning repo pushes",
-      "remaining": "source audit, reviewed codemod/pilot changes, real builds/device evidence and measured deltas",
-      "exceptionExpires": "2026-11-13",
-      "migrationGuide": "docs/migration/products.md"
+      "name": "haptic",
+      "applicability": "haptic engine owner and SDK docs (apps/docs)",
+      "owner": "bloxwap/haptic maintainers (named assignment pending, #57)",
+      "higVersion": "0.1.0-candidate.sha7c67a07c",
+      "status": "migrated (docs consume vendored HIG packages)",
+      "mergedPRs": [
+        "https://github.com/bloxwap/haptic/pull/25",
+        "https://github.com/bloxwap/haptic/pull/26"
+      ],
+      "openPRs": [],
+      "validation": "CI green on 8df3523 (docs:smoke 28/28 across four projects); independent verifier: lint, typecheck, coverage 79/79, React 18/19 matrix, docs build, Playwright 21/21 (.github/evidence/hig-34/)",
+      "exceptions": [
+        {
+          "scope": "vendor/bloxwap-hig/*.tgz and 48 nested Radix lockfile entries",
+          "reason": "HIG not on npm; exact Radix peer pins",
+          "owner": "bloxwap/haptic maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/63"
+        }
+      ],
+      "remaining": "Physical haptic certification upstream (bloxwap/haptic#9, #55); npm (#56)",
+      "migrationGuide": "docs/migration/sdk-docs.md",
+      "url": "https://github.com/bloxwap/haptic",
+      "exceptionExpires": "2027-01-15"
     },
     {
       "name": "monorepo",
+      "applicability": "product web (bloxwap.app, bloxwap.pro), marketing Worker (bloxwap.com) and React Native app",
+      "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "higVersion": "web: 0.1.0-candidate.sha1a776b93 (artifacts/hig); mobile PR: 0.1.0-candidate.sha7c67a07c",
+      "status": "in progress: pilot merged; four follow-up PRs open, blocked by the required human signoff status",
+      "mergedPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515"
+      ],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4522",
+        "https://github.com/bloxwap/monorepo/pull/4523",
+        "https://github.com/bloxwap/monorepo/pull/4525",
+        "https://github.com/bloxwap/monorepo/pull/4540"
+      ],
+      "validation": "Per-surface rows below; CI green on all open PRs; independent verifiers approved #4522/#4523/#4525 and #4540",
+      "exceptions": [
+        {
+          "scope": "retired forks kept as rollback renderers (apps/pro ui/segmented, ui/button, ui/input; apps/app components/ui; packages/ui-native Button/Sheet/Toast)",
+          "reason": "host rollback flags NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT and screens not yet migrated",
+          "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/33"
+        },
+        {
+          "scope": "apps/www/public/fonts (12 MB committed font copies)",
+          "reason": "marketing Worker has no deploy-time font asset step yet",
+          "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/33"
+        }
+      ],
+      "remaining": "Human signoff and merge of #4522/#4523/#4525/#4540 (#33, #35); remaining screens; fork retirement",
+      "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/monorepo",
-      "applicability": "product web/native/docs/marketing surfaces",
-      "owner": "monorepo maintainers (named assignment pending)",
-      "status": "audited applicability; owning repo changes outside this hig-only task",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
-      "migrationGuide": "docs/governance/adoption.md"
+      "exceptionExpires": "2027-01-15"
     },
     {
-      "name": ".github-private",
-      "url": "https://github.com/bloxwap/.github-private",
-      "applicability": "organization profile/governance; no runtime UI in observed tree",
-      "owner": ".github-private maintainers (named assignment pending)",
-      "status": "audited applicability; owning repo changes outside this hig-only task",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
-      "migrationGuide": "docs/governance/adoption.md"
+      "name": "agent-cli",
+      "applicability": "CLI package and Fumadocs docs site (apps/docs)",
+      "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
+      "higVersion": "none (copied HIG token CSS)",
+      "status": "not migrated: docs copy vendor/hig/tokens.css and Bloxwap TTFs",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Scoped drift check on 2026-10-15 flags vendor/hig import, copied tokens and committed TTFs",
+      "exceptions": [
+        {
+          "scope": "apps/docs",
+          "reason": "docs site created 2026-10-14 after the inventory; migration not started",
+          "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/58"
+        }
+      ],
+      "remaining": "Migrate to HIG packages (#58)",
+      "migrationGuide": "docs/governance/new-repository.md",
+      "url": "https://github.com/bloxwap/agent-cli",
+      "exceptionExpires": "2027-01-15"
     },
     {
       "name": "taptradetv",
+      "applicability": "streaming, auction and contest web apps (apps/*) and shared UI (packages/ui)",
+      "owner": "bloxwap/taptradetv maintainers (named assignment pending, #57)",
+      "higVersion": "none",
+      "status": "not migrated: local primitive forks, copied token CSS and Geist fonts",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Tree audit 2026-10-15 (apps/host/src/components/ui, apps/web/app/components/ui, apps/host/src/styles/tokens.generated.css)",
+      "exceptions": [
+        {
+          "scope": "apps/*",
+          "reason": "per-app applicability (product vs internal/broadcast) still to decide",
+          "owner": "bloxwap/taptradetv maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/59"
+        }
+      ],
+      "remaining": "Decide per-app applicability and migrate product-facing surfaces (#59)",
+      "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/taptradetv",
-      "applicability": "streaming/auction/contest web apps and shared UI",
-      "owner": "taptradetv maintainers (named assignment pending)",
-      "status": "audited applicability; owning repo changes outside this hig-only task",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
-      "migrationGuide": "docs/governance/adoption.md"
+      "exceptionExpires": "2027-01-15"
     },
     {
       "name": "tapsiren",
+      "applicability": "strategy services and workers; one Next worker page (workers/tapsiren) with a local Button fork",
+      "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
+      "higVersion": "none",
+      "status": "pending classification of the worker page",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Tree audit 2026-10-15: only workers/tapsiren app/, components/ and packages/icons are UI",
+      "exceptions": [
+        {
+          "scope": "workers/tapsiren",
+          "reason": "public vs internal tooling decision pending",
+          "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/60"
+        }
+      ],
+      "remaining": "Classify and adopt or except (#60)",
+      "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/tapsiren",
-      "applicability": "strategy services/tooling; review seven UI-like paths before classifying runtime UI",
-      "owner": "tapsiren maintainers (named assignment pending)",
-      "status": "audited applicability; owning repo changes outside this hig-only task",
-      "exceptionExpires": "2026-11-13",
-      "packageVersion": "0.1.0 candidate",
-      "owningPR": null,
-      "remaining": "Owning maintainers must approve applicability/ownership and migration scope; source paths/tree SHA recorded in issue-1-18 evidence",
-      "migrationGuide": "docs/governance/adoption.md"
+      "exceptionExpires": "2027-01-15"
+    },
+    {
+      "name": "bloxwap.github.io",
+      "applicability": "static root docs/marketing hub (plain HTML + styles.css)",
+      "owner": "bloxwap/bloxwap.github.io maintainers (named assignment pending, #57)",
+      "higVersion": "none",
+      "status": "not migrated: hand-written styles.css",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Tree audit 2026-10-15",
+      "exceptions": [
+        {
+          "scope": "styles.css",
+          "reason": "no build step; tokens path to be added",
+          "owner": "bloxwap/bloxwap.github.io maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/61"
+        }
+      ],
+      "remaining": "Adopt HIG token roles and brand marks (#61)",
+      "migrationGuide": "docs/installation.md",
+      "url": "https://github.com/bloxwap/bloxwap.github.io",
+      "exceptionExpires": "2027-01-15"
+    },
+    {
+      "name": "icons",
+      "applicability": "brand/chain icon asset source (assets/agg_icons); no runtime UI",
+      "owner": "bloxwap/icons maintainers (named assignment pending, #57)",
+      "higVersion": "not applicable",
+      "status": "decided: no HIG runtime adoption; icons stay upstream-owned assets",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Tree audit 2026-10-15 (default branch v2)",
+      "exceptions": [],
+      "remaining": "None. HIG never imports the full catalog; asset admission and provenance stay with this repo",
+      "migrationGuide": "docs/governance/contributing.md",
+      "url": "https://github.com/bloxwap/icons",
+      "exceptionExpires": "2027-01-15"
+    },
+    {
+      "name": "dimension-adapters",
+      "applicability": "no UI (data/fee adapters fork)",
+      "owner": "bloxwap/dimension-adapters maintainers (named assignment pending, #57)",
+      "higVersion": "not applicable",
+      "status": "decided: no UI, no HIG dependency",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Tree audit 2026-10-15 (default branch master)",
+      "exceptions": [],
+      "remaining": "None",
+      "migrationGuide": "docs/governance/new-repository.md",
+      "url": "https://github.com/bloxwap/dimension-adapters",
+      "exceptionExpires": "2027-01-15"
+    },
+    {
+      "name": ".github",
+      "applicability": "organization profile content (README, profile/assets wordmark SVGs, job posts)",
+      "owner": "bloxwap/.github maintainers (named assignment pending, #57)",
+      "higVersion": "not applicable (brand/content only)",
+      "status": "decided: brand/content conventions only, no runtime dependency",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Tree audit 2026-10-15",
+      "exceptions": [],
+      "remaining": "Take wordmarks from HIG brand assets on next change",
+      "migrationGuide": "docs/governance/new-repository.md",
+      "url": "https://github.com/bloxwap/.github",
+      "exceptionExpires": "2027-01-15"
+    },
+    {
+      "name": ".github-private",
+      "applicability": "private organization profile README; no UI",
+      "owner": "bloxwap/.github-private maintainers (named assignment pending, #57)",
+      "higVersion": "not applicable",
+      "status": "decided: no UI, no HIG dependency",
+      "mergedPRs": [],
+      "openPRs": [],
+      "validation": "Tree audit 2026-10-15",
+      "exceptions": [],
+      "remaining": "None",
+      "migrationGuide": "docs/governance/new-repository.md",
+      "url": "https://github.com/bloxwap/.github-private",
+      "exceptionExpires": "2027-01-15"
     }
   ],
   "surfaces": [
     {
       "name": "bloxwap.app",
-      "repository": "monorepo (inaccessible)",
-      "owner": "product/native maintainers (assignment pending)",
-      "status": "guide/checklist only; owning migration not performed",
-      "guide": "docs/migration/products.md",
-      "owningPR": null,
-      "validatedVersion": null,
-      "exceptionExpires": "2026-11-13"
+      "repository": "monorepo",
+      "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "status": "pilot merged (#4515: settings/billing, raw amount fields); Sound & Haptics feedback controller PR open",
+      "mergedPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515"
+      ],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4523"
+      ],
+      "validatedVersion": "0.1.0-candidate.sha1a776b93",
+      "validation": "#4523: lint, typecheck, 3,122 tests, production build, 24-case settings browser matrix (Chrome/Firefox CI)",
+      "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
+      "remaining": "Signed-in amount/review/sheet/outcome pilots; remaining direct sfx/haptics calls; fork retirement",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/products.md"
     },
     {
       "name": "bloxwap.pro",
-      "repository": "monorepo (inaccessible)",
-      "owner": "product/native maintainers (assignment pending)",
-      "status": "guide/checklist only; owning migration not performed",
-      "guide": "docs/migration/products.md",
-      "owningPR": null,
-      "validatedVersion": null,
-      "exceptionExpires": "2026-11-13"
+      "repository": "monorepo",
+      "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "status": "pilot merged (#4515) with a compact-density regression; fix and navigation/numbers pilots open in #4522",
+      "mergedPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515"
+      ],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4522"
+      ],
+      "validatedVersion": "0.1.0-candidate.sha1a776b93",
+      "validation": "#4522: leaderboard row 47px->38px and order-ticket slider 48px->6px restored (production next start), roving-tabindex keyboard, 216 tests",
+      "rollback": "NEXT_PUBLIC_HIG_PILOT=0; revert 8fe4859c",
+      "remaining": "Merge #4522 (main currently carries the #4515 density regression); market list, stats header, tables",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/products.md"
     },
     {
       "name": "bloxwap.com",
-      "repository": "monorepo (inaccessible)",
-      "owner": "product/native maintainers (assignment pending)",
-      "status": "guide/checklist only; owning migration not performed",
-      "guide": "docs/migration/products.md",
-      "owningPR": null,
-      "validatedVersion": null,
-      "exceptionExpires": "2026-11-13"
+      "repository": "monorepo",
+      "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "status": "typography/CTA pilot merged (#4515); waitlist/Pro features/touch footer PR open",
+      "mergedPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515"
+      ],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4525"
+      ],
+      "validatedVersion": "0.1.0-candidate.sha1a776b93",
+      "validation": "#4525: 38 tests, Worker bundle, marketing browser check (48px touch targets, busy waitlist) in Chrome/Firefox CI",
+      "rollback": "HIG_MARKETING_PILOT=0",
+      "remaining": "Signals, markets and setup sections; retire 12 MB public/fonts copies",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/products.md"
     },
     {
       "name": "React Native app",
-      "repository": "monorepo (inaccessible)",
-      "owner": "product/native maintainers (assignment pending)",
-      "status": "guide/checklist only; owning migration not performed",
-      "guide": "docs/migration/native.md",
-      "owningPR": null,
+      "repository": "monorepo",
+      "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "status": "settings/field typography pilot merged (#4515); full migration PR open (#4540), blocked by human signoff",
+      "mergedPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515"
+      ],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4540"
+      ],
+      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "validation": "#4540: 3,020 tests; iOS Simulator XCUITest 7/7 flows (AXXXL, RTL, fr/ko, reduce motion, accessibility audit 0 issues); Android emulator flows incl. TalkBack, font scale 2.0, muted channels; JS +55.7 KB, 15 duplicate fonts (12 MB) removed",
+      "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
+      "remaining": "Signoff/merge; upgrade to a candidate containing #53 GestureSheet fixes and #54; physical devices (#55); RN 0.83 certification (#68)",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/native.md"
+    },
+    {
+      "name": "Hyperliquid docs",
+      "repository": "hyperliquid",
+      "owner": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
+      "status": "migrated",
+      "mergedPRs": [
+        "https://github.com/bloxwap/hyperliquid/pull/179",
+        "https://github.com/bloxwap/hyperliquid/pull/180"
+      ],
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "validation": "CI green on 4eec557; independent verifier: bun run check, docs build (13 pages, 1168 links), Playwright 8/8, unmocked mainnet playground; export total -888,353 B, 9 copied files to 0 (apps/docs/design-review/hig-packages/)",
+      "rollback": "revert the squash merge (base builds verified by the PR verifier)",
+      "remaining": "Swap vendored tarballs for npm (#56); HIG Callout lacks note/tip severities (#69)",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/sdk-docs.md"
+    },
+    {
+      "name": "Chart docs",
+      "repository": "chart",
+      "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
+      "status": "migrated",
+      "mergedPRs": [
+        "https://github.com/bloxwap/chart/pull/52",
+        "https://github.com/bloxwap/chart/pull/53"
+      ],
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "validation": "CI green on bff4476; independent verifier: docs build (30 pages, 1530 links), lint, typecheck, 1869/1869 tests at 100% coverage, docs:test browser suite; 9 copied files removed (904,638 B) (docs/hig-adoption/hig-7c67a07/)",
+      "rollback": "revert the squash merge (base builds verified by the PR verifier)",
+      "remaining": "Drop workarounds after #63 and #66; npm (#56)",
+      "exceptionExpires": "2026-11-13",
+      "guide": "docs/migration/sdk-docs.md"
+    },
+    {
+      "name": "Font docs",
+      "repository": "font",
+      "owner": "bloxwap/font maintainers (named assignment pending, #57)",
+      "status": "migrated",
+      "mergedPRs": [
+        "https://github.com/bloxwap/font/pull/10",
+        "https://github.com/bloxwap/font/pull/11"
+      ],
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "validation": "CI green on 44b8a002 (72 Playwright checks across Chromium/Firefox/WebKit); independent verifier: lint, typecheck, unit 7/7, docs build (27 HTML, 52 @font-face), Playwright 48/48, mutation check (evidence/hig-34/)",
+      "rollback": "revert the squash merge (base builds verified by the PR verifier)",
+      "remaining": "Font binaries in apps/docs are canonical to this repo (declare under canonical in hig-drift.json); npm (#56)",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/sdk-docs.md"
+    },
+    {
+      "name": "SFX docs",
+      "repository": "sfx",
+      "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
+      "status": "migrated",
+      "mergedPRs": [
+        "https://github.com/bloxwap/sfx/pull/45",
+        "https://github.com/bloxwap/sfx/pull/50"
+      ],
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "validation": "CI green on fb1da5c (docs smoke 9/9 across three engines); independent verifier: lint, typecheck, docs:check, coverage 183/183, docs build, 18 pages probe; 8 files removed (904,457 B) (evidence/hig/docs-package-migration/)",
+      "rollback": "revert the squash merge (base builds verified by the PR verifier)",
+      "remaining": "Drop bridge after #65; Radix duplication (#63); upstream voice cancellation (#70); npm (#56)",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/sdk-docs.md"
+    },
+    {
+      "name": "Haptic docs",
+      "repository": "haptic",
+      "owner": "bloxwap/haptic maintainers (named assignment pending, #57)",
+      "status": "migrated",
+      "mergedPRs": [
+        "https://github.com/bloxwap/haptic/pull/25",
+        "https://github.com/bloxwap/haptic/pull/26"
+      ],
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "validation": "CI green on 8df3523 (docs:smoke 28/28 across four projects); independent verifier: lint, typecheck, coverage 79/79, React 18/19 matrix, docs build, Playwright 21/21 (.github/evidence/hig-34/)",
+      "rollback": "revert the squash merge (base builds verified by the PR verifier)",
+      "remaining": "Physical haptic certification upstream (bloxwap/haptic#9, #55); npm (#56)",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/sdk-docs.md"
+    },
+    {
+      "name": "agent-cli docs",
+      "repository": "agent-cli",
+      "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
+      "status": "not migrated",
+      "mergedPRs": [],
+      "openPRs": [],
       "validatedVersion": null,
-      "exceptionExpires": "2026-11-13"
+      "validation": "drift check flags copied HIG CSS",
+      "rollback": "n/a",
+      "remaining": "#58",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/governance/new-repository.md"
     }
-  ],
-  "sourceDecisions": {
-    "agent-cli": "gh repo view: empty defaultBranchRef, README 404",
-    ".github": "main README # .github",
-    "dimension-adapters": "master README contains CLI/data-adapter tasks",
-    "bloxwap.github.io": "main README identifies root GitHub Pages docs site"
-  },
-  "inventoryEvidence": "planning/org-inventory-2026-10-13.json",
-  "inventoryScope": "All repositories visible to the authenticated token on 2026-10-13; not a claim about repositories hidden from that token."
+  ]
 }

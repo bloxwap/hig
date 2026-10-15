@@ -1,6 +1,6 @@
 # Native application pilot (#35)
 
-Owner: native app maintainers; assignment pending. Exception review: 2026-11-13. Real app source/build credentials and physical iPhone/Android access are absent; no application migration or tactile certification is claimed. No owning repo is pushed.
+Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.sha7c67a07c`, with one HIG feedback controller and 15 duplicate fonts removed. It was verified on the iOS Simulator and Android emulator, but it is not merged yet (it needs the required human `signoff`). Physical-device certification is tracked in #55 and React Native 0.83 certification in #68. No tactile, audible or VoiceOver observation is claimed.
 
 Pilot: font registration → dp/sRGB token mapping → amount/selection/review sheet → visible async outcome → independent feedback settings. The Expo gallery proves candidate packaging and contract examples, not the owning app's native build.
 

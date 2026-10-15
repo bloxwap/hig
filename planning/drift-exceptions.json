@@ -1,7 +1,11 @@
 {
-  "version":"0.1.0",
-  "exceptions":[
-    {"path":"packages/react/src/brand.tsx","rule":"copied-palette","owner":"HIG brand maintainers","reason":"Approved exact mark geometry and fills from pinned Font SVG; tokenizing would change approved asset","expires":"2026-11-13"},
-    {"path":"packages/native/src/brand.tsx","rule":"copied-palette","owner":"HIG brand maintainers","reason":"Same approved exact native mark geometry/fills; SVG provenance retained in tokens assets","expires":"2026-11-13"}
+  "version": "0.1.0",
+  "note": "Scoped anti-drift configuration for this repository. Rules and the exception policy are in docs/governance/contributing.md; adopting repositories keep the same shape in their own hig-drift.json (docs/governance/new-repository.md).",
+  "paths": ["packages/react/src", "packages/native/src", "fixtures/web/src", "fixtures/native", "apps/docs/src", "apps/docs/app", "apps/docs/components", "apps/docs/lib", "apps/docs/styles"],
+  "obsoleteImports": ["@/components/ui/"],
+  "canonical": ["packages/tokens/", "packages/react/src/styles.css"],
+  "exceptions": [
+    {"path": "packages/react/src/brand.tsx", "rule": "copied-palette", "owner": "HIG brand maintainers", "reason": "Approved exact mark geometry and fills from pinned Font SVG; tokenizing would change approved asset", "expires": "2026-11-13"},
+    {"path": "packages/native/src/brand.tsx", "rule": "copied-palette", "owner": "HIG brand maintainers", "reason": "Same approved exact native mark geometry/fills; SVG provenance retained in tokens assets", "expires": "2026-11-13"}
   ]
 }

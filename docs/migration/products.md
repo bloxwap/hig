@@ -1,6 +1,6 @@
 # App, Pro and marketing pilots (#33)
 
-Owner: product monorepo/application maintainers, assignment pending. Exception review: 2026-11-13. Source access and actual migration/build validation remain required. User forbids pushes to owning repos.
+Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: the first pilot is merged in [monorepo#4515](https://github.com/bloxwap/monorepo/pull/4515). Three follow-ups are open with green CI and verifier approval: [#4522](https://github.com/bloxwap/monorepo/pull/4522) (Pro compact density fix, navigation and numbers), [#4523](https://github.com/bloxwap/monorepo/pull/4523) (app Sound & Haptics controller) and [#4525](https://github.com/bloxwap/monorepo/pull/4525) (marketing waitlist, features and touch footer). They wait on the repository's required human `signoff` status. `planning/adoption.json` records the versions, rollback flags and gaps for each surface. The kit below is the checklist those PRs followed.
 
 | Surface | Pilot and HIG mapping | Preserve | Owner work remaining |
 | --- | --- | --- | --- |
@@ -18,4 +18,4 @@ Checklist:
 - [ ] Compare before/after at the same viewport/data/toolchain; record measured source/asset/bundle delta without guessed improvements.
 - [ ] Remove old copies/dependencies only after reference search and build/device proof. Link owning PR and residual surface work in adoption matrix.
 
-Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. This kit itself does not claim any origin migrated.
+Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. The adoption matrix, not this kit, records which surfaces are migrated.

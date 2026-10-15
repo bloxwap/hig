@@ -1,15 +1,39 @@
 # Organization adoption and governance (#36)
 
-The active-repo matrix is `planning/adoption.json`, dated 2026-10-13. It includes empty/no-UI/tooling repositories as well as SDK docs and product targets. A role owner and expiry are explicit; personal/team assignment and owning PR URLs remain pending, never fabricated. Product monorepo is an explicit inaccessible external target, even though it is absent from the visible org repo list.
+The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-15 against `planning/org-inventory-2026-10-15.json`: the 15 repositories visible to `gh repo list bloxwap`, none archived. The 2026-10-13 inventory is kept for history. Each row records:
 
-Every new repo chooses runtime, docs/marketing, brand/content-only or no-UI applicability. No-UI repos reference principles/content/brand rules without adding React/native/audio dependencies. Runtime repos use individual platform imports and CI package/behavior checks. SDK demos stay owned by their SDK. HIG owns token and component contracts; Font/SFX/Haptic/Chart own their engines/assets.
+- applicability
+- owner (a maintainer role until #57 records named owners)
+- HIG version
+- merged and open PRs
+- validation
+- status
+- remaining work
+- dated exceptions, each with scope, reason, owner, an expiry no more than 180 days ahead, and a tracking issue
 
-Review/admission requires actual repeated usage evidence, minimal API, both platform mapping or reasoned alternative, complete states, accessible labels/focus/back/large text, muted operation, tests/examples/docs and migration/rollback. Remove a component only after consumers are inventoried and a deprecation window is observed. New palette/primitive copies are blocked by scoped anti-drift checks with owner/reason/expiry exceptions.
+`tests/docs.test.ts` fails when a visible repository has no row or when a row is missing these fields. Product surfaces (bloxwap.app, bloxwap.pro, bloxwap.com, the React Native app) and the five SDK docs sites have their own rows under `surfaces`.
 
-Semver: token/type/geometry changes, action timing, accessible behavior and semantic cue maps are API changes. Breaking behavior requires a major; new compatible roles/exports a minor; verified fixes a patch. Deprecations retain old exports for a documented migration window and provide a codemod/checklist. Candidate artifacts and docs share commit provenance; stable publication stays gated by missing source audit/device/adoption evidence and is prohibited by this task.
+## Status · 2026-10-15
 
-Completion review: all 36 issues need an owning implementation/validation link or explicit blocker; catalog entries need docs/code/platform/test coverage; source/bundle deltas must be measured; all active rows must have owner, version, status, residuals and dated exceptions. This matrix cannot be called migrated until owning-repo changes and device checks exist.
+| Group | Repositories | State |
+| --- | --- | --- |
+| Canonical | hig | Source of truth. npm publication is #56 and physical-device certification is #55 |
+| SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Merged and verified on HIG `0.1.0-candidate.sha7c67a07c` (#34) |
+| Product | monorepo | Pilot merged in #4515. #4522, #4523, #4525 (#33) and #4540 (#35) are approved and green but wait on the required human `signoff` |
+| Newly found UI gaps | agent-cli (#58), taptradetv (#59), tapsiren (#60), bloxwap.github.io (#61) | Dated exceptions, each with a tracking issue |
+| No HIG runtime | icons (asset source), dimension-adapters (no UI), .github (brand content), .github-private (no UI) | Decided; no dependency added |
 
-## Inventory refresh · 2026-10-13
+## Governance
 
-`planning/org-inventory-2026-10-13.json` records all active repositories visible to the current authenticated token; `planning/adoption.json` assigns an applicability and dated exception to each. This refresh adds tapsiren (workers/data services), taptradetv (product UI), and private organization profile content. Previously inaccessible product source is now readable; it is not copied into public docs. Named maintainers still need to accept ownership and provide migration PR/build/baseline evidence. An inventory decision or migration kit does not establish production adoption.
+- **Ownership, review, admission, removal, platform support and product exceptions:** see the contribution chapter (`docs/governance/contributing.md`).
+- **Release, semver and deprecation:** see the release chapter (`docs/governance/release.md`).
+- **Setting up and upgrading a repository** without copying component folders, palettes, fonts or feedback engines: see `docs/governance/new-repository.md`.
+- **Anti-drift:** `scripts/drift.mjs` enforces it here and in adopting repositories with `--root` and a `hig-drift.json`.
+
+## Completion review
+
+- Every issue needs an owning implementation and validation link, or an explicit linked follow-up. See `planning/issue-coverage.md` for the per-issue state.
+- Catalog entries need docs, code, platform and test coverage.
+- Source and bundle deltas must be measured in the owning repository.
+- A matrix row is "migrated" only when its owning PR is merged and its validation is linked. Open PRs are recorded as in progress, never as migrated.
+- Physical hardware results are never inferred from simulator, emulator or browser evidence.
