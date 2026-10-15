@@ -8,13 +8,14 @@
     "contracts": 6,
     "feedback": 17,
     "native": 38,
+    "native-fonts": 4,
     "react": 41,
-    "tokens": 6
+    "tokens": 5
   },
   "sizes": {
     "button": {
       "raw": 1249,
-      "gzip": 705,
+      "gzip": 708,
       "inputs": [
         "packages/contracts/dist/index.js",
         "packages/react/dist/provider.js",
@@ -24,7 +25,7 @@
     },
     "field": {
       "raw": 789,
-      "gzip": 345,
+      "gzip": 347,
       "inputs": [
         "packages/react/dist/field.js",
         "field.js"
@@ -46,18 +47,18 @@
     },
     "feedbackContract": {
       "raw": 2951,
-      "gzip": 1003,
+      "gzip": 996,
       "inputs": [
         "packages/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
     "docsJS": {
-      "raw": 2197259,
-      "gzip": 611683
+      "raw": 2205989,
+      "gzip": 615153
     },
     "docsCSS": {
-      "raw": 108549
+      "raw": 110489
     },
     "fonts": {
       "raw": 592796
