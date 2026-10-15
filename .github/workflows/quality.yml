@@ -35,6 +35,7 @@ jobs:
       - run: npm run smoke:packed-next
         env:
           NEXT_TELEMETRY_DISABLED: '1'
+      - run: npm run smoke:packed-css
       - name: Browser, visual and hydration gates
         run: node scripts/run-browser-gates.mjs
       - run: npm run release:dry-run -- --channel candidate

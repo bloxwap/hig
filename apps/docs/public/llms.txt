@@ -1187,6 +1187,7 @@ npm run quality
 npm run smoke:packed
 npm run smoke:packed-native
 npm run smoke:packed-next
+npm run smoke:packed-css
 npm run release:dry-run -- --channel candidate
 npm run release:dry-run -- --channel stable-simulation
 ```
@@ -1269,7 +1270,11 @@ Install the tokens tarball alone and import CSS variables or typed tokens. No Re
 .card { border-radius: var(--hig-radius-lg); padding: var(--hig-space-lg); font: var(--hig-type-body); }
 .card h2 { font: var(--hig-type-title); }
 .card button { min-height: var(--hig-density-control); transition: background var(--hig-motion-duration-fast) var(--hig-motion-easing-standard); }
-``` Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. The audited monorepo web/native rem roots are both 16; HIG supports StyleSheet rather than claiming a verified NativeWind consumer. See the source-reconciliation chapter for native font generation and registration.
+```
+
+`npm run smoke:packed-css` proves this path. It installs only the packed `@bloxwap/hig-tokens` tarball into an empty consumer, links `@bloxwap/hig-tokens/css` from a script-free HTML page whose own stylesheet uses nothing but the roles, and checks the computed radius, type, motion and density values in Chromium, Firefox and WebKit, including 0ms durations under `prefers-reduced-motion: reduce` and `[data-hig-motion='reduced']` and the compact values under `[data-hig-density='compact']`. It fails if the page requests anything other than the HTML, its stylesheet and the token CSS, so the manifest is never read.
+
+Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. The audited monorepo web/native rem roots are both 16; HIG supports StyleSheet rather than claiming a verified NativeWind consumer. See the source-reconciliation chapter for native font generation and registration.
 
 ## Optional chart, sound and haptics
 
