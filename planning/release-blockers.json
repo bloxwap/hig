@@ -18,9 +18,9 @@
   {
     "id": "native-fonts",
     "owner": "Font/native maintainers",
-    "reason": "HIG generates 15 pinned static native TTFs from Font 0.1.2 with hash checks; registration and Dynamic Type/large-text layouts were observed on the iOS Simulator and Android emulator (#53). Physical rasterization remains (#55); separating native faces from the web tokens package is #64.",
+    "reason": "HIG generates 15 pinned static native TTFs from Font 0.1.2 with hash checks, shipped in @bloxwap/hig-native-fonts and no longer in the web tokens package (#64, PR #75); registration and Dynamic Type/large-text layouts were observed on the iOS Simulator and Android emulator (#53). Physical rasterization remains (#55).",
     "status": "partial",
-    "tracking": "https://github.com/bloxwap/hig/issues/64",
+    "tracking": "https://github.com/bloxwap/hig/issues/55",
     "reviewBy": "2027-01-15"
   },
   {
@@ -34,7 +34,7 @@
   {
     "id": "owning-migrations",
     "owner": "each adopting repository maintainers",
-    "reason": "Five SDK docs migrations are merged (hyperliquid#180, chart#53, font#11, sfx#50, haptic#26). Product web and native follow-ups (monorepo#4522, #4523, #4525, #4540) await the monorepo's required human signoff; agent-cli, taptradetv, tapsiren and bloxwap.github.io have dated exceptions (#58-#61).",
+    "reason": "Five SDK docs migrations are merged (hyperliquid#180; chart#56, font#11, sfx#52 and haptic#28 on candidate 872906a9), as are agent-cli#48, taptradetv#188 (/sponsors), tapsiren#399 and bloxwap.github.io#26. Product web and native follow-ups (monorepo#4522, #4523, #4525, #4540) await the monorepo's required human signoff; taptradetv's remaining routes and apps/host (#100) and the tapsiren mark (#101) have dated exceptions.",
     "status": "partial",
     "tracking": "https://github.com/bloxwap/hig/issues/36",
     "reviewBy": "2027-01-15"
