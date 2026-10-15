@@ -1,0 +1,47 @@
+{
+  "auditIssues" : [
+
+  ],
+  "results" : [
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Text",
+      "sliders" : 0,
+      "staticTexts" : 34,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Switch",
+      "sliders" : 0,
+      "staticTexts" : 26,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 6,
+      "component" : "Alert",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "Slider",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 0,
+      "buttons" : 5,
+      "component" : "NumberReadout",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    }
+  ]
+}

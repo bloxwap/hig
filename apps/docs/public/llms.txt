@@ -47,9 +47,9 @@ Source: docs/architecture/platform-matrix.md
 | Area | DOM | RN | Evidence |
 | --- | --- | --- | --- |
 | Actions, surfaces, text, fields | Semantic DOM elements | Pressable/View/Text/TextInput | behavior tests, Vite/SSR/Metro |
-| Native text scaling and script tracking | Browser zoom; no cap | `Text`/`Heading`/`NumberReadout` `maxFontSizeMultiplier` (prop or HIGProvider default); Korean/Chinese runs at companion spacing via `script` and `letterSpacingByScript` | native Jest (#67); iOS AX5 and Android 200% gallery captures pending |
-| Native colour roles | CSS severity/data attributes | `Switch` `tone`, `Alert` `severity`/`tone` take token roles only; raw colours fall back | native Jest (#67) |
-| Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser; Android Slider adds `ACTION_SET_PROGRESS` through the autolinked `HIGAdjustableView` (plain View without native linking) | contract tests; module compiled in a headless Android release build (#71); emulator set-progress run pending |
+| Native text scaling and script tracking | Browser zoom; no cap | `Text`/`Heading`/`NumberReadout` `maxFontSizeMultiplier` (prop or HIGProvider default); Korean/Chinese runs at companion spacing via `script` and `letterSpacingByScript` | native Jest (#67); iOS Simulator AX5: capped readout 48pt vs 86pt prose; Android emulator 200% (non-linear scaling stays under the 2x cap) (`evidence/native-sim/issue-67-71/`) |
+| Native colour roles | CSS severity/data attributes | `Switch` `tone`, `Alert` `severity`/`tone` take token roles only; raw colours fall back. The Android Switch thumb uses the `text` token instead of the app theme accent | native Jest (#67); iOS Simulator and Android emulator captures (`evidence/native-sim/issue-67-71/`) |
+| Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser; Android Slider adds `ACTION_SET_PROGRESS` through the autolinked `HIGAdjustableView` (plain View without native linking) | contract tests; Android emulator UiAutomation (#71): set-progress listed, 80 applied once, snapped/clamped, absent and rejected while disabled; iOS Simulator increment/decrement unchanged (`evidence/native-sim/issue-67-71/`) |
 | Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
 | Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
@@ -353,7 +353,7 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 
 | Control | Key props and behavior |
 | --- | --- |
-| Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. |
+| Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
 | Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
 | `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. |
 
@@ -1152,7 +1152,7 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | --- | --- | --- | --- |
 | Individual DOM Button gzip (React external) | 706 B | 850 B | ~20% API/behavior fix headroom, overlay/audio/chart excluded |
 | Individual AmountInput gzip | 325 B | 400 B | Small labelled primitive, ~23% headroom |
-| Native Switch gzip (React/RN external) | 1,383 B; 1,849 B after #67 | 2,200 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track. ~19% headroom; verifies no Slider/SVG/overlay/feedback imports |
+| Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67 | 2,200 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
 | Docs CSS | 110,618 B (with token roles, #66) | 115,000 B | ~4% headroom; raised from 110,000 B when `@bloxwap/hig-tokens/css` gained radius/type/motion/density/font roles |

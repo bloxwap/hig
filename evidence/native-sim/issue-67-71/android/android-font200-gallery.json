@@ -1,0 +1,30 @@
+{
+ "results": [
+  {
+   "component": "Text",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Switch",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Alert",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "Slider",
+   "windows": 1,
+   "auditIssues": 0
+  },
+  {
+   "component": "NumberReadout",
+   "windows": 1,
+   "auditIssues": 0
+  }
+ ],
+ "auditIssues": []
+}

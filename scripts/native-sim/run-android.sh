@@ -46,6 +46,10 @@ adb shell am force-stop $PKG; adb shell cmd locale set-app-locales $PKG --locale
 adb shell settings put system font_scale 2.0
 run snapshot name font-scale-200
 run galleryCaptures components "$SUBSET" prefix android-font200
+# #67: scroll the Text/Switch/Alert examples into view at 200% and measure the capped readout against prose.
+run exampleCapture name font200-example-text query "component=Text&state=default" scrollTo "Review the amount" measure 'BLOXWAP|한국어|Price: 67,234.56|Review the amount'
+run exampleCapture name font200-example-switch query "component=Switch&state=default" scrollTo "Preference preview" measure "Preference preview|Info tone preview"
+run exampleCapture name font200-example-alert-error query "component=Alert&state=error" scrollTo "Data unavailable" measure "Data unavailable"
 adb shell settings put system font_scale 1.0
 # Remove animations (Android's reduce-motion signal for React Native).
 adb shell settings put global transition_animation_scale 0; adb shell settings put global animator_duration_scale 0

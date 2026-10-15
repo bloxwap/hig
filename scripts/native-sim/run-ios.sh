@@ -33,6 +33,11 @@ run testSnapshot TEST_RUNNER_HIG_NAME=os-arabic "TEST_RUNNER_HIG_LAUNCH_ARGS=-Ap
 xcrun simctl ui "$UDID" content_size accessibility-extra-extra-extra-large
 run testSnapshot TEST_RUNNER_HIG_NAME=dynamic-type-ax5
 run testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS="$SUBSET" TEST_RUNNER_HIG_PREFIX=ios-ax5
+# #67: scroll the Text/Switch/Alert examples into view at AX5 and measure the capped readout against prose.
+MEASURE='BLOXWAP|한국어|Price: 67,234.56|Review the amount'
+run testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-text "TEST_RUNNER_HIG_QUERY=component=Text&state=default" "TEST_RUNNER_HIG_SCROLL_TO=Review the amount" "TEST_RUNNER_HIG_MEASURE=$MEASURE"
+run testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-switch "TEST_RUNNER_HIG_QUERY=component=Switch&state=default" "TEST_RUNNER_HIG_SCROLL_TO=Preference preview" "TEST_RUNNER_HIG_MEASURE=Preference preview|Info tone preview"
+run testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-alert-error "TEST_RUNNER_HIG_QUERY=component=Alert&state=error" "TEST_RUNNER_HIG_SCROLL_TO=Data unavailable" "TEST_RUNNER_HIG_MEASURE=Data unavailable"
 xcrun simctl ui "$UDID" content_size large
 # Reduce Motion through the Simulator's accessibility defaults.
 xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool true

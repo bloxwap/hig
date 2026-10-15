@@ -1,0 +1,38 @@
+{
+  "disabled" : {
+    "isEnabled" : false,
+    "labelAfter" : "Volume preview: 84",
+    "labelBefore" : "Volume preview: 84",
+    "result" : "failed AXAction 2004 (increment): Error kAXErrorCannotComplete performing AXAction kAXIncrementAction_iOS on element AX element pid: 43031, elementOrHash.elementID: 4414327808.25"
+  },
+  "elementType" : "rawValue 1",
+  "found" : true,
+  "initialLabel" : "Volume preview: 25",
+  "initialValue" : "25%",
+  "steps" : [
+    {
+      "accessibilityValue" : "30%",
+      "action" : "accessibilityIncrement",
+      "result" : "performed AXAction 2004 (increment)",
+      "visibleLabel" : "Volume preview: 30"
+    },
+    {
+      "accessibilityValue" : "35%",
+      "action" : "accessibilityIncrement",
+      "result" : "performed AXAction 2004 (increment)",
+      "visibleLabel" : "Volume preview: 35"
+    },
+    {
+      "accessibilityValue" : "30%",
+      "action" : "accessibilityDecrement",
+      "result" : "performed AXAction 2005 (decrement)",
+      "visibleLabel" : "Volume preview: 30"
+    },
+    {
+      "accessibilityValue" : "84%",
+      "action" : "touch drag toward 80%",
+      "visibleLabel" : "Volume preview: 84"
+    }
+  ],
+  "traits" : 8589938688
+}

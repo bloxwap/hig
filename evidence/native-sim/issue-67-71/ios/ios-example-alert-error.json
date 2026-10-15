@@ -1,0 +1,14 @@
+{
+  "drags" : 0,
+  "frames" : {
+    "Data unavailable" : {
+      "height" : 30,
+      "label" : "Data unavailable",
+      "type" : 48,
+      "value" : "",
+      "width" : 309
+    }
+  },
+  "name" : "example-alert-error",
+  "targetFound" : true
+}
