@@ -6,6 +6,7 @@
   "helper": {
     "package": "@bloxwap/hig-contracts",
     "function": "formatNumber",
+    "functions": ["formatNumber", "formatLeverage", "formatTicker", "formatZonedTime"],
     "note": "Display only. Null/non-finite values render as —. Keep raw decimal strings in transaction logic."
   },
   "components": {

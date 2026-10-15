@@ -748,22 +748,27 @@ Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents c
 
 ## Shared helpers
 
-Use `formatNumber` from `@bloxwap/hig-contracts` and the data readouts. Do not hand-roll separators, currency symbols or compact suffixes.
+Use the display helpers from `@bloxwap/hig-contracts` and the data readouts. Do not hand-roll separators, currency symbols, compact suffixes, the leverage `×` or zone labels. Every helper returns `—` for `null`, `undefined` and non-finite input.
 
 ```ts
-import {formatNumber} from '@bloxwap/hig-contracts';
-formatNumber(value, locale, options); // Intl.NumberFormat; null/NaN → —
+import {formatNumber, formatLeverage, formatTicker, formatZonedTime} from '@bloxwap/hig-contracts';
+formatNumber(value, locale, options);             // Intl.NumberFormat
+formatLeverage(10, locale);                        // '10×' (decimal style forced)
+formatTicker(12.34, 'USDC', locale, {signDisplay: 'exceptZero'}); // '+12.34 USDC' (no-break space)
+formatZonedTime(instant, locale, 'UTC');           // '4:00 PM UTC' / '16:00 UTC'
 ```
 
 | Need | API |
 | --- | --- |
 | Decimal/grouped numbers | `formatNumber` / `NumberReadout` + host `minimumFractionDigits`/`maximumFractionDigits` |
 | USD | `Usd` (`style:'currency', currency:'USD'`) |
-| USDC | `formatNumber` for the amount, then untranslated `USDC` (`{amount} USDC` in `en-US`) |
+| USDC | `formatTicker(amount, 'USDC', locale, options)` — decimal amount plus untranslated ticker, never `$` |
+| Leverage | `formatLeverage(value, locale)` — `10×`, never percent |
 | Percent points | `Percent` (5 means 5%; do not pass a ratio) |
-| Signed PnL | `signDisplay:'exceptZero'` |
+| Signed PnL | `signDisplay:'exceptZero'` on `Usd`/`formatNumber`/`formatTicker` |
 | Compact totals | `notation:'compact', compactDisplay:'short'` |
-| Dates / clocks | `Intl.DateTimeFormat` |
+| Funding / expiry clocks | `formatZonedTime(instant, locale, timeZone)` — `Intl.DateTimeFormat` with the zone name always shown |
+| Other dates | `Intl.DateTimeFormat` |
 | Funding countdown | `Intl.RelativeTimeFormat` on a duration, not a zone-less clock |
 
 Hermes in RN 0.81.5 provides `Intl`. Don’t polyfill, don’t concatenate `'$'+value`, and don’t parse a formatted string back into an order.
@@ -776,7 +781,7 @@ Grouping and decimal marks come from the locale: `1,234.5` in `en-US`, `1.234,5`
 
 ## Currency, signed PnL and compact notation
 
-USD uses ISO `currency:'USD'`. Intl places the symbol (`$1,234.50` vs `1.234,50 $`). USDC is a ticker, not a reliable ISO 4217 code: format the number without `style:'currency'`, then append `USDC`. Never show USDC as `$` or `USD`.
+USD uses ISO `currency:'USD'`. Intl places the symbol (`$1,234.50` vs `1.234,50 $`). USDC is a ticker, not a reliable ISO 4217 code: use `formatTicker(amount, 'USDC', locale)`, which formats the number without `style:'currency'` and appends `USDC` after a no-break space. Never show USDC as `$` or `USD`.
 
 Signed PnL always includes a sign except at zero (`+$12.34`, `-$12.34`). Color is not a substitute for the sign. Don’t use accounting parentheses.
 
@@ -788,13 +793,13 @@ USDC PnL follows the same sign rule: `+12.34 USDC`. Tabular nums on every readou
 
 `en-US` clocks are 12-hour (`4:00 PM`). Many other locales resolve `h23`. Use `Intl.DateTimeFormat` (`hourCycle` from the locale unless the host overrides). Store instants in UTC.
 
-Funding and expiries: compute the next payment from UTC (Hyperliquid funding is hourly; the interval is protocol-owned). Display the instant with an explicit zone (`16:00 UTC` or a named device zone). Pair a duration countdown (“in 12 min”) with that labeled clock. Perps have no expiry — don’t render an expiry field on a perp.
+Funding and expiries: compute the next payment from UTC (Hyperliquid funding is hourly; the interval is protocol-owned). Display the instant with an explicit zone (`16:00 UTC` or a named device zone) using `formatZonedTime`. Pair a duration countdown (“in 12 min”) with that labeled clock. Perps have no expiry — don’t render an expiry field on a perp.
 
 **Don’t** show a funding time without a zone or treat a local wall clock as UTC.
 
 ## Leverage and percentages
 
-Leverage is a multiplier with the untranslated `×` suffix (`10×`), never `1000%` or percent styling. Percentages use the glossary’s rate terms (funding, builder fee as `5 bps (0.05%)`) and `Percent` for percent-point values (`+2.5%`, `-2.5%`). Keep `bps` untranslated.
+Leverage is a multiplier with the untranslated `×` suffix (`10×`, via `formatLeverage`), never `1000%` or percent styling. Percentages use the glossary’s rate terms (funding, builder fee as `5 bps (0.05%)`) and `Percent` for percent-point values (`+2.5%`, `-2.5%`). Keep `bps` untranslated.
 
 ## RTL and text expansion
 
