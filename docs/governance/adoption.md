@@ -21,7 +21,7 @@ The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-1
 | SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Merged and verified on HIG `0.1.0-candidate.sha7c67a07c` (#34) |
 | Product | monorepo | Pilot merged in #4515. #4522, #4523, #4525 (#33) and #4540 (#35) are approved and green but wait on the required human `signoff` |
 | Newly found UI gaps | agent-cli (#58), taptradetv (#59), bloxwap.github.io (#61) | Dated exceptions, each with a tracking issue |
-| Public page, migration open | tapsiren (#60) | `workers/tapsiren` is classified as a public, brand-facing marketing page (tapsiren.com). [tapsiren#399](https://github.com/bloxwap/tapsiren/pull/399) adopts HIG tokens CSS, Bloxwap fonts and HIG Link/button on candidate `872906a9`, with a scoped drift check. Not migrated until it merges; merging deploys tapsiren.com |
+| Public page migrated | tapsiren (#60) | `workers/tapsiren` is classified as a public, brand-facing marketing page (tapsiren.com). [tapsiren#399](https://github.com/bloxwap/tapsiren/pull/399) merged and deployed: HIG tokens CSS, Bloxwap fonts and HIG Link/button on candidate `872906a9`, with a scoped drift check in its CI. The cyan product mark and favicon keep a dated exception |
 | No HIG runtime | icons (asset source), dimension-adapters (no UI), .github (brand content), .github-private (no UI) | Decided; no dependency added |
 
 ## Governance
