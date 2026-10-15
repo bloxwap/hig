@@ -16,7 +16,7 @@ it('native amount entry keeps raw decimal string and labeled error hint',()=>{co
 it('native Modal handles Android back without DOM imports',()=>{const close=jest.fn();const tree=mount(React.createElement(Dialog,{open:true,onOpenChange:close,title:'Review',description:'Verify amount'},null));act(()=>tree.findByType(Modal).props.onRequestClose());expect(close).toHaveBeenCalledWith(false);});
 it('native unknown financial values stay distinct from zero',()=>{mount(React.createElement(NumberReadout,{value:null}));expect(JSON.stringify(root.toJSON())).toContain('—');});
 
-it('native slider blocks disabled backend changes and exposes adjustment state',()=>{const {Slider}=require('../../packages/native/src/slider');const change=jest.fn();const tree=mount(React.createElement(Slider,{label:'Volume',value:20,disabled:true,onValueChange:change}));const slider=tree.findAll(n=>n.props.accessibilityRole==='adjustable'&&n.props.onValueChange)[0];expect(slider.props.accessibilityState).toEqual({disabled:true});expect(slider.props.accessibilityValue).toEqual({min:0,max:100,now:20});act(()=>slider.props.onValueChange(30));expect(change).not.toHaveBeenCalled();});
+it('native slider blocks disabled backend changes and exposes adjustment state',()=>{const {Slider}=require('../../packages/native/src/slider');const change=jest.fn();const tree=mount(React.createElement(Slider,{label:'Volume',value:20,disabled:true,onValueChange:change}));const slider=tree.findAll(n=>n.props.accessibilityRole==='adjustable')[0];const backend=tree.findAll(n=>n.props.onValueChange&&n.props.minimumValue===0)[0];expect(slider.props.accessibilityState).toEqual({disabled:true});expect(slider.props.accessibilityValue).toEqual({min:0,max:100,now:20});act(()=>backend.props.onValueChange(30));expect(change).not.toHaveBeenCalled();});
 it('native notification bursts preserve critical retry and every message',()=>{const {Toast}=require('../../packages/native/src/status');const retry=jest.fn();const notices=Array.from({length:5},(_,i)=>({id:String(i),message:`Outcome ${i}`,severity:'error',action:i===0?React.createElement(Button,{onPress:retry},'Retry'):undefined}));mount(React.createElement(Toast,{notices,onDismiss:jest.fn()}));const json=JSON.stringify(root.toJSON());for(const n of notices)expect(json).toContain(n.message);expect(json).toContain('Retry');});
 
 it('native registered static heading face avoids synthesized font weight',()=>{const {HIGProvider}=require('../../packages/native/src/provider');const {Heading}=require('../../packages/native/src/surface');const {Text,StyleSheet}=require('react-native');const tree=mount(React.createElement(HIGProvider,{fontFamily:'SansRegular',fontFamilies:{400:'SansRegular',600:'SansSemiBold'}},React.createElement(Heading,null,'Review')));const text=tree.findByType(Text);const style=StyleSheet.flatten(text.props.style);expect(style.fontFamily).toBe('SansSemiBold');expect(style.fontWeight).toBe('normal');});
@@ -65,4 +65,113 @@ it('native menu disclosure is quiet and one accepted selection follows the actio
  act(()=>tree.findAllByType(Button).find(b=>b.props.children==='Actions').props.onPress(event()));expect(emit).not.toHaveBeenCalled();
  act(()=>tree.findAllByType(Button).find(b=>b.props.children==='Select').props.onPress(event()));expect(order).toEqual(['action','feedback']);expect(emit.mock.calls[0][0].intent).toBe('selection');
  act(()=>tree.findAllByType(Button).find(b=>b.props.children==='Actions').props.onPress(event()));act(()=>tree.findAllByType(Button).find(b=>b.props.children==='Cancel').props.onPress(event()));expect(emit).toHaveBeenCalledTimes(1);
+});
+it('native button keeps adjacent text children in one wrapping Text run (iOS Simulator regression)',()=>{
+ // Select/MarketRow pass `{label}: {value}` and `{name} ({symbol})`; split runs rendered "Bitcoin ( BTC" with ")" wrapped alone.
+ const {Text}=require('react-native');const {Select}=require('../../packages/native/src/select');const {MarketRow}=require('../../packages/native/src/recipes');
+ const select=mount(React.createElement(Select,{label:'Component',options:[{value:'button',label:'Button'}],value:'button',onValueChange:jest.fn()}));
+ expect(select.findAllByType(Text).map(t=>t.props.children)).toContain('Component: Button');
+ const row=mount(React.createElement(MarketRow,{symbol:'BTC',name:'Bitcoin',price:1,change:1,onSelect:jest.fn()}));
+ expect(row.findAllByType(Text).map(t=>t.props.children)).toContain('Bitcoin (BTC)');
+ const icon=mount(React.createElement(Button,null,'Copy ',3,React.createElement(Text,{testID:'icon'},'*'),' items'));
+ expect(icon.findAllByType(Text).map(t=>t.props.children)).toEqual(['Copy 3','*',' items']);
+});
+it('native search status region never renders an empty accessibility element (iOS Simulator audit regression)',()=>{
+ const {Text}=require('react-native');const {Search}=require('../../packages/native/src/navigation');
+ const status=results=>{const tree=mount(React.createElement(Search,{query:'b',onQueryChange:jest.fn(),results}));return tree.findAllByType(Text).find(t=>t.props.accessibilityLiveRegion==='polite').props.children;};
+ expect(status([{id:'btc',label:'Bitcoin (BTC)',onSelect:jest.fn()}])).toBe('1 result');
+ expect(status([{id:'a',label:'A',onSelect:jest.fn()},{id:'b',label:'B',onSelect:jest.fn()}])).toBe('2 results');
+ expect(status([])).toBe('No results');
+});
+it('native switch exposes one labeled 48dp row target and toggles from the row (Android emulator 47x27dp regression)',()=>{
+ const {Switch}=require('../../packages/native/src/switch');const {StyleSheet}=require('react-native');const change=jest.fn();
+ const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:change}));
+ const rows=tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function');
+ expect(rows).toHaveLength(1);const row=rows[0];
+ expect(row.props.accessibilityLabel).toBe('Sound');expect(row.props.accessibilityState).toEqual({checked:false,disabled:false});
+ expect(StyleSheet.flatten(typeof row.props.style==='function'?row.props.style({pressed:false}):row.props.style).minHeight).toBeGreaterThanOrEqual(48);
+ const hidden=tree.findAll(n=>n.props.importantForAccessibility==='no-hide-descendants'&&n.props.accessibilityElementsHidden===true);
+ expect(hidden.length).toBeGreaterThan(0);expect(hidden[0].props.pointerEvents).toBe('none');
+ act(()=>row.props.onPress());expect(change).toHaveBeenCalledWith(true);
+});
+it('native slider exposes a 48dp adjustable accessibility element (Android emulator 18dp SeekBar regression)',()=>{
+ const {Slider}=require('../../packages/native/src/slider');const {StyleSheet}=require('react-native');
+ const tree=mount(React.createElement(Slider,{label:'Volume',value:20}));const element=tree.findAll(n=>n.props.accessibilityRole==='adjustable'&&n.props.accessible)[0];
+ expect(StyleSheet.flatten(element.props.style).minHeight).toBe(48);
+ const backend=tree.findAll(n=>n.props.onValueChange&&n.props.minimumValue===0)[0];expect(backend.props.importantForAccessibility).toBe('no-hide-descendants');
+});
+it('native provider follows the OS RTL layout direction by default (Android emulator Arabic-locale regression)',()=>{
+ // With an Arabic per-app locale I18nManager.isRTL was true, yet HIG Stack/Inline forced direction:"ltr".
+ jest.isolateModules(()=>{
+  const R=require('react');const {create,act:run}=require('react-test-renderer');const RN=require('react-native');
+  const original=RN.I18nManager.isRTL;Object.defineProperty(RN.I18nManager,'isRTL',{value:true,configurable:true});
+  try{const {HIGProvider}=require('../../packages/native/src/provider');const {Stack}=require('../../packages/native/src/surface');
+   const direction=element=>{let r;run(()=>{r=create(element);});const value=RN.StyleSheet.flatten(r.root.findAll(n=>n.type===RN.View)[0].props.style).direction;run(()=>r.unmount());return value;};
+   expect(direction(R.createElement(HIGProvider,null,R.createElement(Stack)))).toBe('rtl');
+   expect(direction(R.createElement(Stack))).toBe('rtl');
+   expect(direction(R.createElement(HIGProvider,{direction:'ltr'},R.createElement(Stack)))).toBe('ltr');
+  }finally{Object.defineProperty(RN.I18nManager,'isRTL',{value:original,configurable:true});}
+ });
+});
+it('native iOS slider handles VoiceOver increment/decrement actions in 5% steps (iOS Simulator regression)',()=>{
+ // RN Fabric only forwards accessibilityIncrement/Decrement to onAccessibilityAction; without it VoiceOver swipes did nothing.
+ const {Platform}=require('react-native');expect(Platform.OS).toBe('ios');
+ const {Slider}=require('../../packages/native/src/slider');const change=jest.fn();
+ const tree=mount(React.createElement(Slider,{label:'Volume',defaultValue:25,onValueChange:change}));
+ const slider=()=>tree.findAll(n=>n.props.accessibilityRole==='adjustable'&&n.props.onAccessibilityAction)[0];
+ expect(slider().props.accessibilityActions.map(a=>a.name)).toEqual(['increment','decrement']);
+ // The community backend drops onAccessibilityAction on iOS Fabric, so it must be hidden behind the adjustable wrapper.
+ const backend=tree.findAll(n=>n.props.onValueChange&&n.props.minimumValue===0)[0];expect(backend.props.accessibilityElementsHidden).toBe(true);expect(backend.props.onAccessibilityAction).toBeUndefined();
+ act(()=>slider().props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));expect(slider().props.accessibilityValue.now).toBe(30);
+ act(()=>slider().props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));act(()=>slider().props.onAccessibilityAction({nativeEvent:{actionName:'decrement'}}));
+ expect(change.mock.calls.map(c=>c[0])).toEqual([30,35,30]);
+ if(root)act(()=>root.unmount());const disabled=jest.fn();const t2=mount(React.createElement(Slider,{label:'Volume',value:100,disabled:true,onValueChange:disabled}));
+ act(()=>t2.findAll(n=>n.props.onAccessibilityAction)[0].props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));expect(disabled).not.toHaveBeenCalled();
+});
+it('native code recipes use the registered mono face and stay LTR inside RTL roots (simulator capture regression)',()=>{
+ const {Text,StyleSheet}=require('react-native');const {HIGProvider}=require('../../packages/native/src/provider');const {CodeWindow,InstallCommand}=require('../../packages/native/src/recipes');
+ const tree=mount(React.createElement(HIGProvider,{direction:'rtl',fontFamily:'BloxwapSansRegular',monoFontFamily:'BloxwapMonoRegular'},React.createElement(CodeWindow,{language:'TypeScript'},'a >= b'),React.createElement(InstallCommand,{command:'npm i x',onCopy:jest.fn()})));
+ const style=text=>StyleSheet.flatten(tree.findAllByType(Text).find(t=>t.props.children===text).props.style);
+ for(const text of ['a >= b','npm i x'])expect(style(text)).toMatchObject({fontFamily:'BloxwapMonoRegular',writingDirection:'ltr'});
+ expect(style('TypeScript')).toMatchObject({fontFamily:'BloxwapSansRegular',writingDirection:'rtl'});
+});
+it('native Menu and Select return focus to their own trigger on close (Android TalkBack regression)',()=>{
+ // With TalkBack on the emulator, closing a Menu by Back left focus on the first screen element instead of the trigger.
+ const rn=require('react-native');const {Menu}=require('../../packages/native/src/overlay');const {Select}=require('../../packages/native/src/select');
+ const handle=jest.spyOn(rn,'findNodeHandle').mockImplementation(node=>node?'trigger-handle':null);const focus=jest.spyOn(rn.AccessibilityInfo,'setAccessibilityFocus').mockImplementation(()=>{});const raf=jest.spyOn(global,'requestAnimationFrame').mockImplementation(callback=>{callback(0);return 1;});
+ try{for(const element of [React.createElement(Menu,{label:'Market actions',items:[{label:'Show details',onSelect:jest.fn()}]}),React.createElement(Select,{label:'Side',options:[{value:'buy',label:'Buy'}],value:'buy',onValueChange:jest.fn()})]){
+  if(root)act(()=>root.unmount());focus.mockClear();const tree=mount(element);
+  const trigger=tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0];
+  act(()=>trigger.props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented(){return false;}}));
+  const modal=tree.findByType(rn.Modal);expect(modal.props.visible).toBe(true);
+  act(()=>modal.props.onRequestClose());
+  expect(tree.findByType(rn.Modal).props.visible).toBe(false);
+  expect(focus).toHaveBeenLastCalledWith('trigger-handle');
+ }}finally{handle.mockRestore();focus.mockRestore();raf.mockRestore();}
+});
+it('native InstallCommand hides its empty status region from VoiceOver until a copy outcome exists (iOS audit regression)',async()=>{
+ const {Text}=require('react-native');const {InstallCommand}=require('../../packages/native/src/recipes');
+ const tree=mount(React.createElement(InstallCommand,{command:'npm i x',onCopy:()=>Promise.resolve()}));
+ const status=()=>tree.findAllByType(Text).find(t=>t.props.accessibilityLiveRegion==='polite');
+ expect(status().props.accessibilityElementsHidden).toBe(true);
+ await act(async()=>{tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented(){return false;}});});
+ expect(status().props.children).toBe('Copied');expect(status().props.accessibilityElementsHidden).toBe(false);
+});
+it('native overlay focus requests also send viewHoverEnter on Android so TalkBack moves focus (emulator regression)',()=>{
+ // focusNative reads Platform.OS per call, so the shared registry can be switched to Android for this test.
+ const RN=require('react-native');const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});
+ const handle=jest.spyOn(RN,'findNodeHandle').mockImplementation(node=>node?42:null);const focus=jest.spyOn(RN.AccessibilityInfo,'setAccessibilityFocus').mockImplementation(()=>{});const hover=jest.spyOn(RN.AccessibilityInfo,'sendAccessibilityEvent').mockImplementation(()=>{});const raf=jest.spyOn(global,'requestAnimationFrame').mockImplementation(cb=>{cb(0);return 1;});
+ try{const trigger={current:{_nativeTag:5}};const props={open:true,onOpenChange:jest.fn(),title:'Review',description:'Verify',returnFocusRef:trigger};
+  const tree=mount(React.createElement(Dialog,props,null));
+  act(()=>tree.findByType(RN.Modal).props.onShow());expect(focus).toHaveBeenCalledWith(42);expect(hover).toHaveBeenLastCalledWith(expect.anything(),'viewHoverEnter');
+  act(()=>root.update(React.createElement(Dialog,{...props,open:false},null)));
+  expect(hover).toHaveBeenLastCalledWith(trigger.current,'viewHoverEnter');
+ }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});handle.mockRestore();focus.mockRestore();hover.mockRestore();raf.mockRestore();}
+});
+it('native switch keeps react-native-web semantics on Expo web (no nested interactive controls)',()=>{
+ const RN=require('react-native');const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'web',configurable:true});
+ try{const {Switch}=require('../../packages/native/src/switch');const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:jest.fn()}));
+  expect(tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function')).toHaveLength(0);
+  expect(tree.findByType(RN.Switch).props.accessibilityLabel).toBe('Sound');
+ }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
 });

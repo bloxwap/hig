@@ -1,0 +1,148 @@
+10-14 21:20:42:875 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@2b91788com.google.android.accessibility.utils.output.SpeechControllerImpl$5@92aa521 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:21:52:124 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@babadeacom.google.android.accessibility.utils.output.SpeechControllerImpl$5@41288db callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:21:52:188 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@babadeacom.google.android.accessibility.utils.output.SpeechControllerImpl$5@41288db callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:36:22:225 requestAudioFocus() from uid/pid 10207/10171 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@d233db9expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@ae5d5fe callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:36:22:343 requestAudioFocus() from uid/pid 10207/10171 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@d233db9expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@ae5d5fe callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:36:22:876 requestAudioFocus() from uid/pid 10207/10171 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@d233db9expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@ae5d5fe callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:36:52:425 requestAudioFocus() from uid/pid 10207/10263 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@4658827expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@3e10ad4 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:36:55:753 requestAudioFocus() from uid/pid 10207/10263 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@4658827expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@3e10ad4 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:37:03:643 requestAudioFocus() from uid/pid 10207/10263 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@4658827expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@3e10ad4 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:37:53:148 requestAudioFocus() from uid/pid 10207/10478 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@e8a124bexpo.modules.audio.AudioModule$$ExternalSyntheticLambda0@35ed428 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:37:56:075 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@6d92ce8com.google.android.accessibility.utils.output.SpeechControllerImpl$5@996ff01 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:37:56:158 requestAudioFocus() from uid/pid 10207/10478 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@e8a124bexpo.modules.audio.AudioModule$$ExternalSyntheticLambda0@35ed428 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:37:56:476 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@6d92ce8com.google.android.accessibility.utils.output.SpeechControllerImpl$5@996ff01 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:37:58:686 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@6d92ce8com.google.android.accessibility.utils.output.SpeechControllerImpl$5@996ff01 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:38:00:904 requestAudioFocus() from uid/pid 10207/10478 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@e8a124bexpo.modules.audio.AudioModule$$ExternalSyntheticLambda0@35ed428 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 21:38:01:103 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@6d92ce8com.google.android.accessibility.utils.output.SpeechControllerImpl$5@996ff01 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:38:05:680 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@6d92ce8com.google.android.accessibility.utils.output.SpeechControllerImpl$5@996ff01 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:38:07:359 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@6d92ce8com.google.android.accessibility.utils.output.SpeechControllerImpl$5@996ff01 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 21:38:09:651 requestAudioFocus() from uid/pid 10167/5567 AA=USAGE_ASSISTANCE_ACCESSIBILITY/CONTENT_TYPE_SPEECH clientId=android.media.AudioManager@6d92ce8com.google.android.accessibility.utils.output.SpeechControllerImpl$5@996ff01 callingPack=com.google.android.marvin.talkback req=3 flags=0x0 sdk=35
+10-14 22:08:54:232 requestAudioFocus() from uid/pid 10207/11766 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@f47e0d8expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@72cbc31 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+10-14 22:08:55:072 requestAudioFocus() from uid/pid 10207/11766 AA=USAGE_UNKNOWN/CONTENT_TYPE_MUSIC clientId=android.media.AudioManager@f47e0d8expo.modules.audio.AudioModule$$ExternalSyntheticLambda0@72cbc31 callingPack=com.bloxwap.hig.gallery req=2 flags=0x1 sdk=36
+  mHasVibrator=true
+  mVolumePolicy=VolumePolicy[volumeDownToEnterSilent=false,volumeUpToExitSilent=false,doNotDisturbWhenSilent=false,vibrateToSilentDebounce=400]
+  players:
+  ducked players piids:
+  faded out players piids:
+  muted player piids due to call/ring:
+  muted players (piids) awaiting device connection:
+Events log: playback activity as reported through PlayerBase
+10-14 21:38:01:269 releasing player piid:1087, uid:10148
+10-14 21:38:01:277 new player piid:1095 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1329
+10-14 21:38:01:277 port updated portId:159 mapped to player piid:1095
+10-14 21:38:01:280 player piid:1095 event:started
+10-14 21:38:01:284 player piid:1095 format update:FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=24000}
+10-14 21:38:01:307 player piid:1095 event:device updated deviceId:2
+10-14 21:38:03:685 player piid:1095 event:stopped
+10-14 21:38:03:689 releasing player piid:1095, uid:10148
+10-14 21:38:03:821 player piid:999 event:started
+10-14 21:38:03:855 new player piid:1103 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1345
+10-14 21:38:03:877 port updated portId:161 mapped to player piid:1103
+10-14 21:38:03:912 player piid:1103 event:started
+10-14 21:38:03:917 player piid:1103 format update:FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=24000}
+10-14 21:38:03:919 player piid:1103 event:device updated deviceId:2
+10-14 21:38:03:979 player piid:999 event:started
+10-14 21:38:05:304 player piid:999 event:started
+10-14 21:38:05:572 player piid:1103 event:stopped
+10-14 21:38:05:577 player piid:1103 event:stopped
+10-14 21:38:05:578 releasing player piid:1103, uid:10148
+10-14 21:38:05:598 new player piid:1111 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1353
+10-14 21:38:05:636 port updated portId:162 mapped to player piid:1111
+10-14 21:38:05:636 player piid:1111 event:stopped
+10-14 21:38:05:643 player piid:1111 event:stopped
+10-14 21:38:05:643 releasing player piid:1111, uid:10148
+10-14 21:38:05:769 player piid:999 event:started
+10-14 21:38:05:885 new player piid:1119 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1369
+10-14 21:38:05:885 port updated portId:164 mapped to player piid:1119
+10-14 21:38:05:886 player piid:1119 event:started
+10-14 21:38:05:891 player piid:1119 format update:FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=24000}
+10-14 21:38:05:941 player piid:1119 event:device updated deviceId:2
+10-14 21:38:07:190 player piid:1119 event:stopped
+10-14 21:38:07:200 player piid:1119 event:stopped
+10-14 21:38:07:200 releasing player piid:1119, uid:10148
+10-14 21:38:07:238 new player piid:1127 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1377
+10-14 21:38:07:240 port updated portId:165 mapped to player piid:1127
+10-14 21:38:07:240 player piid:1127 event:stopped
+10-14 21:38:07:242 player piid:1127 event:stopped
+10-14 21:38:07:242 releasing player piid:1127, uid:10148
+10-14 21:38:07:391 player piid:999 event:started
+10-14 21:38:07:496 new player piid:1135 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1393
+10-14 21:38:07:502 port updated portId:167 mapped to player piid:1135
+10-14 21:38:07:504 player piid:1135 event:started
+10-14 21:38:07:506 player piid:1135 format update:FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=24000}
+10-14 21:38:07:530 player piid:1135 event:device updated deviceId:2
+10-14 21:38:09:557 player piid:1135 event:stopped
+10-14 21:38:09:557 player piid:1135 event:stopped
+10-14 21:38:09:557 player piid:1135 event:stopped
+10-14 21:38:09:557 releasing player piid:1135, uid:10148
+10-14 21:38:09:597 new player piid:1143 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1401
+10-14 21:38:09:636 port updated portId:168 mapped to player piid:1143
+10-14 21:38:09:636 player piid:1143 event:stopped
+10-14 21:38:09:636 player piid:1143 event:stopped
+10-14 21:38:09:636 releasing player piid:1143, uid:10148
+10-14 21:38:09:668 releasing player piid:999, uid:10167
+10-14 21:38:09:925 releasing player piid:1079, uid:0
+10-14 21:38:09:926 releasing player piid:1015, uid:0
+10-14 21:38:09:926 releasing player piid:1023, uid:0
+10-14 21:38:09:926 releasing player piid:1031, uid:0
+10-14 21:38:10:151 new player piid:1151 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1409
+10-14 21:38:10:153 port updated portId:169 mapped to player piid:1151
+10-14 21:38:10:154 player piid:1151 event:started
+10-14 21:38:10:168 player piid:1151 format update:FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=24000}
+10-14 21:38:10:175 player piid:1151 event:device updated deviceId:2
+10-14 21:38:14:490 player piid:1151 event:stopped
+10-14 21:38:14:492 releasing player piid:1151, uid:10148
+10-14 21:38:14:504 new player piid:1159 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1417
+10-14 21:38:14:505 port updated portId:170 mapped to player piid:1159
+10-14 21:38:14:505 player piid:1159 event:stopped
+10-14 21:38:14:505 player piid:1159 event:stopped
+10-14 21:38:14:505 releasing player piid:1159, uid:10148
+10-14 21:38:14:527 new player piid:1167 uid/pid:10148/4800 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_ASSISTANCE_ACCESSIBILITY content=CONTENT_TYPE_UNKNOWN flags=0x900 tags= bundle=null session:1425
+10-14 21:38:14:527 port updated portId:171 mapped to player piid:1167
+10-14 21:38:14:527 player piid:1167 event:stopped
+10-14 21:38:14:535 releasing player piid:1167, uid:10148
+10-14 22:08:54:130 new player piid:1175 uid/pid:10207/11766 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0xA00 tags= bundle=null session:1433
+10-14 22:08:54:130 new player piid:1183 uid/pid:10207/11766 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0xA00 tags= bundle=null session:1449
+10-14 22:08:54:130 port updated portId:172 mapped to player piid:1183
+10-14 22:08:54:135 port updated portId:174 mapped to player piid:1175
+10-14 22:08:54:139 new player piid:1191 uid/pid:10207/11766 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0xA00 tags= bundle=null session:1441
+10-14 22:08:54:144 port updated portId:173 mapped to player piid:1191
+10-14 22:08:54:312 player piid:1175 event:started
+10-14 22:08:54:337 player piid:1175 event:stopped
+10-14 22:08:54:348 player piid:1175 format update:FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=48000}
+10-14 22:08:54:369 new player piid:1199 uid/pid:10207/11766 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0xA00 tags= bundle=null session:1457
+10-14 22:08:54:369 port updated portId:175 mapped to player piid:1199
+10-14 22:08:54:422 player piid:1175 event:device updated deviceId:2
+10-14 22:08:54:881 player piid:1175 event:stopped
+10-14 22:08:54:882 releasing player piid:1175, uid:10207
+10-14 22:08:54:918 new player piid:1207 uid/pid:10207/11766 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0xA00 tags= bundle=null session:1433
+10-14 22:08:54:919 port updated portId:176 mapped to player piid:1207
+10-14 22:08:55:121 player piid:1207 event:started
+10-14 22:08:55:135 player piid:1207 format update:FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=48000}
+10-14 22:08:55:154 player piid:1207 event:stopped
+10-14 22:08:55:239 player piid:1207 event:device updated deviceId:2
+10-14 22:08:56:161 player piid:1191 event:stopped
+10-14 22:08:56:553 player piid:1199 event:stopped
+10-14 22:09:01:901 releasing player piid:1207, uid:0
+10-14 22:09:01:902 releasing player piid:1191, uid:0
+10-14 22:09:01:902 releasing player piid:1183, uid:0
+10-14 22:09:01:902 releasing player piid:1199, uid:0
+10-14 21:22:13:151 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:22:17:504 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:22:27:089 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:22:31:674 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:22:37:576 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:22:38:274 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:22:46:657 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:22:47:073 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:36:22:006 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:36:27:651 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:36:52:219 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:37:02:695 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:37:18:883 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:37:38:187 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:37:52:738 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:38:09:765 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 21:38:09:993 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 22:08:53:618 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505
+10-14 22:09:01:936 setForceUse(FOR_VIBRATE_RINGING, FORCE_NONE) due to muteRingerModeStreams() from u/pid:1000/505

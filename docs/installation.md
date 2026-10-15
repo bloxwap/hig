@@ -14,6 +14,10 @@ Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. T
 
 Run `npm run smoke:packed-native` after packed artifacts are built, or `npm run start -w hig-native-fixture` for the device gallery. Matrix: React 19.1, RN 0.81.5, Expo 54, Metro as locked. Native consumers install tokens/contracts/native tarballs; optional feedback installs its tarball and explicit Expo backend peers. Slider and SVG peers are only needed by their family entries. Import `@bloxwap/hig-native/button`, not the DOM renderer. Dynamic Type remains enabled; native targets stay 48. Keyboard/safe-area/back behavior belongs to the native host and its supported OS.
 
+Install Expo native peers with `npx expo install` (for example `expo-asset ~12.0.13` and `expo-constants ~18.0.14` alongside `expo-font`/`expo-audio`). Expo 54 autolinking links the copy resolved from the app root; a hoisted SDK 57 `expo-asset` pulled by `expo-audio`'s `*` peer compiles away and the app fails at launch with `Cannot find native module 'ExpoAsset'` (observed on the iOS Simulator). `verifyExpoNativeModules` in `scripts/native-compatibility.mjs` guards the fixture and packed consumer. `HIGProvider` follows the OS layout direction (`I18nManager.isRTL`) unless `direction` is passed.
+
+Simulator/emulator verification: `scripts/native-sim/` builds the packed candidate gallery as real Release apps and drives them with XCUITest (iOS Simulator) and UiAutomation instrumentation, uiautomator and TalkBack (Android emulator). Results and residual physical-hardware limits are in `evidence/native-sim/`.
+
 WOFF2 is not a native font asset. Supply pinned approved static TTFs and a typed FontManifest; register them before setting the native provider fontFamily. Until upstream supplies the manifest/assets, the gallery explicitly uses the system fallback and does not claim Bloxwap native typography certification.
 
 ## Tokens only / plain CSS / Tailwind

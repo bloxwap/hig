@@ -52,72 +52,182 @@
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native iOS/Android runtime execution remains unobserved. Linux cannot run iOS hardware. Own API 35 emulator attempts failed (KVM EACCES, software CPU-thread hang/offline adb). Resumed port-5582 emulator briefly reported boot_completed=1 but shell queries stalled and adb became offline; no fixture execution or hierarchy was obtained. Metro exports and Expo web do not substitute for OS execution.",
+    "reason": "Physical hardware only: execution on physical iPhone and Android devices.",
     "localNotes": "Clean build/tests, SSR and packed web/Next/Android/iOS Metro consumers; Expo web added as a separate renderer check.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "packed candidate tarballs (no workspace aliases) built as Expo 54 / RN 0.81.5 Release apps that launch and render all 64 gallery examples on the iOS Simulator and Android emulator",
+        "fixed the launch crash \"Cannot find native module 'ExpoAsset'\" (hoisted SDK 57 expo-asset/expo-constants) and added an Expo native-module version guard to quality and packed smoke",
+        "native Jest suites execute in CI"
+      ],
+      "physicalHardwareOnly": [
+        "execution on physical iPhone and Android devices"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 6,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Physical iOS Display-P3 and Android display comparison remains unperformed. Authored source palette, alpha/space conversion, contrast and browser/native consumer imports are now software-verified.",
+    "reason": "Physical hardware only: Display-P3 panel versus sRGB comparison on physical iPhone and Android displays (simulator/emulator captures are sRGB framebuffers).",
     "localNotes": "Authored OKLCH/P3 provenance restored; native space/alpha conversion, generated CSS and contrast gates.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "native sRGB tokens render pixel-exact in simulator/emulator captures (#0a0a0a, #171717, #262626, #00ff3f, #fafafa, #a1a1a1 sampled)"
+      ],
+      "physicalHardwareOnly": [
+        "Display-P3 panel versus sRGB comparison on physical iPhone and Android displays (simulator/emulator captures are sRGB framebuffers)"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 7,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Actual native font rasterization, OS text scaling, script fallback and keyboard/device layout remain unobserved. Static faces, hashes, registration and Expo-web font loading are implemented; generated native samples are not device typography certification.",
+    "reason": "Physical hardware only: rasterization and hinting on physical displays.",
     "localNotes": "15 reproducible static native faces from pinned @bloxwap/font sources, hash/selected-face byte gates and explicit Expo registration.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "Bloxwap Sans and Mono static faces registered through expo-font and rasterized on both targets",
+        "iOS Dynamic Type AX5 (font scale 3.57) and Android font_scale 2.0 layouts wrap without clipping",
+        "mixed-script fallback (Korean, Chinese, Arabic, Greek), tabular digits and Bloxwap Mono code ligatures captured",
+        "OS-Arabic and HIG-RTL captures",
+        "fixed native CodeWindow/InstallCommand to use the registered mono face and stay LTR"
+      ],
+      "physicalHardwareOnly": [
+        "rasterization and hinting on physical displays"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 8,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native orientation/tablet safe-area/on-screen keyboard and OS large-text layout observations require a booted native target or physical device; owning-product parity/density approval remains pending.",
+    "reason": "owning-product density/parity approval (governance). iOS landscape re-layout was not observed (the gallery stayed portrait when XCUITest rotated the headless Simulator). Physical hardware only: physical tablet, notch and rotation hardware.",
     "localNotes": "16-unit source rem roots, density/radius/spacing reconciliation, 320px/200% DOM reflow and native per-root RTL layout.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "iOS AX5 and Android 200% font layouts",
+        "safe-area insets (status bar, home indicator) in captures",
+        "on-screen decimal keypad keeps the focused amount field visible on both targets with host keyboard avoidance (Android 15 edge-to-edge no longer resizes for the IME)",
+        "48dp targets: fixed Switch (47x27dp track) and Slider (18dp SeekBar) to 48dp accessibility elements",
+        "Android emulator landscape: TradeEntry reflows and a Dialog opens and closes by Back after rotation"
+      ],
+      "physicalHardwareOnly": [
+        "physical tablet, notch and rotation hardware"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [
+        "owning-product density/parity approval (governance).",
+        "iOS landscape re-layout was not observed (the gallery stayed portrait when XCUITest rotated the headless Simulator)."
+      ],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 9,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native drag/scroll cancellation, gesture animation interruption and OS motion observations remain unperformed. Optional Gorhom sheet detents/reduced-motion/cancellation lifecycle configuration is implemented and software-tested; the actual native engine still requires a booted target.",
+    "reason": "Physical hardware only: tactile drag/fling feel and gesture velocity on physical touch panels.",
     "localNotes": "Reduced-motion pointer cancellation and native OS-preference subscription checks; static native alternatives and source motion catalog reconciled.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "OS reduce-motion preference reaches the HIG provider on the iOS Simulator (Reduce Motion) and Android emulator (animator scales 0)",
+        "AnimatedNumberReadout static under reduced motion",
+        "overlay interruption by Android Back and list scroll leave no stale state",
+        "fixed the optional GestureSheet so it presents on first open; detent drag, canceled short drag, drag dismissal and Android Back observed"
+      ],
+      "physicalHardwareOnly": [
+        "tactile drag/fling feel and gesture velocity on physical touch panels"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 10,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Real VoiceOver/TalkBack reference-flow completion and native OS large-text/RTL navigation/announcement behavior remain unobserved; automated axe, keyboard, RN tree semantics and Expo web are separate evidence.",
+    "reason": "Physical hardware only: VoiceOver reference flows (VoiceOver does not run in the iOS Simulator); TalkBack gesture/keyboard-driven reference flows and speech output with real touch input (injected adb key combos and taps bypassed TalkBack on the emulator).",
     "localNotes": "Zero automated WCAG axe findings in expanded web flows and Expo web; native state/role/focus requests and explicit observation limits.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "Xcode accessibility audits on all 64 iOS gallery examples and Android UiAutomation scanner checks (labels, 48dp targets, screen-reader importance) on all 64 Android examples with no remaining scanner findings",
+        "TalkBack running on the Android emulator: accessibility focus moves to the overlay heading on open and returns to the trigger after Back for Dialog, AlertDialog, Sheet and Menu; slider increment/decrement and activation via the accessibility actions TalkBack sends",
+        "large text, OS RTL and sound/haptics disabled by default",
+        "fixed TalkBack focus requests (viewHoverEnter), empty live regions, slider semantics and GestureSheet grouping"
+      ],
+      "physicalHardwareOnly": [
+        "VoiceOver reference flows (VoiceOver does not run in the iOS Simulator)",
+        "TalkBack gesture/keyboard-driven reference flows and speech output with real touch input (injected adb key combos and taps bypassed TalkBack on the emulator)"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 11,
@@ -148,97 +258,255 @@
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native large-text/mixed-script layout, native assistive-technology activation and approved app/Pro visual parity require native/owning-product review. Web reflow, keyboard, busy/disabled, registered font APIs and native target/geometry contracts are verified.",
+    "reason": "approved app/Pro visual parity (owning-product review). Physical hardware only: VoiceOver activation on a physical iPhone.",
     "localNotes": "Busy/disabled/canceled activation, 48-unit native target and registered static font weight semantics; web long-label/keyboard/reflow checks.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "Button, IconButton, Surface and Card render with Bloxwap fonts at default, AX5 and 200% sizes; buttons keep 48dp targets",
+        "fixed Button splitting adjacent text children into gapped fragments (\"Component : Button\", \"Bitcoin ( BTC\" with a lone \")\")",
+        "busy/disabled states exposed in iOS and Android accessibility trees"
+      ],
+      "physicalHardwareOnly": [
+        "VoiceOver activation on a physical iPhone"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [
+        "approved app/Pro visual parity (owning-product review)."
+      ],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 14,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Real IME composition, native decimal keyboard/keyboard avoidance, screen-reader helper/error recovery and on-device selection/autofill behavior remain unobserved. Browser composition events are synthetic and do not certify OS IME.",
+    "reason": "Physical hardware only: IME composition and autofill on physical keyboards/devices; VoiceOver helper/error recovery on a physical iPhone.",
     "localNotes": "Required DOM validation, visible labels/helper/error associations, raw negative decimal/locale precision and synthetic composition checks.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "AmountInput shows the OS decimal keypad on both targets",
+        "focused field stays above the keyboard with host keyboard avoidance (documented for Android 15 edge-to-edge)",
+        "visible labels, helper and error text exposed in both accessibility trees"
+      ],
+      "physicalHardwareOnly": [
+        "IME composition and autofill on physical keyboards/devices",
+        "VoiceOver helper/error recovery on a physical iPhone"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 15,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native accessibility increment/decrement, physical drag cancellation and native controlled slider behavior still need a booted Android/iOS target; web keyboard/range and RN state/disabled/rejection semantics are covered by automation.",
+    "reason": "Physical hardware only: tactile drag cancellation and haptic rate on physical touch hardware.",
     "localNotes": "Disabled backend guards, role/state/values and RN-web ARIA/keyboard range support; rejection/dedup examples.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "accessibility increment/decrement change the Slider in 5% steps on both targets and are rejected when disabled",
+        "fixed iOS: the community backend ignored VoiceOver increments; a 48dp adjustable wrapper now owns slider semantics on iOS and Android",
+        "Switch row is one labeled 48dp switch target",
+        "controlled toggles emit one feedback request per change",
+        "Android exposes scroll forward/backward on the slider (set-progress is not exposed by the RN adjustable role)"
+      ],
+      "physicalHardwareOnly": [
+        "tactile drag cancellation and haptic rate on physical touch hardware"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 16,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native nested overlay focus/restoration, OS back/keyboard/safe-area/orientation flows and real VoiceOver/TalkBack remain unobserved. Initial/return focus requests and optional Gorhom detents, controlled dismissal/rejection, native back and keyboard/safe-area wiring are implemented and mocked/Metro-tested; actual gestures/worklets require native runtime validation.",
+    "reason": "iOS orientation flow not observed: the gallery stayed portrait when XCUITest rotated the headless iOS Simulator (cause not isolated). Physical hardware only: VoiceOver focus restoration on a physical iPhone; physical orientation changes and hardware back gestures.",
     "localNotes": "Nested DOM modal focus/keyboard, Android back handlers, native title/trigger focus requests and Android keyboard avoidance/handled taps.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "Dialog, AlertDialog, Sheet and Menu open, isolate the background and close by Close (iOS) and Android Back",
+        "TalkBack focus moves to the overlay heading and returns to the trigger (Menu/Select own their trigger; examples pass returnFocusRef)",
+        "keyboard avoidance and safe areas in captures",
+        "GestureSheet detents/back observed after fixing its first-open bug",
+        "Android emulator landscape: Dialog opens, stays reachable and closes by Back after rotation"
+      ],
+      "physicalHardwareOnly": [
+        "VoiceOver focus restoration on a physical iPhone",
+        "physical orientation changes and hardware back gestures"
+      ],
+      "otherResiduals": [
+        "iOS orientation flow not observed: the gallery stayed portrait when XCUITest rotated the headless iOS Simulator (cause not isolated)."
+      ],
+      "outOfScope": [],
+      "softwareAcceptanceMet": false
+    },
+    "remainingBlockers": [
+      "iOS orientation flow not observed: the gallery stayed portrait when XCUITest rotated the headless iOS Simulator (cause not isolated).",
+      "Physical hardware only: VoiceOver focus restoration on a physical iPhone",
+      "Physical hardware only: physical orientation changes and hardware back gestures"
+    ]
   },
   {
     "issue": 17,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native screen-reader order, translated large-text layout, hardware-keyboard focus restoration and actual route/back/deep-link restoration need owning host/native runtime validation. DOM routing adapters, current-location/disclosure/search/RTL behavior and native applicability/examples are implemented.",
+    "reason": "actual route/back/deep-link restoration in owning host routers. Physical hardware only: VoiceOver reading order on a physical iPhone; hardware-keyboard focus restoration on physical devices.",
     "localNotes": "Translated RTL tabs, disabled skipping, current location, disclosure/search keyboard and recovery; native RTL layouts and applicability matrix.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "Tabs, Accordion, Navigation, Pagination, Search and BackButton render and expose roles/states on both targets",
+        "HIG-RTL, OS-Arabic and 200%/AX5 captures",
+        "fixed Search rendering an empty live-region element when results exist"
+      ],
+      "physicalHardwareOnly": [
+        "VoiceOver reading order on a physical iPhone",
+        "hardware-keyboard focus restoration on physical devices"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [
+        "actual route/back/deep-link restoration in owning host routers."
+      ],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 18,
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Native live-announcement ordering, repeated-outcome suppression under actual assistive technology and native large-text/reduced-motion recovery require native runtime observations. Persistent bursts/dedup/dismiss/retry and no-feedback operation are software-verified.",
+    "reason": "Physical hardware only: announcement ordering and repeated-outcome suppression heard through VoiceOver/TalkBack speech on physical devices.",
     "localNotes": "Undismissed notification bursts no longer lose old/critical messages; dedup, dismissal, retry and no-feedback/native semantics tests.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "Alert, Toast, Progress, Spinner, Skeleton, EmptyState and StatusIndicator render on both targets at default and large text",
+        "reduced motion reaches status components",
+        "live status regions no longer expose empty elements (InstallCommand, Search)"
+      ],
+      "physicalHardwareOnly": [
+        "announcement ordering and repeated-outcome suppression heard through VoiceOver/TalkBack speech on physical devices"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 19,
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Physical iOS/Android list scrolling, large text, VoiceOver/TalkBack and touch performance are unobserved; the 10,000-row test verifies FlatList configuration, not device throughput.; Approved production list/number baseline and before/after performance comparisons require owning-product validation; optional opacity motion is now implemented and software-tested in HIG.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Approved production list/number baselines and before/after performance comparisons require owning-product validation. Physical hardware only: touch scrolling throughput/jank on physical devices; VoiceOver/TalkBack list navigation speech on physical devices.",
     "localNotes": "Linux verification: tests/data.dom.test.tsx; tests/native/components.test.cjs; docs/components/financial-data.md; optional animated-number entries on web/native, reduced-motion/cancellation/rapid-update tests and shared runnable examples",
     "remainingBlockers": [
-      "Physical iOS/Android list scrolling, large text, VoiceOver/TalkBack and touch performance are unobserved; the 10,000-row test verifies FlatList configuration, not device throughput.",
-      "Approved production list/number baseline and before/after performance comparisons require owning-product validation; optional opacity motion is now implemented and software-tested in HIG.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Approved production list/number baselines and before/after performance comparisons require owning-product validation.",
+      "Physical hardware only: touch scrolling throughput/jank on physical devices",
+      "Physical hardware only: VoiceOver/TalkBack list navigation speech on physical devices"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "balances, prices, percentages and lists render with tabular digits on both targets",
+        "a 2,000-row virtualized List scrolls: iOS swipes reach row ~400 and Android accessibility scroll actions reach row ~139 with rows rendered on demand",
+        "AX5/200% captures",
+        "the emulator logged React Native's VirtualizedList slow-update hint (dt 718 ms) for the 2,000-row list; device throughput was not measured"
+      ],
+      "physicalHardwareOnly": [
+        "touch scrolling throughput/jank on physical devices",
+        "VoiceOver/TalkBack list navigation speech on physical devices"
+      ],
+      "otherResiduals": [
+        "Approved production list/number baselines and before/after performance comparisons require owning-product validation."
+      ],
+      "outOfScope": [],
+      "softwareAcceptanceMet": false
+    }
   },
   {
     "issue": 20,
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Chart engine/native rendering and product pan/zoom/crosshair certification belong to the chart and product repos; HIG provides optional DOM integration and native readout/list alternative.; Physical chart gestures and native device observations are unavailable on this Linux VM.",
+    "reason": "Chart engine native rendering and product pan/zoom/crosshair certification belong to the chart and product repositories. Physical hardware only: physical pan/zoom/crosshair gesture responsiveness.",
     "localNotes": "Linux verification: tests/components.dom.test.tsx; docs/components/chart.md; packed import boundaries",
     "remainingBlockers": [
-      "Chart engine/native rendering and product pan/zoom/crosshair certification belong to the chart and product repos; HIG provides optional DOM integration and native readout/list alternative.",
-      "Physical chart gestures and native device observations are unavailable on this Linux VM."
-    ]
+      "Chart engine native rendering and product pan/zoom/crosshair certification belong to the chart and product repositories.",
+      "Physical hardware only: physical pan/zoom/crosshair gesture responsiveness"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "native PriceChart alternative (labeled readout list) renders on both targets with accessible labels"
+      ],
+      "physicalHardwareOnly": [
+        "physical pan/zoom/crosshair gesture responsiveness"
+      ],
+      "otherResiduals": [
+        "Chart engine native rendering and product pan/zoom/crosshair certification belong to the chart and product repositories."
+      ],
+      "outOfScope": [],
+      "softwareAcceptanceMet": false
+    }
   },
   {
     "issue": 21,
@@ -254,37 +522,84 @@
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Physical iPhone Safari tap haptics, Android Chrome vibration and OS/browser settings observations cannot be made on this Linux VM.; Upstream SFX voice cancellation and iOS haptic physical-target constraints remain owned by SFX/Haptic agents; headless dispatch does not prove physical output.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Upstream SFX voice cancellation and Haptic iOS physical-target constraints are owned by the SFX/Haptic repositories. Physical hardware only: iPhone Safari tap haptics and Android Chrome vibration on physical devices.",
     "localNotes": "Linux verification: scripts/feedback-browser-smoke.mjs; scripts/browser-smoke.mjs; tests/feedback-adapters.test.ts; accepted/canceled web/native menu selections and quiet native accordion disclosure",
     "remainingBlockers": [
-      "Physical iPhone Safari tap haptics, Android Chrome vibration and OS/browser settings observations cannot be made on this Linux VM.",
-      "Upstream SFX voice cancellation and iOS haptic physical-target constraints remain owned by SFX/Haptic agents; headless dispatch does not prove physical output.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Upstream SFX voice cancellation and Haptic iOS physical-target constraints are owned by the SFX/Haptic repositories.",
+      "Physical hardware only: iPhone Safari tap haptics and Android Chrome vibration on physical devices"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "native counterpart only: the same feedback controller drives expo-audio and expo-haptics adapters in the native gallery (recorded calls)"
+      ],
+      "physicalHardwareOnly": [
+        "iPhone Safari tap haptics and Android Chrome vibration on physical devices"
+      ],
+      "otherResiduals": [
+        "Upstream SFX voice cancellation and Haptic iOS physical-target constraints are owned by the SFX/Haptic repositories."
+      ],
+      "outOfScope": [],
+      "softwareAcceptanceMet": false
+    }
   },
   {
     "issue": 23,
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Physical iOS/Android playback latency, silent-mode/volume behavior, audio-session interruptions and background/foreground observations are unavailable; Metro builds and injected players are not playback evidence.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Physical hardware only: audible playback latency, volume and silent-switch behavior, audio-session interruptions and background/foreground on physical devices.",
     "localNotes": "Linux verification: tests/feedback-adapters.test.ts; packed native Metro export; cue manifest/hash quality gate",
     "remainingBlockers": [
-      "Physical iOS/Android playback latency, silent-mode/volume behavior, audio-session interruptions and background/foreground observations are unavailable; Metro builds and injected players are not playback evidence.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Physical hardware only: audible playback latency, volume and silent-switch behavior, audio-session interruptions and background/foreground on physical devices"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "packaged tick/toggle cues play through expo-audio on the iOS Simulator and Android emulator audio paths (players report completion; Android logs audio-focus requests)",
+        "sound stays off by default and respects the preference"
+      ],
+      "physicalHardwareOnly": [
+        "audible playback latency, volume and silent-switch behavior, audio-session interruptions and background/foreground on physical devices"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 24,
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Actual iPhone/Android tactile output, OS suppression, unsupported hardware and canceled scroll/drag behavior require physical devices; injected Expo backends and renderer tests are simulations.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Physical hardware only: actual tactile output, OS suppression and canceled scroll/drag feel on a physical iPhone and Android device.",
     "localNotes": "Linux verification: tests/feedback-adapters.test.ts; tests/feedback.test.ts; native renderer tests and Metro exports",
     "remainingBlockers": [
-      "Actual iPhone/Android tactile output, OS suppression, unsupported hardware and canceled scroll/drag behavior require physical devices; injected Expo backends and renderer tests are simulations.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Physical hardware only: actual tactile output, OS suppression and canceled scroll/drag feel on a physical iPhone and Android device"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "haptic adapter calls are made once per accepted interaction and resolve on the iOS Simulator (no Taptic Engine: unsupported-hardware path)",
+        "Android emulator VibratorManager history records the gallery's effects (no motor)",
+        "haptics stay off by default"
+      ],
+      "physicalHardwareOnly": [
+        "actual tactile output, OS suppression and canceled scroll/drag feel on a physical iPhone and Android device"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 25,
@@ -300,13 +615,30 @@
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Approved visual comparison against app, Pro, marketing and SDK production designs requires owning-product review; local recipe captures do not establish production parity.; Physical native recipe/gesture/assistive-technology review remains unobserved.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Approved visual comparison against app, Pro, marketing and SDK production designs requires owning-product review. Physical hardware only: physical native recipe gesture and assistive-technology review.",
     "localNotes": "Linux verification: catalog recipe captures/axe; packed examples; fixtures/web and fixtures/native",
     "remainingBlockers": [
-      "Approved visual comparison against app, Pro, marketing and SDK production designs requires owning-product review; local recipe captures do not establish production parity.",
-      "Physical native recipe/gesture/assistive-technology review remains unobserved.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Approved visual comparison against app, Pro, marketing and SDK production designs requires owning-product review.",
+      "Physical hardware only: physical native recipe gesture and assistive-technology review"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "native recipes (MarketRow, BalanceCard, TradeEntry, InstallCommand, CodeWindow, MarketingHero, ActivityList) render on both targets with Bloxwap tokens/fonts, long text and empty/error states",
+        "fixed recipe text wrapping, code fonts and empty status regions found in captures"
+      ],
+      "physicalHardwareOnly": [
+        "physical native recipe gesture and assistive-technology review"
+      ],
+      "otherResiduals": [
+        "Approved visual comparison against app, Pro, marketing and SDK production designs requires owning-product review."
+      ],
+      "outOfScope": [],
+      "softwareAcceptanceMet": false
+    }
   },
   {
     "issue": 27,
@@ -322,12 +654,26 @@
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Native gallery iOS/Android OS runtime execution and recorded platform captures remain unobserved; Metro exports and Expo web are headless evidence, not native-device execution.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Physical hardware only: physical-device captures.",
     "localNotes": "Linux verification: scripts/catalog-browser-smoke.mjs; packed examples; packed native export",
     "remainingBlockers": [
-      "Native gallery iOS/Android OS runtime execution and recorded platform captures remain unobserved; Metro exports and Expo web are headless evidence, not native-device execution.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Physical hardware only: physical-device captures"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "the native gallery runs on the iOS Simulator (iOS 26.5) and Android emulator (Android 15); 64 examples captured per platform with platform/version recorded, plus RTL, large-text and reduced-motion captures"
+      ],
+      "physicalHardwareOnly": [
+        "physical-device captures"
+      ],
+      "otherResiduals": [],
+      "outOfScope": [],
+      "softwareAcceptanceMet": true
+    }
   },
   {
     "issue": 29,
@@ -343,25 +689,56 @@
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "NativeWind/rem-root integration remains outside the declared verified support matrix; the private product mapping needs an owning-repository integration/build before it can be documented as supported.; The merged source audit reconciles 129 source files; approved product-specific migration mappings and NativeWind host integration/build remain owning-product work.",
+    "reason": "NativeWind/rem-root integration and private product mappings need an owning-repository integration/build.",
     "localNotes": "Linux verification: 212 packed examples; packed Vite/SSR/Next/Metro consumers; tests/docs.test.ts",
     "remainingBlockers": [
-      "NativeWind/rem-root integration remains outside the declared verified support matrix; the private product mapping needs an owning-repository integration/build before it can be documented as supported.",
-      "Complete source-catalog reconciliation and approved product-specific migration mappings require the source audit/owning-product work; current docs cover the shipped HIG catalog."
-    ]
+      "NativeWind/rem-root integration and private product mappings need an owning-repository integration/build."
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "installation and native guides now document Expo peer pinning, Android 15 keyboard avoidance, slider/switch semantics, overlay focus and code fonts observed on simulators; the clean packed native consumer runs on its declared iOS/Android platforms"
+      ],
+      "physicalHardwareOnly": [],
+      "otherResiduals": [
+        "NativeWind/rem-root integration and private product mappings need an owning-repository integration/build."
+      ],
+      "outOfScope": [],
+      "softwareAcceptanceMet": false
+    }
   },
   {
     "issue": 31,
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Physical iPhone Safari, Android Chrome, native iOS/Android and VoiceOver/TalkBack evidence is unavailable.; Versioned visual baselines represent current HIG candidate rendering; approved product/native fidelity and production before/after bundle/source deltas still require maintainer/owning-product review.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Approved product/native fidelity and production bundle/source deltas remain owning-product work. Physical hardware only: physical web/native/assistive-technology observations.",
     "localNotes": "Linux verification: npm run check; quality and negative gate tests; three-engine browsers/axe; catalog captures; eight versioned state PNG baselines and deliberate geometry/pixel regression test",
     "remainingBlockers": [
-      "Physical iPhone Safari, Android Chrome, native iOS/Android and VoiceOver/TalkBack evidence is unavailable.",
-      "Versioned visual baselines represent current HIG candidate rendering; approved product/native fidelity and production before/after bundle/source deltas still require maintainer/owning-product review.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Approved product/native fidelity and production bundle/source deltas remain owning-product work.",
+      "Physical hardware only: physical web/native/assistive-technology observations"
+    ],
+    "nativeSimulator": {
+      "observedAt": "2026-10-14",
+      "pr": "https://github.com/bloxwap/hig/pull/53",
+      "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
+      "evidence": "evidence/native-sim/",
+      "simulatorVerified": [
+        "release evidence now separates automated, browser, iOS Simulator and Android emulator observations (evidence/native-sim/native-sim.json)",
+        "native regressions found on simulators are covered by new Jest/Vitest tests and an Expo native-module guard in quality/packed smoke"
+      ],
+      "physicalHardwareOnly": [
+        "physical web/native/assistive-technology observations"
+      ],
+      "otherResiduals": [
+        "Approved product/native fidelity and production bundle/source deltas remain owning-product work."
+      ],
+      "outOfScope": [],
+      "softwareAcceptanceMet": false
+    }
   },
   {
     "issue": 32,

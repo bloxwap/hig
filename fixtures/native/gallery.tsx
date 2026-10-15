@@ -1,5 +1,6 @@
 // Generated from planning/examples.json.
-import React,{useState} from 'react';
+import React,{useState,useRef} from 'react';
+import {View} from 'react-native';
 import * as AnimatedNumber from '@bloxwap/hig-native/animated-number';
 import * as Brand from '@bloxwap/hig-native/brand';
 import * as Button from '@bloxwap/hig-native/button';
@@ -17,7 +18,7 @@ import * as Status from '@bloxwap/hig-native/status';
 import * as Surface from '@bloxwap/hig-native/surface';
 import * as Switch from '@bloxwap/hig-native/switch';
 const C={...AnimatedNumber,...Brand,...Button,...Checkbox,...Data,...Field,...Navigation,...Overlay,...Provider,...RadioGroup,...Recipes,...Select,...Slider,...Status,...Surface,...Switch};
-export function Example({name,state='default'}:{name:string;state?:string}){const empty=state==='empty';const [checked,setChecked]=useState(false);const [value,setValue]=useState('buy');const [range,setRange]=useState(25);const [open,setOpen]=useState(false);const [amount,setAmount]=useState('0.01');const [message,setMessage]=useState('');const [notices,setNotices]=useState([{id:'1',message:'Demo copied',severity:'success' as const}]);const choices=[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}];const rows=empty?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];const busy=state==='busy',disabled=state==='disabled',error=state==='error'?'Data unavailable. Retry when connected.':undefined;
+export function Example({name,state='default'}:{name:string;state?:string}){const trigger=useRef<View>(null);const empty=state==='empty';const [checked,setChecked]=useState(false);const [value,setValue]=useState('buy');const [range,setRange]=useState(25);const [open,setOpen]=useState(false);const [amount,setAmount]=useState('0.01');const [message,setMessage]=useState('');const [notices,setNotices]=useState([{id:'1',message:'Demo copied',severity:'success' as const}]);const choices=[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}];const rows=empty?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];const busy=state==='busy',disabled=state==='disabled',error=state==='error'?'Data unavailable. Retry when connected.':undefined;
 function preview(){switch(name){case "Button":return <C.Button busy={busy} disabled={disabled}>Review order</C.Button>;
 case "IconButton":return <C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>;
 case "Link":return <C.Link href='https://github.com/bloxwap/hig'>Read HIG guidelines</C.Link>;
@@ -40,9 +41,9 @@ case "RadioGroup":return <C.RadioGroup label='Market direction' options={choices
 case "SegmentedControl":return <C.SegmentedControl label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>;
 case "Select":return <C.Select label='Market direction' options={choices} value={value} onValueChange={setValue} disabled={disabled}/>;
 case "Slider":return <C.Slider label='Volume preview' value={range} onValueChange={setRange} disabled={disabled}/>;
-case "Dialog":return <C.Stack><C.Button onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog></C.Stack>;
-case "AlertDialog":return <C.Stack><C.Button onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.AlertDialog></C.Stack>;
-case "Sheet":return <C.Stack><C.Button onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Sheet></C.Stack>;
+case "Dialog":return <C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog></C.Stack>;
+case "AlertDialog":return <C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.AlertDialog></C.Stack>;
+case "Sheet":return <C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Sheet></C.Stack>;
 case "Menu":return <C.Menu label='Market actions' items={[{label:'Show details',onSelect:()=>setMessage('Details selected')},{label:'Unavailable action',disabled:true,onSelect:()=>{}}]}/>;
 case "Popover":return <C.HelpText>Precision help: display rounding never changes order quantity.</C.HelpText>;
 case "Tooltip":return <C.HelpText>Copy help is persistent on touch; no hover requirement.</C.HelpText>;

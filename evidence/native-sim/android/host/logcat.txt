@@ -1,0 +1,17 @@
+--------- beginning of main
+10-14 21:49:11.421 11342 11365 I ReactNativeJS: Running "main"
+10-14 22:06:45.101 11483 11506 I ReactNativeJS: Running "main"
+10-14 22:07:19.675 11548 11572 I ReactNativeJS: Running "main"
+10-14 22:07:33.320 11612 11635 I ReactNativeJS: Running "main"
+10-14 22:08:30.764 11685 11708 I ReactNativeJS: Running "main"
+10-14 22:08:37.942 11685 11708 I ReactNativeJS: 'VirtualizedList: You have a large list that is slow to update - make sure your renderItem function renders components that follow React performance best practices like PureComponent, shouldComponentUpdate, etc.', { dt: 718, prevDt: 1242, contentLength: 6240 }
+10-14 22:08:48.249 11766 11790 I ReactNativeJS: Running "main"
+10-14 22:09:06.633 11858 11882 I ReactNativeJS: Running "main"
+10-14 22:09:21.414 11933 11956 I ReactNativeJS: Running "main"
+10-14 22:13:43.982 12016 12040 I ReactNativeJS: Running "main"
+10-14 22:13:55.761 12083 12106 I ReactNativeJS: Running "main"
+10-14 22:15:27.951 12171 12197 I ReactNativeJS: Running "main"
+10-14 22:15:35.389 12234 12257 I ReactNativeJS: Running "main"
+10-14 22:20:03.755 12332 12356 I ReactNativeJS: Running "main"
+10-14 22:20:30.734 12452 12487 I ReactNativeJS: Running "main"
+10-14 22:20:38.787 12539 12569 I ReactNativeJS: Running "main"

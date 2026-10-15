@@ -1,0 +1,35 @@
+# XcodeGen spec: a throwaway host plus a UI-test bundle that drives the installed
+# com.bloxwap.hig.gallery simulator build through XCUIApplication(bundleIdentifier:).
+name: HIGNativeSim
+options:
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  HIGUITestHost:
+    type: application
+    platform: iOS
+    sources: [Host]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.bloxwap.hig.uitesthost
+      GENERATE_INFOPLIST_FILE: YES
+      INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      SWIFT_VERSION: "5.0"
+  HIGNativeSimUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: HIGUITestHost
+    settings:
+      TEST_TARGET_NAME: HIGUITestHost
+      GENERATE_INFOPLIST_FILE: YES
+      PRODUCT_BUNDLE_IDENTIFIER: com.bloxwap.hig.uitests
+      SWIFT_VERSION: "5.0"
+schemes:
+  HIGNativeSimUITests:
+    build:
+      targets:
+        HIGUITestHost: all
+        HIGNativeSimUITests: [test]
+    test:
+      targets: [HIGNativeSimUITests]
