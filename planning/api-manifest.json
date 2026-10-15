@@ -342,11 +342,11 @@
       },
       "NumberProps": {
         "entry": "data",
-        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n}"
+        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string; /** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */\n    maxFontSizeMultiplier?: number;\n}"
       },
       "NumberReadout": {
         "entry": "data",
-        "signature": "export declare function NumberReadout({ value, options, stale, label }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function NumberReadout({ value, options, stale, label, maxFontSizeMultiplier }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Usd": {
         "entry": "data",
@@ -382,7 +382,7 @@
       },
       "Label": {
         "entry": "field",
-        "signature": "export declare const Label: React.ForwardRefExoticComponent<import(\"react-native\").TextProps & React.RefAttributes<import(\"react-native\").Text>>;"
+        "signature": "export declare const Label: React.ForwardRefExoticComponent<import(\"./surface.js\").HIGTextProps & React.RefAttributes<import(\"react-native\").Text>>;"
       },
       "Input": {
         "entry": "field",
@@ -462,11 +462,11 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>;\n}"
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, monoFontFamily }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript }: React.PropsWithChildren<Partial<HIGContext>>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
@@ -512,6 +512,18 @@
         "entry": "recipes",
         "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "accentRoles": {
+        "entry": "roles",
+        "signature": "export declare const accentRoles: readonly [\"action\", \"positive\", \"negative\", \"warning\", \"info\", \"buy\", \"sell\"];"
+      },
+      "AccentRole": {
+        "entry": "roles",
+        "signature": "export type AccentRole = typeof accentRoles[number];"
+      },
+      "roleColor": {
+        "entry": "roles",
+        "signature": "export declare function roleColor(role: unknown, fallback: AccentRole): string;"
+      },
       "Select": {
         "entry": "select",
         "signature": "export declare function Select(props: ChoicesProps): import(\"react/jsx-runtime\").JSX.Element;"
@@ -538,7 +550,7 @@
       },
       "Alert": {
         "entry": "status",
-        "signature": "export declare function Alert({ title, children, severity, action, announce }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Alert({ title, children, severity, tone, action, announce }: React.PropsWithChildren<{\n    title: string;\n    severity?: 'info' | 'success' | 'warning' | 'error';\n    tone?: AccentRole;\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Callout": {
         "entry": "status",
@@ -576,13 +588,29 @@
         "entry": "status",
         "signature": "export declare function StatusIndicator({ label, state }: {\n    label: string;\n    state: 'online' | 'offline' | 'stale';\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "TextScript": {
+        "entry": "surface",
+        "signature": "export type TextScript = 'latin' | 'ko' | 'zh';"
+      },
+      "scriptLetterSpacing": {
+        "entry": "surface",
+        "signature": "export declare const scriptLetterSpacing: Readonly<Record<Exclude<TextScript, 'latin'>, number>>;"
+      },
+      "detectScript": {
+        "entry": "surface",
+        "signature": "export declare function detectScript(text: string, locale: string): TextScript;"
+      },
+      "HIGTextProps": {
+        "entry": "surface",
+        "signature": "export interface HIGTextProps extends TextProps {\n    script?: TextScript; /** Caps Dynamic Type / Android font scale for dense numeric readouts (2 = 200%). Defaults to HIGProvider `maxFontSizeMultiplier`; never disable scaling. */\n    maxFontSizeMultiplier?: number;\n}"
+      },
       "Text": {
         "entry": "surface",
-        "signature": "export declare const Text: React.ForwardRefExoticComponent<TextProps & React.RefAttributes<RNText>>;"
+        "signature": "export declare const Text: React.ForwardRefExoticComponent<HIGTextProps & React.RefAttributes<RNText>>;"
       },
       "Heading": {
         "entry": "surface",
-        "signature": "export declare const Heading: React.ForwardRefExoticComponent<TextProps & React.RefAttributes<RNText>>;"
+        "signature": "export declare const Heading: React.ForwardRefExoticComponent<HIGTextProps & React.RefAttributes<RNText>>;"
       },
       "Stack": {
         "entry": "surface",
@@ -604,9 +632,17 @@
         "entry": "surface",
         "signature": "export declare function Separator(): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "SwitchProps": {
+        "entry": "switch",
+        "signature": "export interface SwitchProps extends CheckedProps {\n    tone?: AccentRole;\n}"
+      },
       "Switch": {
         "entry": "switch",
-        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, tone, onCheckedChange }: SwitchProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "plainText": {
+        "entry": "text-content",
+        "signature": "export declare function plainText(children: React.ReactNode): string;"
       }
     }
   }

@@ -176,3 +176,68 @@ it('native switch keeps react-native-web semantics on Expo web (no nested intera
   expect(tree.findByType(RN.Switch).props.accessibilityLabel).toBe('Sound');
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
 });
+it('native switch and alert accept token colour roles only (#67)',()=>{
+ const {Switch}=require('../../packages/native/src/switch');const {Alert}=require('../../packages/native/src/status');const RN=require('react-native');const {nativeSrgb:colors}=require('../../packages/tokens/dist/index.js');
+ const track=props=>{const tree=mount(React.createElement(Switch,{label:'Sound',...props}));const value=tree.findByType(RN.Switch).props.trackColor;act(()=>root.unmount());root=null;return value;};
+ expect(track({})).toEqual({true:colors.action,false:colors.nested});
+ expect(track({tone:'positive'}).true).toBe(colors.positive);
+ // Untyped JS cannot smuggle a raw palette colour through the role prop.
+ expect(track({tone:'#123456'}).true).toBe(colors.action);
+ const accent=props=>{const tree=mount(React.createElement(Alert,{title:'Result',announce:false,...props}));const style=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.View&&n.props.style)[0].props.style);act(()=>root.unmount());root=null;return style;};
+ expect(accent({}).borderColor).toBe(colors.info);
+ expect(accent({severity:'success'}).borderColor).toBe(colors.positive);
+ expect(accent({severity:'warning'}).borderColor).toBe(colors.warning);
+ expect(accent({severity:'error'}).borderColor).toBe(colors.negative);
+ expect(accent({severity:'error',tone:'action'}).borderColor).toBe(colors.action);
+ expect(accent({severity:'error',tone:'rgb(1,2,3)'}).borderColor).toBe(colors.negative);
+ expect(accent({}).borderStartWidth).toBe(4);
+});
+it('native Text caps font scale from the prop or the provider and readouts pass it through (#67)',()=>{
+ const {HIGProvider}=require('../../packages/native/src/provider');const {Text,Heading}=require('../../packages/native/src/surface');const {Text:RNText}=require('react-native');
+ const tree=mount(React.createElement(HIGProvider,{maxFontSizeMultiplier:3},React.createElement(Text,{testID:'inherited'},'Prose'),React.createElement(Text,{testID:'capped',maxFontSizeMultiplier:2},'Dense'),React.createElement(Heading,{testID:'heading',maxFontSizeMultiplier:1.5},'Title'),React.createElement(NumberReadout,{value:67234.56,maxFontSizeMultiplier:2})));
+ const multiplier=id=>tree.findAllByType(RNText).find(t=>t.props.testID===id).props.maxFontSizeMultiplier;
+ expect(multiplier('inherited')).toBe(3);expect(multiplier('capped')).toBe(2);expect(multiplier('heading')).toBe(1.5);
+ expect(tree.findAllByType(RNText).find(t=>t.props.style&&JSON.stringify(t.props.style).includes('tabular-nums')).props.maxFontSizeMultiplier).toBe(2);
+ if(root)act(()=>root.unmount());const plain=mount(React.createElement(Text,null,'Unscaled default'));expect(plain.findByType(RNText).props.maxFontSizeMultiplier).toBeUndefined();expect(plain.findByType(RNText).props.allowFontScaling).toBeUndefined();
+});
+it('native Text sets Korean and Chinese runs at the companion face spacing, overridable per script (#67)',()=>{
+ const {HIGProvider}=require('../../packages/native/src/provider');const {Text,detectScript,scriptLetterSpacing}=require('../../packages/native/src/surface');const {Text:RNText,StyleSheet}=require('react-native');
+ expect(detectScript('Bloxwap 한국어','en-US')).toBe('ko');expect(detectScript('中文 ₿','en-US')).toBe('zh');expect(detectScript('한국어 中文','en-US')).toBe('ko');
+ expect(detectScript('「」','ko-KR')).toBe('ko');expect(detectScript('「」','zh-CN')).toBe('zh');expect(detectScript('BTC 0.25','ko')).toBe('latin');
+ expect(scriptLetterSpacing).toEqual({ko:0,zh:0});
+ const spacing=(element)=>{const tree=mount(element);const values=Object.fromEntries(tree.findAllByType(RNText).filter(t=>t.props.testID).map(t=>[t.props.testID,StyleSheet.flatten(t.props.style).letterSpacing]));act(()=>root.unmount());root=null;return values;};
+ const sample=props=>[React.createElement(Text,{key:1,testID:'latin',style:{letterSpacing:1}},'Order details'),React.createElement(Text,{key:2,testID:'ko',style:{letterSpacing:1,fontSize:20}},'한국어'),React.createElement(Text,{key:3,testID:'zh',style:{letterSpacing:1}},'中文'),React.createElement(Text,{key:4,testID:'forced',script:'zh',style:{letterSpacing:1}},'Latin forced'),React.createElement(Text,{key:5,testID:'nested',style:{letterSpacing:1}},'Bloxwap ',React.createElement(RNText,null,'한국어'))].map(e=>React.cloneElement(e,props));
+ expect(spacing(React.createElement(React.Fragment,null,...sample()))).toEqual({latin:1,ko:0,zh:0,forced:0,nested:0});
+ expect(spacing(React.createElement(HIGProvider,{letterSpacingByScript:{ko:-0.01}},...sample()))).toEqual({latin:1,ko:-0.2,zh:0,forced:0,nested:-0.16});
+});
+it('native Android slider exposes set-progress through HIGAdjustableView and keeps steps and disabled rejection (#71)',()=>{
+ jest.isolateModules(()=>{
+  const R=require('react');const {create,act:run}=require('react-test-renderer');const RN=require('react-native');
+  const descriptor=Object.getOwnPropertyDescriptor(RN.Platform,'OS'),original=RN.UIManager.hasViewManagerConfig;
+  Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});RN.UIManager.hasViewManagerConfig=name=>name==='HIGAdjustableView';
+  try{const {Slider}=require('../../packages/native/src/slider');const change=jest.fn();let r;
+   run(()=>{r=create(R.createElement(Slider,{label:'Volume',defaultValue:25,onValueChange:change}));});
+   const node=()=>r.root.findAll(n=>n.type==='HIGAdjustableView')[0];
+   expect(node().props.accessibilityRole).toBe('adjustable');expect(node().props.accessibilityValue).toEqual({min:0,max:100,now:25});
+   expect(node().props.accessibilityActions.map(a=>a.name)).toEqual(['increment','decrement']);
+   const act=nativeEvent=>run(()=>node().props.onAccessibilityAction({nativeEvent}));
+   act({actionName:'setProgress',value:80});expect(node().props.accessibilityValue.now).toBe(80);
+   act({actionName:'setProgress',value:80});act({actionName:'setProgress',value:61.6});act({actionName:'setProgress',value:250});act({actionName:'setProgress',value:Number.NaN});act({actionName:'setProgress'});
+   act({actionName:'decrement'});act({actionName:'increment'});
+   // One update per accepted request: repeats, NaN and missing values change nothing; out-of-range clamps; steps stay 5%.
+   expect(change.mock.calls.map(c=>c[0])).toEqual([80,62,100,95,100]);
+   run(()=>r.unmount());const disabled=jest.fn();run(()=>{r=create(R.createElement(Slider,{label:'Volume',value:30,disabled:true,onValueChange:disabled}));});
+   expect(node().props.accessibilityState).toEqual({disabled:true});act({actionName:'setProgress',value:80});act({actionName:'increment'});expect(disabled).not.toHaveBeenCalled();run(()=>r.unmount());
+  }finally{Object.defineProperty(RN.Platform,'OS',descriptor);RN.UIManager.hasViewManagerConfig=original;}
+ });
+});
+it('native Android slider falls back to a plain adjustable View when HIGAdjustableView is not linked (Expo Go)',()=>{
+ jest.isolateModules(()=>{
+  const R=require('react');const {create,act:run}=require('react-test-renderer');const RN=require('react-native');
+  const descriptor=Object.getOwnPropertyDescriptor(RN.Platform,'OS'),original=RN.UIManager.hasViewManagerConfig;
+  Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});RN.UIManager.hasViewManagerConfig=()=>false;
+  try{const {Slider}=require('../../packages/native/src/slider');let r;run(()=>{r=create(R.createElement(Slider,{label:'Volume',value:20}));});
+   expect(r.root.findAll(n=>n.type==='HIGAdjustableView')).toHaveLength(0);expect(r.root.findAll(n=>n.type===RN.View&&n.props.accessibilityRole==='adjustable')).toHaveLength(1);run(()=>r.unmount());
+  }finally{Object.defineProperty(RN.Platform,'OS',descriptor);RN.UIManager.hasViewManagerConfig=original;}
+ });
+});

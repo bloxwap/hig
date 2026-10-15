@@ -5,6 +5,8 @@
   "license": "MIT",
   "files": [
     "dist",
+    "android/build.gradle",
+    "android/src",
     "README.md",
     "LICENSE"
   ],

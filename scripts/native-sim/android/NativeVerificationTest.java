@@ -303,7 +303,12 @@ public class NativeVerificationTest {
       String before = label(byLabelPrefix("Volume preview: "));
       boolean ok = disabled.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
       settle(500);
-      r.put("disabled", new JSONObject().put("enabled", disabled.isEnabled()).put("node", node(disabled)).put("performed", ok).put("labelBefore", before).put("labelAfter", label(byLabelPrefix("Volume preview: "))));
+      // #71: a disabled slider must neither list nor accept set-progress.
+      Bundle disabledArgs = new Bundle();
+      disabledArgs.putFloat(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE, 80f);
+      boolean setDisabled = disabled.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.getId(), disabledArgs);
+      settle(500);
+      r.put("disabled", new JSONObject().put("enabled", disabled.isEnabled()).put("node", node(disabled)).put("performed", ok).put("setProgressPerformed", setDisabled).put("labelBefore", before).put("labelAfter", label(byLabelPrefix("Volume preview: "))));
     }
     write("android-slider.json", r.toString(1));
   }

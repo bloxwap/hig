@@ -9,7 +9,7 @@ HIG="$(cd "$(dirname "$0")/../.." && pwd -P)"
 export PATH="${ANDROID_HOME:-$HOME/Library/Android/sdk}/platform-tools:$PATH"
 PKG=com.bloxwap.hig.gallery
 COMPONENTS="$(node -e "console.log(require('$HIG/fixtures/native/gallery-manifest.json').examples.map(e=>e.name).join(','))")"
-SUBSET="Button,Select,Field,AmountInput,Checkbox,Switch,RadioGroup,SegmentedControl,Slider,Tabs,Alert,Toast,NumberReadout,AnimatedNumberReadout,MarketRow,BalanceCard,TradeEntry,EmptyState"
+SUBSET="Button,Text,Select,Field,AmountInput,Checkbox,Switch,RadioGroup,SegmentedControl,Slider,Tabs,Alert,Toast,NumberReadout,AnimatedNumberReadout,MarketRow,BalanceCard,TradeEntry,EmptyState"
 mkdir -p "$OUT/logs" "$OUT/host"
 adb install -r "$APP/android/app/build/outputs/apk/release/app-release.apk" >/dev/null
 adb install -r "$APP/android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" >/dev/null

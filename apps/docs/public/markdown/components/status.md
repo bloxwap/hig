@@ -10,7 +10,7 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Alert` | `title`, `severity`, and an optional recovery `action`. |
+| `Alert` | `title`, `severity`, and an optional recovery `action`. Native severity sets the accent border role (info → `info`, success → `positive`, warning → `warning`, error → `negative`); `tone` swaps in another token role for an approved product accent, never a raw colour. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |

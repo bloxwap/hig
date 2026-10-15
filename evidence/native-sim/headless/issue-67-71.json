@@ -1,0 +1,36 @@
+{
+  "issues": [67, 71],
+  "date": "2026-10-15",
+  "host": "Linux x86_64 CI-class VM without KVM or macOS: no Android emulator, no iOS Simulator",
+  "candidate": "packed 0.1.0 candidate tarballs (npm run release:dry-run -- --channel candidate) installed into a copy of fixtures/native (React Native 0.81.5, Expo 54)",
+  "headless": {
+    "autolinking": "npx expo-modules-autolinking react-native-config --platform android lists @bloxwap/hig-native -> import com.bloxwap.hig.HIGPackage;",
+    "moduleCompile": "./gradlew :bloxwap_hig-native:compileReleaseJavaWithJavac -> BUILD SUCCESSFUL (JDK 17.0.20.1, Android SDK 36, Gradle 8.14.3, react-android 0.81.5)",
+    "releaseApk": {
+      "command": "npx expo prebuild --platform android --no-install && ./gradlew assembleRelease -PreactNativeArchitectures=x86_64",
+      "result": "BUILD SUCCESSFUL in 10m 9s (563 tasks)",
+      "apkBytes": 29853932,
+      "apkSha256": "cf1ad0a50f18612eb6ec760ed3483706778de6981775b7a3ec62435a9cd9c97b",
+      "dexContains": ["Lcom/bloxwap/hig/HIGAdjustableView;", "Lcom/bloxwap/hig/HIGPackage;"],
+      "jsBundleReferences": "HIGAdjustableView"
+    },
+    "nativeJest": [
+      "native switch and alert accept token colour roles only (#67)",
+      "native Text caps font scale from the prop or the provider and readouts pass it through (#67)",
+      "native Text sets Korean and Chinese runs at the companion face spacing, overridable per script (#67)",
+      "native Android slider exposes set-progress through HIGAdjustableView and keeps steps and disabled rejection (#71)",
+      "native Android slider falls back to a plain adjustable View when HIGAdjustableView is not linked (Expo Go)",
+      "native iOS slider handles VoiceOver increment/decrement actions in 5% steps (iOS Simulator regression)"
+    ]
+  },
+  "deviceChecks": {
+    "status": "blocked",
+    "reason": "No KVM on this host, so no Android emulator; no macOS, so no iOS Simulator. Nothing here is an emulator, simulator or device observation.",
+    "pending": [
+      "Android emulator: scripts/native-sim/run-android.sh sliderAccessibilityActions must show setProgress on the Volume preview node, setProgress(80) updating the visible label once to 80, and setProgressPerformed=false with an unchanged label when disabled (#71)",
+      "Android emulator: increment/decrement still 5% steps on the same node (#71)",
+      "iOS Simulator: testSliderAccessibilityActions VoiceOver adjustable behaviour unchanged (#71)",
+      "iOS Simulator AX5 (ios-ax5 captures) and Android font_scale 2.0 (android-font200 captures) of Text, Switch and Alert, now in the SUBSET list (#67)"
+    ]
+  }
+}
