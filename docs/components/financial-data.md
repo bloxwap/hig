@@ -1,10 +1,20 @@
-# NumberReadout, Usd, Percent, Metric/Stat, Row, List; DOM Table · HIG 0.1.0
+# Financial data · HIG 0.1.0
+
+Readable numbers, metrics, lists, and tables for host-provided financial data.
+
+Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, and `List`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig-react/data` or `@bloxwap/hig-native/data` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty/label/loading/error/onRetry/onLoadMore. Loading suppresses a misleading empty message, keeps existing rows visible, and disables pagination/retry until ready. Error text remains visible with optional host retry. Native uses FlatList virtualization; stable host keys preserve identity during live updates. Table caption/rows/columns/keyFor; optional host sorting callbacks.
+| Component | Key props and behavior |
+| --- | --- |
+| Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
+| `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
+| `Table` | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. |
+
+Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
 
 ## When to use and examples
 

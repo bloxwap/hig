@@ -1,10 +1,19 @@
-# MarketRow, BalanceCard, TradeEntry, ActivityList, InstallCommand, CodeWindow, MarketingHero · HIG 0.1.0
+# Recipes · HIG 0.1.0
+
+Composed patterns for balances, markets, trade review, and documentation.
+
+Includes `MarketRow`, `BalanceCard`, `TradeEntry`, `ActivityList`, `InstallCommand`, `CodeWindow`, and `MarketingHero`.
 
 Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig-react/recipes` or `@bloxwap/hig-native/recipes` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-All data/actions host-supplied. TradeEntry raw amount/onAmountChange/onConfirm/available/busy/error; opens review before submission. InstallCommand command/onCopy accepts async host clipboard adapter.
+All data and actions are supplied by the host application.
+
+| Recipe | Key props and behavior |
+| --- | --- |
+| `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. |
 
 ## When to use and examples
 

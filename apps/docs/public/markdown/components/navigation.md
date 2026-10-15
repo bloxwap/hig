@@ -1,10 +1,18 @@
-# Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0
+# Navigation · HIG 0.1.0
+
+Tabs, disclosure, search, and navigation that keep the current location clear.
+
+Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, and `Search`. `Breadcrumb` is web-only; native alternatives include `BackButton` and `BottomNavigation`.
 
 Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig-react/navigation` or `@bloxwap/hig-native/navigation` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Tabs label/items/value/defaultValue/onValueChange. Items include content and disabled. Navigation takes DOM hrefs or RN host callbacks. Search takes query/results/loading/error; no bundled search index/router.
+| Component | Key props and behavior |
+| --- | --- |
+| `Tabs` | `label`, `items`, `value`, `defaultValue`, and `onValueChange`. Items include panel content and optional `disabled`. |
+| `Navigation` | Web links use `href`; native destinations use host callbacks. |
+| `Search` | `query`, `results`, `loading`, and `error`. The host supplies the search index and router. |
 
 ## When to use and examples
 

@@ -61,16 +61,25 @@ SSR: client components retain use-client boundaries in emitted JS. Importing a b
 Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution. ESM is supported; CommonJS consumer support is not claimed.
 
 
-## Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0
+## Actions & surfaces · HIG 0.1.0
 Source: docs/components/actions-surfaces.md
 
-# Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0
+# Actions & surfaces · HIG 0.1.0
+
+Buttons, typography, and layout primitives for clear actions and related content.
+
+Includes `Button`, `IconButton`, `Link`, `Text`, `Heading`, `Stack`, `Inline`, `Surface`, `Card`, and `Separator`.
 
 Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig-react/button` or `@bloxwap/hig-native/button` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Button children, intent (primary/secondary/destructive/ghost), busy, disabled, fullWidth, suppressFeedback, forwarded ref. DOM onClick; RN onPress. Text/Heading accept platform text props. Stack/Inline/Surface accept platform layout props.
+| Component | Key props and behavior |
+| --- | --- |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. |
+| `Link` | Platform link behavior; host applications own routing. |
+| `Text`, `Heading` | Platform text props. |
+| `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
 
 ## When to use and examples
 
@@ -91,16 +100,23 @@ RN external Link uses Linking; routes belong to host. Native fontFamily only aft
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
-## PriceChart (DOM only), chartTheme; native readout/list summary · HIG 0.1.0
+## Charts · HIG 0.1.0
 Source: docs/components/chart.md
 
-# PriceChart (DOM only), chartTheme; native readout/list summary · HIG 0.1.0
+# Charts · HIG 0.1.0
+
+Web price charts with text summaries and native readout alternatives.
+
+Includes web-only `PriceChart` and `chartTheme`. Native uses readouts, lists, and text summaries.
 
 Issue #20. Entry: `chart`. Import platform entries from `@bloxwap/hig-react/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig-native/data` for summary/readout/list alternatives. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-PriceChart data, summary, height, and chart SDK props. summary is mandatory; token chartTheme uses sRGB to preserve canvas compatibility.
+| Component | Key props and behavior |
+| --- | --- |
+| `PriceChart` | `data`, required `summary`, `height`, and chart SDK props. |
+| `chartTheme` | Token-based colors in sRGB for canvas compatibility. |
 
 ## When to use and examples
 
@@ -121,16 +137,24 @@ RN canvas is unsupported in this candidate. Use NumberReadout/List plus host sum
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
-## Field, Label, Input, TextArea, AmountInput, SearchInput · HIG 0.1.0
+## Fields & inputs · HIG 0.1.0
 Source: docs/components/fields.md
 
-# Field, Label, Input, TextArea, AmountInput, SearchInput · HIG 0.1.0
+# Fields & inputs · HIG 0.1.0
+
+Labeled inputs for text, search, and amounts, with visible help and validation.
+
+Includes `Field`, `Label`, `Input`, `TextArea`, `AmountInput`, and `SearchInput`.
 
 Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig-react/field` or `@bloxwap/hig-native/field` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Field label, id (DOM), description, error, required, disabled; Input/TextArea expose native platform props and refs. AmountInput is text/decimal mode; value stays raw string.
+| Component | Key props and behavior |
+| --- | --- |
+| `Field` | `label`, `id` (web), `description`, `error`, `required`, and `disabled`. |
+| `Input`, `TextArea` | Platform input props and forwarded refs. |
+| `AmountInput` | Text input with decimal keyboard hints; `value` stays a raw string. |
 
 ## When to use and examples
 
@@ -151,16 +175,26 @@ RN decimal-pad has locale/platform differences; no implicit money parser. Host o
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
-## NumberReadout, Usd, Percent, Metric/Stat, Row, List; DOM Table · HIG 0.1.0
+## Financial data · HIG 0.1.0
 Source: docs/components/financial-data.md
 
-# NumberReadout, Usd, Percent, Metric/Stat, Row, List; DOM Table · HIG 0.1.0
+# Financial data · HIG 0.1.0
+
+Readable numbers, metrics, lists, and tables for host-provided financial data.
+
+Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, and `List`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig-react/data` or `@bloxwap/hig-native/data` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Readout value:number|null|undefined, locale from provider, Intl options, stale, label. List items/keyFor/render/empty/label/loading/error/onRetry/onLoadMore. Loading suppresses a misleading empty message, keeps existing rows visible, and disables pagination/retry until ready. Error text remains visible with optional host retry. Native uses FlatList virtualization; stable host keys preserve identity during live updates. Table caption/rows/columns/keyFor; optional host sorting callbacks.
+| Component | Key props and behavior |
+| --- | --- |
+| Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
+| `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
+| `Table` | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. |
+
+Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
 
 ## When to use and examples
 
@@ -185,16 +219,24 @@ See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consume
 `AnimatedNumberReadout` lives in the separate `animated-number` entry on both platforms. It fades the final localized reading on a deliberate value change, using Web Animations or the RN native opacity driver. It never interpolates financial values or adds a live region. Reduced motion, unknown values and changes less than 250 ms apart use the static final reading; pending motion is canceled on replacement/unmount. No animation engine is imported by the ordinary `data` entry. Example: `import {AnimatedNumberReadout} from '@bloxwap/hig-react/animated-number'` (or `hig-native/animated-number`), then `<AnimatedNumberReadout value={price} label="Price" options={{style:'currency',currency:'USD'}} />`. The same gallery manifest contains runnable examples for both renderers.
 
 
-## Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0
+## Navigation · HIG 0.1.0
 Source: docs/components/navigation.md
 
-# Tabs, Accordion, Pagination, Navigation, Search; DOM Breadcrumb; RN BackButton/BottomNavigation · HIG 0.1.0
+# Navigation · HIG 0.1.0
+
+Tabs, disclosure, search, and navigation that keep the current location clear.
+
+Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, and `Search`. `Breadcrumb` is web-only; native alternatives include `BackButton` and `BottomNavigation`.
 
 Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig-react/navigation` or `@bloxwap/hig-native/navigation` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Tabs label/items/value/defaultValue/onValueChange. Items include content and disabled. Navigation takes DOM hrefs or RN host callbacks. Search takes query/results/loading/error; no bundled search index/router.
+| Component | Key props and behavior |
+| --- | --- |
+| `Tabs` | `label`, `items`, `value`, `defaultValue`, and `onValueChange`. Items include panel content and optional `disabled`. |
+| `Navigation` | Web links use `href`; native destinations use host callbacks. |
+| `Search` | `query`, `results`, `loading`, and `error`. The host supplies the search index and router. |
 
 ## When to use and examples
 
@@ -215,16 +257,26 @@ Breadcrumb is DOM-specific; native host routes plus BackButton are supported alt
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
-## Dialog, AlertDialog, Sheet, Menu; DOM Popover/Tooltip; RN HelpText · HIG 0.1.0
+## Overlays · HIG 0.1.0
 Source: docs/components/overlays.md
 
-# Dialog, AlertDialog, Sheet, Menu; DOM Popover/Tooltip; RN HelpText · HIG 0.1.0
+# Overlays · HIG 0.1.0
+
+Dialogs, sheets, menus, and contextual help with explicit dismissal and focus behavior.
+
+Includes `Dialog`, `AlertDialog`, `Sheet`, and `Menu`. `Popover` and `Tooltip` are web-only; native help uses persistent `HelpText`.
 
 Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/overlay` or `@bloxwap/hig-native/overlay` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Dialog controlled open/onOpenChange, title, description, children; native initialFocusRef/returnFocusRef accept live focus targets, default initial focus requests the title. Native return focus is scheduled after the static Modal closes and canceled on reopen/unmount; host provides the trigger ref. DOM trigger is a ref-capable single element. Menu label and {label,disabled,onSelect} items.
+| Component | Key props and behavior |
+| --- | --- |
+| `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. |
+| Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref. |
+| `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
+
+Native return focus is scheduled after the static Modal closes and canceled on reopen or unmount.
 
 ## When to use and examples
 
@@ -245,16 +297,25 @@ Basic Sheet uses static Modal layout. The separate optional `@bloxwap/hig-native
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
-## MarketRow, BalanceCard, TradeEntry, ActivityList, InstallCommand, CodeWindow, MarketingHero · HIG 0.1.0
+## Recipes · HIG 0.1.0
 Source: docs/components/recipes.md
 
-# MarketRow, BalanceCard, TradeEntry, ActivityList, InstallCommand, CodeWindow, MarketingHero · HIG 0.1.0
+# Recipes · HIG 0.1.0
+
+Composed patterns for balances, markets, trade review, and documentation.
+
+Includes `MarketRow`, `BalanceCard`, `TradeEntry`, `ActivityList`, `InstallCommand`, `CodeWindow`, and `MarketingHero`.
 
 Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig-react/recipes` or `@bloxwap/hig-native/recipes` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-All data/actions host-supplied. TradeEntry raw amount/onAmountChange/onConfirm/available/busy/error; opens review before submission. InstallCommand command/onCopy accepts async host clipboard adapter.
+All data and actions are supplied by the host application.
+
+| Recipe | Key props and behavior |
+| --- | --- |
+| `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. |
 
 ## When to use and examples
 
@@ -275,16 +336,24 @@ M2 supplies visual recipes; M3 adds semantic feedback composition because #26 de
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
-## Checkbox, RadioGroup, Switch, SegmentedControl, Select, Slider; Tabs in navigation · HIG 0.1.0
+## Selection controls · HIG 0.1.0
 Source: docs/components/selection.md
 
-# Checkbox, RadioGroup, Switch, SegmentedControl, Select, Slider; Tabs in navigation · HIG 0.1.0
+# Selection controls · HIG 0.1.0
+
+Controls for choosing options, changing preferences, and adjusting values.
+
+Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Select`, and `Slider`. See the navigation guide for `Tabs`.
 
 Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/selection` or `@bloxwap/hig-native/selection` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-checked/defaultChecked/onCheckedChange; value/defaultValue/onValueChange. Options are {value,label,disabled}. Slider min/max/step/value; label required.
+| Control | Key props and behavior |
+| --- | --- |
+| Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. |
+| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. |
 
 ## When to use and examples
 
@@ -305,16 +374,25 @@ SegmentedControl is single-choice radio semantics, not navigation. Native picker
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
-## Badge, Alert/Callout, Toast, Progress, Spinner, Skeleton, EmptyState, Avatar, StatusIndicator · HIG 0.1.0
+## Status & feedback · HIG 0.1.0
 Source: docs/components/status.md
 
-# Badge, Alert/Callout, Toast, Progress, Spinner, Skeleton, EmptyState, Avatar, StatusIndicator · HIG 0.1.0
+# Status & feedback · HIG 0.1.0
+
+Visible progress, notifications, and recoverable states that keep people informed.
+
+Includes `Badge`, `Alert`, `Callout`, `Toast`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, and `StatusIndicator`.
 
 Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/status` or `@bloxwap/hig-native/status` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Alert title/severity/action; Toast notices with stable id/message/severity/action, onDismiss. Progress label/value/max; EmptyState title/description/action.
+| Component | Key props and behavior |
+| --- | --- |
+| `Alert` | `title`, `severity`, and an optional recovery `action`. |
+| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. |
+| `Progress` | `label`, `value`, and `max`. |
+| `EmptyState` | `title`, `description`, and an optional `action`. |
 
 ## When to use and examples
 

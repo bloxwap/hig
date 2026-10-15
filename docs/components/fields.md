@@ -1,10 +1,18 @@
-# Field, Label, Input, TextArea, AmountInput, SearchInput · HIG 0.1.0
+# Fields & inputs · HIG 0.1.0
+
+Labeled inputs for text, search, and amounts, with visible help and validation.
+
+Includes `Field`, `Label`, `Input`, `TextArea`, `AmountInput`, and `SearchInput`.
 
 Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig-react/field` or `@bloxwap/hig-native/field` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Field label, id (DOM), description, error, required, disabled; Input/TextArea expose native platform props and refs. AmountInput is text/decimal mode; value stays raw string.
+| Component | Key props and behavior |
+| --- | --- |
+| `Field` | `label`, `id` (web), `description`, `error`, `required`, and `disabled`. |
+| `Input`, `TextArea` | Platform input props and forwarded refs. |
+| `AmountInput` | Text input with decimal keyboard hints; `value` stays a raw string. |
 
 ## When to use and examples
 

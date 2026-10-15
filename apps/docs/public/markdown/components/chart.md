@@ -1,10 +1,17 @@
-# PriceChart (DOM only), chartTheme; native readout/list summary · HIG 0.1.0
+# Charts · HIG 0.1.0
+
+Web price charts with text summaries and native readout alternatives.
+
+Includes web-only `PriceChart` and `chartTheme`. Native uses readouts, lists, and text summaries.
 
 Issue #20. Entry: `chart`. Import platform entries from `@bloxwap/hig-react/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig-native/data` for summary/readout/list alternatives. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-PriceChart data, summary, height, and chart SDK props. summary is mandatory; token chartTheme uses sRGB to preserve canvas compatibility.
+| Component | Key props and behavior |
+| --- | --- |
+| `PriceChart` | `data`, required `summary`, `height`, and chart SDK props. |
+| `chartTheme` | Token-based colors in sRGB for canvas compatibility. |
 
 ## When to use and examples
 

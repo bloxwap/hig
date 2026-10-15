@@ -1,10 +1,18 @@
-# Checkbox, RadioGroup, Switch, SegmentedControl, Select, Slider; Tabs in navigation · HIG 0.1.0
+# Selection controls · HIG 0.1.0
+
+Controls for choosing options, changing preferences, and adjusting values.
+
+Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Select`, and `Slider`. See the navigation guide for `Tabs`.
 
 Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/selection` or `@bloxwap/hig-native/selection` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-checked/defaultChecked/onCheckedChange; value/defaultValue/onValueChange. Options are {value,label,disabled}. Slider min/max/step/value; label required.
+| Control | Key props and behavior |
+| --- | --- |
+| Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. |
+| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. |
 
 ## When to use and examples
 

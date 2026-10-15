@@ -1,10 +1,19 @@
-# Button, IconButton, Link, Text, Heading, Stack, Inline, Surface/Card, Separator · HIG 0.1.0
+# Actions & surfaces · HIG 0.1.0
+
+Buttons, typography, and layout primitives for clear actions and related content.
+
+Includes `Button`, `IconButton`, `Link`, `Text`, `Heading`, `Stack`, `Inline`, `Surface`, `Card`, and `Separator`.
 
 Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig-react/button` or `@bloxwap/hig-native/button` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Button children, intent (primary/secondary/destructive/ghost), busy, disabled, fullWidth, suppressFeedback, forwarded ref. DOM onClick; RN onPress. Text/Heading accept platform text props. Stack/Inline/Surface accept platform layout props.
+| Component | Key props and behavior |
+| --- | --- |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. |
+| `Link` | Platform link behavior; host applications own routing. |
+| `Text`, `Heading` | Platform text props. |
+| `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
 
 ## When to use and examples
 
