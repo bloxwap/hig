@@ -17,5 +17,3 @@
 .brand-name small{font-size:.7rem;font-weight:400;color:var(--hig-muted)}
 .docs-version{padding-top:.75rem;font-size:.7rem;color:var(--hig-muted)}
 
-.hig-button { font-family:var(--font-bloxwap-sans),system-ui,sans-serif; }
-.hig-number { font-family:var(--font-bloxwap-mono),monospace; }
