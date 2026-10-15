@@ -1,10 +1,20 @@
-# Dialog, AlertDialog, Sheet, Menu; DOM Popover/Tooltip; RN HelpText · HIG 0.1.0
+# Overlays · HIG 0.1.0
+
+Dialogs, sheets, menus, and contextual help with explicit dismissal and focus behavior.
+
+Includes `Dialog`, `AlertDialog`, `Sheet`, and `Menu`. `Popover` and `Tooltip` are web-only; native help uses persistent `HelpText`.
 
 Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/overlay` or `@bloxwap/hig-native/overlay` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Dialog controlled open/onOpenChange, title, description, children; native initialFocusRef/returnFocusRef accept live focus targets, default initial focus requests the title. Native return focus is scheduled after the static Modal closes and canceled on reopen/unmount; host provides the trigger ref. DOM trigger is a ref-capable single element. Menu label and {label,disabled,onSelect} items.
+| Component | Key props and behavior |
+| --- | --- |
+| `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. |
+| Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref. |
+| `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
+
+Native return focus is scheduled after the static Modal closes and canceled on reopen or unmount.
 
 ## When to use and examples
 

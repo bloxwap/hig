@@ -1,0 +1,57 @@
+[
+  {
+    "family": "actions-surfaces",
+    "title": "Actions & surfaces",
+    "description": "Buttons, typography, and layout primitives for clear actions and related content."
+  },
+  {
+    "family": "fields",
+    "title": "Fields & inputs",
+    "description": "Labeled inputs for text, search, and amounts, with visible help and validation."
+  },
+  {
+    "family": "selection",
+    "title": "Selection controls",
+    "description": "Controls for choosing options, changing preferences, and adjusting values."
+  },
+  {
+    "family": "navigation",
+    "title": "Navigation",
+    "description": "Tabs, disclosure, search, and navigation that keep the current location clear."
+  },
+  {
+    "family": "overlays",
+    "title": "Overlays",
+    "description": "Dialogs, sheets, menus, and contextual help with explicit dismissal and focus behavior."
+  },
+  {
+    "family": "status",
+    "title": "Status & feedback",
+    "description": "Visible progress, notifications, and recoverable states that keep people informed."
+  },
+  {
+    "family": "financial-data",
+    "title": "Financial data",
+    "description": "Readable numbers, metrics, lists, and tables for host-provided financial data."
+  },
+  {
+    "family": "chart",
+    "title": "Charts",
+    "description": "Web price charts with text summaries and native readout alternatives."
+  },
+  {
+    "family": "recipes",
+    "title": "Recipes",
+    "description": "Composed patterns for balances, markets, trade review, and documentation."
+  },
+  {
+    "family": "brand",
+    "title": "Brand",
+    "description": "Bloxwap marks and icons with accessible labels where needed."
+  },
+  {
+    "family": "provider",
+    "title": "Configuration",
+    "description": "Shared density, locale, direction, motion, and optional feedback settings."
+  }
+]

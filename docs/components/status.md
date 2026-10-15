@@ -1,10 +1,19 @@
-# Badge, Alert/Callout, Toast, Progress, Spinner, Skeleton, EmptyState, Avatar, StatusIndicator · HIG 0.1.0
+# Status & feedback · HIG 0.1.0
+
+Visible progress, notifications, and recoverable states that keep people informed.
+
+Includes `Badge`, `Alert`, `Callout`, `Toast`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, and `StatusIndicator`.
 
 Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/status` or `@bloxwap/hig-native/status` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
-Alert title/severity/action; Toast notices with stable id/message/severity/action, onDismiss. Progress label/value/max; EmptyState title/description/action.
+| Component | Key props and behavior |
+| --- | --- |
+| `Alert` | `title`, `severity`, and an optional recovery `action`. |
+| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. |
+| `Progress` | `label`, `value`, and `max`. |
+| `EmptyState` | `title`, `description`, and an optional `action`. |
 
 ## When to use and examples
 
