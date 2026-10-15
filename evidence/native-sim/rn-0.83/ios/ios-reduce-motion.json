@@ -1,0 +1,8 @@
+{
+  "Feedback calls:" : "Feedback calls: #1 sound configure called | #2 sound configure resolved",
+  "Font scale:" : "Font scale: 1.00 (PixelRatio 1.00) · window 402x874 @3x",
+  "name" : "reduce-motion",
+  "OS reduce motion:" : "OS reduce motion: true · screen reader: false",
+  "OS RTL:" : "OS RTL: false · HIG direction: ltr",
+  "Runtime:" : "Runtime: ios 26.5 · RN 0.83.10 · Hermes yes"
+}

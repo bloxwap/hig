@@ -1,0 +1,58 @@
+[
+  {
+    "auditIssuesWhileOpen" : [
+
+    ],
+    "closedByCloseButton" : true,
+    "closeVisible" : true,
+    "component" : "Dialog",
+    "galleryHeadingReachableWhileOpen" : false,
+    "titleIsHeader" : null,
+    "titleTraits" : null,
+    "titleVisible" : true,
+    "triggerFound" : true,
+    "triggerHittableAfterClose" : true
+  },
+  {
+    "auditIssuesWhileOpen" : [
+
+    ],
+    "closedByCloseButton" : true,
+    "closeVisible" : true,
+    "component" : "AlertDialog",
+    "galleryHeadingReachableWhileOpen" : false,
+    "titleIsHeader" : null,
+    "titleTraits" : null,
+    "titleVisible" : true,
+    "triggerFound" : true,
+    "triggerHittableAfterClose" : true
+  },
+  {
+    "auditIssuesWhileOpen" : [
+
+    ],
+    "closedByCloseButton" : true,
+    "closeVisible" : true,
+    "component" : "Sheet",
+    "galleryHeadingReachableWhileOpen" : false,
+    "titleIsHeader" : null,
+    "titleTraits" : null,
+    "titleVisible" : true,
+    "triggerFound" : true,
+    "triggerHittableAfterClose" : true
+  },
+  {
+    "auditIssuesWhileOpen" : [
+
+    ],
+    "closedByCloseButton" : true,
+    "closeVisible" : true,
+    "component" : "Menu",
+    "galleryHeadingReachableWhileOpen" : false,
+    "titleIsHeader" : null,
+    "titleTraits" : null,
+    "titleVisible" : true,
+    "triggerFound" : true,
+    "triggerHittableAfterClose" : true
+  }
+]

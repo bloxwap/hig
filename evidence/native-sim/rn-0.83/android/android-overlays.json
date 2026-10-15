@@ -1,0 +1,62 @@
+[
+ {
+  "component": "Dialog",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": null
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": null
+  }
+ },
+ {
+  "component": "AlertDialog",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": null
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": null
+  }
+ },
+ {
+  "component": "Sheet",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": null
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": null
+  }
+ },
+ {
+  "component": "Menu",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": null
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": null
+  }
+ }
+]

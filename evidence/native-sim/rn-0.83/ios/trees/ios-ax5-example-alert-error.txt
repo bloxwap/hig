@@ -1,0 +1,79 @@
+Optional(Attributes: Application, pid: 57936, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, pid: 57936, label: 'Bloxwap HIG Gallery'
+    Window (Main), {{0.0, 0.0}, {402.0, 874.0}}
+      Other, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, {{0.0, 0.0}, {402.0, 874.0}}
+                    Other, {{0.0, 62.0}, {402.0, 778.0}}
+                      ScrollView, {{0.0, 62.0}, {402.0, 778.0}}
+                        Other, {{0.0, -946.0}, {402.0, 5597.7}}
+                          Other, {{0.0, -946.0}, {402.0, 5597.7}}
+                            Other, {{24.0, -922.0}, {32.0, 32.0}}, label: 'Bloxwap'
+                            StaticText, {{24.0, -878.0}, {354.0, 321.7}}, label: 'Native HIG gallery'
+                              StaticText, {{24.0, -878.0}, {354.0, 321.7}}, label: 'Native HIG gallery'
+                            Button, {{24.0, -544.3}, {354.0, 161.3}}, label: 'Component: Alert'
+                            Button, {{24.0, -371.0}, {354.0, 161.3}}, label: 'Example state: error'
+                            StaticText, {{24.0, -197.7}, {354.0, 343.0}}, label: '0.1.0 · pinned Bloxwap Sans static faces registered'
+                              StaticText, {{24.0, -197.7}, {354.0, 343.0}}, label: '0.1.0 · pinned Bloxwap Sans static faces registered'
+                            Other, {{24.0, 157.3}, {354.0, 799.3}}
+                            StaticText, {{48.0, 178.3}, {309.0, 321.7}}, label: 'Data unavailable'
+                              StaticText, {{48.0, 178.3}, {309.0, 321.7}}, label: 'Data unavailable'
+                            StaticText, {{48.0, 500.0}, {309.0, 343.0}}, label: 'Data unavailable. Retry when connected.'
+                              StaticText, {{48.0, 500.0}, {309.0, 343.0}}, label: 'Data unavailable. Retry when connected.'
+                            Button, {{48.0, 843.0}, {177.0, 92.7}}, label: 'Retry'
+                            Other, {{24.0, 968.7}, {354.0, 1000.7}}
+                            StaticText, {{44.0, 988.7}, {314.0, 321.7}}, label: 'Review BTC order'
+                              StaticText, {{44.0, 988.7}, {314.0, 321.7}}, label: 'Review BTC order'
+                            StaticText, {{44.0, 1322.3}, {314.0, 171.7}}, label: 'Amount (BTC)'
+                              StaticText, {{44.0, 1322.3}, {314.0, 171.7}}, label: 'Amount (BTC)'
+                            Other, {{44.0, 1502.0}, {314.0, 94.3}}
+                              TextField, {{45.0, 1503.0}, {312.0, 92.3}}, label: 'Amount (BTC)', value: 0.01
+                            StaticText, {{44.0, 1604.3}, {314.0, 171.7}}, label: 'Available: 0.25 BTC'
+                              StaticText, {{44.0, 1604.3}, {314.0, 171.7}}, label: 'Available: 0.25 BTC'
+                            Button, {{44.0, 1788.0}, {314.0, 161.3}}, label: 'Review order'
+                            Other, {{24.0, 1981.3}, {354.0, 297.7}}
+                            StaticText, {{44.0, 2001.3}, {314.0, 171.7}}, label: 'Sample balance'
+                              StaticText, {{44.0, 2001.3}, {314.0, 171.7}}, label: 'Sample balance'
+                            StaticText, {{44.0, 2173.0}, {314.0, 86.0}}, label: '$1,250.45'
+                              StaticText, {{44.0, 2173.0}, {314.0, 86.0}}, label: '$1,250.45'
+                            Button, {{24.0, 2303.0}, {354.0, 161.3}}, label: 'Bitcoin (BTC)'
+                            StaticText, {{24.0, 2476.3}, {274.3, 86.0}}, label: '$67,234.56'
+                              StaticText, {{24.0, 2476.3}, {274.3, 86.0}}, label: '$67,234.56'
+                            StaticText, {{24.0, 2574.3}, {109.0, 86.0}}, label: '2.5%'
+                              StaticText, {{24.0, 2574.3}, {109.0, 86.0}}, label: '2.5%'
+                            Switch, {{24.0, 2684.3}, {354.0, 86.0}}, label: 'Sound', value: 1
+                            Switch, {{24.0, 2782.3}, {354.0, 86.0}}, label: 'Haptics', value: 1
+                            StaticText, {{24.0, 2880.3}, {354.0, 86.0}}, label: 'Volume: 30'
+                              StaticText, {{24.0, 2880.3}, {354.0, 86.0}}, label: 'Volume: 30'
+                            Other, {{24.0, 2966.3}, {354.0, 48.0}}, label: 'Volume', value: 30%
+                            Switch, {{24.0, 3026.3}, {354.0, 86.0}}, label: 'Motion', value: 1
+                            Other, {{24.0, 3124.3}, {354.0, 621.0}}
+                            StaticText, {{48.0, 3145.3}, {309.0, 321.7}}, label: 'Sample outcome'
+                              StaticText, {{48.0, 3145.3}, {309.0, 321.7}}, label: 'Sample outcome'
+                            StaticText, {{48.0, 3467.0}, {309.0, 257.3}}, label: 'Demo only; no trade is submitted.'
+                              StaticText, {{48.0, 3467.0}, {309.0, 257.3}}, label: 'Demo only; no trade is submitted.'
+                            Other, {{24.0, 3757.3}, {354.0, 870.3}}
+                            StaticText, {{44.0, 3777.3}, {314.0, 514.3}}, label: 'npm install ./bloxwap-hig-native-0.1.0.tgz'
+                              StaticText, {{44.0, 3777.3}, {314.0, 514.3}}, label: 'npm install ./bloxwap-hig-native-0.1.0.tgz'
+                            Button, {{44.0, 4291.7}, {314.0, 230.0}}, label: 'Copy install command'
+                        Other, {{369.0, 62.0}, {30.0, 750.0}}, label: 'Vertical scroll bar, 8 pages', value: 21%
+                          Other, {{396.0, 199.0}, {3.0, 103.3}}
+                        Other, {{28.0, 807.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, {{31.0, 834.0}, {340.0, 3.0}}
+                        Other, {{369.0, 62.0}, {30.0, 750.0}}, label: 'Vertical scroll bar, 8 pages', value: 21%
+                          Other, {{396.0, 199.0}, {3.0, 103.3}}
+                        Other, {{28.0, 807.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, {{31.0, 834.0}, {340.0, 3.0}}
+Path to element:
+ →Application, pid: 57936, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, pid: 57936, label: 'Bloxwap HIG Gallery'
+  }
+)

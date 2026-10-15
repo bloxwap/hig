@@ -29,7 +29,7 @@ formatZonedTime(instant, locale, 'UTC');           // '4:00 PM UTC' / '16:00 UTC
 | Other dates | `Intl.DateTimeFormat` |
 | Funding countdown | `Intl.RelativeTimeFormat` on a duration, not a zone-less clock |
 
-Hermes in RN 0.81.5 provides `Intl`. Don’t polyfill, don’t concatenate `'$'+value`, and don’t parse a formatted string back into an order.
+Hermes in RN 0.81.5 and 0.83.10 provides `Intl`. Don’t polyfill, don’t concatenate `'$'+value`, and don’t parse a formatted string back into an order.
 
 ## Numbers
 

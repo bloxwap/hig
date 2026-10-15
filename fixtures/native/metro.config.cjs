@@ -1,8 +1,8 @@
 const {getDefaultConfig}=require('expo/metro-config');
 const {dirname,resolve}=require('node:path');
 const config=getDefaultConfig(__dirname);
-// Expo 54's native renderer requires React 19.1. Resolve every workspace
-// package through this consumer's React, while the Fumadocs host uses 19.2.
+// The RN renderer requires its exact React (RN 0.81.5/Expo 54: 19.1.0; RN 0.83.10/Expo 55: 19.2.0).
+// Resolve every workspace package through this consumer's React, never the web hosts' copy.
 const roots=Object.fromEntries(['react','react-dom'].map(name=>[name,dirname(require.resolve(`${name}/package.json`,{paths:[__dirname]}))]));
 config.resolver.resolveRequest=(context,name,platform)=>{
  const base=name.split('/')[0];

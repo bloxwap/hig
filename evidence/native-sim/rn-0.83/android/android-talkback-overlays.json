@@ -1,0 +1,78 @@
+[
+ {
+  "component": "Dialog",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": "Review order",
+   "class": "android.view.View",
+   "heading": true
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": "Open review order",
+   "class": "android.widget.Button",
+   "heading": false
+  }
+ },
+ {
+  "component": "AlertDialog",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": "Confirm cancellation",
+   "class": "android.view.View",
+   "heading": true
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": "Open confirm cancellation",
+   "class": "android.widget.Button",
+   "heading": false
+  }
+ },
+ {
+  "component": "Sheet",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": "Order details",
+   "class": "android.view.View",
+   "heading": true
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": "Open order details",
+   "class": "android.widget.Button",
+   "heading": false
+  }
+ },
+ {
+  "component": "Menu",
+  "triggerFound": true,
+  "triggerClick": true,
+  "openedCloseVisible": true,
+  "windowsWhileOpen": 1,
+  "focusAfterOpen": {
+   "accessibilityFocus": "Market actions",
+   "class": "android.view.View",
+   "heading": true
+  },
+  "closedByBack": true,
+  "appStillForeground": true,
+  "focusAfterBack": {
+   "accessibilityFocus": "Market actions",
+   "class": "android.widget.Button",
+   "heading": false
+  }
+ }
+]

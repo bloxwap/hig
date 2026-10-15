@@ -166,7 +166,8 @@ public class NativeVerificationTest {
     if (n.getCollectionInfo() != null) o.put("collection", n.getCollectionInfo().getRowCount() + "x" + n.getCollectionInfo().getColumnCount());
     JSONArray actions = new JSONArray();
     for (AccessibilityNodeInfo.AccessibilityAction a : n.getActionList()) {
-      String name = a.getLabel() != null ? a.getLabel().toString() : actionName(a.getId());
+      // RN 0.83 gives unlabeled accessibilityActions an empty label instead of null (#68); keep the action id visible.
+      String name = a.getLabel() == null ? actionName(a.getId()) : a.getLabel().length() == 0 ? (actionName(a.getId()) != null ? actionName(a.getId()) : "id " + a.getId()) + " (empty label)" : a.getLabel().toString();
       if (name != null) actions.put(name);
     }
     if (actions.length() > 0) o.put("actions", actions);

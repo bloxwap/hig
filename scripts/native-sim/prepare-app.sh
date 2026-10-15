@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Builds the packed-candidate native gallery as real iOS Simulator and Android emulator apps.
-# Usage: scripts/native-sim/prepare-app.sh <app-dir> <simulator-udid>
+# Usage: scripts/native-sim/prepare-app.sh <app-dir> <simulator-udid> [profile]
+# profile: rn-0.81 (default; RN 0.81.5 / Expo 54) or rn-0.83 (RN 0.83.10 / Expo 55), from fixtures/native/profiles.json (#68).
 # Requires artifacts/release-candidate/*.tgz (native-fonts needs `npm run generate:fonts` first) (npm run release:dry-run -- --channel candidate),
 # Xcode with an iOS Simulator runtime, JDK 17 and the Android SDK. Nothing is published.
 set -euo pipefail
 HIG="$(cd "$(dirname "$0")/../.." && pwd -P)"
-APP="$1"; UDID="$2"
+APP="$1"; UDID="$2"; PROFILE="${3:-rn-0.81}"
 mkdir -p "$APP"; APP="$(cd "$APP" && pwd -P)"
 rsync -a --exclude node_modules --exclude dist --exclude .expo "$HIG/fixtures/native/" "$APP/"
-node -e "const fs=require('fs');const p='$APP/package.json';const m=JSON.parse(fs.readFileSync(p));for(const k of Object.keys(m.dependencies))if(k.startsWith('@bloxwap/hig-'))delete m.dependencies[k];m.type='commonjs';fs.writeFileSync(p,JSON.stringify(m,null,2));"
+node "$HIG/scripts/native-consumer.mjs" "$PROFILE" "$APP"
 (cd "$APP" && npm install --no-audit --no-fund $(ls "$HIG"/artifacts/release-candidate/bloxwap-hig-{contracts,feedback,native,native-fonts,tokens}-*.tgz))
-node --input-type=module -e "import {verifyNativeReact,verifyExpoNativeModules} from '$HIG/scripts/native-compatibility.mjs';console.log(verifyNativeReact('$APP'),verifyExpoNativeModules('$APP'))"
+node --input-type=module -e "import {verifyNativeReact,verifyExpoNativeModules,verifyDeclaredPeers} from '$HIG/scripts/native-compatibility.mjs';console.log(verifyNativeReact('$APP'),verifyExpoNativeModules('$APP'),verifyDeclaredPeers('$APP'))"
 (cd "$APP" && CI=1 npx expo prebuild --no-install) # idempotent; applies app.json changes
 # Xcode 27 rejects pod resource targets below iOS 15.
 grep -q "Xcode 27 rejects" "$APP/ios/Podfile" || ruby -e 'p=ARGV[0];s=File.read(p);s.sub!(/(:ccache_enabled => ccache_enabled\?\(podfile_properties\),\n    \)\n)/){$1+"    # Xcode 27 rejects pod resource targets below iOS 15.0.\n    installer.pods_project.targets.each { |t| t.build_configurations.each { |c| c.build_settings[%q(IPHONEOS_DEPLOYMENT_TARGET)] = %q(15.1) if c.build_settings[%q(IPHONEOS_DEPLOYMENT_TARGET)].to_f < 15.1 } }\n"};File.write(p,s)' "$APP/ios/Podfile"

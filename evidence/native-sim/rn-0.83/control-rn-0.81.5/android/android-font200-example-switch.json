@@ -1,0 +1,17 @@
+{
+ "name": "font200-example-switch",
+ "fontScale": 2,
+ "drags": 0,
+ "sizes": {
+  "Preference preview": {
+   "label": "Preference preview",
+   "visible": true,
+   "dp": "372x48"
+  },
+  "Info tone preview": {
+   "label": "Info tone preview",
+   "visible": true,
+   "dp": "372x48"
+  }
+ }
+}

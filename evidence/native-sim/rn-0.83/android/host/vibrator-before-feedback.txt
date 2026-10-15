@@ -1,0 +1,27 @@
+VibratorManagerService:
+  VibrationSettings:
+    vibrateOn = true
+    keyboardVibrationOn = true, default: true
+    vibrateInputDevices = false
+    VibrationIntensities:
+    VibrationConfig:
+      ignoreVibrationsOnWirelessCharger = false
+      requestVibrationParamsForUsages = [ALARM, RINGTONE, NOTIFICATION, COMMUNICATION_REQUEST]
+      requestVibrationParamsTimeoutMs = 50
+  VibrationScaler:
+    defaultVibrationAmplitude = 255
+  Vibrators:
+    Vibrator (id=1):
+      isVibrating = false
+      vibratorInfoLoadSuccessful = true
+      vibratorStateListener size = 0
+      VibratorInfo:
+  CurrentVibration:
+  NextVibration:
+  CurrentExternalVibration:
+  Recent vibrations:
+  Aggregated vibration history:
+  VibratorControlService:
+    isVibratorControllerRegistered = false
+    hasPendingVibrationParamsRequest = false
+    Vibration parameters update history:

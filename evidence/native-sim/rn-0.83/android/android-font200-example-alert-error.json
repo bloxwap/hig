@@ -1,0 +1,12 @@
+{
+ "name": "font200-example-alert-error",
+ "fontScale": 2,
+ "drags": 1,
+ "sizes": {
+  "Data unavailable": {
+   "label": "Data unavailable",
+   "visible": true,
+   "dp": "327x38"
+  }
+ }
+}

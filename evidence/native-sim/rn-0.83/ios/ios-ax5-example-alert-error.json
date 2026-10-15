@@ -1,0 +1,14 @@
+{
+  "drags" : 4,
+  "frames" : {
+    "Data unavailable" : {
+      "height" : 321.6666259765625,
+      "label" : "Data unavailable",
+      "type" : 48,
+      "value" : "",
+      "width" : 309
+    }
+  },
+  "name" : "ax5-example-alert-error",
+  "targetFound" : true
+}

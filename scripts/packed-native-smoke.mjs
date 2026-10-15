@@ -1,19 +1,24 @@
-import {verifyNativeReact,verifyExpoNativeModules} from './native-compatibility.mjs';
+import {verifyNativeReact,verifyExpoNativeModules,verifyDeclaredPeers} from './native-compatibility.mjs';
+import {nativeConsumerManifest,nativeProfiles} from './native-consumer.mjs';
 import {execFileSync} from 'node:child_process';
 import {mkdtempSync,writeFileSync,readFileSync,cpSync,readdirSync,statSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
-const dir=mkdtempSync(join(tmpdir(),'hig-native-consumer-'));
-const manifest=JSON.parse(readFileSync('fixtures/native/package.json','utf8'));
-for(const key of Object.keys(manifest.dependencies)){if(key.startsWith('@bloxwap/hig-'))delete manifest.dependencies[key];}
-manifest.type='commonjs';
+// --profile rn-0.81 (default: RN 0.81.5 / Expo 54) or rn-0.83 (RN 0.83.10 / Expo 55); see fixtures/native/profiles.json.
+const args=process.argv.slice(2);const profile=args[0]==='--profile'&&args[1]?args[1]:args.length?(()=>{throw Error('Usage: packed-native-smoke.mjs [--profile <name>]');})():'rn-0.81';
+const manifest=nativeConsumerManifest(profile);
+console.log(`Packed native consumer profile ${profile}: ${nativeProfiles[profile].stack}`);
+const dir=mkdtempSync(join(tmpdir(),`hig-native-consumer-${profile}-`));
 cpSync('fixtures/native',dir,{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/dist')&&!s.includes('/.expo')});
 writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
 const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')).map(n=>resolve('artifacts',n));
 execFileSync('npm',['install','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
-console.log('Native runtime versions',verifyNativeReact(dir));console.log('Expo native modules',verifyExpoNativeModules(dir));
+const runtime=verifyNativeReact(dir);console.log('Native runtime versions',runtime);console.log('Expo native modules',verifyExpoNativeModules(dir));
+// npm only warns on most peer conflicts in an Expo tree, so every declared HIG peer range must explicitly accept what was installed.
+console.log('Declared peers satisfied',verifyDeclaredPeers(dir));
+assert.equal(runtime.reactNative,manifest.dependencies['react-native'],`Consumer runs the ${profile} React Native version`);
 execFileSync('npm',['run','bundle','--','--max-workers','2'],{cwd:dir,stdio:'inherit'});
 // #64: native faces come from @bloxwap/hig-native-fonts with the generator's hashes; the web tokens package carries none.
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -27,5 +32,5 @@ assert.equal(walk(join(dir,'node_modules/@bloxwap/hig-tokens')).filter(p=>/\.(?:
 console.log('Packed native fonts: hashes match the generator manifest and Metro bundles the registered faces');
 writeFileSync(join(dir,'index.js'),readFileSync('fixtures/native/index-gesture.js'));
 execFileSync('npm',['run','bundle','--','--max-workers','2','--output-dir','dist-gesture'],{cwd:dir,stdio:'inherit'});
-console.log('Packed optional gesture-sheet consumer exported Android/iOS with real Gorhom/Reanimated/Worklets peers');
-console.log(`Packed native consumer exported both platforms from ${tarballs.length} independent tarballs`);
+console.log(`Packed optional gesture-sheet consumer (${profile}) exported Android/iOS with real Gorhom/Reanimated/Worklets peers`);
+console.log(`Packed native consumer (${profile}: ${nativeProfiles[profile].stack}) exported Android and iOS from ${tarballs.length} independent tarballs`);
