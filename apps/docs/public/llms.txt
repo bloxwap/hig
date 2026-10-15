@@ -1023,10 +1023,11 @@ The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-1
 | Group | Repositories | State |
 | --- | --- | --- |
 | Canonical | hig | Source of truth. npm publication is #56 and physical-device certification is #55 |
-| SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Merged and verified on HIG `0.1.0-candidate.sha7c67a07c` (#34) |
-| Product | monorepo | Pilot merged in #4515. #4522, #4523, #4525 (#33) and #4540 (#35) are approved and green but wait on the required human `signoff` |
-| Newly found UI gaps | agent-cli (#58), taptradetv (#59), bloxwap.github.io (#61) | Dated exceptions, each with a tracking issue |
-| Public page migrated | tapsiren (#60) | `workers/tapsiren` is classified as a public, brand-facing marketing page (tapsiren.com). [tapsiren#399](https://github.com/bloxwap/tapsiren/pull/399) merged and deployed: HIG tokens CSS, Bloxwap fonts and HIG Link/button on candidate `872906a9`, with a scoped drift check in its CI. The cyan product mark and favicon keep a dated exception |
+| SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Merged and verified (#34). Chart, SFX and Haptic moved to candidate `872906a9` in [chart#56](https://github.com/bloxwap/chart/pull/56), [sfx#52](https://github.com/bloxwap/sfx/pull/52) and [haptic#28](https://github.com/bloxwap/haptic/pull/28). Those PRs dropped the `legacy-peer-deps` setting, the nested Radix trees, the font bridges and the generated role file (#63, #65, #66). Hyperliquid and Font stay on `7c67a07c` |
+| Product | monorepo | Pilot merged in #4515. #4522, #4523 and #4525 (#33) and #4540 (#35) are approved and green, and wait on the required human `signoff`. #4540 was refreshed onto candidate `c32771dc` and drops the #62, #64 and #67 workarounds |
+| Docs site migrated | agent-cli (#58) | [agent-cli#47](https://github.com/bloxwap/agent-cli/pull/47) and [#48](https://github.com/bloxwap/agent-cli/pull/48) merged on candidate `872906a9`. The scoped drift check passes with no dated exceptions |
+| Product, partly migrated | taptradetv (#59) | Every app is classified: web is product UI, host is a broadcast/capture surface, and auction, contest, deck, capture and stream have no HIG runtime. In [taptradetv#188](https://github.com/bloxwap/taptradetv/pull/188), the `/sponsors` auction moved to HIG with a rollback flag. The rest of web and host have dated exceptions tracked in #100 |
+| Public pages migrated | tapsiren (#60), bloxwap.github.io (#61) | [tapsiren#399](https://github.com/bloxwap/tapsiren/pull/399) is merged and deployed to tapsiren.com; its mark and favicon colour is tracked in #101. [bloxwap.github.io#26](https://github.com/bloxwap/bloxwap.github.io/pull/26) uses only `--hig-*` roles in `styles.css`. Its package copies are committed because Pages has no build step (dated exceptions) |
 | No HIG runtime | icons (asset source), dimension-adapters (no UI), .github (brand content), .github-private (no UI) | Decided; no dependency added |
 
 ## Governance
@@ -1202,9 +1203,9 @@ First run against current `main` heads on 2026-10-15, scanning `apps/docs` (auto
 
 - hyperliquid and haptic pass.
 - sfx flags the brand-mark fill in `lib/og-card.tsx`. That needs an exception like HIG's own brand marks.
-- chart flags `styles/hig-roles.generated.css`, tracked upstream in #66; [chart#54](https://github.com/bloxwap/chart/pull/54) deletes it.
+- chart flagged `styles/hig-roles.generated.css` (#66). [chart#56](https://github.com/bloxwap/chart/pull/56) deleted it.
 - font flags its own font binaries, which belong under `canonical`.
-- agent-cli flags `vendor/hig/tokens.css`, its import, and committed TTFs (#58).
+- agent-cli flagged `vendor/hig/tokens.css`, its import, and committed TTFs (#58). [agent-cli#47](https://github.com/bloxwap/agent-cli/pull/47) removed them, and its drift check now passes with no exceptions.
 
 ## 4. Validate and record
 
@@ -1377,7 +1378,7 @@ Source: docs/migration/native.md
 
 # Native application pilot (#35)
 
-Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.sha7c67a07c`, with one HIG feedback controller and 15 duplicate fonts removed. It was verified on the iOS Simulator and Android emulator, but it is not merged yet (it needs the required human `signoff`). Physical-device certification is tracked in #55. HIG is certified on React Native 0.83.10 / Expo SDK 55 (#68), but the app needs a candidate with those peer ranges, and on Android it must pass `direction` to `HIGProvider` until #86 is fixed. No tactile, audible or VoiceOver observation is claimed.
+Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.shac32771dc`, with one HIG feedback controller and 15 duplicate fonts removed. It loads the faces from `@bloxwap/hig-native-fonts` (#64) and passes translated `messages` (#62). It also drops the local Switch, Alert and Text workarounds (#67), and passes `direction` to `HIGProvider` on Android (#86). A wrapper sets the busy Button's accessible name until #94 is fixed. It was verified on the iOS Simulator and Android emulator, but it is not merged yet (it needs the required human `signoff`). Physical-device certification is tracked in #55. HIG is certified on React Native 0.83.10 / Expo SDK 55 (#68). No tactile, audible or VoiceOver observation is claimed.
 
 Pilot: font registration → dp/sRGB token mapping → amount/selection/review sheet → visible async outcome → independent feedback settings. The Expo gallery proves candidate packaging and contract examples, not the owning app's native build.
 
@@ -1443,7 +1444,7 @@ Source: docs/migration/sdk-docs.md
 
 # Five SDK documentation pilots (#34)
 
-Owner: each SDK repository's docs maintainers (named assignment in #57). Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. Status on 2026-10-15: all five sites consume the vendored HIG `0.1.0-candidate.sha7c67a07c` packages. Each was merged after independent verification: [hyperliquid#180](https://github.com/bloxwap/hyperliquid/pull/180), [chart#53](https://github.com/bloxwap/chart/pull/53), [font#11](https://github.com/bloxwap/font/pull/11), [sfx#50](https://github.com/bloxwap/sfx/pull/50) and [haptic#26](https://github.com/bloxwap/haptic/pull/26). Measurements and residual exceptions are in each PR's evidence folder and in `planning/adoption.json`.
+Owner: each SDK repository's docs maintainers (named assignment in #57). Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. Status on 2026-10-15: all five sites consume vendored HIG packages. Each was merged after independent verification: [hyperliquid#180](https://github.com/bloxwap/hyperliquid/pull/180), [chart#53](https://github.com/bloxwap/chart/pull/53), [font#11](https://github.com/bloxwap/font/pull/11), [sfx#50](https://github.com/bloxwap/sfx/pull/50) and [haptic#26](https://github.com/bloxwap/haptic/pull/26), all on `0.1.0-candidate.sha7c67a07c`. Chart, SFX and Haptic then moved to `0.1.0-candidate.sha872906a9` in [chart#56](https://github.com/bloxwap/chart/pull/56), [sfx#52](https://github.com/bloxwap/sfx/pull/52) and [haptic#28](https://github.com/bloxwap/haptic/pull/28). That refresh removed the workarounds for #63 (`legacy-peer-deps` and nested Radix trees; the overlay-free recipe entries are used instead), #65 (font bridges) and #66 (chart's generated role file). Hyperliquid and Font stay on `7c67a07c` until their next refresh. Measurements and residual exceptions are in each PR's evidence folder and in `planning/adoption.json`.
 
 | Repository | Shared presentation | Distinctive feature to preserve | Remaining owner validation |
 | --- | --- | --- | --- |
