@@ -76,3 +76,39 @@ it('native button keeps adjacent text children in one wrapping Text run (iOS Sim
  const icon=mount(React.createElement(Button,null,'Copy ',3,React.createElement(Text,{testID:'icon'},'*'),' items'));
  expect(icon.findAllByType(Text).map(t=>t.props.children)).toEqual(['Copy 3','*',' items']);
 });
+it('native search status region never renders an empty accessibility element (iOS Simulator audit regression)',()=>{
+ const {Text}=require('react-native');const {Search}=require('../../packages/native/src/navigation');
+ const status=results=>{const tree=mount(React.createElement(Search,{query:'b',onQueryChange:jest.fn(),results}));return tree.findAllByType(Text).find(t=>t.props.accessibilityLiveRegion==='polite').props.children;};
+ expect(status([{id:'btc',label:'Bitcoin (BTC)',onSelect:jest.fn()}])).toBe('1 result');
+ expect(status([{id:'a',label:'A',onSelect:jest.fn()},{id:'b',label:'B',onSelect:jest.fn()}])).toBe('2 results');
+ expect(status([])).toBe('No results');
+});
+it('native switch exposes one labeled 48dp row target and toggles from the row (Android emulator 47x27dp regression)',()=>{
+ const {Switch}=require('../../packages/native/src/switch');const {StyleSheet}=require('react-native');const change=jest.fn();
+ const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:change}));
+ const rows=tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function');
+ expect(rows).toHaveLength(1);const row=rows[0];
+ expect(row.props.accessibilityLabel).toBe('Sound');expect(row.props.accessibilityState).toEqual({checked:false,disabled:false});
+ expect(StyleSheet.flatten(typeof row.props.style==='function'?row.props.style({pressed:false}):row.props.style).minHeight).toBeGreaterThanOrEqual(48);
+ const hidden=tree.findAll(n=>n.props.importantForAccessibility==='no-hide-descendants'&&n.props.accessibilityElementsHidden===true);
+ expect(hidden.length).toBeGreaterThan(0);expect(hidden[0].props.pointerEvents).toBe('none');
+ act(()=>row.props.onPress());expect(change).toHaveBeenCalledWith(true);
+});
+it('native slider reserves a 48dp touch target (Android emulator 18dp SeekBar regression)',()=>{
+ const {Slider}=require('../../packages/native/src/slider');const {StyleSheet}=require('react-native');
+ const tree=mount(React.createElement(Slider,{label:'Volume',value:20}));const slider=tree.findAll(n=>n.props.accessibilityRole==='adjustable'&&n.props.onValueChange)[0];
+ expect(StyleSheet.flatten(slider.props.style).minHeight).toBe(48);
+});
+it('native provider follows the OS RTL layout direction by default (Android emulator Arabic-locale regression)',()=>{
+ // With an Arabic per-app locale I18nManager.isRTL was true, yet HIG Stack/Inline forced direction:"ltr".
+ jest.isolateModules(()=>{
+  const R=require('react');const {create,act:run}=require('react-test-renderer');const RN=require('react-native');
+  const original=RN.I18nManager.isRTL;Object.defineProperty(RN.I18nManager,'isRTL',{value:true,configurable:true});
+  try{const {HIGProvider}=require('../../packages/native/src/provider');const {Stack}=require('../../packages/native/src/surface');
+   const direction=element=>{let r;run(()=>{r=create(element);});const value=RN.StyleSheet.flatten(r.root.findAll(n=>n.type===RN.View)[0].props.style).direction;run(()=>r.unmount());return value;};
+   expect(direction(R.createElement(HIGProvider,null,R.createElement(Stack)))).toBe('rtl');
+   expect(direction(R.createElement(Stack))).toBe('rtl');
+   expect(direction(R.createElement(HIGProvider,{direction:'ltr'},R.createElement(Stack)))).toBe('ltr');
+  }finally{Object.defineProperty(RN.I18nManager,'isRTL',{value:original,configurable:true});}
+ });
+});

@@ -10,6 +10,8 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -65,6 +67,17 @@ public class NativeVerificationTest {
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     ctx.startActivity(intent);
     settle(900);
+  }
+
+  /** Injects a real touch tap (as a finger would) so the IME opens like a user tap. */
+  private void tap(int x, int y) {
+    long now = SystemClock.uptimeMillis();
+    MotionEvent down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, x, y, 0);
+    down.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+    ua.injectInputEvent(down, true);
+    MotionEvent up = MotionEvent.obtain(now, now + 60, MotionEvent.ACTION_UP, x, y, 0);
+    up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+    ua.injectInputEvent(up, true);
   }
 
   private void settle(long ms) {
@@ -288,6 +301,7 @@ public class NativeVerificationTest {
 
   @Test
   public void overlayFocusAndBack() throws Exception {
+    String prefix = arg("prefix", "android");
     JSONArray results = new JSONArray();
     String[][] cases = {{"Dialog", "Open review order", "Review order"}, {"AlertDialog", "Open confirm cancellation", "Confirm cancellation"}, {"Sheet", "Open order details", "Order details"}, {"Menu", "Market actions", "Market actions"}};
     for (String[] c : cases) {
@@ -302,17 +316,17 @@ public class NativeVerificationTest {
       r.put("openedCloseVisible", close != null);
       r.put("windowsWhileOpen", roots().size());
       r.put("focusAfterOpen", focusInfo());
-      write("trees/android-overlay-" + c[0] + ".json", tree().toString(1));
-      capture("android-overlay-" + c[0] + "-open");
+      write("trees/" + prefix + "-overlay-" + c[0] + ".json", tree().toString(1));
+      capture(prefix + "-overlay-" + c[0] + "-open");
       ua.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK);
       settle(900);
       r.put("closedByBack", find(n -> "Close".contentEquals(label(n))) == null);
       r.put("appStillForeground", find(n -> label(n).equals("Native HIG gallery")) != null);
       r.put("focusAfterBack", focusInfo());
-      capture("android-overlay-" + c[0] + "-after-back");
+      capture(prefix + "-overlay-" + c[0] + "-after-back");
       results.put(r);
     }
-    write("android-overlays.json", results.toString(1));
+    write(prefix + "-overlays.json", results.toString(1));
   }
 
   @Test
@@ -321,7 +335,7 @@ public class NativeVerificationTest {
     JSONObject r = new JSONObject();
     AccessibilityNodeInfo first = waitFor(n -> label(n).equals("Verification row 1"), 6000);
     r.put("firstRowVisible", first != null);
-    AccessibilityNodeInfo scroller = waitFor(n -> n.isScrollable() && find(n, x -> label(x).startsWith("Verification row")) != null, 4000);
+    AccessibilityNodeInfo scroller = waitFor(n -> n.isScrollable() && find(n, x -> label(x).startsWith("Verification row ")) != null, 4000);
     r.put("scrollableFound", scroller != null);
     JSONArray samples = new JSONArray();
     long start = SystemClock.uptimeMillis();
@@ -329,7 +343,7 @@ public class NativeVerificationTest {
       boolean ok = scroller.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
       SystemClock.sleep(120);
       if (i % 8 == 7) {
-        AccessibilityNodeInfo visible = find(n -> label(n).startsWith("Verification row") && n.isVisibleToUser());
+        AccessibilityNodeInfo visible = find(n -> label(n).startsWith("Verification row ") && n.isVisibleToUser());
         samples.put(new JSONObject().put("afterScrolls", i + 1).put("performed", ok).put("firstVisible", visible == null ? JSONObject.NULL : label(visible)));
       }
     }
@@ -364,12 +378,17 @@ public class NativeVerificationTest {
     JSONArray results = new JSONArray();
     for (String component : new String[] {"Field", "TradeEntry"}) {
       open("component=" + component + "&state=default");
-      AccessibilityNodeInfo input = waitFor(AccessibilityNodeInfo::isEditable, 5000);
+      // Use the lowest visible amount field (TradeEntry in the scroll view) so the keyboard would cover it.
+      waitFor(AccessibilityNodeInfo::isEditable, 5000);
+      AccessibilityNodeInfo input = null;
+      for (AccessibilityNodeInfo root : roots()) input = lowestEditable(root, input);
       JSONObject r = new JSONObject().put("component", component).put("inputFound", input != null);
       if (input != null) {
-        input.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
-        input.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-        settle(1800);
+        Rect before = new Rect();
+        input.getBoundsInScreen(before);
+        r.put("inputBoundsBeforeTap", before.flattenToString());
+        tap(before.centerX(), before.centerY());
+        settle(2000);
         input.refresh();
         Rect ime = null;
         for (AccessibilityWindowInfo w : ua.getWindows()) if (w.getType() == AccessibilityWindowInfo.TYPE_INPUT_METHOD) { ime = new Rect(); w.getBoundsInScreen(ime); }
@@ -384,6 +403,18 @@ public class NativeVerificationTest {
       results.put(r);
     }
     write("android-keyboard.json", results.toString(1));
+  }
+
+  private AccessibilityNodeInfo lowestEditable(AccessibilityNodeInfo n, AccessibilityNodeInfo best) {
+    if (n == null) return best;
+    if (n.isEditable() && n.isVisibleToUser()) {
+      Rect a = new Rect(), b = new Rect();
+      n.getBoundsInScreen(a);
+      if (best != null) best.getBoundsInScreen(b);
+      if (best == null || a.top > b.top) best = n;
+    }
+    for (int i = 0; i < n.getChildCount(); i++) best = lowestEditable(n.getChild(i), best);
+    return best;
   }
 
   @Test

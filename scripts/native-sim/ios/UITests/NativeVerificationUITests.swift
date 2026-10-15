@@ -101,9 +101,13 @@ final class NativeVerificationUITests: XCTestCase {
   func testSliderAccessibilityActions() throws {
     open("component=Slider&state=default")
     var r: [String: Any] = [:]
-    let slider = app.sliders["Volume preview"]
+    // RN exposes the slider host view as the accessibility element; record how XCUITest types it.
+    let candidates = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Volume preview'"))
+    let slider = candidates.firstMatch
     r["found"] = slider.waitForExistence(timeout: 5)
     guard slider.exists else { try write("ios-slider.json", r); return }
+    r["elementType"] = slider.elementType == .slider ? "slider" : "rawValue \(slider.elementType.rawValue)"
+    r["traits"] = ((try? slider.snapshot()) as AnyObject?)?.value(forKey: "traits") ?? NSNull()
     r["initialValue"] = slider.value as? String ?? ""
     r["initialLabel"] = label("Volume preview: ") ?? ""
     var steps: [[String: Any]] = []
@@ -118,7 +122,7 @@ final class NativeVerificationUITests: XCTestCase {
     r["steps"] = steps
     try capture("ios-slider-after-actions")
     open("component=Slider&state=disabled")
-    let disabled = app.sliders["Volume preview"]
+    let disabled = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Volume preview'")).firstMatch
     if disabled.waitForExistence(timeout: 5) {
       let before = label("Volume preview: ") ?? ""
       let result = AXAdjust.perform(disabled, increment: true)
@@ -140,7 +144,10 @@ final class NativeVerificationUITests: XCTestCase {
       let close = app.buttons["Close"]
       r["closeVisible"] = close.waitForExistence(timeout: 5)
       r["titleVisible"] = app.staticTexts[title].exists
-      r["titleIsHeader"] = app.staticTexts.matching(NSPredicate(format: "label == %@", title)).allElementsBoundByIndex.contains { $0.elementType == .staticText && $0.debugDescription.contains("Header") }
+      // UIAccessibilityTraitHeader is 1 << 16 in the snapshot's private traits bitmask.
+      let traits = ((try? app.staticTexts[title].snapshot()) as AnyObject?)?.value(forKey: "traits") as? UInt64
+      r["titleTraits"] = traits.map { NSNumber(value: $0) } ?? NSNull()
+      r["titleIsHeader"] = traits.map { $0 & (1 << 16) != 0 } ?? NSNull()
       r["galleryHeadingReachableWhileOpen"] = app.staticTexts["Native HIG gallery"].exists && app.staticTexts["Native HIG gallery"].isHittable
       try tree("ios-overlay-\(component)")
       try capture("ios-overlay-\(component)-open")
@@ -197,8 +204,10 @@ final class NativeVerificationUITests: XCTestCase {
     var results: [[String: Any]] = []
     for component in ["Field", "TradeEntry"] {
       open("component=\(component)&state=default")
-      let field = app.textFields.firstMatch
-      var r: [String: Any] = ["component": component, "inputFound": field.waitForExistence(timeout: 5)]
+      // The lowest amount field (TradeEntry inside the scroll view) is the one a keyboard would cover.
+      _ = app.textFields.firstMatch.waitForExistence(timeout: 5)
+      let field = app.textFields.allElementsBoundByIndex.filter { $0.isHittable }.max { $0.frame.minY < $1.frame.minY } ?? app.textFields.firstMatch
+      var r: [String: Any] = ["component": component, "inputFound": field.exists, "inputFrameBeforeTap": NSCoder.string(for: field.frame)]
       if field.exists {
         field.tap()
         let keyboard = app.keyboards.firstMatch
