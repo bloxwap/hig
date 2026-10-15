@@ -235,21 +235,37 @@
       "name": "agent-cli",
       "applicability": "CLI package and Fumadocs docs site (apps/docs)",
       "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
-      "higVersion": "none (copied HIG token CSS)",
-      "status": "not migrated: docs copy vendor/hig/tokens.css and Bloxwap TTFs",
-      "mergedPRs": [],
+      "higVersion": "0.1.0-candidate.sha19c75619",
+      "status": "migrated (docs consume vendored HIG packages)",
+      "mergedPRs": [
+        "https://github.com/bloxwap/agent-cli/pull/47"
+      ],
       "openPRs": [],
-      "validation": "Scoped drift check on 2026-10-15 flags vendor/hig import, copied tokens and committed TTFs",
+      "validation": "PR CI green on 35b120f, merged as 778c8f5 (docs build 16 pages/597 links/13 cards at /agent-cli, docs:check, scoped drift pass, Playwright docs:smoke 10/10); drift 6 violations to 0; 9 copied files and 892,964 B of TTFs removed; emitted CSS +8,679 B, JS +5,929 B (evidence/hig/docs-package-migration/)",
       "exceptions": [
         {
-          "scope": "apps/docs",
-          "reason": "docs site created 2026-10-14 after the inventory; migration not started",
+          "scope": "vendor/bloxwap-hig/*.tgz",
+          "reason": "HIG not on npm; checksummed candidate tarballs",
           "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/58"
+          "tracking": "https://github.com/bloxwap/hig/issues/56"
+        },
+        {
+          "scope": "HIG font-family bridge in apps/docs/app/global.css",
+          "reason": "HIG control CSS uses literal family names the Next loader never registers",
+          "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/65"
+        },
+        {
+          "scope": "@radix-ui/react-dropdown-menu and react-tooltip in apps/docs",
+          "reason": "installed only so @bloxwap/hig-react/recipes can resolve its overlay import; tree-shaken from the bundle",
+          "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
+          "expires": "2027-01-15",
+          "tracking": "https://github.com/bloxwap/hig/issues/63"
         }
       ],
-      "remaining": "Migrate to HIG packages (#58)",
+      "remaining": "Drop Radix peers after #63 and the font bridge after #65; swap vendored tarballs for npm (#56)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/agent-cli",
       "exceptionExpires": "2027-01-15"
@@ -546,13 +562,15 @@
       "name": "agent-cli docs",
       "repository": "agent-cli",
       "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
-      "status": "not migrated",
-      "mergedPRs": [],
+      "status": "migrated",
+      "mergedPRs": [
+        "https://github.com/bloxwap/agent-cli/pull/47"
+      ],
       "openPRs": [],
-      "validatedVersion": null,
-      "validation": "drift check flags copied HIG CSS",
-      "rollback": "n/a",
-      "remaining": "#58",
+      "validatedVersion": "0.1.0-candidate.sha19c75619",
+      "validation": "PR CI green on 35b120f, merged as 778c8f5 (docs build 16 pages/597 links/13 cards at /agent-cli, docs:check, scoped drift pass, Playwright docs:smoke 10/10); drift 6 violations to 0; 9 copied files and 892,964 B of TTFs removed; emitted CSS +8,679 B, JS +5,929 B (evidence/hig/docs-package-migration/)",
+      "rollback": "revert the squash merge (restores vendor/hig, TTFs and the previous lockfile)",
+      "remaining": "#63, #65, #56",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/governance/new-repository.md"
     }
