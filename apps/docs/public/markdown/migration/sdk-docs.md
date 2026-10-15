@@ -1,6 +1,6 @@
 # Five SDK documentation pilots (#34)
 
-Owner: each SDK repository's docs maintainers; assignment pending. Exception review: 2026-11-13. Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. No owning-repo PR/push/build is performed in this task.
+Owner: each SDK repository's docs maintainers (named assignment in #57). Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. Status on 2026-10-15: all five sites consume the vendored HIG `0.1.0-candidate.sha7c67a07c` packages. Each was merged after independent verification: [hyperliquid#180](https://github.com/bloxwap/hyperliquid/pull/180), [chart#53](https://github.com/bloxwap/chart/pull/53), [font#11](https://github.com/bloxwap/font/pull/11), [sfx#50](https://github.com/bloxwap/sfx/pull/50) and [haptic#26](https://github.com/bloxwap/haptic/pull/26). Measurements and residual exceptions are in each PR's evidence folder and in `planning/adoption.json`.
 
 | Repository | Shared presentation | Distinctive feature to preserve | Remaining owner validation |
 | --- | --- | --- | --- |

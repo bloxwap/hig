@@ -1,12 +1,13 @@
 {
   "observedAt": "2026-10-14",
-  "scope": "HIG issues 19\u201336; Linux software verification only; no npm publication/tags/releases/production deployments or owning-repository writes",
+  "scope": "HIG issues 19–36; Linux software verification only; no npm publication/tags/releases/production deployments or owning-repository writes",
   "branch": "hig/gaps-b",
   "fullySatisfied": [
     21,
     25,
     27,
-    29
+    29,
+    34
   ],
   "issues": [
     {
@@ -201,11 +202,9 @@
     },
     {
       "issue": 34,
-      "status": "partial",
+      "status": "satisfied",
       "proof": "docs/migration/sdk-docs.md; migrations/; planning/adoption.json",
-      "remainingBlockers": [
-        "Each Hyperliquid/Chart/Font/SFX/Haptic docs owner must provide its migration PR, production build, preserved distinctive demo, asset-path/accessibility checks and source/bundle deltas. HIG migration kits do not constitute those migrations; parallel repo agents own four of these."
-      ]
+      "remainingBlockers": []
     },
     {
       "issue": 35,
@@ -214,7 +213,7 @@
       "remainingBlockers": [
         "Owning mobile-app migrations, native dependency/autolinking changes, real iOS/Android builds, duplicate removal and size/latency measurements remain outside this worktree.",
         "Physical Dynamic Type, RTL/long translations, VoiceOver/TalkBack, reduced motion and observed sound/haptics require devices; no hardware observations are fabricated.",
-        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+        "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user’s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence."
       ]
     },
     {
@@ -233,5 +232,50 @@
     "environment": "iOS Simulator (iPhone 16 Pro, iOS 26.5, Xcode 27.2) and Android emulator (Medium_Phone_API_35, Android 15 arm64 Google Play image) running Release builds of the packed candidate 0.1.0-candidate.sha1172b6a3",
     "evidence": "evidence/native-sim/native-sim.json",
     "pr": "https://github.com/bloxwap/hig/pull/53"
+  },
+  "closeout": {
+    "date": "2026-10-15",
+    "closed": [
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      34
+    ],
+    "open": [
+      33,
+      35,
+      36
+    ],
+    "followUps": [
+      "https://github.com/bloxwap/hig/issues/55",
+      "https://github.com/bloxwap/hig/issues/56",
+      "https://github.com/bloxwap/hig/issues/57",
+      "https://github.com/bloxwap/hig/issues/58",
+      "https://github.com/bloxwap/hig/issues/59",
+      "https://github.com/bloxwap/hig/issues/60",
+      "https://github.com/bloxwap/hig/issues/61",
+      "https://github.com/bloxwap/hig/issues/62",
+      "https://github.com/bloxwap/hig/issues/63",
+      "https://github.com/bloxwap/hig/issues/64",
+      "https://github.com/bloxwap/hig/issues/65",
+      "https://github.com/bloxwap/hig/issues/66",
+      "https://github.com/bloxwap/hig/issues/67",
+      "https://github.com/bloxwap/hig/issues/68",
+      "https://github.com/bloxwap/hig/issues/69",
+      "https://github.com/bloxwap/hig/issues/70",
+      "https://github.com/bloxwap/hig/issues/71"
+    ],
+    "source": "planning/issue-coverage.json closeout entries"
   }
 }

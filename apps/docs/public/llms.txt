@@ -919,19 +919,220 @@ Source: docs/governance/adoption.md
 
 # Organization adoption and governance (#36)
 
-The active-repo matrix is `planning/adoption.json`, dated 2026-10-13. It includes empty/no-UI/tooling repositories as well as SDK docs and product targets. A role owner and expiry are explicit; personal/team assignment and owning PR URLs remain pending, never fabricated. Product monorepo is an explicit inaccessible external target, even though it is absent from the visible org repo list.
+The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-15 against `planning/org-inventory-2026-10-15.json`: the 15 repositories visible to `gh repo list bloxwap`, none archived. The 2026-10-13 inventory is kept for history. Each row records:
 
-Every new repo chooses runtime, docs/marketing, brand/content-only or no-UI applicability. No-UI repos reference principles/content/brand rules without adding React/native/audio dependencies. Runtime repos use individual platform imports and CI package/behavior checks. SDK demos stay owned by their SDK. HIG owns token and component contracts; Font/SFX/Haptic/Chart own their engines/assets.
+- applicability
+- owner (a maintainer role until #57 records named owners)
+- HIG version
+- merged and open PRs
+- validation
+- status
+- remaining work
+- dated exceptions, each with scope, reason, owner, an expiry no more than 180 days ahead, and a tracking issue
 
-Review/admission requires actual repeated usage evidence, minimal API, both platform mapping or reasoned alternative, complete states, accessible labels/focus/back/large text, muted operation, tests/examples/docs and migration/rollback. Remove a component only after consumers are inventoried and a deprecation window is observed. New palette/primitive copies are blocked by scoped anti-drift checks with owner/reason/expiry exceptions.
+`tests/docs.test.ts` fails when a visible repository has no row or when a row is missing these fields. Product surfaces (bloxwap.app, bloxwap.pro, bloxwap.com, the React Native app) and the five SDK docs sites have their own rows under `surfaces`.
 
-Semver: token/type/geometry changes, action timing, accessible behavior and semantic cue maps are API changes. Breaking behavior requires a major; new compatible roles/exports a minor; verified fixes a patch. Deprecations retain old exports for a documented migration window and provide a codemod/checklist. Candidate artifacts and docs share commit provenance; stable publication stays gated by missing source audit/device/adoption evidence and is prohibited by this task.
+## Status · 2026-10-15
 
-Completion review: all 36 issues need an owning implementation/validation link or explicit blocker; catalog entries need docs/code/platform/test coverage; source/bundle deltas must be measured; all active rows must have owner, version, status, residuals and dated exceptions. This matrix cannot be called migrated until owning-repo changes and device checks exist.
+| Group | Repositories | State |
+| --- | --- | --- |
+| Canonical | hig | Source of truth. npm publication is #56 and physical-device certification is #55 |
+| SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Merged and verified on HIG `0.1.0-candidate.sha7c67a07c` (#34) |
+| Product | monorepo | Pilot merged in #4515. #4522, #4523, #4525 (#33) and #4540 (#35) are approved and green but wait on the required human `signoff` |
+| Newly found UI gaps | agent-cli (#58), taptradetv (#59), tapsiren (#60), bloxwap.github.io (#61) | Dated exceptions, each with a tracking issue |
+| No HIG runtime | icons (asset source), dimension-adapters (no UI), .github (brand content), .github-private (no UI) | Decided; no dependency added |
 
-## Inventory refresh · 2026-10-13
+## Governance
 
-`planning/org-inventory-2026-10-13.json` records all active repositories visible to the current authenticated token; `planning/adoption.json` assigns an applicability and dated exception to each. This refresh adds tapsiren (workers/data services), taptradetv (product UI), and private organization profile content. Previously inaccessible product source is now readable; it is not copied into public docs. Named maintainers still need to accept ownership and provide migration PR/build/baseline evidence. An inventory decision or migration kit does not establish production adoption.
+- **Ownership, review, admission, removal, platform support and product exceptions:** see the contribution chapter (`docs/governance/contributing.md`).
+- **Release, semver and deprecation:** see the release chapter (`docs/governance/release.md`).
+- **Setting up and upgrading a repository** without copying component folders, palettes, fonts or feedback engines: see `docs/governance/new-repository.md`.
+- **Anti-drift:** `scripts/drift.mjs` enforces it here and in adopting repositories with `--root` and a `hig-drift.json`.
+
+## Completion review
+
+- Every issue needs an owning implementation and validation link, or an explicit linked follow-up. See `planning/issue-coverage.md` for the per-issue state.
+- Catalog entries need docs, code, platform and test coverage.
+- Source and bundle deltas must be measured in the owning repository.
+- A matrix row is "migrated" only when its owning PR is merged and its validation is linked. Open PRs are recorded as in progress, never as migrated.
+- Physical hardware results are never inferred from simulator, emulator or browser evidence.
+
+
+## Contribution, ownership and admission · HIG 0.1.0
+Source: docs/governance/contributing.md
+
+# Contribution, ownership and admission · HIG 0.1.0
+
+Issue #36. This chapter sets out how HIG stays the one maintained design system for Bloxwap. It covers who owns what, how changes are reviewed, how components enter and leave the catalog, which platforms are supported, and how a product can justify an exception. Release, semver and deprecation rules are in the release chapter. Setting up and upgrading a repository is covered in the new-repository chapter.
+
+## Canonical ownership
+
+| Area | Canonical owner | Others may |
+| --- | --- | --- |
+| Semantic tokens (colour roles, space, radius, type, motion, density), native colour spaces, contrast pairs | `bloxwap/hig` → `@bloxwap/hig-tokens` | Map roles to host variables with `var()`. They may not redefine literal values. |
+| Component contracts, DOM and React Native renderers, recipes, the semantic feedback contract | `bloxwap/hig` → `@bloxwap/hig-contracts`, `-react`, `-native`, `-feedback` | Compose components and override layout in context. They may not fork a primitive's paint or geometry. |
+| Font sources, families and web loaders | `bloxwap/font` → `@bloxwap/font` | HIG generates pinned native faces from Font releases. Consumers install fonts and never commit binaries. |
+| Sound recipes and the Web Audio engine | `bloxwap/sfx` | HIG owns the cue mapping and preferences, and exports approved WAV cues for native. |
+| Haptic presets and the web engine | `bloxwap/haptic` | HIG owns the RN adapter and the capability matrix. |
+| Chart engine | `bloxwap/chart` | HIG owns chart theming and the accessible non-canvas alternative. |
+| Product business logic, routing and data | The owning product repository | HIG components never import wallet, network or trading code. |
+| Brand marks | `bloxwap/hig` brand component (pinned from the Font SVG) | Use the component. Exact mark fills need a dated exception. |
+
+The organization adoption matrix (`planning/adoption.json`) records the owner, applicability, HIG version, merged PRs, status and dated exceptions for each repository and product surface.
+
+## Contribution and review criteria
+
+Every HIG pull request must:
+
+1. **Link its issue** (`Part of #N` or `Closes #N`) and state its intent, the states it affects and its platform mapping.
+2. **Change source and generated artifacts together**, then run `npm ci && npm run check` (build, lint, generation drift, typecheck, web and native tests). Also run the smokes relevant to the change: `smoke:ssr`, `smoke:packed`, `smoke:packed-native`, `smoke:packed-boundaries`, `smoke:packed-examples`, `examples:check` and `quality`.
+3. **Cover behaviour on both renderers**, or record the platform decision and its supported alternative. Include accessible names, roles and states, keyboard and focus, native back, large text and RTL, and muted operation (sound and haptics off) without losing essential feedback.
+4. **Label evidence precisely**: automated, browser, iOS Simulator, Android emulator or physical device. A mock, simulator or emulator never proves physical sound, haptics, VoiceOver or display output.
+5. **List the checks that were not run**, upstream gaps, rollout and rollback. Breaking changes follow the release chapter.
+6. **Pass the scoped anti-drift check** (`node scripts/drift.mjs`, run by `npm run quality` and tests). New exceptions follow the exception policy below.
+
+A maintainer reviews against the same list. A PR that only updates screenshots or baselines must say why the visual change is intended.
+
+## Component admission
+
+A component or recipe enters the catalog only when all of the following hold:
+
+- It is used repeatedly in at least two Bloxwap surfaces, or one product surface plus an SDK docs site, and the inventory (`planning/catalog.json`) cites that usage.
+- It has a minimal API that composes existing primitives, with no wallet, network or trading dependencies and no unrelated imports. The per-entry export and boundary smokes enforce this.
+- It has a React DOM renderer and either a React Native renderer or a documented native alternative, and the platform matrix is updated.
+- It has a complete state matrix: focus, pressed, busy/disabled, error, empty, long text, large text, reduced motion, and feedback disabled where relevant. It also has catalog examples that typecheck in the packed consumers.
+- It is documented: a usage chapter, an API reference, accessibility notes and a migration note for each fork it replaces.
+
+## Component removal
+
+1. Inventory every consumer with org-wide code search and the adoption matrix.
+2. Deprecate the component in a minor release. Name the replacement, provide a codemod or checklist, and keep the export working for at least one minor release and 30 days.
+3. Open removal PRs in each consuming repository, or record dated exceptions for them.
+4. Remove the component in the next major release and record the change in the changelog and the matrix.
+
+## Platform support policy
+
+| Platform | Supported (tested in CI or recorded evidence) | Notes |
+| --- | --- | --- |
+| React DOM | React 19.2; Vite, SSR and Next 16.4 (webpack) packed consumers; Chromium, Firefox and WebKit | Other bundler or Next versions need checks in the host |
+| React Native | React 19.1, RN 0.81.5, Expo 54, Metro; iOS Simulator (iOS 26.5) and Android emulator (API 35) gallery runs | RN 0.83 is not certified yet (#68). Physical devices are pending (#55) |
+| Tokens only | Plain CSS, Tailwind through host config, typed tokens | No React, RN or audio peers |
+| Feedback | Web: `@bloxwap/sfx` and `@bloxwap/haptic`. Native: Expo audio and haptics adapters | Essential outcomes must never depend on sound or haptics |
+
+Support only changes in a minor or major release. Each change updates `docs/architecture/platform-matrix.md`, the packed smokes and this table together.
+
+## Justified product exceptions
+
+A product may differ from HIG only through a recorded exception. Silent forks are not allowed.
+
+- **Scope:** an exact path or folder prefix, and a single anti-drift rule (`obsolete-import`, `copied-palette`, `copied-token-definition`, `copied-primitive-css` or `copied-font-binary`).
+- **Required fields:** `owner` (an accountable role or person), `reason` (the user or product need, or the rollback dependency) and `expires` (`YYYY-MM-DD`, at most 180 days ahead).
+- **Where:** HIG's own exceptions go in `planning/drift-exceptions.json`. An adopting repository keeps its exceptions in its own `hig-drift.json`. The adoption matrix links to them.
+- **Review:** the check fails on expired exceptions and on exceptions without an owner or reason, and warns about unused ones. Renewing an exception needs a new reason and owner approval. Repeated exceptions for the same need are a signal to propose a HIG change through the admission criteria.
+
+Intentional density differences, such as compact Pro versus the comfortable touch app, are HIG density modes. They are not exceptions.
+
+## Scoped anti-drift checks
+
+`scripts/drift.mjs` has no dependencies and checks only files tracked in git under the configured `paths`. Paths listed under `canonical` are exempt from the copy rules.
+
+| Rule | Fails when |
+| --- | --- |
+| `obsolete-import` | Code imports a retired fork (`@workspace/tokens`, `@workspace/ui`, `@workspace/ui-native`, plus repository-specific `obsoleteImports`) or a copied `vendor/hig/` or `styles/hig/` folder |
+| `copied-palette` | Code hard-codes the Bloxwap brand hexes owned by `@bloxwap/hig-tokens` |
+| `copied-token-definition` | A stylesheet assigns a literal value to a `--hig-*` token. Remapping one role to another with `var()` is allowed |
+| `copied-primitive-css` | A bare `.hig-*` selector sets the primitive's paint or geometry (background, border, radius or min-height). Contextual layout overrides are allowed |
+| `copied-font-binary` | A `.ttf`, `.otf` or `.woff*` file is committed outside a canonical font owner |
+
+Generation drift (stale tokens, brand or glossary outputs) is checked separately by `scripts/check-drift.mjs` in `npm run lint`.
+
+
+## New repository setup and upgrades · HIG 0.1.0
+Source: docs/governance/new-repository.md
+
+# New repository setup and upgrades · HIG 0.1.0
+
+Issue #36. These steps adopt HIG in a new or existing Bloxwap repository without copying component folders, palettes, fonts or feedback engines. The five SDK docs sites followed this path: bloxwap/hyperliquid#180, bloxwap/chart#53, bloxwap/font#11, bloxwap/sfx#50 and bloxwap/haptic#26.
+
+## 1. Pick applicability
+
+Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/hig) with one of these applicability values:
+
+| Applicability | Install | Never add |
+| --- | --- | --- |
+| Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font` | Copied component folders or token CSS |
+| Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
+| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font` | A local `.btn` layer, a palette copy, `vendor/hig` |
+| Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
+| No UI | Nothing; README and content conventions only | Any HIG runtime dependency |
+
+## 2. Install versioned packages
+
+HIG is not on npm yet (#56). Until it is, consume the packed candidate:
+
+```sh
+git clone https://github.com/bloxwap/hig && cd hig && git checkout <commit>
+npm ci && npm run generate:fonts && npm run build
+npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
+```
+
+`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. In the consuming repository:
+
+- Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
+- Record their SHA-256 hashes and the source commit in a README or `provenance.json`.
+- Depend on them with `file:` dependencies, adding `overrides` so HIG's internal dependencies resolve to the same files.
+
+Never copy `packages/*/src`, `dist` folders, `tokens.css`, palettes, fonts or feedback engines. When #56 publishes, swap the `file:` dependencies for registry versions and delete `vendor/bloxwap-hig/`.
+
+Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once, use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
+
+## 3. Add the scoped drift check to CI
+
+Create `hig-drift.json` in the repository root:
+
+```json
+{
+  "paths": ["apps/docs/app", "apps/docs/components", "apps/docs/lib", "apps/docs/styles"],
+  "canonical": [],
+  "obsoleteImports": [],
+  "exceptions": []
+}
+```
+
+Run the check from a pinned HIG checkout. The script uses only Node built-ins and needs no install:
+
+```yaml
+- uses: actions/checkout@v4
+  with: {repository: bloxwap/hig, ref: <same commit as the vendored tarballs>, path: .hig}
+- run: node .hig/scripts/drift.mjs --root . --config hig-drift.json
+```
+
+- **Scope:** only paths you have migrated. Widen `paths` as more surfaces move.
+- **`canonical`:** use it only for assets the repository owns. For example, `bloxwap/font` owns its web font files.
+- **Exceptions:** record any other exception with an owner, a reason and an expiry no more than 180 days ahead, following the contribution chapter's exception policy.
+
+First run against current `main` heads on 2026-10-15, scanning `apps/docs` (automated, local):
+
+- hyperliquid and haptic pass.
+- sfx flags the brand-mark fill in `lib/og-card.tsx`. That needs an exception like HIG's own brand marks.
+- chart flags `styles/hig-roles.generated.css`, tracked upstream in #66.
+- font flags its own font binaries, which belong under `canonical`.
+- agent-cli flags `vendor/hig/tokens.css`, its import, and committed TTFs (#58).
+
+## 4. Validate and record
+
+- Build the site or app and run the repository's lint, typecheck, test and browser checks, plus keyboard, 390px mobile, large text and RTL checks.
+- Measure CSS, JS and font bytes and the dependency count before and after.
+- Link the merged PR, the HIG version and any dated exceptions in the matrix row.
+- Label evidence as automated, browser, iOS Simulator, Android emulator or physical device.
+
+## Upgrading HIG
+
+1. Read the changelog in the dry-run artifact, or the npm release once #56 is done, together with the semver section of the release chapter.
+2. Upgrade tokens, contracts, renderer and feedback together. Never mix candidate commits. Recompute the vendored hashes.
+3. Update the drift checkout `ref` to the same commit and run the check. Remove exceptions whose need has gone.
+4. Re-run the validation in step 4 and update the matrix row's `higVersion` and PR links.
+5. Roll back by reverting the upgrade PR, which restores the previous tarballs and lockfile. Product pilots also keep their host feature flag (for example `NEXT_PUBLIC_HIG_PILOT=0`).
 
 
 ## Quality, budgets and evidence · HIG 0.1.0
@@ -990,9 +1191,22 @@ Candidate mode stages `0.1.0-candidate.sha<commit>` package metadata and matchin
 
 CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/example/visual/accessibility/budget gates and uploads review artifacts. A provenance record identifies source commit, package/contract/docs versions and hashes; it is not an npm registry provenance attestation or a release. Artifact inspection checks exports, licenses, optional peers and only approved assets. No example app implementation is included in runtime packages.
 
-Publication gates remain blocked in `planning/release-blockers.json`: task policy, unavailable monorepo audit, native font metadata, physical devices/assistive technology, upstream feedback gaps and owning migrations. A dry run cannot turn these into passes. This task does not “publish v1” by renaming a candidate.
+Publication gates are tracked in `planning/release-blockers.json`:
 
-Semver: breaking token meaning/appearance, typography scale, layout, accessibility/action behavior or semantic feedback mapping is major; compatible additions are minor; verified fixes patch. Deprecation names the alternative, migration codemod/checklist, owning consumers and a documented review window. Keep code/examples/API/citations at the same source commit; separate package prerelease identifiers are explicit in artifact metadata.
+- npm credentials are not configured on the release machine (#56).
+- Physical devices and assistive technology (#55).
+- Upstream feedback gaps (#70).
+- Owning product migrations that are still open (#33, #35).
+
+A dry run cannot turn these into passes, and renaming a candidate does not publish v1.
+
+Semver:
+
+- **Major:** breaking changes to token meaning or appearance, typography scale, layout, accessibility or action behaviour, or semantic feedback mapping.
+- **Minor:** compatible additions.
+- **Patch:** verified fixes.
+
+Deprecation names the alternative, a migration codemod or checklist, and the owning consumers from `planning/adoption.json`. A deprecated export keeps working for at least one minor release and 30 days, and is removed only in the next major release after consumer PRs are merged or have dated exceptions (see the contribution chapter). Keep code/examples/API/citations at the same source commit; separate package prerelease identifiers are explicit in artifact metadata.
 
 Rollback for an owning pilot: keep the previous package artifacts and lockfile, disable the host feature flag, restore prior renderer/backend imports and rebuild. Keep saved feedback/business data backward-compatible; never erase prior choices. Remove old assets only after production and physical-device proof. A future published rollback would require separate release authorization and package provenance; this task performs none.
 
@@ -1020,7 +1234,7 @@ Install Expo native peers with `npx expo install` (for example `expo-asset ~12.0
 
 Simulator/emulator verification: `scripts/native-sim/` builds the packed candidate gallery as real Release apps and drives them with XCUITest (iOS Simulator) and UiAutomation instrumentation, uiautomator and TalkBack (Android emulator). Results and residual physical-hardware limits are in `evidence/native-sim/`.
 
-WOFF2 is not a native font asset. Supply pinned approved static TTFs and a typed FontManifest; register them before setting the native provider fontFamily. Until upstream supplies the manifest/assets, the gallery explicitly uses the system fallback and does not claim Bloxwap native typography certification.
+WOFF2 is not a native font asset. `@bloxwap/hig-tokens/fonts/*` ships 15 static Bloxwap Sans/Mono TTFs generated reproducibly from pinned Font 0.1.2 sources, plus a typed FontManifest. Register them with expo-font before setting the native provider fontFamily, as the gallery does. Rasterization on physical displays remains part of #55. Moving these faces out of the web tokens package is tracked in #64. New repositories follow `docs/governance/new-repository.md`.
 
 ## Tokens only / plain CSS / Tailwind
 
@@ -1042,7 +1256,7 @@ Source: docs/migration/native.md
 
 # Native application pilot (#35)
 
-Owner: native app maintainers; assignment pending. Exception review: 2026-11-13. Real app source/build credentials and physical iPhone/Android access are absent; no application migration or tactile certification is claimed. No owning repo is pushed.
+Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.sha7c67a07c`, with one HIG feedback controller and 15 duplicate fonts removed. It was verified on the iOS Simulator and Android emulator, but it is not merged yet (it needs the required human `signoff`). Physical-device certification is tracked in #55 and React Native 0.83 certification in #68. No tactile, audible or VoiceOver observation is claimed.
 
 Pilot: font registration → dp/sRGB token mapping → amount/selection/review sheet → visible async outcome → independent feedback settings. The Expo gallery proves candidate packaging and contract examples, not the owning app's native build.
 
@@ -1067,7 +1281,7 @@ Source: docs/migration/products.md
 
 # App, Pro and marketing pilots (#33)
 
-Owner: product monorepo/application maintainers, assignment pending. Exception review: 2026-11-13. Source access and actual migration/build validation remain required. User forbids pushes to owning repos.
+Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: the first pilot is merged in [monorepo#4515](https://github.com/bloxwap/monorepo/pull/4515). Three follow-ups are open with green CI and verifier approval: [#4522](https://github.com/bloxwap/monorepo/pull/4522) (Pro compact density fix, navigation and numbers), [#4523](https://github.com/bloxwap/monorepo/pull/4523) (app Sound & Haptics controller) and [#4525](https://github.com/bloxwap/monorepo/pull/4525) (marketing waitlist, features and touch footer). They wait on the repository's required human `signoff` status. `planning/adoption.json` records the versions, rollback flags and gaps for each surface. The kit below is the checklist those PRs followed.
 
 | Surface | Pilot and HIG mapping | Preserve | Owner work remaining |
 | --- | --- | --- | --- |
@@ -1085,7 +1299,7 @@ Checklist:
 - [ ] Compare before/after at the same viewport/data/toolchain; record measured source/asset/bundle delta without guessed improvements.
 - [ ] Remove old copies/dependencies only after reference search and build/device proof. Link owning PR and residual surface work in adoption matrix.
 
-Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. This kit itself does not claim any origin migrated.
+Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. The adoption matrix, not this kit, records which surfaces are migrated.
 
 
 ## Five SDK documentation pilots (#34)
@@ -1093,7 +1307,7 @@ Source: docs/migration/sdk-docs.md
 
 # Five SDK documentation pilots (#34)
 
-Owner: each SDK repository's docs maintainers; assignment pending. Exception review: 2026-11-13. Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. No owning-repo PR/push/build is performed in this task.
+Owner: each SDK repository's docs maintainers (named assignment in #57). Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. Status on 2026-10-15: all five sites consume the vendored HIG `0.1.0-candidate.sha7c67a07c` packages. Each was merged after independent verification: [hyperliquid#180](https://github.com/bloxwap/hyperliquid/pull/180), [chart#53](https://github.com/bloxwap/chart/pull/53), [font#11](https://github.com/bloxwap/font/pull/11), [sfx#50](https://github.com/bloxwap/sfx/pull/50) and [haptic#26](https://github.com/bloxwap/haptic/pull/26). Measurements and residual exceptions are in each PR's evidence folder and in `planning/adoption.json`.
 
 | Repository | Shared presentation | Distinctive feature to preserve | Remaining owner validation |
 | --- | --- | --- | --- |

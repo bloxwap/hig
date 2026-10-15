@@ -4,12 +4,23 @@
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Roadmap requires #19\u2013#36, actual owning-product/SDK/native adoption, authorized publication/releases, approved owners and physical device certification; those are outside this task or prohibited.",
+    "reason": "Roadmap requires #19–#36, actual owning-product/SDK/native adoption, authorized publication/releases, approved owners and physical device certification; those are outside this task or prohibited.",
     "localNotes": "Roadmap reconciled against actual merged deliveries and live issue bodies.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "open",
+      "evidencePRs": [],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/56",
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "Roadmap epic; closes only after #33, #35 and #36 close"
+    }
   },
   {
     "issue": 2,
@@ -21,7 +32,19 @@
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "Inventory, fork dispositions, catalog, baseline report and adoption matrix complete; Pro before capture is the source-derived production build of monorepo 6360bc6c (monorepo#4522 docs/hig/evidence/pro-compact/baseline/); named-owner confirmation in #57"
+    }
   },
   {
     "issue": 3,
@@ -33,7 +56,17 @@
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 4,
@@ -45,7 +78,17 @@
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 5,
@@ -74,6 +117,19 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Packed gallery runs on iOS Simulator and Android emulator; Physical-hardware-only residuals in #55"
     }
   },
   {
@@ -101,6 +157,19 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Native sRGB tokens pixel-exact in simulator/emulator captures; P3 panels in #55"
     }
   },
   {
@@ -132,6 +201,20 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/64"
+      ],
+      "note": "Native faces registered; AX5/200% and mixed-script captures; rasterization in #55"
     }
   },
   {
@@ -166,6 +249,21 @@
         "owning-product density/parity approval (governance)."
       ],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53",
+        "https://github.com/bloxwap/hig/pull/54"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "iOS and Android landscape observed; density approval in #57; Physical-hardware-only residuals in #55"
     }
   },
   {
@@ -196,6 +294,19 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Reduced motion and gesture cancellation observed; Physical-hardware-only residuals in #55"
     }
   },
   {
@@ -227,6 +338,20 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53",
+        "https://github.com/bloxwap/hig/pull/48"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Xcode audits, Android scanner, TalkBack focus on emulator; VoiceOver/TalkBack speech in #55"
     }
   },
   {
@@ -239,7 +364,17 @@
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/37",
+        "https://github.com/bloxwap/hig/pull/45"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 12,
@@ -251,7 +386,17 @@
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/42"
     ],
-    "evidence": "evidence/issue-1-18/"
+    "evidence": "evidence/issue-1-18/",
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/45"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 13,
@@ -282,6 +427,20 @@
         "approved app/Pro visual parity (owning-product review)."
       ],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "Button text and 48dp fixes observed; parity approval in #57; Physical-hardware-only residuals in #55"
     }
   },
   {
@@ -312,6 +471,19 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Decimal keypad and keyboard avoidance observed; IME/autofill in #55"
     }
   },
   {
@@ -343,6 +515,20 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/71"
+      ],
+      "note": "AX increment/decrement on both targets; Android set-progress in #71"
     }
   },
   {
@@ -383,7 +569,21 @@
     "remainingBlockers": [
       "Physical hardware only: VoiceOver focus restoration on a physical iPhone",
       "Physical hardware only: physical orientation changes and hardware back gestures"
-    ]
+    ],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53",
+        "https://github.com/bloxwap/hig/pull/54"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "iOS landscape Dialog fixed and observed (#54); VoiceOver/rotation hardware in #55"
+    }
   },
   {
     "issue": 17,
@@ -415,6 +615,20 @@
         "actual route/back/deep-link restoration in owning host routers."
       ],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "Roles/states, RTL and large text on both targets; host router restoration in #57"
     }
   },
   {
@@ -444,6 +658,19 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/45",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Status components and live regions verified; AT speech in #55"
     }
   },
   {
@@ -478,6 +705,19 @@
       ],
       "outOfScope": [],
       "softwareAcceptanceMet": false
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "Display rules, 2,000-row list on both targets; production baselines in #57"
     }
   },
   {
@@ -507,6 +747,19 @@
       ],
       "outOfScope": [],
       "softwareAcceptanceMet": false
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/53",
+        "https://github.com/bloxwap/chart/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Chart docs demo on HIG packages with zoom/hover; native readout alternative; touch gestures in #55"
     }
   },
   {
@@ -516,7 +769,16 @@
     "status": "satisfied",
     "reason": "All issue acceptance criteria verified in the HIG software scope.",
     "localNotes": "Linux verification: tests/feedback.test.ts; tests/feedback-react.dom.test.tsx; tests/components.dom.test.tsx; accepted/canceled web/native menu selections and quiet native accordion disclosure",
-    "remainingBlockers": []
+    "remainingBlockers": [],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 22,
@@ -545,6 +807,19 @@
       ],
       "outOfScope": [],
       "softwareAcceptanceMet": false
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/39",
+        "https://github.com/bloxwap/hig/pull/44"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/70"
+      ],
+      "note": "Three-engine feedback tests; upstream SFX/Haptic API gaps in #70; device haptics in #55"
     }
   },
   {
@@ -572,6 +847,19 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/70"
+      ],
+      "note": "Cues play through simulator/emulator audio paths; audible behaviour in #55"
     }
   },
   {
@@ -600,6 +888,18 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Adapter calls once per interaction; tactile output in #55"
     }
   },
   {
@@ -609,7 +909,16 @@
     "status": "satisfied",
     "reason": "All issue acceptance criteria verified in the HIG software scope.",
     "localNotes": "Linux verification: tests/feedback.test.ts; tests/feedback-react.dom.test.tsx; tests/feedback-adapters.test.ts; docs browser persisted preferences; accepted/canceled web/native menu selections and quiet native accordion disclosure",
-    "remainingBlockers": []
+    "remainingBlockers": [],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 26,
@@ -639,6 +948,20 @@
       ],
       "outOfScope": [],
       "softwareAcceptanceMet": false
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/57",
+        "https://github.com/bloxwap/hig/issues/69"
+      ],
+      "note": "Native/web recipes render; approved visual parity in #57"
     }
   },
   {
@@ -648,7 +971,17 @@
     "status": "satisfied",
     "reason": "All issue acceptance criteria verified in the HIG software scope.",
     "localNotes": "Linux verification: scripts/docs-browser-smoke.mjs; tests/docs.test.ts; production static-route build",
-    "remainingBlockers": []
+    "remainingBlockers": [],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/43",
+        "https://github.com/bloxwap/hig/pull/44"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 28,
@@ -674,6 +1007,18 @@
       "otherResiduals": [],
       "outOfScope": [],
       "softwareAcceptanceMet": true
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "64 examples per platform on iOS Simulator and Android emulator; device captures in #55"
     }
   },
   {
@@ -683,7 +1028,16 @@
     "status": "satisfied",
     "reason": "All issue acceptance criteria verified in the HIG software scope.",
     "localNotes": "Linux verification: scripts/docs-browser-smoke.mjs; packed configuration examples",
-    "remainingBlockers": []
+    "remainingBlockers": [],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44"
+      ],
+      "followUps": [],
+      "note": "Satisfied"
+    }
   },
   {
     "issue": 30,
@@ -709,6 +1063,20 @@
       ],
       "outOfScope": [],
       "softwareAcceptanceMet": false
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/48",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/62",
+        "https://github.com/bloxwap/hig/issues/64"
+      ],
+      "note": "Docs complete; NativeWind not claimed; product mappings exercised by monorepo#4540"
     }
   },
   {
@@ -739,6 +1107,20 @@
       ],
       "outOfScope": [],
       "softwareAcceptanceMet": false
+    },
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/41",
+        "https://github.com/bloxwap/hig/pull/44",
+        "https://github.com/bloxwap/hig/pull/53"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "Gates in CI; release evidence labels automated/browser/simulator/emulator; production deltas measured in SDK/product PRs"
     }
   },
   {
@@ -751,7 +1133,20 @@
     "remainingBlockers": [
       "npm publication, tags and releases are explicitly prohibited by this task; only candidate/stable-simulation artifacts can be generated.",
       "Stable publication remains gated by physical/catalog review and approved production audit baseline deltas."
-    ]
+    ],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/41",
+        "https://github.com/bloxwap/hig/pull/42",
+        "https://github.com/bloxwap/hig/pull/44"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/56"
+      ],
+      "note": "Dry-run release automation and packed consumers complete; npm publication in #56"
+    }
   },
   {
     "issue": 33,
@@ -762,31 +1157,73 @@
     "localNotes": "Linux verification: tests/codemods.test.ts; docs/migration/products.md; planning/adoption.json",
     "remainingBlockers": [
       "Representative migrations, production builds, reviewed before/after visuals, dependency/source removal and measured deltas in app/Pro/marketing are owning-monorepo work; this task permits HIG-directory changes only."
-    ]
+    ],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "open",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "monorepo#4522/#4523/#4525 approved and green but unmerged (required human signoff)"
+    }
   },
   {
     "issue": 34,
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
-    "status": "partial",
-    "reason": "Each Hyperliquid/Chart/Font/SFX/Haptic docs owner must provide its migration PR, production build, preserved distinctive demo, asset-path/accessibility checks and source/bundle deltas. HIG migration kits do not constitute those migrations; parallel repo agents own four of these.",
+    "status": "satisfied",
+    "reason": "All five SDK docs migrations merged after independent verification; residual package fixes tracked in #56, #63, #65, #66, #69.",
     "localNotes": "Linux verification: docs/migration/sdk-docs.md; migrations/; planning/adoption.json",
-    "remainingBlockers": [
-      "Each Hyperliquid/Chart/Font/SFX/Haptic docs owner must provide its migration PR, production build, preserved distinctive demo, asset-path/accessibility checks and source/bundle deltas. HIG migration kits do not constitute those migrations; parallel repo agents own four of these."
-    ]
+    "remainingBlockers": [],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hyperliquid/pull/180",
+        "https://github.com/bloxwap/chart/pull/53",
+        "https://github.com/bloxwap/font/pull/11",
+        "https://github.com/bloxwap/sfx/pull/50",
+        "https://github.com/bloxwap/haptic/pull/26"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/56",
+        "https://github.com/bloxwap/hig/issues/63",
+        "https://github.com/bloxwap/hig/issues/65",
+        "https://github.com/bloxwap/hig/issues/66",
+        "https://github.com/bloxwap/hig/issues/69"
+      ],
+      "note": "All five docs sites merged and verified; matrix rows updated"
+    }
   },
   {
     "issue": 35,
     "branch": "hig/gaps-b",
     "pr": "https://github.com/bloxwap/hig/pull/44",
     "status": "partial",
-    "reason": "Owning mobile-app migrations, native dependency/autolinking changes, real iOS/Android builds, duplicate removal and size/latency measurements remain outside this worktree.; Physical Dynamic Type, RTL/long translations, VoiceOver/TalkBack, reduced motion and observed sound/haptics require devices; no hardware observations are fabricated.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
+    "reason": "Owning mobile-app migrations, native dependency/autolinking changes, real iOS/Android builds, duplicate removal and size/latency measurements remain outside this worktree.; Physical Dynamic Type, RTL/long translations, VoiceOver/TalkBack, reduced motion and observed sound/haptics require devices; no hardware observations are fabricated.; Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user’s request; it needs real physical hardware. Headless renderer/typecheck/bundle tests are separate evidence.",
     "localNotes": "Linux verification: docs/migration/native.md; tests/codemods.test.ts; planning/adoption.json",
     "remainingBlockers": [
       "Owning mobile-app migrations, native dependency/autolinking changes, real iOS/Android builds, duplicate removal and size/latency measurements remain outside this worktree.",
       "Physical Dynamic Type, RTL/long translations, VoiceOver/TalkBack, reduced motion and observed sound/haptics require devices; no hardware observations are fabricated.",
-      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user\u2019s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
-    ]
+      "Native device/emulator and TalkBack validation is blocked on this VM and was stopped at the user’s request; it needs physical or functioning KVM hardware. Headless renderer/typecheck/bundle tests are separate evidence."
+    ],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "open",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/62",
+        "https://github.com/bloxwap/hig/issues/67",
+        "https://github.com/bloxwap/hig/issues/68"
+      ],
+      "note": "monorepo#4540 approved and green but unmerged (required human signoff)"
+    }
   },
   {
     "issue": 36,
@@ -798,6 +1235,19 @@
     "remainingBlockers": [
       "Named owners must accept the dated exceptions and link actual migrations/validated HIG versions for all applicable repos and product/native/SDK surfaces, including newly inventoried taptradetv.",
       "The inventory covers all repos visible to this token on 2026-10-13; it cannot certify hidden repos or organization-wide production adoption."
-    ]
+    ],
+    "closeout": {
+      "date": "2026-10-15",
+      "finalState": "open",
+      "evidencePRs": [],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/57",
+        "https://github.com/bloxwap/hig/issues/58",
+        "https://github.com/bloxwap/hig/issues/59",
+        "https://github.com/bloxwap/hig/issues/60",
+        "https://github.com/bloxwap/hig/issues/61"
+      ],
+      "note": "Governance merged; product origins/native app migrations unmerged (#33, #35); new UI gaps #58-#61"
+    }
   }
 ]

@@ -18,7 +18,7 @@ Install Expo native peers with `npx expo install` (for example `expo-asset ~12.0
 
 Simulator/emulator verification: `scripts/native-sim/` builds the packed candidate gallery as real Release apps and drives them with XCUITest (iOS Simulator) and UiAutomation instrumentation, uiautomator and TalkBack (Android emulator). Results and residual physical-hardware limits are in `evidence/native-sim/`.
 
-WOFF2 is not a native font asset. Supply pinned approved static TTFs and a typed FontManifest; register them before setting the native provider fontFamily. Until upstream supplies the manifest/assets, the gallery explicitly uses the system fallback and does not claim Bloxwap native typography certification.
+WOFF2 is not a native font asset. `@bloxwap/hig-tokens/fonts/*` ships 15 static Bloxwap Sans/Mono TTFs generated reproducibly from pinned Font 0.1.2 sources, plus a typed FontManifest. Register them with expo-font before setting the native provider fontFamily, as the gallery does. Rasterization on physical displays remains part of #55. Moving these faces out of the web tokens package is tracked in #64. New repositories follow `docs/governance/new-repository.md`.
 
 ## Tokens only / plain CSS / Tailwind
 
