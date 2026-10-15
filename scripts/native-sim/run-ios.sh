@@ -7,6 +7,7 @@ UDID="$1"; APP="$2"; XCTESTRUN="$3"; OUT="$(mkdir -p "$4" && cd "$4" && pwd -P)"
 HIG="$(cd "$(dirname "$0")/../.." && pwd -P)"
 COMPONENTS="$(node -e "console.log(require('$HIG/fixtures/native/gallery-manifest.json').examples.map(e=>e.name).join(','))")"
 SUBSET="Button,Select,Field,AmountInput,Checkbox,Switch,RadioGroup,SegmentedControl,Slider,Tabs,Alert,Toast,NumberReadout,AnimatedNumberReadout,MarketRow,BalanceCard,TradeEntry,EmptyState"
+xcrun simctl uninstall "$UDID" com.bloxwap.hig.gallery 2>/dev/null # start from default preferences
 xcrun simctl install "$UDID" "$APP"
 run() { # run <test> [ENV=VALUE ...]
   local test="$1"; shift

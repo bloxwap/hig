@@ -40,7 +40,7 @@ final class NativeVerificationUITests: XCTestCase {
     app = XCUIApplication(bundleIdentifier: "com.bloxwap.hig.gallery")
     if let args = env["HIG_LAUNCH_ARGS"], !args.isEmpty { app.launchArguments = args.split(separator: "|").map(String.init) }
     app.launch()
-    XCTAssertTrue(app.staticTexts["Native HIG gallery"].waitForExistence(timeout: 20), "gallery rendered")
+    if env["HIG_GESTURE"] != "1" { XCTAssertTrue(app.staticTexts["Native HIG gallery"].waitForExistence(timeout: 20), "gallery rendered") }
   }
 
   private func open(_ query: String) {
@@ -172,11 +172,24 @@ final class NativeVerificationUITests: XCTestCase {
     r["firstRowVisible"] = app.staticTexts["Verification row 1"].waitForExistence(timeout: 6)
     var samples: [[String: Any]] = []
     let start = Date()
+    let height = app.windows.firstMatch.frame.height
+    // One snapshot per sample: per-element isHittable queries made the earlier run take ~14 minutes.
+    func visibleRows() -> [String] {
+      guard let snap = try? app.snapshot() else { return [] }
+      var rows: [(CGFloat, String)] = []
+      func walk(_ node: XCUIElementSnapshot) {
+        if node.label.hasPrefix("Verification row "), node.frame.minY >= 0, node.frame.maxY <= height { rows.append((node.frame.minY, node.label)) }
+        node.children.forEach(walk)
+      }
+      walk(snap)
+      var seen = Set<String>()
+      return rows.sorted { $0.0 < $1.0 }.map { $0.1 }.filter { seen.insert($0).inserted }
+    }
     for i in 1...24 {
       app.swipeUp(velocity: .fast)
       if i % 6 == 0 {
-        let visible = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Verification row'")).allElementsBoundByIndex.filter { $0.isHittable }.map { $0.label }
-        samples.append(["afterSwipes": i, "firstHittable": visible.first ?? "", "hittableCount": visible.count])
+        let visible = visibleRows()
+        samples.append(["afterSwipes": i, "firstVisible": visible.first ?? "", "visibleCount": visible.count])
       }
     }
     r["elapsedSeconds"] = Date().timeIntervalSince(start)
@@ -192,10 +205,15 @@ final class NativeVerificationUITests: XCTestCase {
   func testFeedbackCalls() throws {
     open("component=Button&state=default&diag=1")
     var r: [String: Any] = ["diagnosticsBefore": label("Feedback calls:") ?? ""]
-    for name in ["Sound", "Haptics", "Motion", "Motion"] {
-      let toggle = app.switches[name]
+    // Preferences persist; turn Sound and Haptics on explicitly, then toggle Motion twice to emit selections.
+    func control(_ name: String) -> XCUIElement { app.descendants(matching: .any).matching(NSPredicate(format: "label == %@ AND (elementType == %d OR elementType == %d)", name, XCUIElement.ElementType.switch.rawValue, XCUIElement.ElementType.button.rawValue)).firstMatch }
+    func isOn(_ e: XCUIElement) -> Bool { let v = (e.value as? String ?? "").lowercased(); return v == "1" || v == "on" || v == "checked" }
+    for (name, target) in [("Sound", true), ("Haptics", true), ("Motion", nil), ("Motion", nil)] as [(String, Bool?)] {
+      let toggle = control(name)
       reveal(toggle)
-      if toggle.exists { toggle.tap(); Thread.sleep(forTimeInterval: 1.2) } else { r["missing-\(name)"] = true }
+      guard toggle.exists else { r["missing-\(name)"] = true; continue }
+      r["\(name)-value-before"] = toggle.value as? String ?? ""
+      if target == nil || isOn(toggle) != target { toggle.tap(); Thread.sleep(forTimeInterval: 1.2) }
     }
     for _ in 0..<8 { app.swipeDown() }
     Thread.sleep(forTimeInterval: 1.5)
@@ -240,5 +258,37 @@ final class NativeVerificationUITests: XCTestCase {
     try capture("ios-\(name)")
     if env["HIG_AUDIT"] != "0" { r["auditIssues"] = audit(name) }
     try write("ios-\(name).json", r)
+  }
+
+  /// Optional GestureSheet fixture (index-gesture.js entry): detent drag, canceled dismissal and dismissal.
+  func testGestureSheet() throws {
+    var r: [String: Any] = [:]
+    let open = app.buttons["Open detent sheet"]
+    r["fixtureLoaded"] = open.waitForExistence(timeout: 10)
+    guard open.exists else { try write("ios-gesture-sheet.json", r); return }
+    open.tap()
+    let title = app.staticTexts["Review details"]
+    r["openedAtFirstDetent"] = title.waitForExistence(timeout: 5)
+    Thread.sleep(forTimeInterval: 1)
+    let y0 = title.frame.minY
+    try capture("ios-gesture-sheet-50")
+    title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12)))
+    Thread.sleep(forTimeInterval: 1)
+    r["titleYAfterDragUp"] = title.frame.minY
+    r["expandedToSecondDetent"] = title.frame.minY < y0 - 50
+    try capture("ios-gesture-sheet-90")
+    let start = title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+    start.press(forDuration: 0.1, thenDragTo: start.withOffset(CGVector(dx: 0, dy: 60)))
+    Thread.sleep(forTimeInterval: 1)
+    r["stillOpenAfterShortDrag"] = title.exists && title.isHittable
+    try capture("ios-gesture-sheet-short-drag")
+    let s2 = title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+    s2.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.98)))
+    Thread.sleep(forTimeInterval: 1.5)
+    r["dismissedByDrag"] = !(title.exists && title.isHittable)
+    r["triggerHittableAfterDismiss"] = open.isHittable
+    try capture("ios-gesture-sheet-dismissed")
+    try tree("ios-gesture-sheet")
+    try write("ios-gesture-sheet.json", r)
   }
 }

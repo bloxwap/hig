@@ -13,6 +13,7 @@ SUBSET="Button,Select,Field,AmountInput,Checkbox,Switch,RadioGroup,SegmentedCont
 mkdir -p "$OUT/logs" "$OUT/host"
 adb install -r "$APP/android/app/build/outputs/apk/release/app-release.apk" >/dev/null
 adb install -r "$APP/android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" >/dev/null
+adb shell pm clear $PKG >/dev/null # start from default (sound/haptics off) preferences
 adb shell settings put system font_scale 1.0
 adb shell settings put global transition_animation_scale 1; adb shell settings put global animator_duration_scale 1
 adb shell cmd locale set-app-locales $PKG --locales "" >/dev/null 2>&1 || true

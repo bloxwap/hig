@@ -160,6 +160,7 @@ public class NativeVerificationTest {
     if (n.isEditable()) o.put("editable", true);
     if (n.isPassword()) o.put("password", true);
     if (!n.isVisibleToUser()) o.put("visible", false);
+    if (!n.isImportantForAccessibility()) o.put("important", false);
     if (n.getInputType() != 0) o.put("inputType", n.getInputType());
     if (n.getRangeInfo() != null) o.put("range", n.getRangeInfo().getMin() + ".." + n.getRangeInfo().getMax() + " now " + n.getRangeInfo().getCurrent());
     if (n.getCollectionInfo() != null) o.put("collection", n.getCollectionInfo().getRowCount() + "x" + n.getCollectionInfo().getColumnCount());
@@ -196,7 +197,11 @@ public class NativeVerificationTest {
     Rect r = new Rect();
     n.getBoundsInScreen(r);
     boolean actionable = n.isClickable() || n.isCheckable() || n.isEditable() || n.getRangeInfo() != null;
-    if (actionable && n.isVisibleToUser() && n.isEnabled()) {
+    // Skip nodes hidden from screen readers and nodes cut by the viewport edge (their visible bounds are partial).
+    Rect window = new Rect();
+    if (n.getWindow() != null) n.getWindow().getBoundsInScreen(window);
+    boolean clipped = !window.isEmpty() && (r.bottom >= window.bottom - 2 || r.top <= window.top + 2);
+    if (actionable && n.isVisibleToUser() && n.isEnabled() && n.isImportantForAccessibility() && !clipped) {
       String l = label(n);
       if (l.isEmpty() && n.getHintText() == null && !hasLabelledDescendant(n)) issues.put(new JSONObject().put("component", component).put("issue", "unlabeled actionable node").put("class", String.valueOf(n.getClassName())).put("bounds", r.flattenToString()));
       int w = Math.round(r.width() / density), h = Math.round(r.height() / density);
@@ -357,9 +362,15 @@ public class NativeVerificationTest {
     open("component=Button&state=default&diag=1");
     JSONObject r = new JSONObject();
     r.put("diagnosticsBefore", diagnostics());
-    for (String name : new String[] {"Sound", "Haptics", "Motion", "Motion"}) {
-      AccessibilityNodeInfo sw = waitFor(n -> name.contentEquals(label(n)) && n.isCheckable(), 5000);
+    // Preferences persist between launches: turn Sound and Haptics on explicitly, then toggle Motion twice.
+    String[] names = {"Sound", "Haptics", "Motion", "Motion"};
+    Boolean[] targets = {true, true, null, null};
+    for (int k = 0; k < names.length; k++) {
+      String name = names[k];
+      AccessibilityNodeInfo sw = waitFor(n -> name.contentEquals(label(n)) && n.isCheckable() && n.isImportantForAccessibility(), 5000);
       if (sw == null) { r.put("missing-" + name, true); continue; }
+      r.put(name + "-checked-before-" + k, sw.isChecked());
+      if (targets[k] != null && sw.isChecked() == targets[k]) continue;
       AccessibilityNodeInfo scroller = waitFor(AccessibilityNodeInfo::isScrollable, 1000);
       for (int i = 0; i < 6 && !sw.isVisibleToUser() && scroller != null; i++) { scroller.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD); settle(200); sw.refresh(); }
       sw.performAction(AccessibilityNodeInfo.ACTION_CLICK);
