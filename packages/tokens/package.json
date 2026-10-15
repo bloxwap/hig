@@ -19,8 +19,7 @@
     },
     "./css": "./dist/tokens.css",
     "./manifest": "./dist/manifest.json",
-    "./mark.svg": "./assets/bloxwap-icon.svg",
-    "./fonts/*": "./assets/fonts/*"
+    "./mark.svg": "./assets/bloxwap-icon.svg"
   },
   "repository": {
     "type": "git",

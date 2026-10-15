@@ -21,10 +21,29 @@ const p3=Object.entries(tokens.colors).filter(([,v])=>v.p3).map(([k,v])=>`  --hi
 const oklch=Object.entries(tokens.colors).filter(([,v])=>v.oklch).map(([k,v])=>`  --hig-${k}: ${v.oklch};`).join('\n');
 const sourceVars=Object.entries(upstream.semanticOklch).map(([k,v])=>`  --hig-source-${k}: ${v};`).join('\n');
 const space=Object.entries(tokens.space).map(([k,v])=>`  --hig-space-${k}: ${v/16}rem;`).join('\n');
+const rem=px=>`${px/16}rem`;
+// Font roles prefer the @bloxwap/font Next loader variables when a host sets them on <html>, then the literal families plain @font-face hosts register (#65).
+const fonts=Object.entries(tokens.font).map(([k,v])=>`  --hig-font-${k}: var(${v.loaderVariable}, '${v.family}'), ${v.fallback.join(', ')};`).join('\n');
+const radius=Object.entries(tokens.radius).map(([k,v])=>`  --hig-radius-${k}: ${v>=9999?`${v}px`:rem(v)};`).join('\n');
+const type=Object.entries(tokens.type).map(([k,v])=>[`  --hig-type-${k}-size: ${rem(v.size)};`,`  --hig-type-${k}-line-height: ${rem(v.lineHeight)};`,`  --hig-type-${k}-weight: ${v.weight};`,`  --hig-type-${k}: ${v.weight} ${rem(v.size)}/${rem(v.lineHeight)} var(--hig-font-sans);`].join('\n')).join('\n');
+const durations=Object.entries(tokens.motion).map(([k,v])=>`  --hig-motion-duration-${k}: ${v}ms;`).join('\n');
+const reducedDurations=Object.keys(tokens.motion).map(k=>`--hig-motion-duration-${k}: 0ms;`).join(' ');
+const easing=Object.entries(tokens.easing).map(([k,v])=>`  --hig-motion-easing-${k}: cubic-bezier(${v.join(', ')});`).join('\n');
+const densityMetrics=Object.keys(tokens.density.comfortable);
+const density=[...Object.entries(tokens.density).flatMap(([mode,metrics])=>Object.entries(metrics).map(([k,v])=>`  --hig-density-${mode}-${k}: ${rem(v)};`)),...densityMetrics.map(k=>`  --hig-density-${k}: var(--hig-density-comfortable-${k});`)].join('\n');
 writeFileSync('packages/tokens/generated/tokens.css',`:root { color-scheme: dark;
 ${vars}
 ${space}
+${fonts}
+${radius}
+${type}
+${durations}
+${easing}
+${density}
 }
+[data-hig-density='compact'] { ${densityMetrics.map(k=>`--hig-density-${k}: var(--hig-density-compact-${k});`).join(' ')} }
+@media (prefers-reduced-motion: reduce) { :root { ${reducedDurations} } }
+[data-hig-motion='reduced'] { ${reducedDurations} }
 @supports (color: oklch(0.5 0 0)) { :root {
 ${oklch}
 ${sourceVars}

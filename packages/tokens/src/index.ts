@@ -127,6 +127,14 @@ export const tokens = {
     "base": 260,
     "slow": 320
   },
+  "easing": {
+    "standard": [
+      0.22,
+      1,
+      0.36,
+      1
+    ]
+  },
   "type": {
     "caption": {
       "size": 12,
@@ -152,6 +160,24 @@ export const tokens = {
       "size": 48,
       "lineHeight": 52,
       "weight": 600
+    }
+  },
+  "font": {
+    "sans": {
+      "family": "Bloxwap Sans",
+      "loaderVariable": "--font-bloxwap-sans",
+      "fallback": [
+        "system-ui",
+        "sans-serif"
+      ]
+    },
+    "mono": {
+      "family": "Bloxwap Mono",
+      "loaderVariable": "--font-bloxwap-mono",
+      "fallback": [
+        "ui-monospace",
+        "monospace"
+      ]
     }
   }
 } as const;

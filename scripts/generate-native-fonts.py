@@ -57,7 +57,7 @@ args = parser.parse_args()
 package_dir = args.package_dir
 if package_dir is None:
     # Match workspace/hoisted installs by looking up ancestor node_modules.
-    for base in (ROOT / 'packages/tokens', ROOT / 'packages', ROOT):
+    for base in (ROOT / 'packages/native-fonts', ROOT / 'packages', ROOT):
         candidate = base / 'node_modules/@bloxwap/font'
         if (candidate / 'package.json').is_file():
             package_dir = candidate
@@ -72,7 +72,7 @@ for relative, expected in SOURCE_SHA256.items():
     actual = hashlib.sha256((pkg / relative).read_bytes()).hexdigest()
     if actual != expected:
         raise SystemExit(f'Published {PACKAGE_VERSION} source SHA256 mismatch: {relative}: {actual}')
-native = ROOT / 'packages/tokens/assets/fonts'
+native = ROOT / 'packages/native-fonts/fonts'
 native.mkdir(parents=True, exist_ok=True)
 manifest = {'package': '@bloxwap/font', 'version': PACKAGE_VERSION, 'sources': SOURCE_SHA256, 'faces': [], 'outputs': {}}
 for family, weights, script in [('BloxwapSans', [400,500,600,700,800,900], 'latin'), ('BloxwapMono', [400,500,600,700,800], 'latin'), ('BloxwapSansKR', [400,600], 'korean'), ('BloxwapSansSC', [400,600], 'simplified-chinese')]:

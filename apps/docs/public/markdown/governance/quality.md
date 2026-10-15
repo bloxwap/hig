@@ -13,8 +13,10 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Native Switch gzip (React/RN external) | 1,383 B; 1,849 B after #67 | 2,200 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track. ~19% headroom; verifies no Slider/SVG/overlay/feedback imports |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
-| Docs CSS | 17,419 B | 22,000 B | ~26% headroom for responsive/documentation states |
+| Docs CSS | 110,618 B (with token roles, #66) | 115,000 B | ~4% headroom; raised from 110,000 B when `@bloxwap/hig-tokens/css` gained radius/type/motion/density/font roles |
 | Sans + Mono assets | 592,796 B | 600,000 B | Pins two approved faces; new script/face requires explicit review |
+| Native fixture faces from `@bloxwap/hig-native-fonts` (Sans 400/600, Mono 400) | 1,278,880 B | 1,400,000 B | Only the three registered faces; optional CJK and other weights stay unloaded. Every generated face hash is checked |
+| Font binaries in web/shared tarballs (tokens, contracts, react, feedback, native) | 0 files | 0 files | Native faces ship only in `@bloxwap/hig-native-fonts` (#64); `release:dry-run` fails otherwise and records `packedSizes` |
 | Native four-cue WAV assets | 103,618 B | 110,000 B | ~6% headroom; no full engine/catalog assets |
 
 The actual build report is `evidence/quality-report.json`. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
