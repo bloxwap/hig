@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds the packed-candidate native gallery as real iOS Simulator and Android emulator apps.
 # Usage: scripts/native-sim/prepare-app.sh <app-dir> <simulator-udid>
-# Requires artifacts/release-candidate/*.tgz (npm run release:dry-run -- --channel candidate),
+# Requires artifacts/release-candidate/*.tgz (native-fonts needs `npm run generate:fonts` first) (npm run release:dry-run -- --channel candidate),
 # Xcode with an iOS Simulator runtime, JDK 17 and the Android SDK. Nothing is published.
 set -euo pipefail
 HIG="$(cd "$(dirname "$0")/../.." && pwd -P)"
@@ -9,7 +9,7 @@ APP="$1"; UDID="$2"
 mkdir -p "$APP"; APP="$(cd "$APP" && pwd -P)"
 rsync -a --exclude node_modules --exclude dist --exclude .expo "$HIG/fixtures/native/" "$APP/"
 node -e "const fs=require('fs');const p='$APP/package.json';const m=JSON.parse(fs.readFileSync(p));for(const k of Object.keys(m.dependencies))if(k.startsWith('@bloxwap/hig-'))delete m.dependencies[k];m.type='commonjs';fs.writeFileSync(p,JSON.stringify(m,null,2));"
-(cd "$APP" && npm install --no-audit --no-fund $(ls "$HIG"/artifacts/release-candidate/bloxwap-hig-{contracts,feedback,native,tokens}-*.tgz))
+(cd "$APP" && npm install --no-audit --no-fund $(ls "$HIG"/artifacts/release-candidate/bloxwap-hig-{contracts,feedback,native,native-fonts,tokens}-*.tgz))
 node --input-type=module -e "import {verifyNativeReact,verifyExpoNativeModules} from '$HIG/scripts/native-compatibility.mjs';console.log(verifyNativeReact('$APP'),verifyExpoNativeModules('$APP'))"
 (cd "$APP" && CI=1 npx expo prebuild --no-install) # idempotent; applies app.json changes
 # Xcode 27 rejects pod resource targets below iOS 15.

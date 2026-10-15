@@ -1,0 +1,21 @@
+{
+  "drags" : 0,
+  "frames" : {
+    "Info tone preview" : {
+      "height" : 48,
+      "label" : "Info tone preview",
+      "type" : 40,
+      "value" : "1",
+      "width" : 354
+    },
+    "Preference preview" : {
+      "height" : 48,
+      "label" : "Preference preview",
+      "type" : 40,
+      "value" : "0",
+      "width" : 354
+    }
+  },
+  "name" : "example-switch",
+  "targetFound" : true
+}

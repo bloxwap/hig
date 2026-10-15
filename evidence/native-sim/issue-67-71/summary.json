@@ -1,0 +1,68 @@
+{
+  "issues": [67, 71],
+  "observedAt": "2026-10-15",
+  "evidenceKinds": {
+    "iOS Simulator": "Release build of the packed candidate on a booted iOS Simulator, driven by XCUITest (scripts/native-sim/ios). XCUITest accessibility actions are not a VoiceOver user run.",
+    "Android emulator": "Release APK of the packed candidate on the Android emulator, driven by instrumentation with UiAutomation as the accessibility client (scripts/native-sim/android). Not a Voice Access, Switch Access or TalkBack user run.",
+    "physical hardware": "none; nothing here is a physical-device observation"
+  },
+  "environment": {
+    "host": "macOS 27.2 (Apple silicon), Xcode 27.2 (27B5019j), JDK 17, Android SDK emulator",
+    "iosSimulator": "iPhone 16 Pro, iOS 26.5 (23F77), a simulator created for this run and shut down afterwards",
+    "androidEmulator": "Medium_Phone_API_35, google/sdk_gphone64_arm64/emu64a:15/AE3A.240806.036 (read-only instance on console port 5100), 1260x2736 override at 480dpi (420dp wide)",
+    "stack": "Expo SDK 54 prebuild, Release, React Native 0.81.5 New Architecture, Hermes"
+  },
+  "candidate": {
+    "version": "0.1.0-candidate.shad7ff4780",
+    "sourceCommit": "d7ff478 (main, includes #76) plus this branch's Android Switch thumb token. All device results below come from this one candidate build.",
+    "tarballs": ["bloxwap-hig-contracts", "bloxwap-hig-feedback", "bloxwap-hig-native", "bloxwap-hig-native-fonts", "bloxwap-hig-tokens"],
+    "consumption": "scripts/native-sim/prepare-app.sh copies fixtures/native to a scratch app and installs only the packed tarballs. The release APK dex contains com.bloxwap.hig.HIGAdjustableView.",
+    "published": false
+  },
+  "issue71": {
+    "android": {
+      "file": "android/android-slider.json",
+      "listsSetProgress": true,
+      "initialActions": ["scrollForward", "scrollBackward", "setProgress"],
+      "increment": "scrollForward 25 -> 30 -> 35 (5% steps)",
+      "decrement": "scrollBackward 35 -> 30",
+      "setProgress": [
+        {"request": 80, "performed": true, "labelChanges": ["Volume preview: 80"], "rangeNow": 80},
+        {"request": "80 again", "performed": true, "labelChanges": [], "rangeNow": 80},
+        {"request": 42.4, "performed": true, "labelChanges": ["Volume preview: 42"], "rangeNow": 42, "note": "snapped to step 1"},
+        {"request": 150, "performed": true, "labelChanges": ["Volume preview: 100"], "rangeNow": 100, "note": "clamped to max"}
+      ],
+      "updatesOnce": "After each request the visible label was sampled every 50ms for 1.5s. It changed once per request, with no intermediate values, and did not change for a repeated value.",
+      "disabled": {"enabled": false, "listsSetProgress": false, "setProgressPerformed": false, "scrollForwardPerformed": false, "labelBefore": "Volume preview: 100", "labelAfter": "Volume preview: 100"}
+    },
+    "ios": {
+      "file": "ios/ios-slider.json",
+      "increment": "AXAction 2004 25 -> 30 -> 35",
+      "decrement": "AXAction 2005 35 -> 30",
+      "disabled": "AXAction 2004 rejected (kAXErrorCannotComplete); label unchanged",
+      "matchesIssue53Baseline": "same steps, values and disabled rejection as evidence/native-sim/ios/ios-slider.json"
+    }
+  },
+  "issue67": {
+    "fontScaleCap": {
+      "ios": "At AX5 (font scale 3.57), the uncapped one-line prose BLOXWAP and the Korean/Chinese line are 86pt tall (24pt at default). The NumberReadout with maxFontSizeMultiplier=2 is 48pt (24pt at default), so it is capped at 2x. See ios/ios-ax5-example-text.json and ios/captures/ios-ax5-example-text.png.",
+      "android": "At font_scale 2.0, the prose line and the capped readout are both 36dp (24dp at 1.0). Android 14+ non-linear font scaling gives 16sp text about 1.5x at its largest setting, so the 2x cap is not reached there. See android/android-font200-example-text.json."
+    },
+    "cjkTracking": "The default and AX5/200% captures show BLOXWAP with letterSpacing 1 and the 한국어 · 中文 line at companion-face spacing (ios/captures/ios-example-text.png, android/captures/android-example-text.png).",
+    "switchTone": "The Info tone preview switch track samples #35b5ff (info token) in android/captures/android-example-switch.png, and the info track also renders on iOS (ios/captures/ios-ax5-example-switch.png). Each row is one switch element, 48pt/dp tall at default size.",
+    "androidSwitchThumbFixed": "The first emulator run showed the Android on-state thumb in the platform theme accent (Material teal), which is not a token role. Switch now passes thumbColor = text token on Android only. On the rerun the thumb samples #f5f5f5 (text token #fafafa through the platform thumb drawable), with no teal. iOS keeps its native white thumb.",
+    "alertSeverity": "The Alert error start border samples #ff5c5c (negative token) on both targets (android/captures/android-example-alert-error.png, ios/captures/ios-example-alert-error.png). AX5 and 200% captures: ios/captures/ios-ax5-example-alert-error.png, android/captures/android-font200-example-alert-error.png.",
+    "audits": {
+      "androidScanner": "0 issues for Text, Switch, Alert, Slider and NumberReadout at 1.0 and 2.0 (android/android-gallery.json, android/android-font200-gallery.json)",
+      "iosXcode": "AX5: 0 issues (ios/ios-ax5-gallery.json). Default size: only the existing gallery header findings ('Amount (BTC)' Dynamic Type, readout labels), the same as the #53 baseline in evidence/native-sim/ios/ios-gallery.json."
+    }
+  },
+  "observations": [
+    "At AX5 the Alert error title 'Data unavailable' wraps inside the word 'unavailable', because that word is wider than the 309pt content width at that size (ios/captures/ios-ax5-example-alert-error.png). Body text wraps at word boundaries. #67 did not cause this."
+  ],
+  "commands": {
+    "build": "npm run generate:fonts && npm run build && npm run release:dry-run -- --channel candidate && scripts/native-sim/prepare-app.sh <app> <udid>",
+    "ios": "testSliderAccessibilityActions, testGalleryCaptures (default and AX5), testSnapshot (dynamic-type-ax5, alert-error), testExampleCapture (Text/Switch/Alert at default and AX5); see ios/run-summary.txt",
+    "android": "sliderAccessibilityActions, galleryCaptures (1.0 and 2.0), snapshot (font-scale-200, alert-error), exampleCapture (Text/Switch/Alert at 1.0 and 2.0); see android/run-summary.txt"
+  }
+}

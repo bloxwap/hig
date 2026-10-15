@@ -1,0 +1,24 @@
+{
+  "auditIssues" : [
+    {
+      "component" : "alert-error",
+      "detail" : "User will not be able to change the font size of this RCTUITextField",
+      "element" : "49:Amount (BTC)",
+      "summary" : "Dynamic Type font sizes are unsupported",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 65536)"
+    },
+    {
+      "component" : "alert-error",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$1,250.45",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    }
+  ],
+  "Feedback calls:" : null,
+  "Font scale:" : null,
+  "name" : "alert-error",
+  "OS reduce motion:" : null,
+  "OS RTL:" : null,
+  "Runtime:" : null
+}

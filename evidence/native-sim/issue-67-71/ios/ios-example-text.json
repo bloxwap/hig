@@ -1,0 +1,35 @@
+{
+  "drags" : 0,
+  "frames" : {
+    "BLOXWAP" : {
+      "height" : 24,
+      "label" : "BLOXWAP",
+      "type" : 48,
+      "value" : "",
+      "width" : 354
+    },
+    "Price: 67,234.56" : {
+      "height" : 24,
+      "label" : "Price: 67,234.56",
+      "type" : 48,
+      "value" : "",
+      "width" : 354
+    },
+    "Review the amount" : {
+      "height" : 24,
+      "label" : "Review the amount and asset before confirming.",
+      "type" : 48,
+      "value" : "",
+      "width" : 354
+    },
+    "한국어" : {
+      "height" : 24,
+      "label" : "한국어 · 中文",
+      "type" : 48,
+      "value" : "",
+      "width" : 354
+    }
+  },
+  "name" : "example-text",
+  "targetFound" : true
+}

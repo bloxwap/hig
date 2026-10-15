@@ -1,0 +1,12 @@
+{
+ "name": "example-alert-error",
+ "fontScale": 1,
+ "drags": 0,
+ "sizes": {
+  "Data unavailable": {
+   "label": "Data unavailable",
+   "visible": true,
+   "dp": "327x30"
+  }
+ }
+}

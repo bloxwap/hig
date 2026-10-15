@@ -99,6 +99,37 @@ final class NativeVerificationUITests: XCTestCase {
     try write("\(prefix)-gallery.json", ["results": results, "auditIssues": issues])
   }
 
+  /// #67: scrolls one example into view (the gallery header grows at AX5) and records label frames,
+  /// so a capped readout can be compared with uncapped prose at the same Dynamic Type size.
+  func testExampleCapture() throws {
+    let name = env["HIG_NAME"] ?? "example"
+    open(env["HIG_QUERY"] ?? "component=Text&state=default")
+    var r: [String: Any] = ["name": name]
+    if let target = env["HIG_SCROLL_TO"], !target.isEmpty {
+      // Any element type: a Switch row is a labeled switch element, not static text.
+      let element = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", target)).firstMatch
+      r["targetFound"] = element.waitForExistence(timeout: 10)
+      let height = app.windows.firstMatch.frame.height
+      var drags = 0
+      // Short held drags (no fling) until the target sits in the upper half of the window.
+      while element.exists && element.frame.minY > height * 0.45 && drags < 20 {
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7)).press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4)), withVelocity: .slow, thenHoldForDuration: 0.3)
+        drags += 1
+      }
+      r["drags"] = drags
+    }
+    Thread.sleep(forTimeInterval: 0.6)
+    var frames: [String: Any] = [:]
+    for prefix in (env["HIG_MEASURE"] ?? "").split(separator: "|").map(String.init) where !prefix.isEmpty {
+      let element = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
+      frames[prefix] = element.waitForExistence(timeout: 3) ? ["label": element.label, "type": element.elementType.rawValue, "value": element.value as? String ?? "", "width": Double(element.frame.width), "height": Double(element.frame.height)] : NSNull()
+    }
+    r["frames"] = frames
+    try tree("ios-\(name)")
+    try capture("ios-\(name)")
+    try write("ios-\(name).json", r)
+  }
+
   func testSliderAccessibilityActions() throws {
     open("component=Slider&state=default")
     var r: [String: Any] = [:]

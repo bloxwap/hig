@@ -1,0 +1,27 @@
+{
+ "name": "example-text",
+ "fontScale": 1,
+ "drags": 0,
+ "sizes": {
+  "BLOXWAP": {
+   "label": "BLOXWAP",
+   "visible": true,
+   "dp": "372x24"
+  },
+  "한국어": {
+   "label": "한국어 · 中文",
+   "visible": true,
+   "dp": "372x24"
+  },
+  "Price: 67,234.56": {
+   "label": "Price: 67,234.56",
+   "visible": true,
+   "dp": "372x24"
+  },
+  "Review the amount": {
+   "label": "Review the amount and asset before confirming.",
+   "visible": true,
+   "dp": "372x24"
+  }
+ }
+}

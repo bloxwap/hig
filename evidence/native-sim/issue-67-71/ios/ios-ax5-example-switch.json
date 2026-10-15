@@ -1,0 +1,21 @@
+{
+  "drags" : 4,
+  "frames" : {
+    "Info tone preview" : {
+      "height" : 211.666748046875,
+      "label" : "Info tone preview",
+      "type" : 40,
+      "value" : "1",
+      "width" : 354
+    },
+    "Preference preview" : {
+      "height" : 211.6666259765625,
+      "label" : "Preference preview",
+      "type" : 40,
+      "value" : "0",
+      "width" : 354
+    }
+  },
+  "name" : "ax5-example-switch",
+  "targetFound" : true
+}

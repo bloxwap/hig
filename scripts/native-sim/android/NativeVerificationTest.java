@@ -268,6 +268,61 @@ public class NativeVerificationTest {
     write(prefix + "-gallery.json", new JSONObject().put("results", results).put("auditIssues", issues).toString(1));
   }
 
+  /** Injects a short held drag (no fling) that scrolls the gallery by about 30% of the screen. */
+  private void dragUp(int w, int h) {
+    long start = SystemClock.uptimeMillis();
+    int x = w / 2, from = Math.round(h * 0.7f), to = Math.round(h * 0.4f);
+    MotionEvent down = MotionEvent.obtain(start, start, MotionEvent.ACTION_DOWN, x, from, 0);
+    down.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+    ua.injectInputEvent(down, true);
+    for (int i = 1; i <= 20; i++) {
+      MotionEvent move = MotionEvent.obtain(start, start + i * 25, MotionEvent.ACTION_MOVE, x, from + (to - from) * i / 20f, 0);
+      move.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+      ua.injectInputEvent(move, true);
+    }
+    SystemClock.sleep(300);
+    MotionEvent up = MotionEvent.obtain(start, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, to, 0);
+    up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+    ua.injectInputEvent(up, true);
+    settle(400);
+  }
+
+  /**
+   * #67: scrolls one example into view (the gallery header grows at 200%) and records label sizes,
+   * so a capped readout can be compared with uncapped prose at the same font scale.
+   */
+  @Test
+  public void exampleCapture() throws Exception {
+    String name = arg("name", "example");
+    open(arg("query", "component=Text&state=default"));
+    final String target = arg("scrollTo", "");
+    int w = ctx.getResources().getDisplayMetrics().widthPixels, h = ctx.getResources().getDisplayMetrics().heightPixels;
+    JSONObject r = new JSONObject().put("name", name).put("fontScale", ctx.getResources().getConfiguration().fontScale);
+    int drags = 0;
+    while (!target.isEmpty() && drags < 20) {
+      AccessibilityNodeInfo n = waitFor(x -> label(x).startsWith(target), 3000);
+      Rect b = new Rect();
+      if (n != null) n.getBoundsInScreen(b);
+      if (n != null && n.isVisibleToUser() && b.top <= h * 0.45f) break;
+      dragUp(w, h);
+      drags++;
+    }
+    r.put("drags", drags);
+    JSONObject sizes = new JSONObject();
+    for (String prefix : arg("measure", "").split("\\|")) {
+      if (prefix.isEmpty()) continue;
+      AccessibilityNodeInfo n = waitFor(x -> label(x).startsWith(prefix), 3000);
+      if (n == null) { sizes.put(prefix, JSONObject.NULL); continue; }
+      Rect b = new Rect();
+      n.getBoundsInScreen(b);
+      sizes.put(prefix, new JSONObject().put("label", label(n)).put("visible", n.isVisibleToUser()).put("dp", Math.round(b.width() / density) + "x" + Math.round(b.height() / density)));
+    }
+    r.put("sizes", sizes);
+    write("trees/android-" + name + ".json", tree().toString(1));
+    capture("android-" + name);
+    write("android-" + name + ".json", r.toString(1));
+  }
+
   @Test
   public void sliderAccessibilityActions() throws Exception {
     open("component=Slider&state=default");
@@ -287,12 +342,28 @@ public class NativeVerificationTest {
         slider.refresh();
         steps.put(new JSONObject().put("action", names[i]).put("performed", ok).put("range", slider.getRangeInfo() == null ? JSONObject.NULL : slider.getRangeInfo().getCurrent()).put("visibleLabel", label(byLabelPrefix("Volume preview: "))));
       }
-      Bundle args = new Bundle();
-      args.putFloat(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE, 80f);
-      boolean set = slider.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.getId(), args);
-      settle(500);
+      // #71: set-progress is listed on the adjustable node, and each request moves the value once
+      // (sampled every 50ms for 1.5s: the visible label must go straight to the snapped/clamped value).
       slider.refresh();
-      steps.put(new JSONObject().put("action", "setProgress(80)").put("performed", set).put("range", slider.getRangeInfo() == null ? JSONObject.NULL : slider.getRangeInfo().getCurrent()).put("visibleLabel", label(byLabelPrefix("Volume preview: "))));
+      r.put("listsSetProgress", slider.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS));
+      float[] requests = {80f, 80f, 42.4f, 150f};
+      String[] requestNames = {"setProgress(80)", "setProgress(80) repeated", "setProgress(42.4) snaps to step", "setProgress(150) clamps to max"};
+      for (int i = 0; i < requests.length; i++) {
+        Bundle args = new Bundle();
+        args.putFloat(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE, requests[i]);
+        String before = label(byLabelPrefix("Volume preview: "));
+        boolean set = slider.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.getId(), args);
+        JSONArray observed = new JSONArray();
+        String last = before;
+        for (int t = 0; t < 30; t++) {
+          SystemClock.sleep(50);
+          AccessibilityNodeInfo l = find(x -> label(x).startsWith("Volume preview: "));
+          String now = l == null ? last : label(l);
+          if (!now.equals(last)) { observed.put(now); last = now; }
+        }
+        slider.refresh();
+        steps.put(new JSONObject().put("action", requestNames[i]).put("performed", set).put("labelBefore", before).put("labelChanges", observed).put("range", slider.getRangeInfo() == null ? JSONObject.NULL : slider.getRangeInfo().getCurrent()).put("visibleLabel", last));
+      }
       r.put("steps", steps);
       capture("android-slider-after-actions");
     }
@@ -308,7 +379,8 @@ public class NativeVerificationTest {
       disabledArgs.putFloat(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE, 80f);
       boolean setDisabled = disabled.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.getId(), disabledArgs);
       settle(500);
-      r.put("disabled", new JSONObject().put("enabled", disabled.isEnabled()).put("node", node(disabled)).put("performed", ok).put("setProgressPerformed", setDisabled).put("labelBefore", before).put("labelAfter", label(byLabelPrefix("Volume preview: "))));
+      disabled.refresh();
+      r.put("disabled", new JSONObject().put("enabled", disabled.isEnabled()).put("listsSetProgress", disabled.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS)).put("node", node(disabled)).put("performed", ok).put("setProgressPerformed", setDisabled).put("labelBefore", before).put("labelAfter", label(byLabelPrefix("Volume preview: "))));
     }
     write("android-slider.json", r.toString(1));
   }

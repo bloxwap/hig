@@ -1,0 +1,144 @@
+{
+  "auditIssues" : [
+    {
+      "component" : "Text",
+      "detail" : "User will not be able to change the font size of this RCTUITextField",
+      "element" : "49:Amount (BTC)",
+      "summary" : "Dynamic Type font sizes are unsupported",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 65536)"
+    },
+    {
+      "component" : "Text",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$1,250.45",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "Switch",
+      "detail" : "User will not be able to change the font size of this RCTUITextField",
+      "element" : "49:Amount (BTC)",
+      "summary" : "Dynamic Type font sizes are unsupported",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 65536)"
+    },
+    {
+      "component" : "Switch",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$1,250.45",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "Switch",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$67,234.56",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "Alert",
+      "detail" : "User will not be able to change the font size of this RCTUITextField",
+      "element" : "49:Amount (BTC)",
+      "summary" : "Dynamic Type font sizes are unsupported",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 65536)"
+    },
+    {
+      "component" : "Alert",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$1,250.45",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "Slider",
+      "detail" : "User will not be able to change the font size of this RCTUITextField",
+      "element" : "49:Amount (BTC)",
+      "summary" : "Dynamic Type font sizes are unsupported",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 65536)"
+    },
+    {
+      "component" : "Slider",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$1,250.45",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "Slider",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$67,234.56",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "NumberReadout",
+      "detail" : "User will not be able to change the font size of this RCTUITextField",
+      "element" : "49:Amount (BTC)",
+      "summary" : "Dynamic Type font sizes are unsupported",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 65536)"
+    },
+    {
+      "component" : "NumberReadout",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:67,234.56",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "NumberReadout",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$1,250.45",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    },
+    {
+      "component" : "NumberReadout",
+      "detail" : "The accessibilityLabel of this RCTAccessibilityElement is not human-readable.",
+      "element" : "48:$67,234.56",
+      "summary" : "Label not human-readable",
+      "type" : "XCUIAccessibilityAuditType(rawValue: 8)"
+    }
+  ],
+  "results" : [
+    {
+      "auditIssues" : 2,
+      "buttons" : 5,
+      "component" : "Text",
+      "sliders" : 0,
+      "staticTexts" : 34,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 3,
+      "buttons" : 5,
+      "component" : "Switch",
+      "sliders" : 0,
+      "staticTexts" : 26,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 2,
+      "buttons" : 6,
+      "component" : "Alert",
+      "sliders" : 0,
+      "staticTexts" : 30,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 3,
+      "buttons" : 5,
+      "component" : "Slider",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    },
+    {
+      "auditIssues" : 4,
+      "buttons" : 5,
+      "component" : "NumberReadout",
+      "sliders" : 0,
+      "staticTexts" : 28,
+      "textFields" : 1
+    }
+  ]
+}

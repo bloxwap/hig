@@ -10,7 +10,7 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | --- | --- | --- | --- |
 | Individual DOM Button gzip (React external) | 706 B | 850 B | ~20% API/behavior fix headroom, overlay/audio/chart excluded |
 | Individual AmountInput gzip | 325 B | 400 B | Small labelled primitive, ~23% headroom |
-| Native Switch gzip (React/RN external) | 1,383 B; 1,849 B after #67 | 2,200 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track. ~19% headroom; verifies no Slider/SVG/overlay/feedback imports |
+| Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67 | 2,200 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
 | Docs CSS | 110,618 B (with token roles, #66) | 115,000 B | ~4% headroom; raised from 110,000 B when `@bloxwap/hig-tokens/css` gained radius/type/motion/density/font roles |

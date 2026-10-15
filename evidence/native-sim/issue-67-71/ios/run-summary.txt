@@ -1,0 +1,12 @@
+testSliderAccessibilityActions  -> exit 0
+testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS=Text,Switch,Alert,Slider,NumberReadout TEST_RUNNER_HIG_PREFIX=ios -> exit 0
+testSnapshot TEST_RUNNER_HIG_NAME=alert-error TEST_RUNNER_HIG_QUERY=component=Alert&state=error -> exit 0
+testSnapshot TEST_RUNNER_HIG_NAME=dynamic-type-ax5 -> exit 0
+testSnapshot TEST_RUNNER_HIG_NAME=ax5-alert-error TEST_RUNNER_HIG_QUERY=component=Alert&state=error -> exit 0
+testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS=Text,Switch,Alert,Slider,NumberReadout TEST_RUNNER_HIG_PREFIX=ios-ax5 -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=example-text TEST_RUNNER_HIG_QUERY=component=Text&state=default TEST_RUNNER_HIG_SCROLL_TO=Review the amount TEST_RUNNER_HIG_MEASURE=BLOXWAP|한국어|Price: 67,234.56|Review the amount -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-text TEST_RUNNER_HIG_QUERY=component=Text&state=default TEST_RUNNER_HIG_SCROLL_TO=Review the amount TEST_RUNNER_HIG_MEASURE=BLOXWAP|한국어|Price: 67,234.56|Review the amount -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-switch TEST_RUNNER_HIG_QUERY=component=Switch&state=default TEST_RUNNER_HIG_SCROLL_TO=Preference preview TEST_RUNNER_HIG_MEASURE=Preference preview|Info tone preview -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-alert-error TEST_RUNNER_HIG_QUERY=component=Alert&state=error TEST_RUNNER_HIG_SCROLL_TO=Data unavailable TEST_RUNNER_HIG_MEASURE=Data unavailable -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=example-switch TEST_RUNNER_HIG_QUERY=component=Switch&state=default TEST_RUNNER_HIG_SCROLL_TO=Preference preview TEST_RUNNER_HIG_MEASURE=Preference preview|Info tone preview -> exit 0
+testExampleCapture TEST_RUNNER_HIG_NAME=example-alert-error TEST_RUNNER_HIG_QUERY=component=Alert&state=error TEST_RUNNER_HIG_SCROLL_TO=Data unavailable TEST_RUNNER_HIG_MEASURE=Data unavailable -> exit 0

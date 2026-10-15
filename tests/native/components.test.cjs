@@ -183,6 +183,11 @@ it('native switch and alert accept token colour roles only (#67)',()=>{
  expect(track({tone:'positive'}).true).toBe(colors.positive);
  // Untyped JS cannot smuggle a raw palette colour through the role prop.
  expect(track({tone:'#123456'}).true).toBe(colors.action);
+ // Android paints the thumb from the app theme accent unless HIG sets a token; iOS keeps the native thumb.
+ const thumb=()=>{const tree=mount(React.createElement(Switch,{label:'Sound',checked:true}));const value=tree.findByType(RN.Switch).props.thumbColor;act(()=>root.unmount());root=null;return value;};
+ expect(thumb()).toBeUndefined();
+ const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});
+ try{expect(thumb()).toBe(colors.text);}finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
  const accent=props=>{const tree=mount(React.createElement(Alert,{title:'Result',announce:false,...props}));const style=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.View&&n.props.style)[0].props.style);act(()=>root.unmount());root=null;return style;};
  expect(accent({}).borderColor).toBe(colors.info);
  expect(accent({severity:'success'}).borderColor).toBe(colors.positive);

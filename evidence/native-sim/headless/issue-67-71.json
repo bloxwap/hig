@@ -1,5 +1,8 @@
 {
-  "issues": [67, 71],
+  "issues": [
+    67,
+    71
+  ],
   "date": "2026-10-15",
   "host": "Linux x86_64 CI-class VM without KVM or macOS: no Android emulator, no iOS Simulator",
   "candidate": "packed 0.1.0 candidate tarballs (npm run release:dry-run -- --channel candidate) installed into a copy of fixtures/native (React Native 0.81.5, Expo 54)",
@@ -11,7 +14,10 @@
       "result": "BUILD SUCCESSFUL in 10m 9s (563 tasks)",
       "apkBytes": 29853932,
       "apkSha256": "cf1ad0a50f18612eb6ec760ed3483706778de6981775b7a3ec62435a9cd9c97b",
-      "dexContains": ["Lcom/bloxwap/hig/HIGAdjustableView;", "Lcom/bloxwap/hig/HIGPackage;"],
+      "dexContains": [
+        "Lcom/bloxwap/hig/HIGAdjustableView;",
+        "Lcom/bloxwap/hig/HIGPackage;"
+      ],
       "jsBundleReferences": "HIGAdjustableView"
     },
     "nativeJest": [
@@ -24,13 +30,8 @@
     ]
   },
   "deviceChecks": {
-    "status": "blocked",
-    "reason": "No KVM on this host, so no Android emulator; no macOS, so no iOS Simulator. Nothing here is an emulator, simulator or device observation.",
-    "pending": [
-      "Android emulator: scripts/native-sim/run-android.sh sliderAccessibilityActions must show setProgress on the Volume preview node, setProgress(80) updating the visible label once to 80, and setProgressPerformed=false with an unchanged label when disabled (#71)",
-      "Android emulator: increment/decrement still 5% steps on the same node (#71)",
-      "iOS Simulator: testSliderAccessibilityActions VoiceOver adjustable behaviour unchanged (#71)",
-      "iOS Simulator AX5 (ios-ax5 captures) and Android font_scale 2.0 (android-font200 captures) of Text, Switch and Alert, now in the SUBSET list (#67)"
-    ]
+    "status": "done on 2026-10-15 on a macOS host (iOS Simulator and Android emulator); see evidence/native-sim/issue-67-71/summary.json",
+    "previousStatus": "blocked on this Linux host (no KVM, no macOS)",
+    "pending": []
   }
 }
