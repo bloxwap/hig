@@ -50,7 +50,9 @@ jobs:
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: font-cache
         with:
-          path: packages/native-fonts/fonts
+          path: |
+            packages/native-fonts/fonts
+            packages/og-fonts/fonts
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
@@ -62,6 +64,9 @@ jobs:
       - run: npm run quality
       - run: npm run smoke:ssr
       - run: npm run smoke:packed
+      - run: npm run smoke:packed-og
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
       - run: npm run smoke:packed-boundaries
       - run: npm run smoke:packed-fumadocs
       - run: npm run smoke:packed-examples
@@ -89,6 +94,7 @@ jobs:
           path: |
             evidence/
             artifacts/*.tgz
+            artifacts/og/
             artifacts/release-candidate/
             apps/docs/dist/
             apps/docs/out/
@@ -109,7 +115,9 @@ jobs:
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: font-cache
         with:
-          path: packages/native-fonts/fonts
+          path: |
+            packages/native-fonts/fonts
+            packages/og-fonts/fonts
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
@@ -138,7 +146,9 @@ jobs:
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: font-cache
         with:
-          path: packages/native-fonts/fonts
+          path: |
+            packages/native-fonts/fonts
+            packages/og-fonts/fonts
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'

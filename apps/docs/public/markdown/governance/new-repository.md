@@ -10,7 +10,7 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 | --- | --- | --- |
 | Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font` | Copied component folders or token CSS |
 | Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
-| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font` | A local `.btn` layer, a palette copy, `vendor/hig` |
+| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font`; `-og-fonts` as a build-time dev dependency for OG cards only | A local `.btn` layer, a palette copy, `vendor/hig`, `-native-fonts` for OG cards |
 | Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
 | No UI | Nothing; README and content conventions only | Any HIG runtime dependency |
 
@@ -24,7 +24,7 @@ npm ci && npm run generate:fonts && npm run build
 npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
 ```
 
-`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. In the consuming repository:
+`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
 
 - Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
 - Record their SHA-256 hashes and the source commit in a README or `provenance.json`.

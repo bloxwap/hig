@@ -1,0 +1,65 @@
+{
+  "package": "@bloxwap/font",
+  "version": "0.1.2",
+  "derivedFrom": "@bloxwap/hig-native-fonts",
+  "sources": {
+    "fonts/BloxwapSans/BloxwapSans-Variable.woff2": "96f6be58023b1d22152c797336282a4330a47ab4a3c0ab87451be887903746b7",
+    "fonts/BloxwapMono/BloxwapMono-Variable.woff2": "fa66e41575807c3d260d8f5b493be349cac127836b0174976c7d4876237d2632",
+    "fonts/BloxwapSansKR/BloxwapSansKR-Variable.woff2": "ac41500ba7546e204d07499266cadb848e24c0e9935c2616124aedcfba5a9737",
+    "fonts/BloxwapSansSC/BloxwapSansSC-Variable.woff2": "c0244998e334bbd997dc9acfaf3f10bce169facfec1cf2bbcfc4db38c7122893"
+  },
+  "faces": [
+    {
+      "family": "BloxwapSans",
+      "weight": 400,
+      "asset": "BloxwapSans.ttf",
+      "script": "latin",
+      "registration": "BloxwapSansRegular",
+      "postscript": "BloxwapSans-Regular",
+      "bytes": 446440
+    },
+    {
+      "family": "BloxwapSans",
+      "weight": 500,
+      "asset": "BloxwapSans-Medium.ttf",
+      "script": "latin",
+      "registration": "BloxwapSansMedium",
+      "postscript": "BloxwapSans-Medium",
+      "bytes": 447024
+    },
+    {
+      "family": "BloxwapSans",
+      "weight": 700,
+      "asset": "BloxwapSans-Bold.ttf",
+      "script": "latin",
+      "registration": "BloxwapSansBold",
+      "postscript": "BloxwapSans-Bold",
+      "bytes": 447388
+    },
+    {
+      "family": "BloxwapSans",
+      "weight": 900,
+      "asset": "BloxwapSans-Black.ttf",
+      "script": "latin",
+      "registration": "BloxwapSansBlack",
+      "postscript": "BloxwapSans-Black",
+      "bytes": 445912
+    },
+    {
+      "family": "BloxwapMono",
+      "weight": 500,
+      "asset": "BloxwapMono-Medium.ttf",
+      "script": "latin",
+      "registration": "BloxwapMonoMedium",
+      "postscript": "BloxwapMono-Medium",
+      "bytes": 385628
+    }
+  ],
+  "outputs": {
+    "BloxwapSans.ttf": "778520981b42b408c19e43fc6d62e513ff0c47bd9870d62159e2e74cda2f79f5",
+    "BloxwapSans-Medium.ttf": "add342361cd444c59fb05bb072ac71b32ed27d2fd2f9a364bddb6a930c6bd6bd",
+    "BloxwapSans-Bold.ttf": "13e10451ecec4e33733b196454f1232a16d34d5014dce66daaee4d0c58600e1b",
+    "BloxwapSans-Black.ttf": "a99894c158cff3cff828b7d17ec12f075352848843944a730caa9d64c0362ea2",
+    "BloxwapMono-Medium.ttf": "f969fd1e4d3b81a7fac108a21a8130b7618f04c39ce7fd5e598fb70fd1230b1f"
+  }
+}

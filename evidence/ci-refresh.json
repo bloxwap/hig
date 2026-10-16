@@ -1,0 +1,94 @@
+{
+  "issue": "bloxwap/hig#98, bloxwap/hig#99",
+  "evidence": "automated, Linux CI (ubuntu-24.04, GitHub Actions); copied unchanged from the run artifacts, not regenerated locally",
+  "workflow": "HIG candidate quality and dry-run artifacts",
+  "runId": 38972223859,
+  "runUrl": "https://github.com/bloxwap/hig/actions/runs/38972223859",
+  "event": "push",
+  "sourceCommit": "2e2ebf104b2349d0da4db8ec56d362568c77681c",
+  "artifacts": {
+    "hig-candidate-review-2e2ebf104b2349d0da4db8ec56d362568c77681c": [
+      "evidence/release-dry-run.json",
+      "evidence/quality-report.json",
+      "evidence/packed-og-smoke.json",
+      "evidence/m5-candidate-install.json",
+      "evidence/packed-smoke.json"
+    ],
+    "hig-candidate-browser-2e2ebf104b2349d0da4db8ec56d362568c77681c": [
+      "evidence/issue-1-18/chromium-acceptance.json",
+      "evidence/issue-1-18/firefox-acceptance.json",
+      "evidence/issue-1-18/webkit-acceptance.json"
+    ]
+  },
+  "releaseDryRun": {
+    "channel": "candidate",
+    "artifactVersion": "0.1.0-candidate.sha2e2ebf10",
+    "packages": [
+      "@bloxwap/hig-contracts",
+      "@bloxwap/hig-feedback",
+      "@bloxwap/hig-native",
+      "@bloxwap/hig-native-fonts",
+      "@bloxwap/hig-og-fonts",
+      "@bloxwap/hig-react",
+      "@bloxwap/hig-tokens"
+    ],
+    "packedSizes": {
+      "webTokens": {
+        "file": "bloxwap-hig-tokens-0.1.0-candidate.sha2e2ebf10.tgz",
+        "bytes": 8226,
+        "unpackedBytes": 43413,
+        "fontFiles": 0
+      },
+      "nativeFonts": {
+        "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha2e2ebf10.tgz",
+        "bytes": 4420491,
+        "unpackedBytes": 12069011,
+        "fontFiles": 15
+      },
+      "ogFonts": {
+        "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha2e2ebf10.tgz",
+        "bytes": 844032,
+        "unpackedBytes": 2195023,
+        "fontFiles": 5,
+        "limit": 1000000
+      }
+    }
+  },
+  "note": "Other files under evidence/ (including the issue-1-18 screenshots) keep their earlier provenance. CI uploads fresh copies of every evidence file in the same artifacts for each run.",
+  "packedOgSmoke": {
+    "tarballBytes": 844017,
+    "nextRouteHandler": {
+      "turbopack": {
+        "build": "next build",
+        "nextConfig": {},
+        "serve": "next start",
+        "status": 200
+      },
+      "webpack": {
+        "build": "next build --webpack",
+        "nextConfig": {},
+        "serve": "next start",
+        "status": 200
+      },
+      "turbopack-standalone": {
+        "build": "next build",
+        "nextConfig": {
+          "output": "standalone"
+        },
+        "serve": "standalone, moved",
+        "status": 200
+      },
+      "webpack-standalone-external": {
+        "build": "next build --webpack",
+        "nextConfig": {
+          "output": "standalone",
+          "serverExternalPackages": [
+            "@bloxwap/hig-og-fonts"
+          ]
+        },
+        "serve": "standalone, moved",
+        "status": 200
+      }
+    }
+  }
+}

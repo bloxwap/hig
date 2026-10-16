@@ -43,3 +43,23 @@ and Haptic also repeat the same button and search recipes. Use the existing
 HIG token/component packages for shared behavior, and keep the written guide
 compact with **rule → token or recipe → exception** rather than duplicating the
 five implementations.
+
+## OG card fonts: switch to `@bloxwap/hig-og-fonts` (#99)
+
+Since #64, chart, sfx, agent-cli and tapsiren vendor the whole `@bloxwap/hig-native-fonts` tarball (4,420,375 B, 15 faces) as a build-time dev dependency, but their Satori/`next/og` cards read only two to four TTFs. Switch each repository at its next HIG candidate refresh:
+
+| Repository | OG card file | Faces it reads | Change |
+| --- | --- | --- | --- |
+| chart | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Replace the `node_modules/@bloxwap/hig-native-fonts/fonts` path with `loadOgFonts(ogFonts.filter(f => f.weight >= 700))` |
+| sfx | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Replace both `hig.resolve('@bloxwap/hig-native-fonts/fonts/…')` reads with the same `loadOgFonts` call |
+| agent-cli | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Same as sfx |
+| tapsiren | `workers/tapsiren/scripts/copy-og-fonts.mjs` | Sans 400, 500, 700; Mono 500 | Keep the build-time copy (the card runs on Workers). Resolve `@bloxwap/hig-og-fonts/manifest` and `@bloxwap/hig-og-fonts/fonts/<face>` instead of the native package; the SHA-256 values do not change |
+
+In each repository:
+
+1. Vendor `bloxwap-hig-og-fonts-<candidate>.tgz` from `artifacts/release-candidate/` (about 0.84 MB packed; the exact size is in `packedSizes.ogFonts` of that candidate's release report). Record its SHA-256 next to the other tarballs in `vendor/bloxwap-hig/`.
+2. Replace the `@bloxwap/hig-native-fonts` dev dependency with `@bloxwap/hig-og-fonts`, regenerate the lockfile, and delete the native fonts tarball unless the repository also ships a React Native app.
+3. Import the fonts from `@bloxwap/hig-og-fonts/node` (`loadOgFonts`, `readOgFont`). These check every SHA-256 against the package manifest. They work with the default Turbopack `next build` and with `next build --webpack`. If the docs app uses webpack with `output: 'standalone'` and the build moves, add `serverExternalPackages: ['@bloxwap/hig-og-fonts']`. Vendor a candidate that includes the per-face asset URL fix. Under Turbopack, an earlier `0.1.0` tarball returns 500 with `SHA-256 … does not match the manifest`. An edge host checks `fontManifest.outputs` itself, as tapsiren does. Font names (`'Bloxwap Sans'`, `'Bloxwap Mono'`) and weights stay the same.
+4. Rebuild the OG cards and compare them with the previous images. The faces are byte-identical copies, so the cards should not change. Record the vendored-byte delta in the repository's adoption evidence and update its row in `planning/adoption.json`.
+
+See [Open Graph card fonts](../installation.md#open-graph-card-fonts) for the full API and the edge-runtime path.

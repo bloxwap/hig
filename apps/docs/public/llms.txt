@@ -18,7 +18,7 @@ graph TD
   Native --> Expo[Expo gallery]
 ```
 
-`@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-feedback` owns optional adapter entry points. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
+`@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-feedback` owns optional adapter entry points. `@bloxwap/hig-native-fonts` ships the static native TTFs (#64), and `@bloxwap/hig-og-fonts` ships the five byte-identical Latin faces that Satori/`next/og` cards need (#99). Both are generated from pinned `@bloxwap/font` sources by `npm run generate:fonts`, and they are the only packages allowed to contain font binaries. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
 
 Candidate validation matrix: Node 22.22+, TypeScript 5.9, React/DOM 19.1, RN 0.81.5 with Expo 54 and RN 0.83.10 with Expo 55 (React 19.1.0 and 19.2.0 respectively, #68), Vite 6.4. Next 16.4.0 webpack is verified by M5 production/packed consumer checks. NativeWind styling remains outside the supported StyleSheet consumer path. Use StyleSheet on RN and plain CSS on web; Tailwind may refer to `var(--hig-*)` without scanning HIG sources. The pinned monorepo source now documents web/native rem roots of 16; see source reconciliation. Never infer native sizes by replacing `rem` with `dp`.
 
@@ -1196,7 +1196,7 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 | --- | --- | --- |
 | Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font` | Copied component folders or token CSS |
 | Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
-| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font` | A local `.btn` layer, a palette copy, `vendor/hig` |
+| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font`; `-og-fonts` as a build-time dev dependency for OG cards only | A local `.btn` layer, a palette copy, `vendor/hig`, `-native-fonts` for OG cards |
 | Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
 | No UI | Nothing; README and content conventions only | Any HIG runtime dependency |
 
@@ -1210,7 +1210,7 @@ npm ci && npm run generate:fonts && npm run build
 npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
 ```
 
-`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. In the consuming repository:
+`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
 
 - Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
 - Record their SHA-256 hashes and the source commit in a README or `provenance.json`.
@@ -1293,7 +1293,7 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Font binaries in web/shared tarballs (tokens, contracts, react, feedback, native) | 0 files | 0 files | Native faces ship only in `@bloxwap/hig-native-fonts` (#64); `release:dry-run` fails otherwise and records `packedSizes` |
 | Native four-cue WAV assets | 103,618 B | 110,000 B | ~6% headroom; no full engine/catalog assets |
 
-The actual build report is `evidence/quality-report.json`. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
+The actual build report is `evidence/quality-report.json`. The committed copy, the release report and the browser acceptance files are copied from a Linux CI run, not regenerated on macOS. `evidence/ci-refresh.json` names that run and its source commit (#98). Every CI run uploads fresh copies. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
 
 Exceptions require path/rule, owner, reason and expiry. Approved brand geometry is exempt from literal-palette detection until review; unrelated primitive/palette copies fail. New repositories should run scoped gates on migrated surfaces and keep dated residuals rather than blanket exemptions.
 
@@ -1316,7 +1316,9 @@ npm ci
 npm run check
 npm run examples:check
 npm run quality
+npm run generate:fonts   # Python with fonttools[woff]==4.61.1 and brotli==1.2.0
 npm run smoke:packed
+npm run smoke:packed-og
 npm run smoke:packed-native
 npm run smoke:packed-next
 npm run smoke:packed-css
@@ -1325,6 +1327,8 @@ npm run release:dry-run -- --channel stable-simulation
 ```
 
 Candidate mode stages `0.1.0-candidate.sha<commit>` package metadata and matching internal dependency versions. Stable-simulation stages the coordinated source version. Runtime contract/docs source version and source commit are recorded explicitly; neither source files nor git refs are version-mutated by the dry run. Both produce local tarballs, checked export/types/CSS/assets/files/dependency manifests, hashes, changelog, copied docs artifact and provenance report. `npm pack --ignore-scripts` packs already validated outputs, never publishes. Physical claims remain pending in every report.
+
+The release dry run, `npm run quality`, `smoke:packed-native` and `smoke:packed-og` first check that the generated TTF faces exist and match their manifests (#98). If any face is missing or stale, they stop before building anything. The message names `npm run generate:fonts` and its Python pins and lists the affected files, instead of failing with a raw `ENOENT`. `packedSizes` in the report records the packed and unpacked bytes and the font-file counts of `@bloxwap/hig-tokens` (no fonts), `@bloxwap/hig-native-fonts` and `@bloxwap/hig-og-fonts`. The dry run fails if any other package contains a font binary, or if `@bloxwap/hig-og-fonts` reaches 1,000,000 B packed (#99). `smoke:packed-og` builds the documented `app/og/route.tsx` handler with Turbopack (the Next 16 default) and with `--webpack`. It serves each build with `next start`, and also as moved standalone output. Every face's SHA-256 has to match, so a loader that bundles only one face fails here.
 
 CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/example/visual/accessibility/budget gates and uploads review artifacts. A provenance record identifies source commit, package/contract/docs versions and hashes; it is not an npm registry provenance attestation or a release. Artifact inspection checks exports, licenses, optional peers and only approved assets. No example app implementation is included in runtime packages.
 
@@ -1391,6 +1395,26 @@ The four Radix packages are optional peers with caret ranges: `@radix-ui/react-d
 Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout (or in the route layouts that use HIG; the component CSS is scoped, see above) and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream.
 
 Fonts in Next: put the `@bloxwap/font` loader variables on `<html>`, for example `<html className={`${BloxwapSans.variable} ${BloxwapMono.variable}`}>`. The loaders register hashed family names, so HIG never matches a literal `'Bloxwap Sans'` there. Instead `--hig-font-sans` and `--hig-font-mono` in `@bloxwap/hig-tokens/css` resolve `var(--font-bloxwap-sans)` and `var(--font-bloxwap-mono)` first and fall back to the literal families. No bridge CSS is needed. If a host keeps its own variable names, override the roles on `:root` after importing the tokens CSS: `:root { --hig-font-sans: var(--my-sans), 'Bloxwap Sans', system-ui, sans-serif; }`. The variables must be defined on `<html>` (not `<body>`), because the roles resolve on `:root`. `npm run smoke:packed-next` serves the packed consumer and checks, in Chromium, that `.hig-button` and `.hig-number` compute to a loaded Bloxwap face (`document.fonts.check` plus the `FontFace` status). Next 16.4.0 (webpack), React 19.2 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
+
+## Open Graph card fonts
+
+Satori, `next/og` `ImageResponse` and `@vercel/og` read TTF/OTF but not WOFF2, and `@bloxwap/font` ships only WOFF2. Docs and marketing sites that render OG cards install `@bloxwap/hig-og-fonts` as a build-time dev dependency. Do not use `@bloxwap/hig-native-fonts` for this (#99). The package holds five static Latin faces: Bloxwap Sans 400, 500, 700 and 900, and Bloxwap Mono 500. These are the faces the chart, sfx, agent-cli and tapsiren cards use. It packs to about 0.84 MB; the native fonts package is 4.4 MB. `npm run generate:fonts` copies the five faces byte for byte from `@bloxwap/hig-native-fonts`, so each SHA-256 in its manifest equals the native manifest entry. The release dry run records the packed size in `packedSizes.ogFonts` and fails at 1,000,000 B.
+
+Node runtime (route handlers with `export const runtime = 'nodejs'`, or static OG export scripts):
+
+```tsx
+import {ImageResponse} from 'next/og';
+import {loadOgFonts} from '@bloxwap/hig-og-fonts/node';
+
+const fonts = await loadOgFonts(); // {name, data, weight, style}[]; throws if any TTF's SHA-256 differs from the manifest
+export function GET() {
+  return new ImageResponse(<div style={{display: 'flex', fontFamily: 'Bloxwap Sans', fontWeight: 700}}>Bloxwap</div>, {width: 1200, height: 630, fonts});
+}
+```
+
+This works in a Next 16 route handler with the default Turbopack build and with `next build --webpack`. Turbopack copies the five faces into `.next/server`, so `output: 'standalone'` works even after you move it. webpack reads the faces from `node_modules/@bloxwap/hig-og-fonts/fonts` at the absolute path it had at build time. If a webpack standalone build runs from another directory, add `serverExternalPackages: ['@bloxwap/hig-og-fonts']` to `next.config`. Earlier 0.1.0 candidate builds made each face's path from a template URL, and under Turbopack every face read the same file. The route then failed with `BloxwapSans.ttf: SHA-256 f969fd1e… does not match the manifest`.
+
+Pass a subset if you need fewer faces: `loadOgFonts(ogFonts.filter(f => f.weight >= 700))`, with `ogFonts` imported from `@bloxwap/hig-og-fonts`. Edge and Workers runtimes cannot read `node_modules` at request time. Copy `@bloxwap/hig-og-fonts/fonts/<asset>` into a gitignored build folder at build time. Before you write each file, check it against `fontManifest.outputs[asset]` (from the package root, or as JSON at `@bloxwap/hig-og-fonts/manifest`), as tapsiren's `copy-og-fonts.mjs` does. Plain Node ESM scripts outside Next import `next/og.js`, because `next` has no exports map. `npm run smoke:packed-og` installs the packed tarball next to `next@16.4.0` in a clean consumer. It hashes every exported TTF against both manifests and renders 1200×630 PNG cards through `ImageResponse`: each Sans weight must render differently, and none may match the default font. It also requires `readOgFont` to reject a tampered face. It then builds an `app/og/route.tsx` handler with the code above and checks it four ways: Turbopack and `--webpack`, each under `next start`; Turbopack `output: 'standalone'`; and webpack standalone with `serverExternalPackages`. Each standalone build is moved to another directory with the consumer's `node_modules` hidden. Every face must come back with its own SHA-256, and every card must match the plain Node render byte for byte. Results go to `evidence/packed-og-smoke.json`.
 
 ## Expo / React Native
 
@@ -1579,6 +1603,26 @@ and Haptic also repeat the same button and search recipes. Use the existing
 HIG token/component packages for shared behavior, and keep the written guide
 compact with **rule → token or recipe → exception** rather than duplicating the
 five implementations.
+
+## OG card fonts: switch to `@bloxwap/hig-og-fonts` (#99)
+
+Since #64, chart, sfx, agent-cli and tapsiren vendor the whole `@bloxwap/hig-native-fonts` tarball (4,420,375 B, 15 faces) as a build-time dev dependency, but their Satori/`next/og` cards read only two to four TTFs. Switch each repository at its next HIG candidate refresh:
+
+| Repository | OG card file | Faces it reads | Change |
+| --- | --- | --- | --- |
+| chart | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Replace the `node_modules/@bloxwap/hig-native-fonts/fonts` path with `loadOgFonts(ogFonts.filter(f => f.weight >= 700))` |
+| sfx | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Replace both `hig.resolve('@bloxwap/hig-native-fonts/fonts/…')` reads with the same `loadOgFonts` call |
+| agent-cli | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Same as sfx |
+| tapsiren | `workers/tapsiren/scripts/copy-og-fonts.mjs` | Sans 400, 500, 700; Mono 500 | Keep the build-time copy (the card runs on Workers). Resolve `@bloxwap/hig-og-fonts/manifest` and `@bloxwap/hig-og-fonts/fonts/<face>` instead of the native package; the SHA-256 values do not change |
+
+In each repository:
+
+1. Vendor `bloxwap-hig-og-fonts-<candidate>.tgz` from `artifacts/release-candidate/` (about 0.84 MB packed; the exact size is in `packedSizes.ogFonts` of that candidate's release report). Record its SHA-256 next to the other tarballs in `vendor/bloxwap-hig/`.
+2. Replace the `@bloxwap/hig-native-fonts` dev dependency with `@bloxwap/hig-og-fonts`, regenerate the lockfile, and delete the native fonts tarball unless the repository also ships a React Native app.
+3. Import the fonts from `@bloxwap/hig-og-fonts/node` (`loadOgFonts`, `readOgFont`). These check every SHA-256 against the package manifest. They work with the default Turbopack `next build` and with `next build --webpack`. If the docs app uses webpack with `output: 'standalone'` and the build moves, add `serverExternalPackages: ['@bloxwap/hig-og-fonts']`. Vendor a candidate that includes the per-face asset URL fix. Under Turbopack, an earlier `0.1.0` tarball returns 500 with `SHA-256 … does not match the manifest`. An edge host checks `fontManifest.outputs` itself, as tapsiren does. Font names (`'Bloxwap Sans'`, `'Bloxwap Mono'`) and weights stay the same.
+4. Rebuild the OG cards and compare them with the previous images. The faces are byte-identical copies, so the cards should not change. Record the vendored-byte delta in the repository's adoption evidence and update its row in `planning/adoption.json`.
+
+See [Open Graph card fonts](../installation.md#open-graph-card-fonts) for the full API and the edge-runtime path.
 
 
 ## Documentation website and migration shell · HIG 0.1.0

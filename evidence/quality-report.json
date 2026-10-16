@@ -10,6 +10,7 @@
     "feedback": 17,
     "native": 38,
     "native-fonts": 4,
+    "og-fonts": 6,
     "react": 42,
     "tokens": 5
   },
@@ -60,8 +61,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2246183,
-      "gzip": 627347
+      "raw": 2256027,
+      "gzip": 630504
     },
     "docsCSS": {
       "raw": 111949
