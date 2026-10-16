@@ -2,7 +2,25 @@
 
 ## Color (#6)
 
-Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values; iOS Display-P3 hosts use the generated iosDisplayP3 channel hex map; hosts using sRGB retain ios/Android values. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+
+### Native colour space
+
+React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff5c5c` is read as P3 channels and paints a more saturated red than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog, GestureSheet and the brand mark) then paints from that table through `useColors()`. Hosts choose a table and never pass raw colours. Nested providers inherit the value, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
+
+| `HIGProvider colorSpace` | iOS | Android | react-native-web |
+| --- | --- | --- | --- |
+| `srgb` (default) | `nativeSrgb` | `nativeSrgb` | `nativeSrgb` |
+| `display-p3` | `nativeDisplayP3` (= `nativeColors.iosDisplayP3`) | `nativeSrgb` (HIG publishes no Android P3 table) | `nativeSrgb` |
+
+| Role | `nativeSrgb` | `iosDisplayP3` |
+| --- | --- | --- |
+| action / positive / buy / focus | `#00ff3f` | `#00ff3d` |
+| warning | `#f5b300` | `#ebb63e` |
+| negative / sell | `#ff5c5c` | `#ec6762` |
+| info | `#35b5ff` | `#2eb8ff` |
+
+Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and an iOS Simulator capture of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). Physical display comparison is tracked in #55.
 
 ## Typography (#7)
 

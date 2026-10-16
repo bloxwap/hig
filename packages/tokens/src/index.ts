@@ -200,6 +200,25 @@ export const nativeSrgb = {
   "warning": "#f5b300",
   "info": "#35b5ff"
 } as const;
+// iOS Display P3 hosts (HIGProvider colorSpace='display-p3'): the same roles as P3 channel hex, kept small for the same reason.
+export const nativeDisplayP3 = {
+  "background": "#0a0a0a",
+  "surface": "#171717",
+  "nested": "#262626",
+  "text": "#fafafa",
+  "muted": "#a1a1a1",
+  "faint": "#858585",
+  "border": "#3a3a3a",
+  "action": "#00ff3d",
+  "onAction": "#0a0a0a",
+  "focus": "#00ff3d",
+  "buy": "#00ff3d",
+  "sell": "#ec6762",
+  "positive": "#00ff3d",
+  "negative": "#ec6762",
+  "warning": "#ebb63e",
+  "info": "#2eb8ff"
+} as const;
 export const nativeMetrics = {
   "space": {
     "xs": 4,
@@ -374,24 +393,7 @@ export const nativeColors = {
     "warning": "#f5b300",
     "info": "#35b5ff"
   },
-  "iosDisplayP3": {
-    "background": "#0a0a0a",
-    "surface": "#171717",
-    "nested": "#262626",
-    "text": "#fafafa",
-    "muted": "#a1a1a1",
-    "faint": "#858585",
-    "border": "#3a3a3a",
-    "action": "#00ff3d",
-    "onAction": "#0a0a0a",
-    "focus": "#00ff3d",
-    "buy": "#00ff3d",
-    "sell": "#ec6762",
-    "positive": "#00ff3d",
-    "negative": "#ec6762",
-    "warning": "#ebb63e",
-    "info": "#2eb8ff"
-  },
+  "iosDisplayP3": nativeDisplayP3,
   "iosP3": {
     "background": {
       "space": "display-p3",

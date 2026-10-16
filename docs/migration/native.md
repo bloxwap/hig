@@ -32,4 +32,18 @@ Issue #64. Up to `0.1.0-candidate.sha7c67a07c`, `@bloxwap/hig-tokens` shipped th
 - **Web-only hosts:** remove nothing. They keep loading fonts from `@bloxwap/font`, and their tokens tarball shrinks. `npm run release:dry-run` fails if any web or shared tarball contains `.ttf`, `.otf` or `.woff*` files, and it records the packed sizes in `packedSizes` in the release report.
 - **Coordination:** monorepo#4540 loads the faces from `@bloxwap/hig-tokens`. Rebase it on a candidate that includes this change, and switch it to the new prefix when it does.
 
+## Native colour space (#93)
+
+Up to `0.1.0-candidate.shaac27cf7`, HIG native components always painted `nativeSrgb` hex values. On an iOS host whose React Native default colour space is Display P3, those values were read as P3 channels, so the Switch track, Alert accent, Text, Surface and the other components painted warning, negative and info more saturated than the token. HIG now selects one of its own tables through the provider:
+
+```tsx
+// iOS hosts whose app delegate returns .displayP3 from defaultColorSpace() (bloxwap/monorepo apps/mobile/plugins/with-ios-display-p3.js).
+<HIGProvider colorSpace='display-p3'>{app}</HIGProvider>
+```
+
+- **Display P3 hosts** set `colorSpace='display-p3'` on the root `HIGProvider`. iOS then paints `nativeColors.iosDisplayP3`, and Android and web keep `nativeSrgb`, so the prop can be set unconditionally. Nested providers inherit it.
+- **Host-drawn colour** next to HIG components: drop local `nativeColors.iosDisplayP3` lookups and per-platform selection and read `useColors()` from `@bloxwap/hig-native/provider`. Delete wrappers that only existed to pass a P3 colour into Button `style`.
+- **sRGB hosts** change nothing. The default is `srgb` and renders the same values as before.
+- Raw colours are still not accepted. `colorSpace` takes only `'srgb'` or `'display-p3'`, and any other value falls back to sRGB.
+
 Rollback: host feature flag restores old renderer/backends and previous lockfile. Persisted business data and feedback choices retain old-compatible fields during staged rollout; avoid one-way preference deletion. Keep old static assets until both physical platforms pass.

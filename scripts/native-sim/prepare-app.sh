@@ -2,6 +2,9 @@
 # Builds the packed-candidate native gallery as real iOS Simulator and Android emulator apps.
 # Usage: scripts/native-sim/prepare-app.sh <app-dir> <simulator-udid> [profile]
 # profile: rn-0.81 (default; RN 0.81.5 / Expo 54) or rn-0.83 (RN 0.83.10 / Expo 55), from fixtures/native/profiles.json (#68).
+# HIG_IOS_COLOR_SPACE=display-p3 builds the iOS app as a Display P3 host (React Native default colour space, as a host's
+# defaultColorSpace() override does) for HIGProvider colorSpace='display-p3' captures (#93); unset keeps sRGB.
+# HIG_SKIP_ANDROID=1 stops after the iOS build.
 # Requires artifacts/release-candidate/*.tgz (native-fonts needs `npm run generate:fonts` first) (npm run release:dry-run -- --channel candidate),
 # Xcode with an iOS Simulator runtime, JDK 17 and the Android SDK. Nothing is published.
 set -euo pipefail
@@ -13,12 +16,26 @@ node "$HIG/scripts/native-consumer.mjs" "$PROFILE" "$APP"
 (cd "$APP" && npm install --no-audit --no-fund $(ls "$HIG"/artifacts/release-candidate/bloxwap-hig-{contracts,feedback,native,native-fonts,tokens}-*.tgz))
 node --input-type=module -e "import {verifyNativeReact,verifyExpoNativeModules,verifyDeclaredPeers} from '$HIG/scripts/native-compatibility.mjs';console.log(verifyNativeReact('$APP'),verifyExpoNativeModules('$APP'),verifyDeclaredPeers('$APP'))"
 (cd "$APP" && CI=1 npx expo prebuild --no-install) # idempotent; applies app.json changes
+# #93: Display P3 host. Inserted into (or removed from) the generated Swift ReactNativeDelegate on every run.
+python3 - "$APP/ios/BloxwapHIGGallery/AppDelegate.swift" "${HIG_IOS_COLOR_SPACE:-srgb}" <<'EOF'
+import sys
+path,space=sys.argv[1],sys.argv[2];s=open(path).read()
+block="  // HIG_DISPLAY_P3: hex/rgba style colours are Display P3 channels on iOS (#93).\n  override func defaultColorSpace() -> RCTColorSpace {\n    .displayP3\n  }\n\n"
+s=s.replace(block,"")
+if space=="display-p3":
+  anchor="class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {\n"
+  if anchor not in s: sys.exit("AppDelegate.swift has no ReactNativeDelegate; update prepare-app.sh for this Expo template")
+  s=s.replace(anchor,anchor+block,1)
+elif space!="srgb": sys.exit(f"HIG_IOS_COLOR_SPACE must be srgb or display-p3, got {space}")
+open(path,"w").write(s)
+EOF
 # Xcode 27 rejects pod resource targets below iOS 15.
 grep -q "Xcode 27 rejects" "$APP/ios/Podfile" || ruby -e 'p=ARGV[0];s=File.read(p);s.sub!(/(:ccache_enabled => ccache_enabled\?\(podfile_properties\),\n    \)\n)/){$1+"    # Xcode 27 rejects pod resource targets below iOS 15.0.\n    installer.pods_project.targets.each { |t| t.build_configurations.each { |c| c.build_settings[%q(IPHONEOS_DEPLOYMENT_TARGET)] = %q(15.1) if c.build_settings[%q(IPHONEOS_DEPLOYMENT_TARGET)].to_f < 15.1 } }\n"};File.write(p,s)' "$APP/ios/Podfile"
 (cd "$APP/ios" && pod install)
 xcodebuild -workspace "$APP/ios/BloxwapHIGGallery.xcworkspace" -scheme BloxwapHIGGallery -configuration Release -sdk iphonesimulator \
   -destination "id=$UDID" -derivedDataPath "$APP/../dd-ios" CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=YES ARCHS=arm64 \
   ENTRY_FILE="$APP/index.js" PROJECT_ROOT="$APP" build
+[ "${HIG_SKIP_ANDROID:-0}" = 1 ] && exit 0
 # Android: instrumentation test runs against the release build.
 GRADLE="$APP/android/app/build.gradle"
 grep -q testInstrumentationRunner "$GRADLE" || python3 - "$GRADLE" <<'EOF'

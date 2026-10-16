@@ -49,6 +49,7 @@ Source: docs/architecture/platform-matrix.md
 | Actions, surfaces, text, fields | Semantic DOM elements | Pressable/View/Text/TextInput | behavior tests, Vite/SSR/Metro |
 | Native text scaling and script tracking | Browser zoom; no cap | `Text`/`Heading`/`NumberReadout` `maxFontSizeMultiplier` (prop or HIGProvider default); Korean/Chinese runs at companion spacing via `script` and `letterSpacingByScript` | native Jest (#67); iOS Simulator AX5: capped readout 48pt vs 86pt prose; Android emulator 200% (non-linear scaling stays under the 2x cap) (`evidence/native-sim/issue-67-71/`) |
 | Native colour roles | CSS severity/data attributes | `Switch` `tone`, `Alert` `severity`/`tone` take token roles only; raw colours fall back. The Android Switch thumb uses the `text` token instead of the app theme accent | native Jest (#67); iOS Simulator and Android emulator captures (`evidence/native-sim/issue-67-71/`) |
+| Native colour space | CSS sRGB with P3 in `@supports` | `HIGProvider colorSpace` `srgb` (default) or `display-p3`; every component paints from `useColors()`; iOS `display-p3` uses `nativeColors.iosDisplayP3`, Android and web stay sRGB; no raw colours | native Jest (#93: P3 values for action/warning/negative/info, direct-import guard); iOS Simulator capture as a Display P3 host (`evidence/native-sim/issue-93/`); physical display pending (#55) |
 | Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser; Android Slider adds `ACTION_SET_PROGRESS` through the autolinked `HIGAdjustableView` (plain View without native linking) | contract tests; Android emulator UiAutomation (#71): set-progress listed, 80 applied once, snapped/clamped, absent and rejected while disabled; iOS Simulator increment/decrement unchanged (`evidence/native-sim/issue-67-71/`) |
 | Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
@@ -909,7 +910,25 @@ Source: docs/foundations/platform.md
 
 ## Color (#6)
 
-Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values; iOS Display-P3 hosts use the generated iosDisplayP3 channel hex map; hosts using sRGB retain ios/Android values. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+
+### Native colour space
+
+React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff5c5c` is read as P3 channels and paints a more saturated red than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog, GestureSheet and the brand mark) then paints from that table through `useColors()`. Hosts choose a table and never pass raw colours. Nested providers inherit the value, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
+
+| `HIGProvider colorSpace` | iOS | Android | react-native-web |
+| --- | --- | --- | --- |
+| `srgb` (default) | `nativeSrgb` | `nativeSrgb` | `nativeSrgb` |
+| `display-p3` | `nativeDisplayP3` (= `nativeColors.iosDisplayP3`) | `nativeSrgb` (HIG publishes no Android P3 table) | `nativeSrgb` |
+
+| Role | `nativeSrgb` | `iosDisplayP3` |
+| --- | --- | --- |
+| action / positive / buy / focus | `#00ff3f` | `#00ff3d` |
+| warning | `#f5b300` | `#ebb63e` |
+| negative / sell | `#ff5c5c` | `#ec6762` |
+| info | `#35b5ff` | `#2eb8ff` |
+
+Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and an iOS Simulator capture of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). Physical display comparison is tracked in #55.
 
 ## Typography (#7)
 
@@ -987,7 +1006,7 @@ The audit covers tokens, shared web/native primitives, plain-ui and app/Pro-owne
 
 `packages/tokens/upstream-palette.json` preserves the complete authored semantic OKLCH palette and brand sRGB/P3 channels. `sourceColors` exports web strings plus converted Android sRGB and iOS Display-P3 channel values; generated CSS exposes authored `--hig-source-*` variables. The HIG surface, nested, text and muted roles now retain their corresponding authored OKLCH values and tested sRGB fallback. Brand green and blue preserve upstream P3 channels. HIG focus green, market sell red, warning gold, opaque border and faint text are intentional intent/accessibility mappings rather than mislabeled exact source copies; direction remains distinct from destructive intent.
 
-Native views default to sRGB and use `nativeColors.android`/`ios`. A host that explicitly configures RN iOS default color space as Display-P3 must use `nativeColors.iosDisplayP3` throughout, including converted third-party sRGB assets. Never send CSS functions to native views or use P3 channel hex in an sRGB host. These are mathematical conversion checks, not physical wide-gamut display certification.
+Native views default to sRGB and use `nativeColors.android`/`ios`. A host that explicitly configures RN iOS default color space as Display-P3 sets `HIGProvider colorSpace='display-p3'`, so HIG components paint `nativeColors.iosDisplayP3` (also exported alone as `nativeDisplayP3`). It reads `useColors()` for its own views and converts third-party sRGB assets (#93). Never send CSS functions to native views or use P3 channel hex in an sRGB host. These are mathematical conversion checks, not physical wide-gamut display certification.
 
 Source `spacing.ts` and `type.ts` explicitly set both rem roots to 16; native spacing md=12 and base type=16 match HIG. Radius 6/8/10/14 and motion 180/260/320 ms also match. HIG caption line-height 18, title 30 and display 52 intentionally provide readable role leading versus the stock utility steps. Comfortable 48-unit native targets and compact 36-pixel desktop targets remain distinct; compact native buttons still retain 48-unit hit targets. Source native sheets use optional Gorhom/Reanimated gesture backends, 320 ms card transitions and separate 500 ms opening motion. HIG's basic Sheet stays a static, scrollable Modal alternative. The isolated gesture-sheet entry now supplies an optional Gorhom adapter with detents, cancellation delegation, native back, safe-area/keyboard configuration, reduced-motion mapping and focus requests. Its mocked lifecycle and real Metro imports are software-verified; actual worklet, pan interruption and assistive-technology behavior still require a booted native target.
 
@@ -1436,6 +1455,20 @@ Issue #64. Up to `0.1.0-candidate.sha7c67a07c`, `@bloxwap/hig-tokens` shipped th
 - **Satori / OG images in web repositories:** these also read static TTFs (bloxwap/chart's OG card is one). Install `@bloxwap/hig-native-fonts` as a build-time dependency for that script only, or read the TTF from `@bloxwap/font` if it ships one. Never copy the faces into the repository.
 - **Web-only hosts:** remove nothing. They keep loading fonts from `@bloxwap/font`, and their tokens tarball shrinks. `npm run release:dry-run` fails if any web or shared tarball contains `.ttf`, `.otf` or `.woff*` files, and it records the packed sizes in `packedSizes` in the release report.
 - **Coordination:** monorepo#4540 loads the faces from `@bloxwap/hig-tokens`. Rebase it on a candidate that includes this change, and switch it to the new prefix when it does.
+
+## Native colour space (#93)
+
+Up to `0.1.0-candidate.shaac27cf7`, HIG native components always painted `nativeSrgb` hex values. On an iOS host whose React Native default colour space is Display P3, those values were read as P3 channels, so the Switch track, Alert accent, Text, Surface and the other components painted warning, negative and info more saturated than the token. HIG now selects one of its own tables through the provider:
+
+```tsx
+// iOS hosts whose app delegate returns .displayP3 from defaultColorSpace() (bloxwap/monorepo apps/mobile/plugins/with-ios-display-p3.js).
+<HIGProvider colorSpace='display-p3'>{app}</HIGProvider>
+```
+
+- **Display P3 hosts** set `colorSpace='display-p3'` on the root `HIGProvider`. iOS then paints `nativeColors.iosDisplayP3`, and Android and web keep `nativeSrgb`, so the prop can be set unconditionally. Nested providers inherit it.
+- **Host-drawn colour** next to HIG components: drop local `nativeColors.iosDisplayP3` lookups and per-platform selection and read `useColors()` from `@bloxwap/hig-native/provider`. Delete wrappers that only existed to pass a P3 colour into Button `style`.
+- **sRGB hosts** change nothing. The default is `srgb` and renders the same values as before.
+- Raw colours are still not accepted. `colorSpace` takes only `'srgb'` or `'display-p3'`, and any other value falls back to sRGB.
 
 Rollback: host feature flag restores old renderer/backends and previous lockfile. Persisted business data and feedback choices retain old-compatible fields during staged rollout; avoid one-way preference deletion. Keep old static assets until both physical platforms pass.
 
