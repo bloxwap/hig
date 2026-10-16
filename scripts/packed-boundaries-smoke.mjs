@@ -26,6 +26,15 @@ for(const [entry,[name,props]] of Object.entries(overlayFree)){
  assert.ok(result.outputFiles[0].contents.length>0);
  assert.equal(inputs.some(p=>/radix|overlay|dialog/.test(p)),false,`recipes/${entry} pulls overlay code: ${inputs.filter(p=>/radix|overlay|dialog/.test(p))}`);
 }
+// #95: the component CSS is scoped to HIG classes; page-wide element defaults are the opt-in ./css/base entry.
+// Both resolve through package exports in a bundler, and the scoped file carries no bare element rule.
+const cssBundle=async contents=>{const out=await build({stdin:{contents,resolveDir:directory,sourcefile:'styles.js'},absWorkingDir:directory,bundle:true,write:false,outdir:join(directory,'css-out'),logLevel:'silent'});return out.outputFiles.find(f=>f.path.endsWith('.css'))?.text??'';};
+const rulesOf=css=>[...css.replace(/\/\*[\s\S]*?\*\//g,'').matchAll(/([^{}@]+)\{[^{}]*\}/g)].flatMap(m=>{const parts=[];let depth=0,part='';for(const c of m[1]){if(c==='('||c==='[')depth++;if(c===')'||c===']')depth--;if(c===','&&!depth){parts.push(part);part='';}else part+=c;}return [...parts,part].map(s=>s.trim());}).filter(Boolean);
+const scoped=await cssBundle("import '@bloxwap/hig-react/css';"),base=await cssBundle("import '@bloxwap/hig-react/css/base';");
+assert.ok(scoped.includes('.hig-button'),'@bloxwap/hig-react/css bundles the component rules');
+const unscoped=rulesOf(scoped).filter(selector=>!/hig-|^(?:from|to|\d+%)$|^:root$/.test(selector));
+assert.deepEqual(unscoped,[],`@bloxwap/hig-react/css has selectors outside HIG classes: ${unscoped.join(' | ')}`);
+for(const selector of ['*',':focus-visible','table','th','td','input[type=range]'])assert.ok(rulesOf(base).some(s=>s.replace(/["']/g,'')===selector),`@bloxwap/hig-react/css/base keeps ${selector}`);
 // Guard the guard: the overlay recipe still needs its Dialog peer, so the bundle must fail here.
 await assert.rejects(bundle("export {TradeEntry} from '@bloxwap/hig-react/recipes/trade-entry';"),/@radix-ui\/react-dialog/,'trade-entry bundled without its dialog peer');
-console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, native, chart or feedback engines');
+console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, native, chart or feedback engines; scoped ./css and opt-in ./css/base resolve through exports');

@@ -79,6 +79,7 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: '1'
       - run: npm run smoke:packed-css
+      - run: npm run smoke:packed-react-css
       - run: npm run release:dry-run -- --channel candidate
       - run: npm run smoke:release-artifact -- candidate
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

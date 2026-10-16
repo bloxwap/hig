@@ -39,6 +39,7 @@
     "quality": "node scripts/quality.mjs && node scripts/drift.mjs",
     "smoke:packed-next": "node scripts/packed-next-smoke.mjs",
     "smoke:packed-css": "node scripts/packed-css-smoke.mjs",
+    "smoke:packed-react-css": "node scripts/packed-react-css-smoke.mjs",
     "release:dry-run": "node scripts/release-dry-run.mjs",
     "smoke:packed-examples": "node scripts/packed-examples-smoke.mjs",
     "smoke:packed-boundaries": "node scripts/packed-boundaries-smoke.mjs",

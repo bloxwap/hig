@@ -2,6 +2,8 @@ import React,{useState,useCallback,useMemo,useEffect} from 'react';
 import {createRoot} from 'react-dom/client';
 import './fonts.css';
 import '@bloxwap/hig-tokens/css';
+// Page-wide element defaults (box-sizing, focus ring, table, range) are opt-in since #95; import them before the component CSS.
+import '@bloxwap/hig-react/css/base';
 import '@bloxwap/hig-react/css';
 import {FeedbackProvider,useFeedback} from '@bloxwap/hig-feedback/react';
 import {FeedbackController} from '@bloxwap/hig-feedback';

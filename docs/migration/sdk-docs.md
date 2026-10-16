@@ -10,6 +10,8 @@ Owner: each SDK repository's docs maintainers (named assignment in #57). Preserv
 | sfx | Controls/presets/settings/docs states | Sound board and recipe editor/export | Trusted audio unlock, mute/volume, edited recipes, native WAV command docs and cleanup |
 | haptic | Common controls and explicit capability labels | Physical-target/platform demo and certification references | Physical iOS/Android/VoiceOver evidence remains upstream haptic#9; no API-call-as-tactile-proof claims |
 
+Docs sites that render Markdown tables or plain form controls relied on the page-wide rules that `@bloxwap/hig-react/css` set before #95. On a candidate that contains #95, add `@import '@bloxwap/hig-react/css/base';` before `@import '@bloxwap/hig-react/css';` to keep the same look, as the HIG docs site does. See [installation](../installation.md#component-css-and-the-opt-in-base).
+
 Per-repo checklist:
 - [ ] Pin source commit, HIG version and staged tarballs; capture before pages and duplicate CSS/primitive/font/audio/dependency/bundle baseline.
 - [ ] Inventory each existing apps/docs shell, static base path, metadata, search/index adapter, CSS/Next font loader and copy/install control.
