@@ -37,8 +37,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 3819,
-      "gzip": 1883,
+      "raw": 4282,
+      "gzip": 2019,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -60,8 +60,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2232788,
-      "gzip": 623462
+      "raw": 2246183,
+      "gzip": 627347
     },
     "docsCSS": {
       "raw": 111949

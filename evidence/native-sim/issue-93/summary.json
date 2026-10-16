@@ -1,0 +1,205 @@
+{
+  "issue": 93,
+  "observedAt": "2026-10-16",
+  "evidenceKinds": {
+    "automated": "Native Jest (tests/native/color-space.test.cjs, tests/native/gesture-sheet.test.cjs): table selection, inheritance, iosDisplayP3 values rendered by every component, Android stays sRGB, direct-import/raw-hex guard.",
+    "iOS Simulator": "Release build of the packed candidate on a booted iOS Simulator, built as a Display P3 host; deep links via simctl openurl; screenshots via simctl io screenshot.",
+    "Android emulator": "not run for this change; Android ignores display-p3 by design and is covered by the automated tests",
+    "physical hardware": "none; no physical wide-gamut display comparison (device residuals: bloxwap/hig#55)"
+  },
+  "environment": {
+    "host": "macOS 27.2 (Apple silicon), Xcode 27.2",
+    "iosSimulator": "HIG Native iPhone 16 Pro (061B087F-1BF5-4548-AA37-BD2355667D01), iOS 26.5 (23F77), 1206x2622 px, dark appearance, default content size; booted for this run and shut down afterwards",
+    "stack": "Expo SDK 55.0.31 prebuild, Release, React Native 0.83.10 New Architecture, Hermes (fixtures/native/profiles.json rn-0.83, the profile bloxwap/monorepo apps/mobile runs)",
+    "hostColorSpace": "Display P3: prepare-app.sh HIG_IOS_COLOR_SPACE=display-p3 inserts `override func defaultColorSpace() -> RCTColorSpace { .displayP3 }` into ReactNativeDelegate, as monorepo apps/mobile/plugins/with-ios-display-p3.js does"
+  },
+  "candidate": {
+    "version": "0.1.0-candidate.shaac27cf7c",
+    "sourceCommit": "fb1ddd6 (this branch; packages unchanged by the later fixture-only commit)",
+    "consumption": "HIG_IOS_COLOR_SPACE=display-p3 HIG_SKIP_ANDROID=1 scripts/native-sim/prepare-app.sh <app> <udid> rn-0.83 installs only the packed tarballs from npm run release:dry-run -- --channel candidate",
+    "published": false
+  },
+  "method": "scripts/native-sim/capture-color-space.sh opens bloxwaphig://gallery?colorSpace=<display-p3|srgb>[&component=…] in the same P3-host build. The gallery header shows the provider's resolved table plus a warning, negative and info Alert and a warning-tone Switch (fixtures/native/App.tsx ColorSpaceCheck). scripts/native-sim/sample-accents.py lists the most frequent saturated pixel colours.",
+  "screenshotColorSpace": "simctl writes PNGs tagged sRGB IEC61966-2.1 (sips), so pixels are the sRGB rendering of what the P3 host painted; colours wider than sRGB are clipped",
+  "results": {
+    "colorSpace=display-p3": {
+      "resolvedTable": "action #00ff3d · warning #ebb63e · negative #ec6762 · info #2eb8ff (on-screen readout)",
+      "warning": "Alert border and Switch track render sRGB #f5b300, exactly the nativeSrgb token",
+      "negative": "Alert border renders sRGB #ff5c5c, exactly the nativeSrgb token",
+      "actionAndInfo": "Button fill and BrandMark render #00ff00; info renders #00bbff. The authored action/info colours are wider than sRGB, so an sRGB screenshot clips them and cannot confirm them; physical display comparison is #55"
+    },
+    "colorSpace=srgb (the #93 bug: sRGB hex read as P3 channels)": {
+      "resolvedTable": "action #00ff3f · warning #f5b300 · negative #ff5c5c · info #35b5ff (on-screen readout)",
+      "warning": "renders #ffaf00/#ffb000, more saturated than the token",
+      "negative": "renders #ff4a54/#ff4b54/#ff4b55, more saturated than the token",
+      "info": "renders #00b8ff/#00b9ff"
+    }
+  },
+  "samples": {
+    "ios-gallery-display-p3": [
+      {
+        "rgb": "#00ff00",
+        "samples": 13719
+      },
+      {
+        "rgb": "#f5b300",
+        "samples": 3959
+      },
+      {
+        "rgb": "#ff5c5c",
+        "samples": 2181
+      },
+      {
+        "rgb": "#00bbff",
+        "samples": 1428
+      },
+      {
+        "rgb": "#00bcff",
+        "samples": 709
+      },
+      {
+        "rgb": "#34c759",
+        "samples": 218
+      }
+    ],
+    "ios-gallery-srgb": [
+      {
+        "rgb": "#00ff00",
+        "samples": 13719
+      },
+      {
+        "rgb": "#ffaf00",
+        "samples": 3276
+      },
+      {
+        "rgb": "#00b8ff",
+        "samples": 1505
+      },
+      {
+        "rgb": "#ffb000",
+        "samples": 686
+      },
+      {
+        "rgb": "#ff4a54",
+        "samples": 647
+      },
+      {
+        "rgb": "#00b9ff",
+        "samples": 598
+      }
+    ],
+    "ios-alert-error-display-p3": [
+      {
+        "rgb": "#ff5c5c",
+        "samples": 4591
+      },
+      {
+        "rgb": "#f5b300",
+        "samples": 3959
+      },
+      {
+        "rgb": "#00ff00",
+        "samples": 1625
+      },
+      {
+        "rgb": "#00bbff",
+        "samples": 1428
+      },
+      {
+        "rgb": "#00bcff",
+        "samples": 709
+      },
+      {
+        "rgb": "#34c759",
+        "samples": 218
+      }
+    ],
+    "ios-alert-error-srgb": [
+      {
+        "rgb": "#ffaf00",
+        "samples": 3276
+      },
+      {
+        "rgb": "#00ff00",
+        "samples": 1625
+      },
+      {
+        "rgb": "#00b8ff",
+        "samples": 1505
+      },
+      {
+        "rgb": "#ff4a54",
+        "samples": 1378
+      },
+      {
+        "rgb": "#ff4b54",
+        "samples": 1280
+      },
+      {
+        "rgb": "#ff4b55",
+        "samples": 1073
+      }
+    ],
+    "ios-switch-default-display-p3": [
+      {
+        "rgb": "#f5b300",
+        "samples": 3959
+      },
+      {
+        "rgb": "#00bbff",
+        "samples": 3188
+      },
+      {
+        "rgb": "#ff5c5c",
+        "samples": 2181
+      },
+      {
+        "rgb": "#00ff00",
+        "samples": 1625
+      },
+      {
+        "rgb": "#00bcff",
+        "samples": 709
+      },
+      {
+        "rgb": "#34c759",
+        "samples": 218
+      }
+    ],
+    "ios-switch-default-srgb": [
+      {
+        "rgb": "#ffaf00",
+        "samples": 3276
+      },
+      {
+        "rgb": "#00b8ff",
+        "samples": 3265
+      },
+      {
+        "rgb": "#00ff00",
+        "samples": 1625
+      },
+      {
+        "rgb": "#ffb000",
+        "samples": 686
+      },
+      {
+        "rgb": "#ff4a54",
+        "samples": 647
+      },
+      {
+        "rgb": "#00b9ff",
+        "samples": 598
+      }
+    ]
+  },
+  "captures": [
+    "ios/ios-gallery-display-p3.png",
+    "ios/ios-gallery-srgb.png",
+    "ios/ios-alert-error-display-p3.png",
+    "ios/ios-alert-error-srgb.png",
+    "ios/ios-switch-default-display-p3.png",
+    "ios/ios-switch-default-srgb.png"
+  ],
+  "notObserved": "VoiceOver, physical wide-gamut display, Android emulator"
+}

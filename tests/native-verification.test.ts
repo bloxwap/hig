@@ -5,6 +5,8 @@ it('parses simulator deep links for the native gallery harness',()=>{
  expect(parseGalleryRoute('bloxwaphig://gallery?dir=up&rows=-1&component=%E2%80%A6')).toEqual({component:'…'});
  expect(parseGalleryRoute('bloxwaphig://gallery?component=Button&state=busy&messages=ko')).toEqual({component:'Button',state:'busy',messages:'ko'});
  expect(parseGalleryRoute('bloxwaphig://gallery?messages=toString')).toEqual({});
+ expect(parseGalleryRoute('bloxwaphig://gallery?component=Alert&state=warning&colorSpace=display-p3')).toEqual({component:'Alert',state:'warning',colorSpace:'display-p3'});
+ expect(parseGalleryRoute('bloxwaphig://gallery?colorSpace=%23ff0000')).toEqual({});
  expect(parseGalleryRoute('bloxwaphig://gallery')).toBeNull();expect(parseGalleryRoute(null)).toBeNull();
 });
 it('records haptic and sound adapter calls without changing their outcome',async()=>{
