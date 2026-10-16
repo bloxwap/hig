@@ -10,7 +10,8 @@
     "feedback": 17,
     "native": 38,
     "native-fonts": 4,
-    "react": 42,
+    "og-fonts": 6,
+    "react": 41,
     "tokens": 5
   },
   "sizes": {
@@ -37,8 +38,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4282,
-      "gzip": 2019,
+      "raw": 3819,
+      "gzip": 1883,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -60,11 +61,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2246183,
-      "gzip": 627347
+      "raw": 2240112,
+      "gzip": 625639
     },
     "docsCSS": {
-      "raw": 111949
+      "raw": 111309
     },
     "fonts": {
       "raw": 592796

@@ -7,6 +7,7 @@
     "pointer cancellation and reduced-motion press transform",
     "synthetic composition and negative locale raw precision",
     "range Home/End/step",
+    "slider focus ring clear of label and next control at comfortable and compact density (#69)",
     "radio keyboard",
     "RTL translated tabs and disabled skip",
     "nested modal Tab/Escape and focus restoration",

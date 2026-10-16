@@ -1,0 +1,36 @@
+{
+  "version": "0.1.0",
+  "evidence": "automated (local tarball, clean temporary consumer)",
+  "package": "@bloxwap/hig-og-fonts",
+  "tarball": {
+    "file": "bloxwap-hig-og-fonts-0.1.0.tgz",
+    "bytes": 843597,
+    "unpackedBytes": 2193127,
+    "sha256": "b82c25bd8d42e19d711bb68a07e3c08a838b63643dd52544b53e14e3e329329f",
+    "limit": 1000000
+  },
+  "fonts": [
+    "fonts/BloxwapMono-Medium.ttf",
+    "fonts/BloxwapSans-Black.ttf",
+    "fonts/BloxwapSans-Bold.ttf",
+    "fonts/BloxwapSans-Medium.ttf",
+    "fonts/BloxwapSans.ttf"
+  ],
+  "hashesMatchNativeManifest": true,
+  "consumer": {
+    "next": "16.4.0",
+    "react": "19.2.0",
+    "renderer": "next/og ImageResponse (Satori + resvg), Node runtime"
+  },
+  "checks": [
+    "Manifest export and fonts/* exports resolve; every TTF SHA-256 equals fonts/manifest.json and the @bloxwap/hig-native-fonts entry",
+    "loadOgFonts() returns Satori-shaped fonts; four Bloxwap Sans weights render four different 1200x630 PNGs, all different from the next/og default font",
+    "readOgFont() rejects a tampered face"
+  ],
+  "pngBytes": {
+    "400": 33676,
+    "500": 33688,
+    "700": 33394,
+    "900": 33086
+  }
+}
