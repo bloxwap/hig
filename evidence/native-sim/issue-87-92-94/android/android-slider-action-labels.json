@@ -1,0 +1,149 @@
+{
+ "en": {
+  "found": true,
+  "actions": [
+   {
+    "id": "id 4",
+    "label": null
+   },
+   {
+    "id": "id 8",
+    "label": null
+   },
+   {
+    "id": "id 1",
+    "label": null
+   },
+   {
+    "id": "id 64",
+    "label": null
+   },
+   {
+    "id": "id 131072",
+    "label": null
+   },
+   {
+    "id": "id 256",
+    "label": null
+   },
+   {
+    "id": "id 512",
+    "label": null
+   },
+   {
+    "id": "id 16908342",
+    "label": null
+   },
+   {
+    "id": "scrollForward",
+    "label": "Increase"
+   },
+   {
+    "id": "scrollBackward",
+    "label": "Decrease"
+   },
+   {
+    "id": "setProgress",
+    "label": null
+   }
+  ]
+ },
+ "fr": {
+  "found": true,
+  "actions": [
+   {
+    "id": "id 4",
+    "label": null
+   },
+   {
+    "id": "id 8",
+    "label": null
+   },
+   {
+    "id": "id 1",
+    "label": null
+   },
+   {
+    "id": "id 64",
+    "label": null
+   },
+   {
+    "id": "id 131072",
+    "label": null
+   },
+   {
+    "id": "id 256",
+    "label": null
+   },
+   {
+    "id": "id 512",
+    "label": null
+   },
+   {
+    "id": "id 16908342",
+    "label": null
+   },
+   {
+    "id": "scrollForward",
+    "label": "Augmenter"
+   },
+   {
+    "id": "scrollBackward",
+    "label": "Diminuer"
+   },
+   {
+    "id": "setProgress",
+    "label": null
+   }
+  ]
+ },
+ "ko": {
+  "found": true,
+  "actions": [
+   {
+    "id": "id 4",
+    "label": null
+   },
+   {
+    "id": "id 8",
+    "label": null
+   },
+   {
+    "id": "id 1",
+    "label": null
+   },
+   {
+    "id": "id 64",
+    "label": null
+   },
+   {
+    "id": "id 131072",
+    "label": null
+   },
+   {
+    "id": "id 256",
+    "label": null
+   },
+   {
+    "id": "id 512",
+    "label": null
+   },
+   {
+    "id": "id 16908342",
+    "label": null
+   },
+   {
+    "id": "scrollForward",
+    "label": "증가"
+   },
+   {
+    "id": "scrollBackward",
+    "label": "감소"
+   },
+   {
+    "id": "setProgress",
+    "label": null
+   }
+  ]
+ }
+}
