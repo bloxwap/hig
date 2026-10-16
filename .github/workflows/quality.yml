@@ -1,8 +1,15 @@
 name: HIG candidate quality and dry-run artifacts
 on:
   pull_request:
+  # Workflow-level paths-ignore is safe on push (no required checks).
+  # On pull_request it would skip the workflow entirely and leave required
+  # checks pending, so PRs use the paths-filter job below instead.
   push:
     branches: ['hig/**']
+    paths-ignore:
+      - '**/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,7 +17,27 @@ concurrency:
   group: hig-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  candidate:
+  paths-filter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      code: ${{ github.event_name != 'pull_request' && 'true' || steps.filter.outputs.code }}
+    steps:
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        if: github.event_name == 'pull_request'
+        id: filter
+        with:
+          predicate-quantifier: some-with-excludes
+          filters: |
+            code:
+              - '**'
+              - '!**/*.md'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/pull_request_template.md'
+
+  quality:
+    needs: paths-filter
+    if: needs.paths-filter.outputs.code == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -27,20 +54,21 @@ jobs:
       - run: npm run quality
       - run: npm run smoke:ssr
       - run: npm run smoke:packed
-      - name: Packed native consumer, RN 0.81.5 / Expo 54 (Android and iOS Metro export)
-        run: npm run smoke:packed-native
-      - name: Packed native consumer, RN 0.83.10 / Expo 55 (Android and iOS Metro export, #68)
-        run: npm run smoke:packed-native -- --profile rn-0.83
       - run: npm run smoke:packed-boundaries
       - run: npm run smoke:packed-fumadocs
       - run: npm run smoke:packed-examples
+      - name: Read Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run smoke:packed-next
         env:
           NEXT_TELEMETRY_DISABLED: '1'
       - run: npm run smoke:packed-css
-      - name: Browser, visual and hydration gates
-        run: node scripts/run-browser-gates.mjs
       - run: npm run release:dry-run -- --channel candidate
       - run: npm run smoke:release-artifact -- candidate
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -50,9 +78,99 @@ jobs:
           path: |
             evidence/
             artifacts/*.tgz
-            artifacts/visual/
             artifacts/release-candidate/
             apps/docs/dist/
             apps/docs/out/
           retention-days: 14
+
+  native:
+    needs: paths-filter
+    if: needs.paths-filter.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.22.0'
+          cache: npm
+      - run: npm ci
+      - run: python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
+      - run: npm run generate:fonts
+      - run: npm run generate && node scripts/build.mjs
+      - run: npm run smoke:packed
+      - name: Packed native consumer, RN 0.81.5 / Expo 54 (Android and iOS Metro export)
+        run: npm run smoke:packed-native
+      - name: Packed native consumer, RN 0.83.10 / Expo 55 (Android and iOS Metro export, #68)
+        run: npm run smoke:packed-native -- --profile rn-0.83
+
+  browser:
+    needs: paths-filter
+    if: needs.paths-filter.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.22.0'
+          cache: npm
+      - run: npm ci
+      - run: python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
+      - run: npm run generate:fonts
+      - run: npm run build
+      - name: Read Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Browser, visual and hydration gates
+        run: node scripts/run-browser-gates.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: hig-candidate-browser-${{ github.sha }}
+          path: |
+            evidence/
+            artifacts/visual/
+          retention-days: 14
+
+  # Same job name as the previous single required check. Always reports so
+  # docs-only PRs are not stuck on "Waiting for status to be reported."
+  candidate:
+    needs: [paths-filter, quality, native, browser]
+    if: always() && !cancelled()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Confirm candidate quality
+        env:
+          CHANGES: ${{ needs.paths-filter.result }}
+          CODE: ${{ needs.paths-filter.outputs.code }}
+          QUALITY: ${{ needs.quality.result }}
+          NATIVE: ${{ needs.native.result }}
+          BROWSER: ${{ needs.browser.result }}
+        run: |
+          set -euo pipefail
+          if [ "$CHANGES" != success ]; then
+            echo "paths-filter job: $CHANGES"
+            exit 1
+          fi
+          if [ "$CODE" != true ]; then
+            echo "Docs-only change; quality jobs skipped"
+            exit 0
+          fi
+          failed=0
+          for pair in "quality:$QUALITY" "native:$NATIVE" "browser:$BROWSER"; do
+            job="${pair%%:*}"
+            result="${pair#*:}"
+            echo "$job: $result"
+            if [ "$result" != success ]; then
+              failed=1
+            fi
+          done
+          exit "$failed"
 # No npm publish, git tag, release API, deployment or write permissions.
