@@ -221,35 +221,34 @@
       "name": "monorepo",
       "applicability": "product web (bloxwap.app, bloxwap.pro), marketing Worker (bloxwap.com) and React Native app",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "higVersion": "web: 0.1.0-candidate.sha1a776b93 (artifacts/hig); mobile PR #4540: 0.1.0-candidate.shac32771dc",
-      "status": "in progress: pilot merged; four follow-up PRs open, blocked by the required human signoff status",
+      "higVersion": "web: 0.1.0-candidate.sha1a776b93 (artifacts/hig; refresh in #109); mobile: 0.1.0-candidate.shac32771dc (apps/mobile/vendor/bloxwap-hig)",
+      "status": "pilots merged on all three web origins and the native app; remaining surfaces and fork retirement tracked in #110",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4522",
         "https://github.com/bloxwap/monorepo/pull/4523",
         "https://github.com/bloxwap/monorepo/pull/4525",
         "https://github.com/bloxwap/monorepo/pull/4540"
       ],
-      "validation": "Per-surface rows below; CI green on all open PRs; independent verifiers approved #4522/#4523/#4525 and the refreshed #4540 (head 99b26d55)",
+      "openPRs": [],
+      "validation": "Per-surface rows below. #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe: each merged origin/main, passed bun run quality, CI green and human signoff before squash-merge",
       "exceptions": [
         {
           "scope": "retired forks kept as rollback renderers (apps/pro ui/segmented, ui/button, ui/input; apps/app components/ui; packages/ui-native Button/Sheet/Toast)",
           "reason": "host rollback flags NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT and screens not yet migrated",
           "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/33"
+          "tracking": "https://github.com/bloxwap/hig/issues/110"
         },
         {
           "scope": "apps/www/public/fonts (12 MB committed font copies)",
           "reason": "marketing Worker has no deploy-time font asset step yet",
           "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/33"
+          "tracking": "https://github.com/bloxwap/hig/issues/110"
         }
       ],
-      "remaining": "Human signoff and merge of #4522/#4523/#4525/#4540 (#33, #35); remaining screens; fork retirement",
+      "remaining": "Web candidate refresh (#109); remaining surfaces and fork/font retirement (#110); upstream native fixes #86/#92/#93/#94; physical devices (#55)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/monorepo",
       "exceptionExpires": "2027-01-15"
@@ -456,17 +455,16 @@
       "name": "bloxwap.app",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "pilot merged (#4515: settings/billing, raw amount fields); Sound & Haptics feedback controller PR open",
+      "status": "pilots merged (#4515 settings/billing, raw amount fields; #4523 Sound & Haptics through the HIG feedback controller)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4523"
       ],
+      "openPRs": [],
       "validatedVersion": "0.1.0-candidate.sha1a776b93",
-      "validation": "#4523: lint, typecheck, 3,122 tests, production build, 24-case settings browser matrix (Chrome/Firefox CI)",
+      "validation": "#4523 merged as b1b913dac. #4523: lint, typecheck, 3,122 tests, production build, 24-case settings browser matrix (Chrome/Firefox CI)",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
-      "remaining": "Signed-in amount/review/sheet/outcome pilots; remaining direct sfx/haptics calls; fork retirement",
+      "remaining": "Signed-in amount/review/sheet/outcome pilots; remaining direct sfx/haptics calls; fork retirement; candidate refresh (#109); tracked in #110",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/products.md"
     },
@@ -474,17 +472,16 @@
       "name": "bloxwap.pro",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "pilot merged (#4515) with a compact-density regression; fix and navigation/numbers pilots open in #4522",
+      "status": "pilots merged (#4515; #4522 compact-density fix restores 38px leaderboard rows and 6px order-ticket slider, navigation/numbers pilots)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4522"
       ],
+      "openPRs": [],
       "validatedVersion": "0.1.0-candidate.sha1a776b93",
-      "validation": "#4522: leaderboard row 47px->38px and order-ticket slider 48px->6px restored (production next start), roving-tabindex keyboard, 216 tests",
+      "validation": "#4522 merged as 137660fc7. #4522: leaderboard row 47px->38px and order-ticket slider 48px->6px restored (production next start), roving-tabindex keyboard, 216 tests",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0; revert 8fe4859c",
-      "remaining": "Merge #4522 (main currently carries the #4515 density regression); market list, stats header, tables",
+      "remaining": "market list, stats header, tables; candidate refresh (#109); tracked in #110",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/products.md"
     },
@@ -492,17 +489,16 @@
       "name": "bloxwap.com",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "typography/CTA pilot merged (#4515); waitlist/Pro features/touch footer PR open",
+      "status": "pilots merged (#4515 typography/CTA; #4525 waitlist, Pro features, touch footer)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4525"
       ],
+      "openPRs": [],
       "validatedVersion": "0.1.0-candidate.sha1a776b93",
-      "validation": "#4525: 38 tests, Worker bundle, marketing browser check (48px touch targets, busy waitlist) in Chrome/Firefox CI",
+      "validation": "#4525 merged as 38d7360fe. #4525: 38 tests, Worker bundle, marketing browser check (48px touch targets, busy waitlist) in Chrome/Firefox CI",
       "rollback": "HIG_MARKETING_PILOT=0",
-      "remaining": "Signals, markets and setup sections; retire 12 MB public/fonts copies",
+      "remaining": "Signals, markets and setup sections; retire 12 MB public/fonts copies; candidate refresh (#109); tracked in #110",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/products.md"
     },
@@ -510,17 +506,16 @@
       "name": "React Native app",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "settings/field typography pilot merged (#4515); full migration PR #4540 refreshed onto candidate shac32771dc, CI green and verifier-approved, blocked only by the required human signoff",
+      "status": "full migration merged (#4540 on candidate shac32771dc)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4540"
       ],
+      "openPRs": [],
       "validatedVersion": "0.1.0-candidate.shac32771dc",
-      "validation": "#4540 at 99b26d55 (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out · Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff)",
+      "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out · Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff)",
       "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
-      "remaining": "Human signoff and merge of #4540 (#35); drop the busy-label wrapper after #94; #92, #93, #86 upstream; physical devices (#55); remaining screens on ui-native (trade, toasts, account sheet)",
+      "remaining": "drop the busy-label wrapper after #94; #92, #93, #86 upstream; physical devices (#55); remaining screens on ui-native (trade, toasts, account sheet); tracked in #110",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/native.md"
     },
