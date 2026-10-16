@@ -1,0 +1,229 @@
+{
+ "results": [
+  {
+   "catalog": "en",
+   "visibleLabel": "Review order",
+   "visibleSuffix": " · Working",
+   "found": true,
+   "contentDescription": "Review order, busy",
+   "containsLabel": true,
+   "startsWithLabel": true,
+   "busyWordCount": 0,
+   "enabled": false,
+   "node": {
+    "class": "android.widget.Button",
+    "contentDescription": "Review order, busy",
+    "bounds": "72 1050 708 1194",
+    "dp": "212x48",
+    "clickable": true,
+    "focusable": true,
+    "enabled": false,
+    "actions": [
+     "click"
+    ],
+    "children": [
+     {
+      "class": "android.widget.TextView",
+      "text": "Review order",
+      "bounds": "132 1086 412 1158",
+      "dp": "93x24"
+     },
+     {
+      "class": "android.widget.TextView",
+      "text": " · Working",
+      "bounds": "436 1086 648 1158",
+      "dp": "71x24"
+     }
+    ]
+   }
+  },
+  {
+   "catalog": "en",
+   "visibleLabel": "Log out",
+   "visibleSuffix": " · Working",
+   "found": true,
+   "contentDescription": "Log out, busy",
+   "containsLabel": true,
+   "startsWithLabel": true,
+   "busyWordCount": 0,
+   "enabled": false,
+   "node": {
+    "class": "android.widget.Button",
+    "contentDescription": "Log out, busy",
+    "id": "busy-name-check",
+    "bounds": "72 870 586 1014",
+    "dp": "171x48",
+    "clickable": true,
+    "focusable": true,
+    "enabled": false,
+    "actions": [
+     "click"
+    ],
+    "children": [
+     {
+      "class": "android.widget.TextView",
+      "text": "Log out",
+      "bounds": "132 906 290 978",
+      "dp": "53x24"
+     },
+     {
+      "class": "android.widget.TextView",
+      "text": " · Working",
+      "bounds": "314 906 526 978",
+      "dp": "71x24"
+     }
+    ]
+   }
+  },
+  {
+   "catalog": "fr",
+   "visibleLabel": "Review order",
+   "visibleSuffix": " · En cours",
+   "found": true,
+   "contentDescription": "Review order, busy",
+   "containsLabel": true,
+   "startsWithLabel": true,
+   "busyWordCount": 0,
+   "enabled": false,
+   "node": {
+    "class": "android.widget.Button",
+    "contentDescription": "Review order, busy",
+    "bounds": "72 1050 714 1194",
+    "dp": "214x48",
+    "clickable": true,
+    "focusable": true,
+    "enabled": false,
+    "actions": [
+     "click"
+    ],
+    "children": [
+     {
+      "class": "android.widget.TextView",
+      "text": "Review order",
+      "bounds": "132 1086 412 1158",
+      "dp": "93x24"
+     },
+     {
+      "class": "android.widget.TextView",
+      "text": " · En cours",
+      "bounds": "436 1086 654 1158",
+      "dp": "73x24"
+     }
+    ]
+   }
+  },
+  {
+   "catalog": "fr",
+   "visibleLabel": "Déconnexion",
+   "visibleSuffix": " · En cours",
+   "found": true,
+   "contentDescription": "Déconnexion, busy",
+   "containsLabel": true,
+   "startsWithLabel": true,
+   "busyWordCount": 0,
+   "enabled": false,
+   "node": {
+    "class": "android.widget.Button",
+    "contentDescription": "Déconnexion, busy",
+    "id": "busy-name-check",
+    "bounds": "72 870 707 1014",
+    "dp": "212x48",
+    "clickable": true,
+    "focusable": true,
+    "enabled": false,
+    "actions": [
+     "click"
+    ],
+    "children": [
+     {
+      "class": "android.widget.TextView",
+      "text": "Déconnexion",
+      "bounds": "132 906 405 978",
+      "dp": "91x24"
+     },
+     {
+      "class": "android.widget.TextView",
+      "text": " · En cours",
+      "bounds": "429 906 647 978",
+      "dp": "73x24"
+     }
+    ]
+   }
+  },
+  {
+   "catalog": "ko",
+   "visibleLabel": "Review order",
+   "visibleSuffix": " · 처리 중",
+   "found": true,
+   "contentDescription": "Review order, busy",
+   "containsLabel": true,
+   "startsWithLabel": true,
+   "busyWordCount": 0,
+   "enabled": false,
+   "node": {
+    "class": "android.widget.Button",
+    "contentDescription": "Review order, busy",
+    "bounds": "72 1050 678 1194",
+    "dp": "202x48",
+    "clickable": true,
+    "focusable": true,
+    "enabled": false,
+    "actions": [
+     "click"
+    ],
+    "children": [
+     {
+      "class": "android.widget.TextView",
+      "text": "Review order",
+      "bounds": "132 1086 412 1158",
+      "dp": "93x24"
+     },
+     {
+      "class": "android.widget.TextView",
+      "text": " · 처리 중",
+      "bounds": "436 1086 618 1158",
+      "dp": "61x24"
+     }
+    ]
+   }
+  },
+  {
+   "catalog": "ko",
+   "visibleLabel": "로그아웃",
+   "visibleSuffix": " · 처리 중",
+   "found": true,
+   "contentDescription": "로그아웃, busy",
+   "containsLabel": true,
+   "startsWithLabel": true,
+   "busyWordCount": 0,
+   "enabled": false,
+   "node": {
+    "class": "android.widget.Button",
+    "contentDescription": "로그아웃, busy",
+    "id": "busy-name-check",
+    "bounds": "72 870 574 1014",
+    "dp": "167x48",
+    "clickable": true,
+    "focusable": true,
+    "enabled": false,
+    "actions": [
+     "click"
+    ],
+    "children": [
+     {
+      "class": "android.widget.TextView",
+      "text": "로그아웃",
+      "bounds": "132 906 308 978",
+      "dp": "59x24"
+     },
+     {
+      "class": "android.widget.TextView",
+      "text": " · 처리 중",
+      "bounds": "332 906 514 978",
+      "dp": "61x24"
+     }
+    ]
+   }
+  }
+ ]
+}

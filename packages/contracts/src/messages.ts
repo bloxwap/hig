@@ -16,7 +16,7 @@ export interface HIGMessages {
  dismiss: string;
  /** Toast dismiss accessible name. Must contain `dismiss` (the visible label) so voice control still matches. */
  dismissNotice: (message: string, dismiss: string) => string;
- /** Visible and announced Button busy suffix (` · Working`). An empty string hides the suffix; busy state is still exposed. */
+ /** Visible and announced Button busy suffix (` · Working`). An empty string hides the suffix; busy state is still exposed. On Android the platform's busy state description replaces the suffix in the accessible name. */
  busy: string;
  /** Web Toast landmark name. */
  notifications: string;
@@ -98,6 +98,10 @@ export interface HIGMessages {
  statusOffline: string;
  /** StatusIndicator `stale` state. */
  statusStale: string;
+ /** Native Slider increment accessibility action label (Android action list; RN 0.83 otherwise exposes an empty label). */
+ increase: string;
+ /** Native Slider decrement accessibility action label. */
+ decrease: string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.
 export const close = 'Close';
@@ -145,8 +149,10 @@ export const noActivity = 'No activity yet';
 export const statusOnline = 'online';
 export const statusOffline = 'offline';
 export const statusStale = 'stale';
+export const increase = 'Increase';
+export const decrease = 'Decrease';
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale, increase, decrease};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**

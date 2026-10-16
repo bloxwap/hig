@@ -1,0 +1,125 @@
+{
+ "found": true,
+ "initial": {
+  "class": "android.widget.SeekBar",
+  "contentDescription": "Volume preview",
+  "bounds": "72 942 1188 1086",
+  "dp": "372x48",
+  "focusable": true,
+  "range": "0.0..100.0 now 25.0",
+  "actions": [
+   "scrollForward \"Increase\"",
+   "scrollBackward \"Decrease\"",
+   "setProgress"
+  ],
+  "children": [
+   {
+    "class": "android.widget.SeekBar",
+    "stateDescription": "25%",
+    "bounds": "72 987 1188 1041",
+    "dp": "372x18",
+    "focusable": true,
+    "important": false,
+    "range": "0.0..100.0 now 25.0",
+    "actions": [
+     "scrollBackward",
+     "scrollForward",
+     "setProgress"
+    ]
+   }
+  ]
+ },
+ "initialLabel": "Volume preview: 25",
+ "listsSetProgress": true,
+ "steps": [
+  {
+   "action": "scrollForward(increment)",
+   "performed": false,
+   "range": 30,
+   "visibleLabel": "Volume preview: 30"
+  },
+  {
+   "action": "scrollForward(increment)",
+   "performed": false,
+   "range": 35,
+   "visibleLabel": "Volume preview: 35"
+  },
+  {
+   "action": "scrollBackward(decrement)",
+   "performed": false,
+   "range": 30,
+   "visibleLabel": "Volume preview: 30"
+  },
+  {
+   "action": "setProgress(80)",
+   "performed": true,
+   "labelBefore": "Volume preview: 30",
+   "labelChanges": [
+    "Volume preview: 80"
+   ],
+   "range": 80,
+   "visibleLabel": "Volume preview: 80"
+  },
+  {
+   "action": "setProgress(80) repeated",
+   "performed": true,
+   "labelBefore": "Volume preview: 80",
+   "labelChanges": [],
+   "range": 80,
+   "visibleLabel": "Volume preview: 80"
+  },
+  {
+   "action": "setProgress(42.4) snaps to step",
+   "performed": true,
+   "labelBefore": "Volume preview: 80",
+   "labelChanges": [
+    "Volume preview: 42"
+   ],
+   "range": 42,
+   "visibleLabel": "Volume preview: 42"
+  },
+  {
+   "action": "setProgress(150) clamps to max",
+   "performed": true,
+   "labelBefore": "Volume preview: 42",
+   "labelChanges": [
+    "Volume preview: 100"
+   ],
+   "range": 100,
+   "visibleLabel": "Volume preview: 100"
+  }
+ ],
+ "disabled": {
+  "enabled": false,
+  "listsSetProgress": false,
+  "node": {
+   "class": "android.widget.SeekBar",
+   "contentDescription": "Volume preview",
+   "bounds": "72 942 1188 1086",
+   "dp": "372x48",
+   "focusable": true,
+   "enabled": false,
+   "range": "0.0..100.0 now 100.0",
+   "actions": [
+    "scrollForward \"Increase\"",
+    "scrollBackward \"Decrease\""
+   ],
+   "children": [
+    {
+     "class": "android.widget.SeekBar",
+     "stateDescription": "100%",
+     "bounds": "72 987 1188 1041",
+     "dp": "372x18",
+     "focusable": true,
+     "enabled": false,
+     "important": false,
+     "range": "0.0..100.0 now 100.0"
+    }
+   ]
+  },
+  "performed": false,
+  "setProgressPerformed": false,
+  "labelBefore": "Volume preview: 100",
+  "labelAfter": "Volume preview: 100"
+ }
+}
