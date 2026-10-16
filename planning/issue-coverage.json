@@ -25,6 +25,16 @@
       "date": "2026-10-15",
       "finalState": "open",
       "note": "Roadmap epic; #58-#71 are closed, but #33, #35 and #36 still wait on the monorepo human signoff"
+    },
+    "monorepoLanding": {
+      "date": "2026-10-16",
+      "finalState": "open",
+      "evidencePRs": [],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/56",
+        "https://github.com/bloxwap/hig/issues/57"
+      ]
     }
   },
   {
@@ -1178,6 +1188,19 @@
       "date": "2026-10-15",
       "finalState": "open",
       "note": "monorepo#4522/#4523/#4525 approved and green; unmerged pending the required human signoff"
+    },
+    "monorepoLanding": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4522",
+        "https://github.com/bloxwap/monorepo/pull/4523",
+        "https://github.com/bloxwap/monorepo/pull/4525"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/109",
+        "https://github.com/bloxwap/hig/issues/110"
+      ]
     }
   },
   {
@@ -1238,6 +1261,17 @@
       "date": "2026-10-15",
       "finalState": "open",
       "note": "monorepo#4540 refreshed onto candidate c32771dc (head 99b26d55, CI green, verifier-approved), drops the #62/#64/#67 workarounds; unmerged pending the required human signoff; physical devices in #55; upstream #86, #92, #93, #94"
+    },
+    "monorepoLanding": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4540"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/110"
+      ]
     }
   },
   {
@@ -1268,6 +1302,20 @@
       "date": "2026-10-15",
       "finalState": "open",
       "note": "agent-cli, taptradetv (/sponsors), tapsiren and bloxwap.github.io migrations merged and recorded; SDK docs chart/sfx/haptic on 872906a9; product origins and native app wait on monorepo signoff (#33, #35); remaining dated exceptions tracked in #100 and #101"
+    },
+    "monorepoLanding": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4522",
+        "https://github.com/bloxwap/monorepo/pull/4523",
+        "https://github.com/bloxwap/monorepo/pull/4525",
+        "https://github.com/bloxwap/monorepo/pull/4540"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/109",
+        "https://github.com/bloxwap/hig/issues/110"
+      ]
     }
   },
   {
