@@ -554,7 +554,7 @@
       "ios": "Feedback calls: #11 sound play:tick volume 0.30 | #12 sound tick finished 0.08s of 0.08s | #13 haptic selection called | #14 haptic selection resolved | #15 sound play:tick volume 0.30 | #16 sound tick finished 0.08s of 0.08s",
       "android": "Feedback calls: #9 sound tick finished 0.09s of 0.08s | #10 haptic selection called | #11 sound play:tick volume 0.30 | #12 haptic selection resolved | #13 sound tick finished 0.09s of 0.08s | #14 sound tick finished 0.09s of 0.08s",
       "androidAudioFocusRequests": 11,
-      "note": "expo-audio players reported playback completion (didJustFinish) through the simulator/emulator audio path; nothing was listened to and silent-switch/interruption behavior is not simulated"
+      "note": "expo-audio players reported playback completion (didJustFinish) through the simulator/emulator audio path; nothing was listened to and silent-switch/interruption behavior is not simulated. The two Android didJustFinish entries per tick are expo-audio 1.1 reporting one finish twice, not a second play: 4 play() calls, 4 playing starts and 8 didJustFinish statuses (4 repeats); Expo SDK 55 reports one (issue-86-88-89/summary.json, #89)"
     },
     "haptics": {
       "iosSimulator": "expo-haptics selectionAsync resolved through the HIG adapter (recorded call); the Simulator has no Taptic Engine: unsupported-hardware path, no tactile output",
@@ -568,7 +568,7 @@
         "Label not human-readable": 122
       },
       "androidScanner": {},
-      "note": "iOS \"Label not human-readable\" flags currency readouts such as \"$1,250.45\" (heuristic; VoiceOver pronunciation needs a device); \"Label duplicates traits\" is the gallery Select value \"Button\"; \"Dynamic Type font sizes are unsupported\" flags React Native TextInput, which scales by fontScale rather than adjustsFontForContentSizeCategory (AX5 captures show the input text scaling)"
+      "note": "iOS \"Label not human-readable\" flags currency readouts such as \"$1,250.45\" (heuristic; VoiceOver pronunciation needs a device); \"Label duplicates traits\" is the gallery Select value \"Button\"; \"Dynamic Type font sizes are unsupported\" applies to React Native 0.81.5 (this run): it flags React Native TextInput, which scales by fontScale rather than adjustsFontForContentSizeCategory (AX5 captures show the input text scaling). On React Native 0.82+ (0.83.10 in rn-0.83/) the audit no longer flags it: react/react-native#53324 turned enableFontScaleChangesUpdatingLayout on by default, so RCTTextInputComponentView re-applies the scaled font when the content size category changes; adjustsFontForContentSizeCategory is still unset (react/react-native#57426 is unmerged). See issue-86-88-89/summary.json (#88)."
     },
     "orientation": {
       "android": {

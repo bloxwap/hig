@@ -443,6 +443,8 @@ For approved iOS physical action targets, install `@bloxwap/haptic@0.1.0` and wr
 
 Install the feedback package plus `expo-audio` (`~1.1.1` on Expo SDK 54, `~55.0.18` on SDK 55) only in the native host setup. `expoAudioBackend(Audio)` supplies a thin playback bridge; `createNativeSoundAdapter(backend, assets)` accepts Metro asset ids. The Expo gallery imports only the four committed WAV cues. Configure ambient/silent-mode behavior with `playsInSilentMode:false`, no background playback and `doNotMix` interruption mode. Host AppState calls `setBackground`; backgrounding pauses cached players. Call `preload()` at startup: it configures the audio session and caches players once. After that, `play()` dispatches synchronously, with no awaited bridge round trip before `player.play()`. It stops only the previous cue, issues `seekTo(0)` without awaiting it (native players apply calls in order) and plays. A cue requested before preload settles waits for it, and only the newest such request plays. Concurrency is limited to one active cue, volume/mute are honored, missing cues are silent, and disposal pauses/removes every cached player.
 
+Playback completion: HIG does not listen to `playbackStatusUpdate` and never relies on `didJustFinish`. On Android, `expo-audio` 1.1 (Expo SDK 54) reports `didJustFinish` twice for one finished cue; SDK 55 (`expo-audio` 55.0) reports it once (#89). In the Android emulator run, SDK 54 had 4 `play()` calls, 4 playing starts and 8 `didJustFinish` statuses: the same finish reported twice, not a second play (`evidence/native-sim/issue-86-88-89/`). In `expo-audio` 1.1, every status sent while the player is ended carries `didJustFinish: true`, and two listeners send one when a cue ends. A host or future adapter that acts on completion must de-duplicate it, for example by ignoring a `didJustFinish` that has no `play()` or `playing: true` status since the last one. Device timing for both SDKs is tracked in #55.
+
 Regenerate with `npm run generate:cues`. `assets/manifest.json` pins package/recipe/export flags, 48kHz mono PCM16, durations, peaks/RMS, bytes and reviewed hashes. Noise recipes vary; do not assert regenerated WAV bytes are deterministic. Inspect duration/envelope/level tolerances and review the actual artifact hashes. Offline generation dependencies are dev-only; Metro never imports them or browser synthesis.
 
 ## Native haptics
@@ -812,6 +814,27 @@ Logical inline spacing, wrapping labels, no fixed-height clipping of translated 
 
 Long translations, Arabic/Hebrew RTL and large text remain part of the [platform checklist](platform.md#accessibility-and-localization-10). Physical-device observations are still pending.
 
+### Native direction from the host locale
+
+Issue #86. On native, `HIGProvider` follows `I18nManager.isRTL` when `direction` is unset. React Native 0.82 and later, including 0.83.10, do not report an Android per-app RTL locale through `I18nManager` (Android 13+ `cmd locale set-app-locales ar-EG`, or a per-app language picker). `I18nManager.isRTL` stays `false`, so an Arabic or Hebrew user would get a left-to-right HIG tree. RN 0.81.5 and iOS are not affected.
+
+Hosts that lay out right to left pass the locale's direction:
+
+```tsx
+import {getLocales} from 'expo-localization';
+import {HIGProvider, localeDirection} from '@bloxwap/hig-native/provider';
+
+const direction = localeDirection(getLocales()[0]); // 'rtl' for ar-EG; undefined keeps the I18nManager default
+<HIGProvider locale={getLocales()[0]?.languageTag} direction={direction}>{children}</HIGProvider>;
+```
+
+`localeDirection` (also exported from `@bloxwap/hig-contracts`) returns expo-localization's `textDirection` when present. Otherwise it reads the tag's script, then its language: `ar_EG`, `he-IL` and `az-Arab-IR` give `rtl`; `en-US`, `ar-Latn` and `en-u-nu-arab` give `ltr`. It accepts BCP 47 tags, Android/Java identifiers and objects with `textDirection`/`languageTag`, and returns `undefined` for no language (`''`, `und`). Without expo-localization, React Native's `I18nManager.getConstants().localeIdentifier` is the app's configuration locale on Android (from the RN 0.83 source; the gallery verifies the expo-localization path).
+
+- **Don't** pass a locale-derived direction in an app that disallows RTL (`I18nManager.allowRTL(false)`, or `android:supportsRtl="false"`). Leave `direction` unset so HIG follows the OS layout. HIG never derives direction on its own for this reason.
+- **Don't** expect `I18nManager.isRTL` to change on RN 0.83 Android. Native views HIG does not draw keep the host's direction.
+
+Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/53417) (0.82.0) made `I18nUtil.isDevicePreferredLanguageRTL` read `Locale.getAvailableLocales()[0]` instead of the app's locale. The bug is reported in [#54938](https://github.com/react/react-native/issues/54938) and fixed by [#57635](https://github.com/react/react-native/pull/57635), first released in 0.88.0. 0.83.10, 0.84.1, 0.85.3, 0.86.3 and 0.87.1 still have the bug. The native gallery passes `localeDirection(getLocales()[0])`, and its `os-arabic` Android emulator step asserts `rtl` on RN 0.81.5 and 0.83.10 (`evidence/native-sim/issue-86-88-89/`). A system-wide Arabic locale and physical devices are not yet tested (#55).
+
 ## Built-in component strings
 
 Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/react/src` or `packages/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig-contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
@@ -1126,7 +1149,7 @@ A component or recipe enters the catalog only when all of the following hold:
 | Platform | Supported (tested in CI or recorded evidence) | Notes |
 | --- | --- | --- |
 | React DOM | React 19.2; Vite, SSR and Next 16.4 (webpack) packed consumers; Chromium, Firefox and WebKit | Other bundler or Next versions need checks in the host |
-| React Native | RN 0.81.5 with Expo 54 and React 19.1.0; RN 0.83.10 with Expo 55 and React 19.2.0 (#68); Metro; packed Android/iOS exports in CI for both; iOS Simulator (iOS 26.5) and Android emulator (API 35) gallery runs for both | RN 0.82 and 0.84+ are not supported. On RN 0.83 Android a per-app RTL locale does not reach `I18nManager.isRTL`, so pass `direction` (#86). Physical devices are pending (#55) |
+| React Native | RN 0.81.5 with Expo 54 and React 19.1.0; RN 0.83.10 with Expo 55 and React 19.2.0 (#68); Metro; packed Android/iOS exports in CI for both; iOS Simulator (iOS 26.5) and Android emulator (API 35) gallery runs for both | RN 0.82 and 0.84+ are not supported. On RN 0.83 Android a per-app RTL locale does not reach `I18nManager.isRTL`, so RTL hosts pass `direction={localeDirection(getLocales()[0])}` ([localization](../foundations/localization.md#native-direction-from-the-host-locale), #86). Physical devices are pending (#55) |
 | Tokens only | Plain CSS, Tailwind through host config, typed tokens | No React, RN or audio peers |
 | Feedback | Web: `@bloxwap/sfx` and `@bloxwap/haptic`. Native: Expo audio and haptics adapters | Essential outcomes must never depend on sound or haptics |
 
@@ -1432,6 +1455,7 @@ Checklist:
 - [ ] Record actual RN/Expo/Metro/autolinking versions, source commit, old ui-native/token/font/audio wrappers, screenshots and native bundle/assets/latency baseline.
 - [ ] Register the pinned static TTF faces from `@bloxwap/hig-native-fonts` and its typed `fontManifest`; register before setting family. Do not treat WOFF2 or an invented native family as success.
 - [ ] Map dp and legacy NativeWind rem roots explicitly. Keep Dynamic Type, 48 targets, logical RTL layout, safe areas, keyboard avoidance, native back and labelled fields/errors.
+- [ ] On RN 0.83, pass `HIGProvider direction={localeDirection(getLocales()[0])}` if the app supports RTL: an Android per-app Arabic or Hebrew locale does not reach `I18nManager.isRTL` ([localization](../foundations/localization.md#native-direction-from-the-host-locale), #86).
 - [ ] Preview native import codemods, using individual switch/checkbox/range entries; wire optional SVG/Slider/Expo audio/haptic peers only where used. Retain platform-specific descriptions and host callbacks.
 - [ ] Preserve raw financial strings, order/network logic, stable list identity and quiet live numbers. Use labelled list/readout native chart alternative unless a real supported native engine is reviewed.
 - [ ] Read old sound/haptic settings with a host migration adapter before writing v1 key. Keep explicit false choices, volume and motion independent; handle corrupt/missing storage conservatively.

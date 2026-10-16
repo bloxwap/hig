@@ -106,6 +106,7 @@
       "rn081": "OS RTL: true · HIG direction: rtl",
       "rn083": "OS RTL: false · HIG direction: ltr; the 7 os-arabic captures differ by 14–21% (LTR layout)",
       "cause": "RN 0.83 I18nUtil.isDevicePreferredLanguageRTL reads Locale.getAvailableLocales()[0] instead of Locale.getDefault() (unchanged in 0.84.1 and 0.85.3)",
+      "resolution": "Hosts pass HIGProvider direction from their locale (localeDirection(getLocales()[0])); the gallery does, and os-arabic asserts rtl on both versions. Upstream: introduced by react/react-native#53417 (0.82.0), fixed by react/react-native#57635 (0.88.0). See ../issue-86-88-89/summary.json.",
       "files": [
         "android/android-os-arabic.json",
         "android/captures/android-os-arabic*.png",
@@ -131,6 +132,7 @@
       "check": "testGalleryCaptures Xcode accessibility audit",
       "rn081": "189 findings: 68 \"Dynamic Type font sizes are unsupported\" (Amount (BTC) RCTUITextField), 119 \"Label not human-readable\", 2 \"Label duplicates traits\"",
       "rn083": "121 findings: no Dynamic Type finding; the other 121 are identical; AX5 captures match within 2%",
+      "cause": "react/react-native#53324 (0.82.0) turned enableFontScaleChangesUpdatingLayout on by default; RCTTextInputComponentView.traitCollectionDidChange then re-applies the scaled font when the content size category changes (inferred from source; see ../issue-86-88-89/summary.json)",
       "files": [
         "ios/ios-gallery.json",
         "control-rn-0.81.5/ios/ios-gallery.json"
@@ -142,6 +144,7 @@
       "check": "feedbackCalls",
       "rn081": "two \"sound tick finished\" (didJustFinish) entries per tick; 20 log entries after the four toggles",
       "rn083": "one per tick; 16 entries; the adapter calls (configure, play, haptic selection) are the same",
+      "cause": "expo-audio 1.1 Android sends didJustFinish on every status while the player is ended; the isPlaying and playback-state listeners both emit at the end. Counted on the emulator: SDK 54 4 play() / 4 starts / 8 didJustFinish (4 repeats), SDK 55 4 / 4 / 4. See ../issue-86-88-89/summary.json.",
       "files": [
         "android/android-feedback.json",
         "android/captures/android-feedback-diagnostics.png",

@@ -1,0 +1,9 @@
+{
+ "diagnosticsBefore": "Feedback calls: #1 sound configure called",
+ "Sound-checked-before-0": false,
+ "Haptics-checked-before-1": false,
+ "Motion-checked-before-2": true,
+ "Motion-checked-before-3": false,
+ "diagnosticsAfter": "Feedback calls: #15 sound tick finished 0.09s of 0.08s | #16 sound play:tick volume 0.30 dispatch 2.6ms p95 8.7ms | #17 haptic selection called | #18 haptic selection resolved | #19 sound tick finished 0.09s of 0.08s | #20 sound tick finished 0.09s of 0.08s",
+ "soundCounts": "Sound counts: tick play 4 · start 4 · status 31 · didJustFinish 8 (repeat 4) | success play 0 · start 0 · status 6 · didJustFinish 0 (repeat 0) | toggle play 0 · start 0 · status 3 · didJustFinish 0 (repeat 0) | error play 0 · start 0 · status 3 · didJustFinish 0 (repeat 0)"
+}

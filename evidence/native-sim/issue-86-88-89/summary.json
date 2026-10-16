@@ -1,0 +1,83 @@
+{
+  "issues": [86, 88, 89],
+  "observedAt": "2026-10-16",
+  "question": "Three React Native 0.83 differences found while certifying #68: Android per-app RTL (#86), the Xcode Dynamic Type audit on TextInput (#88) and expo-audio didJustFinish counts (#89). What causes each, and what does HIG do about it?",
+  "evidenceKinds": {
+    "automated": "Vitest (tests/locale-direction.test.ts: localeDirection for BCP 47 tags, Android/Java identifiers and expo-localization locale objects; tests/native-verification.test.ts: play()/status counting in the recording wrapper) and native Jest (tests/native/components.test.cjs: HIGProvider takes a locale-derived direction while I18nManager.isRTL is false).",
+    "Android emulator": "Release APKs of the packed candidate for both consumer profiles, driven by instrumentation with UiAutomation as the accessibility client (scripts/native-sim/android/NativeVerificationTest.java: feedbackCalls, snapshot with expectDirection, galleryCaptures). Not a TalkBack user run; no speaker or vibration motor is observed.",
+    "iOS Simulator": "not run for this change. #88 is answered from React Native source and the #68 iOS Simulator audit results (rn-0.83/ios/ios-gallery.json, rn-0.83/control-rn-0.81.5/ios/ios-gallery.json).",
+    "source": "React Native and expo-audio sources read from the published npm tarballs and from github.com/react/react-native at the release tags named below.",
+    "physical hardware": "none; device VoiceOver/TalkBack, Dynamic Type and tick timing residuals are tracked in bloxwap/hig#55"
+  },
+  "environment": {
+    "host": "macOS 27.2 (Apple silicon), JDK 17, Android SDK emulator",
+    "androidEmulator": "Medium_Phone_API_35, google/sdk_gphone64_arm64/emu64a:15/AE3A.240806.036 (read-only instance on console port 5640, audio enabled, shut down afterwards), 1260x2736 override at 480dpi",
+    "stacks": {
+      "rn-0.83": "Expo SDK 55.0.31 prebuild, Release, React Native 0.83.10 New Architecture, Hermes, expo-audio 55.0.18, expo-localization 55.0.19 (fixtures/native/profiles.json rn-0.83)",
+      "rn-0.81": "Expo SDK 54.0.37 prebuild, Release, React Native 0.81.5 New Architecture, Hermes, expo-audio 1.1.1, expo-localization 17.0.9 (fixtures/native/package.json)"
+    }
+  },
+  "candidate": {
+    "version": "0.1.0-candidate.shab2f7740c",
+    "sourceCommit": "b2f7740 plus this branch's package changes (localeDirection in @bloxwap/hig-contracts, re-exported from @bloxwap/hig-native/provider); built with npm run release:dry-run -- --channel candidate from the branch working tree",
+    "consumption": "HIG_SKIP_IOS=1 scripts/native-sim/prepare-app.sh <app> - <profile> copies fixtures/native to a scratch app and installs only the packed tarballs",
+    "steps": "Same commands as scripts/native-sim/run-android.sh for: feedbackCalls; snapshot name baseline expectDirection ltr; cmd locale set-app-locales ar-EG; snapshot name os-arabic expectDirection rtl; galleryCaptures Button,Select,Field,Tabs,MarketRow,TradeEntry prefix android-os-arabic",
+    "published": false
+  },
+  "issue86": {
+    "decision": "HIG does not derive direction on its own. HIGProvider keeps following I18nManager.isRTL when `direction` is unset, so an app that disallows RTL (I18nManager.allowRTL(false) or android:supportsRtl=\"false\") is never flipped. Hosts that support RTL pass `direction={localeDirection(getLocales()[0])}`: `localeDirection` (exported from @bloxwap/hig-contracts and @bloxwap/hig-native/provider) returns expo-localization's textDirection, else derives it from the tag's script or language, else undefined (HIGProvider then keeps its default). The native gallery passes it; docs/foundations/localization.md documents the recipe.",
+    "results": {
+      "rn-0.83": {
+        "os-arabic": "OS RTL: false · HIG direction: rtl · host locale: ar-EG (rtl)",
+        "baseline": "OS RTL: false · HIG direction: ltr · host locale: en-US (ltr)",
+        "assertion": "snapshot expectDirection rtl and ltr: OK (1 test) each",
+        "files": ["android-rn-0.83/android-os-arabic.json", "android-rn-0.83/android-baseline.json", "android-rn-0.83/captures/android-os-arabic*.png", "android-rn-0.83/host/app-locales-os-arabic.txt", "android-rn-0.83/run-summary.txt"]
+      },
+      "rn-0.81": {
+        "os-arabic": "OS RTL: true · HIG direction: rtl · host locale: ar-EG (rtl)",
+        "baseline": "OS RTL: false · HIG direction: ltr · host locale: en-US (ltr)",
+        "assertion": "snapshot expectDirection rtl and ltr: OK (1 test) each",
+        "files": ["android-rn-0.81.5/android-os-arabic.json", "android-rn-0.81.5/android-baseline.json", "android-rn-0.81.5/captures/android-os-arabic*.png"]
+      },
+      "captureComparison": {
+        "method": "scripts/visual-diff.mjs rule (channel tolerance 24) on the 420px-wide evidence captures; percent of pixels changed",
+        "rn083VsRn0815ThisRun": {"android-os-arabic.png": 0.96, "Button": 0.02, "Select": 0.02, "Field": 0.02, "Tabs": 0.02, "MarketRow": 0.02, "TradeEntry": 0.02},
+        "rn083VsPriorRn083LtrRun": {"android-os-arabic.png": 23.91, "Button": 21.91, "Select": 22.99, "Field": 18.51, "Tabs": 18.2, "MarketRow": 21.43, "TradeEntry": 18.4},
+        "note": "android-os-arabic.png includes the diagnostics text, which names the React Native version. The prior RN 0.83 run (rn-0.83/android/captures) was laid out left to right."
+      }
+    },
+    "upstream": {
+      "introduced": "react/react-native#53417 (merged as a03780d, first released in 0.82.0) changed I18nUtil.isDevicePreferredLanguageRTL from Locale.getDefault() to Locale.getAvailableLocales()[0]",
+      "reported": "react/react-native#54938 (RN 0.82.1, per-app Arabic locale stays LTR; closed as stale, not planned)",
+      "fixed": "react/react-native#57635 (merged as e46189e) reads context.resources.configuration.locales[0]; first released in 0.88.0. Not in 0.83.10, 0.84.1, 0.85.3, 0.86.3 or 0.87.1 (I18nUtil.kt at those tags still reads getAvailableLocales()[0]). react/react-native#58723 (eaa9d7f) later reads it through ConfigurationCompat. react/react-native#54986 (same fix by the original author) is still open.",
+      "filed": "No new upstream issue: the bug is already reported and fixed upstream. A 0.83 backport would be a pick request in reactwg/react-native-releases; none was filed from here.",
+      "osRtlStillFalse": "With the fix outside 0.83, I18nManager.isRTL stays false on 0.83 Android for a per-app RTL locale; native views HIG does not draw keep the host's direction."
+    },
+    "notTested": "A system-wide (not per-app) Arabic locale: the emulator image cannot change it without root. iOS (-AppleLanguages (ar)) reported RTL on both versions in #68 and is unchanged by this fix."
+  },
+  "issue88": {
+    "finding": "The Xcode Dynamic Type audit finding on the gallery's Amount (BTC) RCTUITextField (68 on RN 0.81.5, 0 on 0.83.10 in #68) changes with React Native's enableFontScaleChangesUpdatingLayout feature flag.",
+    "evidence": [
+      "ReactNativeFeatureFlagsDefaults.h: enableFontScaleChangesUpdatingLayout() returns false in react-native 0.81.5 and true in 0.82.0 and 0.83.10 (npm tarballs; github.com/react/react-native tags v0.82.0, v0.83.0).",
+      "react/react-native#53324 (686d14f, \"Enable enableFontScaleChangesUpdatingLayout by default\", changelog [General][Changed]) is contained in v0.82.0 and not in v0.81.5.",
+      "RCTTextInputComponentView.mm traitCollectionDidChange (identical in 0.81.5 and 0.83.10) re-applies defaultTextAttributes with RCTFontSizeMultiplier() when preferredContentSizeCategory changes, only when that flag is on; SurfaceHandler.cpp also re-measures text when fontSizeMultiplier changes under the same flag.",
+      "No other RN 0.81.5 -> 0.83.10 change touches TextInput font scaling: RCTUITextField.mm is unchanged; RCTTextInputComponentView.mm, RCTFontUtils.mm, RCTAttributedTextUtils.mm and TextAttributes differ only in formatting, inputAccessoryView reset and a default font resolver hook. Neither version sets adjustsFontForContentSizeCategory on the backing field; react/react-native#57426, which would, is unmerged (upstream audit report: react/react-native#51612, open)."
+    ],
+    "conclusion": "On 0.83 the native field updates its font in process when the content size category changes, which the audit accepts; on 0.81.5 it changes only after the next React render. This is inferred from source: Apple does not document the audit heuristic, and the flag was not toggled in isolation on the Simulator.",
+    "evidenceNote": "evidence/native-sim/native-sim.json accessibilityAudits.note now applies the TextInput Dynamic Type finding to RN 0.81.5 only.",
+    "unchanged": "AX5 captures of Field, AmountInput and TradeEntry matched within 2% across versions in #68: the input text scales the same way on both.",
+    "pending": "Dynamic Type of text inputs at the largest sizes with VoiceOver on a device (bloxwap/hig#55)."
+  },
+  "issue89": {
+    "method": "fixtures/native/native-verification.ts recordingAudioBackend counts, per cue, play() calls, playbackStatusUpdate events, statuses whose playing turns true (starts) and didJustFinish statuses; a repeat is a didJustFinish with no play() call and no playing status since that player's previous didJustFinish. feedbackCalls reads the `Sound counts:` diagnostics line after the four toggles.",
+    "results": {
+      "Expo SDK 54 (expo-audio 1.1.1, RN 0.81.5)": "tick play 4 · start 4 · status 31 · didJustFinish 8 (repeat 4)",
+      "Expo SDK 55 (expo-audio 55.0.18, RN 0.83.10)": "tick play 4 · start 4 · status 25 · didJustFinish 4 (repeat 0)",
+      "files": ["android-rn-0.81.5/android-feedback.json", "android-rn-0.83/android-feedback.json", "android-rn-0.81.5/captures/android-feedback-diagnostics.png", "android-rn-0.83/captures/android-feedback-diagnostics.png"]
+    },
+    "conclusion": "Not a second play: on SDK 54 each tick has one play() call and one playing start, followed by two didJustFinish statuses with nothing between them.",
+    "source": "expo-audio 1.1.1 android/.../AudioPlayer.kt currentStatus() sets didJustFinish to (playbackState == STATE_ENDED) on every status, and both onIsPlayingChanged(false) and onPlaybackStateChanged(STATE_ENDED) send a status when a cue ends. expo-audio 55.0.18 sets didJustFinish false in currentStatus(), sends it only from onPlaybackStateChanged on the transition into STATE_ENDED, and skips the transient isPlaying=false status at the end.",
+    "hig": "@bloxwap/hig-feedback does not listen to playback status (packages/feedback/src/native.ts: preload, seekTo(0), play). No de-duplication is added; if HIG ever relies on completion it must de-duplicate didJustFinish for expo-audio 1.1 (docs/feedback/adapters.md).",
+    "pending": "Tick dispatch timing and audible output on devices for both SDKs (bloxwap/hig#55)."
+  }
+}

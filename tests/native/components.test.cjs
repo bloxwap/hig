@@ -115,6 +115,21 @@ it('native provider follows the OS RTL layout direction by default (Android emul
   }finally{Object.defineProperty(RN.I18nManager,'isRTL',{value:original,configurable:true});}
  });
 });
+it('native provider takes a host locale direction when I18nManager.isRTL stays false (RN 0.83 Android per-app locale, #86)',()=>{
+ jest.isolateModules(()=>{
+  const R=require('react');const {create,act:run}=require('react-test-renderer');const RN=require('react-native');
+  const original=RN.I18nManager.isRTL;Object.defineProperty(RN.I18nManager,'isRTL',{value:false,configurable:true});
+  try{const {HIGProvider,localeDirection}=require('../../packages/native/src/provider');const {Stack}=require('../../packages/native/src/surface');
+   const direction=element=>{let r;run(()=>{r=create(element);});const value=RN.StyleSheet.flatten(r.root.findAll(n=>n.type===RN.View)[0].props.style).direction;run(()=>r.unmount());return value;};
+   // expo-localization getLocales()[0] reports the per-app locale and its textDirection; HIG never derives it on its own.
+   expect(direction(R.createElement(HIGProvider,{direction:localeDirection({languageTag:'ar-EG',textDirection:'rtl'})},R.createElement(Stack)))).toBe('rtl');
+   expect(direction(R.createElement(HIGProvider,{direction:localeDirection('ar_EG')},R.createElement(Stack)))).toBe('rtl');
+   expect(direction(R.createElement(HIGProvider,{direction:localeDirection('en-US')},R.createElement(Stack)))).toBe('ltr');
+   expect(direction(R.createElement(HIGProvider,{direction:localeDirection('und')},R.createElement(Stack)))).toBe('ltr');
+   expect(direction(R.createElement(HIGProvider,null,R.createElement(Stack)))).toBe('ltr');
+  }finally{Object.defineProperty(RN.I18nManager,'isRTL',{value:original,configurable:true});}
+ });
+});
 it('native iOS slider handles VoiceOver increment/decrement actions in 5% steps (iOS Simulator regression)',()=>{
  // RN Fabric only forwards accessibilityIncrement/Decrement to onAccessibilityAction; without it VoiceOver swipes did nothing.
  const {Platform}=require('react-native');expect(Platform.OS).toBe('ios');
