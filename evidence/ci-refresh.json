@@ -2,19 +2,19 @@
   "issue": "bloxwap/hig#98, bloxwap/hig#99",
   "evidence": "automated, Linux CI (ubuntu-24.04, GitHub Actions); copied unchanged from the run artifacts, not regenerated locally",
   "workflow": "HIG candidate quality and dry-run artifacts",
-  "runId": 38965978409,
-  "runUrl": "https://github.com/bloxwap/hig/actions/runs/38965978409",
+  "runId": 38972223859,
+  "runUrl": "https://github.com/bloxwap/hig/actions/runs/38972223859",
   "event": "push",
-  "sourceCommit": "8ba143ab6f26af741ed5719d23526002dfa86751",
+  "sourceCommit": "2e2ebf104b2349d0da4db8ec56d362568c77681c",
   "artifacts": {
-    "hig-candidate-review-8ba143ab6f26af741ed5719d23526002dfa86751": [
+    "hig-candidate-review-2e2ebf104b2349d0da4db8ec56d362568c77681c": [
       "evidence/release-dry-run.json",
       "evidence/quality-report.json",
       "evidence/packed-og-smoke.json",
       "evidence/m5-candidate-install.json",
       "evidence/packed-smoke.json"
     ],
-    "hig-candidate-browser-8ba143ab6f26af741ed5719d23526002dfa86751": [
+    "hig-candidate-browser-2e2ebf104b2349d0da4db8ec56d362568c77681c": [
       "evidence/issue-1-18/chromium-acceptance.json",
       "evidence/issue-1-18/firefox-acceptance.json",
       "evidence/issue-1-18/webkit-acceptance.json"
@@ -22,7 +22,7 @@
   },
   "releaseDryRun": {
     "channel": "candidate",
-    "artifactVersion": "0.1.0-candidate.sha8ba143ab",
+    "artifactVersion": "0.1.0-candidate.sha2e2ebf10",
     "packages": [
       "@bloxwap/hig-contracts",
       "@bloxwap/hig-feedback",
@@ -34,20 +34,20 @@
     ],
     "packedSizes": {
       "webTokens": {
-        "file": "bloxwap-hig-tokens-0.1.0-candidate.sha8ba143ab.tgz",
-        "bytes": 8108,
-        "unpackedBytes": 42749,
+        "file": "bloxwap-hig-tokens-0.1.0-candidate.sha2e2ebf10.tgz",
+        "bytes": 8226,
+        "unpackedBytes": 43413,
         "fontFiles": 0
       },
       "nativeFonts": {
-        "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha8ba143ab.tgz",
-        "bytes": 4420492,
+        "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha2e2ebf10.tgz",
+        "bytes": 4420491,
         "unpackedBytes": 12069011,
         "fontFiles": 15
       },
       "ogFonts": {
-        "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha8ba143ab.tgz",
-        "bytes": 844029,
+        "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha2e2ebf10.tgz",
+        "bytes": 844032,
         "unpackedBytes": 2195023,
         "fontFiles": 5,
         "limit": 1000000
