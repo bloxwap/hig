@@ -79,7 +79,7 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. Native: the label and suffix render through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](../foundations/localization.md#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
@@ -356,7 +356,7 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
 | Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
-| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. Native increment/decrement accessibility actions are labeled from HIGProvider `messages.increase`/`messages.decrease`. |
 
 ## When to use and examples
 
@@ -838,6 +838,8 @@ Resolution order, per key: the component prop, then the nearest `HIGProvider mes
 Rules:
 
 - **Visible text and accessible names come from the same key.** The Close, Dismiss and busy text is the button content, so it is also the accessible name. The Toast dismiss name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it, so voice-control users can say the label they see. `stale` and `required` are appended to both the visible text and the accessible name.
+- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is the visible `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
+- **Slider actions are labeled (#87).** The native Slider's increment and decrement accessibility actions carry `increase` and `decrease`. React Native 0.83 Android otherwise lists them with an empty label.
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
 - **RTL is a direction, not a translation.** Messages render inside the provider's `dir` (web) or `writingDirection` (native). The Unicode bidi algorithm places the ` · ` busy separator and parentheses. Do not add direction marks to messages.
@@ -890,6 +892,8 @@ Rules:
 | `statusOnline` | online | StatusIndicator `online` | — |
 | `statusOffline` | offline | StatusIndicator `offline` | — |
 | `statusStale` | stale | StatusIndicator `stale` | — |
+| `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
+| `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

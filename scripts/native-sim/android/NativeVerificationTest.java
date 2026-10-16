@@ -167,7 +167,9 @@ public class NativeVerificationTest {
     JSONArray actions = new JSONArray();
     for (AccessibilityNodeInfo.AccessibilityAction a : n.getActionList()) {
       // RN 0.83 gives unlabeled accessibilityActions an empty label instead of null (#68); keep the action id visible.
-      String name = a.getLabel() == null ? actionName(a.getId()) : a.getLabel().length() == 0 ? (actionName(a.getId()) != null ? actionName(a.getId()) : "id " + a.getId()) + " (empty label)" : a.getLabel().toString();
+      // A labeled standard action prints `id "label"` (#87: Slider increment/decrement carry HIG's increase/decrease copy).
+      String id = actionName(a.getId());
+      String name = a.getLabel() == null ? id : a.getLabel().length() == 0 ? (id != null ? id : "id " + a.getId()) + " (empty label)" : id != null ? id + " \"" + a.getLabel() + "\"" : a.getLabel().toString();
       if (name != null) actions.put(name);
     }
     if (actions.length() > 0) o.put("actions", actions);
@@ -384,6 +386,65 @@ public class NativeVerificationTest {
       r.put("disabled", new JSONObject().put("enabled", disabled.isEnabled()).put("listsSetProgress", disabled.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS)).put("node", node(disabled)).put("performed", ok).put("setProgressPerformed", setDisabled).put("labelBefore", before).put("labelAfter", label(byLabelPrefix("Volume preview: "))));
     }
     write("android-slider.json", r.toString(1));
+  }
+
+  /**
+   * #94: a busy Button with text children keeps its name in the Android content description. For each fixture
+   * catalog (gallery `messages=` route) records the generated Button example (`Review order`, busy) and a host-label
+   * Button (`Log out` / `Déconnexion` / `로그아웃`). Android appends its own busy state description to the label.
+   */
+  @Test
+  public void busyButtonName() throws Exception {
+    JSONArray results = new JSONArray();
+    String[][] catalogs = {{"en", "Log out", "Working"}, {"fr", "Déconnexion", "En cours"}, {"ko", "로그아웃", "처리 중"}};
+    for (String locales : arg("catalogs", "en,fr,ko").split(",")) {
+      for (String[] c : catalogs) {
+        if (!c[0].equals(locales)) continue;
+        open("component=Button&state=busy&messages=" + c[0]);
+        waitFor(n -> label(n).equals("Example state: busy"), 12000);
+        for (final String text : new String[] {"Review order", c[1]}) {
+          AccessibilityNodeInfo button = waitFor(n -> String.valueOf(n.getClassName()).endsWith("Button") && hasText(n, text), 12000);
+          JSONObject r = new JSONObject().put("catalog", c[0]).put("visibleLabel", text).put("visibleSuffix", " · " + c[2]).put("found", button != null);
+          if (button != null) {
+            CharSequence d = button.getContentDescription();
+            String description = d == null ? "" : d.toString();
+            r.put("contentDescription", description).put("containsLabel", description.contains(text)).put("startsWithLabel", description.startsWith(text))
+                .put("busyWordCount", count(description, c[2])).put("enabled", button.isEnabled()).put("node", node(button));
+          }
+          results.put(r);
+        }
+        capture("android-busy-name-" + c[0]);
+        write("trees/android-busy-name-" + c[0] + ".json", tree().toString(1));
+      }
+    }
+    write("android-busy-name.json", new JSONObject().put("results", results).toString(1));
+  }
+
+  private boolean hasText(AccessibilityNodeInfo n, String text) {
+    if (n == null) return false;
+    if (label(n).contains(text)) return true;
+    for (int i = 0; i < n.getChildCount(); i++) if (hasText(n.getChild(i), text)) return true;
+    return false;
+  }
+
+  private static int count(String haystack, String needle) {
+    int n = 0;
+    for (int i = haystack.indexOf(needle); i >= 0; i = haystack.indexOf(needle, i + needle.length())) n++;
+    return n;
+  }
+
+  /** #87: Slider action labels with a host catalog (gallery `messages=` route). */
+  @Test
+  public void sliderActionLabels() throws Exception {
+    JSONObject r = new JSONObject();
+    for (String catalog : arg("catalogs", "en,fr,ko").split(",")) {
+      open("component=Slider&state=default&messages=" + catalog);
+      AccessibilityNodeInfo slider = waitFor(n -> "Volume preview".contentEquals(label(n)) && n.isImportantForAccessibility() && n.getRangeInfo() != null, 12000);
+      JSONArray actions = new JSONArray();
+      if (slider != null) for (AccessibilityNodeInfo.AccessibilityAction a : slider.getActionList()) actions.put(new JSONObject().put("id", actionName(a.getId()) == null ? "id " + a.getId() : actionName(a.getId())).put("label", a.getLabel() == null ? JSONObject.NULL : a.getLabel().toString()));
+      r.put(catalog, new JSONObject().put("found", slider != null).put("actions", actions));
+    }
+    write("android-slider-action-labels.json", r.toString(1));
   }
 
   @Test

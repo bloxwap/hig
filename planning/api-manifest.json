@@ -338,7 +338,11 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode;\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode;\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean; /** Caps Dynamic Type / Android font scale for the label and busy suffix (2 = 200%). Defaults to HIGProvider `maxFontSizeMultiplier`, as for HIG Text. */\n    maxFontSizeMultiplier?: number;\n}"
+      },
+      "busyAccessibilityLabel": {
+        "entry": "button",
+        "signature": "export declare function busyAccessibilityLabel(text: string, busyText: string, os?: string): string | undefined;"
       },
       "Button": {
         "entry": "button",
@@ -671,6 +675,10 @@
       "plainText": {
         "entry": "text-content",
         "signature": "export declare function plainText(children: React.ReactNode): string;"
+      },
+      "blockText": {
+        "entry": "text-content",
+        "signature": "export declare function blockText(children: React.ReactNode): string;"
       }
     }
   }

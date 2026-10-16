@@ -28,6 +28,8 @@ adb logcat -c
 run galleryCaptures components "$COMPONENTS" prefix android
 run snapshot name baseline
 run sliderAccessibilityActions
+run sliderActionLabels catalogs en,fr,ko # #87: increase/decrease labels from the host catalog
+run busyButtonName catalogs en,fr,ko # #94: busy content description keeps the label
 run overlayFocusAndBack
 run listScrolling
 adb shell dumpsys gfxinfo $PKG > "$OUT/host/gfxinfo-after-list.txt"

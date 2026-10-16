@@ -1,16 +1,26 @@
 import type {NativeAudioBackend,NativeHapticBackend,NativePlayer} from '@bloxwap/hig-feedback/native';
 /**
  * Simulator/emulator verification harness for the native gallery.
- * Deep links (bloxwaphig://gallery?component=Slider&state=default&dir=rtl&diag=1&rows=2000)
+ * Deep links (bloxwaphig://gallery?component=Slider&state=default&dir=rtl&diag=1&rows=2000&messages=ko)
  * select examples without UI automation, and the feedback recorder makes
  * adapter calls observable on targets without speakers or tactile hardware.
  * Recording a call is not evidence of audible or tactile output.
  */
-export interface GalleryRoute {component?:string;state?:string;direction?:'ltr'|'rtl';diagnostics?:boolean;rows?:number}
+/**
+ * Verification-only host catalogs (#94, #87): HIG approves no translation locale and ships English only, so these stand in
+ * for a host's own `HIGProvider messages`. `label` is a host button label rendered busy next to the generated example.
+ */
+export const fixtureCatalogs={
+ en:{locale:'en-US',label:'Log out',messages:{}},
+ fr:{locale:'fr-FR',label:'Déconnexion',messages:{busy:'En cours',increase:'Augmenter',decrease:'Diminuer'}},
+ ko:{locale:'ko-KR',label:'로그아웃',messages:{busy:'처리 중',increase:'증가',decrease:'감소'}},
+} as const;
+export type FixtureCatalog=keyof typeof fixtureCatalogs;
+export interface GalleryRoute {component?:string;state?:string;direction?:'ltr'|'rtl';diagnostics?:boolean;rows?:number;messages?:FixtureCatalog}
 export function parseGalleryRoute(url:string|null|undefined):GalleryRoute|null{
  if(!url)return null;const query=url.split('#')[0].split('?')[1];if(!query)return null;const route:GalleryRoute={};
  for(const part of query.split('&')){const [rawKey,rawValue='']=part.split('=');let key:string,value:string;try{key=decodeURIComponent(rawKey);value=decodeURIComponent(rawValue.replace(/\+/g,' '));}catch{continue;}
-  if(key==='component'&&value)route.component=value;else if(key==='state'&&value)route.state=value;else if(key==='dir'&&(value==='ltr'||value==='rtl'))route.direction=value;else if(key==='diag')route.diagnostics=value==='1'||value==='true';else if(key==='rows'&&/^\d+$/.test(value))route.rows=Math.min(10000,Number(value));}
+  if(key==='component'&&value)route.component=value;else if(key==='state'&&value)route.state=value;else if(key==='dir'&&(value==='ltr'||value==='rtl'))route.direction=value;else if(key==='diag')route.diagnostics=value==='1'||value==='true';else if(key==='rows'&&/^\d+$/.test(value))route.rows=Math.min(10000,Number(value));else if(key==='messages'&&Object.hasOwn(fixtureCatalogs,value))route.messages=value as FixtureCatalog;}
  return route;
 }
 export interface FeedbackLogEntry {sequence:number;channel:'sound'|'haptic';call:string;result:string}

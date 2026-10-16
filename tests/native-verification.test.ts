@@ -3,6 +3,8 @@ import {parseGalleryRoute,feedbackLog,recordingHapticBackend,recordingAudioBacke
 it('parses simulator deep links for the native gallery harness',()=>{
  expect(parseGalleryRoute('bloxwaphig://gallery?component=Slider&state=disabled&dir=rtl&diag=1&rows=20000')).toEqual({component:'Slider',state:'disabled',direction:'rtl',diagnostics:true,rows:10000});
  expect(parseGalleryRoute('bloxwaphig://gallery?dir=up&rows=-1&component=%E2%80%A6')).toEqual({component:'…'});
+ expect(parseGalleryRoute('bloxwaphig://gallery?component=Button&state=busy&messages=ko')).toEqual({component:'Button',state:'busy',messages:'ko'});
+ expect(parseGalleryRoute('bloxwaphig://gallery?messages=toString')).toEqual({});
  expect(parseGalleryRoute('bloxwaphig://gallery')).toBeNull();expect(parseGalleryRoute(null)).toBeNull();
 });
 it('records haptic and sound adapter calls without changing their outcome',async()=>{
