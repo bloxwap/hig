@@ -89,6 +89,7 @@
       "import": "./dist/chart.js"
     },
     "./css": "./dist/styles.css",
+    "./css/base": "./dist/base.css",
     "./animated-number": {
       "types": "./dist/animated-number.d.ts",
       "import": "./dist/animated-number.js"

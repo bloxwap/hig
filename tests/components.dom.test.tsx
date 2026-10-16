@@ -6,12 +6,12 @@ import {Button} from '../packages/react/src/button';
 import {HIGProvider} from '../packages/react/src/provider';
 import {Field,AmountInput,TextArea} from '../packages/react/src/field';
 import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/react/src/selection';
-import {Tabs} from '../packages/react/src/navigation';
+import {Tabs,Accordion} from '../packages/react/src/navigation';
 import {Dialog} from '../packages/react/src/overlay';
 import {Toast,Callout} from '../packages/react/src/status';
-import {InstallCommand} from '../packages/react/src/recipes';
+import {InstallCommand,CodeWindow} from '../packages/react/src/recipes';
 import {readFileSync} from 'node:fs';
-import {Percent} from '../packages/react/src/data';
+import {Percent,Table} from '../packages/react/src/data';
 afterEach(cleanup);
 describe('DOM behavior contracts',()=>{
  it('blocks busy/disabled activation and preserves forwarded focus',async()=>{const onClick=vi.fn();const feedback=vi.fn();const ref=createRef<HTMLButtonElement>();const {rerender}=render(<HIGProvider onAccepted={feedback}><Button ref={ref} busy onClick={onClick}>Review order</Button></HIGProvider>);await userEvent.click(screen.getByRole('button'));expect(onClick).not.toHaveBeenCalled();expect(feedback).not.toHaveBeenCalled();rerender(<HIGProvider onAccepted={feedback}><Button ref={ref} onClick={onClick}>Review order</Button></HIGProvider>);ref.current?.focus();expect(document.activeElement).toBe(ref.current);await userEvent.keyboard('{Enter}');expect(onClick).toHaveBeenCalledTimes(1);expect(feedback).toHaveBeenCalledTimes(1);});
@@ -70,6 +70,19 @@ describe('DOM behavior contracts',()=>{
   expect(screen.getByText('Tip').closest('section')!.getAttribute('data-severity')).toBe('tip');
   const css=readFileSync('packages/react/src/styles.css','utf8');
   for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']])expect(css).toMatch(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{[^}]*var\\(--hig-${role}\\)`));
+ });
+ it('scopes component CSS to HIG classes and keeps every focusable part inside the scoped focus ring (#95)',()=>{
+  const css=readFileSync('packages/react/src/styles.css','utf8').replace(/\/\*[\s\S]*?\*\//g,'');
+  for(const bare of [/(?:^|\})\s*\*\s*\{/m,/(?:^|\})\s*:focus-visible\s*\{/m,/(?:^|[},])\s*(?:table|th|td)\s*[{,]/m,/(?:^|\})\s*input\[type=.range.\]/m,/(?:^|[},])\s*\[data-severity/m])expect(css).not.toMatch(bare);
+  const base=readFileSync('packages/react/src/base.css','utf8');
+  for(const rule of ['* { box-sizing: border-box; }',':focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }','table { border-collapse:collapse;width:100%; }',"input[type='range']"])expect(base).toContain(rule);
+  expect(JSON.parse(readFileSync('packages/react/package.json','utf8')).exports['./css/base']).toBe('./dist/base.css');
+  const ring=/(:where\([^{]*\)):focus-visible\s*\{[^}]*outline:2px solid var\(--hig-focus\)/.exec(css)?.[1];expect(ring).toBeTruthy();
+  render(<><Table caption='Prices' rows={[{id:'a'}]} keyFor={r=>r.id} columns={[{key:'id',label:'Market',onSort:()=>{},sort:'ascending',render:r=>r.id}]}/><Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/><Accordion title='More'>Body</Accordion><CodeWindow language='bash'>npm ci</CodeWindow><InstallCommand command='npm i' onCopy={()=>{}}/><Slider label='Amount'/><Switch label='Alerts'/><RadioGroup label='Side' options={[{value:'buy',label:'Buy'}]}/><SegmentedControl label='Mode' options={[{value:'a',label:'A'}]}/></>);
+  expect(document.querySelector('table')?.classList.contains('hig-table')).toBe(true);
+  const focusable=[...document.querySelectorAll<HTMLElement>('button,input,select,textarea,summary,a[href],[tabindex]')].filter(el=>el.tabIndex>=0||el.getAttribute('tabindex')!==null);
+  expect(focusable.length).toBeGreaterThan(8);
+  for(const el of focusable)expect(el.matches(ring!),el.outerHTML.slice(0,80)).toBe(true);
  });
  it('moves tabs with keyboard and exposes only selected panel',async()=>{render(<Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/>);screen.getByRole('tab',{name:'Preview'}).focus();await userEvent.keyboard('{ArrowRight}');expect(screen.getByRole('tab',{name:'Code'}).getAttribute('aria-selected')).toBe('true');expect(screen.getByRole('tabpanel').textContent).toBe('Code body');});
  it('dismisses modal with Escape and restores trigger focus',async()=>{function Example(){const [open,set]=useState(false);return <Dialog open={open} onOpenChange={set} title='Review' description='Verify amount' trigger={<Button>Open review</Button>}><Button>Confirm</Button></Dialog>;}render(<Example/>);await userEvent.click(screen.getByText('Open review'));expect(screen.getByRole('dialog').getAttribute('aria-describedby')).toBeTruthy();await userEvent.keyboard('{Escape}');expect(screen.queryByRole('dialog')).toBeNull();expect(document.activeElement).toBe(screen.getByText('Open review'));});

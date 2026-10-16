@@ -32,7 +32,7 @@ npm run release:dry-run -- --channel candidate   # local tarballs only; no publi
 
 Never copy `packages/*/src`, `dist` folders, `tokens.css`, palettes, fonts or feedback engines. When #56 publishes, swap the `file:` dependencies for registry versions and delete `vendor/bloxwap-hig/`.
 
-Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once, use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
+Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once (add `@bloxwap/hig-react/css/base` first only when HIG owns the whole page), use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
 
 ## 3. Add the scoped drift check to CI
 

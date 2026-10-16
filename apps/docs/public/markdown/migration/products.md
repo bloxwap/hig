@@ -18,4 +18,12 @@ Checklist:
 - [ ] Compare before/after at the same viewport/data/toolchain; record measured source/asset/bundle delta without guessed improvements.
 - [ ] Remove old copies/dependencies only after reference search and build/device proof. Link owning PR and residual surface work in adoption matrix.
 
+## Partial adoption: scoped component CSS and the opt-in base (#95)
+
+`@bloxwap/hig-react/css` now styles HIG components only, so a product can load it on the routes it migrates and leave the rest of the site alone. Next.js keeps a route's stylesheet after a client navigation. Before #95 the file also set page-wide rules (`* { box-sizing }`, a global `:focus-visible` ring, `table`/`th`/`td` and `input[type=range]` defaults), and these reached routes that never imported HIG. Those rules are now the opt-in entry `@bloxwap/hig-react/css/base` (see [installation](../installation.md#component-css-and-the-opt-in-base)).
+
+- **Whole-page adopters** (bloxwap.app, bloxwap.pro, docs sites): add `import '@bloxwap/hig-react/css/base'` before `@bloxwap/hig-react/css` to keep the current look of plain tables, ranges and focus rings. HIG components need no change.
+- **Partial adopters**: import only `@bloxwap/hig-react/css` in the HIG routes, and delete any host reset that undid the old global rules. taptradetv loads HIG only on `/sponsors` ([taptradetv#188](https://github.com/bloxwap/taptradetv/pull/188), #59). It can drop the `th, td` reset in `apps/web/app/sponsors/sponsors-hig.css` once it moves to a candidate that contains #95. The `/schedule` calendar then keeps its own cell styles after a navigation from `/sponsors`, and non-HIG routes keep the host's focus ring.
+- Before removing a reset, verify with a client navigation from a HIG route to a non-HIG route in a production build. Compare the computed styles of tables, ranges and focus rings, not only screenshots.
+
 Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. The adoption matrix, not this kit, records which surfaces are migrated.
