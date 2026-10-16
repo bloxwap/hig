@@ -608,7 +608,7 @@
     {
       "name": "PriceChart",
       "route": "components/price-chart",
-      "entry": "chart",
+      "entry": "@bloxwap/hig-chart",
       "nativeSupport": "alternative",
       "states": [
         "default",

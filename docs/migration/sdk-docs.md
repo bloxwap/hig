@@ -63,3 +63,21 @@ In each repository:
 4. Rebuild the OG cards and compare them with the previous images. The faces are byte-identical copies, so the cards should not change. Record the vendored-byte delta in the repository's adoption evidence and update its row in `planning/adoption.json`.
 
 See [Open Graph card fonts](../installation.md#open-graph-card-fonts) for the full API and the edge-runtime path.
+
+## Chart adapter: `@bloxwap/hig-chart` (#96)
+
+`@bloxwap/hig-react` no longer has a `./chart` entry or an optional `@bloxwap/chart` peer. `PriceChart` and `chartTheme` moved unchanged to `@bloxwap/hig-chart`, which requires `@bloxwap/chart` `^0.3.0` as a peer. The optional peer made npm drop chart's `packages/chart` workspace when `package-lock.json` was regenerated from scratch without `legacy-peer-deps`. This reproduces on npm 10.9.9, 11.6.1, 11.21.1 and 12.2.0. A required peer does not trigger it.
+
+| Repository | Uses `@bloxwap/hig-react/chart`? | Change at the next HIG refresh |
+| --- | --- | --- |
+| chart | No. The docs theme comes from `@bloxwap/hig-tokens` (`apps/docs/scripts/hig-tokens.mjs`) | Vendor the new hig-react tarball. Remove the `legacy-peer-deps` regeneration note from `vendor/bloxwap-hig/README.md`. A from-scratch `npm install` then keeps `@bloxwap/chart -> ./packages/chart`. Vendor `@bloxwap/hig-chart` only if the docs adopt `PriceChart` |
+| sfx, haptic, hyperliquid, font | No | None beyond the usual tarball refresh |
+
+A host that does import the entry changes one specifier and adds the package:
+
+```diff
+-import {PriceChart} from '@bloxwap/hig-react/chart';
++import {PriceChart} from '@bloxwap/hig-chart';
+```
+
+The candidate was never published, and a GitHub code search on 2026-10-16 found no consumer outside this repository, so no deprecated shim is kept (see [charts](../components/chart.md#moved-from-bloxwap-hig-react-chart-96)). `npm run smoke:packed-chart-workspace` reproduces chart's layout: an npm workspace whose `packages/chart` provides `@bloxwap/chart`, and an app that depends on the packed hig-react and hig-chart. It deletes the lockfile, reinstalls with strict peers and fails if the workspace link is lost.

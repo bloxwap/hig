@@ -1,9 +1,9 @@
 // Generated from planning/examples.json.
 import React,{useState} from 'react';
+import * as Chart from '@bloxwap/hig-chart';
 import * as AnimatedNumber from '@bloxwap/hig-react/animated-number';
 import * as Brand from '@bloxwap/hig-react/brand';
 import * as Button from '@bloxwap/hig-react/button';
-import * as Chart from '@bloxwap/hig-react/chart';
 import * as Data from '@bloxwap/hig-react/data';
 import * as Field from '@bloxwap/hig-react/field';
 import * as Navigation from '@bloxwap/hig-react/navigation';
@@ -13,7 +13,7 @@ import * as Recipes from '@bloxwap/hig-react/recipes';
 import * as Selection from '@bloxwap/hig-react/selection';
 import * as Status from '@bloxwap/hig-react/status';
 import * as Surface from '@bloxwap/hig-react/surface';
-const C={...AnimatedNumber,...Brand,...Button,...Chart,...Data,...Field,...Navigation,...Overlay,...Provider,...Recipes,...Selection,...Status,...Surface};
+const C={...Chart,...AnimatedNumber,...Brand,...Button,...Data,...Field,...Navigation,...Overlay,...Provider,...Recipes,...Selection,...Status,...Surface};
 export function Example({name,state='default'}:{name:string;state?:string}){const empty=state==='empty';const [checked,setChecked]=useState(false);const [value,setValue]=useState('buy');const [range,setRange]=useState(25);const [open,setOpen]=useState(false);const [amount,setAmount]=useState('0.01');const [message,setMessage]=useState('');const [notices,setNotices]=useState([{id:'1',message:'Demo copied',severity:'success' as const}]);const choices=[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}];const rows=empty?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];const busy=state==='busy',disabled=state==='disabled',error=state==='error'?'Data unavailable. Retry when connected.':undefined;
 function preview(){switch(name){case "Button":return <C.Button busy={busy} disabled={disabled}>Review order</C.Button>;
 case "IconButton":return <C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>;

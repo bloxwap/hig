@@ -1,6 +1,7 @@
 {
   "version": "0.1.0",
   "packages": [
+    "@bloxwap/hig-chart",
     "@bloxwap/hig-contracts",
     "@bloxwap/hig-feedback",
     "@bloxwap/hig-native",

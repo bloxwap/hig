@@ -44,6 +44,7 @@
     "release:dry-run": "node scripts/release-dry-run.mjs",
     "smoke:packed-examples": "node scripts/packed-examples-smoke.mjs",
     "smoke:packed-boundaries": "node scripts/packed-boundaries-smoke.mjs",
+    "smoke:packed-chart-workspace": "node scripts/packed-chart-workspace-smoke.mjs",
     "smoke:packed-fumadocs": "node scripts/packed-fumadocs-smoke.mjs",
     "smoke:release-artifact": "node scripts/release-artifact-smoke.mjs",
     "generate:fonts": "python3 scripts/generate-native-fonts.py",

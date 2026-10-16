@@ -52,8 +52,8 @@ export function findBuiltInStrings(source,fileName='source.tsx'){
  return found;
 }
 const root=fileURLToPath(new URL('..',import.meta.url));
-export const scannedDirectories=['packages/react/src','packages/native/src'];
-/** Scans HIG React and React Native sources. */
+export const scannedDirectories=['packages/react/src','packages/chart/src','packages/native/src'];
+/** Scans HIG React (including the @bloxwap/hig-chart adapter) and React Native sources. */
 export function scanPackages(base=root){
  const results=[];
  for(const dir of scannedDirectories){
