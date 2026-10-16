@@ -47,8 +47,16 @@ jobs:
           node-version: '22.22.0'
           cache: npm
       - run: npm ci
-      - run: python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
-      - run: npm run generate:fonts
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: font-cache
+        with:
+          path: packages/native-fonts/fonts
+          key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
+      - name: Generate native fonts
+        if: steps.font-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
+          npm run generate:fonts
       - run: npm run check
       - run: npm run examples:check
       - run: npm run quality
@@ -60,11 +68,13 @@ jobs:
       - name: Read Playwright version
         id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      # Restore-only: packed-next needs Chromium. Saving from this job would
+      # overwrite the full chromium/firefox/webkit cache the browser job writes.
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
-      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npx playwright install --with-deps chromium
       - run: npm run smoke:packed-next
         env:
           NEXT_TELEMETRY_DISABLED: '1'
@@ -95,8 +105,16 @@ jobs:
           node-version: '22.22.0'
           cache: npm
       - run: npm ci
-      - run: python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
-      - run: npm run generate:fonts
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: font-cache
+        with:
+          path: packages/native-fonts/fonts
+          key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
+      - name: Generate native fonts
+        if: steps.font-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
+          npm run generate:fonts
       - run: npm run generate && node scripts/build.mjs
       - run: npm run smoke:packed
       - name: Packed native consumer, RN 0.81.5 / Expo 54 (Android and iOS Metro export)
@@ -116,9 +134,16 @@ jobs:
           node-version: '22.22.0'
           cache: npm
       - run: npm ci
-      - run: python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
-      - run: npm run generate:fonts
-      - run: npm run build
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: font-cache
+        with:
+          path: packages/native-fonts/fonts
+          key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
+      - name: Generate native fonts
+        if: steps.font-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
+          npm run generate:fonts
       - name: Read Playwright version
         id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
@@ -126,7 +151,13 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
-      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Build packages/docs and install Playwright
+        run: |
+          set -euo pipefail
+          npm run build &
+          build=$!
+          npx playwright install --with-deps chromium firefox webkit
+          wait "$build"
       - name: Browser, visual and hydration gates
         run: node scripts/run-browser-gates.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
