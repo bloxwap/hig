@@ -923,7 +923,7 @@
     {
       "name": "PriceChart",
       "slug": "price-chart",
-      "entry": "chart",
+      "entry": "@bloxwap/hig-chart",
       "family": "chart",
       "web": "<C.PriceChart summary='Sample Bitcoin candles; no live feed. Price values also available as text.' data={empty?[]:[{time:1700000000,open:67000,high:68000,low:66800,close:67500},{time:1700000060,open:67500,high:68100,low:67200,close:67900}]} height={240}/>",
       "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",

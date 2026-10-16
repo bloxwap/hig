@@ -4,7 +4,7 @@ import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {join,resolve} from 'node:path';
 // @ts-expect-error Executable JavaScript gate tested through its public functions.
-import {checkExports,assertBudget,checkPlatformImports} from '../scripts/quality.mjs';
+import {checkExports,assertBudget,checkPlatformImports,checkChartBoundary} from '../scripts/quality.mjs';
 // @ts-expect-error Executable anti-drift gate.
 import {driftViolations} from '../scripts/drift.mjs';
 it('fails invalid package exports',()=>{const directory=mkdtempSync(join(tmpdir(),'hig-invalid-export-'));writeFileSync(join(directory,'package.json'),JSON.stringify({name:'invalid',exports:{'.':'./missing.js'}}));expect(()=>checkExports(directory)).toThrow('Invalid export');});
@@ -13,3 +13,21 @@ it('fails cross-platform imports instead of silently skipping native checks',()=
 it('rejects copied tokens/obsolete imports and expired exceptions',()=>{const copied="import { Button } from '@workspace/ui/button'; const green='#00ff3f';";expect(driftViolations(copied,'surface.tsx',[])).toHaveLength(2);expect(driftViolations(copied,'surface.tsx',[{path:'surface.tsx',rule:'copied-palette',owner:'maintainer',reason:'approved',expires:'2000-01-01'}])).toHaveLength(2);});
 it('a deliberately stale generated token artifact fails the real anti-drift command',()=>{const directory=mkdtempSync(join(tmpdir(),'hig-stale-token-'));mkdirSync(join(directory,'packages/tokens'),{recursive:true});writeFileSync(join(directory,'packages/tokens/source.json'),readFileSync('packages/tokens/source.json'));writeFileSync(join(directory,'packages/tokens/upstream-palette.json'),readFileSync('packages/tokens/upstream-palette.json'));const generator=resolve('scripts/generate.mjs');expect(spawnSync(process.execPath,[generator],{cwd:directory}).status).toBe(0);writeFileSync(join(directory,'packages/tokens/generated/tokens.css'),'stale');const check=spawnSync(process.execPath,[resolve('scripts/check-drift.mjs')],{cwd:directory,encoding:'utf8'});expect(check.status).not.toBe(0);expect(check.stderr).toContain('Stale generated artifact');});
 it('a stale radius/type/motion/density role fails the real anti-drift command (#66)',()=>{const directory=mkdtempSync(join(tmpdir(),'hig-stale-role-'));mkdirSync(join(directory,'packages/tokens'),{recursive:true});writeFileSync(join(directory,'packages/tokens/source.json'),readFileSync('packages/tokens/source.json'));writeFileSync(join(directory,'packages/tokens/upstream-palette.json'),readFileSync('packages/tokens/upstream-palette.json'));const generator=resolve('scripts/generate.mjs');expect(spawnSync(process.execPath,[generator],{cwd:directory}).status).toBe(0);const css=join(directory,'packages/tokens/generated/tokens.css');writeFileSync(css,readFileSync(css,'utf8').replace('--hig-motion-duration-fast: 180ms;','--hig-motion-duration-fast: 200ms;'));const check=spawnSync(process.execPath,[resolve('scripts/check-drift.mjs')],{cwd:directory,encoding:'utf8'});expect(check.status).not.toBe(0);expect(check.stderr).toContain('Stale generated artifact');});
+it('only @bloxwap/hig-chart names @bloxwap/chart, as a required peer; hig-react has no ./chart entry (#96)',()=>{
+ const react=JSON.parse(readFileSync('packages/react/package.json','utf8')),chart=JSON.parse(readFileSync('packages/chart/package.json','utf8'));
+ expect(JSON.stringify(react)).not.toContain('@bloxwap/chart');expect(react.exports['./chart']).toBeUndefined();
+ expect(chart.name).toBe('@bloxwap/hig-chart');expect(chart.version).toBe(JSON.parse(readFileSync('package.json','utf8')).version);
+ expect(chart.peerDependencies['@bloxwap/chart']).toBe('^0.3.0');expect(chart.peerDependenciesMeta).toBeUndefined();
+ expect(chart.peerDependencies['@bloxwap/hig-react']).toBe(react.version);
+ expect(()=>checkChartBoundary()).not.toThrow();
+});
+
+it('the chart boundary gate rejects an optional @bloxwap/chart peer anywhere and an optional one on hig-chart',()=>{
+ const fixture=(manifests:Record<string,object>)=>{const root=mkdtempSync(join(tmpdir(),'hig-chart-boundary-'));for(const [dir,manifest] of Object.entries(manifests)){mkdirSync(join(root,dir));writeFileSync(join(root,dir,'package.json'),JSON.stringify(manifest));}return root;};
+ const adapter={name:'@bloxwap/hig-chart',peerDependencies:{'@bloxwap/chart':'^0.3.0'}};
+ expect(()=>checkChartBoundary(fixture({chart:adapter,react:{name:'@bloxwap/hig-react'}}))).not.toThrow();
+ expect(()=>checkChartBoundary(fixture({chart:adapter,react:{name:'@bloxwap/hig-react',peerDependencies:{'@bloxwap/chart':'^0.3.0'},peerDependenciesMeta:{'@bloxwap/chart':{optional:true}}}}))).toThrow('@bloxwap/hig-react declares @bloxwap/chart');
+ expect(()=>checkChartBoundary(fixture({chart:{...adapter,peerDependenciesMeta:{'@bloxwap/chart':{optional:true}}}}))).toThrow('required peer only');
+ const leaked=fixture({react:{name:'@bloxwap/hig-react'}});mkdirSync(join(leaked,'react/dist'));writeFileSync(join(leaked,'react/dist/chart.js'),"export const load=()=>import('@bloxwap/chart/react');");
+ expect(()=>checkChartBoundary(leaked)).toThrow('dist/chart.js imports @bloxwap/chart');
+});

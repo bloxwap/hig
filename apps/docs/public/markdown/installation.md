@@ -100,7 +100,7 @@ Tailwind may reference these values through host configuration; HIG does not req
 
 ## Optional chart, sound and haptics
 
-Chart is DOM-only and lazy; install @bloxwap/chart 0.3.0 for that entry and supply a textual summary. Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
+Chart is DOM-only and lazy. The adapter is its own package, `@bloxwap/hig-chart` (#96): install it with `@bloxwap/chart` `^0.3.0` (a required peer) and supply a textual summary. `@bloxwap/hig-react` has no `@bloxwap/chart` peer, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](components/chart.md). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
 
 ## Stable citations and upgrades
 

@@ -68,6 +68,8 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: '1'
       - run: npm run smoke:packed-boundaries
+      - name: Packed chart-shaped workspace, lockfile regenerated from scratch with strict peers (#96)
+        run: npm run smoke:packed-chart-workspace
       - run: npm run smoke:packed-fumadocs
       - run: npm run smoke:packed-examples
       - name: Read Playwright version

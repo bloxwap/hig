@@ -30,14 +30,6 @@
         "entry": "button",
         "signature": "export declare const Link: React.ForwardRefExoticComponent<React.AnchorHTMLAttributes<HTMLAnchorElement> & React.RefAttributes<HTMLAnchorElement>>;"
       },
-      "chartTheme": {
-        "entry": "chart",
-        "signature": "export declare const chartTheme: DeepPartial<ChartConfig>;"
-      },
-      "PriceChart": {
-        "entry": "chart",
-        "signature": "export declare function PriceChart({ summary, ...props }: ChartProps & {\n    summary: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
-      },
       "NumberProps": {
         "entry": "data",
         "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n}"
@@ -699,6 +691,16 @@
       "blockText": {
         "entry": "text-content",
         "signature": "export declare function blockText(children: React.ReactNode): string;"
+      }
+    },
+    "chart": {
+      "chartTheme": {
+        "entry": "@bloxwap/hig-chart",
+        "signature": "export declare const chartTheme: DeepPartial<ChartConfig>;"
+      },
+      "PriceChart": {
+        "entry": "@bloxwap/hig-chart",
+        "signature": "export declare function PriceChart({ summary, ...props }: ChartProps & {\n    summary: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       }
     }
   }

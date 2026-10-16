@@ -15,7 +15,7 @@ console.log(`Packed native consumer profile ${profile}: ${nativeProfiles[profile
 const dir=mkdtempSync(join(tmpdir(),`hig-native-consumer-${profile}-`));
 cpSync('fixtures/native',dir,{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/dist')&&!s.includes('/.expo')});
 writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
-const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')&&!n.includes('hig-og-fonts')).map(n=>resolve('artifacts',n));
+const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')&&!n.includes('hig-chart')&&!n.includes('hig-og-fonts')).map(n=>resolve('artifacts',n));
 execFileSync('npm',['install','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 const runtime=verifyNativeReact(dir);console.log('Native runtime versions',runtime);console.log('Expo native modules',verifyExpoNativeModules(dir));
 // npm only warns on most peer conflicts in an Expo tree, so every declared HIG peer range must explicitly accept what was installed.

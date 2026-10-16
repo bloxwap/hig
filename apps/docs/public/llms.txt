@@ -18,11 +18,11 @@ graph TD
   Native --> Expo[Expo gallery]
 ```
 
-`@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-feedback` owns optional adapter entry points. `@bloxwap/hig-native-fonts` ships the static native TTFs (#64), and `@bloxwap/hig-og-fonts` ships the five byte-identical Latin faces that Satori/`next/og` cards need (#99). Both are generated from pinned `@bloxwap/font` sources by `npm run generate:fonts`, and they are the only packages allowed to contain font binaries. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
+`@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-chart` owns the web adapter for `@bloxwap/chart` (`PriceChart`, `chartTheme`), with `@bloxwap/chart` and `@bloxwap/hig-react` as required peers (#96). No other package names `@bloxwap/chart`: an optional peer on it made npm 11 drop chart's workspace copy when that repository regenerated its lockfile. `@bloxwap/hig-feedback` owns optional adapter entry points. `@bloxwap/hig-native-fonts` ships the static native TTFs (#64), and `@bloxwap/hig-og-fonts` ships the five byte-identical Latin faces that Satori/`next/og` cards need (#99). Both are generated from pinned `@bloxwap/font` sources by `npm run generate:fonts`, and they are the only packages allowed to contain font binaries. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
 
 Candidate validation matrix: Node 22.22+, TypeScript 5.9, React/DOM 19.1, RN 0.81.5 with Expo 54 and RN 0.83.10 with Expo 55 (React 19.1.0 and 19.2.0 respectively, #68), Vite 6.4. Next 16.4.0 webpack is verified by M5 production/packed consumer checks. NativeWind styling remains outside the supported StyleSheet consumer path. Use StyleSheet on RN and plain CSS on web; Tailwind may refer to `var(--hig-*)` without scanning HIG sources. The pinned monorepo source now documents web/native rem roots of 16; see source reconciliation. Never infer native sizes by replacing `rem` with `dp`.
 
-Prefer built-in semantic controls; modal/disclosure behavior must retain keyboard, focus restoration and descriptions. Optional chart entry imports the chart SDK only on the client. Libraries retain upstream licenses; extracted tokens and mark have commit provenance, no vendor engine source is copied. Font binaries remain owned by @bloxwap/font (OFL-1.1).
+Prefer built-in semantic controls; modal/disclosure behavior must retain keyboard, focus restoration and descriptions. The separate `@bloxwap/hig-chart` package imports the chart SDK only on the client. Libraries retain upstream licenses; extracted tokens and mark have commit provenance, no vendor engine source is copied. Font binaries remain owned by @bloxwap/font (OFL-1.1).
 
 Deprecation plan: inventory all live references, map variants to intent/density, run migration diff and consumer validation, switch a pilot behind a host flag, then delete unused copies. App comfortable targets and Pro compact rows are intentional. HIG cannot retire owning-repository copies within this hig-only change. API/token/behavior changes follow semver; breaking accessibility behavior counts as breaking. Support upgrades require web, SSR and Metro evidence with a documented rollback before changing the matrix.
 
@@ -32,7 +32,7 @@ Source: docs/architecture/attribution.md
 
 # Attribution and provenance
 
-HIG code: MIT. @radix-ui/react-dialog, dropdown-menu, popover, tooltip: MIT, consumed as dependencies without copied engine code. @bloxwap/chart/sfx/haptic: independent upstream packages; optional integration only. @bloxwap/font: OFL-1.1, binaries stay in its pinned package. Brand SVG/geometry derives from Font docs, exact upstream commit in `evidence/upstream-inventory.json`; do not imply arbitrary trademark relicensing. Utility CheckIcon is original simple geometry. Full icons catalogs are excluded.
+HIG code: MIT. @radix-ui/react-dialog, dropdown-menu, popover, tooltip: MIT, consumed as dependencies without copied engine code. @bloxwap/chart/sfx/haptic: independent upstream packages; optional integration only (chart through the separate `@bloxwap/hig-chart` adapter). @bloxwap/font: OFL-1.1, binaries stay in its pinned package. Brand SVG/geometry derives from Font docs, exact upstream commit in `evidence/upstream-inventory.json`; do not imply arbitrary trademark relicensing. Utility CheckIcon is original simple geometry. Full icons catalogs are excluded.
 
 ## Generated favicon and social preview
 
@@ -55,14 +55,14 @@ Source: docs/architecture/platform-matrix.md
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
 | Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
 | Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
-| Chart | optional lazy @bloxwap/chart canvas | numeric/list summary only | typed theme; physical gesture evidence pending |
+| Chart | `@bloxwap/hig-chart`: lazy @bloxwap/chart canvas (required peer) | numeric/list summary only | typed theme; physical gesture evidence pending |
 | Brand mark | individual SVG renderer/asset | optional react-native-svg | pinned geometry; device comparison pending |
 | React Native versions | — | RN 0.81.5 / Expo 54 / React 19.1.0 and RN 0.83.10 / Expo 55 / React 19.2.0; peer ranges `react-native` `^0.81.5 \|\| ^0.83.10`, SDK-matched Expo, SVG, Slider and Worklets peers | CI packed Metro exports for both (`smoke:packed-native`, `--profile rn-0.83`); iOS Simulator and Android emulator gallery, interaction and GestureSheet runs on both with the same outcomes; differences tracked in #86–#89 (`evidence/native-sim/rn-0.83/`) |
 | Fonts | pinned Sans/Mono asset URLs | hash-pinned static faces, typed manifest, explicit weight registration and host script fallback | Expo-web loading/byte/hash gates; no physical native-font certification |
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 
 ## Actions & surfaces · HIG 0.1.0
@@ -113,7 +113,13 @@ Web price charts with text summaries and native readout alternatives.
 
 Includes web-only `PriceChart` and `chartTheme`. Native uses readouts, lists, and text summaries.
 
-Issue #20. Entry: `chart`. Import platform entries from `@bloxwap/hig-react/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig-native/data` for summary/readout/list alternatives. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+Issues #20 and #96. Package: `@bloxwap/hig-chart`. Import `PriceChart` and `chartTheme` from `@bloxwap/hig-chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig-native/data` for summary/readout/list alternatives. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+```sh
+npm install @bloxwap/hig-chart @bloxwap/hig-react @bloxwap/chart@^0.3.0
+```
+
+`@bloxwap/hig-chart` has three required peers: `react`, `@bloxwap/hig-react` (its `HIGProvider` supplies the localized fallback) and `@bloxwap/chart` `^0.3.0`. Its dependencies are `@bloxwap/hig-tokens` and `@bloxwap/hig-contracts`. `@bloxwap/hig-react` itself declares no `@bloxwap/chart` peer and has no `./chart` entry.
 
 ## API and anatomy
 
@@ -131,6 +137,19 @@ Do: provide host-generated price/trend summary and lazy-load chart on demand. Do
 @bloxwap/chart/react loads only on PriceChart render, in Suspense. Token theme covers surface/text/border/grid/crosshair/up/down/fonts; engine owns gestures and cleanup.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Moved from `@bloxwap/hig-react/chart` (#96)
+
+Until #96 the adapter was the `./chart` entry of `@bloxwap/hig-react`, which declared `@bloxwap/chart` as an optional peer. npm 11.6 drops a workspace copy of `@bloxwap/chart` from a lockfile regenerated from scratch without `legacy-peer-deps` whenever an installed package declares it as an optional peer. bloxwap/chart hit this: its `packages/chart` workspace disappeared and `apps/docs` lost `@bloxwap/chart`. Repacking hig-react without that peer kept the link. A required peer on a separate package does not trigger it, so the adapter moved to `@bloxwap/hig-chart` and the peer is required there. `npm run smoke:packed-chart-workspace` builds a chart-shaped workspace, regenerates its lockfile from scratch with strict peers, and fails if the link is lost (see the release chapter).
+
+Migration: replace `@bloxwap/hig-react/chart` with `@bloxwap/hig-chart` in imports and add `@bloxwap/hig-chart` next to `@bloxwap/hig-react`. `PriceChart` props and `chartTheme` values are unchanged.
+
+```diff
+-import {PriceChart, chartTheme} from '@bloxwap/hig-react/chart';
++import {PriceChart, chartTheme} from '@bloxwap/hig-chart';
+```
+
+Consumers: an org-wide GitHub code search (default branches) on 2026-10-16 found no import of `@bloxwap/hig-react/chart` outside this repository. bloxwap/chart, sfx and haptic import only other hig-react entries, and chart builds its own theme from `@bloxwap/hig-tokens`. The candidate was never published. The release chapter normally keeps a deprecated export working for a minor release, but that is skipped here: there are no consumers to migrate, and a working shim would need the optional peer that causes the bug. Hosts that only use other hig-react entries change nothing. bloxwap/chart can drop the `legacy-peer-deps` regeneration note in `vendor/bloxwap-hig/README.md` at its next HIG refresh.
 
 ## Platform mapping and limits
 
@@ -880,7 +899,7 @@ Rules:
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
 | `loadingItems` | Loading items | List loading row | — |
-| `loadingChart` | Loading chart… | PriceChart fallback (web) | — |
+| `loadingChart` | Loading chart… | PriceChart fallback (web, `@bloxwap/hig-chart`) | — |
 | `noItems` | No items | List empty text | `empty` |
 | `noRows` | No rows | Table empty text (web) | — |
 | `retry` | Retry | List retry button | — |
@@ -1194,7 +1213,7 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 
 | Applicability | Install | Never add |
 | --- | --- | --- |
-| Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font` | Copied component folders or token CSS |
+| Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font`; `-chart` with `@bloxwap/chart` only for `PriceChart` (#96) | Copied component folders or token CSS |
 | Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
 | Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font`; `-og-fonts` as a build-time dev dependency for OG cards only | A local `.btn` layer, a palette copy, `vendor/hig`, `-native-fonts` for OG cards |
 | Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
@@ -1322,6 +1341,8 @@ npm run smoke:packed-og
 npm run smoke:packed-native
 npm run smoke:packed-next
 npm run smoke:packed-css
+npm run smoke:packed-boundaries
+npm run smoke:packed-chart-workspace
 npm run release:dry-run -- --channel candidate
 npm run release:dry-run -- --channel stable-simulation
 ```
@@ -1329,6 +1350,8 @@ npm run release:dry-run -- --channel stable-simulation
 Candidate mode stages `0.1.0-candidate.sha<commit>` package metadata and matching internal dependency versions. Stable-simulation stages the coordinated source version. Runtime contract/docs source version and source commit are recorded explicitly; neither source files nor git refs are version-mutated by the dry run. Both produce local tarballs, checked export/types/CSS/assets/files/dependency manifests, hashes, changelog, copied docs artifact and provenance report. `npm pack --ignore-scripts` packs already validated outputs, never publishes. Physical claims remain pending in every report.
 
 The release dry run, `npm run quality`, `smoke:packed-native` and `smoke:packed-og` first check that the generated TTF faces exist and match their manifests (#98). If any face is missing or stale, they stop before building anything. The message names `npm run generate:fonts` and its Python pins and lists the affected files, instead of failing with a raw `ENOENT`. `packedSizes` in the report records the packed and unpacked bytes and the font-file counts of `@bloxwap/hig-tokens` (no fonts), `@bloxwap/hig-native-fonts` and `@bloxwap/hig-og-fonts`. The dry run fails if any other package contains a font binary, or if `@bloxwap/hig-og-fonts` reaches 1,000,000 B packed (#99). `smoke:packed-og` builds the documented `app/og/route.tsx` handler with Turbopack (the Next 16 default) and with `--webpack`. It serves each build with `next start`, and also as moved standalone output. Every face's SHA-256 has to match, so a loader that bundles only one face fails here.
+
+The chart adapter ships as its own artifact, `@bloxwap/hig-chart` (#96). The dry run fails unless `@bloxwap/hig-chart` declares `@bloxwap/chart` as a required peer and no other artifact names `@bloxwap/chart` in dependencies or peers. The result is recorded in `chartAdapter` in the report. `npm run quality` applies the same rule to the source manifests and to every built `dist` file. `smoke:packed-boundaries` checks that the packed hig-react manifest has no `./chart` entry and no `@bloxwap/chart` peer, and that `PriceChart` renders on the server with its required peer installed. `smoke:packed-chart-workspace` builds a host shaped like bloxwap/chart: an npm workspace whose `packages/chart` provides `@bloxwap/chart` 0.3.0, plus `apps/docs`, which depends on it and on the packed hig-react, hig-chart, tokens and contracts through `file:` specs. The smoke deletes `package-lock.json` and `node_modules` and installs with `legacy-peer-deps=false` and `strict-peer-deps=true`. It then asserts four things. The lockfile keeps `packages/chart` and the `node_modules/@bloxwap/chart` link. `npm ls` is clean. Node and esbuild resolve `@bloxwap/chart` (including hig-chart's lazy `@bloxwap/chart/react`) from the app into the workspace. The host's `HIGProvider` messages reach `PriceChart`. It repeats the checks after `npm ci` and requires a second `npm install` to leave the lockfile byte-identical. A control run repacks hig-react with the old optional peer and records in `evidence/packed-chart-workspace-smoke.json` whether that npm still drops the workspace.
 
 CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/example/visual/accessibility/budget gates and uploads review artifacts. A provenance record identifies source commit, package/contract/docs versions and hashes; it is not an npm registry provenance attestation or a release. Artifact inspection checks exports, licenses, optional peers and only approved assets. No example app implementation is included in runtime packages.
 
@@ -1457,7 +1480,7 @@ Tailwind may reference these values through host configuration; HIG does not req
 
 ## Optional chart, sound and haptics
 
-Chart is DOM-only and lazy; install @bloxwap/chart 0.3.0 for that entry and supply a textual summary. Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
+Chart is DOM-only and lazy. The adapter is its own package, `@bloxwap/hig-chart` (#96): install it with `@bloxwap/chart` `^0.3.0` (a required peer) and supply a textual summary. `@bloxwap/hig-react` has no `@bloxwap/chart` peer, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](components/chart.md). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
 
 ## Stable citations and upgrades
 
@@ -1623,6 +1646,24 @@ In each repository:
 4. Rebuild the OG cards and compare them with the previous images. The faces are byte-identical copies, so the cards should not change. Record the vendored-byte delta in the repository's adoption evidence and update its row in `planning/adoption.json`.
 
 See [Open Graph card fonts](../installation.md#open-graph-card-fonts) for the full API and the edge-runtime path.
+
+## Chart adapter: `@bloxwap/hig-chart` (#96)
+
+`@bloxwap/hig-react` no longer has a `./chart` entry or an optional `@bloxwap/chart` peer. `PriceChart` and `chartTheme` moved unchanged to `@bloxwap/hig-chart`, which requires `@bloxwap/chart` `^0.3.0` as a peer. The optional peer made npm drop chart's `packages/chart` workspace when `package-lock.json` was regenerated from scratch without `legacy-peer-deps`. This reproduces on npm 10.9.9, 11.6.1, 11.21.1 and 12.2.0. A required peer does not trigger it.
+
+| Repository | Uses `@bloxwap/hig-react/chart`? | Change at the next HIG refresh |
+| --- | --- | --- |
+| chart | No. The docs theme comes from `@bloxwap/hig-tokens` (`apps/docs/scripts/hig-tokens.mjs`) | Vendor the new hig-react tarball. Remove the `legacy-peer-deps` regeneration note from `vendor/bloxwap-hig/README.md`. A from-scratch `npm install` then keeps `@bloxwap/chart -> ./packages/chart`. Vendor `@bloxwap/hig-chart` only if the docs adopt `PriceChart` |
+| sfx, haptic, hyperliquid, font | No | None beyond the usual tarball refresh |
+
+A host that does import the entry changes one specifier and adds the package:
+
+```diff
+-import {PriceChart} from '@bloxwap/hig-react/chart';
++import {PriceChart} from '@bloxwap/hig-chart';
+```
+
+The candidate was never published, and a GitHub code search on 2026-10-16 found no consumer outside this repository, so no deprecated shim is kept (see [charts](../components/chart.md#moved-from-bloxwap-hig-react-chart-96)). `npm run smoke:packed-chart-workspace` reproduces chart's layout: an npm workspace whose `packages/chart` provides `@bloxwap/chart`, and an app that depends on the packed hig-react and hig-chart. It deletes the lockfile, reinstalls with strict peers and fails if the workspace link is lost.
 
 
 ## Documentation website and migration shell · HIG 0.1.0

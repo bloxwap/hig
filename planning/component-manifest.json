@@ -126,7 +126,7 @@
     {
       "slug": "chart",
       "issue": 20,
-      "module": "chart",
+      "module": "@bloxwap/hig-chart",
       "components": [
         "PriceChart (DOM only)",
         "chartTheme; native readout/list summary"
