@@ -1,7 +1,7 @@
 // #96: a host shaped like bloxwap/chart keeps its workspace @bloxwap/chart when it regenerates package-lock.json
 // from scratch with strict peers. The host is an npm workspace whose packages/chart provides @bloxwap/chart 0.3.0
 // and whose apps/docs depends on @bloxwap/chart plus the packed HIG tarballs through file: specs, as chart's docs
-// site does. npm 11.6 dropped that workspace while @bloxwap/hig-react declared an optional @bloxwap/chart peer; the
+// site does. npm (10.9 through 12.2, including chart's 11.6.1) dropped that workspace while @bloxwap/hig-react declared an optional @bloxwap/chart peer; the
 // adapter now lives in @bloxwap/hig-chart with a required peer, and hig-react names no @bloxwap/chart at all.
 //
 // Scenarios (each starts with no package-lock.json and no node_modules, legacy-peer-deps off, strict-peer-deps on):
@@ -9,6 +9,8 @@
 //   react-and-chart:   apps/docs also uses @bloxwap/hig-chart (PriceChart).
 //   legacy-control:    hig-react repacked with the pre-#96 optional @bloxwap/chart peer. Recorded, not asserted, so
 //                      the evidence shows whether this npm still reproduces the original bug.
+// Every scenario runs with the ambient npm (CI: the one bundled with Node 22.22) and with the npm pinned in this
+// repository's packageManager (11.6.1, the version chart reported), installed into a scratch prefix.
 import {execFileSync} from 'node:child_process';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,cpSync,rmSync,realpathSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -24,7 +26,18 @@ const chartVersion=JSON.parse(readFileSync(join(chartSource,'package.json'),'utf
 assert.equal(chartVersion,'0.3.0','root devDependency @bloxwap/chart must be 0.3.0');
 const env={...process.env,npm_config_legacy_peer_deps:'false',npm_config_strict_peer_deps:'true'};
 delete env.npm_config_force;
-const npmVersion=execFileSync('npm',['--version'],{encoding:'utf8'}).trim();
+const pinnedNpm=JSON.parse(readFileSync('package.json','utf8')).packageManager.replace(/^npm@/,'');
+const ambientNpm=execFileSync('npm',['--version'],{encoding:'utf8'}).trim();
+function npmClients(scratch){
+ const clients=[{version:ambientNpm,source:'ambient',command:['npm']}];
+ if(pinnedNpm!==ambientNpm){
+  const prefix=join(scratch,`npm-${pinnedNpm}`);mkdirSync(prefix,{recursive:true});
+  execFileSync('npm',['install','--prefix',prefix,'--no-audit','--no-fund','--ignore-scripts',`npm@${pinnedNpm}`],{stdio:'pipe'});
+  const cli=join(prefix,'node_modules/npm/bin/npm-cli.js'),version=execFileSync(process.execPath,[cli,'--version'],{encoding:'utf8'}).trim();
+  assert.equal(version,pinnedNpm);clients.push({version,source:'packageManager',command:[process.execPath,cli]});
+ }
+ return clients;
+}
 
 function legacyReactTarball(directory){
  // Re-add exactly the peer that hig-react declared before #96.
@@ -55,7 +68,8 @@ function host(name,{withChart,reactTarball=tarball('react')}){
  return root;
 }
 
-const npm=(root,args)=>execFileSync('npm',[...args,'--ignore-scripts','--no-audit','--no-fund'],{cwd:root,env,stdio:'pipe',encoding:'utf8'});
+let client;
+const npm=(root,args)=>execFileSync(client.command[0],[...client.command.slice(1),...args,'--ignore-scripts','--no-audit','--no-fund'],{cwd:root,env,stdio:'pipe',encoding:'utf8'});
 function inspect(root){
  const lock=JSON.parse(readFileSync(join(root,'package-lock.json'),'utf8'));
  const workspace=lock.packages['packages/chart']??null,link=lock.packages['node_modules/@bloxwap/chart']??null;
@@ -97,29 +111,37 @@ async function assertApp(root,label,withChart){
  return {resolved:resolved.map(f=>relative(realpathSync(root),f)),ssr:'PriceChart summary and host-localized fallback',bundleLazyImport:lazy[0]};
 }
 
-const scenarios=[];
-for(const [name,withChart] of [['react-only',false],['react-and-chart',true]]){
- const root=host(name,{withChart});
- assert.equal(existsSync(join(root,'package-lock.json')),false);
- npm(root,['install']);
- const fresh=assertKept(root,`${name} fresh lockfile`);const app=await assertApp(root,name,withChart);
- const lock=readFileSync(join(root,'package-lock.json'));
- rmSync(join(root,'node_modules'),{recursive:true,force:true});rmSync(join(root,'apps/docs/node_modules'),{recursive:true,force:true});
- npm(root,['ci']);assertKept(root,`${name} npm ci`);await assertApp(root,`${name} npm ci`,withChart);
- npm(root,['install']);assert.ok(readFileSync(join(root,'package-lock.json')).equals(lock),`${name}: a second npm install rewrote the lockfile`);
- scenarios.push({name,app:withChart?['@bloxwap/hig-react','@bloxwap/hig-tokens','@bloxwap/hig-contracts','@bloxwap/hig-chart']:['@bloxwap/hig-react','@bloxwap/hig-tokens','@bloxwap/hig-contracts'],freshLockfile:fresh,npmCi:'workspace link kept',reinstall:'lockfile byte-identical',...app});
- rmSync(root,{recursive:true,force:true});
+const scratch=mkdtempSync(join(tmpdir(),'hig-chart-workspace-tools-'));
+const legacyTarball=legacyReactTarball(scratch);
+const runs=[];
+for(client of npmClients(scratch)){
+ const scenarios=[];
+ for(const [name,withChart] of [['react-only',false],['react-and-chart',true]]){
+  const label=`npm ${client.version} ${name}`;
+  const root=host(name,{withChart});
+  assert.equal(existsSync(join(root,'package-lock.json')),false);
+  npm(root,['install']);
+  const fresh=assertKept(root,`${label} fresh lockfile`);const app=await assertApp(root,label,withChart);
+  const lock=readFileSync(join(root,'package-lock.json'));
+  rmSync(join(root,'node_modules'),{recursive:true,force:true});rmSync(join(root,'apps/docs/node_modules'),{recursive:true,force:true});
+  npm(root,['ci']);assertKept(root,`${label} npm ci`);await assertApp(root,`${label} npm ci`,withChart);
+  npm(root,['install']);assert.ok(readFileSync(join(root,'package-lock.json')).equals(lock),`${label}: a second npm install rewrote the lockfile`);
+  scenarios.push({name,app:withChart?['@bloxwap/hig-react','@bloxwap/hig-tokens','@bloxwap/hig-contracts','@bloxwap/hig-chart']:['@bloxwap/hig-react','@bloxwap/hig-tokens','@bloxwap/hig-contracts'],freshLockfile:fresh,npmCi:'workspace link kept',reinstall:'lockfile byte-identical',...app});
+  rmSync(root,{recursive:true,force:true});
+ }
+ const legacyRoot=host('legacy-control',{withChart:false,reactTarball:legacyTarball});
+ npm(legacyRoot,['install']);
+ const legacy=inspect(legacyRoot);
+ const control={name:'legacy-control',hig:'hig-react repacked with the pre-#96 optional @bloxwap/chart peer',workspaceDropped:!legacy.workspaceInLock||!legacy.nodeModulesLink,...legacy};
+ rmSync(legacyRoot,{recursive:true,force:true});
+ if(!control.workspaceDropped)console.warn(`legacy-control: npm ${client.version} no longer drops the workspace with an optional peer; the regression checks still hold`);
+ runs.push({npm:client.version,source:client.source,scenarios,control});
 }
-const scratch=mkdtempSync(join(tmpdir(),'hig-chart-workspace-legacy-'));
-const legacyRoot=host('legacy-control',{withChart:false,reactTarball:legacyReactTarball(scratch)});
-npm(legacyRoot,['install']);
-const legacy=inspect(legacyRoot);
-const control={name:'legacy-control',hig:'hig-react repacked with the pre-#96 optional @bloxwap/chart peer',workspaceDropped:!legacy.workspaceInLock||!legacy.nodeModulesLink,...legacy};
-rmSync(legacyRoot,{recursive:true,force:true});rmSync(scratch,{recursive:true,force:true});
-if(!control.workspaceDropped)console.warn(`legacy-control: npm ${npmVersion} no longer drops the workspace with an optional peer; the regression check above still holds`);
+rmSync(scratch,{recursive:true,force:true});
+assert.ok(runs.some(r=>r.npm===pinnedNpm),`no run used the pinned npm ${pinnedNpm}`);
 
-const evidence={version:'0.1.0',issue:'bloxwap/hig#96',evidence:'automated (local tarballs, clean temporary npm workspaces); no publication',platform:`${process.platform} ${process.arch}`,node:process.version,npm:npmVersion,
+const evidence={version:'0.1.0',issue:'bloxwap/hig#96',evidence:'automated (local tarballs, clean temporary npm workspaces); no publication',platform:`${process.platform} ${process.arch}`,node:process.version,
  host:{shape:'npm workspace like bloxwap/chart: packages/chart provides @bloxwap/chart, apps/docs depends on it by version and on HIG tarballs through file: specs',chart:`@bloxwap/chart ${chartVersion} (published build copied into packages/chart)`,install:'rm package-lock.json + node_modules; npm install with legacy-peer-deps=false, strict-peer-deps=true; then npm ci; then npm install (no lockfile change)'},
- scenarios,control};
+ runs};
 writeFileSync('evidence/packed-chart-workspace-smoke.json',JSON.stringify(evidence,null,2)+'\n');
-console.log(`Packed chart-shaped workspace (npm ${npmVersion}): ${scenarios.map(s=>s.name).join(', ')} keep packages/chart linked after a from-scratch strict-peer lockfile, npm ci and reinstall; legacy optional peer ${control.workspaceDropped?'still drops':'no longer drops'} the workspace`);
+for(const run of runs)console.log(`Packed chart-shaped workspace, npm ${run.npm} (${run.source}): ${run.scenarios.map(s=>s.name).join(', ')} keep packages/chart linked after a from-scratch strict-peer lockfile, npm ci and reinstall; legacy optional peer ${run.control.workspaceDropped?'still drops':'no longer drops'} the workspace`);
