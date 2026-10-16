@@ -25,6 +25,8 @@ export function GET() {
 }
 ```
 
+This works in Next 16 route handlers with both the default Turbopack build and `next build --webpack`. Each face has its own literal `new URL('../fonts/<File>.ttf', import.meta.url)`, which Turbopack copies into `.next/server`. webpack reads the faces from this package's `fonts/` directory at the absolute path it had at build time. If a webpack `output: 'standalone'` build moves to another directory, add `serverExternalPackages: ['@bloxwap/hig-og-fonts']` to `next.config`.
+
 `loadOgFonts(faces?)` returns `{name, data, weight, style}` objects, the shape Satori takes. `ogFonts` (from the package root) lists the same faces with their asset names and hashes, so you can pass a subset, for example `ogFonts.filter(f => f.weight >= 700)`. `readOgFont(asset)` reads and checks a single file.
 
 Edge or Workers runtimes cannot read `node_modules` at request time. Copy `@bloxwap/hig-og-fonts/fonts/<asset>` into a build output at build time and check each file against `fontManifest.outputs[asset]` (also at `@bloxwap/hig-og-fonts/manifest`) before you write it. Keep that output gitignored.

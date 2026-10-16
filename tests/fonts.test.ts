@@ -70,6 +70,19 @@ describe('OG/Satori fonts package (#99)',()=>{
   expect(ogFonts.map(f=>`${f.name} ${f.weight}`)).toEqual(['Bloxwap Sans 400','Bloxwap Sans 500','Bloxwap Sans 700','Bloxwap Sans 900','Bloxwap Mono 500']);
   for(const face of ogFonts){expect(face.style).toBe('normal');expect(face.sha256).toBe(ogManifest.outputs[face.asset]);}
  });
+ it('names every face with its own literal asset URL so Turbopack and webpack bundle all five',async()=>{
+  // A template URL (`../fonts/${asset}`) made Turbopack, the Next 16 default, read one file for every face (#99).
+  const source=readFileSync('packages/og-fonts/src/node.ts','utf8');
+  const literals=[...source.matchAll(/new URL\('\.\.\/fonts\/([^']+)', import\.meta\.url\)/g)].map(m=>m[1]);
+  expect(literals).toEqual(Object.keys(ogManifest.outputs));
+  expect(source.match(/new URL\(/g)).toHaveLength(literals.length);
+  expect(source).not.toMatch(/new URL\(`/);
+  const {loadOgFonts,readOgFont}=await import('../packages/og-fonts/src/node');
+  const {createHash}=await import('node:crypto');
+  const fonts=await loadOgFonts();
+  expect(fonts.map(f=>createHash('sha256').update(f.data).digest('hex'))).toEqual(ogFonts.map(f=>f.sha256));
+  await expect(readOgFont('constructor' as never)).rejects.toThrow('does not ship constructor');
+ });
  it('keeps the raw faces well under the 1 MB packed budget (gzip measured by the release dry run)',()=>{
   expect(ogManifest.faces.reduce((sum,f)=>sum+f.bytes,0)).toBeLessThan(2_300_000);
   const pkg=JSON.parse(readFileSync('packages/og-fonts/package.json','utf8'));
