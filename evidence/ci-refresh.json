@@ -1,20 +1,20 @@
 {
-  "issue": "bloxwap/hig#98",
+  "issue": "bloxwap/hig#98, bloxwap/hig#99",
   "evidence": "automated, Linux CI (ubuntu-24.04, GitHub Actions); copied unchanged from the run artifacts, not regenerated locally",
   "workflow": "HIG candidate quality and dry-run artifacts",
-  "runId": 38961635994,
-  "runUrl": "https://github.com/bloxwap/hig/actions/runs/38961635994",
+  "runId": 38965978409,
+  "runUrl": "https://github.com/bloxwap/hig/actions/runs/38965978409",
   "event": "push",
-  "sourceCommit": "a4c2af3dad4eb40e20fccc250418cc3574f7ee7b",
+  "sourceCommit": "8ba143ab6f26af741ed5719d23526002dfa86751",
   "artifacts": {
-    "hig-candidate-review-a4c2af3dad4eb40e20fccc250418cc3574f7ee7b": [
+    "hig-candidate-review-8ba143ab6f26af741ed5719d23526002dfa86751": [
       "evidence/release-dry-run.json",
       "evidence/quality-report.json",
       "evidence/packed-og-smoke.json",
       "evidence/m5-candidate-install.json",
       "evidence/packed-smoke.json"
     ],
-    "hig-candidate-browser-a4c2af3dad4eb40e20fccc250418cc3574f7ee7b": [
+    "hig-candidate-browser-8ba143ab6f26af741ed5719d23526002dfa86751": [
       "evidence/issue-1-18/chromium-acceptance.json",
       "evidence/issue-1-18/firefox-acceptance.json",
       "evidence/issue-1-18/webkit-acceptance.json"
@@ -22,7 +22,7 @@
   },
   "releaseDryRun": {
     "channel": "candidate",
-    "artifactVersion": "0.1.0-candidate.shaa4c2af3d",
+    "artifactVersion": "0.1.0-candidate.sha8ba143ab",
     "packages": [
       "@bloxwap/hig-contracts",
       "@bloxwap/hig-feedback",
@@ -34,25 +34,61 @@
     ],
     "packedSizes": {
       "webTokens": {
-        "file": "bloxwap-hig-tokens-0.1.0-candidate.shaa4c2af3d.tgz",
-        "bytes": 8106,
+        "file": "bloxwap-hig-tokens-0.1.0-candidate.sha8ba143ab.tgz",
+        "bytes": 8108,
         "unpackedBytes": 42749,
         "fontFiles": 0
       },
       "nativeFonts": {
-        "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shaa4c2af3d.tgz",
+        "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha8ba143ab.tgz",
         "bytes": 4420492,
         "unpackedBytes": 12069011,
         "fontFiles": 15
       },
       "ogFonts": {
-        "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shaa4c2af3d.tgz",
-        "bytes": 843602,
-        "unpackedBytes": 2193149,
+        "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha8ba143ab.tgz",
+        "bytes": 844029,
+        "unpackedBytes": 2195023,
         "fontFiles": 5,
         "limit": 1000000
       }
     }
   },
-  "note": "Other files under evidence/ (including the issue-1-18 screenshots) keep their earlier provenance. CI uploads fresh copies of every evidence file in the same artifacts for each run."
+  "note": "Other files under evidence/ (including the issue-1-18 screenshots) keep their earlier provenance. CI uploads fresh copies of every evidence file in the same artifacts for each run.",
+  "packedOgSmoke": {
+    "tarballBytes": 844017,
+    "nextRouteHandler": {
+      "turbopack": {
+        "build": "next build",
+        "nextConfig": {},
+        "serve": "next start",
+        "status": 200
+      },
+      "webpack": {
+        "build": "next build --webpack",
+        "nextConfig": {},
+        "serve": "next start",
+        "status": 200
+      },
+      "turbopack-standalone": {
+        "build": "next build",
+        "nextConfig": {
+          "output": "standalone"
+        },
+        "serve": "standalone, moved",
+        "status": 200
+      },
+      "webpack-standalone-external": {
+        "build": "next build --webpack",
+        "nextConfig": {
+          "output": "standalone",
+          "serverExternalPackages": [
+            "@bloxwap/hig-og-fonts"
+          ]
+        },
+        "serve": "standalone, moved",
+        "status": 200
+      }
+    }
+  }
 }

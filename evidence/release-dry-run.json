@@ -4,19 +4,19 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "candidate",
-  "sourceCommit": "a4c2af3dad4eb40e20fccc250418cc3574f7ee7b",
+  "sourceCommit": "8ba143ab6f26af741ed5719d23526002dfa86751",
   "sourceVersion": "0.1.0",
-  "artifactVersion": "0.1.0-candidate.shaa4c2af3d",
+  "artifactVersion": "0.1.0-candidate.sha8ba143ab",
   "docsGuidelineVersion": "0.1.0",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig-contracts",
-      "version": "0.1.0-candidate.shaa4c2af3d",
-      "file": "bloxwap-hig-contracts-0.1.0-candidate.shaa4c2af3d.tgz",
-      "bytes": 6117,
+      "version": "0.1.0-candidate.sha8ba143ab",
+      "file": "bloxwap-hig-contracts-0.1.0-candidate.sha8ba143ab.tgz",
+      "bytes": 6118,
       "unpackedBytes": 19006,
-      "sha256": "a8f129ef67e331328a517c11d1bae300da2d51264956bfe3b41fa0854d1253c3",
+      "sha256": "9201237ad21dee239047cea9a10376be77e80470b0c1b4975b0e2a3b0fb01d41",
       "files": [
         "LICENSE",
         "README.md",
@@ -34,11 +34,11 @@
     },
     {
       "package": "@bloxwap/hig-feedback",
-      "version": "0.1.0-candidate.shaa4c2af3d",
-      "file": "bloxwap-hig-feedback-0.1.0-candidate.shaa4c2af3d.tgz",
+      "version": "0.1.0-candidate.sha8ba143ab",
+      "file": "bloxwap-hig-feedback-0.1.0-candidate.sha8ba143ab.tgz",
       "bytes": 65823,
       "unpackedBytes": 130799,
-      "sha256": "7eca1a653a404e25a27567a050b5bf2149b5a7f11acbfe281a284f348ad71c57",
+      "sha256": "1de83949ba8586e49aebc73b234ec8c7827b35a43d947c5b30d21ce1a046c652",
       "files": [
         "LICENSE",
         "README.md",
@@ -66,7 +66,7 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shaa4c2af3d"
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha8ba143ab"
       },
       "optionalPeers": [
         "react",
@@ -78,11 +78,11 @@
     },
     {
       "package": "@bloxwap/hig-native",
-      "version": "0.1.0-candidate.shaa4c2af3d",
-      "file": "bloxwap-hig-native-0.1.0-candidate.shaa4c2af3d.tgz",
-      "bytes": 21746,
+      "version": "0.1.0-candidate.sha8ba143ab",
+      "file": "bloxwap-hig-native-0.1.0-candidate.sha8ba143ab.tgz",
+      "bytes": 21747,
       "unpackedBytes": 80029,
-      "sha256": "8339b3de723b309099eb8f89e538c0a62f88db9179d8380e832f15e1eb4de317",
+      "sha256": "3c2c585c5946430d76101b9bb8a8fae06f03bb2a0d3256a888b8f4418c537463",
       "files": [
         "LICENSE",
         "README.md",
@@ -135,8 +135,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shaa4c2af3d",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shaa4c2af3d"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha8ba143ab",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha8ba143ab"
       },
       "optionalPeers": [
         "react-native-svg",
@@ -150,11 +150,11 @@
     },
     {
       "package": "@bloxwap/hig-native-fonts",
-      "version": "0.1.0-candidate.shaa4c2af3d",
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shaa4c2af3d.tgz",
+      "version": "0.1.0-candidate.sha8ba143ab",
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha8ba143ab.tgz",
       "bytes": 4420492,
       "unpackedBytes": 12069011,
-      "sha256": "7f18f7c422c87ef8f367ba0bb5439c4faa57d4b092208fe16d10c0a868cc6c05",
+      "sha256": "7efffc57ab0d3e37b13b76aa812b5b76e2280360c51e7deee7dfb088b74a3d8a",
       "files": [
         "LICENSE",
         "README.md",
@@ -183,11 +183,11 @@
     },
     {
       "package": "@bloxwap/hig-og-fonts",
-      "version": "0.1.0-candidate.shaa4c2af3d",
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shaa4c2af3d.tgz",
-      "bytes": 843602,
-      "unpackedBytes": 2193149,
-      "sha256": "291a001ae75992dc4e8288d8c696ca6cb528f19cd4141ec22cdaef21743f5d35",
+      "version": "0.1.0-candidate.sha8ba143ab",
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha8ba143ab.tgz",
+      "bytes": 844029,
+      "unpackedBytes": 2195023,
+      "sha256": "6efd0e815e359371ec8a743d267de1773db83030a2698ec7341c79cc539c45f6",
       "files": [
         "LICENSE",
         "README.md",
@@ -208,11 +208,11 @@
     },
     {
       "package": "@bloxwap/hig-react",
-      "version": "0.1.0-candidate.shaa4c2af3d",
-      "file": "bloxwap-hig-react-0.1.0-candidate.shaa4c2af3d.tgz",
+      "version": "0.1.0-candidate.sha8ba143ab",
+      "file": "bloxwap-hig-react-0.1.0-candidate.sha8ba143ab.tgz",
       "bytes": 20286,
       "unpackedBytes": 89664,
-      "sha256": "a5dee9a3416c66c1c76da14de24aa9a61d3d21db30cd924689b33360b7d72927",
+      "sha256": "799df05dd13386108d89600bd6c7952346a28db28e0cc8c6d103cdd85575a39a",
       "files": [
         "LICENSE",
         "README.md",
@@ -262,8 +262,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shaa4c2af3d",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shaa4c2af3d"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha8ba143ab",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha8ba143ab"
       },
       "optionalPeers": [
         "@bloxwap/chart",
@@ -275,11 +275,11 @@
     },
     {
       "package": "@bloxwap/hig-tokens",
-      "version": "0.1.0-candidate.shaa4c2af3d",
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.shaa4c2af3d.tgz",
-      "bytes": 8106,
+      "version": "0.1.0-candidate.sha8ba143ab",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha8ba143ab.tgz",
+      "bytes": 8108,
       "unpackedBytes": 42749,
-      "sha256": "dc78f6796a0a8a8b453d63129d9a1d1d9c6329289e97113effbf2e47939946ec",
+      "sha256": "daf37e517b52a5d6c73b808fbd1dc757e7628c2ff6b4804c582eff431a86b6ff",
       "files": [
         "LICENSE",
         "README.md",
@@ -295,21 +295,21 @@
   ],
   "packedSizes": {
     "webTokens": {
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.shaa4c2af3d.tgz",
-      "bytes": 8106,
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha8ba143ab.tgz",
+      "bytes": 8108,
       "unpackedBytes": 42749,
       "fontFiles": 0
     },
     "nativeFonts": {
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shaa4c2af3d.tgz",
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha8ba143ab.tgz",
       "bytes": 4420492,
       "unpackedBytes": 12069011,
       "fontFiles": 15
     },
     "ogFonts": {
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shaa4c2af3d.tgz",
-      "bytes": 843602,
-      "unpackedBytes": 2193149,
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha8ba143ab.tgz",
+      "bytes": 844029,
+      "unpackedBytes": 2195023,
       "fontFiles": 5,
       "limit": 1000000
     }
@@ -361,8 +361,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2240112,
-      "gzip": 625639
+      "raw": 2242465,
+      "gzip": 626444
     },
     "docsCSS": {
       "raw": 111309
