@@ -928,7 +928,7 @@ React Native reads a hex colour's channels in the app's default colour space. Th
 | negative / sell | `#ff5c5c` | `#ec6762` |
 | info | `#35b5ff` | `#2eb8ff` |
 
-Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and an iOS Simulator capture of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). Physical display comparison is tracked in #55.
+Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and iOS Simulator captures of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). In the sRGB screenshots, `display-p3` paints warning and negative as exactly the sRGB tokens (`#f5b300`, `#ff5c5c`), while `srgb` on the same host paints them oversaturated (`#ffaf00`, `#ff4a54`). Action and info are wider than sRGB, so the screenshot clips them. Physical display comparison is tracked in #55.
 
 ## Typography (#7)
 
