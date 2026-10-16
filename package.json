@@ -25,6 +25,7 @@
     "test:web": "vitest run",
     "test:native": "jest --config jest.native.config.cjs",
     "smoke:packed-native": "node scripts/packed-native-smoke.mjs",
+    "smoke:packed-og": "node scripts/packed-og-smoke.mjs",
     "generate:cues": "node scripts/export-cues.mjs",
     "generate:examples": "node scripts/generate-examples.mjs",
     "build:docs": "node scripts/build-docs.mjs",

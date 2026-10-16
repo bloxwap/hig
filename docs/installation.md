@@ -39,6 +39,24 @@ Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. T
 
 Fonts in Next: put the `@bloxwap/font` loader variables on `<html>`, for example `<html className={`${BloxwapSans.variable} ${BloxwapMono.variable}`}>`. The loaders register hashed family names, so HIG never matches a literal `'Bloxwap Sans'` there. Instead `--hig-font-sans` and `--hig-font-mono` in `@bloxwap/hig-tokens/css` resolve `var(--font-bloxwap-sans)` and `var(--font-bloxwap-mono)` first and fall back to the literal families. No bridge CSS is needed. If a host keeps its own variable names, override the roles on `:root` after importing the tokens CSS: `:root { --hig-font-sans: var(--my-sans), 'Bloxwap Sans', system-ui, sans-serif; }`. The variables must be defined on `<html>` (not `<body>`), because the roles resolve on `:root`. `npm run smoke:packed-next` serves the packed consumer and checks, in Chromium, that `.hig-button` and `.hig-number` compute to a loaded Bloxwap face (`document.fonts.check` plus the `FontFace` status). Next 16.4.0 (webpack), React 19.2 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
 
+## Open Graph card fonts
+
+Satori, `next/og` `ImageResponse` and `@vercel/og` read TTF/OTF but not WOFF2, and `@bloxwap/font` ships only WOFF2. Docs and marketing sites that render OG cards install `@bloxwap/hig-og-fonts` as a build-time dev dependency. Do not use `@bloxwap/hig-native-fonts` for this (#99). The package holds five static Latin faces: Bloxwap Sans 400, 500, 700 and 900, and Bloxwap Mono 500. These are the faces the chart, sfx, agent-cli and tapsiren cards use. It packs to about 0.84 MB; the native fonts package is 4.4 MB. `npm run generate:fonts` copies the five faces byte for byte from `@bloxwap/hig-native-fonts`, so each SHA-256 in its manifest equals the native manifest entry. The release dry run records the packed size in `packedSizes.ogFonts` and fails at 1,000,000 B.
+
+Node runtime (route handlers with `export const runtime = 'nodejs'`, or static OG export scripts):
+
+```tsx
+import {ImageResponse} from 'next/og';
+import {loadOgFonts} from '@bloxwap/hig-og-fonts/node';
+
+const fonts = await loadOgFonts(); // {name, data, weight, style}[]; throws if any TTF's SHA-256 differs from the manifest
+export function GET() {
+  return new ImageResponse(<div style={{display: 'flex', fontFamily: 'Bloxwap Sans', fontWeight: 700}}>Bloxwap</div>, {width: 1200, height: 630, fonts});
+}
+```
+
+Pass a subset if you need fewer faces: `loadOgFonts(ogFonts.filter(f => f.weight >= 700))`, with `ogFonts` imported from `@bloxwap/hig-og-fonts`. Edge and Workers runtimes cannot read `node_modules` at request time. Copy `@bloxwap/hig-og-fonts/fonts/<asset>` into a gitignored build folder at build time. Before you write each file, check it against `fontManifest.outputs[asset]` (from the package root, or as JSON at `@bloxwap/hig-og-fonts/manifest`), as tapsiren's `copy-og-fonts.mjs` does. Plain Node ESM scripts outside Next import `next/og.js`, because `next` has no exports map. `npm run smoke:packed-og` installs the packed tarball next to `next@16.4.0` in a clean consumer. It hashes every exported TTF against both manifests and renders 1200×630 PNG cards through `ImageResponse`: each Sans weight must render differently, and none may match the default font. It also requires `readOgFont` to reject a tampered face, and writes `evidence/packed-og-smoke.json`.
+
 ## Expo / React Native
 
 Run `npm run smoke:packed-native` after packed artifacts are built, or `npm run start -w hig-native-fixture` for the device gallery. Matrix: RN 0.81.5 with Expo SDK 54 and React 19.1.0, and RN 0.83.10 with Expo SDK 55 and React 19.2.0 (#68), Metro as locked. `npm run smoke:packed-native -- --profile rn-0.83` installs the same fixture with the SDK 55 versions from `fixtures/native/profiles.json`; CI exports both consumers for Android and iOS. `@bloxwap/hig-native` declares `react-native` `^0.81.5 || ^0.83.10`, so RN 0.82 and 0.84+ are outside the tested range. Native consumers install tokens/contracts/native tarballs; optional feedback installs its tarball and explicit Expo backend peers. Slider and SVG peers are only needed by their family entries. Import `@bloxwap/hig-native/button`, not the DOM renderer. Dynamic Type remains enabled; native targets stay 48. Keyboard/safe-area/back behavior belongs to the native host and its supported OS.
