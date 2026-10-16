@@ -1,0 +1,4 @@
+feedbackCalls  -> OK (1 test)
+snapshot -e name 'baseline' -e expectDirection 'ltr' -> OK (1 test)
+snapshot -e name 'os-arabic' -e expectDirection 'rtl' -> OK (1 test)
+galleryCaptures -e components 'Button,Select,Field,Tabs,MarketRow,TradeEntry' -e prefix 'android-os-arabic' -> OK (1 test)

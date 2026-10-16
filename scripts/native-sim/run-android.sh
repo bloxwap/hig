@@ -41,7 +41,7 @@ run keyboardAvoidance
 # HIG per-root RTL, then OS RTL through an Arabic per-app locale (Android 13+).
 run galleryCaptures components "$SUBSET" prefix android-rtl query "&dir=rtl"
 adb shell am force-stop $PKG; adb shell cmd locale set-app-locales $PKG --locales ar-EG
-run snapshot name os-arabic
+run snapshot name os-arabic expectDirection rtl # #86: the gallery passes direction from expo-localization
 run galleryCaptures components "Button,Select,Field,Tabs,MarketRow,TradeEntry" prefix android-os-arabic
 adb shell am force-stop $PKG; adb shell cmd locale set-app-locales $PKG --locales ""
 # OS font scale 2.0 (largest Android setting).

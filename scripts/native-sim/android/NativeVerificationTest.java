@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -523,6 +524,9 @@ public class NativeVerificationTest {
     for (int i = 0; i < 10 && scroller != null; i++) { if (!scroller.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)) break; settle(150); }
     settle(1500);
     r.put("diagnosticsAfter", diagnostics());
+    // #89: play() calls against playbackStatusUpdate events per cue, counted by the recording wrapper.
+    AccessibilityNodeInfo counts = waitFor(x -> label(x).startsWith("Sound counts:"), 3000);
+    r.put("soundCounts", counts == null ? JSONObject.NULL : label(counts));
     capture("android-feedback-diagnostics");
     write("android-feedback.json", r.toString(1));
   }
@@ -591,8 +595,14 @@ public class NativeVerificationTest {
     AccessibilityNodeInfo rtl = waitFor(n -> label(n).startsWith("OS RTL:"), 3000);
     JSONObject r = new JSONObject().put("name", name).put("diagnostics", diagnostics());
     r.put("runtime", runtime == null ? JSONObject.NULL : label(runtime)).put("fontScale", scale == null ? JSONObject.NULL : label(scale)).put("rtl", rtl == null ? JSONObject.NULL : label(rtl)).put("motion", motion == null ? JSONObject.NULL : label(motion));
+    // #86: expectDirection asserts the HIG direction the host passes (React Native 0.83 Android leaves I18nManager.isRTL false for a per-app RTL locale).
+    String expected = arg("expectDirection", null);
+    String actual = null;
+    if (rtl != null) { java.util.regex.Matcher m = java.util.regex.Pattern.compile("HIG direction: (ltr|rtl)").matcher(label(rtl)); if (m.find()) actual = m.group(1); }
+    if (expected != null) r.put("expectedDirection", expected).put("higDirection", actual == null ? JSONObject.NULL : actual).put("directionMatches", expected.equals(actual));
     write("trees/android-" + name + ".json", tree().toString(1));
     capture("android-" + name);
     write("android-" + name + ".json", r.toString(1));
+    if (expected != null) Assert.assertEquals("HIG direction for " + name, expected, actual);
   }
 }

@@ -5,6 +5,8 @@ import {nativeSrgb,nativeDisplayP3} from '@bloxwap/hig-tokens';
 import {defaultEnvironment,type Environment} from '@bloxwap/hig-contracts';
 import {defaultMessages,resolveMessages,type HIGMessages} from '@bloxwap/hig-contracts/messages';
 export type {HIGMessages} from '@bloxwap/hig-contracts/messages';
+/** Direction of a host-supplied locale (for example expo-localization's `getLocales()[0]`) for `HIGProvider direction`; see #86. */
+export {localeDirection,type HostLocale} from '@bloxwap/hig-contracts';
 /** Colour space the host paints React Native colours in. `display-p3` is for iOS hosts whose React Native default colour space is Display P3 (an app delegate `defaultColorSpace()` override); there HIG paints its generated `nativeDisplayP3` table (`nativeColors.iosDisplayP3`). Android and web stay sRGB, because HIG publishes no other table for them. */
 export type HIGColorSpace='srgb'|'display-p3';
 /** Semantic token roles every native component paints from. */
@@ -16,7 +18,7 @@ export function colorTable(colorSpace?:HIGColorSpace,os:string=Platform.OS):HIGC
 export interface HIGContext extends Environment {onAccepted?:(id:string)=>void;feedback?:FeedbackSink;fontFamily?:string;fontFamilies?:Readonly<Record<string,string>>;/** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */monoFontFamily?:string;/** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */maxFontSizeMultiplier?:number;/** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */letterSpacingByScript?:Readonly<Partial<Record<'ko'|'zh',number>>>;/** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */colorSpace:HIGColorSpace;/** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */messages:Readonly<Partial<HIGMessages>>}
 export interface HIGProviderProps extends Partial<Omit<HIGContext,'messages'>> {/** `display-p3` selects HIG's iosDisplayP3 table on iOS for hosts that set React Native's default colour space to Display P3; omitted, the enclosing provider's value (else `srgb`) applies. */colorSpace?:HIGColorSpace;/** Translations for HIG's built-in strings; omitted keys fall back to the enclosing provider, then English. */messages?:Partial<HIGMessages>}
 const Context=createContext<HIGContext>({...defaultEnvironment,direction:I18nManager.isRTL?'rtl':'ltr',colorSpace:'srgb',messages:{}});
-/** Direction defaults to the OS layout direction (I18nManager) so HIG roots never force LTR inside an RTL app. */
+/** Direction defaults to the OS layout direction (I18nManager) so HIG roots never force LTR inside an RTL app. React Native 0.83 Android does not report a per-app RTL locale through I18nManager (#86): RTL hosts pass `direction={localeDirection(getLocales()[0])}`. Hosts that disallow RTL leave `direction` unset. */
 export function HIGProvider({children,density='comfortable',locale='en-US',direction=I18nManager.isRTL?'rtl':'ltr',reducedMotion,onAccepted,feedback,fontFamily,fontFamilies,monoFontFamily,maxFontSizeMultiplier,letterSpacingByScript,colorSpace,messages}:React.PropsWithChildren<HIGProviderProps>){
  const parent=useContext(Context);const inherited=parent.messages;const resolved=useMemo(()=>resolveMessages(inherited,messages),[inherited,messages]);
  const [osReduced,setOSReduced]=useState(false);

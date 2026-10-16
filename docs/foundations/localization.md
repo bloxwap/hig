@@ -65,6 +65,27 @@ Logical inline spacing, wrapping labels, no fixed-height clipping of translated 
 
 Long translations, Arabic/Hebrew RTL and large text remain part of the [platform checklist](platform.md#accessibility-and-localization-10). Physical-device observations are still pending.
 
+### Native direction from the host locale
+
+Issue #86. On native, `HIGProvider` follows `I18nManager.isRTL` when `direction` is unset. React Native 0.82 and later, including 0.83.10, do not report an Android per-app RTL locale through `I18nManager` (Android 13+ `cmd locale set-app-locales ar-EG`, or a per-app language picker). `I18nManager.isRTL` stays `false`, so an Arabic or Hebrew user would get a left-to-right HIG tree. RN 0.81.5 and iOS are not affected.
+
+Hosts that lay out right to left pass the locale's direction:
+
+```tsx
+import {getLocales} from 'expo-localization';
+import {HIGProvider, localeDirection} from '@bloxwap/hig-native/provider';
+
+const direction = localeDirection(getLocales()[0]); // 'rtl' for ar-EG; undefined keeps the I18nManager default
+<HIGProvider locale={getLocales()[0]?.languageTag} direction={direction}>{children}</HIGProvider>;
+```
+
+`localeDirection` (also exported from `@bloxwap/hig-contracts`) returns expo-localization's `textDirection` when present. Otherwise it reads the tag's script, then its language: `ar_EG`, `he-IL` and `az-Arab-IR` give `rtl`; `en-US`, `ar-Latn` and `en-u-nu-arab` give `ltr`. It accepts BCP 47 tags, Android/Java identifiers and objects with `textDirection`/`languageTag`, and returns `undefined` for no language (`''`, `und`). Without expo-localization, React Native's `I18nManager.getConstants().localeIdentifier` is the app's configuration locale on Android (from the RN 0.83 source; the gallery verifies the expo-localization path).
+
+- **Don't** pass a locale-derived direction in an app that disallows RTL (`I18nManager.allowRTL(false)`, or `android:supportsRtl="false"`). Leave `direction` unset so HIG follows the OS layout. HIG never derives direction on its own for this reason.
+- **Don't** expect `I18nManager.isRTL` to change on RN 0.83 Android. Native views HIG does not draw keep the host's direction.
+
+Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/53417) (0.82.0) made `I18nUtil.isDevicePreferredLanguageRTL` read `Locale.getAvailableLocales()[0]` instead of the app's locale. The bug is reported in [#54938](https://github.com/react/react-native/issues/54938) and fixed by [#57635](https://github.com/react/react-native/pull/57635), first released in 0.88.0. 0.83.10, 0.84.1, 0.85.3, 0.86.3 and 0.87.1 still have the bug. The native gallery passes `localeDirection(getLocales()[0])`, and its `os-arabic` Android emulator step asserts `rtl` on RN 0.81.5 and 0.83.10 (`evidence/native-sim/issue-86-88-89/`). A system-wide Arabic locale and physical devices are not yet tested (#55).
+
 ## Built-in component strings
 
 Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/react/src` or `packages/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig-contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
