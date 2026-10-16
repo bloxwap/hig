@@ -1648,5 +1648,275 @@
       ],
       "note": "Android emulator: slider lists setProgress, sets once, snaps/clamps, rejected when disabled; increment/decrement and iOS AX adjustable unchanged; native Jest covers them"
     }
+  },
+  {
+    "issue": 86,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "HIGProvider still follows I18nManager when direction is unset; typed localeDirection(locale) in @bloxwap/hig-contracts, re-exported from @bloxwap/hig-native/provider; gallery passes localeDirection(getLocales()[0]) and run-android.sh asserts expectDirection rtl for os-arabic (Android emulator, RN 0.83.10: 'OS RTL: false · HIG direction: rtl'; 0.81.5 control rtl); upstream linked, not filed: introduced by react/react-native#53417 (0.82.0), reported #54938, fixed by #57635 in 0.88.0; host direction documented in docs/foundations/localization.md and docs/migration/native.md",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/113"
+    ],
+    "evidence": "evidence/native-sim/issue-86-88-89/",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/113"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "HIGProvider still follows I18nManager when direction is unset; typed localeDirection(locale) in @bloxwap/hig-contracts, re-exported from @bloxwap/hig-native/provider; gallery passes localeDirection(getLocales()[0]) and run-android.sh asserts expectDirection rtl for os-arabic (Android emulator, RN 0.83.10: 'OS RTL: false · HIG direction: rtl'; 0.81.5 control rtl); upstream linked, not filed: introduced by react/react-native#53417 (0.82.0), reported #54938, fixed by #57635 in 0.88.0; host direction documented in docs/foundations/localization.md and docs/migration/native.md"
+    }
+  },
+  {
+    "issue": 87,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "Typed messages increase/decrease (docs/foundations/localization.md, localization.json) label the native Slider increment/decrement actions; Android emulator (UiAutomation, RN 0.83.10) lists Increase/Decrease, Augmenter/Diminuer and 증가/감소 instead of empty labels; #71 set-progress, snapping, clamping and disabled rejection unchanged; TalkBack actions-menu check on a device in #55",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/105"
+    ],
+    "evidence": "evidence/native-sim/issue-87-92-94/",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/105"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Typed messages increase/decrease (docs/foundations/localization.md, localization.json) label the native Slider increment/decrement actions; Android emulator (UiAutomation, RN 0.83.10) lists Increase/Decrease, Augmenter/Diminuer and 증가/감소 instead of empty labels; #71 set-progress, snapping, clamping and disabled rejection unchanged; TalkBack actions-menu check on a device in #55"
+    }
+  },
+  {
+    "issue": 88,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "Cause recorded from React Native source: react/react-native#53324 (0.82.0) turned enableFontScaleChangesUpdatingLayout on, so RCTTextInputComponentView re-applies the scaled font on content size category changes; adjustsFontForContentSizeCategory still unset (#57426 unmerged); audit note in evidence/native-sim/native-sim.json now applies to RN 0.81.5 only; inferred from source, not isolated in the Simulator; device Dynamic Type check in #55",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/113"
+    ],
+    "evidence": "evidence/native-sim/issue-86-88-89/summary.json",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/113"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Cause recorded from React Native source: react/react-native#53324 (0.82.0) turned enableFontScaleChangesUpdatingLayout on, so RCTTextInputComponentView re-applies the scaled font on content size category changes; adjustsFontForContentSizeCategory still unset (#57426 unmerged); audit note in evidence/native-sim/native-sim.json now applies to RN 0.81.5 only; inferred from source, not isolated in the Simulator; device Dynamic Type check in #55"
+    }
+  },
+  {
+    "issue": 89,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "Android emulator counts per sound: SDK 54 play 4 · start 4 · didJustFinish 8; SDK 55 play 4 · start 4 · didJustFinish 4, so SDK 54's duplicate is expo-audio 1.1 reporting one finish twice, not a second play; HIG never relies on playback completion, so no de-duplication; docs/feedback/adapters.md explains how to de-duplicate; device tick timing in #55",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/113"
+    ],
+    "evidence": "evidence/native-sim/issue-86-88-89/",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/113"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55"
+      ],
+      "note": "Android emulator counts per sound: SDK 54 play 4 · start 4 · didJustFinish 8; SDK 55 play 4 · start 4 · didJustFinish 4, so SDK 54's duplicate is expo-audio 1.1 reporting one finish twice, not a second play; HIG never relies on playback completion, so no de-duplication; docs/feedback/adapters.md explains how to de-duplicate; device tick timing in #55"
+    }
+  },
+  {
+    "issue": 92,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "Native Button label and busy suffix render through HIG Text: provider or Button maxFontSizeMultiplier cap, the registered 600 face on both runs, letterSpacingByScript for ko/zh (native Jest); Android emulator Korean capture shows the suffix in the label's weight; large-text device run in #55",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/105"
+    ],
+    "evidence": "tests/native/text-rules.test.cjs",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/105"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/115"
+      ],
+      "note": "Native Button label and busy suffix render through HIG Text: provider or Button maxFontSizeMultiplier cap, the registered 600 face on both runs, letterSpacingByScript for ko/zh (native Jest); Android emulator Korean capture shows the suffix in the label's weight; large-text device run in #55"
+    }
+  },
+  {
+    "issue": 93,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "HIGProvider colorSpace 'srgb' (default) | 'display-p3' with useColors()/colorTable(); every native component paints from the provider, guard test fails on any other nativeSrgb/nativeColors import or raw hex; iOS Simulator (P3 host, RN 0.83.10) shows warning/negative at the sRGB token values with display-p3 and oversaturated with srgb; action/info clip in the sRGB screenshot; physical wide-gamut comparison in #55",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/112"
+    ],
+    "evidence": "evidence/native-sim/issue-93/",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/112"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/115"
+      ],
+      "note": "HIGProvider colorSpace 'srgb' (default) | 'display-p3' with useColors()/colorTable(); every native component paints from the provider, guard test fails on any other nativeSrgb/nativeColors import or raw hex; iOS Simulator (P3 host, RN 0.83.10) shows warning/negative at the sRGB token values with display-p3 and oversaturated with srgb; action/info clip in the sRGB screenshot; physical wide-gamut comparison in #55"
+    }
+  },
+  {
+    "issue": 94,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "busyAccessibilityLabel(): a busy text Button gets a non-empty accessibilityLabel with the visible label for en/fr/ko/ar (RNTL): '{text} · {busy}' on iOS, '{text}' on Android so React Native's own busy word is not doubled (owner comment on #94); explicit label wins; Android emulator content descriptions 'Log out, busy', 'Déconnexion, busy', '로그아웃, busy', '로그아웃, 처리 중' (ko app locale); TalkBack/VoiceOver on devices in #55",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/105"
+    ],
+    "evidence": "evidence/native-sim/issue-87-92-94/",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/105"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/55",
+        "https://github.com/bloxwap/hig/issues/115"
+      ],
+      "note": "busyAccessibilityLabel(): a busy text Button gets a non-empty accessibilityLabel with the visible label for en/fr/ko/ar (RNTL): '{text} · {busy}' on iOS, '{text}' on Android so React Native's own busy word is not doubled (owner comment on #94); explicit label wins; Android emulator content descriptions 'Log out, busy', 'Déconnexion, busy', '로그아웃, busy', '로그아웃, 처리 중' (ko app locale); TalkBack/VoiceOver on devices in #55"
+    }
+  },
+  {
+    "issue": 95,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "@bloxwap/hig-react/css styles only HIG classes; old page-wide rules ship as opt-in @bloxwap/hig-react/css/base; smoke:packed-react-css in the CI quality job proves plain table/th/td, range, box-sizing, [data-severity] and a plain button's focus outline compute as with tokens only (Chromium 141, Firefox 142, WebKit 26, Linux CI); smoke:packed-boundaries rejects non-HIG selectors; documented in docs/installation.md and docs/migration/products.md",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/107"
+    ],
+    "evidence": "evidence/packed-react-css-scope.json",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/107"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/115"
+      ],
+      "note": "@bloxwap/hig-react/css styles only HIG classes; old page-wide rules ship as opt-in @bloxwap/hig-react/css/base; smoke:packed-react-css in the CI quality job proves plain table/th/td, range, box-sizing, [data-severity] and a plain button's focus outline compute as with tokens only (Chromium 141, Firefox 142, WebKit 26, Linux CI); smoke:packed-boundaries rejects non-HIG selectors; documented in docs/installation.md and docs/migration/products.md"
+    }
+  },
+  {
+    "issue": 96,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "Chart adapter moved to @bloxwap/hig-chart with a required @bloxwap/chart peer; hig-react has no ./chart entry and no @bloxwap/chart peer; smoke:packed-chart-workspace (CI quality) regenerates a chart-shaped workspace lockfile from scratch with strict peers on npm 10.9.4 and 11.6.1 and keeps the packages/chart link, while a control with the old optional peer drops it; verifier reproduced both in a real bloxwap/chart clone; upstream npm/cli report drafted in PR #114, related npm/cli#9249 and #10086",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/114"
+    ],
+    "evidence": "evidence/packed-chart-workspace-smoke.json",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/114"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/115"
+      ],
+      "note": "Chart adapter moved to @bloxwap/hig-chart with a required @bloxwap/chart peer; hig-react has no ./chart entry and no @bloxwap/chart peer; smoke:packed-chart-workspace (CI quality) regenerates a chart-shaped workspace lockfile from scratch with strict peers on npm 10.9.4 and 11.6.1 and keeps the packages/chart link, while a control with the old optional peer drops it; verifier reproduced both in a real bloxwap/chart clone; upstream npm/cli report drafted in PR #114, related npm/cli#9249 and #10086"
+    }
+  },
+  {
+    "issue": 97,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "Tabs sets the shown panel's tab stop in an isomorphic layout effect, in the same commit that shows it; DOM tests switch tabs with fireEvent.click and check tabindex synchronously (the layout-effect probe fails on the old code); smoke:ssr and smoke:packed-next hydration unchanged",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/108"
+    ],
+    "evidence": "tests/components.dom.test.tsx",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/108"
+      ],
+      "followUps": [],
+      "note": "Tabs sets the shown panel's tab stop in an isomorphic layout effect, in the same commit that shows it; DOM tests switch tabs with fireEvent.click and check tabindex synchronously (the layout-effect probe fails on the old code); smoke:ssr and smoke:packed-next hydration unchanged"
+    }
+  },
+  {
+    "issue": 98,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "Release dry run, quality and packed font smokes check for the generated faces first and name npm run generate:fonts with the fonttools/brotli pins (tests/fonts.test.ts); committed evidence is copied from Linux CI and recorded in evidence/ci-refresh.json; release-dry-run.json is a current candidate run listing all 8 packages including @bloxwap/hig-native-fonts",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/106"
+    ],
+    "evidence": "evidence/release-dry-run.json",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/106"
+      ],
+      "followUps": [],
+      "note": "Release dry run, quality and packed font smokes check for the generated faces first and name npm run generate:fonts with the fonttools/brotli pins (tests/fonts.test.ts); committed evidence is copied from Linux CI and recorded in evidence/ci-refresh.json; release-dry-run.json is a current candidate run listing all 8 packages including @bloxwap/hig-native-fonts"
+    }
+  },
+  {
+    "issue": 99,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "@bloxwap/hig-og-fonts: 5 Latin TTFs (Sans 400/500/700/900, Mono 500) checked against the manifest SHA-256, 844,028 B packed against a 1,000,000 B limit; smoke:packed-og serves cards from Next route handlers under Turbopack, webpack and both standalone outputs; docs/installation.md 'Open Graph card fonts'; docs/migration/sdk-docs.md tells chart, sfx, agent-cli and tapsiren to switch (#115)",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/106"
+    ],
+    "evidence": "evidence/packed-og-smoke.json",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/106"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/115"
+      ],
+      "note": "@bloxwap/hig-og-fonts: 5 Latin TTFs (Sans 400/500/700/900, Mono 500) checked against the manifest SHA-256, 844,028 B packed against a 1,000,000 B limit; smoke:packed-og serves cards from Next route handlers under Turbopack, webpack and both standalone outputs; docs/installation.md 'Open Graph card fonts'; docs/migration/sdk-docs.md tells chart, sfx, agent-cli and tapsiren to switch (#115)"
+    }
+  },
+  {
+    "issue": 102,
+    "branch": "hig/followups-86-102-closeout",
+    "status": "satisfied",
+    "reason": "plainText joins text nodes with no separator and collapses whitespace; blockText keeps Alert body children apart; native Jest checks a mixed ReactNode Alert title is announced as 'Display-only value strings', matching the visible text with no doubled whitespace",
+    "implementationPRs": [
+      "https://github.com/bloxwap/hig/pull/105"
+    ],
+    "evidence": "tests/native/text-rules.test.cjs",
+    "closeout": {
+      "date": "2026-10-16",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/hig/pull/105"
+      ],
+      "followUps": [],
+      "note": "plainText joins text nodes with no separator and collapses whitespace; blockText keeps Alert body children apart; native Jest checks a mixed ReactNode Alert title is announced as 'Display-only value strings', matching the visible text with no doubled whitespace"
+    }
   }
 ]

@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "observedAt": "2026-10-15",
+  "observedAt": "2026-10-16",
   "inventoryEvidence": "planning/org-inventory-2026-10-15.json",
   "inventoryScope": "All 15 repositories visible to the authenticated token on 2026-10-15 (gh repo list bloxwap); none archived.",
   "policy": "Owners are recorded as repository maintainer roles until #57 records named owners. Every exception has scope, reason, owner, expiry (at most 180 days) and a tracking issue. Statuses link only merged or open PRs that exist.",
@@ -38,7 +38,17 @@
         "https://github.com/bloxwap/hig/pull/83",
         "https://github.com/bloxwap/hig/pull/84",
         "https://github.com/bloxwap/hig/pull/85",
-        "https://github.com/bloxwap/hig/pull/90"
+        "https://github.com/bloxwap/hig/pull/90",
+        "https://github.com/bloxwap/hig/pull/103",
+        "https://github.com/bloxwap/hig/pull/104",
+        "https://github.com/bloxwap/hig/pull/105",
+        "https://github.com/bloxwap/hig/pull/106",
+        "https://github.com/bloxwap/hig/pull/107",
+        "https://github.com/bloxwap/hig/pull/108",
+        "https://github.com/bloxwap/hig/pull/111",
+        "https://github.com/bloxwap/hig/pull/112",
+        "https://github.com/bloxwap/hig/pull/113",
+        "https://github.com/bloxwap/hig/pull/114"
       ],
       "openPRs": [],
       "validation": "npm run check, packed web/SSR/Next/Metro consumers, three-engine browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
@@ -58,7 +68,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/55"
         }
       ],
-      "remaining": "Publish to npm (#56); physical-device certification (#55); open package follow-ups #86–#89, #92–#99 and #102",
+      "remaining": "Publish to npm (#56); physical-device certification (#55). Package follow-ups #86–#89, #92–#99 and #102 are closed (#105–#108, #112–#114); consumer workaround removal is #115",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15"
@@ -112,13 +122,13 @@
         },
         {
           "scope": "vendor/bloxwap-hig/bloxwap-hig-native-fonts-*.tgz (4,420,375 B) as a build-time devDependency",
-          "reason": "the Satori OG renderer needs two static TTFs; no small static-face package exists yet",
+          "reason": "the Satori OG renderer needs two static TTFs; @bloxwap/hig-og-fonts (#99, hig#106) replaces it at the next candidate refresh",
           "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/99"
+          "tracking": "https://github.com/bloxwap/hig/issues/115"
         }
       ],
-      "remaining": "Swap vendored tarballs for npm (#56); smaller OG font source (#99); lockfile regeneration needs the documented workaround until #96",
+      "remaining": "Swap vendored tarballs for npm (#56); at the next refresh (candidate at or after 74f4f6a): switch the OG card to @bloxwap/hig-og-fonts (#99 fixed) and remove the legacy-peer-deps lockfile note from vendor/bloxwap-hig/README.md (#96 fixed; tracked in #115)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/chart",
       "exceptionExpires": "2027-01-15"
@@ -179,13 +189,13 @@
         },
         {
           "scope": "vendor/bloxwap-hig/bloxwap-hig-native-fonts-*.tgz (4,420,375 B) as a build-time devDependency",
-          "reason": "the Satori OG renderer needs two static TTFs; no small static-face package exists yet",
+          "reason": "the Satori OG renderer needs two static TTFs; @bloxwap/hig-og-fonts (#99, hig#106) replaces it at the next candidate refresh",
           "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/99"
+          "tracking": "https://github.com/bloxwap/hig/issues/115"
         }
       ],
-      "remaining": "Upstream voice cancellation (#70); smaller OG font source (#99); npm (#56)",
+      "remaining": "Upstream voice cancellation (#70); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); npm (#56)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/sfx",
       "exceptionExpires": "2027-01-15"
@@ -248,7 +258,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/110"
         }
       ],
-      "remaining": "Web candidate refresh (#109); remaining surfaces and fork/font retirement (#110); upstream native fixes #86/#92/#93/#94; physical devices (#55)",
+      "remaining": "Web candidate refresh (#109); remaining surfaces and fork/font retirement (#110); native refresh drops the HigActionButton busy-label wrapper (#94) and sets HIGProvider colorSpace='display-p3' instead of the local iosDisplayP3 Button style (#93), tracked in #115; physical devices (#55)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/monorepo",
       "exceptionExpires": "2027-01-15"
@@ -274,7 +284,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/56"
         }
       ],
-      "remaining": "Swap vendored tarballs for npm (#56); same-line copy guard (bloxwap/agent-cli#49); smaller OG font source (#99)",
+      "remaining": "Swap vendored tarballs for npm (#56); same-line copy guard (bloxwap/agent-cli#49); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/agent-cli",
       "exceptionExpires": "2027-01-15"
@@ -313,7 +323,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/100"
         }
       ],
-      "remaining": "Migrate the remaining apps/web routes and apps/host tokens-only, and decide the brand accent (#100); unscoped HIG global CSS (#95); npm (#56)",
+      "remaining": "Migrate the remaining apps/web routes and apps/host tokens-only, and decide the brand accent (#100); drop the sponsors-hig.css th/td reset at the next refresh (#95 fixed; #115); npm (#56)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/taptradetv",
       "exceptionExpires": "2027-01-15"
@@ -345,7 +355,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/101"
         }
       ],
-      "remaining": "Decide the product mark/favicon colour (#101, expires 2027-01-15); smaller OG font source (#99); swap vendored tarballs for npm (#56)",
+      "remaining": "Decide the product mark/favicon colour (#101, expires 2027-01-15); copy OG faces from @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); swap vendored tarballs for npm (#56)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/tapsiren",
       "exceptionExpires": "2027-01-15"
@@ -357,7 +367,8 @@
       "higVersion": "0.1.0-candidate.sha872906a9",
       "status": "migrated (styles.css uses 40 --hig-* roles and no literals; approved HIG mark as favicon; Bloxwap Sans/Mono from @bloxwap/font 0.1.2)",
       "mergedPRs": [
-        "https://github.com/bloxwap/bloxwap.github.io/pull/26"
+        "https://github.com/bloxwap/bloxwap.github.io/pull/26",
+        "https://github.com/bloxwap/bloxwap.github.io/pull/28"
       ],
       "openPRs": [],
       "validation": "bloxwap.github.io#26 CI green (check, drift, Playwright 24/24) on c1e7359, merged as 9febbb5 (post-merge CI and Pages build green; live site loads assets/hig/tokens.css); independent verifier: hig@872906a9 tokens tarball rebuilt byte-identical, copied tokens.css/icon.svg byte-identical to the package, scoped drift passed (15 files, 3 dated exceptions), same tests on main fail 13/24 (320px overflow, focus ring, roles, fonts, portal links, OG), all four pages at 1440/390/320 and 200% text without horizontal scroll, every SDK docs link 200; before/after screenshots and byte report (home 8,178 to 603,056 B, fonts 592,796 B) in evidence/hig-61/",
@@ -384,7 +395,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/56"
         }
       ],
-      "remaining": "Build Pages in Actions so copies are not committed (bloxwap.github.io#25); check.mjs shorthand colours and lockup scaling (bloxwap.github.io#27); npm (#56)",
+      "remaining": "Build Pages in Actions so copies are not committed (bloxwap.github.io#25); check.mjs reads CSS function names such as tan() as colours (bloxwap.github.io#29, low priority); npm (#56). Shorthand colours and lockup scaling fixed in bloxwap.github.io#28 (#27)",
       "migrationGuide": "docs/installation.md",
       "url": "https://github.com/bloxwap/bloxwap.github.io",
       "exceptionExpires": "2027-01-15"
