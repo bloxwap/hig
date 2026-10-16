@@ -6,12 +6,13 @@
     "reactNative": "0.81.5"
   },
   "exports": {
+    "chart": 2,
     "contracts": 8,
     "feedback": 17,
     "native": 38,
     "native-fonts": 4,
     "og-fonts": 6,
-    "react": 42,
+    "react": 40,
     "tokens": 5
   },
   "sizes": {
@@ -39,7 +40,7 @@
     },
     "nativeSwitch": {
       "raw": 4282,
-      "gzip": 2019,
+      "gzip": 2018,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -61,8 +62,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2256027,
-      "gzip": 630504
+      "raw": 2269706,
+      "gzip": 634535
     },
     "docsCSS": {
       "raw": 111949
