@@ -162,3 +162,19 @@ These are notes for each repository's next candidate refresh (a candidate built 
 - **chart (#96):** remove the `legacy-peer-deps` regeneration note from `vendor/bloxwap-hig/README.md`; a from-scratch lockfile keeps `@bloxwap/chart -> ./packages/chart` with the new hig-react tarball.
 - **monorepo `apps/mobile` (#94):** delete the `HigActionButton` `higButtonAccessibilityLabel` workaround from [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540); Button now sets the busy name itself.
 - **monorepo `apps/mobile` (#93):** set `HIGProvider colorSpace='display-p3'` and drop the local `nativeColors.iosDisplayP3` Button `style` lookup; read `useColors()` for host-drawn colour.
+
+## #109/#110 progress · 2026-10-16
+
+Five monorepo PRs are open. Each has green CI, passed the pre-push `bun run quality` gate without `--no-verify`, and was approved by an independent verifier working from a fresh clone. All five use `0.1.0-candidate.shab2f7740c`, and the verifier rebuilt those tarballs byte-identical from a fresh bloxwap/hig `b2f7740` candidate (`npm ci && npm run generate:fonts && npm run build && npm run release:dry-run -- --channel candidate`). None is merged: bloxwap/monorepo main requires the human `signoff`. Evidence is labelled automated, browser (headless Chromium; Firefox in CI), iOS Simulator or Android emulator. No physical hardware was used. [#109](https://github.com/bloxwap/hig/issues/109) and [#110](https://github.com/bloxwap/hig/issues/110) stay open until the PRs are merged.
+
+| PR | Issue | Surface | Verified head | Status |
+| --- | --- | --- | --- | --- |
+| [monorepo#4594](https://github.com/bloxwap/monorepo/pull/4594) | #109 | app, Pro, marketing: web candidate refresh from `1a776b9` | `d81cbf00` | open on main; merge first |
+| [monorepo#4601](https://github.com/bloxwap/monorepo/pull/4601) | #110 | app: signed-in send, review, sheets, outcomes; all cues through `appCue()` | `1f2981b7` | stacked on #4594; rebase after it merges |
+| [monorepo#4599](https://github.com/bloxwap/monorepo/pull/4599) | #110 | Pro: market list, stats strip, dense tables | `2e0724da` | stacked on #4594; rebase after it merges |
+| [monorepo#4598](https://github.com/bloxwap/monorepo/pull/4598) | #110 | marketing: signals, The Setup, markets; build-time fonts | `db6e3ab4` | stacked on #4594; rebase after it merges |
+| [monorepo#4602](https://github.com/bloxwap/monorepo/pull/4602) | #110 | React Native app: toasts, trade, account-sheet actions, readouts, language picker; drops the #94/#93 workarounds | `691f4339` | open on main; independent; supersedes the #4577 draft |
+
+- **#109:** Pro compact density did not regress. Leaderboard rows are 38px and the order-ticket slider is 6px on main, on the pilot and on the rollback build. Compact buttons and the amount field stay 36px. The app adopts `@bloxwap/hig-react/css/base` (#95), localized busy text (#82) and 44px buttons (#80). Marketing HTML is byte-identical.
+- **#110, forks with no flag-on consumers once the PRs merge:** ui-native `Button`, ui-native `ToastViewport` and `FlowUsd` in the mobile app, and `apps/www/public/fonts`, which #4598 deletes. No file in `apps/app/src/components/ui` or `apps/pro/src/components/ui` has lost all of its flag-on consumers yet. The per-surface lists are in `planning/adoption.json` (`forksWithoutFlagOnConsumers`, `forksStillUsedFlagOn`).
+- **Still to do:** each rollback flag and rollback renderer is kept, and the dated exceptions (expiring 2027-01-15) still track #110. Upstream gaps filed from #4602 are [#117](https://github.com/bloxwap/hig/issues/117)–[#121](https://github.com/bloxwap/hig/issues/121). The native Hermes delta is about +84 KB on iOS and +85 KB on Android cumulatively, which is over the 64 KB budget; that decision is in [#57](https://github.com/bloxwap/hig/issues/57). Device-only checks are in [#55](https://github.com/bloxwap/hig/issues/55).
