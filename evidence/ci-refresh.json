@@ -1,13 +1,13 @@
 {
-  "issue": "bloxwap/hig#96",
+  "issue": "bloxwap/hig#116 (close-out for #86-#99, #102)",
   "evidence": "automated, Linux CI (ubuntu-24.04, GitHub Actions); copied unchanged from the run artifacts, not regenerated locally",
   "workflow": "HIG candidate quality and dry-run artifacts",
-  "runId": 38978367276,
-  "runUrl": "https://github.com/bloxwap/hig/actions/runs/38978367276",
+  "runId": 38982069520,
+  "runUrl": "https://github.com/bloxwap/hig/actions/runs/38982069520",
   "event": "push",
-  "sourceCommit": "f4ca03d2ba3732dbaf6f5718826e41f36b1c2f80",
+  "sourceCommit": "62d0de93e1fd6f24b94b5802afed4af2189f7d6e",
   "artifacts": {
-    "hig-candidate-review-f4ca03d2ba3732dbaf6f5718826e41f36b1c2f80": [
+    "hig-candidate-review-62d0de93e1fd6f24b94b5802afed4af2189f7d6e": [
       "evidence/release-dry-run.json",
       "evidence/quality-report.json",
       "evidence/packed-og-smoke.json",
@@ -15,7 +15,7 @@
       "evidence/packed-smoke.json",
       "evidence/packed-chart-workspace-smoke.json"
     ],
-    "hig-candidate-browser-f4ca03d2ba3732dbaf6f5718826e41f36b1c2f80": [
+    "hig-candidate-browser-62d0de93e1fd6f24b94b5802afed4af2189f7d6e": [
       "evidence/issue-1-18/chromium-acceptance.json",
       "evidence/issue-1-18/firefox-acceptance.json",
       "evidence/issue-1-18/webkit-acceptance.json"
@@ -23,7 +23,7 @@
   },
   "releaseDryRun": {
     "channel": "candidate",
-    "artifactVersion": "0.1.0-candidate.shaf4ca03d2",
+    "artifactVersion": "0.1.0-candidate.sha62d0de93",
     "packages": [
       "@bloxwap/hig-chart",
       "@bloxwap/hig-contracts",
@@ -36,20 +36,20 @@
     ],
     "packedSizes": {
       "webTokens": {
-        "file": "bloxwap-hig-tokens-0.1.0-candidate.shaf4ca03d2.tgz",
+        "file": "bloxwap-hig-tokens-0.1.0-candidate.sha62d0de93.tgz",
         "bytes": 8227,
         "unpackedBytes": 43413,
         "fontFiles": 0
       },
       "nativeFonts": {
-        "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shaf4ca03d2.tgz",
-        "bytes": 4420500,
+        "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha62d0de93.tgz",
+        "bytes": 4420491,
         "unpackedBytes": 12069011,
         "fontFiles": 15
       },
       "ogFonts": {
-        "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shaf4ca03d2.tgz",
-        "bytes": 844028,
+        "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha62d0de93.tgz",
+        "bytes": 844029,
         "unpackedBytes": 2195023,
         "fontFiles": 5,
         "limit": 1000000
@@ -57,7 +57,7 @@
     },
     "chartAdapter": {
       "package": "@bloxwap/hig-chart",
-      "file": "bloxwap-hig-chart-0.1.0-candidate.shaf4ca03d2.tgz",
+      "file": "bloxwap-hig-chart-0.1.0-candidate.sha62d0de93.tgz",
       "bytes": 2044,
       "peer": "@bloxwap/chart",
       "peerOptional": false,
@@ -86,7 +86,7 @@
       "legacyOptionalPeerDropsWorkspace": true
     }
   ],
-  "note": "Other files under evidence/ (including the issue-1-18 screenshots) keep their earlier provenance. CI uploads fresh copies of every evidence file in the same artifacts for each run. packed-og-smoke.json and the three acceptance files are byte-identical to the previous refresh (run 38972223859).",
+  "note": "Refreshed after the planning change in #116 so the committed release report carries the current planning/release-blockers.json text. Other files under evidence/ (including the issue-1-18 screenshots) keep their earlier provenance. CI uploads fresh copies of every evidence file in the same artifacts for each run. packed-og-smoke.json, packed-smoke.json, packed-chart-workspace-smoke.json and the three acceptance files are byte-identical to the previous refresh (run 38978367276).",
   "packedOgSmoke": {
     "tarballBytes": 844017,
     "nextRouteHandler": {

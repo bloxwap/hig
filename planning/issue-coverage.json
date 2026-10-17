@@ -1883,7 +1883,7 @@
     "issue": 99,
     "branch": "hig/followups-86-102-closeout",
     "status": "satisfied",
-    "reason": "@bloxwap/hig-og-fonts: 5 Latin TTFs (Sans 400/500/700/900, Mono 500) checked against the manifest SHA-256, 844,028 B packed against a 1,000,000 B limit; smoke:packed-og serves cards from Next route handlers under Turbopack, webpack and both standalone outputs; docs/installation.md 'Open Graph card fonts'; docs/migration/sdk-docs.md tells chart, sfx, agent-cli and tapsiren to switch (#115)",
+    "reason": "@bloxwap/hig-og-fonts: 5 Latin TTFs (Sans 400/500/700/900, Mono 500) checked against the manifest SHA-256, about 844,000 B packed against a 1,000,000 B limit; smoke:packed-og serves cards from Next route handlers under Turbopack, webpack and both standalone outputs; docs/installation.md 'Open Graph card fonts'; docs/migration/sdk-docs.md tells chart, sfx, agent-cli and tapsiren to switch (#115)",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/106"
     ],
@@ -1897,7 +1897,7 @@
       "followUps": [
         "https://github.com/bloxwap/hig/issues/115"
       ],
-      "note": "@bloxwap/hig-og-fonts: 5 Latin TTFs (Sans 400/500/700/900, Mono 500) checked against the manifest SHA-256, 844,028 B packed against a 1,000,000 B limit; smoke:packed-og serves cards from Next route handlers under Turbopack, webpack and both standalone outputs; docs/installation.md 'Open Graph card fonts'; docs/migration/sdk-docs.md tells chart, sfx, agent-cli and tapsiren to switch (#115)"
+      "note": "@bloxwap/hig-og-fonts: 5 Latin TTFs (Sans 400/500/700/900, Mono 500) checked against the manifest SHA-256, about 844,000 B packed against a 1,000,000 B limit; smoke:packed-og serves cards from Next route handlers under Turbopack, webpack and both standalone outputs; docs/installation.md 'Open Graph card fonts'; docs/migration/sdk-docs.md tells chart, sfx, agent-cli and tapsiren to switch (#115)"
     }
   },
   {
