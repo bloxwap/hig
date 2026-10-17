@@ -1918,5 +1918,70 @@
       "followUps": [],
       "note": "plainText joins text nodes with no separator and collapses whitespace; blockText keeps Alert body children apart; native Jest checks a mixed ReactNode Alert title is announced as 'Display-only value strings', matching the visible text with no doubled whitespace"
     }
+  },
+  {
+    "issue": 109,
+    "branch": "hig/109-110-progress",
+    "status": "partial",
+    "reason": "Acceptance needs app, Pro and marketing on the same candidate as mobile or newer in monorepo main; monorepo#4594 (0.1.0-candidate.shab2f7740c) is open, CI green and verifier approved but needs the human bun run quality + gh signoff before merge",
+    "implementationPRs": [
+      "https://github.com/bloxwap/monorepo/pull/4594"
+    ],
+    "evidence": "monorepo docs/hig/evidence/{app-settings,pro-compact,marketing-sections}/refresh-b2f7740/",
+    "remainingBlockers": [
+      "Human signoff and merge of monorepo#4594 (deploys Pro/www)",
+      "apps/mobile/vendor/bloxwap-hig/README.md line 14 still names the 1a776b9 web candidates (one-line fix after #4594 or #4602 lands)"
+    ],
+    "progress": {
+      "date": "2026-10-16",
+      "finalState": "open",
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4594"
+      ],
+      "verifiedHead": "d81cbf00",
+      "note": "Tarballs rebuilt byte-identical from a fresh hig@b2f7740 candidate; Pro compact density unchanged (leaderboard 38px, slider 6px on main, pilot and rollback; compact buttons/field 36px); css/base adopted (#95), busy text localized (#82), app billing buttons 44px (#80); marketing HTML byte-identical; bun run quality and CI green (26 pass, 1 manual-only skip). Evidence automated/browser (headless Chromium; Firefox in CI)"
+    }
+  },
+  {
+    "issue": 110,
+    "branch": "hig/109-110-progress",
+    "status": "partial",
+    "reason": "Acceptance needs every monorepo exception in planning/adoption.json retired or renewed before 2027-01-15 and the monorepo drift check passing without the retired paths; remaining-surface PRs are open and verifier approved, forks and rollback flags are intentionally kept until the rollback window ends",
+    "implementationPRs": [
+      "https://github.com/bloxwap/monorepo/pull/4598",
+      "https://github.com/bloxwap/monorepo/pull/4599",
+      "https://github.com/bloxwap/monorepo/pull/4601",
+      "https://github.com/bloxwap/monorepo/pull/4602"
+    ],
+    "evidence": "monorepo docs/hig/evidence/{app-flows,pro-markets,marketing-sections-2,native-app/hig110}/",
+    "remainingBlockers": [
+      "Human signoff and merge: #4594 first, then rebase/retarget #4598, #4599, #4601 onto main; #4602 independent",
+      "After merges and the rollback window: delete forks with no flag-on consumers and the NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT / HIG_MARKETING_PILOT branches, then remove the adoption.json exceptions",
+      "Screens still on forks with the flag on (app components/ui, Pro ui/*, ui-native Sheet/NumberFlow) and upstream #117-#121",
+      "Native Hermes budget decision (#57); physical devices (#55)"
+    ],
+    "progress": {
+      "date": "2026-10-16",
+      "finalState": "open",
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4598",
+        "https://github.com/bloxwap/monorepo/pull/4599",
+        "https://github.com/bloxwap/monorepo/pull/4601",
+        "https://github.com/bloxwap/monorepo/pull/4602"
+      ],
+      "verifiedHeads": {
+        "4598": "db6e3ab4",
+        "4599": "2e0724da",
+        "4601": "1f2981b7",
+        "4602": "691f4339"
+      },
+      "forksWithoutFlagOnConsumers": [
+        "packages/ui-native Button (apps/mobile, #4602)",
+        "packages/ui-native ToastViewport (apps/mobile, #4602)",
+        "FlowUsd in apps/mobile/src/hig/numbers.tsx (#4602)",
+        "apps/www/public/fonts (deleted in #4598)"
+      ],
+      "note": "No apps/app components/ui or apps/pro ui/* file has lost all flag-on consumers yet; per-surface lists are in planning/adoption.json"
+    }
   }
 ]
