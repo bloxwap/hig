@@ -1,6 +1,13 @@
 # Native application pilot (#35)
 
-Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.shac32771dc`, with one HIG feedback controller and 15 duplicate fonts removed. It loads the faces from `@bloxwap/hig-native-fonts` (#64) and passes translated `messages` (#62). It also drops the local Switch, Alert and Text workarounds (#67), and passes `direction` to `HIGProvider` on Android (#86). A wrapper sets the busy Button's accessible name until #94 is fixed. It was verified on the iOS Simulator and Android emulator, but it is not merged yet (it needs the required human `signoff`). Physical-device certification is tracked in #55. HIG is certified on React Native 0.83.10 / Expo SDK 55 (#68). No tactile, audible or VoiceOver observation is claimed.
+Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.shac32771dc`, with one HIG feedback controller and 15 duplicate fonts removed. It loads the faces from `@bloxwap/hig-native-fonts` (#64) and passes translated `messages` (#62). It also drops the local Switch, Alert and Text workarounds (#67), and passes `direction` to `HIGProvider` on Android (#86). It was verified on the iOS Simulator and Android emulator and merged as `2f636e8fe` on 2026-10-16. Physical-device certification is tracked in #55.
+
+Workarounds the app can drop at its next candidate refresh (a candidate built from `74f4f6a` or later; tracked in #115):
+
+- **Busy Button name (#94):** delete the `HigActionButton` wrapper's `higButtonAccessibilityLabel`. Button now sets the name itself: `{label} · {busy}` on iOS and `{label}` on Android, where React Native adds its own busy word, so Korean no longer reads `처리 중` twice.
+- **Display P3 (#93):** set `colorSpace='display-p3'` on the root `HIGProvider` and drop the local `nativeColors.iosDisplayP3` lookup for the Button fill (see [Native colour space](#native-colour-space-93)).
+- **Button text (#92):** the label and busy suffix now follow the provider `maxFontSizeMultiplier` and use the 600 face. Re-capture the large-text and fr/ko screens.
+- **Direction (#86):** `localeDirection` from `@bloxwap/hig-native/provider` can replace the app's own direction lookup. HIG is certified on React Native 0.83.10 / Expo SDK 55 (#68). No tactile, audible or VoiceOver observation is claimed.
 
 Pilot: font registration → dp/sRGB token mapping → amount/selection/review sheet → visible async outcome → independent feedback settings. The Expo gallery proves candidate packaging and contract examples, not the owning app's native build.
 
@@ -31,7 +38,7 @@ Issue #64. Up to `0.1.0-candidate.sha7c67a07c`, `@bloxwap/hig-tokens` shipped th
 - **Expo / React Native:** add the `bloxwap-hig-native-fonts-*.tgz` tarball next to tokens, contracts and native (with a matching `overrides` entry when vendoring), then replace the import prefix. `nativeFont(fontManifest, 'BloxwapSans', 600)` from `@bloxwap/hig-contracts` returns the registration key. Hashes you already pinned stay valid.
 - **Satori / OG images in web repositories:** these also read static TTFs (bloxwap/chart's OG card is one). Install `@bloxwap/hig-native-fonts` as a build-time dependency for that script only, or read the TTF from `@bloxwap/font` if it ships one. Never copy the faces into the repository.
 - **Web-only hosts:** remove nothing. They keep loading fonts from `@bloxwap/font`, and their tokens tarball shrinks. `npm run release:dry-run` fails if any web or shared tarball contains `.ttf`, `.otf` or `.woff*` files, and it records the packed sizes in `packedSizes` in the release report.
-- **Coordination:** monorepo#4540 loads the faces from `@bloxwap/hig-tokens`. Rebase it on a candidate that includes this change, and switch it to the new prefix when it does.
+- **Coordination:** monorepo#4540 (merged) already loads the faces from `@bloxwap/hig-native-fonts`.
 
 ## Native colour space (#93)
 

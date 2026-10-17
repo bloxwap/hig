@@ -1,7 +1,7 @@
 {
   "channel": "candidate",
-  "sourceCommit": "f4ca03d2ba3732dbaf6f5718826e41f36b1c2f80",
-  "version": "0.1.0-candidate.shaf4ca03d2",
+  "sourceCommit": "62d0de93e1fd6f24b94b5802afed4af2189f7d6e",
+  "version": "0.1.0-candidate.sha62d0de93",
   "packages": [
     "@bloxwap/hig-chart",
     "@bloxwap/hig-contracts",
