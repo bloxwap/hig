@@ -17,14 +17,12 @@ defaults:
   run:
     shell: bash
 
-env:
-  TMPDIR: ${{ runner.temp }}
-
 jobs:
   build:
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 15
     env:
+      TMPDIR: ${{ runner.temp }}
       NEXT_PUBLIC_BASE_PATH: /hig
       HIG_DOCS_ORIGIN: https://bloxwap.github.io
       NEXT_TELEMETRY_DISABLED: '1'
@@ -54,6 +52,8 @@ jobs:
     needs: build
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 10
+    env:
+      TMPDIR: ${{ runner.temp }}
     permissions:
       pages: write
       id-token: write

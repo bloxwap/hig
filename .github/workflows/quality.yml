@@ -19,12 +19,12 @@ concurrency:
 defaults:
   run:
     shell: bash
-env:
-  TMPDIR: ${{ runner.temp }}
 jobs:
   paths-filter:
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
+    env:
+      TMPDIR: ${{ runner.temp }}
     outputs:
       code: ${{ github.event_name != 'pull_request' && 'true' || steps.filter.outputs.code }}
     steps:
@@ -45,6 +45,8 @@ jobs:
     if: needs.paths-filter.outputs.code == 'true'
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
+    env:
+      TMPDIR: ${{ runner.temp }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -110,6 +112,8 @@ jobs:
     if: needs.paths-filter.outputs.code == 'true'
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
+    env:
+      TMPDIR: ${{ runner.temp }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -139,6 +143,8 @@ jobs:
     if: needs.paths-filter.outputs.code == 'true'
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
+    env:
+      TMPDIR: ${{ runner.temp }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -188,6 +194,8 @@ jobs:
     if: always() && !cancelled()
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
+    env:
+      TMPDIR: ${{ runner.temp }}
     steps:
       - name: Confirm candidate quality
         env:

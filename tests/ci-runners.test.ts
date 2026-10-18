@@ -11,7 +11,9 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
   expect(text,name).toContain('runs-on: [self-hosted, macOS, ARM64]');
   expect(text,name).not.toMatch(/ubuntu-|--with-deps|\bapt-get\b|\bsudo /);
   expect(text,name).toContain('TMPDIR: ${{ runner.temp }}');
+  expect(text,name).not.toMatch(/^env:\n  TMPDIR:/m);
   expect(text.match(/runs-on:/g)?.length,name).toBe(text.match(/\[self-hosted, macOS, ARM64\]/g)?.length);
+  expect(text.match(/TMPDIR:/g)?.length,name).toBe(text.match(/runs-on:/g)?.length);
  }
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('command -v gtar');
