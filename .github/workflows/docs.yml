@@ -40,7 +40,20 @@ jobs:
         run: |
           set -euo pipefail
           if ! command -v gtar >/dev/null 2>&1; then
-            echo "actions/upload-pages-artifact on macOS needs gtar (Homebrew gnu-tar). See docs/ci-runners.md."
+            if command -v brew >/dev/null 2>&1; then
+              for dir in "$(brew --prefix)/opt/gnu-tar/bin" "$(brew --prefix gnu-tar)/bin"; do
+                if [ -x "$dir/gtar" ]; then
+                  echo "$dir" >> "$GITHUB_PATH"
+                  PATH="$dir:$PATH"
+                  break
+                fi
+              done
+            fi
+          fi
+          if ! command -v gtar >/dev/null 2>&1; then
+            echo "actions/upload-pages-artifact on macOS needs gtar on PATH."
+            echo "Install on the runner with: brew install gnu-tar"
+            echo "See docs/ci-runners.md."
             exit 1
           fi
           gtar --version | head -n 1

@@ -12,7 +12,7 @@ There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `su
 
 - macOS on Apple silicon, with the Actions runner registered using the labels `self-hosted`, `macOS`, and `ARM64`
 - Git
-- Python 3 with the standard-library `venv` module. Cache misses create `$RUNNER_TEMP/hig-fonttools` and install `fonttools[woff]==4.61.1` and `brotli==1.2.0` there; they do not write to system site-packages
+- Python 3.10+ with the standard-library `venv` module (`fonttools` 4.61.1 requires `>=3.10`). CI installs CPython 3.12 with `actions/setup-python`; the login-shell Python does not have to be 3.12. Cache misses create `$RUNNER_TEMP/hig-fonttools` and install `fonttools[woff]==4.61.1` and `brotli==1.2.0` there; they do not write to system site-packages
 - Network access to npm, GitHub, and Playwright browser downloads
 - Homebrew `gnu-tar` so `gtar` is on `PATH`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option)
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
