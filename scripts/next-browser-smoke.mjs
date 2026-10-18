@@ -1,9 +1,9 @@
-import {chromium} from '@playwright/test';
+import {launchPlaywright} from './playwright-launch.mjs';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 import {assertLoadedFace} from './font-check.mjs';
 const stage=process.argv[2]==='packed'?'packed':'m5';
-const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+const browser=await launchPlaywright('chromium');
 try{
  const page=await browser.newPage({viewport:{width:390,height:844}});page.setDefaultTimeout(120000);const errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});

@@ -1,9 +1,9 @@
-import {chromium} from '@playwright/test';
+import {launchPlaywright} from './playwright-launch.mjs';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {writeFileSync,readFileSync} from 'node:fs';
 const stage=process.argv[2]??'m4';
-const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),args:['--no-sandbox','--disable-dev-shm-usage'],headless:true});
+const browser=await launchPlaywright('chromium');
 try{
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
 const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));

@@ -87,6 +87,11 @@ jobs:
           path: ~/Library/Caches/ms-playwright
           key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
       - run: npx playwright install chromium firefox webkit
+      - name: Clear Playwright macOS quarantine
+        run: |
+          set -euo pipefail
+          cache="${HOME}/Library/Caches/ms-playwright"
+          if [ -d "$cache" ]; then xattr -cr "$cache" || true; fi
       - run: npm run smoke:packed-next
         env:
           NEXT_TELEMETRY_DISABLED: '1'
@@ -180,6 +185,8 @@ jobs:
           build=$!
           npx playwright install chromium firefox webkit
           wait "$build"
+          cache="${HOME}/Library/Caches/ms-playwright"
+          if [ -d "$cache" ]; then xattr -cr "$cache" || true; fi
       - name: Browser, visual and hydration gates
         run: node scripts/run-browser-gates.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

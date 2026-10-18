@@ -1,8 +1,8 @@
-import {chromium} from '@playwright/test';
+import {launchPlaywright} from './playwright-launch.mjs';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
-const browser=await chromium.launch({headless:true});
+const browser=await launchPlaywright('chromium');
 try{
  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));

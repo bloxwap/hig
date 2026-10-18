@@ -16,7 +16,7 @@ import {mkdirSync,readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {join,resolve,normalize,extname} from 'node:path';
 import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
-import {chromium,firefox,webkit} from '@playwright/test';
+import {launchPlaywright} from './playwright-launch.mjs';
 
 const engines=(process.env.HIG_PACKED_REACT_CSS_BROWSERS??'chromium,firefox,webkit').split(',').map(s=>s.trim()).filter(Boolean);
 const port=Number(process.env.HIG_PACKED_REACT_CSS_PORT??4187);
@@ -74,8 +74,7 @@ async function focusRing(page,id){
 const results=[];
 try{
  for(const engine of engines){
-  const launcher={chromium,firefox,webkit}[engine];if(!launcher)throw Error(`Unsupported browser ${engine}`);
-  const browser=await launcher.launch({headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
+  const browser=await launchPlaywright(engine);
   try{
    const seen={};
    for(const name of Object.keys(pages)){
