@@ -91,7 +91,7 @@ Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to b
 
 ## Playwright
 
-Jobs that need browsers run `npx playwright install chromium firefox webkit` with no `--with-deps`. The quality job restores, and the browser job saves, `~/Library/Caches/ms-playwright` keyed by Playwright version. Chromium, Firefox, and WebKit must launch headless as the runner user. CI clears macOS quarantine attributes on that cache (`xattr -cr`) and launches Firefox with the content sandbox disabled plus software WebRender (`scripts/playwright-launch.mjs`). That is not a skipped engine. If Firefox Nightly's `plugin-container` still fails with `sandbox_extension_issue_file_to_process` / `Operation not permitted`, the Actions runner must run as a LaunchAgent in a logged-in Aqua session for the runner user (not a LaunchDaemon without a window server).
+Jobs that need browsers run `npx playwright install chromium firefox webkit` with no `--with-deps`. The quality job restores, and the browser job saves, `~/Library/Caches/ms-playwright` keyed by Playwright version. Chromium, Firefox, and WebKit must launch headless as the runner user.
 
 ## Visual baselines
 

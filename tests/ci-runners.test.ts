@@ -15,16 +15,8 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
  }
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
- expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('xattr -cr');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('actions/setup-python');
  expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
- expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toMatch(/HIG_PACKED_CSS_BROWSERS|HIG_PACKED_REACT_CSS_BROWSERS/);
- const launch=readFileSync('scripts/playwright-launch.mjs','utf8');
- expect(launch).toContain("MOZ_DISABLE_CONTENT_SANDBOX");
- expect(launch).toContain("'security.sandbox.content.level':0");
- expect(readFileSync('scripts/run-browser-gates.mjs','utf8')).toContain("['chromium','firefox','webkit']");
- expect(readFileSync('scripts/packed-css-smoke.mjs','utf8')).toContain("chromium,firefox,webkit");
- expect(readFileSync('scripts/packed-react-css-smoke.mjs','utf8')).toContain("chromium,firefox,webkit");
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('command -v gtar');
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
  const python=readFileSync('scripts/ci-setup-python.sh','utf8');

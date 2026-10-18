@@ -7,7 +7,7 @@ import {mkdirSync,readFileSync,writeFileSync,readdirSync,existsSync} from 'node:
 import {join,resolve,normalize,extname} from 'node:path';
 import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
-import {launchPlaywright} from './playwright-launch.mjs';
+import {chromium,firefox,webkit} from '@playwright/test';
 
 const source=JSON.parse(readFileSync('packages/tokens/source.json','utf8'));
 const engines=(process.env.HIG_PACKED_CSS_BROWSERS??'chromium,firefox,webkit').split(',').map(s=>s.trim()).filter(Boolean);
@@ -74,7 +74,8 @@ function compare(actual,want,label){for(const [id,props] of Object.entries(want)
 const results=[];
 try{
  for(const engine of engines){
-  const browser=await launchPlaywright(engine);
+  const launcher={chromium,firefox,webkit}[engine];if(!launcher)throw Error(`Unsupported browser ${engine}`);
+  const browser=await launcher.launch({headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
   try{
    for(const reducedMotion of ['no-preference','reduce']){
     const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion});const page=await context.newPage();

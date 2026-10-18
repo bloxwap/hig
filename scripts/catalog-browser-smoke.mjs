@@ -1,4 +1,4 @@
-import {launchPlaywright} from './playwright-launch.mjs';
+import {chromium} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {dirname} from 'node:path';
@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import {compareVisual} from './visual-diff.mjs';
 import {visualBaselinePath} from './visual-baseline.mjs';
 const {catalog}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
-const browser=await launchPlaywright('chromium');
+const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const results=[];const visualFailures=[];mkdirSync('artifacts/visual',{recursive:true});
 const baselineNames=new Set(['Button','Field','Input']);
 // Keyboard-focused captures at both densities (#69): the Slider ring must stay inside its own box.

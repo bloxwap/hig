@@ -1,9 +1,9 @@
-import {launchPlaywright} from './playwright-launch.mjs';
+import {chromium,firefox,webkit} from '@playwright/test';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 const results=[];
 for(const engine of ['chromium','firefox','webkit']){
- const browser=await launchPlaywright(engine);
+ const browser=await ({chromium,firefox,webkit}[engine]).launch({headless:true});
  try{
   const page=await browser.newPage({reducedMotion:'reduce'});const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto((process.env.HIG_PREVIEW_URL??'http://localhost:4173')+'/?simulateFeedback=1');
