@@ -1940,6 +1940,17 @@
       ],
       "verifiedHead": "d81cbf00",
       "note": "Tarballs rebuilt byte-identical from a fresh hig@b2f7740 candidate; Pro compact density unchanged (leaderboard 38px, slider 6px on main, pilot and rollback; compact buttons/field 36px); css/base adopted (#95), busy text localized (#82), app billing buttons 44px (#80); marketing HTML byte-identical; bun run quality and CI green (26 pass, 1 manual-only skip). Evidence automated/browser (headless Chromium; Firefox in CI)"
+    },
+    "landing": {
+      "date": "2026-10-17",
+      "finalState": "closed",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4594"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/110",
+        "https://github.com/bloxwap/hig/issues/115"
+      ]
     }
   },
   {
@@ -1982,6 +1993,26 @@
         "apps/www/public/fonts (deleted in #4598)"
       ],
       "note": "No apps/app components/ui or apps/pro ui/* file has lost all flag-on consumers yet; per-surface lists are in planning/adoption.json"
+    },
+    "landing": {
+      "date": "2026-10-17",
+      "finalState": "open",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4598",
+        "https://github.com/bloxwap/monorepo/pull/4599",
+        "https://github.com/bloxwap/monorepo/pull/4602",
+        "https://github.com/bloxwap/monorepo/pull/4606"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/117",
+        "https://github.com/bloxwap/hig/issues/118",
+        "https://github.com/bloxwap/hig/issues/119",
+        "https://github.com/bloxwap/hig/issues/120",
+        "https://github.com/bloxwap/hig/issues/121",
+        "https://github.com/bloxwap/hig/issues/124",
+        "https://github.com/bloxwap/hig/issues/57",
+        "https://github.com/bloxwap/hig/issues/55"
+      ]
     }
   }
 ]

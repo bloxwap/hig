@@ -178,3 +178,20 @@ Five monorepo PRs are open. Each has green CI, passed the pre-push `bun run qual
 - **#109:** Pro compact density did not regress. Leaderboard rows are 38px and the order-ticket slider is 6px on main, on the pilot and on the rollback build. Compact buttons and the amount field stay 36px. The app adopts `@bloxwap/hig-react/css/base` (#95), localized busy text (#82) and 44px buttons (#80). Marketing HTML is byte-identical.
 - **#110, forks with no flag-on consumers once the PRs merge:** ui-native `Button`, ui-native `ToastViewport` and `FlowUsd` in the mobile app, and `apps/www/public/fonts`, which #4598 deletes. No file in `apps/app/src/components/ui` or `apps/pro/src/components/ui` has lost all of its flag-on consumers yet. The per-surface lists are in `planning/adoption.json` (`forksWithoutFlagOnConsumers`, `forksStillUsedFlagOn`).
 - **Still to do:** each rollback flag and rollback renderer is kept, and the dated exceptions (expiring 2027-01-15) still track #110. Upstream gaps filed from #4602 are [#117](https://github.com/bloxwap/hig/issues/117)–[#121](https://github.com/bloxwap/hig/issues/121). The native Hermes delta is about +84 KB on iOS and +85 KB on Android cumulatively, which is over the 64 KB budget; that decision is in [#57](https://github.com/bloxwap/hig/issues/57). Device-only checks are in [#55](https://github.com/bloxwap/hig/issues/55).
+
+## #109/#110 landing · 2026-10-17
+
+All five PRs merged after `bun run quality`, green CI and the human `signoff`; production deploys passed for every merge and mobile-ci on main is green. Web and mobile now both run `0.1.0-candidate.shab2f7740c`.
+
+| PR | Issue | Surface | Merge |
+| --- | --- | --- | --- |
+| [monorepo#4594](https://github.com/bloxwap/monorepo/pull/4594) | #109 | app, Pro, marketing: web candidate refresh | `dc88d78d9` |
+| [monorepo#4599](https://github.com/bloxwap/monorepo/pull/4599) | #110 | Pro: market list, stats strip, dense tables | `3ca24bfce` |
+| [monorepo#4598](https://github.com/bloxwap/monorepo/pull/4598) | #110 | marketing: signals, The Setup, markets; build-time fonts | `031b29814` |
+| [monorepo#4602](https://github.com/bloxwap/monorepo/pull/4602) | #110 | React Native app: toasts, trade, account-sheet actions, readouts, language picker | `edee3476c` |
+| [monorepo#4606](https://github.com/bloxwap/monorepo/pull/4606) | #110 | app: signed-in send, review, sheets, outcomes (replaces #4601) | `29812c9a4` |
+
+- [#109](https://github.com/bloxwap/hig/issues/109) is closed: all three origins run the same candidate as mobile.
+- [#110](https://github.com/bloxwap/hig/issues/110) stays open. The `apps/www/public/fonts` exception is retired. The rollback-renderer exception (expires 2027-01-15) remains, with the surfaces listed in `planning/adoption.json` still to migrate and upstream gaps #117–#121.
+- New: [#124](https://github.com/bloxwap/hig/issues/124). Firefox cannot run on the monorepo Mac mini runners (monorepo#4603), and app-flows times out in WebKit, so CI runs app-flows in Chrome only.
+
