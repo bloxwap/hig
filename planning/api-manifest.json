@@ -506,11 +506,11 @@
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | null>;\n    returnFocusRef?: React.RefObject<View | null>; /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | RNText | null>;\n    returnFocusRef?: React.RefObject<View | RNText | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */ closeLabel?: string;\n    /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */ contentMode?: 'default' | 'custom';\n    /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */ titleRef?: React.RefObject<View | RNText | null>;\n    /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */ stageComponent?: React.ComponentType<ViewProps>;\n    stageStyle?: StyleProp<ViewStyle>;\n    stageTestID?: string;\n    /** Custom-mode backdrop, including the host's dismissal policy and decoration. */ backdrop?: React.ReactNode;\n    /** Custom-mode surface layout; no implicit padding or scroll view is added. */ contentStyle?: StyleProp<ViewStyle>;\n    /** Identifies the actual modal content surface in either mode. */ testID?: string;\n    /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */ animationType?: ModalProps['animationType'];\n}"
       },
       "Dialog": {
         "entry": "overlay",
-        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children, initialFocusRef, returnFocusRef, closeLabel }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children, initialFocusRef, returnFocusRef, closeLabel, contentMode, titleRef, stageComponent: Stage, stageStyle, stageTestID, backdrop, contentStyle, testID, animationType }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Sheet": {
         "entry": "overlay",
