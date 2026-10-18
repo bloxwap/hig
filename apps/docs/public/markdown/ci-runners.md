@@ -21,7 +21,7 @@ Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to b
 
 ## Playwright
 
-Jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. The quality job restores, and the browser job saves, `~/Library/Caches/ms-playwright` keyed by Playwright version. Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
+Jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. Browsers stay on disk at `~/Library/Caches/ms-playwright` across jobs on a mini; do not save that folder with `actions/cache` (it stalls 11+ minutes because the directory is shared). Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
 
 ## Visual baselines
 

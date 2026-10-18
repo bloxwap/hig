@@ -77,15 +77,9 @@ jobs:
         run: npm run smoke:packed-chart-workspace
       - run: npm run smoke:packed-fumadocs
       - run: npm run smoke:packed-examples
-      - name: Read Playwright version
-        id: playwright
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      # Restore-only: packed-next and packed-css need Chromium and WebKit, but
-      # saving from this job could race the browser job's full cache write.
-      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: ~/Library/Caches/ms-playwright
-          key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
+      # Do not save ~/Library/Caches/ms-playwright with actions/cache: the folder
+      # is shared on-disk across jobs on these minis, and cache save stalls 11+
+      # minutes (monorepo #4603). playwright install uses the on-disk cache.
       - run: npx playwright install chromium webkit
       - run: npm run smoke:packed-next
         env:
@@ -166,13 +160,9 @@ jobs:
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
         run: bash scripts/ci-generate-fonts.sh
-      - name: Read Playwright version
-        id: playwright
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: ~/Library/Caches/ms-playwright
-          key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
+      # Do not save ~/Library/Caches/ms-playwright with actions/cache: the folder
+      # is shared on-disk across jobs on these minis, and cache save stalls 11+
+      # minutes (monorepo #4603). playwright install uses the on-disk cache.
       - name: Build packages/docs and install Playwright
         run: |
           set -euo pipefail

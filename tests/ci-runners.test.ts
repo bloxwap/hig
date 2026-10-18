@@ -14,6 +14,7 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
   expect(text.match(/runs-on:/g)?.length,name).toBe(text.match(/\[self-hosted, macOS, ARM64\]/g)?.length);
  }
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
+ expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toMatch(/path:\s*~\/Library\/Caches\/ms-playwright/);
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('npx playwright install chromium webkit');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('firefox');
@@ -22,6 +23,7 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('command -v gtar');
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
  expect(readFileSync('docs/ci-runners.md','utf8')).toContain('playwright install chromium webkit');
+ expect(readFileSync('docs/ci-runners.md','utf8')).toContain('do not save that folder with `actions/cache`');
  expect(readFileSync('docs/ci-runners.md','utf8')).not.toContain('install chromium firefox');
  expect(readFileSync('scripts/run-browser-gates.mjs','utf8')).toContain("['chromium','webkit']");
  expect(readFileSync('scripts/run-browser-gates.mjs','utf8')).not.toContain('firefox');
