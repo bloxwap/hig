@@ -22,8 +22,8 @@ adb install -r "$APP/android/app/build/outputs/apk/release/app-release.apk" >/de
 adb shell pm grant com.google.android.marvin.talkback android.permission.POST_NOTIFICATIONS 2>/dev/null
 adb shell cmd statusbar collapse; adb shell am force-stop com.bloxwap.hig.gallery; clear_anr; adb shell am start -n com.bloxwap.hig.gallery/.MainActivity >/dev/null; sleep 6; clear_anr
 dump() { adb shell uiautomator dump /sdcard/g.xml >/dev/null 2>&1; adb pull /sdcard/g.xml "$OUT/android-$1.xml" >/dev/null; adb exec-out screencap -p > "$OUT/android-$1.png"; }
-center() { grep -o "text=\"$2\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]\"" "$OUT/android-$1.xml" | head -1 | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/' | awk '{print int(($1+$3)/2), int(($2+$4)/2)}'; }
-top() { grep -o "text=\"Review details\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]" "$OUT/android-$1.xml" | head -1 | sed -E 's/.*\[[0-9]+,([0-9]+)\]$/\1/'; }
+center() { grep -o "text=\"$2\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]\"" "$OUT/android-$1.xml" | head -n 1 | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/' | awk '{print int(($1+$3)/2), int(($2+$4)/2)}'; }
+top() { grep -o "text=\"Review details\"[^>]*bounds=\"\[[0-9]*,[0-9]*\]" "$OUT/android-$1.xml" | head -n 1 | sed -E 's/.*\[[0-9]+,([0-9]+)\]$/\1/'; }
 dump 01-fixture
 read -r X Y <<<"$(center 01-fixture 'Open detent sheet')"; adb shell input tap "$X" "$Y"; sleep 2; dump 02-open
 T2="$(top 02-open)"; echo "Android sheet opened (title y=$T2)" | tee -a "$OUT/summary.txt"

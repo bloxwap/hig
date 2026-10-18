@@ -3,7 +3,7 @@
 import {existsSync,readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {join} from 'node:path';
-// Keep in sync with scripts/generate-native-fonts.py, .github/workflows/quality.yml and docs/governance/new-repository.md (tests/fonts.test.ts).
+// Keep in sync with scripts/generate-native-fonts.py, scripts/ci-generate-fonts.sh and docs/governance/new-repository.md (tests/fonts.test.ts).
 export const fontGeneratorRequirements=['fonttools[woff]==4.61.1','brotli==1.2.0'];
 export const generatedFontDirectories=['packages/native-fonts/fonts','packages/og-fonts/fonts'];
 export function generatedFontStatus(root='.'){

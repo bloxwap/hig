@@ -3,20 +3,20 @@
 // come from packages/tokens/source.json so a new role is checked as soon as it is generated.
 import {execFileSync} from 'node:child_process';
 import {createServer} from 'node:http';
-import {mkdtempSync,mkdirSync,readFileSync,writeFileSync,readdirSync,existsSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {mkdirSync,readFileSync,writeFileSync,readdirSync,existsSync} from 'node:fs';
 import {join,resolve,normalize,extname} from 'node:path';
+import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
-import {chromium,firefox,webkit} from '@playwright/test';
+import {chromium,webkit} from '@playwright/test';
 
 const source=JSON.parse(readFileSync('packages/tokens/source.json','utf8'));
-const engines=(process.env.HIG_PACKED_CSS_BROWSERS??'chromium,firefox,webkit').split(',').map(s=>s.trim()).filter(Boolean);
+const engines=(process.env.HIG_PACKED_CSS_BROWSERS??'chromium,webkit').split(',').map(s=>s.trim()).filter(Boolean);
 const port=Number(process.env.HIG_PACKED_CSS_PORT??4181);
 const px=value=>`${value}px`;
 
 mkdirSync('artifacts',{recursive:true});
 const [pack]=JSON.parse(execFileSync('npm',['pack','./packages/tokens','--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
-const dir=mkdtempSync(join(tmpdir(),'hig-plain-css-consumer-'));
+const dir=scratchDir('hig-plain-css-consumer-');
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,name:'hig-plain-css-consumer'},null,2));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',resolve('artifacts',pack.filename)],{cwd:dir,stdio:'pipe'});
 assert.deepEqual(readdirSync(join(dir,'node_modules/@bloxwap')),['hig-tokens'],'the plain CSS consumer installs only the tokens tarball');
@@ -74,7 +74,7 @@ function compare(actual,want,label){for(const [id,props] of Object.entries(want)
 const results=[];
 try{
  for(const engine of engines){
-  const launcher={chromium,firefox,webkit}[engine];if(!launcher)throw Error(`Unsupported browser ${engine}`);
+  const launcher={chromium,webkit}[engine];if(!launcher)throw Error(`Unsupported browser ${engine}`);
   const browser=await launcher.launch({headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
   try{
    for(const reducedMotion of ['no-preference','reduce']){

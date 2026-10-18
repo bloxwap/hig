@@ -1,16 +1,17 @@
 import {chromium} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
+import {dirname} from 'node:path';
 import assert from 'node:assert/strict';
 import {compareVisual} from './visual-diff.mjs';
+import {visualBaselinePath} from './visual-baseline.mjs';
 const {catalog}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
 const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const results=[];const visualFailures=[];mkdirSync('artifacts/visual',{recursive:true});
 const baselineNames=new Set(['Button','Field','Input']);
 // Keyboard-focused captures at both densities (#69): the Slider ring must stay inside its own box.
 const focusBaselineNames=new Set(['Slider']);
-function checkBaseline(slug,file){const baseline=`tests/visual-baselines/${slug}.png`;if(process.env.HIG_UPDATE_VISUALS==='1'){writeFileSync(baseline,readFileSync(file));return {updated:true};}if(!existsSync(baseline)){visualFailures.push(`${slug}: missing visual baseline ${baseline}; review the CI capture ${file} before committing it`);return {failed:true,message:'missing baseline'};}try{return compareVisual(readFileSync(file),readFileSync(baseline));}catch(error){mkdirSync('evidence/visual-actuals',{recursive:true});writeFileSync(`evidence/visual-actuals/${slug}.png`,readFileSync(file));writeFileSync(`evidence/visual-actuals/${slug}.txt`,String(error?.message??error));visualFailures.push(`${slug}: ${error?.message??error}`);return {failed:true,message:String(error?.message??error)};}}
-mkdirSync('tests/visual-baselines',{recursive:true});
+function checkBaseline(slug,file){const baseline=visualBaselinePath(slug);mkdirSync(dirname(baseline),{recursive:true});if(process.env.HIG_UPDATE_VISUALS==='1'){writeFileSync(baseline,readFileSync(file));return {updated:true,baseline};}if(!existsSync(baseline)){const message=`missing visual baseline ${baseline} for ${process.platform}; review the CI capture ${file} before committing it (HIG_UPDATE_VISUALS=1). Do not reuse another OS baseline or loosen the 2%/24-channel thresholds`;visualFailures.push(`${slug}: ${message}`);return {failed:true,message};}try{return compareVisual(readFileSync(file),readFileSync(baseline));}catch(error){mkdirSync('evidence/visual-actuals',{recursive:true});writeFileSync(`evidence/visual-actuals/${slug}.png`,readFileSync(file));writeFileSync(`evidence/visual-actuals/${slug}.txt`,String(error?.message??error));visualFailures.push(`${slug}: ${error?.message??error}`);return {failed:true,message:String(error?.message??error)};}}
 try{
  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const entries=process.env.HIG_VISUAL_ONLY==='1'?catalog.filter(e=>baselineNames.has(e.name)||focusBaselineNames.has(e.name)):catalog;

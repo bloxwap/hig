@@ -1,9 +1,9 @@
-import {chromium,firefox,webkit} from '@playwright/test';
+import {chromium,webkit} from '@playwright/test';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 const results=[];
-for(const engine of ['chromium','firefox','webkit']){
- const browser=await ({chromium,firefox,webkit}[engine]).launch({headless:true});
+for(const engine of ['chromium','webkit']){
+ const browser=await ({chromium,webkit}[engine]).launch({headless:true});
  try{
   const page=await browser.newPage({reducedMotion:'reduce'});const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto((process.env.HIG_PREVIEW_URL??'http://localhost:4173')+'/?simulateFeedback=1');
@@ -30,4 +30,4 @@ for(const engine of ['chromium','firefox','webkit']){
   results.push({engine,version:browser.version(),checks:['pointer and Enter: one activation request per enabled channel','outcome distinct from activation','disabled/busy dispatched clicks silent','switch/range/menu selections dispatch one request per enabled channel','menu disclosure and canceled selection are silent','persisted mute survives reload and preserves action'],adapter:'simulated host sound/haptic dispatch; no physical audio or tactile observations'});
  }finally{await browser.close();}
 }
-writeFileSync('evidence/gaps-b-feedback-browsers.json',JSON.stringify({results},null,2)+'\n');console.log('Simulated feedback interactions passed in all three headless engines');
+writeFileSync('evidence/gaps-b-feedback-browsers.json',JSON.stringify({results},null,2)+'\n');console.log('Simulated feedback interactions passed in Chromium and WebKit');

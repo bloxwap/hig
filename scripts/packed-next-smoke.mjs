@@ -1,10 +1,10 @@
 import {execFileSync,spawn} from 'node:child_process';
 import {setTimeout as delay} from 'node:timers/promises';
-import {mkdtempSync,writeFileSync,readFileSync,cpSync,readdirSync} from 'node:fs';
+import {writeFileSync,readFileSync,cpSync,readdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
-import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
-const dir=mkdtempSync(join(tmpdir(),'hig-next-consumer-'));
+import {scratchDir} from './scratch.mjs';
+const dir=scratchDir('hig-next-consumer-');
 const manifest=JSON.parse(readFileSync('fixtures/next/package.json','utf8'));
 for(const key of Object.keys(manifest.dependencies))if(key.startsWith('@bloxwap/hig-'))delete manifest.dependencies[key];
 manifest.devDependencies={typescript:'5.9.3','@types/react':'19.1.16','@types/node':'22.18.10'};

@@ -65,6 +65,62 @@ SSR: client components retain use-client boundaries in emitted JS. Importing a b
 Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 
+## CI runners · HIG 0.1.0
+Source: docs/ci-runners.md
+
+# CI runners · HIG 0.1.0
+
+Every GitHub Actions job in this repository runs on self-hosted Apple silicon Mac minis:
+
+```yaml
+runs-on: [self-hosted, macOS, ARM64]
+```
+
+There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
+
+## Required on every runner
+
+- macOS on Apple silicon, with the Actions runner registered using the labels `self-hosted`, `macOS`, and `ARM64`
+- Git
+- Python 3.10+ with the standard-library `venv` module (`fonttools` 4.61.1 requires `>=3.10`). GitHub's `actions/setup-python` macOS builds mkdir `/Users/runner/hostedtoolcache` and fail on these minis (`Permission denied`). CI therefore installs relocatable CPython 3.12 into `$RUNNER_TEMP` with a pinned `uv` 0.13.1 binary (`scripts/ci-setup-python.sh`). The login-shell Python does not have to be 3.12. Cache misses create `$RUNNER_TEMP/hig-fonttools` and install `fonttools[woff]==4.61.1` and `brotli==1.2.0` there; they do not write to system site-packages
+- Network access to npm, GitHub, and Playwright browser downloads
+- Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
+- Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
+
+Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default.
+
+## Playwright
+
+Jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. Browsers stay on disk at `~/Library/Caches/ms-playwright` across jobs on a mini; do not save that folder with `actions/cache` (it stalls 11+ minutes because the directory is shared). Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
+
+## Visual baselines
+
+Catalog Button/Field/Input states and Slider focus captures live under `tests/visual-baselines/<process.platform>/` (`linux` or `darwin`). Geometry changes still fail; pixel changes still fail above 2% after a 24-channel-value antialias tolerance. Missing Darwin images fail closed: review the uploaded capture and commit it with `HIG_UPDATE_VISUALS=1`. Do not copy a Linux baseline or raise the thresholds to hide an OS difference.
+
+## Not required for these workflows
+
+The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` for RN 0.81.5 / Expo 54 and RN 0.83.10 / Expo 55). It does not boot simulators. Xcode, an iOS Simulator runtime, JDK 17, and the Android SDK are only for local `scripts/native-sim/` gallery runs, which these workflows do not execute.
+
+## Jobs
+
+### HIG candidate quality and dry-run artifacts (`quality.yml`)
+
+| Job | Role |
+| --- | --- |
+| `paths-filter` | Same PR path filter as before; docs-only PRs skip the heavy jobs |
+| `quality` | `check`, examples, quality gates, SSR and packed smokes, Playwright packed-next/css, release dry-run |
+| `native` | Packed native Metro export for both supported RN/Expo profiles |
+| `browser` | Chromium and WebKit browser, visual, and hydration gates |
+| `candidate` | Aggregator so the required check reports on docs-only PRs |
+
+### Documentation (`docs.yml`)
+
+| Job | Role |
+| --- | --- |
+| `build` | Static docs build, typecheck, GitHub Pages artifact |
+| `deploy` | GitHub Pages deploy from `main` |
+
+
 ## Actions & surfaces · HIG 0.1.0
 Source: docs/components/actions-surfaces.md
 
@@ -597,7 +653,7 @@ Install `expo-haptics` (`~15.0.7` on Expo SDK 54, `~55.0.18` on SDK 55) in the n
 
 The Linux tests inject native player and haptic backends. Pending configure/seek requests are superseded by the newest request; cancellation, backgrounding, zero volume and disposal stop pending playback. Failed configuration can retry. Explicit impact intent reaches the native backend even for an otherwise silent press preset. Pause/remove failures cannot prevent other cached players from being released. A dispatch test drives 400 cues through `FeedbackController` with simulated slow bridge calls (configure 60 ms, seek 40 ms). It asserts that every cue reaches `player.play()` inside `emit()` and that p95 stays under one 16 ms frame. The native gallery stamps each emit and logs `dispatch`/`p95` on every play for simulator and emulator runs. These tests establish dispatch/lifecycle behavior, not observed sound, tactile output, acoustic latency (#55) or OS audio-session behavior.
 
-Menu disclosure and dismissal are intentionally silent. Web/native Menu commits emit a single selection intent after the host handler; a host can cancel that effect with the selection event's `preventDefault()`. Native accordion disclosure emits one silent disclosure intent rather than duplicate activation/selection effects. The Linux three-engine fixture also checks switch, range, menu selection and canceled menu actions with injected adapters.
+Menu disclosure and dismissal are intentionally silent. Web/native Menu commits emit a single selection intent after the host handler; a host can cancel that effect with the selection event's `preventDefault()`. Native accordion disclosure emits one silent disclosure intent rather than duplicate activation/selection effects. The Chromium and WebKit fixture also checks switch, range, menu selection and canceled menu actions with injected adapters.
 
 
 ## Semantic feedback · HIG 0.1.0
@@ -1480,7 +1536,7 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Font binaries in web/shared tarballs (tokens, contracts, react, feedback, native) | 0 files | 0 files | Native faces ship only in `@bloxwap/hig-native-fonts` (#64); `release:dry-run` fails otherwise and records `packedSizes` |
 | Native four-cue WAV assets | 103,618 B | 110,000 B | ~6% headroom; no full engine/catalog assets |
 
-The actual build report is `evidence/quality-report.json`. The committed copy, the release report and the browser acceptance files are copied from a Linux CI run, not regenerated on macOS. `evidence/ci-refresh.json` names that run and its source commit (#98). Every CI run uploads fresh copies. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
+The actual build report is `evidence/quality-report.json`. The committed copy, the release report and the browser acceptance files were copied from a Linux CI run (`evidence/ci-refresh.json`, #98), not regenerated locally. GitHub Actions now runs on self-hosted macOS ARM64 Mac minis; see [CI runners](../ci-runners.md). Every CI run uploads fresh copies. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
 
 Exceptions require path/rule, owner, reason and expiry. Approved brand geometry is exempt from literal-palette detection until review; unrelated primitive/palette copies fail. New repositories should run scoped gates on migrated surfaces and keep dated residuals rather than blanket exemptions.
 
@@ -1488,7 +1544,7 @@ Physical release review remains pending: iPhone Safari, Android Chrome, native i
 
 ## Versioned visual regressions
 
-The catalog browser gate captures and runs axe on every shipped state. Button, Field and Input additionally compare eight versioned mobile/reduced-motion screenshots in `tests/visual-baselines/`, and Slider compares two keyboard-focused captures (comfortable and compact density). Geometry changes fail; pixel changes above 2% fail after a 24-channel-value antialias tolerance. `tests/visual.test.ts` deliberately changes geometry and pixels to prove the gate fails. Baselines record current candidate rendering, not approved product parity or native-device fidelity. Review an intentional change using CI captures, then run `HIG_UPDATE_VISUALS=1 node scripts/catalog-browser-smoke.mjs` against the production docs preview and commit the reviewed baseline images.
+The catalog browser gate captures and runs axe on every shipped state. Button, Field and Input additionally compare eight versioned mobile/reduced-motion screenshots in `tests/visual-baselines/<process.platform>/` (`linux` or `darwin`), and Slider compares two keyboard-focused captures (comfortable and compact density). Geometry changes fail; pixel changes above 2% fail after a 24-channel-value antialias tolerance on every OS. `tests/visual.test.ts` deliberately changes geometry and pixels to prove the gate fails. Baselines record current candidate rendering on that OS, not approved product parity or native-device fidelity. Do not reuse another OS image or raise the thresholds to hide a runner difference. Review an intentional change using CI captures, then run `HIG_UPDATE_VISUALS=1 node scripts/catalog-browser-smoke.mjs` against the production docs preview and commit the reviewed baseline images for that platform.
 
 
 ## Release candidates, semver and rollback · HIG 0.1.0

@@ -1,10 +1,10 @@
 import {assertGeneratedFonts} from './font-preflight.mjs';
 import {execFileSync} from 'node:child_process';
-import {mkdtempSync,readFileSync,writeFileSync,mkdirSync,cpSync,readdirSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {readFileSync,writeFileSync,mkdirSync,cpSync,readdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
+import {scratchDir} from './scratch.mjs';
 assertGeneratedFonts();
-const dir=mkdtempSync(join(tmpdir(),'hig-consumer-'));
+const dir=scratchDir('hig-consumer-');
 mkdirSync('artifacts',{recursive:true});
 const manifests=readdirSync('packages').map(p=>JSON.parse(readFileSync(`packages/${p}/package.json`,'utf8')));
 const tarballs=[];

@@ -1,4 +1,4 @@
-import {chromium,firefox,webkit,expect} from '@playwright/test';
+import {chromium,webkit,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {writeFileSync,mkdirSync} from 'node:fs';
@@ -25,8 +25,8 @@ async function assertSliderRingClear(page,engine){
  }
  await page.evaluate(()=>{for(const el of document.querySelectorAll('[data-hig-density]'))el.setAttribute('data-hig-density','comfortable');});
 }
-const browsers={chromium,firefox,webkit};
-if(process.env.HIG_BROWSER)assert(process.env.HIG_BROWSER in browsers,'HIG_BROWSER must be chromium, firefox or webkit');
+const browsers={chromium,webkit};
+if(process.env.HIG_BROWSER)assert(process.env.HIG_BROWSER in browsers,'HIG_BROWSER must be chromium or webkit');
 for(const [engine,launcher] of Object.entries(browsers).filter(([engine])=>!process.env.HIG_BROWSER||process.env.HIG_BROWSER===engine)){
  const browser=await launcher.launch({headless:true});
  try{

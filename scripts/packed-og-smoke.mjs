@@ -4,11 +4,11 @@
 // Turbopack (the Next 16 default) and with --webpack, serves it with next start and as moved standalone output, and
 // fetches the cards over HTTP.
 import {execFileSync,spawn} from 'node:child_process';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,renameSync} from 'node:fs';
+import {mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,renameSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {createServer} from 'node:net';
-import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
+import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
 import {requireGeneratedFonts} from './font-preflight.mjs';
 requireGeneratedFonts('smoke:packed-og');
@@ -21,7 +21,7 @@ assert.ok(tarballBytes.length<limit,`@bloxwap/hig-og-fonts packed ${tarballBytes
 const ttfs=pack.files.map(f=>f.path).filter(p=>p.endsWith('.ttf')).sort();
 const nativeManifest=JSON.parse(readFileSync('packages/native-fonts/fonts/manifest.json','utf8'));
 const next=JSON.parse(readFileSync('fixtures/next/package.json','utf8')).dependencies;
-const dir=mkdtempSync(join(tmpdir(),'hig-og-consumer-'));
+const dir=scratchDir('hig-og-consumer-');
 const root=JSON.parse(readFileSync('package.json','utf8')).devDependencies;
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',dependencies:{next:next.next,react:next.react,'react-dom':next['react-dom']},devDependencies:{typescript:root.typescript,'@types/node':root['@types/node'],'@types/react':root['@types/react']}},null,2));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',tarball],{cwd:dir,stdio:'pipe'});
@@ -128,7 +128,7 @@ for(const {name,flags,config,serve} of cases){
  let server,moved,hidden=false;
  if(serve==='next start')server=spawn(process.execPath,[nextBin,'start','-p',String(port),'-H','127.0.0.1'],{cwd:dir,env,stdio:['ignore','pipe','pipe']});
  else{
-  moved=mkdtempSync(join(tmpdir(),'hig-og-standalone-'));execFileSync('cp',['-R',join(dir,'.next/standalone')+'/.',moved]);
+  moved=scratchDir('hig-og-standalone-');execFileSync('cp',['-R',join(dir,'.next/standalone')+'/.',moved]);
   renameSync(join(dir,'node_modules'),join(dir,'node_modules.off'));hidden=true;
   server=spawn(process.execPath,['server.js'],{cwd:moved,env:{...env,PORT:String(port),HOSTNAME:'127.0.0.1'},stdio:['ignore','pipe','pipe']});
  }
