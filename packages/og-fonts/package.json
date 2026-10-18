@@ -1,0 +1,14 @@
+{
+  "name": "@bloxwap/hig-og-fonts",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "files": ["dist", "fonts", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "exports": {
+    ".": {"types": "./dist/index.d.ts", "import": "./dist/index.js"},
+    "./manifest": "./fonts/manifest.json",
+    "./fonts/*": "./fonts/*"
+  },
+  "repository": {"type": "git", "url": "https://github.com/bloxwap/hig", "directory": "packages/og-fonts"}
+}

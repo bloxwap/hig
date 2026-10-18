@@ -1,0 +1,52 @@
+{
+  "package": "@bloxwap/font",
+  "version": "0.1.2",
+  "sources": {
+    "fonts/BloxwapSans/BloxwapSans-Variable.woff2": "96f6be58023b1d22152c797336282a4330a47ab4a3c0ab87451be887903746b7",
+    "fonts/BloxwapMono/BloxwapMono-Variable.woff2": "fa66e41575807c3d260d8f5b493be349cac127836b0174976c7d4876237d2632"
+  },
+  "faces": [
+    {
+      "family": "BloxwapSans",
+      "weight": 400,
+      "asset": "BloxwapSans.ttf",
+      "script": "latin",
+      "registration": "BloxwapSansRegular",
+      "postscript": "BloxwapSans-Regular",
+      "bytes": 446440
+    },
+    {
+      "family": "BloxwapSans",
+      "weight": 600,
+      "asset": "BloxwapSans-SemiBold.ttf",
+      "script": "latin",
+      "registration": "BloxwapSansSemiBold",
+      "postscript": "BloxwapSans-SemiBold",
+      "bytes": 447104
+    },
+    {
+      "family": "BloxwapSans",
+      "weight": 700,
+      "asset": "BloxwapSans-Bold.ttf",
+      "script": "latin",
+      "registration": "BloxwapSansBold",
+      "postscript": "BloxwapSans-Bold",
+      "bytes": 447388
+    },
+    {
+      "family": "BloxwapMono",
+      "weight": 400,
+      "asset": "BloxwapMono.ttf",
+      "script": "latin",
+      "registration": "BloxwapMonoRegular",
+      "postscript": "BloxwapMono-Regular",
+      "bytes": 385336
+    }
+  ],
+  "outputs": {
+    "BloxwapSans.ttf": "778520981b42b408c19e43fc6d62e513ff0c47bd9870d62159e2e74cda2f79f5",
+    "BloxwapSans-SemiBold.ttf": "7257cb505ec841dae8f5ff3160c629d08003bfd31b9d94334dd4a31798444c8c",
+    "BloxwapSans-Bold.ttf": "13e10451ecec4e33733b196454f1232a16d34d5014dce66daaee4d0c58600e1b",
+    "BloxwapMono.ttf": "6469eea2fc3fbad052301a6e0febf0182aef280b888acbbf1390c623ff168b65"
+  }
+}

@@ -6,11 +6,11 @@ import type {NativeAudioBackend,NativeHapticBackend,NativePlayer} from '@bloxwap
  * adapter calls observable on targets without speakers or tactile hardware.
  * Recording a call is not evidence of audible or tactile output.
  */
-export interface GalleryRoute {component?:string;state?:string;direction?:'ltr'|'rtl';diagnostics?:boolean;rows?:number}
+export interface GalleryRoute {component?:string;state?:string;direction?:'ltr'|'rtl';locale?:string;colorSpace?:'srgb'|'display-p3';fontScaleCap?:number;diagnostics?:boolean;rows?:number}
 export function parseGalleryRoute(url:string|null|undefined):GalleryRoute|null{
  if(!url)return null;const query=url.split('#')[0].split('?')[1];if(!query)return null;const route:GalleryRoute={};
  for(const part of query.split('&')){const [rawKey,rawValue='']=part.split('=');let key:string,value:string;try{key=decodeURIComponent(rawKey);value=decodeURIComponent(rawValue.replace(/\+/g,' '));}catch{continue;}
-  if(key==='component'&&value)route.component=value;else if(key==='state'&&value)route.state=value;else if(key==='dir'&&(value==='ltr'||value==='rtl'))route.direction=value;else if(key==='diag')route.diagnostics=value==='1'||value==='true';else if(key==='rows'&&/^\d+$/.test(value))route.rows=Math.min(10000,Number(value));}
+  if(key==='component'&&value)route.component=value;else if(key==='state'&&value)route.state=value;else if(key==='dir'&&(value==='ltr'||value==='rtl'))route.direction=value;else if(key==='locale'){try{route.locale=Intl.getCanonicalLocales(value)[0];}catch{/* Ignore invalid fixture locale tags. */}}else if(key==='colorSpace'&&(value==='srgb'||value==='display-p3'))route.colorSpace=value;else if(key==='fontScaleCap'&&Number.isFinite(Number(value))&&Number(value)>=1)route.fontScaleCap=Number(value);else if(key==='diag')route.diagnostics=value==='1'||value==='true';else if(key==='rows'&&/^\d+$/.test(value))route.rows=Math.min(10000,Number(value));}
  return route;
 }
 export interface FeedbackLogEntry {sequence:number;channel:'sound'|'haptic';call:string;result:string}

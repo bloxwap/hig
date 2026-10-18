@@ -1,10 +1,12 @@
 {
   "channel": "candidate",
-  "sourceCommit": "2456e72751c1bda39d7f0f1986b818f39625860f",
-  "version": "0.1.0-candidate.sha2456e727",
+  "sourceCommit": "35278bb83c4b8fbb493717428cd89f7667c84586",
+  "version": "0.1.0-candidate.sha35278bb8",
   "packages": [
     "@bloxwap/hig-contracts",
     "@bloxwap/hig-feedback",
+    "@bloxwap/hig-native-fonts",
+    "@bloxwap/hig-og-fonts",
     "@bloxwap/hig-react",
     "@bloxwap/hig-tokens"
   ],

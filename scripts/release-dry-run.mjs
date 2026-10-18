@@ -1,3 +1,4 @@
+import {assertGeneratedFonts} from './generated-fonts.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,readdirSync,mkdirSync,cpSync,existsSync} from 'node:fs';
 import {resolve,join} from 'node:path';
@@ -5,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {checkExports,qualityReport} from './quality.mjs';
 const args=process.argv.slice(2);let channel='candidate';
 for(let i=0;i<args.length;i++){if(args[i]==='--channel'&&['candidate','stable-simulation'].includes(args[i+1])){channel=args[++i];}else throw Error('Dry-run only: supported argument is --channel candidate|stable-simulation. Publishing, releases and tags are prohibited.');}
+assertGeneratedFonts();
 const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const sourceVersion=JSON.parse(readFileSync('package.json','utf8')).version;
 const artifactVersion=channel==='candidate'?`${sourceVersion}-candidate.sha${commit.slice(0,8)}`:sourceVersion;
@@ -24,12 +26,15 @@ for(const name of readdirSync('packages')){
 }
 // Web consumers load fonts from @bloxwap/font; native faces ship only in @bloxwap/hig-native-fonts (#64).
 const fontFile=/\.(?:ttf|otf|woff2?)$/i;
-for(const artifact of artifacts.filter(a=>a.package!=='@bloxwap/hig-native-fonts'))if(artifact.files.some(f=>fontFile.test(f)))throw Error(`Font binary in web/shared package ${artifact.package}`);
+for(const artifact of artifacts.filter(a=>!['@bloxwap/hig-native-fonts','@bloxwap/hig-og-fonts'].includes(a.package)))if(artifact.files.some(f=>fontFile.test(f)))throw Error(`Font binary in web/shared package ${artifact.package}`);
 const tokensArtifact=artifacts.find(a=>a.package==='@bloxwap/hig-tokens'),nativeFontsArtifact=artifacts.find(a=>a.package==='@bloxwap/hig-native-fonts');
 const packedSizes={webTokens:{file:tokensArtifact.file,bytes:tokensArtifact.bytes,fontFiles:0},nativeFonts:{file:nativeFontsArtifact.file,bytes:nativeFontsArtifact.bytes,fontFiles:nativeFontsArtifact.files.filter(f=>fontFile.test(f)).length}};
+const ogFontsArtifact=artifacts.find(a=>a.package==='@bloxwap/hig-og-fonts');
+if(ogFontsArtifact.bytes>=1000000)throw Error('OG font tarball exceeds its 1 MB budget');
+packedSizes.ogFonts={file:ogFontsArtifact.file,bytes:ogFontsArtifact.bytes,fontFiles:ogFontsArtifact.files.filter(f=>fontFile.test(f)).length};
 const blockers=JSON.parse(readFileSync('planning/release-blockers.json','utf8'));
 cpSync('apps/docs/dist',join(output,'docs'),{recursive:true});
-const release={dryRun:true,published:false,tagsCreated:false,releasesCreated:false,channel,sourceCommit:commit,sourceVersion,artifactVersion,docsGuidelineVersion:sourceVersion,versionPolicy:'Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.',artifacts,packedSizes,quality:report.sizes,publishable:false,blockers,rollback:'No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback.'};
+const release={dryRun:true,published:false,tagsCreated:false,releasesCreated:false,channel,sourceCommit:commit,sourceTreeDirty:!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),sourceVersion,artifactVersion,docsGuidelineVersion:sourceVersion,versionPolicy:'Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.',artifacts,packedSizes,quality:report.sizes,publishable:false,blockers,rollback:'No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback.'};
 writeFileSync(join(output,'report.json'),JSON.stringify(release,null,2)+'\n');
 writeFileSync('evidence/release-dry-run.json',JSON.stringify(release,null,2)+'\n');
 writeFileSync(join(output,'CHANGELOG.md'),`# ${artifactVersion} (${channel}, dry run)\n\nSource: ${commit}; HIG contract/docs ${sourceVersion}.\n\nSemantic tokens and separate renderers; optional feedback; docs/playground/gallery; migration/quality governance. No npm publication, release, tag or deployment.\n\nStable publication is blocked by task policy and pending source/device/adoption evidence.\n`);

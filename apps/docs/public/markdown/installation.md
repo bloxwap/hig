@@ -64,3 +64,33 @@ Chart is DOM-only and lazy; install @bloxwap/chart 0.3.0 for that entry and supp
 Cite “Bloxwap HIG 0.1.0 candidate, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. No publication, release or tag is performed by this implementation.
 
 The native fixture pins React **19.1.0**, matching the RN 0.81.5 renderer exactly; the RN 0.83 profile pins **19.2.0**, matching the RN 0.83.10 renderer. Web/Next/Fumadocs fixtures use React 19.2.0. Metro explicitly resolves every native `react`/`react/*` import to the native fixture's version so shared-workspace code cannot load web React. Quality and packed-native checks compare the installed version to the version RN's Paper and Fabric renderers are built for (RN 0.83 no longer throws on a mismatch, so the check reads the renderer build itself); a successful Metro bundle alone does not prove runtime compatibility. The packed check also fails when a declared `@bloxwap/hig-native` or `@bloxwap/hig-feedback` peer range rejects a version the consumer installed.
+
+## Partial web adoption
+
+`@bloxwap/hig-react/css` styles HIG components only. It leaves host tables, cells, ranges, box sizing, focus rings, and status attributes unchanged on other routes, including after client navigation. Hosts that want document-wide border-box sizing and the HIG focus outline explicitly import `@bloxwap/hig-react/css/base` after their reset. Tokens remain a separate import.
+
+```ts
+import '@bloxwap/hig-tokens/css';
+import '@bloxwap/hig-react/css';
+// Optional document-wide defaults:
+import '@bloxwap/hig-react/css/base';
+```
+
+`PriceChart` keeps its individual `@bloxwap/hig-react/chart` entry. Install `@bloxwap/chart@^0.3.0` directly in the consuming application, or use that repository's chart workspace. The shared React renderer declares no chart peer, so regenerating a strict npm lockfile cannot replace or drop the host workspace. Applications that never import the adapter need no chart dependency.
+
+## Open Graph and Satori fonts
+
+Web pages load WOFF2 through `@bloxwap/font`. Build-time `next/og` and Satori renderers use the smaller `@bloxwap/hig-og-fonts` package instead of the full native font package. It contains four Latin TTFs: Sans Regular, SemiBold and Bold, and Mono Regular, with a packed ceiling below 1 MB. Every face keeps the canonical native manifest's SHA-256 hash; it is not regenerated from a second source.
+
+```ts
+import {readFile} from 'node:fs/promises';
+import {fontManifest} from '@bloxwap/hig-og-fonts';
+
+const sans = await readFile(new URL(import.meta.resolve(
+  '@bloxwap/hig-og-fonts/fonts/BloxwapSans-SemiBold.ttf',
+)));
+// Pass sans as the font data for Bloxwap Sans, weight 600, to ImageResponse/Satori.
+// fontManifest.outputs lists the expected SHA-256 of each TTF.
+```
+
+Until registry publication, install the coordinated candidate tarball using the same checksums as the other HIG packages. Source workspaces run `npm run generate:fonts` first; the generator requires `fonttools[woff]==4.61.1` and `brotli==1.2.0` in the selected Python environment. Quality and release commands report this preparation step when generated faces are absent.

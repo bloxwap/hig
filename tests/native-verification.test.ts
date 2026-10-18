@@ -21,3 +21,13 @@ it('measures emit-to-play dispatch for simulator/emulator runs',()=>{
  const summary=dispatchLatency.summary();expect(summary.count).toBe(20);expect(summary.p95).toBeLessThan(16);expect(player.play).toHaveBeenCalledTimes(21);
  expect(feedbackLog.entries(2).map(e=>e.result)).toEqual([expect.stringMatching(/^volume 1\.00 dispatch \d+\.\dms p95 \d+\.\dms$/),'volume 1.00']);
 });
+it('records SDK 54 duplicate completion callbacks without dispatching a second cue (#89)',()=>{
+ feedbackLog.clear();let complete:((status:{didJustFinish:boolean;currentTime:number;duration:number})=>void)|undefined;
+ const player={play:vi.fn(),pause:vi.fn(),seekTo:vi.fn(async()=>{}),remove:vi.fn(),volume:1,addListener:(_event:string,listener:typeof complete)=>{complete=listener;}};
+ const backend=recordingAudioBackend({create:()=>player},new Map([['tick-asset','tick']]));
+ backend.create('tick-asset').play();
+ complete!({didJustFinish:true,currentTime:.09,duration:.08});complete!({didJustFinish:true,currentTime:.09,duration:.08});
+ expect(player.play).toHaveBeenCalledTimes(1);
+ expect(feedbackLog.entries(10).filter(entry=>entry.call==='play:tick')).toHaveLength(1);
+ expect(feedbackLog.entries(10).filter(entry=>entry.call==='tick finished')).toHaveLength(2);
+});

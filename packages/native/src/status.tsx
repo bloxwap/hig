@@ -1,7 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {notificationDelta} from '@bloxwap/hig-contracts/announcements';
-import {ActivityIndicator,View,Image,AccessibilityInfo,Platform,type ImageSourcePropType} from 'react-native';
-import {nativeSrgb as colors} from '@bloxwap/hig-tokens';
+import {ActivityIndicator,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from '@bloxwap/hig-contracts';
 import {Button} from './button.js';
@@ -14,15 +13,62 @@ const severityRole={info:'info',note:'info',success:'positive',tip:'positive',wa
 /** `note` and `tip` are documentation callout severities that reuse the info and positive token roles. */
 export type AlertSeverity=keyof typeof severityRole;
 function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
-export function Badge({children}:React.PropsWithChildren){return <Text style={{backgroundColor:colors.nested,borderRadius:9999,padding:8}}>{children}</Text>;}
+export function Badge({children}:React.PropsWithChildren){const {colors}=useHIG();return <Text style={{backgroundColor:colors.nested,borderRadius:9999,padding:8}}>{children}</Text>;}
 /** Severity sets the accent role (info/note → info, success/tip → positive, warning, error → negative); `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
-export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const accent=roleColor(tone,severityRole[severity]??'info');const message=[plainText(title),plainText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{borderWidth:1,borderStartWidth:4,borderColor:accent}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
+export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const {colors}=useHIG();const accent=roleColor(tone,severityRole[severity]??'info',colors);const message=[plainText(title),plainText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{borderWidth:1,borderStartWidth:4,borderColor:accent}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
 export const Callout=Alert;
-export interface Notice {id:string;message:string;severity:'info'|'success'|'warning'|'error';action?:React.ReactNode}
-export function Toast({notices,onDismiss,dismissLabel}: {notices:readonly Notice[];onDismiss:(id:string)=>void;/** Dismiss button text; defaults to HIGProvider `messages.dismiss`. The accessible label comes from `messages.dismissNotice` and contains it. */dismissLabel?:string}){const {messages}=useHIG();const dismiss=dismissLabel??messages.dismiss??en.dismiss;const unique=[...new Map(notices.map(n=>[n.id,n])).values()];const previous=useRef(new Map<string,string>()),[announcement,setAnnouncement]=useState('');const timer=useRef<ReturnType<typeof setTimeout>|null>(null);const key=JSON.stringify(unique.map(n=>[n.id,n.message,n.severity]));useEffect(()=>{const delta=notificationDelta(previous.current,unique);previous.current=delta.next;if(!delta.message)return;if(Platform.OS!=='web'){speak(delta.message,delta.severity);return;}setAnnouncement('');if(timer.current!==null)clearTimeout(timer.current);timer.current=setTimeout(()=>{timer.current=null;if(previous.current.get(delta.id!)===delta.next.get(delta.id!))setAnnouncement(delta.message!);},25);},[key]);useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);return <Stack>{unique.map(n=><Alert announce={false} key={n.id} title={n.message} severity={n.severity} action={<>{n.action}<Button intent='ghost' accessibilityLabel={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onPress={()=>onDismiss(n.id)}>{dismiss}</Button></>}/>)}{Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}</Stack>;}
-export function Spinner({label}: {label?:string}){const {messages}=useHIG();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
+export interface Notice {
+ id:string;
+ message:string;
+ description?:string;
+ severity:'info'|'success'|'warning'|'error';
+ action?:React.ReactNode;
+ /** Defaults to true when Toast has an onDismiss handler. */
+ closable?:boolean;
+}
+export interface ToastProps {
+ notices:readonly Notice[];
+ onDismiss?:(id:string)=>void;
+ /** Dismiss button text; defaults to HIGProvider messages.dismiss. */
+ dismissLabel?:string;
+ /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */
+ maxHeight?:DimensionValue;
+ testID?:string;
+}
+/** Compact, scrollable notices remain visible until their host removes them. */
+export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastProps){
+ const {messages,colors}=useHIG();
+ const {height}=useWindowDimensions();
+ const dismiss=dismissLabel??messages.dismiss??en.dismiss;
+ const unique=[...new Map(notices.map(n=>[n.id,n])).values()];
+ const spoken=unique.map(n=>({...n,message:[n.message,n.description].filter(Boolean).join('. ')}));
+ const previous=useRef(new Map<string,string>()),[announcement,setAnnouncement]=useState('');
+ const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const key=JSON.stringify(spoken.map(n=>[n.id,n.message,n.severity]));
+ useEffect(()=>{
+  const delta=notificationDelta(previous.current,spoken);previous.current=delta.next;
+  if(!delta.message)return;
+  if(Platform.OS!=='web'){speak(delta.message,delta.severity);return;}
+  setAnnouncement('');
+  if(timer.current!==null)clearTimeout(timer.current);
+  timer.current=setTimeout(()=>{timer.current=null;if(previous.current.get(delta.id!)===delta.next.get(delta.id!))setAnnouncement(delta.message!);},25);
+ },[key]);
+ useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
+ return <View testID={testID} style={{maxHeight:maxHeight??height*.6,flexShrink:1}}>
+  <ScrollView style={{flexGrow:0,flexShrink:1}} nestedScrollEnabled keyboardShouldPersistTaps='handled' accessibilityLabel={messages.notifications??en.notifications}>
+   <Stack style={{gap:8}}>{unique.map(n=><Surface key={n.id} accessibilityLiveRegion='none' style={{padding:12,borderWidth:1,borderStartWidth:4,borderColor:colors[severityRole[n.severity]]}}>
+    <Text style={{fontWeight:'600'}}>{n.message}</Text>
+    {n.description?<Text>{n.description}</Text>:null}
+    {n.action}
+    {n.closable!==false&&onDismiss?<Button intent='ghost' accessibilityLabel={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onPress={()=>onDismiss(n.id)}>{dismiss}</Button>:null}
+   </Surface>)}</Stack>
+  </ScrollView>
+  {Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}
+ </View>;
+}
+export function Spinner({label}: {label?:string}){const {messages,colors}=useHIG();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){const {locale,messages}=useHIG();return <View accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}><Text>{label}{value===undefined?'…':` ${value}/${max}`}</Text></View>;}
-export function Skeleton({label}: {label?:string}){const {messages}=useHIG();return <View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10}}/>;}
+export function Skeleton({label}: {label?:string}){const {messages,colors}=useHIG();return <View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10}}/>;}
 export function EmptyState({title,description,action}: {title:string;description:string;action?:React.ReactNode}){return <Surface><Heading>{title}</Heading><Text>{description}</Text>{action}</Surface>;}
 export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<Text accessibilityLabel={name}>{name.slice(0,2)}</Text>;}
 export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const {messages}=useHIG();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;return <Text>{label}: {text}</Text>;}

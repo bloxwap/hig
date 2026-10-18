@@ -2,7 +2,7 @@
 
 Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents consume [`docs/foundations/glossary.json`](glossary.json). Machine-readable format profiles: [`docs/foundations/localization.json`](localization.json). Host owns locale selection, parsing and time zone; HIG formats display only.
 
-`HIGProvider` locale is a BCP 47 tag (`en-US` default). Direction (`ltr`/`rtl`) is independent. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
+`HIGProvider` locale is a BCP 47 tag (`en-US` default on both platforms). An explicit direction (`ltr`/`rtl`) always wins. Native preserves OS RTL and also infers RTL from the app locale when Android React Native incorrectly reports LTR; hosts can pass their locale and direction explicitly, for example from their localization adapter. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
 
 ## Shared helpers
 
@@ -124,6 +124,8 @@ Rules:
 | `searching` | Searching… | Search in-progress status | — |
 | `noResults` | No results | Search empty status | — |
 | `resultCount` `(count, locale)` | {count} result / {count} results | Search result count (native); use `Intl.PluralRules` for other plural forms | — |
+| `increment` | Increase | Native Slider increment action | — |
+| `decrement` | Decrease | Native Slider decrement action | — |
 | `back` | Back | BackButton (native) | — |
 | `menuDescription` | Available actions | Menu sheet description (native) | — |
 | `choose` | Choose | Select trigger before a choice (native) | — |
@@ -150,3 +152,7 @@ Rules:
 ## Validation
 
 See `tests/tokens.test.ts`, `tests/data.dom.test.tsx`, `tests/glossary.test.ts`, `tests/built-in-strings.test.ts`, `tests/messages.dom.test.tsx`, `tests/native/messages.test.cjs`, `docs/foundations/localization.json` and the data chapter. Cite HIG 0.1.0 with this chapter anchor and a commit permalink.
+
+## Native Button text and announcements
+
+Native Button labels and their busy suffix use HIG Text, including registered font weight, per-script tracking, and the provider's `maxFontSizeMultiplier`. A Button prop can override the cap. A busy button derives its accessible name from its visible children and localized suffix; an explicit `accessibilityLabel` wins, and an empty `busyLabel` keeps the action's name without the suffix. This prevents Android's busy state description from replacing the action name. Native Slider adjustment labels use `messages.increment` and `messages.decrement`, with English Increase/Decrease defaults.

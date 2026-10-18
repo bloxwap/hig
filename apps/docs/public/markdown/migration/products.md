@@ -19,3 +19,7 @@ Checklist:
 - [ ] Remove old copies/dependencies only after reference search and build/device proof. Link owning PR and residual surface work in adoption matrix.
 
 Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. The adoption matrix, not this kit, records which surfaces are migrated.
+
+## Stylesheet isolation
+
+Load `@bloxwap/hig-react/css` for HIG controls without compensating resets on unrelated routes. The package scopes its table, range, focus, box-sizing and severity rules to HIG components. Remove the host resets that previously countered global HIG `th`/`td` or focus rules after upgrading to this candidate. Use `@bloxwap/hig-react/css/base` only when the entire document intentionally adopts the global reset. Compare both direct loads and client navigation from an adopting route to a non-adopting route.

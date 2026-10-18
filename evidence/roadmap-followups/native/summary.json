@@ -1,0 +1,46 @@
+{
+  "observedAt": "2026-10-16",
+  "kind": "automated iOS Simulator and Android emulator; no physical devices",
+  "sourceCommit": "35278bb83c4b8fbb493717428cd89f7667c84586",
+  "sourceTreeDirty": true,
+  "candidate": "0.1.0-candidate.sha35278bb8",
+  "nativeArtifactSha256": "79b2a410ac567e6ad7ebd3b5e93afa4e0466ceb906d48c747c2451ae2a5fb4e6",
+  "runtime": {
+    "reactNative": "0.83.10",
+    "expo": 55,
+    "ios": "26.5",
+    "android": 35
+  },
+  "android": {
+    "busyName": "Review order · Working, busy",
+    "disabled": true,
+    "sliderLabels": [
+      "Increase",
+      "Decrease",
+      "setProgress"
+    ],
+    "direction": "OS RTL: false · HIG direction: rtl",
+    "checks": [
+      "busyButtonName instrumentation passed",
+      "sliderAccessibilityActions instrumentation passed",
+      "os-arabic snapshot assertion passed"
+    ]
+  },
+  "ios": {
+    "busyName": "Review order · Working",
+    "busyValue": "busy",
+    "buttonHeightAtDefaultTextSize": 48,
+    "ax5": {
+      "fontScale": 3.57,
+      "cap2Height": 251.666748046875,
+      "cap10Height": 289.66650390625,
+      "observation": "Both runs use registered HIG Text. At AX5 the cap reduces button height; wrapping remains allowed."
+    },
+    "checks": [
+      "testSnapshot accessibility tree passed",
+      "testExampleCapture at default and AX5 caps 2/10 passed",
+      "system launch prompt captures discarded; saved screenshots show the app"
+    ]
+  },
+  "physicalCertification": "pending #55; these checks do not certify VoiceOver, TalkBack speech, audible/tactile output, or physical P3 panels"
+}

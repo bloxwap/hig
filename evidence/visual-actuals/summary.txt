@@ -1,0 +1,4 @@
+button-busy: Visual pixel regression: 2.32% exceeds 2%
+field-default: Visual pixel regression: 2.60% exceeds 2%
+field-error: Visual pixel regression: 4.44% exceeds 2%
+input-error: Visual pixel regression: 3.51% exceeds 2%

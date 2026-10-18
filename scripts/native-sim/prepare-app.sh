@@ -10,7 +10,16 @@ APP="$1"; UDID="$2"; PROFILE="${3:-rn-0.81}"
 mkdir -p "$APP"; APP="$(cd "$APP" && pwd -P)"
 rsync -a --exclude node_modules --exclude dist --exclude .expo "$HIG/fixtures/native/" "$APP/"
 node "$HIG/scripts/native-consumer.mjs" "$PROFILE" "$APP"
-(cd "$APP" && npm install --no-audit --no-fund $(ls "$HIG"/artifacts/release-candidate/bloxwap-hig-{contracts,feedback,native,native-fonts,tokens}-*.tgz))
+# Use the report's exact artifacts: old candidates may coexist in the directory.
+HIG_RELEASE_DIR="${HIG_NATIVE_ARTIFACTS:-$HIG/artifacts/release-candidate}"
+HIG_NATIVE_TARBALLS=()
+while IFS= read -r archive; do HIG_NATIVE_TARBALLS+=("$archive"); done < <(node --input-type=module -e '
+import {readFileSync} from "node:fs"; import {resolve} from "node:path";
+const directory=process.argv[1], report=JSON.parse(readFileSync(resolve(directory,"report.json"),"utf8"));
+for(const name of ["contracts","feedback","native","native-fonts","tokens"]){const artifact=report.artifacts.find(a=>a.package===`@bloxwap/hig-${name}`);if(!artifact)throw Error(`Missing native release artifact: ${name}`);console.log(resolve(directory,artifact.file));}
+' "$HIG_RELEASE_DIR")
+[ "${#HIG_NATIVE_TARBALLS[@]}" -eq 5 ] || { echo 'Expected five native artifacts in the release report' >&2; exit 1; }
+(cd "$APP" && npm install --no-audit --no-fund "${HIG_NATIVE_TARBALLS[@]}")
 node --input-type=module -e "import {verifyNativeReact,verifyExpoNativeModules,verifyDeclaredPeers} from '$HIG/scripts/native-compatibility.mjs';console.log(verifyNativeReact('$APP'),verifyExpoNativeModules('$APP'),verifyDeclaredPeers('$APP'))"
 (cd "$APP" && CI=1 npx expo prebuild --no-install) # idempotent; applies app.json changes
 # Xcode 27 rejects pod resource targets below iOS 15.
@@ -35,7 +44,12 @@ cd "$APP/android"
 ./gradlew :react-native-worklets:assembleRelease -PreactNativeArchitectures=arm64-v8a
 # Reanimated 4.1 looks for libworklets.so in the pre-AGP-8 cmake layout on this host.
 W="$APP/node_modules/react-native-worklets/android/build/intermediates"
-mkdir -p "$W/cmake/release/obj/arm64-v8a" && cp "$W"/cxx/RelWithDebInfo/*/obj/arm64-v8a/libworklets.so "$W/cmake/release/obj/arm64-v8a/"
+mkdir -p "$W/cmake/release/obj/arm64-v8a"
+for worklets_library in "$W"/cxx/RelWithDebInfo/*/obj/arm64-v8a/libworklets.so; do
+  [ -f "$worklets_library" ] || continue
+  # Newer Worklets already links the legacy layout to this same file.
+  [ "$worklets_library" -ef "$W/cmake/release/obj/arm64-v8a/libworklets.so" ] || cp "$worklets_library" "$W/cmake/release/obj/arm64-v8a/"
+done
 # The bundle task does not track reinstalled tarballs; force it so the APK carries the new candidate.
 ./gradlew :app:createBundleReleaseJsAndAssets --rerun -PreactNativeArchitectures=arm64-v8a
 ./gradlew assembleRelease assembleReleaseAndroidTest -PreactNativeArchitectures=arm64-v8a

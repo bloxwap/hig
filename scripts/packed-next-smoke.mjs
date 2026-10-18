@@ -10,7 +10,7 @@ for(const key of Object.keys(manifest.dependencies))if(key.startsWith('@bloxwap/
 manifest.devDependencies={typescript:'5.9.3','@types/react':'19.1.16','@types/node':'22.18.10'};
 cpSync('fixtures/next',dir,{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/.next')});
 writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
-const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-native')&&!n.includes('hig-feedback')).map(n=>resolve('artifacts',n));
+const tarballs=process.env.HIG_REGISTRY_VERSION?['contracts','tokens','react','og-fonts'].map(name=>`@bloxwap/hig-${name}@${process.env.HIG_REGISTRY_VERSION}`):readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-native')&&!n.includes('hig-feedback')).map(n=>resolve('artifacts',n));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 execFileSync('npm',['run','build'],{cwd:dir,stdio:'inherit',env:{...process.env,NEXT_TELEMETRY_DISABLED:'1'}});
 const html=readFileSync(join(dir,'.next/server/app/index.html'),'utf8');assert.match(html,/Server display:/);assert.match(html,/Review order/);const font=html.match(/href="([^"]+\.woff2)"[^>]*as="font"/);assert.ok(font,'Next preloads a font');const emitted=readFileSync(join(dir,'.next',font[1].replace(/^\/_next\//,'')));const published=readFileSync(join(dir,'node_modules/@bloxwap/font/fonts/BloxwapSans/BloxwapSans-Variable.woff2'));assert.ok(emitted.equals(published),'Next emitted the pinned published Sans font bytes');

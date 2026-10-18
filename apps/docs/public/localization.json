@@ -24,7 +24,7 @@
     "componentProps": ["closeLabel", "cancelLabel", "dismissLabel", "busyLabel"],
     "approvedLocales": ["en-US"],
     "note": "English defaults only. Hosts supply translations; HIG never guesses them. Visible text and accessible names come from the same key.",
-    "keys": ["close", "cancel", "dismiss", "dismissNotice", "busy", "notifications", "loading", "loadingContent", "loadingItems", "loadingChart", "noItems", "noRows", "retry", "loadMore", "stale", "required", "breadcrumb", "pagination", "previous", "next", "pageOf", "search", "searching", "noResults", "resultCount", "back", "menuDescription", "choose", "chooseOne", "inProgress", "progressValue", "copied", "copyFailed", "copyInstallCommand", "reviewAssetOrder", "amountInAsset", "availableAmount", "reviewOrder", "confirmOrder", "confirmOrderDescription", "orderUnavailable", "noActivity", "statusOnline", "statusOffline", "statusStale"]
+    "keys": ["close", "cancel", "dismiss", "dismissNotice", "busy", "notifications", "loading", "loadingContent", "loadingItems", "loadingChart", "noItems", "noRows", "retry", "loadMore", "stale", "required", "breadcrumb", "pagination", "previous", "next", "pageOf", "search", "searching", "noResults", "resultCount", "increment", "decrement", "back", "menuDescription", "choose", "chooseOne", "inProgress", "progressValue", "copied", "copyFailed", "copyInstallCommand", "reviewAssetOrder", "amountInAsset", "availableAmount", "reviewOrder", "confirmOrder", "confirmOrderDescription", "orderUnavailable", "noActivity", "statusOnline", "statusOffline", "statusStale"]
   },
   "rules": {
     "displayIsNotArithmetic": true,

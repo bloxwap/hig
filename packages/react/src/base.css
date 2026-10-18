@@ -1,0 +1,3 @@
+/* Optional document-wide defaults. Component CSS never resets the host page. */
+* { box-sizing: border-box; }
+:focus-visible { outline: 2px solid var(--hig-focus); outline-offset: 3px; }

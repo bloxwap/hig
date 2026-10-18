@@ -1,0 +1,21 @@
+{
+  "issue": 99,
+  "package": "@bloxwap/hig-og-fonts",
+  "bytes": 667891,
+  "budget": 1000000,
+  "faces": [
+    "BloxwapSans.ttf",
+    "BloxwapSans-SemiBold.ttf",
+    "BloxwapSans-Bold.ttf",
+    "BloxwapMono.ttf"
+  ],
+  "sha256": {
+    "BloxwapSans.ttf": "778520981b42b408c19e43fc6d62e513ff0c47bd9870d62159e2e74cda2f79f5",
+    "BloxwapSans-SemiBold.ttf": "7257cb505ec841dae8f5ff3160c629d08003bfd31b9d94334dd4a31798444c8c",
+    "BloxwapSans-Bold.ttf": "13e10451ecec4e33733b196454f1232a16d34d5014dce66daaee4d0c58600e1b",
+    "BloxwapMono.ttf": "6469eea2fc3fbad052301a6e0febf0182aef280b888acbbf1390c623ff168b65"
+  },
+  "canonicalHashes": "matched",
+  "renderer": "next/og, 1200×630 PNG, Sans SemiBold and Mono Regular",
+  "published": false
+}

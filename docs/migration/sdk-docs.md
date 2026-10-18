@@ -41,3 +41,9 @@ and Haptic also repeat the same button and search recipes. Use the existing
 HIG token/component packages for shared behavior, and keep the written guide
 compact with **rule → token or recipe → exception** rather than duplicating the
 five implementations.
+
+## Follow-up package upgrades
+
+Chart, SFX, agent-cli and tapsiren should replace the full `@bloxwap/hig-native-fonts` build dependency with `@bloxwap/hig-og-fonts` for their OG/Satori renderers. Update each TTF resolver to `@bloxwap/hig-og-fonts/fonts/<face>.ttf`, use its manifest for hash checks, and remove the unused native-font tarball after a clean OG render. Sans 400/600/700 and Mono 400 retain their canonical bytes. Runtime native apps continue using the full native package.
+
+Chart keeps `@bloxwap/chart` as a direct workspace dependency. HIG's chart adapter is still individually imported, but the shared renderer no longer declares an optional chart peer. Regenerate the lockfile with normal strict peer resolution; no `legacy-peer-deps` workaround is needed. Verify the workspace symlink after a clean install.

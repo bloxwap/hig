@@ -1,4 +1,7 @@
 {
+  "sourceCommit": "35278bb83c4b8fbb493717428cd89f7667c84586",
+  "sourceTreeDirty": true,
+  "observedAt": "2026-10-16",
   "browser": "26.0",
   "viewport": 320,
   "textScale": "200% root font size",
@@ -7,6 +10,7 @@
     "pointer cancellation and reduced-motion press transform",
     "synthetic composition and negative locale raw precision",
     "range Home/End/step",
+    "slider focus ring clear of label and next control at comfortable and compact density (#69)",
     "radio keyboard",
     "RTL translated tabs and disabled skip",
     "nested modal Tab/Escape and focus restoration",

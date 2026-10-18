@@ -1,3 +1,4 @@
+import {assertGeneratedFonts} from './generated-fonts.mjs';
 import {verifyNativeReact,verifyExpoNativeModules,verifyDeclaredPeers} from './native-compatibility.mjs';
 import {nativeConsumerManifest,nativeProfiles} from './native-consumer.mjs';
 import {execFileSync} from 'node:child_process';
@@ -8,12 +9,13 @@ import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 // --profile rn-0.81 (default: RN 0.81.5 / Expo 54) or rn-0.83 (RN 0.83.10 / Expo 55); see fixtures/native/profiles.json.
 const args=process.argv.slice(2);const profile=args[0]==='--profile'&&args[1]?args[1]:args.length?(()=>{throw Error('Usage: packed-native-smoke.mjs [--profile <name>]');})():'rn-0.81';
+assertGeneratedFonts();
 const manifest=nativeConsumerManifest(profile);
 console.log(`Packed native consumer profile ${profile}: ${nativeProfiles[profile].stack}`);
 const dir=mkdtempSync(join(tmpdir(),`hig-native-consumer-${profile}-`));
 cpSync('fixtures/native',dir,{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/dist')&&!s.includes('/.expo')});
 writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
-const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')).map(n=>resolve('artifacts',n));
+const tarballs=process.env.HIG_REGISTRY_VERSION?['contracts','tokens','native-fonts','feedback','native'].map(name=>`@bloxwap/hig-${name}@${process.env.HIG_REGISTRY_VERSION}`):readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')).map(n=>resolve('artifacts',n));
 execFileSync('npm',['install','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 const runtime=verifyNativeReact(dir);console.log('Native runtime versions',runtime);console.log('Expo native modules',verifyExpoNativeModules(dir));
 // npm only warns on most peer conflicts in an Expo tree, so every declared HIG peer range must explicitly accept what was installed.

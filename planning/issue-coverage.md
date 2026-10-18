@@ -1,5 +1,7 @@
 # Issue delivery and acceptance coverage · 2026-10-14
 
+Historical acceptance audit, with later adoption annotations. The 2026-10-16 live roadmap review and current software follow-ups are tracked in [roadmap-followups.md](roadmap-followups.md); the original access failures and older PR references below are not the current delivery instructions.
+
 This audit covers #1–#18 against their current `gh issue view` bodies, saved in `evidence/issue-1-18/issue-N.json`. Foundations [PR #37](https://github.com/bloxwap/hig/pull/37) and components/feedback/docs [PR #42](https://github.com/bloxwap/hig/pull/42) are already merged. Earlier Contents-403 and monorepo-404 statements are historical; authenticated source reads and PR delivery now work. Current follow-up: [PR #45](https://github.com/bloxwap/hig/pull/45) (`hig/issues-1-18-verification`).
 
 Satisfied means the whole issue's acceptance is covered; partial means concrete residual acceptance remains. Passing software gates do not convert device observations into passes. No issues are closed by this work. No npm publication, tags/releases or production deployment is authorized.

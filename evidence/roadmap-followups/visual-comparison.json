@@ -1,0 +1,76 @@
+{
+  "kind": "same-browser HEAD versus branch component CSS",
+  "platform": "darwin",
+  "browser": "141.0.7390.37",
+  "results": [
+    {
+      "name": "Button",
+      "state": "busy",
+      "replaced": {
+        "removedRules": 106,
+        "insertedRules": 104
+      },
+      "headVersusBranch": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0,
+        "channelTolerance": 0
+      },
+      "headVersusHistoricalBaseline": {
+        "failed": true,
+        "message": "Visual pixel regression: 2.32% exceeds 2%"
+      }
+    },
+    {
+      "name": "Field",
+      "state": "default",
+      "replaced": {
+        "removedRules": 106,
+        "insertedRules": 104
+      },
+      "headVersusBranch": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0,
+        "channelTolerance": 0
+      },
+      "headVersusHistoricalBaseline": {
+        "failed": true,
+        "message": "Visual pixel regression: 2.60% exceeds 2%"
+      }
+    },
+    {
+      "name": "Field",
+      "state": "error",
+      "replaced": {
+        "removedRules": 106,
+        "insertedRules": 104
+      },
+      "headVersusBranch": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0,
+        "channelTolerance": 0
+      },
+      "headVersusHistoricalBaseline": {
+        "failed": true,
+        "message": "Visual pixel regression: 4.44% exceeds 2%"
+      }
+    },
+    {
+      "name": "Input",
+      "state": "error",
+      "replaced": {
+        "removedRules": 106,
+        "insertedRules": 104
+      },
+      "headVersusBranch": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0,
+        "channelTolerance": 0
+      },
+      "headVersusHistoricalBaseline": {
+        "failed": true,
+        "message": "Visual pixel regression: 3.51% exceeds 2%"
+      }
+    }
+  ],
+  "conclusion": "All four failing historical baselines also fail with HEAD CSS. HEAD and branch captures are pixel-identical on this host. Historical baseline files retained; cross-platform raster differences are not rebaselined."
+}

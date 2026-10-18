@@ -1,12 +1,15 @@
+import {assertGeneratedFonts} from './generated-fonts.mjs';
 import {execFileSync} from 'node:child_process';
 import {mkdtempSync,readFileSync,writeFileSync,mkdirSync,cpSync,readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
+assertGeneratedFonts();
 const dir=mkdtempSync(join(tmpdir(),'hig-consumer-'));
 mkdirSync('artifacts',{recursive:true});
 const manifests=readdirSync('packages').map(p=>JSON.parse(readFileSync(`packages/${p}/package.json`,'utf8')));
 const tarballs=[];
 for(const manifest of manifests){
+ if(process.env.HIG_REGISTRY_VERSION){if(!['@bloxwap/hig-native','@bloxwap/hig-native-fonts'].includes(manifest.name))tarballs.push(`${manifest.name}@${process.env.HIG_REGISTRY_VERSION}`);continue;}
  const name=manifest.name.replace('@bloxwap/hig-','');
  const pack=JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
  if(name!=='native'&&name!=='native-fonts')tarballs.push(resolve('artifacts',pack[0].filename));

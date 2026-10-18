@@ -58,6 +58,10 @@ export interface HIGMessages {
  noResults: string;
  /** Native Search result count status. Use Intl.PluralRules for locales with more plural forms. */
  resultCount: (count: number, locale: string) => string;
+ /** Native Slider accessibility action to increase its value. */
+ increment: string;
+ /** Native Slider accessibility action to decrease its value. */
+ decrement: string;
  /** Native BackButton. */
  back: string;
  /** Native Menu sheet description. */
@@ -125,6 +129,8 @@ export const search = 'Search';
 export const searching = 'Searching…';
 export const noResults = 'No results';
 export const resultCount = (count: number, locale: string) => `${new Intl.NumberFormat(locale).format(count)} ${count === 1 ? 'result' : 'results'}`;
+export const increment = 'Increase';
+export const decrement = 'Decrease';
 export const back = 'Back';
 export const menuDescription = 'Available actions';
 export const choose = 'Choose';
@@ -146,7 +152,7 @@ export const statusOnline = 'online';
 export const statusOffline = 'offline';
 export const statusStale = 'stale';
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, increment, decrement, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**

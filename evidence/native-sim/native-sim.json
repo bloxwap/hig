@@ -568,7 +568,7 @@
         "Label not human-readable": 122
       },
       "androidScanner": {},
-      "note": "iOS \"Label not human-readable\" flags currency readouts such as \"$1,250.45\" (heuristic; VoiceOver pronunciation needs a device); \"Label duplicates traits\" is the gallery Select value \"Button\"; \"Dynamic Type font sizes are unsupported\" flags React Native TextInput, which scales by fontScale rather than adjustsFontForContentSizeCategory (AX5 captures show the input text scaling)"
+      "note": "iOS \"Label not human-readable\" flags currency readouts such as \"$1,250.45\" (heuristic; VoiceOver pronunciation needs a device); \"Label duplicates traits\" is the gallery Select value \"Button\"; \"Dynamic Type font sizes are unsupported\" flags React Native TextInput, which scales by fontScale rather than adjustsFontForContentSizeCategory (AX5 captures show the input text scaling). This is the RN 0.81.5 / Expo SDK 54 historical run only. RN 0.83.10 / Expo SDK 55 records zero Dynamic Type input findings; see rn-0.83/summary.json and docs/foundations/native-runtime-differences.md. The audit heuristic alone does not establish VoiceOver behavior or a physical-device pass."
     },
     "orientation": {
       "android": {

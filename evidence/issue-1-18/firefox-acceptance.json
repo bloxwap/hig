@@ -1,4 +1,10 @@
 {
+  "snapshot": {
+    "kind": "historical",
+    "recordingCommit": "7e3efeb5f24faf11080916cd48f06d1702aca784",
+    "currentRun": "not completed: bundled Firefox launch timed out with sandbox_extension_issue_file_to_process Operation not permitted and RenderCompositorSWGL framebuffer failure on macOS",
+    "observedAt": "2026-10-16"
+  },
   "browser": "142.0.1",
   "viewport": 320,
   "textScale": "200% root font size",

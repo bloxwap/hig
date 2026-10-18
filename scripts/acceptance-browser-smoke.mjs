@@ -3,6 +3,8 @@ import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {writeFileSync,mkdirSync} from 'node:fs';
 import {PNG} from 'pngjs';
+import {execFileSync} from 'node:child_process';
+const source={sourceCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourceTreeDirty:!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),observedAt:new Date().toISOString().slice(0,10)};
 /** Pixels that differ between two screenshots of the same region. */
 function changedPixels(a,b){const x=PNG.sync.read(a),y=PNG.sync.read(b);if(x.width!==y.width||x.height!==y.height)return Infinity;let n=0;for(let i=0;i<x.data.length;i+=4)if(x.data[i]!==y.data[i]||x.data[i+1]!==y.data[i+1]||x.data[i+2]!==y.data[i+2])n++;return n;}
 /** #69: the keyboard focus ring must be visible on the slider yet leave its label and the next control untouched, at both densities. */
@@ -23,7 +25,9 @@ async function assertSliderRingClear(page,engine){
  }
  await page.evaluate(()=>{for(const el of document.querySelectorAll('[data-hig-density]'))el.setAttribute('data-hig-density','comfortable');});
 }
-for(const [engine,launcher] of Object.entries({chromium,firefox,webkit})){
+const browsers={chromium,firefox,webkit};
+if(process.env.HIG_BROWSER)assert(process.env.HIG_BROWSER in browsers,'HIG_BROWSER must be chromium, firefox or webkit');
+for(const [engine,launcher] of Object.entries(browsers).filter(([engine])=>!process.env.HIG_BROWSER||process.env.HIG_BROWSER===engine)){
  const browser=await launcher.launch({headless:true});
  try{
   const context=await browser.newContext({viewport:{width:320,height:900},reducedMotion:'reduce'});const page=await context.newPage(),errors=[];
@@ -53,6 +57,7 @@ for(const [engine,launcher] of Object.entries({chromium,firefox,webkit})){
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();assert.deepEqual(axe.violations,[]);assert.deepEqual(errors,[]);
   await page.screenshot({path:`evidence/issue-1-18/${engine}-expanded-rtl.png`,fullPage:true});
-  writeFileSync(`evidence/issue-1-18/${engine}-acceptance.json`,JSON.stringify({browser:await browser.version(),viewport:320,textScale:'200% root font size',checks:['required validation','pointer cancellation and reduced-motion press transform','synthetic composition and negative locale raw precision','range Home/End/step','slider focus ring clear of label and next control at comfortable and compact density (#69)','radio keyboard','RTL translated tabs and disabled skip','nested modal Tab/Escape and focus restoration','notification burst/dismiss/retry','menu keyboard','search recovery','current location','no overflow','zero axe WCAG violations','no runtime errors'],limits:'Synthetic composition does not certify real OS IME; browser text scaling is not native Dynamic Type; no physical assistive technology observation',violations:[]},null,2)+'\n');
+  writeFileSync(`evidence/issue-1-18/${engine}-acceptance.json`,JSON.stringify({...source,browser:await browser.version(),viewport:320,textScale:'200% root font size',checks:['required validation','pointer cancellation and reduced-motion press transform','synthetic composition and negative locale raw precision','range Home/End/step','slider focus ring clear of label and next control at comfortable and compact density (#69)','radio keyboard','RTL translated tabs and disabled skip','nested modal Tab/Escape and focus restoration','notification burst/dismiss/retry','menu keyboard','search recovery','current location','no overflow','zero axe WCAG violations','no runtime errors'],limits:'Synthetic composition does not certify real OS IME; browser text scaling is not native Dynamic Type; no physical assistive technology observation',violations:[]},null,2)+'\n');
+  console.log(`Acceptance ${engine}: keyboard, focus-ring geometry, 200% text and axe checks passed`);
  }finally{await browser.close();}
 }

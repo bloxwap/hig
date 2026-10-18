@@ -1,0 +1,22 @@
+{
+  "issue": 98,
+  "kind": "automated missing-generated-face simulation",
+  "published": false,
+  "results": [
+    {
+      "script": "release-dry-run",
+      "status": 1,
+      "message": "actionable generator and Python pins; no raw ENOENT"
+    },
+    {
+      "script": "quality",
+      "status": 1,
+      "message": "actionable generator and Python pins; no raw ENOENT"
+    },
+    {
+      "script": "packed-native-smoke",
+      "status": 1,
+      "message": "actionable generator and Python pins; no raw ENOENT"
+    }
+  ]
+}

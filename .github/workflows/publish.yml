@@ -1,0 +1,70 @@
+name: Maintainer-approved npm release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  deployments: read
+concurrency:
+  group: hig-npm-release
+  cancel-in-progress: false
+jobs:
+  prerequisites:
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Require configured maintainer approval and successful quality gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          reviewers=$(gh api "repos/$GH_REPO/environments/npm-release" --jq '[.protection_rules[] | select(.type == "required_reviewers") | .reviewers[]] | length')
+          test "$reviewers" -gt 0 || { echo 'Configure required reviewers on the npm-release environment first.' >&2; exit 1; }
+          runs=$(gh run list --workflow quality.yml --commit "$GITHUB_SHA" --status success --limit 1 --json databaseId --jq length)
+          test "$runs" -gt 0 || { echo 'Run the candidate quality workflow successfully for this exact tag commit first.' >&2; exit 1; }
+  publish:
+    needs: prerequisites
+    environment: npm-release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.22.0'
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm install --global npm@11.6.1
+      - run: npm ci
+      - run: python3 -m pip install 'fonttools[woff]==4.61.1' 'brotli==1.2.0'
+      - run: npm run generate:fonts
+      - run: npm run check
+      - run: npm run quality
+      - run: npm run release:dry-run -- --channel stable-simulation
+      - name: Verify source version, gates, exact package set and tarball hashes
+        env:
+          HIG_RELEASE_TAG: ${{ github.ref_name }}
+        run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$HIG_RELEASE_TAG" --output artifacts/verified-release.txt
+      - name: Publish the verified tarballs through npm trusted publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r archive; do
+            npm publish "$archive" --access public --provenance
+          done < artifacts/verified-release.txt
+      - run: npx playwright install --with-deps chromium
+      - run: npm run smoke:registry
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hig-registry-verification-${{ github.sha }}
+          path: |
+            artifacts/release-stable-simulation/report.json
+            artifacts/verified-release.txt
+            evidence/registry-install.json
+          retention-days: 14

@@ -32,6 +32,8 @@ jobs:
       - name: Packed native consumer, RN 0.83.10 / Expo 55 (Android and iOS Metro export, #68)
         run: npm run smoke:packed-native -- --profile rn-0.83
       - run: npm run smoke:packed-boundaries
+      - run: npm run smoke:packed-chart-workspace
+      - run: npm run smoke:packed-og-fonts
       - run: npm run smoke:packed-fumadocs
       - run: npm run smoke:packed-examples
       - run: npx playwright install --with-deps chromium firefox webkit

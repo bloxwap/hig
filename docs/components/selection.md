@@ -11,12 +11,29 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 | Control | Key props and behavior |
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
-| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
+| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. Native options also accept `description` (a second line) and `lang` (the label's BCP-47 language). |
 | `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. |
 
 ## When to use and examples
 
 Do: control selection from accepted host state. Don’t: emit a success cue on every render or repeated slider value.
+
+Native language pickers can keep the native name and a translated description in one radio row:
+
+```tsx
+<HIGProvider locale='en-US' fontFamiliesByScript={{
+  latin: {400: 'BloxwapSansRegular'},
+  ko: {400: 'BloxwapSansKRRegular'},
+  zh: {400: 'BloxwapSansSCRegular'},
+}}>
+  <RadioGroup label='Language' value={language} onValueChange={setLanguage} options={[
+    {value: 'ko', label: '한국어', description: 'Korean', lang: 'ko-KR'},
+    {value: 'zh', label: '简体中文', description: 'Chinese', lang: 'zh-Hans'},
+  ]}/>
+</HIGProvider>
+```
+
+Register each face before passing its name. `Text` chooses `fontFamiliesByScript` by the label's glyphs, independently of the app locale; `lang` supplies `accessibilityLanguage` and resolves shared CJK punctuation. Descriptions use the app language. A script map selects the requested static weight, or its nearest registered weight; the existing `fontFamilies`/`fontFamily` remain the fallback. Explicit text `script` and style `fontFamily` override detection and registered family selection respectively. Native radios expose the label, supporting description as an accessibility hint, checked/disabled state and the explicit `activate` accessibility action; disabled rows reject both touch and accessibility activation. Per-option language is passed to React Native's `accessibilityLanguage`; pronunciation support depends on the platform and installed voices.
 
 ## States, interaction and accessibility
 
@@ -30,4 +47,4 @@ SegmentedControl is single-choice radio semantics, not navigation. Native picker
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, `tests/native/language-options.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
