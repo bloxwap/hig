@@ -359,7 +359,7 @@
         "baseline": "29812c9a4c42a63e10056c8e6196752cd93d9ca4",
         "evidence": "docs/hig/pilots/combined-rollout.md",
         "verification": "docs/hig/evidence/integration/verification.json",
-        "validation": "36 lint,36 typecheck,31 serial test tasks;3683 app passes plus one existing expected failure,269 Pro passes,102 root script passes/two skips and font audit. Exact native88f3 subtree has3080 tests/261 suites,types,lint,enabled/rollback iOS/Android exports and actual simulator/emulator runtime. Integrated Chrome/WebKit controls/forms/dialogs/drawers/segmented/toast/payout/count proofs pass. #4618 all six checks pass plus expected gallery skip; #4617 all checks green, including automatic previews. #124 latest head18c has three consecutive successful remote attempts. Final-head web/browser,tests,accessibility,native exports andscreenshot checks pass remotely; last automatic preview was finishing at the dated snapshot. The only failed check is external GitGuardian historical-hash review.",
+        "validation": "36 lint,36 typecheck,31 serial test tasks;3683 app passes plus one existing expected failure,269 Pro passes,102 root script passes/two skips and font audit. Exact native88f3 subtree has3080 tests/261 suites,types,lint,enabled/rollback iOS/Android exports and actual simulator/emulator runtime. Integrated Chrome/WebKit controls/forms/dialogs/drawers/segmented/toast/payout/count proofs pass. #4618 all six checks pass plus expected gallery skip; #4617 all checks green, including automatic previews. #124 latest head18c has three consecutive successful remote attempts. Final-head web/browser,tests,accessibility,native exports andscreenshot checks pass remotely; last automatic preview was finishing at the dated snapshot. The sole external failure is the historical public-hash finding accepted by the user as a false positive.",
         "costEvidence": {
           "web": "docs/hig/evidence/integration/production/comparison.json",
           "native": "docs/hig/evidence/integration/native-production/report.json",
@@ -380,7 +380,7 @@
         "remaining": "Review/merge, named-owner visual/density/motion/bundle decisions, wallet-authorized sessions, physical observations, registry publication and fork retirement after 2027-01-15.",
         "mergeEffect": "Default-branch versions, fork inventories and exceptions above remain authoritative until merge.",
         "ciObservedAt": "2026-10-18T20:36:43.162290+00:00",
-        "securityCheck": "GitGuardian flags the original public Git tree SHA-1 in historical f786 evidence. Verified exact Git tree object; current schema explicit, but external false-positive review is pending. No suppression or bypass.",
+        "securityCheck": "User explicitly accepted the verified historical public Git tree SHA-1 finding as a false positive and instructed continuing. That exact finding is not a HIG-work blocker; actual provider failure status remains recorded without forgery or blanket suppression.",
         "ciEvidence": "evidence/remaining-issues/delivery-pr-checks-2026-10-18.json"
       }
     },
