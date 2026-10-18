@@ -40,6 +40,6 @@ for(const page of pages){
 write(`${contentRoot}/index.mdx`,'---\ntitle: Human interface guidelines\n---\n\nVersion 0.1.0 candidate.\n\n[Install HIG](/docs/guides/installation) · [Component catalog](/docs/catalog) · [Website and migration shell](/docs/guides/website)\n');
 write(`${contentRoot}/catalog.mdx`,`---\ntitle: Component catalog\ndescription: Reusable building blocks for clear interfaces on web and native.\n---\n\n${groups.map(group=>`## ${group.title}\n\n${group.description}\n\n<ComponentGroup family="${group.family}" />`).join('\n\n')}\n`);
 write(`${contentRoot}/meta.json`,JSON.stringify({title:'HIG 0.1.0',pages:['index','catalog','guides','components']},null,2));
-write(`${contentRoot}/guides/meta.json`,JSON.stringify({title:'Guidelines',pages:['installation','foundations','components','feedback','architecture','governance','migration','website']},null,2));
+write(`${contentRoot}/guides/meta.json`,JSON.stringify({title:'Guidelines',pages:['installation','foundations','components','feedback','architecture','governance','migration','website','ci-runners']},null,2));
 write(`${contentRoot}/components/meta.json`,JSON.stringify({title:'Component reference'},null,2));
 write(`${contentRoot}/guides/components/meta.json`,JSON.stringify({title:'Component guidelines',pages:groups.filter(group=>sourcefiles.includes(`docs/components/${group.family}.md`)).map(group=>group.family)},null,2));

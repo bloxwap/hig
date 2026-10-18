@@ -1,10 +1,10 @@
 import {execFileSync} from 'node:child_process';
-import {mkdtempSync,writeFileSync,existsSync,readFileSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {writeFileSync,existsSync,readFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
-const directory=mkdtempSync(join(tmpdir(),'hig-boundaries-'));
+import {scratchDir} from './scratch.mjs';
+const directory=scratchDir('hig-boundaries-');
 writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module'}));
 const tarball=name=>resolve(`artifacts/bloxwap-hig-${name}-0.1.0.tgz`);
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...['tokens','contracts','feedback'].map(tarball)],{cwd:directory,stdio:'pipe'});

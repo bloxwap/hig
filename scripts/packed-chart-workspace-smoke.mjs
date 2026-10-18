@@ -12,9 +12,9 @@
 // Every scenario runs with the ambient npm (CI: the one bundled with Node 22.22) and with the npm pinned in this
 // repository's packageManager (11.6.1, the version chart reported), installed into a scratch prefix.
 import {execFileSync} from 'node:child_process';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,cpSync,rmSync,realpathSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {mkdirSync,writeFileSync,readFileSync,existsSync,cpSync,rmSync,realpathSync} from 'node:fs';
 import {join,resolve,relative} from 'node:path';
+import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 
@@ -52,7 +52,7 @@ function legacyReactTarball(directory){
 }
 
 function host(name,{withChart,reactTarball=tarball('react')}){
- const root=mkdtempSync(join(tmpdir(),`hig-chart-workspace-${name}-`));
+ const root=scratchDir(`hig-chart-workspace-${name}-`);
  writeFileSync(join(root,'package.json'),JSON.stringify({name:'chart-shaped-host',private:true,type:'module',workspaces:['packages/*','apps/*']},null,2));
  // Strictness lives in the host too, so a plain `npm install` there behaves the same as this script.
  writeFileSync(join(root,'.npmrc'),'legacy-peer-deps=false\nstrict-peer-deps=true\n');
@@ -111,7 +111,7 @@ async function assertApp(root,label,withChart){
  return {resolved:resolved.map(f=>relative(realpathSync(root),f)),ssr:'PriceChart summary and host-localized fallback',bundleLazyImport:lazy[0]};
 }
 
-const scratch=mkdtempSync(join(tmpdir(),'hig-chart-workspace-tools-'));
+const scratch=scratchDir('hig-chart-workspace-tools-');
 const legacyTarball=legacyReactTarball(scratch);
 const runs=[];
 for(client of npmClients(scratch)){

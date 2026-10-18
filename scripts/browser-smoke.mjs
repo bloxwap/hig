@@ -1,10 +1,10 @@
-import {chromium,firefox,webkit} from '@playwright/test';
+import {chromium,webkit} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {assertLoadedFace} from './font-check.mjs';
 const stage=process.argv[2]??'m2';
-const engine=process.env.HIG_BROWSER??'chromium';const launcher={chromium,firefox,webkit}[engine];if(!launcher)throw Error('Unsupported browser');
+const engine=process.env.HIG_BROWSER??'chromium';const launcher={chromium,webkit}[engine];if(!launcher)throw Error('Unsupported browser');
 const browser=await launcher.launch({...(engine==='chromium'&&process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
 const label=stage==='m5'?`${stage}-${engine}`:stage;
 try{
@@ -46,7 +46,7 @@ await page.screenshot({path:`evidence/${label}-web-mobile.png`,fullPage:true});
 await page.setViewportSize({width:1440,height:1000});
 await page.getByLabel('Pro',{exact:true}).check();
 await page.screenshot({path:`evidence/${label}-web-pro.png`,fullPage:true});
-writeFileSync(`evidence/${label}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),platform:`Linux ${engine} headless; no physical-device claim`,viewport:[390,844],checks:['no page errors','plain @font-face Bloxwap Sans/Mono loaded on .hig-button/.hig-number','modal Escape','keyboard tabs','no horizontal viewport overflow','zero axe WCAG findings'],violations},null,2)+'\n');
+writeFileSync(`evidence/${label}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),platform:`${process.platform} ${process.arch} ${engine} headless; no physical-device claim`,viewport:[390,844],checks:['no page errors','plain @font-face Bloxwap Sans/Mono loaded on .hig-button/.hig-number','modal Escape','keyboard tabs','no horizontal viewport overflow','zero axe WCAG findings'],violations},null,2)+'\n');
 console.log(`Browser ${stage}: interaction/accessibility/screenshots passed`);
 
 }finally{await browser.close();}
