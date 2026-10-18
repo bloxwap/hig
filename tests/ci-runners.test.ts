@@ -19,6 +19,8 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
  expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('command -v gtar');
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
+ expect(readFileSync('docs/ci-runners.md','utf8')).toContain('LaunchAgent');
+ expect(readFileSync('docs/ci-runners.md','utf8')).toContain('plugin-container.app');
  const python=readFileSync('scripts/ci-setup-python.sh','utf8');
  expect(python).toContain('RUNNER_TEMP');
  expect(python).toContain('/Users/runner/hostedtoolcache');
