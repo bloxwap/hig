@@ -1,13 +1,14 @@
 {
   "version": "0.1.0",
   "browser": "26.0",
-  "platform": "Linux webkit headless; no physical-device claim",
+  "platform": "darwin arm64 webkit headless; no physical-device claim",
   "viewport": [
     390,
     844
   ],
   "checks": [
     "no page errors",
+    "plain @font-face Bloxwap Sans/Mono loaded on .hig-button/.hig-number",
     "modal Escape",
     "keyboard tabs",
     "no horizontal viewport overflow",

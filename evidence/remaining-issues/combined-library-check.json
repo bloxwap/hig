@@ -32,10 +32,20 @@
       "rn-0.83": "Android/iOS regular, gesture and adoption exports pass; font hashes match"
     },
     "nativeRuntime": "iOS26.5 Simulator two XCTest cases; Android Emulator lifecycle/scroll/dynamic checks pass. See evidence/native-inline/report.json.",
-    "webGestureRuntime": "Six actual pointer/wheel/focus cases in each of Chromium and WebKit; see evidence/web-gesture-sheet/verification.json."
+    "webGestureRuntime": "Six actual pointer/wheel/focus cases in each of Chromium and WebKit; see evidence/web-gesture-sheet/verification.json.",
+    "allBrowserGates": "pass: Chromium/WebKit web acceptance, Pro layout, optional web gesture, feedback, docs, 64-component/104-state catalog axe/visual/runtime, Next hydration/keyboard/raw amount/font",
+    "releaseArtifact": "pass: seven staged packages clean-installed with aligned versions and SSR"
   },
   "limits": [
-    "No physical device, owner signoff, registry publication or manual deployment.",
-    "Clean coordinated candidate is built after this source checkpoint."
-  ]
+    "No physical device, owner signoff, registry publication or manual deployment."
+  ],
+  "candidate": {
+    "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
+    "version": "0.1.0-candidate.shaec6535bb",
+    "sourceTreeDirty": false,
+    "archives": 8,
+    "sha256": "All match authoritative artifacts/release-candidate/report.json",
+    "reactBytes": 25592,
+    "nativeBytes": 28003
+  }
 }

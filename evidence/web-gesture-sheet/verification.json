@@ -57,5 +57,14 @@
     "Desktop Playwright pointer drag and wheel scrolling; physical mobile touch and software-keyboard behavior remain host/device acceptance.",
     "Source is a dirty working-tree observation before the parent creates a clean coordinated source commit and candidate.",
     "No publication or manual deployment."
-  ]
+  ],
+  "coordinatedValidation": {
+    "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
+    "sourceTreeDirty": false,
+    "candidateVersion": "0.1.0-candidate.shaec6535bb",
+    "webTests": 163,
+    "nativeTests": 155,
+    "fullBrowserSuite": "pass",
+    "releaseArtifact": "pass"
+  }
 }

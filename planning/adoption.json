@@ -76,11 +76,12 @@
       "exceptionExpires": "2027-01-15",
       "candidateImplementation": {
         "pr": "https://github.com/bloxwap/hig/pull/126",
-        "sourceCommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
-        "latestPackedCommit": "a7c983b85bbbe8b2273e70dec5b34353954e590e",
+        "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
+        "latestPackedCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
         "lastGreenCICommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
-        "validation": "Coordinated follow-up source passes full build/docs/lint/types, 163 web tests and 155 native tests. Adds optional web Vaul sheet, native dynamic/inline sheet with real nested scrolling, opaque formatted readout values, native EmptyState and semantic web Badge. iOS26.5 Simulator and Android Emulator inline lifecycle/dynamic checks pass; fresh clean candidate follows this source checkpoint. Earlier 4f source passes all remote quality/native/browser/candidate and docs checks.",
-        "ciVisibility": "Read-only repository runner listing returned zero repository-specific runners; organization runner listing requires unavailable admin:org scope. No runner availability is inferred."
+        "validation": "Coordinated follow-up source passes full build/docs/lint/types, 163 web tests and 155 native tests. Adds optional web Vaul sheet, native dynamic/inline sheet with real nested scrolling, opaque formatted readout values, native EmptyState and semantic web Badge. iOS26.5 Simulator and Android Emulator inline lifecycle/dynamic checks pass; All eight archives are packed from clean ec6535bb, sourceTreeDirty=false; SHA-256 verified. Fresh seven-package release consumer, regular/gesture/adoption Android+iOS exports on both RN profiles, full Chromium/WebKit browser/catalog/axe/Next gates, packed boundaries and 212 examples pass. Earlier 4f source passes all remote quality/native/browser/candidate and docs checks.",
+        "ciVisibility": "Read-only repository runner listing returned zero repository-specific runners; organization runner listing requires unavailable admin:org scope. No runner availability is inferred.",
+        "candidateVersion": "0.1.0-candidate.shaec6535bb"
       }
     },
     {
