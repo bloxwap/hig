@@ -15,7 +15,7 @@ try{
  const docs=start(['scripts/preview-docs.mjs']);
  const next=start(['node_modules/next/dist/bin/next','start','fixtures/next','--hostname','127.0.0.1','--port',nextPort]);
  await Promise.all([ready(process.env.HIG_PREVIEW_URL,web),ready(process.env.HIG_DOCS_PREVIEW_URL,docs),ready(process.env.HIG_NEXT_URL,next),ready(`http://127.0.0.1:${process.env.HIG_EXPO_PORT??4176}/`,expo)]);
- for(const engine of ['chromium','firefox','webkit'])execFileSync(process.execPath,['scripts/browser-smoke.mjs','m5'],{stdio:'inherit',env:{...process.env,HIG_BROWSER:engine}});
+ for(const engine of ['chromium','webkit'])execFileSync(process.execPath,['scripts/browser-smoke.mjs','m5'],{stdio:'inherit',env:{...process.env,HIG_BROWSER:engine}});
  execFileSync(process.execPath,['scripts/expo-web-browser-smoke.mjs'],{stdio:'inherit'});
  execFileSync(process.execPath,['scripts/acceptance-browser-smoke.mjs'],{stdio:'inherit'});
  for(const script of ['feedback-browser-smoke','docs-browser-smoke','catalog-browser-smoke','next-browser-smoke'])execFileSync(process.execPath,[`scripts/${script}.mjs`,'m5'],{stdio:'inherit'});

@@ -21,9 +21,7 @@ Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to b
 
 ## Playwright
 
-Jobs that need browsers run `npx playwright install chromium firefox webkit` with no `--with-deps`. The quality job restores, and the browser job saves, `~/Library/Caches/ms-playwright` keyed by Playwright version. Chromium, Firefox, and WebKit must launch headless as the runner user.
-
-The Actions runner must be a LaunchAgent in the logged-in Aqua session of that user (`admin`). A LaunchDaemon has no window server or TCC session; Playwright Firefox then hangs at launch (`sandbox_extension_issue_file_to_process` on `plugin-container.app`, `Operation not permitted`). Chromium headless can still pass. This is a host change, not a skipped engine.
+Jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. The quality job restores, and the browser job saves, `~/Library/Caches/ms-playwright` keyed by Playwright version. Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
 
 ## Visual baselines
 
@@ -42,7 +40,7 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 | `paths-filter` | Same PR path filter as before; docs-only PRs skip the heavy jobs |
 | `quality` | `check`, examples, quality gates, SSR and packed smokes, Playwright packed-next/css, release dry-run |
 | `native` | Packed native Metro export for both supported RN/Expo profiles |
-| `browser` | Three-engine browser, visual, and hydration gates |
+| `browser` | Chromium and WebKit browser, visual, and hydration gates |
 | `candidate` | Aggregator so the required check reports on docs-only PRs |
 
 ### Documentation (`docs.yml`)

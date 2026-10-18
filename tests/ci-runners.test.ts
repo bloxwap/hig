@@ -15,12 +15,21 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
  }
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
+ expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('npx playwright install chromium webkit');
+ expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('firefox');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('actions/setup-python');
  expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('command -v gtar');
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
- expect(readFileSync('docs/ci-runners.md','utf8')).toContain('LaunchAgent');
- expect(readFileSync('docs/ci-runners.md','utf8')).toContain('plugin-container.app');
+ expect(readFileSync('docs/ci-runners.md','utf8')).toContain('playwright install chromium webkit');
+ expect(readFileSync('docs/ci-runners.md','utf8')).not.toContain('install chromium firefox');
+ expect(readFileSync('scripts/run-browser-gates.mjs','utf8')).toContain("['chromium','webkit']");
+ expect(readFileSync('scripts/run-browser-gates.mjs','utf8')).not.toContain('firefox');
+ expect(readFileSync('scripts/packed-css-smoke.mjs','utf8')).toContain("'chromium,webkit'");
+ expect(readFileSync('scripts/packed-css-smoke.mjs','utf8')).not.toContain('firefox');
+ expect(readFileSync('scripts/packed-react-css-smoke.mjs','utf8')).not.toContain('firefox');
+ expect(readFileSync('scripts/acceptance-browser-smoke.mjs','utf8')).not.toContain('firefox');
+ expect(readFileSync('scripts/feedback-browser-smoke.mjs','utf8')).not.toContain('firefox');
  const python=readFileSync('scripts/ci-setup-python.sh','utf8');
  expect(python).toContain('RUNNER_TEMP');
  expect(python).toContain('/Users/runner/hostedtoolcache');

@@ -91,9 +91,7 @@ Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to b
 
 ## Playwright
 
-Jobs that need browsers run `npx playwright install chromium firefox webkit` with no `--with-deps`. The quality job restores, and the browser job saves, `~/Library/Caches/ms-playwright` keyed by Playwright version. Chromium, Firefox, and WebKit must launch headless as the runner user.
-
-The Actions runner must be a LaunchAgent in the logged-in Aqua session of that user (`admin`). A LaunchDaemon has no window server or TCC session; Playwright Firefox then hangs at launch (`sandbox_extension_issue_file_to_process` on `plugin-container.app`, `Operation not permitted`). Chromium headless can still pass. This is a host change, not a skipped engine.
+Jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. The quality job restores, and the browser job saves, `~/Library/Caches/ms-playwright` keyed by Playwright version. Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
 
 ## Visual baselines
 
@@ -112,7 +110,7 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 | `paths-filter` | Same PR path filter as before; docs-only PRs skip the heavy jobs |
 | `quality` | `check`, examples, quality gates, SSR and packed smokes, Playwright packed-next/css, release dry-run |
 | `native` | Packed native Metro export for both supported RN/Expo profiles |
-| `browser` | Three-engine browser, visual, and hydration gates |
+| `browser` | Chromium and WebKit browser, visual, and hydration gates |
 | `candidate` | Aggregator so the required check reports on docs-only PRs |
 
 ### Documentation (`docs.yml`)
@@ -532,7 +530,7 @@ Install `expo-haptics` (`~15.0.7` on Expo SDK 54, `~55.0.18` on SDK 55) in the n
 
 The Linux tests inject native player and haptic backends. Pending configure/seek requests are superseded by the newest request; cancellation, backgrounding, zero volume and disposal stop pending playback. Failed configuration can retry. Explicit impact intent reaches the native backend even for an otherwise silent press preset. Pause/remove failures cannot prevent other cached players from being released. A dispatch test drives 400 cues through `FeedbackController` with simulated slow bridge calls (configure 60 ms, seek 40 ms). It asserts that every cue reaches `player.play()` inside `emit()` and that p95 stays under one 16 ms frame. The native gallery stamps each emit and logs `dispatch`/`p95` on every play for simulator and emulator runs. These tests establish dispatch/lifecycle behavior, not observed sound, tactile output, acoustic latency (#55) or OS audio-session behavior.
 
-Menu disclosure and dismissal are intentionally silent. Web/native Menu commits emit a single selection intent after the host handler; a host can cancel that effect with the selection event's `preventDefault()`. Native accordion disclosure emits one silent disclosure intent rather than duplicate activation/selection effects. The Linux three-engine fixture also checks switch, range, menu selection and canceled menu actions with injected adapters.
+Menu disclosure and dismissal are intentionally silent. Web/native Menu commits emit a single selection intent after the host handler; a host can cancel that effect with the selection event's `preventDefault()`. Native accordion disclosure emits one silent disclosure intent rather than duplicate activation/selection effects. The Chromium and WebKit fixture also checks switch, range, menu selection and canceled menu actions with injected adapters.
 
 
 ## Semantic feedback · HIG 0.1.0

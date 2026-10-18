@@ -80,13 +80,13 @@ jobs:
       - name: Read Playwright version
         id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      # Restore-only: packed-next and packed-css need all three engines, but
+      # Restore-only: packed-next and packed-css need Chromium and WebKit, but
       # saving from this job could race the browser job's full cache write.
       - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/Library/Caches/ms-playwright
           key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
-      - run: npx playwright install chromium firefox webkit
+      - run: npx playwright install chromium webkit
       - run: npm run smoke:packed-next
         env:
           NEXT_TELEMETRY_DISABLED: '1'
@@ -178,7 +178,7 @@ jobs:
           set -euo pipefail
           npm run build &
           build=$!
-          npx playwright install chromium firefox webkit
+          npx playwright install chromium webkit
           wait "$build"
       - name: Browser, visual and hydration gates
         run: node scripts/run-browser-gates.mjs

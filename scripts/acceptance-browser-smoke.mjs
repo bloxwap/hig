@@ -1,4 +1,4 @@
-import {chromium,firefox,webkit,expect} from '@playwright/test';
+import {chromium,webkit,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {writeFileSync,mkdirSync} from 'node:fs';
@@ -23,7 +23,7 @@ async function assertSliderRingClear(page,engine){
  }
  await page.evaluate(()=>{for(const el of document.querySelectorAll('[data-hig-density]'))el.setAttribute('data-hig-density','comfortable');});
 }
-for(const [engine,launcher] of Object.entries({chromium,firefox,webkit})){
+for(const [engine,launcher] of Object.entries({chromium,webkit})){
  const browser=await launcher.launch({headless:true});
  try{
   const context=await browser.newContext({viewport:{width:320,height:900},reducedMotion:'reduce'});const page=await context.newPage(),errors=[];

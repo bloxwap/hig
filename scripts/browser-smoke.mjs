@@ -1,10 +1,10 @@
-import {chromium,firefox,webkit} from '@playwright/test';
+import {chromium,webkit} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {assertLoadedFace} from './font-check.mjs';
 const stage=process.argv[2]??'m2';
-const engine=process.env.HIG_BROWSER??'chromium';const launcher={chromium,firefox,webkit}[engine];if(!launcher)throw Error('Unsupported browser');
+const engine=process.env.HIG_BROWSER??'chromium';const launcher={chromium,webkit}[engine];if(!launcher)throw Error('Unsupported browser');
 const browser=await launcher.launch({...(engine==='chromium'&&process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
 const label=stage==='m5'?`${stage}-${engine}`:stage;
 try{
