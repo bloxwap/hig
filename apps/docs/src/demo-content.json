@@ -1,0 +1,940 @@
+{
+  "pages": [
+    {
+      "route": "guides/architecture/001-packages",
+      "title": "ADR 001: platform renderers, shared contracts"
+    },
+    {
+      "route": "guides/architecture/attribution",
+      "title": "Attribution and provenance"
+    },
+    {
+      "route": "guides/architecture/platform-matrix",
+      "title": "Candidate platform support · 0.1.0"
+    },
+    {
+      "route": "guides/ci-runners",
+      "title": "CI runners · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/actions-surfaces",
+      "title": "Actions & surfaces · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/chart",
+      "title": "Charts · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/fields",
+      "title": "Fields & inputs · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/financial-data",
+      "title": "Financial data · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/navigation",
+      "title": "Navigation · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/overlays",
+      "title": "Overlays · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/recipes",
+      "title": "Recipes · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/selection",
+      "title": "Selection controls · HIG 0.1.0"
+    },
+    {
+      "route": "guides/components/status",
+      "title": "Status & feedback · HIG 0.1.0"
+    },
+    {
+      "route": "guides/feedback/adapters",
+      "title": "Optional adapters and installation · HIG 0.1.0"
+    },
+    {
+      "route": "guides/feedback/contract",
+      "title": "Semantic feedback · HIG 0.1.0"
+    },
+    {
+      "route": "guides/feedback/preferences",
+      "title": "Preferences, preview and device review · HIG 0.1.0"
+    },
+    {
+      "route": "guides/foundations/glossary",
+      "title": "Trading glossary · HIG 0.1.0"
+    },
+    {
+      "route": "guides/foundations/localization",
+      "title": "Numbers, currency, dates and built-in strings · HIG 0.1.0"
+    },
+    {
+      "route": "guides/foundations/native-runtime-differences",
+      "title": "Native runtime differences · HIG 0.1.0"
+    },
+    {
+      "route": "guides/foundations/platform",
+      "title": "Foundation and platform rules · HIG 0.1.0"
+    },
+    {
+      "route": "guides/foundations/principles",
+      "title": "Principles and content · HIG 0.1.0"
+    },
+    {
+      "route": "guides/foundations/source-reconciliation",
+      "title": "Pinned source reconciliation · HIG 0.1.0"
+    },
+    {
+      "route": "guides/governance/adoption",
+      "title": "Organization adoption and governance (#36)"
+    },
+    {
+      "route": "guides/governance/contributing",
+      "title": "Contribution, ownership and admission · HIG 0.1.0"
+    },
+    {
+      "route": "guides/governance/new-repository",
+      "title": "New repository setup and upgrades · HIG 0.1.0"
+    },
+    {
+      "route": "guides/governance/quality",
+      "title": "Quality, budgets and evidence · HIG 0.1.0"
+    },
+    {
+      "route": "guides/governance/release",
+      "title": "Release candidates, semver and rollback · HIG 0.1.0"
+    },
+    {
+      "route": "guides/installation",
+      "title": "Installation and citation · HIG 0.1.0"
+    },
+    {
+      "route": "guides/migration/native",
+      "title": "Native application pilot (#35)"
+    },
+    {
+      "route": "guides/migration/products",
+      "title": "App, Pro and marketing pilots (#33)"
+    },
+    {
+      "route": "guides/migration/sdk-docs",
+      "title": "Five SDK documentation pilots (#34)"
+    },
+    {
+      "route": "guides/website",
+      "title": "Documentation website and migration shell · HIG 0.1.0"
+    },
+    {
+      "route": "components/button",
+      "title": "Button"
+    },
+    {
+      "route": "components/icon-button",
+      "title": "IconButton"
+    },
+    {
+      "route": "components/link",
+      "title": "Link"
+    },
+    {
+      "route": "components/text",
+      "title": "Text"
+    },
+    {
+      "route": "components/heading",
+      "title": "Heading"
+    },
+    {
+      "route": "components/stack",
+      "title": "Stack"
+    },
+    {
+      "route": "components/inline",
+      "title": "Inline"
+    },
+    {
+      "route": "components/surface",
+      "title": "Surface"
+    },
+    {
+      "route": "components/card",
+      "title": "Card"
+    },
+    {
+      "route": "components/separator",
+      "title": "Separator"
+    },
+    {
+      "route": "components/field",
+      "title": "Field"
+    },
+    {
+      "route": "components/label",
+      "title": "Label"
+    },
+    {
+      "route": "components/input",
+      "title": "Input"
+    },
+    {
+      "route": "components/text-area",
+      "title": "TextArea"
+    },
+    {
+      "route": "components/amount-input",
+      "title": "AmountInput"
+    },
+    {
+      "route": "components/search-input",
+      "title": "SearchInput"
+    },
+    {
+      "route": "components/checkbox",
+      "title": "Checkbox"
+    },
+    {
+      "route": "components/switch",
+      "title": "Switch"
+    },
+    {
+      "route": "components/radio-group",
+      "title": "RadioGroup"
+    },
+    {
+      "route": "components/segmented-control",
+      "title": "SegmentedControl"
+    },
+    {
+      "route": "components/select",
+      "title": "Select"
+    },
+    {
+      "route": "components/slider",
+      "title": "Slider"
+    },
+    {
+      "route": "components/dialog",
+      "title": "Dialog"
+    },
+    {
+      "route": "components/alert-dialog",
+      "title": "AlertDialog"
+    },
+    {
+      "route": "components/sheet",
+      "title": "Sheet"
+    },
+    {
+      "route": "components/menu",
+      "title": "Menu"
+    },
+    {
+      "route": "components/popover",
+      "title": "Popover"
+    },
+    {
+      "route": "components/tooltip",
+      "title": "Tooltip"
+    },
+    {
+      "route": "components/tabs",
+      "title": "Tabs"
+    },
+    {
+      "route": "components/accordion",
+      "title": "Accordion"
+    },
+    {
+      "route": "components/breadcrumb",
+      "title": "Breadcrumb"
+    },
+    {
+      "route": "components/navigation",
+      "title": "Navigation"
+    },
+    {
+      "route": "components/pagination",
+      "title": "Pagination"
+    },
+    {
+      "route": "components/search",
+      "title": "Search"
+    },
+    {
+      "route": "components/badge",
+      "title": "Badge"
+    },
+    {
+      "route": "components/alert",
+      "title": "Alert"
+    },
+    {
+      "route": "components/callout",
+      "title": "Callout"
+    },
+    {
+      "route": "components/toast",
+      "title": "Toast"
+    },
+    {
+      "route": "components/progress",
+      "title": "Progress"
+    },
+    {
+      "route": "components/spinner",
+      "title": "Spinner"
+    },
+    {
+      "route": "components/skeleton",
+      "title": "Skeleton"
+    },
+    {
+      "route": "components/empty-state",
+      "title": "EmptyState"
+    },
+    {
+      "route": "components/avatar",
+      "title": "Avatar"
+    },
+    {
+      "route": "components/status-indicator",
+      "title": "StatusIndicator"
+    },
+    {
+      "route": "components/number-readout",
+      "title": "NumberReadout"
+    },
+    {
+      "route": "components/animated-number-readout",
+      "title": "AnimatedNumberReadout"
+    },
+    {
+      "route": "components/usd",
+      "title": "Usd"
+    },
+    {
+      "route": "components/percent",
+      "title": "Percent"
+    },
+    {
+      "route": "components/metric",
+      "title": "Metric"
+    },
+    {
+      "route": "components/stat",
+      "title": "Stat"
+    },
+    {
+      "route": "components/list",
+      "title": "List"
+    },
+    {
+      "route": "components/row",
+      "title": "Row"
+    },
+    {
+      "route": "components/table",
+      "title": "Table"
+    },
+    {
+      "route": "components/brand-mark",
+      "title": "BrandMark"
+    },
+    {
+      "route": "components/check-icon",
+      "title": "CheckIcon"
+    },
+    {
+      "route": "components/h-i-g-provider",
+      "title": "HIGProvider"
+    },
+    {
+      "route": "components/market-row",
+      "title": "MarketRow"
+    },
+    {
+      "route": "components/balance-card",
+      "title": "BalanceCard"
+    },
+    {
+      "route": "components/trade-entry",
+      "title": "TradeEntry"
+    },
+    {
+      "route": "components/install-command",
+      "title": "InstallCommand"
+    },
+    {
+      "route": "components/code-window",
+      "title": "CodeWindow"
+    },
+    {
+      "route": "components/marketing-hero",
+      "title": "MarketingHero"
+    },
+    {
+      "route": "components/activity-list",
+      "title": "ActivityList"
+    },
+    {
+      "route": "components/price-chart",
+      "title": "PriceChart"
+    }
+  ],
+  "catalog": [
+    {
+      "name": "Button",
+      "route": "components/button",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ]
+    },
+    {
+      "name": "IconButton",
+      "route": "components/icon-button",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Link",
+      "route": "components/link",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Text",
+      "route": "components/text",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Heading",
+      "route": "components/heading",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Stack",
+      "route": "components/stack",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Inline",
+      "route": "components/inline",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Surface",
+      "route": "components/surface",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Card",
+      "route": "components/card",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Separator",
+      "route": "components/separator",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Field",
+      "route": "components/field",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ]
+    },
+    {
+      "name": "Label",
+      "route": "components/label",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Input",
+      "route": "components/input",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ]
+    },
+    {
+      "name": "TextArea",
+      "route": "components/text-area",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "AmountInput",
+      "route": "components/amount-input",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "error"
+      ]
+    },
+    {
+      "name": "SearchInput",
+      "route": "components/search-input",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Checkbox",
+      "route": "components/checkbox",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Switch",
+      "route": "components/switch",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "RadioGroup",
+      "route": "components/radio-group",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "SegmentedControl",
+      "route": "components/segmented-control",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Select",
+      "route": "components/select",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Slider",
+      "route": "components/slider",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Dialog",
+      "route": "components/dialog",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "AlertDialog",
+      "route": "components/alert-dialog",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Sheet",
+      "route": "components/sheet",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Menu",
+      "route": "components/menu",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Popover",
+      "route": "components/popover",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "route": "components/tooltip",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Tabs",
+      "route": "components/tabs",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Accordion",
+      "route": "components/accordion",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Breadcrumb",
+      "route": "components/breadcrumb",
+      "nativeSupport": "alternative",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Navigation",
+      "route": "components/navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Pagination",
+      "route": "components/pagination",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Search",
+      "route": "components/search",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "Badge",
+      "route": "components/badge",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Alert",
+      "route": "components/alert",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ]
+    },
+    {
+      "name": "Callout",
+      "route": "components/callout",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Toast",
+      "route": "components/toast",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Progress",
+      "route": "components/progress",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy"
+      ]
+    },
+    {
+      "name": "Spinner",
+      "route": "components/spinner",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "route": "components/skeleton",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "EmptyState",
+      "route": "components/empty-state",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Avatar",
+      "route": "components/avatar",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "StatusIndicator",
+      "route": "components/status-indicator",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ]
+    },
+    {
+      "name": "NumberReadout",
+      "route": "components/number-readout",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "AnimatedNumberReadout",
+      "route": "components/animated-number-readout",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "Usd",
+      "route": "components/usd",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "Percent",
+      "route": "components/percent",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "Metric",
+      "route": "components/metric",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Stat",
+      "route": "components/stat",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "List",
+      "route": "components/list",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "Row",
+      "route": "components/row",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Table",
+      "route": "components/table",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "BrandMark",
+      "route": "components/brand-mark",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "CheckIcon",
+      "route": "components/check-icon",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "HIGProvider",
+      "route": "components/h-i-g-provider",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "MarketRow",
+      "route": "components/market-row",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "BalanceCard",
+      "route": "components/balance-card",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty"
+      ]
+    },
+    {
+      "name": "TradeEntry",
+      "route": "components/trade-entry",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "error"
+      ]
+    },
+    {
+      "name": "InstallCommand",
+      "route": "components/install-command",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "CodeWindow",
+      "route": "components/code-window",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "MarketingHero",
+      "route": "components/marketing-hero",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "ActivityList",
+      "route": "components/activity-list",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "PriceChart",
+      "route": "components/price-chart",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ]
+    }
+  ]
+}

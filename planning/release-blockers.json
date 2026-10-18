@@ -26,7 +26,7 @@
   {
     "id": "physical-devices",
     "owner": "HIG/native/haptic maintainers",
-    "reason": "iOS Simulator and Android emulator runs are recorded in evidence/native-sim/. Physical iOS/Android, VoiceOver/TalkBack with real input, display colour/font, audible and tactile observations are not available.",
+    "reason": "Simulator/emulator evidence remains separate. A paired iPhone 17 Pro and iPad Pro 13-inch (M4) are available as of 2026-10-18; no physical Android is connected. An isolated unsigned gallery uses a unique bundle ID; no valid gallery-specific provisioning profile covers these devices. No installation, account provisioning or physical certification has occurred. Real input, speech, display, audible and tactile observations remain pending.",
     "status": "blocked",
     "tracking": "https://github.com/bloxwap/hig/issues/55",
     "reviewBy": "2027-01-15"
