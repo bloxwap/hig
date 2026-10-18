@@ -6,7 +6,7 @@ Every GitHub Actions job in this repository runs on self-hosted Apple silicon Ma
 runs-on: [self-hosted, macOS, ARM64]
 ```
 
-There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP` (each job sets `TMPDIR` to `${{ runner.temp }}`; workflow-level `env` cannot use the `runner` context).
+There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
 
 ## Required on every runner
 

@@ -22,12 +22,13 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 15
     env:
-      TMPDIR: ${{ runner.temp }}
       NEXT_PUBLIC_BASE_PATH: /hig
       HIG_DOCS_ORIGIN: https://bloxwap.github.io
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
@@ -52,8 +53,6 @@ jobs:
     needs: build
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 10
-    env:
-      TMPDIR: ${{ runner.temp }}
     permissions:
       pages: write
       id-token: write
