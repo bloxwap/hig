@@ -89,6 +89,10 @@
     "./animated-number": {
       "types": "./dist/animated-number.d.ts",
       "import": "./dist/animated-number.js"
+    },
+    "./gesture-sheet": {
+      "types": "./dist/gesture-sheet.d.ts",
+      "import": "./dist/gesture-sheet.js"
     }
   },
   "peerDependencies": {
@@ -97,7 +101,8 @@
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-popover": "^1.1.15",
-    "@radix-ui/react-tooltip": "^1.2.8"
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "vaul": "^1.1.2"
   },
   "peerDependenciesMeta": {
     "@radix-ui/react-dialog": {
@@ -110,6 +115,9 @@
       "optional": true
     },
     "@radix-ui/react-tooltip": {
+      "optional": true
+    },
+    "vaul": {
       "optional": true
     }
   },

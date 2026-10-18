@@ -1,6 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {notificationDelta} from '@bloxwap/hig-contracts/announcements';
-import {ActivityIndicator,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType} from 'react-native';
+import {ActivityIndicator,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType,type ViewProps,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from '@bloxwap/hig-contracts';
 import {Button} from './button.js';
@@ -69,6 +69,22 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
 export function Spinner({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){const {locale,messages}=useHIG();return <View accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}><Text>{label}{value===undefined?'…':` ${value}/${max}`}</Text></View>;}
 export function Skeleton({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();return <View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10}}/>;}
-export function EmptyState({title,description,action}: {title:string;description:string;action?:React.ReactNode}){return <Surface><Heading>{title}</Heading><Text>{description}</Text>{action}</Surface>;}
+export interface EmptyStateProps extends Omit<ViewProps,'children'> {
+ title:string;
+ description?:string;
+ action?:React.ReactNode;
+ /** Decorative content, hidden from accessibility; the title and description supply its meaning. */
+ illustration?:React.ReactNode;
+ titleStyle?:TextProps['style'];
+ descriptionStyle?:TextProps['style'];
+ /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */
+ maxFontSizeMultiplier?:number;
+}
+export function EmptyState({title,description,action,illustration,titleStyle,descriptionStyle,maxFontSizeMultiplier,...props}:EmptyStateProps){return <Surface {...props}>
+ {illustration!=null&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{illustration}</View>}
+ <Heading style={titleStyle} maxFontSizeMultiplier={maxFontSizeMultiplier}>{title}</Heading>
+ {description?<Text style={descriptionStyle} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
+ {action}
+</Surface>;}
 export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<Text accessibilityLabel={name}>{name.slice(0,2)}</Text>;}
 export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const {messages}=useHIG();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;return <Text>{label}: {text}</Text>;}

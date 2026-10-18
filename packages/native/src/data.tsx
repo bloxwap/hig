@@ -9,9 +9,9 @@ export type NumberTone='text'|'positive'|'negative'|'muted';
 /** Typography only: semantic tone owns colour and numeric glyphs remain tabular. */
 export type NumberReadoutStyle=Pick<TextStyle,'fontFamily'|'fontSize'|'fontWeight'|'lineHeight'|'letterSpacing'|'textAlign'>;
 const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
-export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;stale?:boolean;label?:string;/** Explicit semantic meaning; sign alone never chooses the tone. */tone?:NumberTone;/** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */style?:StyleProp<NumberReadoutStyle>;testID?:string;/** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */maxFontSizeMultiplier?:number}
-export function NumberReadout({value,options,stale,label,tone='text',style,testID,maxFontSizeMultiplier}:NumberProps){
- const {locale,messages}=useHIG();const colors=useColors();const reading=formatNumber(value,locale,options);const suffix=stale?` ${messages.stale??en.stale}`:'';
+export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;/** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */formattedValue?:string;stale?:boolean;label?:string;/** Explicit semantic meaning; sign alone never chooses the tone. */tone?:NumberTone;/** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */style?:StyleProp<NumberReadoutStyle>;testID?:string;/** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */maxFontSizeMultiplier?:number}
+export function NumberReadout({value,options,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier}:NumberProps){
+ const {locale,messages}=useHIG();const colors=useColors();const reading=Number.isFinite(value)&&formattedValue?formattedValue:formatNumber(value,locale,options);const suffix=stale?` ${messages.stale??en.stale}`:'';
  // Keep the same boundary for untyped hosts and registered/array styles: no raw colour, glyph or layout overrides.
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key)));
  const color=colors[tone==='positive'||tone==='negative'||tone==='muted'?tone:'text'];

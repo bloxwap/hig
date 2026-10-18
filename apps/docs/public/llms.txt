@@ -51,7 +51,7 @@ Source: docs/architecture/platform-matrix.md
 | Native colour roles | CSS severity/data attributes | `Switch` `tone`, `Alert` `severity`/`tone` take token roles only; raw colours fall back. The Android Switch thumb uses the `text` token instead of the app theme accent | native Jest (#67); iOS Simulator and Android emulator captures (`evidence/native-sim/issue-67-71/`) |
 | Native colour space | CSS sRGB with P3 in `@supports` | `HIGProvider colorSpace` `srgb` (default) or `display-p3`; every component paints from `useColors()`; iOS `display-p3` uses `nativeColors.iosDisplayP3`, Android and web stay sRGB; no raw colours | native Jest (#93: P3 values for action/warning/negative/info, direct-import guard); iOS Simulator capture as a Display P3 host (`evidence/native-sim/issue-93/`); physical display pending (#55) |
 | Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser; Android Slider adds `ACTION_SET_PROGRESS` through the autolinked `HIGAdjustableView` (plain View without native linking) | contract tests; Android emulator UiAutomation (#71): set-progress listed, 80 applied once, snapped/clamped, absent and rejected while disabled; iOS Simulator increment/decrement unchanged (`evidence/native-sim/issue-67-71/`) |
-| Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
+| Dialog/sheet/menu | Radix scoped primitives; optional Vaul GestureSheet entry | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape plus real Chromium/WebKit sheet drag, scroll and snap checks; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
 | Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
 | Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
@@ -62,7 +62,7 @@ Source: docs/architecture/platform-matrix.md
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Vaul is isolated behind the web gesture-sheet entry; Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the native gesture-sheet entry. Base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 
 ## CI runners · HIG 0.1.0
@@ -279,6 +279,8 @@ Native readouts, including `Usd`, `Percent`, and `AnimatedNumberReadout`, accept
 
 For a branded 20 px equity pill, use `<NumberReadout value={equity} label="Equity" testID="equity" style={{fontFamily:'BloxwapMonoSemiBold',fontSize:20,lineHeight:28}} />` with a registered host font. For signed PnL, add `tone={pnl < 0 ? 'negative' : 'positive'}` and `options={{signDisplay:'always'}}`. The same props on `AnimatedNumberReadout` style and identify the final text reading; opacity motion stays on its wrapper.
 
+Native readouts also accept `formattedValue` for a host's existing static display format, such as `<NumberReadout value={90} formattedValue="01:30" label="Time remaining" />`. The host owns this opaque display text and its localization; never parse it for submission or calculations. A finite numeric `value` is still required: `null`, `undefined`, `NaN`, and infinities display the canonical unknown dash even if text is supplied. An empty string falls back to the usual locale and `options` formatting. Stale text, the accessible label, semantic tone, and tabular typography still apply to the resulting reading. Existing moving digit reels need an explicit motion decision before switching to a static readout.
+
 Web tables keep a visible caption and ordinary headers by default. Set `captionHidden` when a visible section already names the table: the caption remains its accessible name. `stickyHeader` pins header cells within a bounded scroll region; give the region a height through `style` or `className`. `tableClassName` styles the table itself. Sorting still belongs to the host, and sort buttons retain native keyboard activation and `aria-sort`.
 
 ```tsx
@@ -374,6 +376,7 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 | `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](../foundations/localization.md#built-in-component-strings). |
 | Web host composition | `title` remains required; `titleHidden` keeps its accessible name when the host renders a visible heading in the card. `description` is optional; `descriptionHidden` keeps supplied supporting text available to assistive technology. `contentRef` reaches the actual modal element. `contentProps` accepts layout classes/styles, DOM attributes and Radix focus/Escape/outside events; HIG retains ownership of the dialog id, role, naming associations, locale, direction, children and mounting behavior. Owned props and `dangerouslySetInnerHTML` are filtered at runtime for JavaScript callers too; the caller's object is left unchanged. |
 | Web close control | Omit `closeButton` for the current translated action, pass a ref-capable button element for a custom control, or pass `null` when the host supplies its own explicit dismissal action. Custom controls are composed with Radix Close; disabled buttons and `event.preventDefault()` retain their normal behavior. `closeLabel`/`cancelLabel` label only the default action. |
+| Optional web `GestureSheet` | A separate Vaul modal root owns real drag, snap points, scroll handoff and focus scope. The Dialog title/description, trigger, close control and `contentRef` contracts apply. `backendProps` retains typed Vaul flags and snap-point options; `contentProps` retains host layout, DOM data attributes, focus/Escape/outside events and pointer capture events. `handleProps`/`handleRef` customize the actual backend handle; `handle={false}` omits it. `overlayProps` observes outside-pointer actions or retains host overlay styling. |
 | Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref (Menu and Select pass their own trigger). |
 | `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
 | Optional native `GestureSheet` | `contentMode='default'` scrolls the title, optional description, children and Close action. `contentMode='custom'` provides an unpadded, full-height content container; the host owns its header, back/close actions, safe-area content padding and scrolling. `title` remains required as the accessible name. Pass `titleRef` attached to the caller's accessible heading to focus it on open; without it, the sheet focuses its visually hidden title. |
@@ -430,9 +433,62 @@ const titleRef = useRef<Text>(null);
 
 Here `Text` and `View` are React Native types/components, and the host supplies the card state and its own accessible back/close labels. Custom content can use its own Gorhom scrollable or list without an outer scroll view. `snapPoints` may change while open: the current detent index is retained, or clamped to the highest remaining index if its detent was removed. Detent changes keep the sheet mounted and do not repeat open focus. Keep at least one sorted snap point; `initialIndex` applies to the next presentation. Focus return, Android Back, reduced-motion and dismissible backdrop behavior apply in both content modes.
 
+For content-sized native cards, set `enableDynamicSizing` and omit `snapPoints`. This chooses one backend-measured detent rather than adding a competing fixed point. In custom mode HIG uses Gorhom's `BottomSheetView` to report intrinsic layout; it keeps a plain full-height `View` in fixed mode so nested scrollable registration stays with the caller. Choose the sizing mode for the presentation and avoid `flex: 1` or a full-height constraint on content that should determine its own height. Bound a long card's own scroll view. Default anatomy continues to use the backend scroll view. Mixed headers/footers and nested registered Gorhom scrollables compete for the backend's content-height measurement: their scroll content can replace the whole card height. Use host-measured fixed snap points for that composition. A content-sized card can instead bound a plain React Native `ScrollView` and set `enableContentPanningGesture={false}`, retaining the handle gesture and its own scroll gesture. This follows [Gorhom dynamic sizing](https://gorhom.dev/react-native-bottom-sheet/dynamic-sizing).
+
+```tsx
+<GestureSheet
+  open={open}
+  onOpenChange={setOpen}
+  title='Size and leverage'
+  contentMode='custom'
+  enableDynamicSizing
+  maxDynamicContentSize={availableHeight}
+>
+  <View>{contentSizedCard}</View>
+</GestureSheet>
+```
+
+`maxDynamicContentSize` is an optional finite positive ceiling in native points; the backend container height is the default. The dynamic detent uses index `0`. Changing content or the ceiling keeps the presentation and card state; height updates do not repeat open focus. A fixed sheet still requires a nonempty `snapPoints` list. `enableContentPanningGesture` passes through to the backend, allowing hosts with an independently scrolling list to disable content panning without changing their close/Back actions.
+
 Host card stacks may also supply `onDismiss` to clear retained card state only after an accepted close settles. Rejected closes and interrupted reopenings do not call it. `onHardwareBackPress` can consume Android Back (`true`) or defer to the host's nested-card dispatcher (`false`); omitting it keeps the default dismissal behavior.
 
 `topInset` and `bottomInset` default to safe-area values; use `0` for an intentional flush edge. `handleComponent` (including `null` for an overlay handle), `handleStyle`, `handleIndicatorStyle`, `backgroundComponent` and `backgroundStyle` retain host geometry and decoration. The backend measures the rendered handle. Use `useColors()` in custom backgrounds. `modalRef` exposes the optional backend's imperative motion methods; hosts must keep controlled `open` in sync with `present()`/`dismiss()`. Focus return and settled `onDismiss` remain controlled by the HIG wrapper. `animateOnMount`, `animationConfigs` and `backdropComponent` retain host entry motion and backdrop styling; the reduced-motion mapping still applies. A custom backdrop must honor the host dismissal policy.
+
+Keyboard policies are typed backend options: `keyboardBehavior`, `keyboardBlurBehavior` and `android_keyboardInputMode`. Defaults remain HIG's `interactive`, `restore` and `adjustResize`. A host retaining an existing Gorhom policy can explicitly pass `none` for blur and `adjustPan` on Android. See [Gorhom keyboard handling](https://gorhom.dev/react-native-bottom-sheet/keyboard-handling).
+
+For a screen-level drawer that must prepare and retain its native children while closed, choose `presentation='inline'`. HIG uses the public persistent `BottomSheet` backend; the default remains `presentation='modal'` with `BottomSheetModal`. Inline content stays mounted at index `-1`, hidden from accessibility and touch, and registers no Back listener while closed. Opening and reopening keep child/controller/list state. Rejected closes restore the last open detent; accepted closes return focus and call `onDismiss` once after settling. Use `sheetRef` for the inline backend's actual `expand`, `close` and `snapToIndex` methods; `modalRef` is only available in modal mode and exposes `present`/`dismiss`. Imperative calls must keep controlled `open` in sync. `onChange` observes backend index/position/type after HIG updates its index, focus and close request; it cannot replace those handlers. This lets a host change its animation policy after the opening detent settles. `containerStyle` retains sibling overlay order. Hosts own screen-level backdrop/container layering for inline presentation. No modal portal provider is required for inline sheets.
+
+## Optional web gesture backend
+
+Install `vaul ^1.1.2` and import `GestureSheet` from `@bloxwap/hig-react/gesture-sheet`. Core `overlay`, Button and overlay-free recipes do not import or install Vaul. The backend supplies its own motion CSS when loaded; HIG's explicitly imported component CSS supplies scoped surface, text, geometry and reduced-motion rules. See the official [Vaul anatomy and API](https://vaul.emilkowal.ski/api) and the verified [1.1.2 source](https://github.com/emilkowalski/vaul/blob/v1.1.2/src/index.tsx).
+
+```tsx
+import {GestureSheet} from '@bloxwap/hig-react/gesture-sheet';
+
+<GestureSheet
+  open={open}
+  onOpenChange={(next) => { if (next || !pending) setOpen(next); }}
+  title={t('markets')}
+  titleHidden
+  contentMode='custom'
+  contentRef={panelRef}
+  contentProps={{ className: 'host-market-card', style: { bottom: viewportBottom, maxHeight: availableHeight } }}
+  backendProps={{ handleOnly: false, repositionInputs: false, shouldScaleBackground: true, dismissible: !pending }}
+  handleProps={{ style: { width: 100 }, preventCycle: true }}
+  closeButton={null}
+>
+  <h2>{t('markets')}</h2>
+  {hostHeaderAndScrollableContent}
+</GestureSheet>
+```
+
+`contentMode='default'` provides padded, scrolling anatomy. `custom` leaves padding and scrolling with the host. The required accessible title remains available when hidden; render a real visible heading when the host card needs one. `closeButton={null}` means the host must retain an explicit accessible close/Back action. `handleOnly=true` requires the actual handle for dragging. Handle styles, classes and capture events are customizable; HIG filters replacements for the backend's handle pointer/click handlers, hidden state and reserved `data-vaul-*` attributes. Frozen caller prop objects remain unchanged.
+
+Backend defaults remain Vaul's: `handleOnly=false`, `repositionInputs=true`, `shouldScaleBackground=false`, `dismissible=true` and `autoFocus=false`. Retain existing host flags explicitly. With `autoFocus=false`, hosts may use `contentProps.onOpenAutoFocus` to focus their heading/search control without requesting a software keyboard automatically. `shouldScaleBackground=true` requires the host's `[data-vaul-drawer-wrapper]` around the page. Physical `backendProps.direction` is independent of the provider's text direction. Snap points retain Vaul's viewport geometry; a full-height snapping panel should supply its own full-height layout. The modal root stays controlled and modal; there is no second nested HIG Dialog root.
+
+The host can reject `onOpenChange(false)` while pending; HIG restores Vaul's last resting motion styles after a rejected drag without remounting card state. Use `dismissible=false` as well when pending should prevent dismissal attempts altogether. Backend `onAnimationEnd` is observed only when its reported state still matches controlled `open`, so rejected closes and stale opposite-state callbacks cannot clear retained card state. Programmatic state changes keep the backend's callback behavior. Reduced motion removes the sheet/overlay animation and transition; drag and snap selection still work. Viewport measurements, editable-input blur policy, animated content-height utilities, safe-area padding and product-specific keyboard accessory reserves stay in the host.
+
+`scripts/gesture-sheet-browser-smoke.mjs` exercises the real Vaul backend in Chromium and WebKit: drag/scroll handoff, handle-only drag, controlled veto with retained input identity, nondismissible state, snap expansion, focus trap/Escape/return, viewport resizing, host styles/refs and reduced motion. Evidence in `evidence/web-gesture-sheet/` records the exact source baseline and dirty state. Desktop viewport resizing does not certify physical mobile software-keyboard behavior; that remains a host/device observation.
 
 ## When to use and examples
 
@@ -579,11 +635,27 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 
 | Component | Key props and behavior |
 | --- | --- |
+| `Badge` | Quiet label; web adds explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`), standard span props and a forwarded span ref. The neutral default retains its appearance. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
 | `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the accent edge from a token role on web and native: info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
 | `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own edge colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides visible Dismiss text; its accessible name contains that text. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |
+
+Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy. Its `description` is optional; omitted or empty text leaves no blank description node. Pass decorative `illustration` content before the heading; HIG hides the whole illustration subtree from VoiceOver/TalkBack navigation while keeping the heading and action accessible. The host controls the illustration's dimensions and spacing. Root `ViewProps`, including `style`, `testID` and layout events, pass to the Surface. `titleStyle` and `descriptionStyle` reach the actual text nodes; `maxFontSizeMultiplier` caps both, or inherits the provider policy when omitted. Text keeps the provider palette and heading semantics unless the host explicitly styles it.
+
+```tsx
+<EmptyState
+  title={t('noMarkets')}
+  illustration={<BrandMark width={64} height={64} />}
+  style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', padding: 0, gap: 12 }}
+  titleStyle={{ fontSize: 20, lineHeight: 28, textAlign: 'center' }}
+  maxFontSizeMultiplier={2}
+  action={<Button onPress={clearFilters}>{t('browseAll')}</Button>}
+/>
+```
+
+The mark and clear-filter action remain host-owned. `tests/native/empty-state.test.cjs` verifies default anatomy, omitted descriptions, decorative accessibility metadata, real text/root props and accepted action delivery; these wiring checks are not physical-device accessibility certification.
 
 ## When to use and examples
 
@@ -1646,6 +1718,8 @@ These are the rules that `@bloxwap/hig-react/css` applied to the whole page befo
 ### Radix overlay peers and Fumadocs
 
 The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig-react/overlay`, `@bloxwap/hig-react/recipes` or `@bloxwap/hig-react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
+
+The separate optional `@bloxwap/hig-react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
 
 ## SSR and Next client boundaries
 

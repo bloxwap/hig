@@ -106,6 +106,30 @@
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
       },
+      "GestureSheetBackendProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetBackendProps = HostBackendProps<BackendProps>;"
+      },
+      "GestureSheetContentProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetContentProps = DialogContentProps & {\n    [key: `data-${string}`]: string | number | boolean | undefined;\n};"
+      },
+      "GestureSheetHandleProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetHandleProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Handle>, 'children' | 'aria-hidden' | 'dangerouslySetInnerHTML' | 'onClick' | 'onPointerDown' | 'onPointerMove' | 'onPointerCancel'>;"
+      },
+      "GestureSheetOverlayProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetOverlayProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Overlay>, 'children' | 'asChild' | 'forceMount' | 'dangerouslySetInnerHTML'>;"
+      },
+      "GestureSheetProps": {
+        "entry": "gesture-sheet",
+        "signature": "export interface GestureSheetProps extends Omit<DialogProps, 'contentProps'> {\n    contentProps?: GestureSheetContentProps;\n    /** Backend defaults are retained, including autoFocus=false and repositionInputs=true. */\n    backendProps?: GestureSheetBackendProps;\n    /** Default anatomy pads and scrolls the card; custom anatomy leaves layout and scrolling to the host. */\n    contentMode?: 'default' | 'custom';\n    /** The real backend drag handle is included by default. */\n    handle?: boolean;\n    handleProps?: GestureSheetHandleProps;\n    handleRef?: React.Ref<HTMLDivElement>;\n    overlayProps?: GestureSheetOverlayProps;\n}"
+      },
+      "GestureSheet": {
+        "entry": "gesture-sheet",
+        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
       "Tabs": {
         "entry": "navigation",
         "signature": "export declare function Tabs({ label, items, value, defaultValue, onValueChange }: {\n    label: string;\n    items: readonly {\n        value: string;\n        label: string;\n        content: React.ReactNode;\n        disabled?: boolean;\n    }[];\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (v: string) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
@@ -250,9 +274,17 @@
         "entry": "selection",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (value: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "BadgeTone": {
+        "entry": "status",
+        "signature": "export type BadgeTone = 'neutral' | 'positive' | 'negative' | 'warning' | 'info';"
+      },
+      "BadgeProps": {
+        "entry": "status",
+        "signature": "export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {\n    tone?: BadgeTone;\n}"
+      },
       "Badge": {
         "entry": "status",
-        "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare const Badge: React.ForwardRefExoticComponent<BadgeProps & React.RefAttributes<HTMLSpanElement>>;"
       },
       "AlertSeverity": {
         "entry": "status",
@@ -378,11 +410,11 @@
       },
       "NumberProps": {
         "entry": "data",
-        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string; /** Explicit semantic meaning; sign alone never chooses the tone. */\n    tone?: NumberTone; /** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */\n    style?: StyleProp<NumberReadoutStyle>;\n    testID?: string; /** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */\n    maxFontSizeMultiplier?: number;\n}"
+        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions; /** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */\n    formattedValue?: string;\n    stale?: boolean;\n    label?: string; /** Explicit semantic meaning; sign alone never chooses the tone. */\n    tone?: NumberTone; /** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */\n    style?: StyleProp<NumberReadoutStyle>;\n    testID?: string; /** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */\n    maxFontSizeMultiplier?: number;\n}"
       },
       "NumberReadout": {
         "entry": "data",
-        "signature": "export declare function NumberReadout({ value, options, stale, label, tone, style, testID, maxFontSizeMultiplier }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function NumberReadout({ value, options, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Usd": {
         "entry": "data",
@@ -438,11 +470,11 @@
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
-        "signature": "export interface GestureSheetProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    /** Default anatomy scrolls the title, description, content and Close action. Custom content owns layout, scrolling and dismissal actions. */\n    contentMode?: 'default' | 'custom';\n    /** In custom mode, attach to the caller-rendered accessible title. Without it, a visually hidden title receives open focus. */\n    titleRef?: React.RefObject<View | RNText | null>;\n    /** Sorted increasing detents; may change while open. The current index is retained, or clamped when a detent is removed. */\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    dismissible?: boolean;\n    returnFocusRef?: React.RefObject<View | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n    /** Called once after an accepted dismissal settles. Rejected or interrupted closes do not clear host card state. */\n    onDismiss?: () => void;\n    /** Return true to consume Android Back, or false to defer to another host BackHandler. Omit for default sheet dismissal. */\n    onHardwareBackPress?: () => boolean;\n    /** Host geometry overrides; defaults to the real safe-area insets. Zero supports flush card stacks. */\n    topInset?: number;\n    bottomInset?: number;\n    /** Optional backend handle. Imperative present/dismiss calls must keep controlled open state in sync. */\n    modalRef?: React.Ref<BottomSheetModal>;\n    /** Host-drawn handle and background slots. Use useColors() for host surfaces. */\n    handleComponent?: BottomSheetModalProps['handleComponent'];\n    handleStyle?: BottomSheetModalProps['handleStyle'];\n    handleIndicatorStyle?: BottomSheetModalProps['handleIndicatorStyle'];\n    backgroundComponent?: BottomSheetModalProps['backgroundComponent'];\n    backgroundStyle?: BottomSheetModalProps['backgroundStyle'];\n    /** Optional host animation and backdrop policies; HIG reduced-motion mapping remains applied. */\n    animateOnMount?: BottomSheetModalProps['animateOnMount'];\n    animationConfigs?: BottomSheetModalProps['animationConfigs'];\n    backdropComponent?: BottomSheetModalProps['backdropComponent'];\n}"
+        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Modal is the default. Inline retains the screen-level backend and its child state while closed. */\n{\n    presentation?: 'modal';\n    modalRef?: React.Ref<BottomSheetModal>;\n    sheetRef?: never;\n} | {\n    presentation: 'inline';\n    sheetRef?: React.Ref<BottomSheet>;\n    modalRef?: never;\n}) & (\n/** Fixed sizing keeps sorted increasing detents. Changes retain the current index or clamp a removed detent. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly (number | `${number}%`)[];\n}\n/** Content sizing uses one backend-measured detent, without competing fixed snap points. */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n});"
       },
       "GestureSheet": {
         "entry": "gesture-sheet",
-        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, contentMode, titleRef, snapPoints, initialIndex, dismissible, returnFocusRef, closeLabel, onDismiss, onHardwareBackPress, topInset, bottomInset, modalRef, handleComponent, handleStyle, handleIndicatorStyle, backgroundComponent, backgroundStyle, animateOnMount, animationConfigs, backdropComponent }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, contentMode, titleRef, presentation, sheetRef, snapPoints, enableDynamicSizing, maxDynamicContentSize, enableContentPanningGesture, keyboardBehavior, keyboardBlurBehavior, android_keyboardInputMode, initialIndex, dismissible, returnFocusRef, closeLabel, onDismiss, onChange, onHardwareBackPress, topInset, bottomInset, modalRef, handleComponent, handleStyle, handleIndicatorStyle, backgroundComponent, backgroundStyle, containerStyle, animateOnMount, animationConfigs, backdropComponent }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -644,9 +676,13 @@
         "entry": "status",
         "signature": "export declare function Skeleton({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "EmptyStateProps": {
+        "entry": "status",
+        "signature": "export interface EmptyStateProps extends Omit<ViewProps, 'children'> {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    /** Decorative content, hidden from accessibility; the title and description supply its meaning. */\n    illustration?: React.ReactNode;\n    titleStyle?: TextProps['style'];\n    descriptionStyle?: TextProps['style'];\n    /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */\n    maxFontSizeMultiplier?: number;\n}"
+      },
       "EmptyState": {
         "entry": "status",
-        "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function EmptyState({ title, description, action, illustration, titleStyle, descriptionStyle, maxFontSizeMultiplier, ...props }: EmptyStateProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Avatar": {
         "entry": "status",

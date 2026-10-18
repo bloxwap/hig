@@ -32,6 +32,15 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px); }
 .hig-backdrop { position:fixed;inset:0;background:#000b;z-index:40; }
 /* Centred with physical left: the content carries the provider dir, and inset-inline-start would flip to right:50% in RTL while the translate stays negative. */
 .hig-dialog { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:min(560px,calc(100vw - 32px));width:100%;max-height:calc(100dvh - 32px);overflow:auto;padding:24px;border-radius:14px;background:var(--hig-surface);color:var(--hig-text);z-index:41;display:flex;flex-direction:column;gap:12px; }
+.hig-gesture-sheet { position:fixed;z-index:41;display:flex;flex-direction:column;max-height:95dvh;background:var(--hig-surface);color:var(--hig-text);outline:none; }
+.hig-gesture-sheet[data-vaul-drawer-direction='bottom'] { inset:auto 0 0;border-radius:14px 14px 0 0; }
+.hig-gesture-sheet[data-vaul-drawer-direction='top'] { inset:0 0 auto;border-radius:0 0 14px 14px; }
+.hig-gesture-sheet[data-vaul-drawer-direction='left'] { inset:0 auto 0 0;width:min(420px,95vw);max-height:none;border-radius:0 14px 14px 0; }
+.hig-gesture-sheet[data-vaul-drawer-direction='right'] { inset:0 0 0 auto;width:min(420px,95vw);max-height:none;border-radius:14px 0 0 14px; }
+.hig-gesture-sheet[data-hig-content-mode='default'] { overflow:auto;gap:12px;padding:24px; }
+.hig-gesture-sheet[data-hig-content-mode='custom'] { padding:0; }
+.hig-gesture-handle[data-vaul-handle] { flex:none;align-self:center;background:var(--hig-muted);margin-block:4px 12px; }
+.hig-gesture-sheet[data-hig-motion='reduced'],.hig-gesture-backdrop[data-hig-motion='reduced'] { animation:none!important;transition:none!important; }
 .hig-popover { max-width:min(360px,calc(100vw - 32px));background:var(--hig-nested);color:var(--hig-text);padding:12px;border-radius:14px;z-index:50; }
 .hig-menu-item { min-height:48px;padding:12px;border-radius:8px;cursor:pointer; }
 .hig-menu-item[data-highlighted] { background:var(--hig-surface);outline:2px solid var(--hig-focus); }
@@ -52,6 +61,10 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px); }
 .hig-market-row[data-mode='presentation'] :is(.hig-market-price,.hig-market-change,.hig-market-volume) { text-align:end; }
 .hig-market-row[data-mode='presentation'] .hig-number { font-family:inherit; }
 .hig-badge { padding:4px 10px;border-radius:9999px;background:var(--hig-nested); }
+.hig-badge[data-tone='positive'] { color:var(--hig-positive);background:color-mix(in srgb,var(--hig-positive) 15%,transparent); }
+.hig-badge[data-tone='negative'] { color:var(--hig-negative);background:color-mix(in srgb,var(--hig-negative) 15%,transparent); }
+.hig-badge[data-tone='warning'] { color:var(--hig-warning);background:color-mix(in srgb,var(--hig-warning) 15%,transparent); }
+.hig-badge[data-tone='info'] { color:var(--hig-info);background:color-mix(in srgb,var(--hig-info) 15%,transparent); }
 .hig-avatar { display:inline-grid;place-items:center;width:40px;height:40px;border-radius:9999px;background:var(--hig-nested); }
 .hig-skeleton { min-height:48px;background:var(--hig-nested);border-radius:10px; }
 :where(.hig-surface)[data-severity='error'] { border-inline-start:3px solid var(--hig-negative); }

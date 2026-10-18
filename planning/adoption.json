@@ -70,14 +70,17 @@
           "tracking": "https://github.com/bloxwap/hig/issues/55"
         }
       ],
-      "remaining": "Roadmap #1: source branch implements native adoption APIs #117\u2013#121 and Pro Table/MarketRow gaps (#110); coordinated consumer refresh #115 and app-flow WebKit #124 are in progress. Physical devices #55, registry #56 and named-owner approvals #57 remain.",
+      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117\u2013#121, Pro Table/MarketRow and Dialog host APIs (#110). Five coordinated consumer refreshes (#115), WebKit resilience (#124), native and Pro owning migrations have validated draft PRs. Further app controls/drawers, native sheet sizing and Pro controls are in progress. Physical devices #55, registry #56 and named-owner approvals #57 remain.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15",
       "candidateImplementation": {
         "pr": "https://github.com/bloxwap/hig/pull/126",
-        "sourceCommit": "5abfb40864289df5cb2960cbbb30e4edab36f638",
-        "validation": "All five quality/candidate jobs green on5abfb408; local151web125native. Subsequent Dialog host API adds5meaningful DOM tests; full156web125native build/lint/types pass. Earlier four iOS Simulator core observations remain scoped to e339 source, separate owning runtime checks use exact5ab artifacts."
+        "sourceCommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
+        "latestPackedCommit": "a7c983b85bbbe8b2273e70dec5b34353954e590e",
+        "lastGreenCICommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
+        "validation": "Coordinated follow-up source passes full build/docs/lint/types, 163 web tests and 155 native tests. Adds optional web Vaul sheet, native dynamic/inline sheet with real nested scrolling, opaque formatted readout values, native EmptyState and semantic web Badge. iOS26.5 Simulator and Android Emulator inline lifecycle/dynamic checks pass; fresh clean candidate follows this source checkpoint. Earlier 4f source passes all remote quality/native/browser/candidate and docs checks.",
+        "ciVisibility": "Read-only repository runner listing returned zero repository-specific runners; organization runner listing requires unavailable admin:org scope. No runner availability is inferred."
       }
     },
     {
@@ -278,7 +281,11 @@
         "https://github.com/bloxwap/monorepo/pull/4602",
         "https://github.com/bloxwap/monorepo/pull/4606"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4607",
+        "https://github.com/bloxwap/monorepo/pull/4608",
+        "https://github.com/bloxwap/monorepo/pull/4609"
+      ],
       "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603): marketing sections run in Chrome+WebKit, app-flows in Chrome only (#124)",
       "exceptions": [
         {
@@ -554,7 +561,11 @@
         "https://github.com/bloxwap/monorepo/pull/4594",
         "https://github.com/bloxwap/monorepo/pull/4606"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4610",
+        "https://github.com/bloxwap/monorepo/pull/4611",
+        "https://github.com/bloxwap/monorepo/pull/4612"
+      ],
       "validatedVersion": "0.1.0-candidate.shab2f7740c",
       "validation": "#4523 merged as b1b913dac (3,122 tests, 24-case settings matrix Chrome/Firefox CI). #4594 at d81cbf00: css/base imported in layout.tsx (#95), busy text from mobile.hig.busy (#82), billing buttons 48px->44px (#80); app tests 3457 pass, production builds pilot and NEXT_PUBLIC_HIG_PILOT=0, settings matrix identical to main, landing focus identical; JS +282 B raw, CSS +10,987 B raw. #4601 (verified at 1f2981b7; landed as #4606 29812c9a4, flows in Chrome only, #124): 96 direct sfx/haptics calls in 22 files through appCue(); browser (automated headless Chromium) 90 feedback cases match rollback, amount 12.7 on both builds, Confirm fires once, rollback screenshots pixel-identical to parent in 12/12; sheet Escape/focus return; tests 3539 pass; CI Chrome+Firefox flows step green. Verifier caveats: sheet.mjs asserts nothing and is not in CI; 80ms per-source dedupe",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
@@ -568,7 +579,27 @@
         "apps/app/src/components/ui/number.tsx": "FlowNumber in 28 files",
         "apps/app/src/components/ui/button.tsx": "37 files besides components/hig/button.tsx",
         "apps/app/src/components/ui/drawer.tsx": "account sheet container (HIG has no drag-to-dismiss bottom drawer)"
-      }
+      },
+      "candidateFollowups": [
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4610",
+          "head": "c74670ab6a2941c87bf99671418a085c0efea51e",
+          "scope": "Centered dialogs, pending-dismiss veto and controlled content/ref slots",
+          "validation": "Full workspace gate and Chromium/WebKit actual dialog captures passed. Required quality green; one configured automatic Preview was canceled after detect/alert completed. No claim that its configured deployment had not started."
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4611",
+          "head": "33113d96ae249077beccabc496e5449fdc6694c8",
+          "scope": "Solana/unified amount entry and HYPE confirmation",
+          "validation": "3630 app tests plus one expected failure; full workspace gate; 120 actual consumer browser cases; ten exact rollback captures. Current checks green."
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4612",
+          "head": "0872681edc1fa8aa59a531f47ddb3512a4e7e0dd",
+          "scope": "27 ordinary button consumer modules, semantic action links and remaining financial amount fields",
+          "validation": "3638 app tests plus one expected failure; full workspace gate; 240 actual consumer browser cases; twenty exact rollback captures. Latest quality running at observation; configured automatic preview and screenshot/security checks green."
+        }
+      ]
     },
     {
       "name": "bloxwap.pro",
@@ -581,7 +612,9 @@
         "https://github.com/bloxwap/monorepo/pull/4594",
         "https://github.com/bloxwap/monorepo/pull/4599"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4608"
+      ],
       "validatedVersion": "0.1.0-candidate.shab2f7740c",
       "validation": "#4522 merged as 137660fc7. #4594 at d81cbf00 (production next start, automated Chromium 1440x1000): leaderboard rows 38px and order-ticket slider 6px on main, pilot and rollback; compact buttons and amount field 36px (field becomes pill); css/base in @layer hig; pro 216 tests. #4599 at 2e0724da: base, pilot and rollback identical on every geometry measure (stats strip 48px/stat 28px, market-list rows 36px, demo-table rows 36px, leaderboard 38px, column right edges); market-list keyboard unchanged; one new Tab stop per table region; number parity 51 edge values per format (verifier fuzz ~20,000 values, Node 22 and 24); 232 tests; JS +6,280 B raw / CSS +219 B; CI Chrome+Firefox",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0; revert 8fe4859c",
@@ -593,6 +626,15 @@
         "apps/pro/src/components/ui/segmented.tsx": "still the flag-on renderer inside components/hig/segmented.tsx",
         "apps/pro/src/components/ui/button.tsx": "17 direct consumers (account-panel row actions, TP/SL, leaderboard pagination, portfolio, connect-wallet, deposit/transfer/withdraw, account summary, chase runner, settings, mobile fallback)",
         "apps/pro/src/components/ui/input.tsx": "5 direct consumers (TextWell/FieldLabel in TP/SL, transfer, withdraw, account summary, order-ticket labels)"
+      },
+      "candidateMigration": {
+        "status": "validated locally; draft PR pending merge",
+        "pr": "https://github.com/bloxwap/monorepo/pull/4608",
+        "head": "857cc13c77273abde9ee56fb061cf495732eef4a",
+        "version": "0.1.0-candidate.sha5abfb408",
+        "evidence": "docs/hig/evidence/pro-data-components/verification.json",
+        "validation": "250 tests in 37 suites, lint/types, production build; Chromium/WebKit before/after/rollback exact table cells, columns and row heights, market keyboard and command menu behavior. Normal full workspace pre-push passed. A settings browser harness readiness fix follows a CI WebKit initial-focus race; all current PR checks now pass. JS +2312 B gzip, CSS +719 B.",
+        "mergeEffect": "Default-branch versions and exceptions above remain authoritative until merge."
       }
     },
     {
@@ -628,7 +670,9 @@
         "https://github.com/bloxwap/monorepo/pull/4540",
         "https://github.com/bloxwap/monorepo/pull/4602"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4609"
+      ],
       "validatedVersion": "0.1.0-candidate.shab2f7740c",
       "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out \u00b7 Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
       "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
@@ -643,6 +687,15 @@
       "forksStillUsedFlagOn": {
         "packages/ui-native/src/components/sheet.tsx": "src/profile/profile-sheet.tsx (account sheet, hig#118), size-lev-sheet.tsx, login-drawer.tsx, account/wallet-card-deck.tsx",
         "packages/ui-native/src/components/number.tsx (NumberFlow)": "live-chart, position-rail, trade-history, market-picker, animated-number-text, trade-detail-card, account/wallet-card-primitives, account/position-card-renderers (hig#117)"
+      },
+      "candidateMigration": {
+        "status": "validated locally; draft PR pending merge",
+        "pr": "https://github.com/bloxwap/monorepo/pull/4609",
+        "head": "1b0217d9d1e407c3ef07e418e3385501e37e0f36",
+        "version": "0.1.0-candidate.sha5abfb408",
+        "evidence": "docs/hig/evidence/native-app/adoption-117-121/report.json",
+        "validation": "3066 tests in 257 suites; lint/types; flag-on/off iOS/Android exports. Actual simulator/emulator runs cover account custom GestureSheet, nested scrolling, Toast normal/AX5/2x recovery, French back context, Korean/Han language options and constrained readout typography/tone. All current PR checks, including Android export, pass. Financial reels remain pending the motion decision.",
+        "mergeEffect": "Default-branch versions and exceptions above remain authoritative until merge."
       }
     },
     {

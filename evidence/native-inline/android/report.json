@@ -1,0 +1,18 @@
+{
+  "inline": {
+    "preparedMounts": 1,
+    "acceptedSettled": 2,
+    "rejectedSettled": 0,
+    "query": "BTC",
+    "selectionRetained": true,
+    "lastActionVisibleAfterReopen": true,
+    "swipesToLastAction": 4,
+    "closedBackDelegated": true,
+    "openBackClosed": true
+  },
+  "dynamic": {
+    "shortTitleY": 1974,
+    "tallTitleY": 1134,
+    "restoredTitleY": 1974
+  }
+}

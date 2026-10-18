@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
-  "sourceCommit": "a7c983b85bbbe8b2273e70dec5b34353954e590e",
-  "sourceTreeDirty": false,
+  "sourceCommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
+  "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
     "renderer": "19.1.0",
@@ -14,7 +14,7 @@
     "native": 38,
     "native-fonts": 4,
     "og-fonts": 6,
-    "react": 40,
+    "react": 42,
     "tokens": 5
   },
   "sizes": {
@@ -64,11 +64,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2297784,
-      "gzip": 643553
+      "raw": 2316728,
+      "gzip": 649698
     },
     "docsCSS": {
-      "raw": 112807
+      "raw": 114722
     },
     "fonts": {
       "raw": 592796
