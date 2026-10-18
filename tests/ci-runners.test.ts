@@ -15,8 +15,16 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
  }
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
+ expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('actions/setup-python');
+ expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('command -v gtar');
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
+ const python=readFileSync('scripts/ci-setup-python.sh','utf8');
+ expect(python).toContain('RUNNER_TEMP');
+ expect(python).toContain('/Users/runner/hostedtoolcache');
+ expect(python).toContain('uv-aarch64-apple-darwin');
+ expect(python).toContain('cfe454573412ff7380d15fc7dae5997ab53ffce72fce0a78e91ddbc84001acd2');
+ expect(python).not.toMatch(/\bapt-get\b|\bsudo /);
 });
 
 it('keeps Linux visual baselines under tests/visual-baselines/linux and names Darwin separately',()=>{
