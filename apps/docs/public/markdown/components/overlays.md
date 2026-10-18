@@ -13,8 +13,33 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 | `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](../foundations/localization.md#built-in-component-strings). |
 | Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref (Menu and Select pass their own trigger). |
 | `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
+| Optional native `GestureSheet` | `contentMode='default'` scrolls the title, optional description, children and Close action. `contentMode='custom'` provides an unpadded, full-height content container; the host owns its header, back/close actions, safe-area content padding and scrolling. `title` remains required as the accessible name. Pass `titleRef` attached to the caller's accessible heading to focus it on open; without it, the sheet focuses its visually hidden title. |
 
 Native return focus is scheduled after the static Modal closes and canceled on reopen or unmount.
+
+For a native card stack, import `GestureSheet` from `@bloxwap/hig-native/gesture-sheet` and render the caller's cards directly:
+
+```tsx
+const titleRef = useRef<Text>(null);
+
+<GestureSheet
+  open={open}
+  onOpenChange={setOpen}
+  title={card.title}
+  titleRef={titleRef}
+  contentMode='custom'
+  snapPoints={card.snapPoints}
+  returnFocusRef={triggerRef}
+>
+  <View style={{ flex: 1 }}>
+    <Heading ref={titleRef}>{card.title}</Heading>
+    {card.content}
+    <Button onPress={() => setOpen(false)}>Done</Button>
+  </View>
+</GestureSheet>
+```
+
+Here `Text` and `View` are React Native types/components, and the host supplies the card state and its own accessible back/close labels. Custom content can use its own Gorhom scrollable or list without an outer scroll view. `snapPoints` may change while open: the current detent index is retained, or clamped to the highest remaining index if its detent was removed. Detent changes keep the sheet mounted and do not repeat open focus. Keep at least one sorted snap point; `initialIndex` applies to the next presentation. Focus return, Android Back, reduced-motion and dismissible backdrop behavior apply in both content modes.
 
 ## When to use and examples
 

@@ -31,3 +31,9 @@ it('sheet Close follows HIGProvider messages, closeLabel and RTL',()=>{const {Te
  expect(label()).toEqual(['إغلاق']);act(()=>root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(close).toHaveBeenCalledWith(false);
  act(()=>{root.update(React.createElement(HIGProvider,{reducedMotion:true,direction:'rtl',locale:'ar-EG',messages:{close:'إغلاق'}},React.createElement(GestureSheet,{title:'مراجعة',description:'تحقق',snapPoints:['50%'],open:true,onOpenChange:close,closeLabel:'تم'},null)));});
  expect(label()).toEqual(['تم']);});
+it('sheet background and handle paint from the provider colour table (#93)',()=>{const RN=require('react-native');const {nativeSrgb,nativeColors}=require('../../packages/tokens/dist/index.js');const descriptor=Object.getOwnPropertyDescriptor(RN.Platform,'OS');Object.defineProperty(RN.Platform,'OS',{value:'ios',configurable:true});
+ try{const paint=props=>{act(()=>{root=create(React.createElement(HIGProvider,{reducedMotion:true,...props},React.createElement(GestureSheet,{title:'Review',description:'Verify amount',snapPoints:['50%'],open:true,onOpenChange:jest.fn()},null)));});const node=root.root.findAll(n=>n.props.testID==='backend')[0];const value=[node.props.backgroundStyle.backgroundColor,node.props.handleIndicatorStyle.backgroundColor];act(()=>root.unmount());root=null;return value;};
+  expect(paint({})).toEqual([nativeSrgb.surface,nativeSrgb.muted]);
+  expect(paint({colorSpace:'display-p3'})).toEqual([nativeColors.iosDisplayP3.surface,nativeColors.iosDisplayP3.muted]);
+ }finally{Object.defineProperty(RN.Platform,'OS',descriptor);}
+});

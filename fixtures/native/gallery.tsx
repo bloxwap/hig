@@ -56,14 +56,14 @@ case "Search":return <C.Search query={amount} onQueryChange={setAmount} results=
 case "Badge":return <C.Badge>Demo data</C.Badge>;
 case "Alert":return <C.Alert title={error?'Data unavailable':'Sample status'} severity={error?'error':'info'} action={<C.Button intent='secondary' onPress={()=>setMessage('Retry requested')}>Retry</C.Button>}><C.Text>{error??'Essential state stays visible with feedback off.'}</C.Text></C.Alert>;
 case "Callout":return <C.Callout title='Display-only values'><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>;
-case "Toast":return <C.Toast notices={notices} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>;
+case "Toast":return <C.Toast maxHeight={280} notices={notices.map(n=>({...n,description:'Review the details before continuing.'}))} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>;
 case "Progress":return <C.Progress label='Loading markets' value={busy?undefined:40}/>;
 case "Spinner":return <C.Spinner label='Fetching prices'/>;
 case "Skeleton":return <C.Skeleton label='Loading balance'/>;
 case "EmptyState":return <C.EmptyState title='No open positions' description='Positions supplied by the host appear here.' action={<C.Button intent='secondary' onPress={()=>setMessage('Refresh requested')}>Refresh</C.Button>}/>;
 case "Avatar":return <C.Avatar name='Demo account'/>;
 case "StatusIndicator":return <C.StatusIndicator label='Market data' state={error?'offline':'stale'}/>;
-case "NumberReadout":return <C.NumberReadout value={empty?null:67234.56} stale={!!error} options={{maximumFractionDigits:2}}/>;
+case "NumberReadout":return <C.NumberReadout value={empty?null:67234.56} stale={!!error} tone={error?'muted':'positive'} testID='sample-price' style={{fontSize:20,lineHeight:28,fontWeight:'600'}} options={{maximumFractionDigits:2}}/>;
 case "AnimatedNumberReadout":return <><C.AnimatedNumberReadout label="Sample price" value={empty?null:range} stale={!!error}/><C.Slider label="Sample price" value={range} onValueChange={setRange}/></>;
 case "Usd":return <C.Usd value={empty?null:1250.45} stale={!!error}/>;
 case "Percent":return <C.Percent value={empty?null:2.5}/>;

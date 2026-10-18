@@ -53,7 +53,7 @@
       "entry": "surface",
       "family": "actions-surfaces",
       "web": "<C.Text>Review the amount and asset before confirming.</C.Text>",
-      "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>한국어 · 中文</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
+      "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>\ud55c\uad6d\uc5b4 \u00b7 \u4e2d\u6587</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -331,8 +331,8 @@
       "slug": "dialog",
       "entry": "overlay",
       "family": "overlays",
-      "web": "<C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided amount and terms.' trigger={<C.Button>Open review</C.Button>}><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog></C.Stack>",
+      "web": "<C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided amount and terms.' trigger={<C.Button>Open review</C.Button>}><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -346,7 +346,7 @@
       "entry": "overlay",
       "family": "overlays",
       "web": "<C.AlertDialog open={open} onOpenChange={setOpen} title='Confirm cancellation' description='The host defines the actual consequence.' trigger={<C.Button intent='destructive'>Review cancellation</C.Button>}><C.Button intent='destructive' onClick={()=>{setMessage('Demo cancellation accepted');setOpen(false);}}>Confirm cancellation</C.Button></C.AlertDialog>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.AlertDialog></C.Stack>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.AlertDialog></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -360,7 +360,7 @@
       "entry": "overlay",
       "family": "overlays",
       "web": "<C.Sheet open={open} onOpenChange={setOpen} title='Order details' description='Scrollable, explicit close action.' trigger={<C.Button>Open details</C.Button>}><C.Text>Terms supplied by host.</C.Text></C.Sheet>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Sheet></C.Stack>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Sheet></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -545,7 +545,7 @@
       "entry": "status",
       "family": "status",
       "web": "<C.Toast notices={notices} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>",
-      "native": "<C.Toast notices={notices} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>",
+      "native": "<C.Toast maxHeight={280} notices={notices.map(n=>({...n,description:'Review the details before continuing.'}))} onDismiss={id=>setNotices(notices.filter(n=>n.id!==id))}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -645,7 +645,7 @@
       "entry": "data",
       "family": "financial-data",
       "web": "<C.NumberReadout value={empty?null:67234.56} stale={!!error} options={{maximumFractionDigits:2}}/>",
-      "native": "<C.NumberReadout value={empty?null:67234.56} stale={!!error} options={{maximumFractionDigits:2}}/>",
+      "native": "<C.NumberReadout value={empty?null:67234.56} stale={!!error} tone={error?'muted':'positive'} testID='sample-price' style={{fontSize:20,lineHeight:28,fontWeight:'600'}} options={{maximumFractionDigits:2}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -923,7 +923,7 @@
     {
       "name": "PriceChart",
       "slug": "price-chart",
-      "entry": "chart",
+      "entry": "@bloxwap/hig-chart",
       "family": "chart",
       "web": "<C.PriceChart summary='Sample Bitcoin candles; no live feed. Price values also available as text.' data={empty?[]:[{time:1700000000,open:67000,high:68000,low:66800,close:67500},{time:1700000060,open:67500,high:68100,low:67200,close:67900}]} height={240}/>",
       "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",

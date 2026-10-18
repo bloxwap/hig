@@ -1,3 +1,9 @@
-/* Optional document-wide defaults. Component CSS never resets the host page. */
+/* Opt-in global base for hosts that want HIG defaults on every element, not only HIG components (#95):
+   import '@bloxwap/hig-react/css/base' next to '@bloxwap/hig-react/css'. These are the page-wide rules
+   that @bloxwap/hig-react/css shipped before it was scoped to HIG classes. Partial adopters that load
+   HIG on some routes only should not import this file. */
 * { box-sizing: border-box; }
-:focus-visible { outline: 2px solid var(--hig-focus); outline-offset: 3px; }
+:focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }
+table { border-collapse:collapse;width:100%; }
+th,td { padding:12px;text-align:start;border-bottom:1px solid var(--hig-border); }
+input[type='range'] { accent-color:var(--hig-action); min-height:48px; width:100%; }

@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-10-18T16:29:09.881Z",
+  "sourceCommit": "c05ef3552ce7e17b1ef6e0162e883eea6d50fb33",
+  "sourceDirty": true,
+  "engines": {
+    "chromium": {
+      "passed": true,
+      "layout": {
+        "scrollTop": 100,
+        "headerTop": 83.4375,
+        "regionTop": 83.4375,
+        "rtlPriceInset": 12,
+        "cellTextAlign": "end",
+        "presentationRows": [
+          {
+            "height": 36,
+            "display": "grid",
+            "paddingBlock": "0px",
+            "priceStart": 201.25,
+            "volumeStart": 24,
+            "price": "81,741.25",
+            "buttons": 0,
+            "tabStops": 0
+          },
+          {
+            "height": 36,
+            "display": "grid",
+            "paddingBlock": "0px",
+            "priceStart": 201.25,
+            "volumeStart": 24,
+            "price": "0.00001234",
+            "buttons": 0,
+            "tabStops": 0
+          }
+        ],
+        "captionHidden": true
+      },
+      "focusSequence": [
+        "Positions",
+        "option",
+        "After"
+      ],
+      "errors": []
+    },
+    "webkit": {
+      "passed": true,
+      "layout": {
+        "scrollTop": 100,
+        "headerTop": 83.4375,
+        "regionTop": 83.4375,
+        "rtlPriceInset": 12,
+        "cellTextAlign": "end",
+        "presentationRows": [
+          {
+            "height": 36,
+            "display": "grid",
+            "paddingBlock": "0px",
+            "priceStart": 196.25,
+            "volumeStart": 24,
+            "price": "81,741.25",
+            "buttons": 0,
+            "tabStops": 0
+          },
+          {
+            "height": 36,
+            "display": "grid",
+            "paddingBlock": "0px",
+            "priceStart": 196.25,
+            "volumeStart": 24,
+            "price": "0.00001234",
+            "buttons": 0,
+            "tabStops": 0
+          }
+        ],
+        "captionHidden": true
+      },
+      "focusSequence": [
+        "Positions",
+        "option",
+        "After"
+      ],
+      "errors": []
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "react": {
-    "PriceChart": "chart",
+    "PriceChart": "@bloxwap/hig-chart",
     "MarketRow": "recipes",
     "BalanceCard": "recipes",
     "TradeEntry": "recipes",

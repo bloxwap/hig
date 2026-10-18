@@ -3,12 +3,28 @@
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
-  "files": ["dist", "fonts", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "fonts",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "exports": {
-    ".": {"types": "./dist/index.d.ts", "import": "./dist/index.js"},
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "node": "./dist/node.js"
+    },
     "./manifest": "./fonts/manifest.json",
     "./fonts/*": "./fonts/*"
   },
-  "repository": {"type": "git", "url": "https://github.com/bloxwap/hig", "directory": "packages/og-fonts"}
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloxwap/hig",
+    "directory": "packages/og-fonts"
+  }
 }

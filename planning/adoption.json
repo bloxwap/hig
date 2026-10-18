@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "observedAt": "2026-10-15",
+  "observedAt": "2026-10-18",
   "inventoryEvidence": "planning/org-inventory-2026-10-15.json",
   "inventoryScope": "All 15 repositories visible to the authenticated token on 2026-10-15 (gh repo list bloxwap); none archived.",
   "policy": "Owners are recorded as repository maintainer roles until #57 records named owners. Every exception has scope, reason, owner, expiry (at most 180 days) and a tracking issue. Statuses link only merged or open PRs that exist.",
@@ -38,7 +38,17 @@
         "https://github.com/bloxwap/hig/pull/83",
         "https://github.com/bloxwap/hig/pull/84",
         "https://github.com/bloxwap/hig/pull/85",
-        "https://github.com/bloxwap/hig/pull/90"
+        "https://github.com/bloxwap/hig/pull/90",
+        "https://github.com/bloxwap/hig/pull/103",
+        "https://github.com/bloxwap/hig/pull/104",
+        "https://github.com/bloxwap/hig/pull/105",
+        "https://github.com/bloxwap/hig/pull/106",
+        "https://github.com/bloxwap/hig/pull/107",
+        "https://github.com/bloxwap/hig/pull/108",
+        "https://github.com/bloxwap/hig/pull/111",
+        "https://github.com/bloxwap/hig/pull/112",
+        "https://github.com/bloxwap/hig/pull/113",
+        "https://github.com/bloxwap/hig/pull/114"
       ],
       "openPRs": [],
       "validation": "npm run check, packed web/SSR/Next/Metro consumers, three-engine browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
@@ -58,7 +68,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/55"
         }
       ],
-      "remaining": "Publish to npm (#56); physical-device certification (#55); open package follow-ups #86–#89, #92–#99 and #102",
+      "remaining": "Roadmap #1: source branch implements native adoption APIs #117\u2013#121 and Pro Table/MarketRow gaps (#110); coordinated consumer refresh #115 and app-flow WebKit #124 are in progress. Physical devices #55, registry #56 and named-owner approvals #57 remain.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15"
@@ -112,13 +122,13 @@
         },
         {
           "scope": "vendor/bloxwap-hig/bloxwap-hig-native-fonts-*.tgz (4,420,375 B) as a build-time devDependency",
-          "reason": "the Satori OG renderer needs two static TTFs; no small static-face package exists yet",
+          "reason": "the Satori OG renderer needs two static TTFs; @bloxwap/hig-og-fonts (#99, hig#106) replaces it at the next candidate refresh",
           "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/99"
+          "tracking": "https://github.com/bloxwap/hig/issues/115"
         }
       ],
-      "remaining": "Swap vendored tarballs for npm (#56); smaller OG font source (#99); lockfile regeneration needs the documented workaround until #96",
+      "remaining": "Swap vendored tarballs for npm (#56); at the next refresh (candidate at or after 74f4f6a): switch the OG card to @bloxwap/hig-og-fonts (#99 fixed) and remove the legacy-peer-deps lockfile note from vendor/bloxwap-hig/README.md (#96 fixed; tracked in #115)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/chart",
       "exceptionExpires": "2027-01-15"
@@ -179,13 +189,13 @@
         },
         {
           "scope": "vendor/bloxwap-hig/bloxwap-hig-native-fonts-*.tgz (4,420,375 B) as a build-time devDependency",
-          "reason": "the Satori OG renderer needs two static TTFs; no small static-face package exists yet",
+          "reason": "the Satori OG renderer needs two static TTFs; @bloxwap/hig-og-fonts (#99, hig#106) replaces it at the next candidate refresh",
           "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/99"
+          "tracking": "https://github.com/bloxwap/hig/issues/115"
         }
       ],
-      "remaining": "Upstream voice cancellation (#70); smaller OG font source (#99); npm (#56)",
+      "remaining": "Upstream voice cancellation (#70); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); npm (#56)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/sfx",
       "exceptionExpires": "2027-01-15"
@@ -221,35 +231,32 @@
       "name": "monorepo",
       "applicability": "product web (bloxwap.app, bloxwap.pro), marketing Worker (bloxwap.com) and React Native app",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "higVersion": "web: 0.1.0-candidate.sha1a776b93 (artifacts/hig); mobile PR #4540: 0.1.0-candidate.shac32771dc",
-      "status": "in progress: pilot merged; four follow-up PRs open, blocked by the required human signoff status",
+      "higVersion": "web: 0.1.0-candidate.shab2f7740c (artifacts/hig); mobile: 0.1.0-candidate.shab2f7740c (apps/mobile/vendor/bloxwap-hig)",
+      "status": "pilots and #109/#110 surface PRs merged on all three web origins and the native app; remaining surfaces, upstream gaps and fork retirement tracked in #110",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4522",
         "https://github.com/bloxwap/monorepo/pull/4523",
         "https://github.com/bloxwap/monorepo/pull/4525",
-        "https://github.com/bloxwap/monorepo/pull/4540"
+        "https://github.com/bloxwap/monorepo/pull/4540",
+        "https://github.com/bloxwap/monorepo/pull/4594",
+        "https://github.com/bloxwap/monorepo/pull/4598",
+        "https://github.com/bloxwap/monorepo/pull/4599",
+        "https://github.com/bloxwap/monorepo/pull/4602",
+        "https://github.com/bloxwap/monorepo/pull/4606"
       ],
-      "validation": "Per-surface rows below; CI green on all open PRs; independent verifiers approved #4522/#4523/#4525 and the refreshed #4540 (head 99b26d55)",
+      "openPRs": [],
+      "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603): marketing sections run in Chrome+WebKit, app-flows in Chrome only (#124)",
       "exceptions": [
         {
-          "scope": "retired forks kept as rollback renderers (apps/pro ui/segmented, ui/button, ui/input; apps/app components/ui; packages/ui-native Button/Sheet/Toast)",
-          "reason": "host rollback flags NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT and screens not yet migrated",
+          "scope": "retired forks kept as rollback renderers (apps/pro ui/segmented, ui/button, ui/input; apps/app components/ui; packages/ui-native Button/Sheet/Toast). Forks with no flag-on consumers: packages/ui-native Button, ToastViewport and FlowUsd (apps/mobile); none yet in apps/app components/ui or apps/pro ui/*",
+          "reason": "host rollback flags NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT stay until the rollback window ends; screens not yet migrated still render ui/* forks with the flag on (see per-surface forksWithoutFlagOnConsumers)",
           "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/33"
-        },
-        {
-          "scope": "apps/www/public/fonts (12 MB committed font copies)",
-          "reason": "marketing Worker has no deploy-time font asset step yet",
-          "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/33"
+          "tracking": "https://github.com/bloxwap/hig/issues/110"
         }
       ],
-      "remaining": "Human signoff and merge of #4522/#4523/#4525/#4540 (#33, #35); remaining screens; fork retirement",
+      "remaining": "#110: remaining surfaces, then retire rollback flags and forks after the rollback window; upstream gaps #117-#121; app-flows WebKit stability (#124); consumer workarounds at next refresh incl. localeDirection for #86 and @bloxwap/hig-chart for #96 (#115); Hermes about +84 KB iOS / +85 KB Android over the 64 KB budget (#57); physical devices (#55)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/monorepo",
       "exceptionExpires": "2027-01-15"
@@ -275,7 +282,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/56"
         }
       ],
-      "remaining": "Swap vendored tarballs for npm (#56); same-line copy guard (bloxwap/agent-cli#49); smaller OG font source (#99)",
+      "remaining": "Swap vendored tarballs for npm (#56); same-line copy guard (bloxwap/agent-cli#49); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/agent-cli",
       "exceptionExpires": "2027-01-15"
@@ -314,7 +321,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/100"
         }
       ],
-      "remaining": "Migrate the remaining apps/web routes and apps/host tokens-only, and decide the brand accent (#100); unscoped HIG global CSS (#95); npm (#56)",
+      "remaining": "Migrate the remaining apps/web routes and apps/host tokens-only, and decide the brand accent (#100); drop the sponsors-hig.css th/td reset at the next refresh (#95 fixed; #115); npm (#56)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/taptradetv",
       "exceptionExpires": "2027-01-15"
@@ -346,7 +353,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/101"
         }
       ],
-      "remaining": "Decide the product mark/favicon colour (#101, expires 2027-01-15); smaller OG font source (#99); swap vendored tarballs for npm (#56)",
+      "remaining": "Decide the product mark/favicon colour (#101, expires 2027-01-15); copy OG faces from @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); swap vendored tarballs for npm (#56)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/tapsiren",
       "exceptionExpires": "2027-01-15"
@@ -358,7 +365,8 @@
       "higVersion": "0.1.0-candidate.sha872906a9",
       "status": "migrated (styles.css uses 40 --hig-* roles and no literals; approved HIG mark as favicon; Bloxwap Sans/Mono from @bloxwap/font 0.1.2)",
       "mergedPRs": [
-        "https://github.com/bloxwap/bloxwap.github.io/pull/26"
+        "https://github.com/bloxwap/bloxwap.github.io/pull/26",
+        "https://github.com/bloxwap/bloxwap.github.io/pull/28"
       ],
       "openPRs": [],
       "validation": "bloxwap.github.io#26 CI green (check, drift, Playwright 24/24) on c1e7359, merged as 9febbb5 (post-merge CI and Pages build green; live site loads assets/hig/tokens.css); independent verifier: hig@872906a9 tokens tarball rebuilt byte-identical, copied tokens.css/icon.svg byte-identical to the package, scoped drift passed (15 files, 3 dated exceptions), same tests on main fail 13/24 (320px overflow, focus ring, roles, fonts, portal links, OG), all four pages at 1440/390/320 and 200% text without horizontal scroll, every SDK docs link 200; before/after screenshots and byte report (home 8,178 to 603,056 B, fonts 592,796 B) in evidence/hig-61/",
@@ -385,7 +393,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/56"
         }
       ],
-      "remaining": "Build Pages in Actions so copies are not committed (bloxwap.github.io#25); check.mjs shorthand colours and lockup scaling (bloxwap.github.io#27); npm (#56)",
+      "remaining": "Build Pages in Actions so copies are not committed (bloxwap.github.io#25); check.mjs reads CSS function names such as tan() as colours (bloxwap.github.io#29, low priority); npm (#56). Shorthand colours and lockup scaling fixed in bloxwap.github.io#28 (#27)",
       "migrationGuide": "docs/installation.md",
       "url": "https://github.com/bloxwap/bloxwap.github.io",
       "exceptionExpires": "2027-01-15"
@@ -456,73 +464,103 @@
       "name": "bloxwap.app",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "pilot merged (#4515: settings/billing, raw amount fields); Sound & Haptics feedback controller PR open",
+      "status": "pilots merged (#4515, #4523); #4594 merged as dc88d78d9, #4606 merged as 29812c9a4 (#109/#110)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
+        "https://github.com/bloxwap/monorepo/pull/4515",
+        "https://github.com/bloxwap/monorepo/pull/4523",
+        "https://github.com/bloxwap/monorepo/pull/4594",
+        "https://github.com/bloxwap/monorepo/pull/4606"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4523"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha1a776b93",
-      "validation": "#4523: lint, typecheck, 3,122 tests, production build, 24-case settings browser matrix (Chrome/Firefox CI)",
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.shab2f7740c",
+      "validation": "#4523 merged as b1b913dac (3,122 tests, 24-case settings matrix Chrome/Firefox CI). #4594 at d81cbf00: css/base imported in layout.tsx (#95), busy text from mobile.hig.busy (#82), billing buttons 48px->44px (#80); app tests 3457 pass, production builds pilot and NEXT_PUBLIC_HIG_PILOT=0, settings matrix identical to main, landing focus identical; JS +282 B raw, CSS +10,987 B raw. #4601 (verified at 1f2981b7; landed as #4606 29812c9a4, flows in Chrome only, #124): 96 direct sfx/haptics calls in 22 files through appCue(); browser (automated headless Chromium) 90 feedback cases match rollback, amount 12.7 on both builds, Confirm fires once, rollback screenshots pixel-identical to parent in 12/12; sheet Escape/focus return; tests 3539 pass; CI Chrome+Firefox flows step green. Verifier caveats: sheet.mjs asserts nothing and is not in CI; 80ms per-source dedupe",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
-      "remaining": "Signed-in amount/review/sheet/outcome pilots; remaining direct sfx/haptics calls; fork retirement",
+      "remaining": "HYPE/Solana/unified sends, withdraw, deposit, position close and trigger confirmations, papertrade amount pad, size/leverage picker; tap-action/icon toasts and the account drawer (no HIG equivalent); real wallet session not driven; fork retirement after the rollback window (#110)",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/products.md"
+      "guide": "docs/migration/products.md",
+      "forksWithoutFlagOnConsumers": [],
+      "forksStillUsedFlagOn": {
+        "apps/app/src/components/ui/dialog.tsx": "tournament-join-modal, referral-prompt, builder-task-dialog, agent-task-dialog",
+        "apps/app/src/components/ui/notification-card.tsx": "tap-action and custom-icon toasts, infoToast (InfoCard/InfoPanel)",
+        "apps/app/src/components/ui/number.tsx": "FlowNumber in 28 files",
+        "apps/app/src/components/ui/button.tsx": "37 files besides components/hig/button.tsx",
+        "apps/app/src/components/ui/drawer.tsx": "account sheet container (HIG has no drag-to-dismiss bottom drawer)"
+      }
     },
     {
       "name": "bloxwap.pro",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "pilot merged (#4515) with a compact-density regression; fix and navigation/numbers pilots open in #4522",
+      "status": "pilots merged (#4515, #4522); #4594 merged as dc88d78d9, #4599 merged as 3ca24bfce (#109/#110)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
+        "https://github.com/bloxwap/monorepo/pull/4515",
+        "https://github.com/bloxwap/monorepo/pull/4522",
+        "https://github.com/bloxwap/monorepo/pull/4594",
+        "https://github.com/bloxwap/monorepo/pull/4599"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4522"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha1a776b93",
-      "validation": "#4522: leaderboard row 47px->38px and order-ticket slider 48px->6px restored (production next start), roving-tabindex keyboard, 216 tests",
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.shab2f7740c",
+      "validation": "#4522 merged as 137660fc7. #4594 at d81cbf00 (production next start, automated Chromium 1440x1000): leaderboard rows 38px and order-ticket slider 6px on main, pilot and rollback; compact buttons and amount field 36px (field becomes pill); css/base in @layer hig; pro 216 tests. #4599 at 2e0724da: base, pilot and rollback identical on every geometry measure (stats strip 48px/stat 28px, market-list rows 36px, demo-table rows 36px, leaderboard 38px, column right edges); market-list keyboard unchanged; one new Tab stop per table region; number parity 51 edge values per format (verifier fuzz ~20,000 values, Node 22 and 24); 232 tests; JS +6,280 B raw / CSS +219 B; CI Chrome+Firefox",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0; revert 8fe4859c",
-      "remaining": "Merge #4522 (main currently carries the #4515 density regression); market list, stats header, tables",
+      "remaining": "signed-in tables not captured in a browser; HIG Table needs column alignment, per-row props and loading/empty/error rows and MarketRow price formatting before components replace markup; mark/index NumberFlow reels and 24px row actions are design decisions; fork retirement after the rollback window (#110)",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/products.md"
+      "guide": "docs/migration/products.md",
+      "forksWithoutFlagOnConsumers": [],
+      "forksStillUsedFlagOn": {
+        "apps/pro/src/components/ui/segmented.tsx": "still the flag-on renderer inside components/hig/segmented.tsx",
+        "apps/pro/src/components/ui/button.tsx": "17 direct consumers (account-panel row actions, TP/SL, leaderboard pagination, portfolio, connect-wallet, deposit/transfer/withdraw, account summary, chase runner, settings, mobile fallback)",
+        "apps/pro/src/components/ui/input.tsx": "5 direct consumers (TextWell/FieldLabel in TP/SL, transfer, withdraw, account summary, order-ticket labels)"
+      }
     },
     {
       "name": "bloxwap.com",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "typography/CTA pilot merged (#4515); waitlist/Pro features/touch footer PR open",
+      "status": "pilots merged (#4515, #4525); #4594 merged as dc88d78d9, #4598 merged as 031b29814 (#109/#110)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
+        "https://github.com/bloxwap/monorepo/pull/4515",
+        "https://github.com/bloxwap/monorepo/pull/4525",
+        "https://github.com/bloxwap/monorepo/pull/4594",
+        "https://github.com/bloxwap/monorepo/pull/4598"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4525"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha1a776b93",
-      "validation": "#4525: 38 tests, Worker bundle, marketing browser check (48px touch targets, busy waitlist) in Chrome/Firefox CI",
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.shab2f7740c",
+      "validation": "#4525 merged as 38d7360fe. #4594: page HTML byte-identical main vs PR. #4598 at db6e3ab4 (wrangler dev, automated Chromium; Firefox in CI): smallest section text 10px->12px (rollback 10px), setup chips HIG badge 12/18 pill, cards 20px/14px/180ms; 24/24 served font paths match pinned SHA-256; same three font files and faces before/after; 10 Tab stops unchanged; apps/www/public/fonts removed (23 files, 12,970,019 B) and copied at build time; deployed preview served 23/23 fonts; Worker +1,762 B raw",
       "rollback": "HIG_MARKETING_PILOT=0",
-      "remaining": "Signals, markets and setup sections; retire 12 MB public/fonts copies",
+      "remaining": "touch targets below 48px in nav/footer and no visible focus ring on live-embed iframes (outside migrated sections); HIG_MARKETING_PILOT rollback CSS until the window ends (#110)",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/products.md"
+      "guide": "docs/migration/products.md",
+      "forksWithoutFlagOnConsumers": [],
+      "retired": [
+        "apps/www/public/fonts (23 files, 12,970,019 B) deleted and gitignored by #4598 (031b29814); faces copied from @bloxwap/font at build with SHA-256 pins"
+      ]
     },
     {
       "name": "React Native app",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "settings/field typography pilot merged (#4515); full migration PR #4540 refreshed onto candidate shac32771dc, CI green and verifier-approved, blocked only by the required human signoff",
+      "status": "full migration merged (#4540); #110 remaining surfaces merged in #4602 as edee3476c on candidate shab2f7740c (toasts, trade, account-sheet actions, readouts, language picker; drops #94/#93 workarounds)",
       "mergedPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4515"
+        "https://github.com/bloxwap/monorepo/pull/4515",
+        "https://github.com/bloxwap/monorepo/pull/4540",
+        "https://github.com/bloxwap/monorepo/pull/4602"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4540"
-      ],
-      "validatedVersion": "0.1.0-candidate.shac32771dc",
-      "validation": "#4540 at 99b26d55 (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out · Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff)",
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.shab2f7740c",
+      "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out \u00b7 Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
       "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
-      "remaining": "Human signoff and merge of #4540 (#35); drop the busy-label wrapper after #94; #92, #93, #86 upstream; physical devices (#55); remaining screens on ui-native (trade, toasts, account sheet)",
+      "remaining": "app still sets direction itself although hig#86 is now closed (localeDirection in c4d45a3, next refresh); upstream #117-#121; Hermes over the 64 KB budget (#57); physical devices (#55); fork retirement after the rollback window (#110)",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/native.md"
+      "guide": "docs/migration/native.md",
+      "forksWithoutFlagOnConsumers": [
+        "packages/ui-native/src/components/button.tsx (rollback-only: apps/mobile/src/hig/app-button.tsx, src/hig/settings-button.tsx, confirm-logout-card.tsx, edit-username-card.tsx)",
+        "packages/ui-native/src/components/toast.tsx ToastViewport (rollback-only in apps/mobile/app/_layout.tsx; the toast()/dismissToast() store API stays on both paths)",
+        "FlowUsd (ui-native number.tsx) in apps/mobile/src/hig/numbers.tsx and the demo-account breakdown (rollback-only)"
+      ],
+      "forksStillUsedFlagOn": {
+        "packages/ui-native/src/components/sheet.tsx": "src/profile/profile-sheet.tsx (account sheet, hig#118), size-lev-sheet.tsx, login-drawer.tsx, account/wallet-card-deck.tsx",
+        "packages/ui-native/src/components/number.tsx (NumberFlow)": "live-chart, position-rail, trade-history, market-picker, animated-number-text, trade-detail-card, account/wallet-card-primitives, account/position-card-renderers (hig#117)"
+      }
     },
     {
       "name": "Hyperliquid docs",

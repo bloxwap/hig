@@ -18,5 +18,5 @@ try{
  for(const engine of ['chromium','firefox','webkit'])execFileSync(process.execPath,['scripts/browser-smoke.mjs','m5'],{stdio:'inherit',env:{...process.env,HIG_BROWSER:engine}});
  execFileSync(process.execPath,['scripts/expo-web-browser-smoke.mjs'],{stdio:'inherit'});
  execFileSync(process.execPath,['scripts/acceptance-browser-smoke.mjs'],{stdio:'inherit'});
- for(const script of ['css-isolation-browser-smoke','feedback-browser-smoke','docs-browser-smoke','catalog-browser-smoke','next-browser-smoke'])execFileSync(process.execPath,[`scripts/${script}.mjs`,'m5'],{stdio:'inherit'});
+ for(const script of ['css-isolation-browser-smoke','pro-data-browser-smoke','feedback-browser-smoke','docs-browser-smoke','catalog-browser-smoke','next-browser-smoke'])execFileSync(process.execPath,[`scripts/${script}.mjs`,'m5'],{stdio:'inherit'});
 }finally{for(const child of servers)child.kill('SIGTERM');}

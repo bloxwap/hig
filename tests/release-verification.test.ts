@@ -17,14 +17,14 @@ it('rejects blockers, wrong commits, missing packages, path changes and tampered
   const withPhysicalGate=(gate:object)=>({...report,blockers:report.blockers.map(blocker=>blocker.id==='physical-devices'?{...blocker,...gate}:blocker)});
   const report={dryRun:true,channel:'stable-simulation',published:false,tagsCreated:false,releasesCreated:false,sourceCommit:'a'.repeat(40),sourceVersion:'0.1.0',artifactVersion:'0.1.0',blockers,artifacts};
   const options={directory,sourceCommit:'a'.repeat(40),sourceVersion:'0.1.0',tag:'v0.1.0',today:'2026-10-16'};
-  expect(verifyReleaseArtifacts(report,options)).toHaveLength(7);
+  expect(verifyReleaseArtifacts(report,options)).toHaveLength(8);
   expect(()=>verifyReleaseArtifacts(withPhysicalGate({status:'blocked'}),options)).toThrow('Release gates remain');
   expect(()=>verifyReleaseArtifacts({...report,blockers:blockers.slice(1)},options)).toThrow('All six release gates');
   expect(()=>verifyReleaseArtifacts({...report,sourceCommit:'b'.repeat(40)},options)).toThrow('immutable release tag');
   expect(()=>verifyReleaseArtifacts({...report,artifacts:artifacts.slice(1)},options)).toThrow('complete approved package set');
   expect(()=>verifyReleaseArtifacts({...report,artifacts:[{...artifacts[0],file:'../outside.tgz'},...artifacts.slice(1)]},options)).toThrow('expected tarball filename');
   const exception={status:'approved-exception',approvedBy:'owner',approval:'https://github.com/bloxwap/hig/issues/55#issuecomment-1',reviewBy:'2026-10-17'};
-  expect(verifyReleaseArtifacts(withPhysicalGate(exception),options)).toHaveLength(7);
+  expect(verifyReleaseArtifacts(withPhysicalGate(exception),options)).toHaveLength(8);
   for(const reviewBy of ['2026-10-15','tomorrow','2026-99-99','2026-02-30'])expect(()=>verifyReleaseArtifacts(withPhysicalGate({...exception,reviewBy}),options)).toThrow('Release gates remain');
   writeFileSync(join(directory,artifacts[0].file),'changed');expect(()=>verifyReleaseArtifacts(report,options)).toThrow('tarball hash mismatch');
  }finally{rmSync(directory,{recursive:true,force:true});}

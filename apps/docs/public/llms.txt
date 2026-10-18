@@ -18,13 +18,11 @@ graph TD
   Native --> Expo[Expo gallery]
 ```
 
-`@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-feedback` owns optional adapter entry points. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
-
-`@bloxwap/hig-native-fonts` carries all registered native TTF faces. `@bloxwap/hig-og-fonts` is a build-time Latin subset for OG/Satori hosts: its four faces retain the canonical native manifest hashes, with a packed ceiling below 1 MB. Web tokens and renderers contain no font binaries. The optional web chart adapter requires the host's direct `@bloxwap/chart` dependency; the shared renderer has no chart peer that can displace a host workspace.
+`@bloxwap/hig-tokens` owns palette, density, units and generation; `@bloxwap/hig-contracts` owns platform-neutral types and formatting. `@bloxwap/hig-react` and `@bloxwap/hig-native` own renderers. `@bloxwap/hig-chart` owns the web adapter for `@bloxwap/chart` (`PriceChart`, `chartTheme`), with `@bloxwap/chart` and `@bloxwap/hig-react` as required peers (#96). No other package names `@bloxwap/chart`: an optional peer on it made npm 11 drop chart's workspace copy when that repository regenerated its lockfile. `@bloxwap/hig-feedback` owns optional adapter entry points. `@bloxwap/hig-native-fonts` ships the static native TTFs (#64), and `@bloxwap/hig-og-fonts` ships the five byte-identical Latin faces that Satori/`next/og` cards need (#99). Both are generated from pinned `@bloxwap/font` sources by `npm run generate:fonts`, and they are the only packages allowed to contain font binaries. Base controls never load audio, haptics, charts, Expo or another platform. Each component has an individual export; CSS is explicit and side-effectful. Plain HTML consumers use tokens/CSS alone.
 
 Candidate validation matrix: Node 22.22+, TypeScript 5.9, React/DOM 19.1, RN 0.81.5 with Expo 54 and RN 0.83.10 with Expo 55 (React 19.1.0 and 19.2.0 respectively, #68), Vite 6.4. Next 16.4.0 webpack is verified by M5 production/packed consumer checks. NativeWind styling remains outside the supported StyleSheet consumer path. Use StyleSheet on RN and plain CSS on web; Tailwind may refer to `var(--hig-*)` without scanning HIG sources. The pinned monorepo source now documents web/native rem roots of 16; see source reconciliation. Never infer native sizes by replacing `rem` with `dp`.
 
-Prefer built-in semantic controls; modal/disclosure behavior must retain keyboard, focus restoration and descriptions. Optional chart entry imports the chart SDK only on the client. Libraries retain upstream licenses; extracted tokens and mark have commit provenance, no vendor engine source is copied. Font binaries remain owned by @bloxwap/font (OFL-1.1).
+Prefer built-in semantic controls; modal/disclosure behavior must retain keyboard, focus restoration and descriptions. The separate `@bloxwap/hig-chart` package imports the chart SDK only on the client. Libraries retain upstream licenses; extracted tokens and mark have commit provenance, no vendor engine source is copied. Font binaries remain owned by @bloxwap/font (OFL-1.1).
 
 Deprecation plan: inventory all live references, map variants to intent/density, run migration diff and consumer validation, switch a pilot behind a host flag, then delete unused copies. App comfortable targets and Pro compact rows are intentional. HIG cannot retire owning-repository copies within this hig-only change. API/token/behavior changes follow semver; breaking accessibility behavior counts as breaking. Support upgrades require web, SSR and Metro evidence with a documented rollback before changing the matrix.
 
@@ -34,7 +32,7 @@ Source: docs/architecture/attribution.md
 
 # Attribution and provenance
 
-HIG code: MIT. @radix-ui/react-dialog, dropdown-menu, popover, tooltip: MIT, consumed as dependencies without copied engine code. @bloxwap/chart/sfx/haptic: independent upstream packages; optional integration only. @bloxwap/font: OFL-1.1, binaries stay in its pinned package. Brand SVG/geometry derives from Font docs, exact upstream commit in `evidence/upstream-inventory.json`; do not imply arbitrary trademark relicensing. Utility CheckIcon is original simple geometry. Full icons catalogs are excluded.
+HIG code: MIT. @radix-ui/react-dialog, dropdown-menu, popover, tooltip: MIT, consumed as dependencies without copied engine code. @bloxwap/chart/sfx/haptic: independent upstream packages; optional integration only (chart through the separate `@bloxwap/hig-chart` adapter). @bloxwap/font: OFL-1.1, binaries stay in its pinned package. Brand SVG/geometry derives from Font docs, exact upstream commit in `evidence/upstream-inventory.json`; do not imply arbitrary trademark relicensing. Utility CheckIcon is original simple geometry. Full icons catalogs are excluded.
 
 ## Generated favicon and social preview
 
@@ -51,19 +49,20 @@ Source: docs/architecture/platform-matrix.md
 | Actions, surfaces, text, fields | Semantic DOM elements | Pressable/View/Text/TextInput | behavior tests, Vite/SSR/Metro |
 | Native text scaling and script tracking | Browser zoom; no cap | `Text`/`Heading`/`NumberReadout` `maxFontSizeMultiplier` (prop or HIGProvider default); Korean/Chinese runs at companion spacing via `script` and `letterSpacingByScript` | native Jest (#67); iOS Simulator AX5: capped readout 48pt vs 86pt prose; Android emulator 200% (non-linear scaling stays under the 2x cap) (`evidence/native-sim/issue-67-71/`) |
 | Native colour roles | CSS severity/data attributes | `Switch` `tone`, `Alert` `severity`/`tone` take token roles only; raw colours fall back. The Android Switch thumb uses the `text` token instead of the app theme accent | native Jest (#67); iOS Simulator and Android emulator captures (`evidence/native-sim/issue-67-71/`) |
+| Native colour space | CSS sRGB with P3 in `@supports` | `HIGProvider colorSpace` `srgb` (default) or `display-p3`; every component paints from `useColors()`; iOS `display-p3` uses `nativeColors.iosDisplayP3`, Android and web stay sRGB; no raw colours | native Jest (#93: P3 values for action/warning/negative/info, direct-import guard); iOS Simulator capture as a Display P3 host (`evidence/native-sim/issue-93/`); physical display pending (#55) |
 | Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser; Android Slider adds `ACTION_SET_PROGRESS` through the autolinked `HIGAdjustableView` (plain View without native linking) | contract tests; Android emulator UiAutomation (#71): set-progress listed, 80 applied once, snapped/clamped, absent and rejected while disabled; iOS Simulator increment/decrement unchanged (`evidence/native-sim/issue-67-71/`) |
 | Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
 | Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
 | Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
-| Chart | optional lazy @bloxwap/chart canvas | numeric/list summary only | typed theme; physical gesture evidence pending |
+| Chart | `@bloxwap/hig-chart`: lazy @bloxwap/chart canvas (required peer) | numeric/list summary only | typed theme; physical gesture evidence pending |
 | Brand mark | individual SVG renderer/asset | optional react-native-svg | pinned geometry; device comparison pending |
 | React Native versions | — | RN 0.81.5 / Expo 54 / React 19.1.0 and RN 0.83.10 / Expo 55 / React 19.2.0; peer ranges `react-native` `^0.81.5 \|\| ^0.83.10`, SDK-matched Expo, SVG, Slider and Worklets peers | CI packed Metro exports for both (`smoke:packed-native`, `--profile rn-0.83`); iOS Simulator and Android emulator gallery, interaction and GestureSheet runs on both with the same outcomes; differences tracked in #86–#89 (`evidence/native-sim/rn-0.83/`) |
 | Fonts | pinned Sans/Mono asset URLs | hash-pinned static faces, typed manifest, explicit weight registration and host script fallback | Expo-web loading/byte/hash gates; no physical native-font certification |
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: chart only for chart entry; community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 
 ## Actions & surfaces · HIG 0.1.0
@@ -81,7 +80,7 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. Native: the label and suffix render through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](../foundations/localization.md#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
@@ -114,7 +113,13 @@ Web price charts with text summaries and native readout alternatives.
 
 Includes web-only `PriceChart` and `chartTheme`. Native uses readouts, lists, and text summaries.
 
-Issue #20. Entry: `chart`. Import platform entries from `@bloxwap/hig-react/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig-native/data` for summary/readout/list alternatives. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+Issues #20 and #96. Package: `@bloxwap/hig-chart`. Import `PriceChart` and `chartTheme` from `@bloxwap/hig-chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig-native/data` for summary/readout/list alternatives. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+
+```sh
+npm install @bloxwap/hig-chart @bloxwap/hig-react @bloxwap/chart@^0.3.0
+```
+
+`@bloxwap/hig-chart` has three required peers: `react`, `@bloxwap/hig-react` (its `HIGProvider` supplies the localized fallback) and `@bloxwap/chart` `^0.3.0`. Its dependencies are `@bloxwap/hig-tokens` and `@bloxwap/hig-contracts`. `@bloxwap/hig-react` itself declares no `@bloxwap/chart` peer and has no `./chart` entry.
 
 ## API and anatomy
 
@@ -132,6 +137,19 @@ Do: provide host-generated price/trend summary and lazy-load chart on demand. Do
 @bloxwap/chart/react loads only on PriceChart render, in Suspense. Token theme covers surface/text/border/grid/crosshair/up/down/fonts; engine owns gestures and cleanup.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
+
+## Moved from `@bloxwap/hig-react/chart` (#96)
+
+Until #96 the adapter was the `./chart` entry of `@bloxwap/hig-react`, which declared `@bloxwap/chart` as an optional peer. npm 11.6 drops a workspace copy of `@bloxwap/chart` from a lockfile regenerated from scratch without `legacy-peer-deps` whenever an installed package declares it as an optional peer. bloxwap/chart hit this: its `packages/chart` workspace disappeared and `apps/docs` lost `@bloxwap/chart`. Repacking hig-react without that peer kept the link. A required peer on a separate package does not trigger it, so the adapter moved to `@bloxwap/hig-chart` and the peer is required there. `npm run smoke:packed-chart-workspace` builds a chart-shaped workspace and regenerates its lockfile from scratch with strict peers, under both the ambient npm and the pinned npm 11.6.1. It fails if the link is lost (see the release chapter).
+
+Migration: replace `@bloxwap/hig-react/chart` with `@bloxwap/hig-chart` in imports and add `@bloxwap/hig-chart` next to `@bloxwap/hig-react`. `PriceChart` props and `chartTheme` values are unchanged.
+
+```diff
+-import {PriceChart, chartTheme} from '@bloxwap/hig-react/chart';
++import {PriceChart, chartTheme} from '@bloxwap/hig-chart';
+```
+
+Consumers: an org-wide GitHub code search (default branches) on 2026-10-16 found no import of `@bloxwap/hig-react/chart` outside this repository. bloxwap/chart, sfx and haptic import only other hig-react entries, and chart builds its own theme from `@bloxwap/hig-tokens`. The candidate was never published. The release chapter normally keeps a deprecated export working for a minor release, but that is skipped here: there are no consumers to migrate, and a working shim would need the optional peer that causes the bug. Hosts that only use other hig-react entries change nothing. bloxwap/chart can drop the `legacy-peer-deps` regeneration note in `vendor/bloxwap-hig/README.md` at its next HIG refresh.
 
 ## Platform mapping and limits
 
@@ -197,9 +215,29 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig-react/data`
 | --- | --- |
 | Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
-| `Table` | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. |
+| `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
 
 Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
+
+Native readouts, including `Usd`, `Percent`, and `AnimatedNumberReadout`, accept `tone="text" | "positive" | "negative" | "muted"`, `testID`, and a constrained typography `style`. The style accepts `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, and `textAlign`, including registered styles and arrays. The tone resolves through the provider palette; it is explicit rather than inferred from the sign. Colour and tabular numeric glyphs stay controlled by the readout. Font scale follows HIG Text and the provider; `maxFontSizeMultiplier` can override its cap.
+
+For a branded 20 px equity pill, use `<NumberReadout value={equity} label="Equity" testID="equity" style={{fontFamily:'BloxwapMonoSemiBold',fontSize:20,lineHeight:28}} />` with a registered host font. For signed PnL, add `tone={pnl < 0 ? 'negative' : 'positive'}` and `options={{signDisplay:'always'}}`. The same props on `AnimatedNumberReadout` style and identify the final text reading; opacity motion stays on its wrapper.
+
+Web tables keep a visible caption and ordinary headers by default. Set `captionHidden` when a visible section already names the table: the caption remains its accessible name. `stickyHeader` pins header cells within a bounded scroll region; give the region a height through `style` or `className`. `tableClassName` styles the table itself. Sorting still belongs to the host, and sort buttons retain native keyboard activation and `aria-sort`.
+
+```tsx
+<Table caption='Positions' captionHidden stickyHeader style={{maxHeight:320}}
+  rows={positions} keyFor={row=>row.id}
+  rowProps={row=>({className:row.current?'current-market':undefined,'aria-current':row.current?'true':undefined})}
+  columns={[
+    {key:'market',label:'Market',render:row=>row.symbol},
+    {key:'balance',label:'Balance',align:'end',render:row=><NumberReadout value={row.balance}/>},
+  ]}
+  loading={refreshing}
+  state={error?<div role='alert'>{error}<button type='button' onClick={retry}>Retry</button></div>:undefined}/>
+```
+
+The `state` slot is content for one cell spanning all columns; it can contain an empty explanation, loading skeleton, or error and retry UI. Pass content rather than `tr`/`td` elements. Existing data rows remain visible. Without a custom state, `loading` exposes the provider's `loading` message and `aria-busy`; an empty, idle table shows `noRows`. `state={null}` suppresses that fallback. Give custom errors an alert role and custom loading content a status role when an announcement is appropriate. `rowProps` cannot replace the row's native role or HIG's cells with `children`/HTML. Row callbacks do not add a selection keyboard model; use native controls inside cells for actions.
 
 ## When to use and examples
 
@@ -217,7 +255,7 @@ Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden pa
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/pro-data.dom.test.tsx`, `tests/pro-data-typecheck.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 ## Optional number motion
 
@@ -249,7 +287,7 @@ Do: expose current location and keep deep-link ownership with host. Don’t: rep
 
 ## States, interaction and accessibility
 
-Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Only the selected tab is in the Tab order. The active DOM panel is a tab stop only when its first content is not focusable. When the panel starts with a focusable element, such as the `InstallCommand` `pre`, that element is the single stop after the tab list. Panels that start with text keep `tabIndex=0` so their content stays reachable. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
+Tabs use selected states and one active panel; DOM Arrow/Home/End keys, RTL-aware arrow mapping. Only the selected tab is in the Tab order. The active DOM panel is a tab stop only when its first content is not focusable. When the panel starts with a focusable element, such as the `InstallCommand` `pre`, that element is the single stop after the tab list. Panels that start with text keep `tabIndex=0` so their content stays reachable. Server and hydration markup render every panel with `tabIndex=0`; on the client a layout effect corrects the shown panel before paint, in the same commit that shows it, so a panel that starts with a focusable element is never an extra stop after a tab switch. Accordion uses details/summary on DOM and expanded Pressable on RN. Search results are visible action lists; keyboard shortcuts belong to host.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -280,8 +318,33 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 | `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](../foundations/localization.md#built-in-component-strings). |
 | Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref (Menu and Select pass their own trigger). |
 | `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
+| Optional native `GestureSheet` | `contentMode='default'` scrolls the title, optional description, children and Close action. `contentMode='custom'` provides an unpadded, full-height content container; the host owns its header, back/close actions, safe-area content padding and scrolling. `title` remains required as the accessible name. Pass `titleRef` attached to the caller's accessible heading to focus it on open; without it, the sheet focuses its visually hidden title. |
 
 Native return focus is scheduled after the static Modal closes and canceled on reopen or unmount.
+
+For a native card stack, import `GestureSheet` from `@bloxwap/hig-native/gesture-sheet` and render the caller's cards directly:
+
+```tsx
+const titleRef = useRef<Text>(null);
+
+<GestureSheet
+  open={open}
+  onOpenChange={setOpen}
+  title={card.title}
+  titleRef={titleRef}
+  contentMode='custom'
+  snapPoints={card.snapPoints}
+  returnFocusRef={triggerRef}
+>
+  <View style={{ flex: 1 }}>
+    <Heading ref={titleRef}>{card.title}</Heading>
+    {card.content}
+    <Button onPress={() => setOpen(false)}>Done</Button>
+  </View>
+</GestureSheet>
+```
+
+Here `Text` and `View` are React Native types/components, and the host supplies the card state and its own accessible back/close labels. Custom content can use its own Gorhom scrollable or list without an outer scroll view. `snapPoints` may change while open: the current detent index is retained, or clamped to the highest remaining index if its detent was removed. Detent changes keep the sheet mounted and do not repeat open focus. Keep at least one sorted snap point; `initialIndex` applies to the next presentation. Focus return, Android Back, reduced-motion and dismissible backdrop behavior apply in both content modes.
 
 ## When to use and examples
 
@@ -321,6 +384,22 @@ All data and actions are supplied by the host application.
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
 | `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. |
+| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation. `mode='presentation'` lets a host option own selection, with optional `icon`, `favorite`, and formatted `volume` slots. |
+
+Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
+
+```tsx
+<CommandItem onSelect={()=>openMarket(market.symbol)}>
+  <MarketRow mode='presentation' symbol={market.symbol} name={market.name}
+    price={market.price} priceOptions={{style:'decimal',maximumFractionDigits:8}}
+    change={market.change} icon={<MarketIcon symbol={market.symbol}/>}
+    favorite={<FavoriteIndicator selected={market.favorite}/>}
+    volume={<NumberReadout value={market.volume} options={{notation:'compact'}}/>}
+    style={{gridTemplateColumns:'minmax(0,1fr) 12ch 8ch 10ch'}}/>
+</CommandItem>
+```
+
+Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned.
 
 ## When to use and examples
 
@@ -338,7 +417,7 @@ M2 supplies visual recipes; M3 adds semantic feedback composition because #26 de
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/pro-data.dom.test.tsx`, `tests/pro-data-typecheck.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
 ## Selection controls · HIG 0.1.0
@@ -357,12 +436,29 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 | Control | Key props and behavior |
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
-| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
-| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. |
+| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. Native options also accept `description` (a second line) and `lang` (the label's BCP-47 language). |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. Native increment/decrement actions use HIGProvider `messages.increase`/`messages.decrease`. |
 
 ## When to use and examples
 
 Do: control selection from accepted host state. Don’t: emit a success cue on every render or repeated slider value.
+
+Native language pickers can keep the native name and a translated description in one radio row:
+
+```tsx
+<HIGProvider locale='en-US' fontFamiliesByScript={{
+  latin: {400: 'BloxwapSansRegular'},
+  ko: {400: 'BloxwapSansKRRegular'},
+  zh: {400: 'BloxwapSansSCRegular'},
+}}>
+  <RadioGroup label='Language' value={language} onValueChange={setLanguage} options={[
+    {value: 'ko', label: '한국어', description: 'Korean', lang: 'ko-KR'},
+    {value: 'zh', label: '简体中文', description: 'Chinese', lang: 'zh-Hans'},
+  ]}/>
+</HIGProvider>
+```
+
+Register each face before passing its name. `Text` chooses `fontFamiliesByScript` by the label's glyphs, independently of the app locale; `lang` supplies `accessibilityLanguage` and resolves shared CJK punctuation. Descriptions use the app language. A script map selects the requested static weight, or its nearest registered weight; the existing `fontFamilies`/`fontFamily` remain the fallback. Explicit text `script` and style `fontFamily` override detection and registered family selection respectively. Native radios expose the label, supporting description as an accessibility hint, checked/disabled state and the explicit `activate` accessibility action; disabled rows reject both touch and accessibility activation. Per-option language is passed to React Native's `accessibilityLanguage`; pronunciation support depends on the platform and installed voices.
 
 ## States, interaction and accessibility
 
@@ -376,7 +472,7 @@ SegmentedControl is single-choice radio semantics, not navigation. Native picker
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, `tests/native/language-options.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
 ## Status & feedback · HIG 0.1.0
@@ -396,7 +492,7 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 | --- | --- |
 | `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the accent edge from a token role on web and native: info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
 | `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own edge colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
-| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. `dismissLabel` overrides the visible Dismiss text; the accessible name is `messages.dismissNotice(message, dismissLabel)` and always contains it. |
+| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides visible Dismiss text; its accessible name contains that text. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |
 
@@ -412,7 +508,19 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 
 ## Platform mapping and limits
 
-Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.
+Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. On native, messages use body-size semibold text and descriptions use a separate body-size line; neither truncates or disables text scaling. The stack scrolls within `maxHeight`, including nested host scroll views. A notice with `closable={false}` has no Dismiss action; host recovery actions remain available. Without `onDismiss`, notices have no Dismiss buttons. No notice expires automatically: remove it from the controlled `notices` array when its host lifetime ends; keep failures with recovery actions until explicitly resolved. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.
+
+```tsx
+// Native: compact notices with large-text scrolling and a persistent failure.
+<Toast
+  maxHeight={320}
+  notices={[
+    { id: 'saved', message: 'Saved', description: 'Your changes are ready.', severity: 'success' },
+    { id: 'retry', message: 'Transfer failed', description: 'Check your balance and retry.', severity: 'error', closable: false },
+  ]}
+  onDismiss={removeNotice}
+/>
+```
 
 ## Validation and citation
 
@@ -443,6 +551,8 @@ For approved iOS physical action targets, install `@bloxwap/haptic@0.1.0` and wr
 ## Native audio
 
 Install the feedback package plus `expo-audio` (`~1.1.1` on Expo SDK 54, `~55.0.18` on SDK 55) only in the native host setup. `expoAudioBackend(Audio)` supplies a thin playback bridge; `createNativeSoundAdapter(backend, assets)` accepts Metro asset ids. The Expo gallery imports only the four committed WAV cues. Configure ambient/silent-mode behavior with `playsInSilentMode:false`, no background playback and `doNotMix` interruption mode. Host AppState calls `setBackground`; backgrounding pauses cached players. Call `preload()` at startup: it configures the audio session and caches players once. After that, `play()` dispatches synchronously, with no awaited bridge round trip before `player.play()`. It stops only the previous cue, issues `seekTo(0)` without awaiting it (native players apply calls in order) and plays. A cue requested before preload settles waits for it, and only the newest such request plays. Concurrency is limited to one active cue, volume/mute are honored, missing cues are silent, and disposal pauses/removes every cached player.
+
+Playback completion: HIG does not listen to `playbackStatusUpdate` and never relies on `didJustFinish`. On Android, `expo-audio` 1.1 (Expo SDK 54) reports `didJustFinish` twice for one finished cue; SDK 55 (`expo-audio` 55.0) reports it once (#89). In the Android emulator run, SDK 54 had 4 `play()` calls, 4 playing starts and 8 `didJustFinish` statuses: the same finish reported twice, not a second play (`evidence/native-sim/issue-86-88-89/`). In `expo-audio` 1.1, every status sent while the player is ended carries `didJustFinish: true`, and two listeners send one when a cue ends. A host or future adapter that acts on completion must de-duplicate it, for example by ignoring a `didJustFinish` that has no `play()` or `playing: true` status since the last one. Device timing for both SDKs is tracked in #55.
 
 Regenerate with `npm run generate:cues`. `assets/manifest.json` pins package/recipe/export flags, 48kHz mono PCM16, durations, peaks/RMS, bytes and reviewed hashes. Noise recipes vary; do not assert regenerated WAV bytes are deterministic. Inspect duration/envelope/level tolerances and review the actual artifact hashes. Offline generation dependencies are dev-only; Metro never imports them or browser synthesis.
 
@@ -750,7 +860,7 @@ Source: docs/foundations/localization.md
 
 Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents consume [`docs/foundations/glossary.json`](glossary.json). Machine-readable format profiles: [`docs/foundations/localization.json`](localization.json). Host owns locale selection, parsing and time zone; HIG formats display only.
 
-`HIGProvider` locale is a BCP 47 tag (`en-US` default on both platforms). An explicit direction (`ltr`/`rtl`) always wins. Native preserves OS RTL and also infers RTL from the app locale when Android React Native incorrectly reports LTR; hosts can pass their locale and direction explicitly, for example from their localization adapter. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
+`HIGProvider` locale is a BCP 47 tag (`en-US` default). Direction (`ltr`/`rtl`) is independent. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
 
 ## Shared helpers
 
@@ -813,6 +923,27 @@ Logical inline spacing, wrapping labels, no fixed-height clipping of translated 
 
 Long translations, Arabic/Hebrew RTL and large text remain part of the [platform checklist](platform.md#accessibility-and-localization-10). Physical-device observations are still pending.
 
+### Native direction from the host locale
+
+Issue #86. On native, `HIGProvider` follows `I18nManager.isRTL` when `direction` is unset. React Native 0.82 and later, including 0.83.10, do not report an Android per-app RTL locale through `I18nManager` (Android 13+ `cmd locale set-app-locales ar-EG`, or a per-app language picker). `I18nManager.isRTL` stays `false`, so an Arabic or Hebrew user would get a left-to-right HIG tree. RN 0.81.5 and iOS are not affected.
+
+Hosts that lay out right to left pass the locale's direction:
+
+```tsx
+import {getLocales} from 'expo-localization';
+import {HIGProvider, localeDirection} from '@bloxwap/hig-native/provider';
+
+const direction = localeDirection(getLocales()[0]); // 'rtl' for ar-EG; undefined keeps the I18nManager default
+<HIGProvider locale={getLocales()[0]?.languageTag} direction={direction}>{children}</HIGProvider>;
+```
+
+`localeDirection` (also exported from `@bloxwap/hig-contracts`) returns expo-localization's `textDirection` when present. Otherwise it reads the tag's script, then its language: `ar_EG`, `he-IL` and `az-Arab-IR` give `rtl`; `en-US`, `ar-Latn` and `en-u-nu-arab` give `ltr`. It accepts BCP 47 tags, Android/Java identifiers and objects with `textDirection`/`languageTag`, and returns `undefined` for no language (`''`, `und`). Without expo-localization, React Native's `I18nManager.getConstants().localeIdentifier` is the app's configuration locale on Android (from the RN 0.83 source; the gallery verifies the expo-localization path).
+
+- **Don't** pass a locale-derived direction in an app that disallows RTL (`I18nManager.allowRTL(false)`, or `android:supportsRtl="false"`). Leave `direction` unset so HIG follows the OS layout. HIG never derives direction on its own for this reason.
+- **Don't** expect `I18nManager.isRTL` to change on RN 0.83 Android. Native views HIG does not draw keep the host's direction.
+
+Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/53417) (0.82.0) made `I18nUtil.isDevicePreferredLanguageRTL` read `Locale.getAvailableLocales()[0]` instead of the app's locale. The bug is reported in [#54938](https://github.com/react/react-native/issues/54938) and fixed by [#57635](https://github.com/react/react-native/pull/57635), first released in 0.88.0. 0.83.10, 0.84.1, 0.85.3, 0.86.3 and 0.87.1 still have the bug. The native gallery passes `localeDirection(getLocales()[0])`, and its `os-arabic` Android emulator step asserts `rtl` on RN 0.81.5 and 0.83.10 (`evidence/native-sim/issue-86-88-89/`). A system-wide Arabic locale and physical devices are not yet tested (#55).
+
 ## Built-in component strings
 
 Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/react/src` or `packages/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig-contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
@@ -840,6 +971,8 @@ Resolution order, per key: the component prop, then the nearest `HIGProvider mes
 Rules:
 
 - **Visible text and accessible names come from the same key.** The Close, Dismiss and busy text is the button content, so it is also the accessible name. The Toast dismiss name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it, so voice-control users can say the label they see. `stale` and `required` are appended to both the visible text and the accessible name.
+- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is the visible `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
+- **Slider actions are labeled (#87).** The native Slider's increment and decrement accessibility actions carry `increase` and `decrease`. React Native 0.83 Android otherwise lists them with an empty label.
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
 - **RTL is a direction, not a translation.** Messages render inside the provider's `dir` (web) or `writingDirection` (native). The Unicode bidi algorithm places the ` · ` busy separator and parentheses. Do not add direction marks to messages.
@@ -856,7 +989,7 @@ Rules:
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
 | `loadingItems` | Loading items | List loading row | — |
-| `loadingChart` | Loading chart… | PriceChart fallback (web) | — |
+| `loadingChart` | Loading chart… | PriceChart fallback (web, `@bloxwap/hig-chart`) | — |
 | `noItems` | No items | List empty text | `empty` |
 | `noRows` | No rows | Table empty text (web) | — |
 | `retry` | Retry | List retry button | — |
@@ -872,8 +1005,6 @@ Rules:
 | `searching` | Searching… | Search in-progress status | — |
 | `noResults` | No results | Search empty status | — |
 | `resultCount` `(count, locale)` | {count} result / {count} results | Search result count (native); use `Intl.PluralRules` for other plural forms | — |
-| `increment` | Increase | Native Slider increment action | — |
-| `decrement` | Decrease | Native Slider decrement action | — |
 | `back` | Back | BackButton (native) | — |
 | `menuDescription` | Available actions | Menu sheet description (native) | — |
 | `choose` | Choose | Select trigger before a choice (native) | — |
@@ -894,6 +1025,8 @@ Rules:
 | `statusOnline` | online | StatusIndicator `online` | — |
 | `statusOffline` | offline | StatusIndicator `offline` | — |
 | `statusStale` | stale | StatusIndicator `stale` | — |
+| `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
+| `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 
@@ -901,9 +1034,7 @@ Rules:
 
 See `tests/tokens.test.ts`, `tests/data.dom.test.tsx`, `tests/glossary.test.ts`, `tests/built-in-strings.test.ts`, `tests/messages.dom.test.tsx`, `tests/native/messages.test.cjs`, `docs/foundations/localization.json` and the data chapter. Cite HIG 0.1.0 with this chapter anchor and a commit permalink.
 
-## Native Button text and announcements
-
-Native Button labels and their busy suffix use HIG Text, including registered font weight, per-script tracking, and the provider's `maxFontSizeMultiplier`. A Button prop can override the cap. A busy button derives its accessible name from its visible children and localized suffix; an explicit `accessibilityLabel` wins, and an empty `busyLabel` keeps the action's name without the suffix. This prevents Android's busy state description from replacing the action name. Native Slider adjustment labels use `messages.increment` and `messages.decrement`, with English Increase/Decrease defaults.
+The native Button's busy suffix starts with the separator (`· Working`); the row supplies its visual gap. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.
 
 
 ## Native runtime differences · HIG 0.1.0
@@ -917,11 +1048,11 @@ Follow-ups #86–#89 and #92–#94 distinguish implementation checks from physic
 
 RN 0.83's `I18nManager.isRTL` can report false for an Arabic app locale. The regression is [upstream #54938](https://github.com/react/react-native/issues/54938), introduced by [#53417](https://github.com/react/react-native/pull/53417) and fixed by [#57635](https://github.com/react/react-native/pull/57635), with older-Android handling in [#58723](https://github.com/react/react-native/pull/58723).
 
-HIG preserves a true OS RTL value and falls back to the app locale's script when the OS value is false. Hosts can always override `direction` explicitly. When no locale is supplied, direction uses the app locale from `Intl.DateTimeFormat().resolvedOptions().locale`; display formatting keeps the existing `en-US` default. Pass the host's chosen locale for localized number/date formatting. The Android `os-arabic` harness snapshot now asserts HIG RTL, rather than treating a captured LTR tree as a pass. The OS diagnostic itself may still read false on affected RN versions.
+HIG defaults direction to `I18nManager.isRTL`. Hosts that support RTL pass `direction={localeDirection(getLocales()[0])}`, using `localeDirection` from `@bloxwap/hig-native/provider` and their localization adapter (for example Expo Localization). This handles an Arabic per-app locale even when RN's OS diagnostic still reports false. Hosts that disallow RTL leave direction unset. Formatting locale remains independent, with `en-US` as the default. The Android `os-arabic` harness asserts the explicit host direction. Historical local fallback measurements predate the merged public API.
 
 ## Slider action labels
 
-RN 0.83 exposes an empty accessibility action label when the host omits it. HIG supplies `messages.increment` and `messages.decrement` for both actions, with English Increase/Decrease defaults and host translation overrides. Disabled adjustments remain rejected. Automated labels and state checks do not establish what a person hears through TalkBack; physical reference flows remain in #55.
+RN 0.83 exposes an empty accessibility action label when the host omits it. HIG supplies `messages.increase` and `messages.decrease` for both actions, with English Increase/Decrease defaults and host translation overrides. Disabled adjustments remain rejected. Automated labels and state checks do not establish what a person hears through TalkBack; physical reference flows remain in #55.
 
 ## iOS Dynamic Type audit
 
@@ -939,7 +1070,7 @@ Only the gallery recorder listens to `playbackStatusUpdate`. The HIG adapter dis
 
 Native Button uses HIG Text for both its label and localized busy suffix, preserving font registration, script spacing and scale caps. Its busy accessible name includes the visible label, with explicit host labels taking precedence. Mixed ReactNode status titles concatenate visible text without inserting extra spaces.
 
-`HIGProvider colorSpace='display-p3'` selects the canonical native P3 table throughout HIG controls. Default sRGB behavior stays available, and nested providers inherit the selected space. These are channel-selection and semantic tests, not comparisons of physical displays.
+`HIGProvider colorSpace='display-p3'` selects the canonical P3 table on iOS. Android and web resolve to sRGB. Native controls and host-drawn views read the resolved table through `useColors()`; nested providers inherit the selected space. These are channel-selection and semantic tests, not comparisons of physical displays.
 
 
 ## Foundation and platform rules · HIG 0.1.0
@@ -949,7 +1080,25 @@ Source: docs/foundations/platform.md
 
 ## Color (#6)
 
-Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values; iOS Display-P3 hosts use the generated iosDisplayP3 channel hex map; hosts using sRGB retain ios/Android values. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+
+### Native colour space
+
+React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff5c5c` is read as P3 channels and paints a more saturated red than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog, GestureSheet and the brand mark) then paints from that table through `useColors()`. Hosts choose a table and never pass raw colours. Nested providers inherit the value, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
+
+| `HIGProvider colorSpace` | iOS | Android | react-native-web |
+| --- | --- | --- | --- |
+| `srgb` (default) | `nativeSrgb` | `nativeSrgb` | `nativeSrgb` |
+| `display-p3` | `nativeDisplayP3` (= `nativeColors.iosDisplayP3`) | `nativeSrgb` (HIG publishes no Android P3 table) | `nativeSrgb` |
+
+| Role | `nativeSrgb` | `iosDisplayP3` |
+| --- | --- | --- |
+| action / positive / buy / focus | `#00ff3f` | `#00ff3d` |
+| warning | `#f5b300` | `#ebb63e` |
+| negative / sell | `#ff5c5c` | `#ec6762` |
+| info | `#35b5ff` | `#2eb8ff` |
+
+Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and iOS Simulator captures of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). In the sRGB screenshots, `display-p3` paints warning and negative as exactly the sRGB tokens (`#f5b300`, `#ff5c5c`), while `srgb` on the same host paints them oversaturated (`#ffaf00`, `#ff4a54`). Action and info are wider than sRGB, so the screenshot clips them. Physical display comparison is tracked in #55.
 
 ## Typography (#7)
 
@@ -975,11 +1124,12 @@ Approved mark is copied verbatim from the pinned Font docs SVG, including embedd
 
 Font-loading note: `@bloxwap/font/css` references all supported families/scripts, which may increase deployed asset bytes even with on-demand browser loading. The Latin web fixture instead uses two explicit @font-face rules with package asset URLs (Sans and Mono). Add only the scripts/italics used by each consumer. Do not assume a Latin-only fixture certifies mixed-script rendering.
 
-## Native drawing color space
 
-Native hosts use sRGB unless they explicitly choose `HIGProvider colorSpace='display-p3'` to match a host that changes React Native's default drawing color space. The provider selects HIG's canonical `nativeColors.iosDisplayP3` table, and nested providers inherit that choice. Text, buttons and links, surfaces, separators, fields, alerts, switches, sliders, spinners, skeletons, overlays, gesture sheets and brand vectors all read this table. Hosts do not pass copied hex values or an arbitrary theme palette. This selects the correct channel values; comparing real P3 displays remains physical-device work in #55.
+## Native text in multiple scripts
 
-The Android RTL regression is tracked upstream in [React Native #54938](https://github.com/react/react-native/issues/54938) and fixed by [#57635](https://github.com/react/react-native/pull/57635), with compatibility handling in [#58723](https://github.com/react/react-native/pull/58723). HIG's locale fallback also supports the affected RN 0.83 consumer; an explicit host direction remains authoritative.
+Register each required companion face with the host font loader, then pass its registration name through `HIGProvider fontFamiliesByScript`, for example `{latin: {400: 'BloxwapSansRegular'}, ko: {400: 'BloxwapSansKRRegular', 600: 'BloxwapSansKRSemiBold'}, zh: {400: 'BloxwapSansSCRegular'}}`. The provider's `fontFamilies` remains the fallback. Nested providers inherit the script map when it is omitted.
+
+HIG Text detects Hangul or Han in each run even when the provider locale is English. Shared CJK punctuation follows the run's `accessibilityLanguage`, then the provider locale; `script` can select a face explicitly. If a script map has fewer weights, Text chooses its nearest registered weight. Explicit `style.fontFamily` wins. Hosts load these optional faces themselves; declaring a map does not load a font. Native RadioGroup options accept `lang` for the spoken label and `description` for its translated second line.
 
 
 ## Principles and content · HIG 0.1.0
@@ -1033,7 +1183,7 @@ The audit covers tokens, shared web/native primitives, plain-ui and app/Pro-owne
 
 `packages/tokens/upstream-palette.json` preserves the complete authored semantic OKLCH palette and brand sRGB/P3 channels. `sourceColors` exports web strings plus converted Android sRGB and iOS Display-P3 channel values; generated CSS exposes authored `--hig-source-*` variables. The HIG surface, nested, text and muted roles now retain their corresponding authored OKLCH values and tested sRGB fallback. Brand green and blue preserve upstream P3 channels. HIG focus green, market sell red, warning gold, opaque border and faint text are intentional intent/accessibility mappings rather than mislabeled exact source copies; direction remains distinct from destructive intent.
 
-Native views default to sRGB and use `nativeColors.android`/`ios`. A host that explicitly configures RN iOS default color space as Display-P3 must use `nativeColors.iosDisplayP3` throughout, including converted third-party sRGB assets. Never send CSS functions to native views or use P3 channel hex in an sRGB host. These are mathematical conversion checks, not physical wide-gamut display certification.
+Native views default to sRGB and use `nativeColors.android`/`ios`. A host that explicitly configures RN iOS default color space as Display-P3 sets `HIGProvider colorSpace='display-p3'`, so HIG components paint `nativeColors.iosDisplayP3` (also exported alone as `nativeDisplayP3`). It reads `useColors()` for its own views and converts third-party sRGB assets (#93). Never send CSS functions to native views or use P3 channel hex in an sRGB host. These are mathematical conversion checks, not physical wide-gamut display certification.
 
 Source `spacing.ts` and `type.ts` explicitly set both rem roots to 16; native spacing md=12 and base type=16 match HIG. Radius 6/8/10/14 and motion 180/260/320 ms also match. HIG caption line-height 18, title 30 and display 52 intentionally provide readable role leading versus the stock utility steps. Comfortable 48-unit native targets and compact 36-pixel desktop targets remain distinct; compact native buttons still retain 48-unit hit targets. Source native sheets use optional Gorhom/Reanimated gesture backends, 320 ms card transitions and separate 500 ms opening motion. HIG's basic Sheet stays a static, scrollable Modal alternative. The isolated gesture-sheet entry now supplies an optional Gorhom adapter with detents, cancellation delegation, native back, safe-area/keyboard configuration, reduced-motion mapping and focus requests. Its mocked lifecycle and real Metro imports are software-verified; actual worklet, pan interruption and assistive-technology behavior still require a booted native target.
 
@@ -1153,7 +1303,7 @@ A component or recipe enters the catalog only when all of the following hold:
 | Platform | Supported (tested in CI or recorded evidence) | Notes |
 | --- | --- | --- |
 | React DOM | React 19.2; Vite, SSR and Next 16.4 (webpack) packed consumers; Chromium, Firefox and WebKit | Other bundler or Next versions need checks in the host |
-| React Native | RN 0.81.5 with Expo 54 and React 19.1.0; RN 0.83.10 with Expo 55 and React 19.2.0 (#68); Metro; packed Android/iOS exports in CI for both; iOS Simulator (iOS 26.5) and Android emulator (API 35) gallery runs for both | RN 0.82 and 0.84+ are not supported. On RN 0.83 Android a per-app RTL locale does not reach `I18nManager.isRTL`, so pass `direction` (#86). Physical devices are pending (#55) |
+| React Native | RN 0.81.5 with Expo 54 and React 19.1.0; RN 0.83.10 with Expo 55 and React 19.2.0 (#68); Metro; packed Android/iOS exports in CI for both; iOS Simulator (iOS 26.5) and Android emulator (API 35) gallery runs for both | RN 0.82 and 0.84+ are not supported. On RN 0.83 Android a per-app RTL locale does not reach `I18nManager.isRTL`, so RTL hosts pass `direction={localeDirection(getLocales()[0])}` ([localization](../foundations/localization.md#native-direction-from-the-host-locale), #86). Physical devices are pending (#55) |
 | Tokens only | Plain CSS, Tailwind through host config, typed tokens | No React, RN or audio peers |
 | Feedback | Web: `@bloxwap/sfx` and `@bloxwap/haptic`. Native: Expo audio and haptics adapters | Essential outcomes must never depend on sound or haptics |
 
@@ -1198,9 +1348,9 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 
 | Applicability | Install | Never add |
 | --- | --- | --- |
-| Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font` | Copied component folders or token CSS |
+| Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font`; `-chart` with `@bloxwap/chart` only for `PriceChart` (#96) | Copied component folders or token CSS |
 | Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
-| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font` | A local `.btn` layer, a palette copy, `vendor/hig` |
+| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font`; `-og-fonts` as a build-time dev dependency for OG cards only | A local `.btn` layer, a palette copy, `vendor/hig`, `-native-fonts` for OG cards |
 | Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
 | No UI | Nothing; README and content conventions only | Any HIG runtime dependency |
 
@@ -1214,7 +1364,7 @@ npm ci && npm run generate:fonts && npm run build
 npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
 ```
 
-`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. In the consuming repository:
+`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
 
 - Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
 - Record their SHA-256 hashes and the source commit in a README or `provenance.json`.
@@ -1222,7 +1372,7 @@ npm run release:dry-run -- --channel candidate   # local tarballs only; no publi
 
 Never copy `packages/*/src`, `dist` folders, `tokens.css`, palettes, fonts or feedback engines. When #56 publishes, swap the `file:` dependencies for registry versions and delete `vendor/bloxwap-hig/`.
 
-Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once, use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
+Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once (add `@bloxwap/hig-react/css/base` first only when HIG owns the whole page), use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
 
 ## 3. Add the scoped drift check to CI
 
@@ -1297,7 +1447,7 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Font binaries in web/shared tarballs (tokens, contracts, react, feedback, native) | 0 files | 0 files | Native faces ship only in `@bloxwap/hig-native-fonts` (#64); `release:dry-run` fails otherwise and records `packedSizes` |
 | Native four-cue WAV assets | 103,618 B | 110,000 B | ~6% headroom; no full engine/catalog assets |
 
-The actual build report is `evidence/quality-report.json`. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
+The actual build report is `evidence/quality-report.json`. The committed copy, the release report and the browser acceptance files are copied from a Linux CI run, not regenerated on macOS. `evidence/ci-refresh.json` names that run and its source commit (#98). Every CI run uploads fresh copies. Bundles use explicit external React/RN peers, so figures measure HIG runtime contribution, not total installed/Metro app size. Production app/Pro/native before/after deltas require owning-repository builds and reviewed baselines; do not invent a percentage improvement. Export/dependency graph reports and packed tests enforce separation, while owning migrations must measure complete apps with equal data/toolchain.
 
 Exceptions require path/rule, owner, reason and expiry. Approved brand geometry is exempt from literal-palette detection until review; unrelated primitive/palette copies fail. New repositories should run scoped gates on migrated surfaces and keep dated residuals rather than blanket exemptions.
 
@@ -1320,15 +1470,23 @@ npm ci
 npm run check
 npm run examples:check
 npm run quality
+npm run generate:fonts   # Python with fonttools[woff]==4.61.1 and brotli==1.2.0
 npm run smoke:packed
+npm run smoke:packed-og
 npm run smoke:packed-native
 npm run smoke:packed-next
 npm run smoke:packed-css
+npm run smoke:packed-boundaries
+npm run smoke:packed-chart-workspace
 npm run release:dry-run -- --channel candidate
 npm run release:dry-run -- --channel stable-simulation
 ```
 
 Candidate mode stages `0.1.0-candidate.sha<commit>` package metadata and matching internal dependency versions. Stable-simulation stages the coordinated source version. Runtime contract/docs source version and source commit are recorded explicitly; neither source files nor git refs are version-mutated by the dry run. Both produce local tarballs, checked export/types/CSS/assets/files/dependency manifests, hashes, changelog, copied docs artifact and provenance report. `npm pack --ignore-scripts` packs already validated outputs, never publishes. Physical claims remain pending in every report.
+
+The release dry run, `npm run quality`, `smoke:packed-native` and `smoke:packed-og` first check that the generated TTF faces exist and match their manifests (#98). If any face is missing or stale, they stop before building anything. The message names `npm run generate:fonts` and its Python pins and lists the affected files, instead of failing with a raw `ENOENT`. `packedSizes` in the report records the packed and unpacked bytes and the font-file counts of `@bloxwap/hig-tokens` (no fonts), `@bloxwap/hig-native-fonts` and `@bloxwap/hig-og-fonts`. The dry run fails if any other package contains a font binary, or if `@bloxwap/hig-og-fonts` reaches 1,000,000 B packed (#99). `smoke:packed-og` builds the documented `app/og/route.tsx` handler with Turbopack (the Next 16 default) and with `--webpack`. It serves each build with `next start`, and also as moved standalone output. Every face's SHA-256 has to match, so a loader that bundles only one face fails here.
+
+The chart adapter ships as its own artifact, `@bloxwap/hig-chart` (#96). The dry run fails unless `@bloxwap/hig-chart` declares `@bloxwap/chart` as a required peer and no other artifact names `@bloxwap/chart` in dependencies or peers. The result is recorded in `chartAdapter` in the report. `npm run quality` applies the same rule to the source manifests and to every built `dist` file. `smoke:packed-boundaries` checks that the packed hig-react manifest has no `./chart` entry and no `@bloxwap/chart` peer, and that `PriceChart` renders on the server with its required peer installed. `smoke:packed-chart-workspace` builds a host shaped like bloxwap/chart: an npm workspace whose `packages/chart` provides `@bloxwap/chart` 0.3.0, plus `apps/docs`, which depends on it and on the packed hig-react, hig-chart, tokens and contracts through `file:` specs. The smoke deletes `package-lock.json` and `node_modules` and installs with `legacy-peer-deps=false` and `strict-peer-deps=true`. It then asserts four things. The lockfile keeps `packages/chart` and the `node_modules/@bloxwap/chart` link. `npm ls` is clean. Node and esbuild resolve `@bloxwap/chart` (including hig-chart's lazy `@bloxwap/chart/react`) from the app into the workspace. The host's `HIGProvider` messages reach `PriceChart`. It repeats the checks after `npm ci` and requires a second `npm install` to leave the lockfile byte-identical. Every scenario runs twice: once with the ambient npm (in CI, the npm bundled with Node 22.22) and once with the npm pinned in `packageManager` (11.6.1, the version chart reported), which is installed into a scratch prefix. A control run repacks hig-react with the old optional peer and records in `evidence/packed-chart-workspace-smoke.json` whether each npm still drops the workspace.
 
 CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/example/visual/accessibility/budget gates and uploads review artifacts. A provenance record identifies source commit, package/contract/docs versions and hashes; it is not an npm registry provenance attestation or a release. Artifact inspection checks exports, licenses, optional peers and only approved assets. No example app implementation is included in runtime packages.
 
@@ -1355,7 +1513,7 @@ Rollback for an owning pilot: keep the previous package artifacts and lockfile, 
 
 The local dry-run command remains unable to publish, create tags, or create releases. The separate `publish.yml` workflow is manual and accepts an existing version tag only. Before its publishing job can start, it requires configured reviewers on the `npm-release` GitHub environment and a successful candidate quality run for that exact commit. The environment then supplies the maintainer review gate.
 
-The workflow rebuilds stable-simulation artifacts and runs `release:verify`: the tag, source commit and coordinated version must match; the complete seven-package set and every tarball hash must match; and all release blockers must be cleared or have a dated, named-owner approval link. Expired or undocumented exceptions fail. Uncommitted source changes fail. It never creates the tag or GitHub release for the maintainer.
+The workflow rebuilds stable-simulation artifacts and runs `release:verify`: the tag, source commit and coordinated version must match; the complete eight-package set and every tarball hash must match; and all release blockers must be cleared or have a dated, named-owner approval link. Expired or undocumented exceptions fail. Uncommitted source changes fail. It never creates the tag or GitHub release for the maintainer.
 
 An npm org owner must configure trusted publishing for each package name for `bloxwap/hig`, workflow `publish.yml`, environment `npm-release`, and approve the first registry version. The workflow pins npm 11.6.1 and Node 22.22.0, meeting [npm's trusted-publishing requirements](https://docs.npmjs.com/trusted-publishers/). Scope/name setup and any first-publish bootstrapping remain owner actions; no token is requested or stored by HIG tooling. Current local `npm whoami` returns E401 and `@bloxwap/hig-tokens` is not available from the public registry, so publication remains blocked.
 
@@ -1373,15 +1531,58 @@ These are review candidates, not published npm packages. Use local dry-run tarba
 
 Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs tarballs into an independent temporary consumer and builds the fixture. For a host app install tokens, contracts and React tarballs plus React/DOM 19.2. Import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once; import individual components such as `@bloxwap/hig-react/button`. Pin @bloxwap/font 0.1.2 and choose only the required families/scripts using asset URL @font-face rules named `'Bloxwap Sans'` and `'Bloxwap Mono'`; HIG controls read `--hig-font-sans`/`--hig-font-mono`, which fall back to those literal families. The included fixture has Sans and Mono only, and its browser smoke checks that `.hig-button` and `.hig-number` render loaded Bloxwap faces. Never copy font binaries or component folders.
 
+### Component CSS and the opt-in base
+
+`@bloxwap/hig-react/css` styles HIG components only. Every rule is scoped to a HIG class, for example `.hig-button`, `.hig-table` cells, `.hig-range` or `.hig-surface[data-severity]`. The box-sizing and focus ring rules use `:where()` on HIG classes, so they keep the specificity of a bare element rule and host CSS can still override them. Loading the file has no effect on plain `table`, `th`, `td`, `input[type=range]`, `[data-severity]` or the focus outline of a non-HIG element. Hosts that load HIG on some routes only can rely on this: Next.js keeps a route's stylesheet after a client navigation, and the scoped file then has no side effects on the other routes (#95).
+
+The page-wide element defaults are a separate, opt-in entry, `@bloxwap/hig-react/css/base`:
+
+| Rule | Effect |
+| --- | --- |
+| `* { box-sizing: border-box }` | Border-box sizing on every element |
+| `:focus-visible` | The 2px `--hig-focus` ring with a 3px offset on every focusable element |
+| `table`, `th`, `td` | Collapsed borders, full width, 12px cells with a `--hig-border` rule |
+| `input[type='range']` | `--hig-action` accent, 48px minimum height, full width |
+
+Import the base only when HIG owns the whole page, and import it before the component CSS:
+
+```ts
+import '@bloxwap/hig-tokens/css';
+import '@bloxwap/hig-react/css/base'; // optional: page-wide element defaults
+import '@bloxwap/hig-react/css';
+```
+
+These are the rules that `@bloxwap/hig-react/css` applied to the whole page before #95, so a host that adds the base sees no change. The HIG docs site and the web and Next fixtures import it. HIG components look the same with or without the base. `npm run smoke:packed-react-css` checks this. It installs the packed tokens, contracts and React tarballs into an empty consumer and renders Table, Slider, Button and Alert to static markup. Then, in Chromium, Firefox and WebKit, it compares three script-free pages: tokens only, tokens plus `@bloxwap/hig-react/css`, and tokens plus the base and the component CSS. The plain table, cells, range, box-sizing, `[data-severity]` and keyboard focus outline must compute the same with the component CSS as with tokens only. The base page must change them, which proves the check can see a leak. The components must compute the same with and without the base. `npm run smoke:packed-boundaries` also checks that both entries resolve through package exports in a bundler and that the component CSS has no selector outside HIG classes.
+
 ### Radix overlay peers and Fumadocs
 
 The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig-react/overlay`, `@bloxwap/hig-react/recipes` or `@bloxwap/hig-react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
 
 ## SSR and Next client boundaries
 
-Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream.
+Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout (or in the route layouts that use HIG; the component CSS is scoped, see above) and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream.
 
 Fonts in Next: put the `@bloxwap/font` loader variables on `<html>`, for example `<html className={`${BloxwapSans.variable} ${BloxwapMono.variable}`}>`. The loaders register hashed family names, so HIG never matches a literal `'Bloxwap Sans'` there. Instead `--hig-font-sans` and `--hig-font-mono` in `@bloxwap/hig-tokens/css` resolve `var(--font-bloxwap-sans)` and `var(--font-bloxwap-mono)` first and fall back to the literal families. No bridge CSS is needed. If a host keeps its own variable names, override the roles on `:root` after importing the tokens CSS: `:root { --hig-font-sans: var(--my-sans), 'Bloxwap Sans', system-ui, sans-serif; }`. The variables must be defined on `<html>` (not `<body>`), because the roles resolve on `:root`. `npm run smoke:packed-next` serves the packed consumer and checks, in Chromium, that `.hig-button` and `.hig-number` compute to a loaded Bloxwap face (`document.fonts.check` plus the `FontFace` status). Next 16.4.0 (webpack), React 19.2 and the published Bloxwap Sans Next loader are verified in the dedicated production fixture; other Next versions require host checks. Verify hydration, stable IDs and StrictMode before adopting a host version.
+
+## Open Graph card fonts
+
+Satori, `next/og` `ImageResponse` and `@vercel/og` read TTF/OTF but not WOFF2, and `@bloxwap/font` ships only WOFF2. Docs and marketing sites that render OG cards install `@bloxwap/hig-og-fonts` as a build-time dev dependency. Do not use `@bloxwap/hig-native-fonts` for this (#99). The package holds five static Latin faces: Bloxwap Sans 400, 500, 700 and 900, and Bloxwap Mono 500. These are the faces the chart, sfx, agent-cli and tapsiren cards use. It packs to about 0.84 MB; the native fonts package is 4.4 MB. `npm run generate:fonts` copies the five faces byte for byte from `@bloxwap/hig-native-fonts`, so each SHA-256 in its manifest equals the native manifest entry. The release dry run records the packed size in `packedSizes.ogFonts` and fails at 1,000,000 B.
+
+Node runtime (route handlers with `export const runtime = 'nodejs'`, or static OG export scripts):
+
+```tsx
+import {ImageResponse} from 'next/og';
+import {loadOgFonts} from '@bloxwap/hig-og-fonts/node';
+
+const fonts = await loadOgFonts(); // {name, data, weight, style}[]; throws if any TTF's SHA-256 differs from the manifest
+export function GET() {
+  return new ImageResponse(<div style={{display: 'flex', fontFamily: 'Bloxwap Sans', fontWeight: 700}}>Bloxwap</div>, {width: 1200, height: 630, fonts});
+}
+```
+
+This works in a Next 16 route handler with the default Turbopack build and with `next build --webpack`. Turbopack copies the five faces into `.next/server`, so `output: 'standalone'` works even after you move it. webpack reads the faces from `node_modules/@bloxwap/hig-og-fonts/fonts` at the absolute path it had at build time. If a webpack standalone build runs from another directory, add `serverExternalPackages: ['@bloxwap/hig-og-fonts']` to `next.config`. Earlier 0.1.0 candidate builds made each face's path from a template URL, and under Turbopack every face read the same file. The route then failed with `BloxwapSans.ttf: SHA-256 f969fd1e… does not match the manifest`.
+
+Pass a subset if you need fewer faces: `loadOgFonts(ogFonts.filter(f => f.weight >= 700))`, with `ogFonts` imported from `@bloxwap/hig-og-fonts`. Edge and Workers runtimes cannot read `node_modules` at request time. Copy `@bloxwap/hig-og-fonts/fonts/<asset>` into a gitignored build folder at build time. Before you write each file, check it against `fontManifest.outputs[asset]` (from the package root, or as JSON at `@bloxwap/hig-og-fonts/manifest`), as tapsiren's `copy-og-fonts.mjs` does. Plain Node ESM scripts outside Next import `next/og.js`, because `next` has no exports map. `npm run smoke:packed-og` installs the packed tarball next to `next@16.4.0` in a clean consumer. It hashes every exported TTF against both manifests and renders 1200×630 PNG cards through `ImageResponse`: each Sans weight must render differently, and none may match the default font. It also requires `readOgFont` to reject a tampered face. It then builds an `app/og/route.tsx` handler with the code above and checks it four ways: Turbopack and `--webpack`, each under `next start`; Turbopack `output: 'standalone'`; and webpack standalone with `serverExternalPackages`. Each standalone build is moved to another directory with the consumer's `node_modules` hidden. Every face must come back with its own SHA-256, and every card must match the plain Node render byte for byte. Results go to `evidence/packed-og-smoke.json`.
 
 ## Expo / React Native
 
@@ -1424,7 +1625,7 @@ Tailwind may reference these values through host configuration; HIG does not req
 
 ## Optional chart, sound and haptics
 
-Chart is DOM-only and lazy; install @bloxwap/chart 0.3.0 for that entry and supply a textual summary. Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
+Chart is DOM-only and lazy. The adapter is its own package, `@bloxwap/hig-chart` (#96): install it with `@bloxwap/chart` `^0.3.0` (a required peer) and supply a textual summary. `@bloxwap/hig-react` has no `@bloxwap/chart` peer, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](components/chart.md). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
 
 ## Stable citations and upgrades
 
@@ -1432,43 +1633,20 @@ Cite “Bloxwap HIG 0.1.0 candidate, chapter/anchor” plus an immutable GitHub 
 
 The native fixture pins React **19.1.0**, matching the RN 0.81.5 renderer exactly; the RN 0.83 profile pins **19.2.0**, matching the RN 0.83.10 renderer. Web/Next/Fumadocs fixtures use React 19.2.0. Metro explicitly resolves every native `react`/`react/*` import to the native fixture's version so shared-workspace code cannot load web React. Quality and packed-native checks compare the installed version to the version RN's Paper and Fabric renderers are built for (RN 0.83 no longer throws on a mismatch, so the check reads the renderer build itself); a successful Metro bundle alone does not prove runtime compatibility. The packed check also fails when a declared `@bloxwap/hig-native` or `@bloxwap/hig-feedback` peer range rejects a version the consumer installed.
 
-## Partial web adoption
-
-`@bloxwap/hig-react/css` styles HIG components only. It leaves host tables, cells, ranges, box sizing, focus rings, and status attributes unchanged on other routes, including after client navigation. Hosts that want document-wide border-box sizing and the HIG focus outline explicitly import `@bloxwap/hig-react/css/base` after their reset. Tokens remain a separate import.
-
-```ts
-import '@bloxwap/hig-tokens/css';
-import '@bloxwap/hig-react/css';
-// Optional document-wide defaults:
-import '@bloxwap/hig-react/css/base';
-```
-
-`PriceChart` keeps its individual `@bloxwap/hig-react/chart` entry. Install `@bloxwap/chart@^0.3.0` directly in the consuming application, or use that repository's chart workspace. The shared React renderer declares no chart peer, so regenerating a strict npm lockfile cannot replace or drop the host workspace. Applications that never import the adapter need no chart dependency.
-
-## Open Graph and Satori fonts
-
-Web pages load WOFF2 through `@bloxwap/font`. Build-time `next/og` and Satori renderers use the smaller `@bloxwap/hig-og-fonts` package instead of the full native font package. It contains four Latin TTFs: Sans Regular, SemiBold and Bold, and Mono Regular, with a packed ceiling below 1 MB. Every face keeps the canonical native manifest's SHA-256 hash; it is not regenerated from a second source.
-
-```ts
-import {readFile} from 'node:fs/promises';
-import {fontManifest} from '@bloxwap/hig-og-fonts';
-
-const sans = await readFile(new URL(import.meta.resolve(
-  '@bloxwap/hig-og-fonts/fonts/BloxwapSans-SemiBold.ttf',
-)));
-// Pass sans as the font data for Bloxwap Sans, weight 600, to ImageResponse/Satori.
-// fontManifest.outputs lists the expected SHA-256 of each TTF.
-```
-
-Until registry publication, install the coordinated candidate tarball using the same checksums as the other HIG packages. Source workspaces run `npm run generate:fonts` first; the generator requires `fonttools[woff]==4.61.1` and `brotli==1.2.0` in the selected Python environment. Quality and release commands report this preparation step when generated faces are absent.
-
 
 ## Native application pilot (#35)
 Source: docs/migration/native.md
 
 # Native application pilot (#35)
 
-Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.shac32771dc`, with one HIG feedback controller and 15 duplicate fonts removed. It loads the faces from `@bloxwap/hig-native-fonts` (#64) and passes translated `messages` (#62). It also drops the local Switch, Alert and Text workarounds (#67), and passes `direction` to `HIGProvider` on Android (#86). A wrapper sets the busy Button's accessible name until #94 is fixed. It was verified on the iOS Simulator and Android emulator, but it is not merged yet (it needs the required human `signoff`). Physical-device certification is tracked in #55. HIG is certified on React Native 0.83.10 / Expo SDK 55 (#68). No tactile, audible or VoiceOver observation is claimed.
+Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.shac32771dc`, with one HIG feedback controller and 15 duplicate fonts removed. It loads the faces from `@bloxwap/hig-native-fonts` (#64) and passes translated `messages` (#62). It also drops the local Switch, Alert and Text workarounds (#67), and passes `direction` to `HIGProvider` on Android (#86). It was verified on the iOS Simulator and Android emulator and merged as `2f636e8fe` on 2026-10-16. Physical-device certification is tracked in #55.
+
+Workarounds the app can drop at its next candidate refresh (a candidate built from `74f4f6a` or later; tracked in #115):
+
+- **Busy Button name (#94):** delete the `HigActionButton` wrapper's `higButtonAccessibilityLabel`. Button now sets the name itself: `{label} · {busy}` on iOS and `{label}` on Android, where React Native adds its own busy word, so Korean no longer reads `처리 중` twice.
+- **Display P3 (#93):** set `colorSpace='display-p3'` on the root `HIGProvider` and drop the local `nativeColors.iosDisplayP3` lookup for the Button fill (see [Native colour space](#native-colour-space-93)).
+- **Button text (#92):** the label and busy suffix now follow the provider `maxFontSizeMultiplier` and use the 600 face. Re-capture the large-text and fr/ko screens.
+- **Direction (#86):** `localeDirection` from `@bloxwap/hig-native/provider` can replace the app's own direction lookup. HIG is certified on React Native 0.83.10 / Expo SDK 55 (#68). No tactile, audible or VoiceOver observation is claimed.
 
 Pilot: font registration → dp/sRGB token mapping → amount/selection/review sheet → visible async outcome → independent feedback settings. The Expo gallery proves candidate packaging and contract examples, not the owning app's native build.
 
@@ -1476,6 +1654,7 @@ Checklist:
 - [ ] Record actual RN/Expo/Metro/autolinking versions, source commit, old ui-native/token/font/audio wrappers, screenshots and native bundle/assets/latency baseline.
 - [ ] Register the pinned static TTF faces from `@bloxwap/hig-native-fonts` and its typed `fontManifest`; register before setting family. Do not treat WOFF2 or an invented native family as success.
 - [ ] Map dp and legacy NativeWind rem roots explicitly. Keep Dynamic Type, 48 targets, logical RTL layout, safe areas, keyboard avoidance, native back and labelled fields/errors.
+- [ ] On RN 0.83, pass `HIGProvider direction={localeDirection(getLocales()[0])}` if the app supports RTL: an Android per-app Arabic or Hebrew locale does not reach `I18nManager.isRTL` ([localization](../foundations/localization.md#native-direction-from-the-host-locale), #86).
 - [ ] Preview native import codemods, using individual switch/checkbox/range entries; wire optional SVG/Slider/Expo audio/haptic peers only where used. Retain platform-specific descriptions and host callbacks.
 - [ ] Preserve raw financial strings, order/network logic, stable list identity and quiet live numbers. Use labelled list/readout native chart alternative unless a real supported native engine is reviewed.
 - [ ] Read old sound/haptic settings with a host migration adapter before writing v1 key. Keep explicit false choices, volume and motion independent; handle corrupt/missing storage conservatively.
@@ -1498,7 +1677,21 @@ Issue #64. Up to `0.1.0-candidate.sha7c67a07c`, `@bloxwap/hig-tokens` shipped th
 - **Expo / React Native:** add the `bloxwap-hig-native-fonts-*.tgz` tarball next to tokens, contracts and native (with a matching `overrides` entry when vendoring), then replace the import prefix. `nativeFont(fontManifest, 'BloxwapSans', 600)` from `@bloxwap/hig-contracts` returns the registration key. Hashes you already pinned stay valid.
 - **Satori / OG images in web repositories:** these also read static TTFs (bloxwap/chart's OG card is one). Install `@bloxwap/hig-native-fonts` as a build-time dependency for that script only, or read the TTF from `@bloxwap/font` if it ships one. Never copy the faces into the repository.
 - **Web-only hosts:** remove nothing. They keep loading fonts from `@bloxwap/font`, and their tokens tarball shrinks. `npm run release:dry-run` fails if any web or shared tarball contains `.ttf`, `.otf` or `.woff*` files, and it records the packed sizes in `packedSizes` in the release report.
-- **Coordination:** monorepo#4540 loads the faces from `@bloxwap/hig-tokens`. Rebase it on a candidate that includes this change, and switch it to the new prefix when it does.
+- **Coordination:** monorepo#4540 (merged) already loads the faces from `@bloxwap/hig-native-fonts`.
+
+## Native colour space (#93)
+
+Up to `0.1.0-candidate.shaac27cf7`, HIG native components always painted `nativeSrgb` hex values. On an iOS host whose React Native default colour space is Display P3, those values were read as P3 channels, so the Switch track, Alert accent, Text, Surface and the other components painted warning, negative and info more saturated than the token. HIG now selects one of its own tables through the provider:
+
+```tsx
+// iOS hosts whose app delegate returns .displayP3 from defaultColorSpace() (bloxwap/monorepo apps/mobile/plugins/with-ios-display-p3.js).
+<HIGProvider colorSpace='display-p3'>{app}</HIGProvider>
+```
+
+- **Display P3 hosts** set `colorSpace='display-p3'` on the root `HIGProvider`. iOS then paints `nativeColors.iosDisplayP3`, and Android and web keep `nativeSrgb`, so the prop can be set unconditionally. Nested providers inherit it.
+- **Host-drawn colour** next to HIG components: drop local `nativeColors.iosDisplayP3` lookups and per-platform selection and read `useColors()` from `@bloxwap/hig-native/provider`. Delete wrappers that only existed to pass a P3 colour into Button `style`.
+- **sRGB hosts** change nothing. The default is `srgb` and renders the same values as before.
+- Raw colours are still not accepted. `colorSpace` takes only `'srgb'` or `'display-p3'`, and any other value falls back to sRGB.
 
 Rollback: host feature flag restores old renderer/backends and previous lockfile. Persisted business data and feedback choices retain old-compatible fields during staged rollout; avoid one-way preference deletion. Keep old static assets until both physical platforms pass.
 
@@ -1526,11 +1719,15 @@ Checklist:
 - [ ] Compare before/after at the same viewport/data/toolchain; record measured source/asset/bundle delta without guessed improvements.
 - [ ] Remove old copies/dependencies only after reference search and build/device proof. Link owning PR and residual surface work in adoption matrix.
 
+## Partial adoption: scoped component CSS and the opt-in base (#95)
+
+`@bloxwap/hig-react/css` now styles HIG components only, so a product can load it on the routes it migrates and leave the rest of the site alone. Next.js keeps a route's stylesheet after a client navigation. Before #95 the file also set page-wide rules (`* { box-sizing }`, a global `:focus-visible` ring, `table`/`th`/`td` and `input[type=range]` defaults), and these reached routes that never imported HIG. Those rules are now the opt-in entry `@bloxwap/hig-react/css/base` (see [installation](../installation.md#component-css-and-the-opt-in-base)).
+
+- **Whole-page adopters** (bloxwap.app, bloxwap.pro, docs sites): add `import '@bloxwap/hig-react/css/base'` before `@bloxwap/hig-react/css` to keep the current look of plain tables, ranges and focus rings. HIG components need no change.
+- **Partial adopters**: import only `@bloxwap/hig-react/css` in the HIG routes, and delete any host reset that undid the old global rules. taptradetv loads HIG only on `/sponsors` ([taptradetv#188](https://github.com/bloxwap/taptradetv/pull/188), #59). It can drop the `th, td` reset in `apps/web/app/sponsors/sponsors-hig.css` once it moves to a candidate that contains #95. The `/schedule` calendar then keeps its own cell styles after a navigation from `/sponsors`, and non-HIG routes keep the host's focus ring.
+- Before removing a reset, verify with a client navigation from a HIG route to a non-HIG route in a production build. Compare the computed styles of tables, ranges and focus rings, not only screenshots.
+
 Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. The adoption matrix, not this kit, records which surfaces are migrated.
-
-## Stylesheet isolation
-
-Load `@bloxwap/hig-react/css` for HIG controls without compensating resets on unrelated routes. The package scopes its table, range, focus, box-sizing and severity rules to HIG components. Remove the host resets that previously countered global HIG `th`/`td` or focus rules after upgrading to this candidate. Use `@bloxwap/hig-react/css/base` only when the entire document intentionally adopts the global reset. Compare both direct loads and client navigation from an adopting route to a non-adopting route.
 
 
 ## Five SDK documentation pilots (#34)
@@ -1547,6 +1744,8 @@ Owner: each SDK repository's docs maintainers (named assignment in #57). Preserv
 | font | Type roles, common controls/geometry and code windows | Type tester, glyph coverage, variable axes and locale companions | Font licensing/provenance, subsets/bytes, scripts/RTL/large text and tester functionality |
 | sfx | Controls/presets/settings/docs states | Sound board and recipe editor/export | Trusted audio unlock, mute/volume, edited recipes, native WAV command docs and cleanup |
 | haptic | Common controls and explicit capability labels | Physical-target/platform demo and certification references | Physical iOS/Android/VoiceOver evidence remains upstream haptic#9; no API-call-as-tactile-proof claims |
+
+Docs sites that render Markdown tables or plain form controls relied on the page-wide rules that `@bloxwap/hig-react/css` set before #95. On a candidate that contains #95, add `@import '@bloxwap/hig-react/css/base';` before `@import '@bloxwap/hig-react/css';` to keep the same look, as the HIG docs site does. See [installation](../installation.md#component-css-and-the-opt-in-base).
 
 Per-repo checklist:
 - [ ] Pin source commit, HIG version and staged tarballs; capture before pages and duplicate CSS/primitive/font/audio/dependency/bundle baseline.
@@ -1580,11 +1779,43 @@ HIG token/component packages for shared behavior, and keep the written guide
 compact with **rule → token or recipe → exception** rather than duplicating the
 five implementations.
 
-## Follow-up package upgrades
+## OG card fonts: switch to `@bloxwap/hig-og-fonts` (#99)
 
-Chart, SFX, agent-cli and tapsiren should replace the full `@bloxwap/hig-native-fonts` build dependency with `@bloxwap/hig-og-fonts` for their OG/Satori renderers. Update each TTF resolver to `@bloxwap/hig-og-fonts/fonts/<face>.ttf`, use its manifest for hash checks, and remove the unused native-font tarball after a clean OG render. Sans 400/600/700 and Mono 400 retain their canonical bytes. Runtime native apps continue using the full native package.
+Since #64, chart, sfx, agent-cli and tapsiren vendor the whole `@bloxwap/hig-native-fonts` tarball (4,420,375 B, 15 faces) as a build-time dev dependency, but their Satori/`next/og` cards read only two to four TTFs. Switch each repository at its next HIG candidate refresh:
 
-Chart keeps `@bloxwap/chart` as a direct workspace dependency. HIG's chart adapter is still individually imported, but the shared renderer no longer declares an optional chart peer. Regenerate the lockfile with normal strict peer resolution; no `legacy-peer-deps` workaround is needed. Verify the workspace symlink after a clean install.
+| Repository | OG card file | Faces it reads | Change |
+| --- | --- | --- | --- |
+| chart | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Replace the `node_modules/@bloxwap/hig-native-fonts/fonts` path with `loadOgFonts(ogFonts.filter(f => f.weight >= 700))` |
+| sfx | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Replace both `hig.resolve('@bloxwap/hig-native-fonts/fonts/…')` reads with the same `loadOgFonts` call |
+| agent-cli | `apps/docs/lib/og-card.tsx` | Sans 700, 900 | Same as sfx |
+| tapsiren | `workers/tapsiren/scripts/copy-og-fonts.mjs` | Sans 400, 500, 700; Mono 500 | Keep the build-time copy (the card runs on Workers). Resolve `@bloxwap/hig-og-fonts/manifest` and `@bloxwap/hig-og-fonts/fonts/<face>` instead of the native package; the SHA-256 values do not change |
+
+In each repository:
+
+1. Vendor `bloxwap-hig-og-fonts-<candidate>.tgz` from `artifacts/release-candidate/` (about 0.84 MB packed; the exact size is in `packedSizes.ogFonts` of that candidate's release report). Record its SHA-256 next to the other tarballs in `vendor/bloxwap-hig/`.
+2. Replace the `@bloxwap/hig-native-fonts` dev dependency with `@bloxwap/hig-og-fonts`, regenerate the lockfile, and delete the native fonts tarball unless the repository also ships a React Native app.
+3. Import the fonts from `@bloxwap/hig-og-fonts/node` (`loadOgFonts`, `readOgFont`). These check every SHA-256 against the package manifest. They work with the default Turbopack `next build` and with `next build --webpack`. If the docs app uses webpack with `output: 'standalone'` and the build moves, add `serverExternalPackages: ['@bloxwap/hig-og-fonts']`. Vendor a candidate that includes the per-face asset URL fix. Under Turbopack, an earlier `0.1.0` tarball returns 500 with `SHA-256 … does not match the manifest`. An edge host checks `fontManifest.outputs` itself, as tapsiren does. Font names (`'Bloxwap Sans'`, `'Bloxwap Mono'`) and weights stay the same.
+4. Rebuild the OG cards and compare them with the previous images. The faces are byte-identical copies, so the cards should not change. Record the vendored-byte delta in the repository's adoption evidence and update its row in `planning/adoption.json`.
+
+See [Open Graph card fonts](../installation.md#open-graph-card-fonts) for the full API and the edge-runtime path.
+
+## Chart adapter: `@bloxwap/hig-chart` (#96)
+
+`@bloxwap/hig-react` no longer has a `./chart` entry or an optional `@bloxwap/chart` peer. `PriceChart` and `chartTheme` moved unchanged to `@bloxwap/hig-chart`, which requires `@bloxwap/chart` `^0.3.0` as a peer. The optional peer made npm drop chart's `packages/chart` workspace when `package-lock.json` was regenerated from scratch without `legacy-peer-deps`. This reproduces on npm 10.9.9, 11.6.1, 11.21.1 and 12.2.0. A required peer does not trigger it.
+
+| Repository | Uses `@bloxwap/hig-react/chart`? | Change at the next HIG refresh |
+| --- | --- | --- |
+| chart | No. The docs theme comes from `@bloxwap/hig-tokens` (`apps/docs/scripts/hig-tokens.mjs`) | Vendor the new hig-react tarball. Remove the `legacy-peer-deps` regeneration note from `vendor/bloxwap-hig/README.md`. A from-scratch `npm install` then keeps `@bloxwap/chart -> ./packages/chart`. Vendor `@bloxwap/hig-chart` only if the docs adopt `PriceChart` |
+| sfx, haptic, hyperliquid, font | No | None beyond the usual tarball refresh |
+
+A host that does import the entry changes one specifier and adds the package:
+
+```diff
+-import {PriceChart} from '@bloxwap/hig-react/chart';
++import {PriceChart} from '@bloxwap/hig-chart';
+```
+
+The candidate was never published, and a GitHub code search on 2026-10-16 found no consumer outside this repository, so no deprecated shim is kept (see [charts](../components/chart.md#moved-from-bloxwap-hig-react-chart-96)). `npm run smoke:packed-chart-workspace` reproduces chart's layout: an npm workspace whose `packages/chart` provides `@bloxwap/chart`, and an app that depends on the packed hig-react and hig-chart. It deletes the lockfile, reinstalls with strict peers and fails if the workspace link is lost.
 
 
 ## Documentation website and migration shell · HIG 0.1.0

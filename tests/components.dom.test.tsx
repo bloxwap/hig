@@ -1,4 +1,4 @@
-import React,{useState,createRef} from 'react';
+import React,{useState,createRef,useLayoutEffect} from 'react';
 import {afterEach,describe,it,expect,vi} from 'vitest';
 import {render,screen,cleanup,fireEvent} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,12 +6,12 @@ import {Button} from '../packages/react/src/button';
 import {HIGProvider} from '../packages/react/src/provider';
 import {Field,AmountInput,TextArea} from '../packages/react/src/field';
 import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/react/src/selection';
-import {Tabs} from '../packages/react/src/navigation';
+import {Tabs,Accordion} from '../packages/react/src/navigation';
 import {Dialog} from '../packages/react/src/overlay';
 import {Toast,Callout} from '../packages/react/src/status';
-import {InstallCommand} from '../packages/react/src/recipes';
+import {InstallCommand,CodeWindow} from '../packages/react/src/recipes';
 import {readFileSync} from 'node:fs';
-import {Percent} from '../packages/react/src/data';
+import {Percent,Table} from '../packages/react/src/data';
 afterEach(cleanup);
 describe('DOM behavior contracts',()=>{
  it('blocks busy/disabled activation and preserves forwarded focus',async()=>{const onClick=vi.fn();const feedback=vi.fn();const ref=createRef<HTMLButtonElement>();const {rerender}=render(<HIGProvider onAccepted={feedback}><Button ref={ref} busy onClick={onClick}>Review order</Button></HIGProvider>);await userEvent.click(screen.getByRole('button'));expect(onClick).not.toHaveBeenCalled();expect(feedback).not.toHaveBeenCalled();rerender(<HIGProvider onAccepted={feedback}><Button ref={ref} onClick={onClick}>Review order</Button></HIGProvider>);ref.current?.focus();expect(document.activeElement).toBe(ref.current);await userEvent.keyboard('{Enter}');expect(onClick).toHaveBeenCalledTimes(1);expect(feedback).toHaveBeenCalledTimes(1);});
@@ -25,7 +25,7 @@ describe('DOM behavior contracts',()=>{
  it('gives InstallCommand inside Tabs one tab stop: the panel yields to its focusable first content (#69)',async()=>{
   render(<><Tabs label='Package manager' items={[{value:'npm',label:'npm',content:<InstallCommand command='npm install @bloxwap/chart' onCopy={()=>{}}/>},{value:'text',label:'Notes',content:'Plain notes'}]}/><button type='button'>After</button></>);
   const panel=screen.getByRole('tabpanel');const pre=panel.querySelector('pre')!;
-  await vi.waitFor(()=>expect(panel.hasAttribute('tabindex')).toBe(false));
+  expect(panel.hasAttribute('tabindex')).toBe(false);
   await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('tab',{name:'npm'}));
   await userEvent.tab();expect(document.activeElement).toBe(pre);
   await userEvent.tab();expect(document.activeElement).toBe(screen.getByRole('button',{name:'Copy install command'}));
@@ -33,16 +33,56 @@ describe('DOM behavior contracts',()=>{
   await userEvent.tab({shift:true});await userEvent.tab({shift:true});await userEvent.tab({shift:true});expect(document.activeElement).toBe(screen.getByRole('tab',{name:'npm'}));
   // A panel that starts with plain text keeps its own stop so its content is reachable.
   await userEvent.keyboard('{ArrowRight}');const notes=screen.getByRole('tabpanel');expect(notes.textContent).toBe('Plain notes');
-  await vi.waitFor(()=>expect(notes.getAttribute('tabindex')).toBe('0'));
+  expect(notes.getAttribute('tabindex')).toBe('0');
   await userEvent.tab();expect(document.activeElement).toBe(notes);
  });
- it('keeps a panel tab stop when text precedes a focusable control',async()=>{render(<Tabs label='Docs' items={[{value:'a',label:'Intro',content:<p>Read first <a href='#more'>more</a></p>}]}/>);const panel=screen.getByRole('tabpanel');await new Promise(r=>setTimeout(r,0));expect(panel.getAttribute('tabindex')).toBe('0');});
+ it('corrects the shown panel tab stop in the same commit that shows it, with no extra tick (#97)',()=>{
+  // A layout-effect probe rendered after Tabs records what the shown panel exposes during the commit that reveals it, before paint and before passive effects.
+  const seen:{label:string|null;tabindex:string|null}[]=[];
+  function Probe(){useLayoutEffect(()=>{const shown=document.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])');seen.push({label:shown?.getAttribute('aria-labelledby')??null,tabindex:shown?.getAttribute('tabindex')??null});});return null;}
+  function Harness(){const [value,setValue]=useState('notes');return <><Tabs label='Package manager' value={value} onValueChange={setValue} items={[{value:'notes',label:'Notes',content:'Plain notes'},{value:'npm',label:'npm',content:<InstallCommand command='npm install @bloxwap/chart' onCopy={()=>{}}/>},{value:'more',label:'More',content:<p>Read first <a href='#more'>more</a></p>}]}/><Probe/></>;}
+  render(<Harness/>);
+  const panel=()=>screen.getByRole('tabpanel');
+  expect(panel().textContent).toBe('Plain notes');expect(panel().getAttribute('tabindex')).toBe('0');
+  // Panel that starts with a focusable element: never a tab stop, not even for one commit.
+  seen.length=0;fireEvent.click(screen.getByRole('tab',{name:'npm'}));
+  expect(panel().querySelector('pre')).toBeTruthy();expect(panel().hasAttribute('tabindex')).toBe(false);
+  const npmCommits=seen.filter(s=>s.label?.endsWith('-tab-npm'));expect(npmCommits.length).toBeGreaterThan(0);expect(npmCommits.map(s=>s.tabindex)).toEqual(npmCommits.map(()=>null));
+  // Panel whose first content is text keeps its own stop in the commit that shows it.
+  seen.length=0;fireEvent.click(screen.getByRole('tab',{name:'More'}));
+  expect(panel().textContent).toBe('Read first more');expect(panel().getAttribute('tabindex')).toBe('0');
+  const moreCommits=seen.filter(s=>s.label?.endsWith('-tab-more'));expect(moreCommits.length).toBeGreaterThan(0);expect(moreCommits.map(s=>s.tabindex)).toEqual(moreCommits.map(()=>'0'));
+  // Switching back restores the yielded stop synchronously, and hidden panels keep their rendered tabindex.
+  seen.length=0;fireEvent.click(screen.getByRole('tab',{name:'npm'}));
+  expect(panel().hasAttribute('tabindex')).toBe(false);expect(seen.filter(s=>s.label?.endsWith('-tab-npm')).every(s=>s.tabindex===null)).toBe(true);
+  for(const hidden of document.querySelectorAll('[role="tabpanel"][hidden]'))expect(hidden.getAttribute('tabindex')).toBe('0');
+ });
+ it('keeps a non-focusable panel a tab stop synchronously after switching tabs (#97)',()=>{
+  render(<Tabs label='Docs' items={[{value:'code',label:'Code',content:<InstallCommand command='npm install @bloxwap/hig-react' onCopy={()=>{}}/>},{value:'text',label:'Notes',content:'Plain notes'}]}/>);
+  expect(screen.getByRole('tabpanel').hasAttribute('tabindex')).toBe(false);
+  fireEvent.click(screen.getByRole('tab',{name:'Notes'}));
+  const notes=screen.getByRole('tabpanel');expect(notes.textContent).toBe('Plain notes');expect(notes.getAttribute('tabindex')).toBe('0');
+ });
+ it('keeps a panel tab stop when text precedes a focusable control',async()=>{render(<Tabs label='Docs' items={[{value:'a',label:'Intro',content:<p>Read first <a href='#more'>more</a></p>}]}/>);const panel=screen.getByRole('tabpanel');expect(panel.getAttribute('tabindex')).toBe('0');});
  it('renders documented Callout note and tip severities with ReactNode titles (#69)',()=>{
   render(<><Callout title={<>Use <code>createChart</code></>} severity='note' announce={false}><p>Body</p></Callout><Callout title='Tip' severity='tip' announce={false}>Shortcut</Callout></>);
   const note=screen.getByText('createChart').closest('section')!;expect(note.getAttribute('data-severity')).toBe('note');expect(note.querySelector('strong')?.textContent).toBe('Use createChart');expect(note.querySelector('strong code')).toBeTruthy();
   expect(screen.getByText('Tip').closest('section')!.getAttribute('data-severity')).toBe('tip');
   const css=readFileSync('packages/react/src/styles.css','utf8');
   for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']])expect(css).toMatch(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{[^}]*var\\(--hig-${role}\\)`));
+ });
+ it('scopes component CSS to HIG classes and keeps every focusable part inside the scoped focus ring (#95)',()=>{
+  const css=readFileSync('packages/react/src/styles.css','utf8').replace(/\/\*[\s\S]*?\*\//g,'');
+  for(const bare of [/(?:^|\})\s*\*\s*\{/m,/(?:^|\})\s*:focus-visible\s*\{/m,/(?:^|[},])\s*(?:table|th|td)\s*[{,]/m,/(?:^|\})\s*input\[type=.range.\]/m,/(?:^|[},])\s*\[data-severity/m])expect(css).not.toMatch(bare);
+  const base=readFileSync('packages/react/src/base.css','utf8');
+  for(const rule of ['* { box-sizing: border-box; }',':focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }','table { border-collapse:collapse;width:100%; }',"input[type='range']"])expect(base).toContain(rule);
+  expect(JSON.parse(readFileSync('packages/react/package.json','utf8')).exports['./css/base']).toBe('./dist/base.css');
+  const ring=/(:where\([^{]*\)):focus-visible\s*\{[^}]*outline:2px solid var\(--hig-focus\)/.exec(css)?.[1];expect(ring).toBeTruthy();
+  render(<><Table caption='Prices' rows={[{id:'a'}]} keyFor={r=>r.id} columns={[{key:'id',label:'Market',onSort:()=>{},sort:'ascending',render:r=>r.id}]}/><Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/><Accordion title='More'>Body</Accordion><CodeWindow language='bash'>npm ci</CodeWindow><InstallCommand command='npm i' onCopy={()=>{}}/><Slider label='Amount'/><Switch label='Alerts'/><RadioGroup label='Side' options={[{value:'buy',label:'Buy'}]}/><SegmentedControl label='Mode' options={[{value:'a',label:'A'}]}/></>);
+  expect(document.querySelector('table')?.classList.contains('hig-table')).toBe(true);
+  const focusable=[...document.querySelectorAll<HTMLElement>('button,input,select,textarea,summary,a[href],[tabindex]')].filter(el=>el.tabIndex>=0||el.getAttribute('tabindex')!==null);
+  expect(focusable.length).toBeGreaterThan(8);
+  for(const el of focusable)expect(el.matches(ring!),el.outerHTML.slice(0,80)).toBe(true);
  });
  it('moves tabs with keyboard and exposes only selected panel',async()=>{render(<Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/>);screen.getByRole('tab',{name:'Preview'}).focus();await userEvent.keyboard('{ArrowRight}');expect(screen.getByRole('tab',{name:'Code'}).getAttribute('aria-selected')).toBe('true');expect(screen.getByRole('tabpanel').textContent).toBe('Code body');});
  it('dismisses modal with Escape and restores trigger focus',async()=>{function Example(){const [open,set]=useState(false);return <Dialog open={open} onOpenChange={set} title='Review' description='Verify amount' trigger={<Button>Open review</Button>}><Button>Confirm</Button></Dialog>;}render(<Example/>);await userEvent.click(screen.getByText('Open review'));expect(screen.getByRole('dialog').getAttribute('aria-describedby')).toBeTruthy();await userEvent.keyboard('{Escape}');expect(screen.queryByRole('dialog')).toBeNull();expect(document.activeElement).toBe(screen.getByText('Open review'));});

@@ -84,16 +84,12 @@
       "types": "./dist/recipes/activity-list.d.ts",
       "import": "./dist/recipes/activity-list.js"
     },
-    "./chart": {
-      "types": "./dist/chart.d.ts",
-      "import": "./dist/chart.js"
-    },
     "./css": "./dist/styles.css",
+    "./css/base": "./dist/base.css",
     "./animated-number": {
       "types": "./dist/animated-number.d.ts",
       "import": "./dist/animated-number.js"
-    },
-    "./css/base": "./dist/base.css"
+    }
   },
   "peerDependencies": {
     "react": "^19.1.0",

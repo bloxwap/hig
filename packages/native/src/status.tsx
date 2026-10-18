@@ -5,17 +5,17 @@ import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from '@bloxwap/hig-contracts';
 import {Button} from './button.js';
 import * as en from '@bloxwap/hig-contracts/messages';
-import {useHIG} from './provider.js';
-import {plainText} from './text-content.js';
+import {useColors,useHIG} from './provider.js';
+import {blockText,plainText} from './text-content.js';
 import {roleColor,type AccentRole} from './roles.js';
 export type {AccentRole} from './roles.js';
 const severityRole={info:'info',note:'info',success:'positive',tip:'positive',warning:'warning',error:'negative'} as const;
 /** `note` and `tip` are documentation callout severities that reuse the info and positive token roles. */
 export type AlertSeverity=keyof typeof severityRole;
 function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
-export function Badge({children}:React.PropsWithChildren){const {colors}=useHIG();return <Text style={{backgroundColor:colors.nested,borderRadius:9999,padding:8}}>{children}</Text>;}
+export function Badge({children}:React.PropsWithChildren){const colors=useColors();return <Text style={{backgroundColor:colors.nested,borderRadius:9999,padding:8}}>{children}</Text>;}
 /** Severity sets the accent role (info/note → info, success/tip → positive, warning, error → negative); `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
-export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const {colors}=useHIG();const accent=roleColor(tone,severityRole[severity]??'info',colors);const message=[plainText(title),plainText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{borderWidth:1,borderStartWidth:4,borderColor:accent}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
+export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const accent=roleColor(tone,severityRole[severity]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{borderWidth:1,borderStartWidth:4,borderColor:accent}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
 export const Callout=Alert;
 export interface Notice {
  id:string;
@@ -37,7 +37,7 @@ export interface ToastProps {
 }
 /** Compact, scrollable notices remain visible until their host removes them. */
 export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastProps){
- const {messages,colors}=useHIG();
+ const {messages}=useHIG();const colors=useColors();
  const {height}=useWindowDimensions();
  const dismiss=dismissLabel??messages.dismiss??en.dismiss;
  const unique=[...new Map(notices.map(n=>[n.id,n])).values()];
@@ -66,9 +66,9 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
   {Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}
  </View>;
 }
-export function Spinner({label}: {label?:string}){const {messages,colors}=useHIG();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
+export function Spinner({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){const {locale,messages}=useHIG();return <View accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}><Text>{label}{value===undefined?'…':` ${value}/${max}`}</Text></View>;}
-export function Skeleton({label}: {label?:string}){const {messages,colors}=useHIG();return <View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10}}/>;}
+export function Skeleton({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();return <View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10}}/>;}
 export function EmptyState({title,description,action}: {title:string;description:string;action?:React.ReactNode}){return <Surface><Heading>{title}</Heading><Text>{description}</Text>{action}</Surface>;}
 export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<Text accessibilityLabel={name}>{name.slice(0,2)}</Text>;}
 export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const {messages}=useHIG();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;return <Text>{label}: {text}</Text>;}

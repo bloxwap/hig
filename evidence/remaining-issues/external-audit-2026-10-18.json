@@ -1,0 +1,1004 @@
+{
+  "checkedAt": "2026-10-18T16:20:58.093812+00:00",
+  "scope": [
+    55,
+    56,
+    57,
+    70,
+    100,
+    101,
+    110,
+    115
+  ],
+  "evidenceScope": "Read-only GitHub/npm/source/device audit. No remote messages, approvals, releases, publication or consumer changes.",
+  "issues": {
+    "55": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-17T00:32:24Z",
+      "url": "https://github.com/bloxwap/hig/issues/55",
+      "comments": 2,
+      "latestComment": "https://github.com/bloxwap/hig/issues/55#issuecomment-6227378700"
+    },
+    "56": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-15T10:12:18Z",
+      "url": "https://github.com/bloxwap/hig/issues/56",
+      "comments": 0,
+      "latestComment": null
+    },
+    "57": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-15T10:11:39Z",
+      "url": "https://github.com/bloxwap/hig/issues/57",
+      "comments": 0,
+      "latestComment": null
+    },
+    "70": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-15T10:12:23Z",
+      "url": "https://github.com/bloxwap/hig/issues/70",
+      "comments": 0,
+      "latestComment": null
+    },
+    "100": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-15T23:36:25Z",
+      "url": "https://github.com/bloxwap/hig/issues/100",
+      "comments": 0,
+      "latestComment": null
+    },
+    "101": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-15T23:36:26Z",
+      "url": "https://github.com/bloxwap/hig/issues/101",
+      "comments": 0,
+      "latestComment": null
+    },
+    "110": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-18T07:01:44Z",
+      "url": "https://github.com/bloxwap/hig/issues/110",
+      "comments": 2,
+      "latestComment": "https://github.com/bloxwap/hig/issues/110#issuecomment-6246885749"
+    },
+    "115": {
+      "state": "OPEN",
+      "updatedAt": "2026-10-16T23:26:53Z",
+      "url": "https://github.com/bloxwap/hig/issues/115",
+      "comments": 0,
+      "latestComment": null
+    }
+  },
+  "publication": {
+    "checkedAt": "2026-10-18T16:19:46.012213+00:00",
+    "npmWhoami": "E401",
+    "packages": {
+      "@bloxwap/sfx": {
+        "exitCode": 0,
+        "result": {
+          "version": "0.1.0",
+          "dist-tags": {
+            "latest": "0.1.0"
+          },
+          "time.modified": "2026-09-30T03:45:14.236Z",
+          "repository.url": "git+https://github.com/bloxwap/sfx.git"
+        }
+      },
+      "@bloxwap/haptic": {
+        "exitCode": 0,
+        "result": {
+          "version": "0.1.0",
+          "dist-tags": {
+            "latest": "0.1.0",
+            "next": "0.1.0-rc.0"
+          },
+          "time.modified": "2026-10-11T02:14:27.630Z",
+          "repository.url": "git+https://github.com/bloxwap/haptic.git"
+        }
+      },
+      "@bloxwap/hig-tokens": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-tokens - Not found",
+            "detail": "The requested resource '@bloxwap/hig-tokens@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      },
+      "@bloxwap/hig-contracts": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-contracts - Not found",
+            "detail": "The requested resource '@bloxwap/hig-contracts@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      },
+      "@bloxwap/hig-react": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-react - Not found",
+            "detail": "The requested resource '@bloxwap/hig-react@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      },
+      "@bloxwap/hig-native": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-native - Not found",
+            "detail": "The requested resource '@bloxwap/hig-native@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      },
+      "@bloxwap/hig-feedback": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-feedback - Not found",
+            "detail": "The requested resource '@bloxwap/hig-feedback@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      },
+      "@bloxwap/hig-native-fonts": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-native-fonts - Not found",
+            "detail": "The requested resource '@bloxwap/hig-native-fonts@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      },
+      "@bloxwap/hig-og-fonts": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-og-fonts - Not found",
+            "detail": "The requested resource '@bloxwap/hig-og-fonts@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      },
+      "@bloxwap/hig-chart": {
+        "exitCode": 1,
+        "result": {
+          "error": {
+            "code": "E404",
+            "summary": "Not Found - GET https://registry.npmjs.org/@bloxwap%2fhig-chart - Not found",
+            "detail": "The requested resource '@bloxwap/hig-chart@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+          }
+        }
+      }
+    },
+    "environments": [
+      {
+        "id": 24328666803,
+        "node_id": "EN_kwDOVHi58c8AAAAFqhn-sw",
+        "name": "github-pages",
+        "url": "https://api.github.com/repos/bloxwap/hig/environments/github-pages",
+        "html_url": "https://github.com/bloxwap/hig/deployments/activity_log?environments_filter=github-pages",
+        "created_at": "2026-10-14T21:42:56Z",
+        "updated_at": "2026-10-14T21:42:56Z",
+        "can_admins_bypass": true,
+        "protection_rules": [
+          {
+            "id": 68835925,
+            "node_id": "GA_kwDOVHi58c4EGlpV",
+            "type": "branch_policy"
+          }
+        ],
+        "deployment_branch_policy": {
+          "protected_branches": false,
+          "custom_branch_policies": true
+        }
+      }
+    ],
+    "repositorySecretsCount": 0,
+    "repositoryVariablesCount": 0,
+    "remoteWorkflows": [
+      {
+        "name": "Documentation",
+        "path": ".github/workflows/docs.yml",
+        "state": "active"
+      },
+      {
+        "name": "HIG candidate quality and dry-run artifacts",
+        "path": ".github/workflows/quality.yml",
+        "state": "active"
+      }
+    ],
+    "trustedPublisher": "Not observable without npm authentication. No publish workflow or npm release environment is present on remote HIG main; only github-pages exists, without required reviewers. This does not prove org-level configuration is absent.",
+    "releaseVersionDecision": "No decision recorded in #56; no comments."
+  },
+  "physicalDevices": {
+    "checkedAt": "2026-10-18T16:19:46.012213+00:00",
+    "apple": "== Devices ==\n\ud83d\udcbb Pro (09671868-7818-5FFA-B3B0-35A9DC578A66)\n\n== Devices Offline ==\nSR1 (26.6) (00008130-000161141E43001C)\nSR2 (26.6) (00008150-0011055E0240401C)\n\u231a\ufe0f \u029c\u1d07\u0280\u1d0d\u1d07\u0300\ua731 \u1d1c\u029f\u1d1b\u0280\u1d00 (26.6) (00008310-000173462E80E01E)\n\ud83d\udcf1 \u026a\u1d18\u1d00\u1d05 \u1d18\u0280\u1d0f (27.0) (00008132-000644610C29001C)\n\ud83d\udcf1 \u1d00\u026a\u0280 (27.2) (00008150-001214683447801C)",
+    "android": "List of devices attached\n\n",
+    "conclusion": "No physical iPhone/iPad/Android currently connected; Apple physical devices listed offline. Device-only tactile, audible, panel and assistive speech observations remain unperformed."
+  },
+  "upstreamFeedback": {
+    "sfx#51": {
+      "headRefOid": "11561635ac3b681f44ce01e9f25299e242aa08fd",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-15T15:24:43Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/bloxwap/sfx/actions/runs/38759742700/job/116507544114",
+          "name": "browser-tests",
+          "startedAt": "2026-10-15T15:22:30Z",
+          "status": "COMPLETED",
+          "workflowName": "Browsers"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-15T15:23:00Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/bloxwap/sfx/actions/runs/38759742974/job/116507544638",
+          "name": "build",
+          "startedAt": "2026-10-15T15:22:30Z",
+          "status": "COMPLETED",
+          "workflowName": "Documentation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-15T15:23:07Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/bloxwap/sfx/actions/runs/38759742598/job/116507543365",
+          "name": "npm audit (runtime + tooling)",
+          "startedAt": "2026-10-15T15:22:30Z",
+          "status": "COMPLETED",
+          "workflowName": "Security"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-15T15:23:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/bloxwap/sfx/actions/runs/38759742803/job/116507544405",
+          "name": "test",
+          "startedAt": "2026-10-15T15:22:30Z",
+          "status": "COMPLETED",
+          "workflowName": "Tests"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-15T15:23:00Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/bloxwap/sfx/actions/runs/38759742974/job/116507826965",
+          "name": "deploy",
+          "startedAt": "2026-10-15T15:23:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Documentation"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-15T15:22:31Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dashboard.gitguardian.com",
+          "name": "GitGuardian Security Checks",
+          "startedAt": "2026-10-15T15:22:29Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "title": "feat(engine): per-play AbortSignal cancellation for HIG root-scoped sounds",
+      "updatedAt": "2026-10-15T15:22:24Z",
+      "url": "https://github.com/bloxwap/sfx/pull/51"
+    },
+    "haptic#27": {
+      "state": "OPEN",
+      "title": "Imperative haptic API for semantic controllers (iOS WebKit async gap from HIG)",
+      "updatedAt": "2026-10-15T15:22:41Z",
+      "url": "https://github.com/bloxwap/haptic/issues/27"
+    },
+    "haptic#7": {
+      "state": "OPEN",
+      "title": "Implement native iOS feedback for physical taps",
+      "updatedAt": "2026-10-11T00:53:03Z",
+      "url": "https://github.com/bloxwap/haptic/issues/7"
+    },
+    "haptic#9": {
+      "state": "OPEN",
+      "title": "Certify iOS and Android behavior on physical devices",
+      "updatedAt": "2026-10-11T01:00:50Z",
+      "url": "https://github.com/bloxwap/haptic/issues/9"
+    },
+    "sfxReleases": [
+      {
+        "isLatest": true,
+        "publishedAt": "2026-09-30T03:49:03Z",
+        "tagName": "v0.1.0"
+      }
+    ],
+    "hapticReleases": [
+      {
+        "isLatest": true,
+        "publishedAt": "2026-10-11T02:09:46Z",
+        "tagName": "v0.1.0"
+      }
+    ]
+  },
+  "ownerSignoff": {
+    "canonicalIssueComments": 0,
+    "conclusion": "#57 has no comments and adoption owner rows still use maintainer roles. Some merged product PRs record human signoff, which is not evidence that every #57 requirement is satisfied. #100 and #101 have no brand-decision comments."
+  },
+  "consumers": {
+    "monorepo": {
+      "head": "29812c9a4c42a63e10056c8e6196752cd93d9ca4",
+      "branch": "main",
+      "packages": {
+        "apps/mobile/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-tokens": "file:./vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.shab2f7740c.tgz",
+            "@bloxwap/hig-contracts": "file:./vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.shab2f7740c.tgz",
+            "@bloxwap/hig-native": "file:./vendor/bloxwap-hig/bloxwap-hig-native-0.1.0-candidate.shab2f7740c.tgz",
+            "@bloxwap/hig-native-fonts": "file:./vendor/bloxwap-hig/bloxwap-hig-native-fonts-0.1.0-candidate.shab2f7740c.tgz",
+            "@bloxwap/hig-feedback": "file:./vendor/bloxwap-hig/bloxwap-hig-feedback-0.1.0-candidate.shab2f7740c.tgz"
+          },
+          "ref": "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/apps/mobile/package.json"
+        },
+        "apps/app/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-react": "file:../../artifacts/hig/bloxwap-hig-react-0.1.0-candidate.shab2f7740c.tgz",
+            "@bloxwap/hig-tokens": "file:../../artifacts/hig/bloxwap-hig-tokens-0.1.0-candidate.shab2f7740c.tgz"
+          },
+          "ref": "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/apps/app/package.json"
+        },
+        "apps/pro/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-contracts": "file:../../artifacts/hig/bloxwap-hig-contracts-0.1.0-candidate.shab2f7740c.tgz",
+            "@bloxwap/hig-react": "file:../../artifacts/hig/bloxwap-hig-react-0.1.0-candidate.shab2f7740c.tgz",
+            "@bloxwap/hig-tokens": "file:../../artifacts/hig/bloxwap-hig-tokens-0.1.0-candidate.shab2f7740c.tgz"
+          },
+          "ref": "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/apps/pro/package.json"
+        },
+        "apps/www/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-tokens": "file:../../artifacts/hig/bloxwap-hig-tokens-0.1.0-candidate.shab2f7740c.tgz"
+          },
+          "ref": "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/apps/www/package.json"
+        }
+      },
+      "relevantPRs": [
+        {
+          "number": 4594,
+          "title": "feat(hig): refresh web pilots from HIG 1a776b9 to candidate b2f7740 (hig#109)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-18T04:09:44Z",
+          "mergeCommit": {
+            "oid": "dc88d78d901868d09f78713dd583f8368a0e0a3a"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4594"
+        },
+        {
+          "number": 4602,
+          "title": "feat(mobile): HIG b2f7740 candidate, drop upstreamed workarounds, toasts/trade/account-sheet/readouts/language on HIG (hig#110)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-18T06:40:26Z",
+          "mergeCommit": {
+            "oid": "edee3476c0c9c746cda303a3c8279ef100b85f22"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4602"
+        },
+        {
+          "number": 4606,
+          "title": "feat(app): signed-in send, review, sheets and outcomes on HIG; all app cues through the HIG feedback controller (hig#110)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-18T06:41:27Z",
+          "mergeCommit": {
+            "oid": "29812c9a4c42a63e10056c8e6196752cd93d9ca4"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4606"
+        },
+        {
+          "number": 4523,
+          "title": "feat(app): Sound & Haptics settings through the HIG feedback controller (hig#33)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T19:27:26Z",
+          "mergeCommit": {
+            "oid": "b1b913dacb0bde0e3f5a8d6840b5c6911ce67e1f"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4523"
+        },
+        {
+          "number": 4601,
+          "title": "feat(app): signed-in send, review, sheets and outcomes on HIG; all app cues through the HIG feedback controller (hig#110)",
+          "state": "CLOSED",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "url": "https://github.com/bloxwap/monorepo/pull/4601"
+        },
+        {
+          "number": 4540,
+          "title": "feat(mobile): migrate native app surfaces and feedback to HIG c32771d (hig#35)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T20:32:13Z",
+          "mergeCommit": {
+            "oid": "2f636e8fe917900702447c0487432db84014f85d"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4540"
+        },
+        {
+          "number": 4522,
+          "title": "feat(pro): HIG compact density fix, dense-navigation and numbers pilots (hig#33)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T19:07:57Z",
+          "mergeCommit": {
+            "oid": "137660fc7414ecaffec9b6119d084ac76fc9c98c"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4522"
+        },
+        {
+          "number": 4599,
+          "title": "feat(pro): market list, stats strip and tables on HIG data primitives (hig#110)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-18T05:11:44Z",
+          "mergeCommit": {
+            "oid": "3ca24bfce5d6700dd8400c24109d77284bc6f4e4"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4599"
+        },
+        {
+          "number": 4525,
+          "title": "feat(www): HIG marketing pilot for waitlist, Pro features and touch footer (hig#33)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T19:36:31Z",
+          "mergeCommit": {
+            "oid": "38d7360fe626150560267e2de737bc4db76f99b0"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4525"
+        },
+        {
+          "number": 4598,
+          "title": "feat(www): signals, The Setup and markets on HIG; build-time landing fonts (hig#110)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-18T06:19:58Z",
+          "mergeCommit": {
+            "oid": "031b29814dd176b3a29f09b690c8660038a38ac9"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4598"
+        },
+        {
+          "number": 4577,
+          "title": "feat(mobile): adopt HIG d52139d text-scale, CJK tracking and colour-role props (hig#67)",
+          "state": "CLOSED",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "url": "https://github.com/bloxwap/monorepo/pull/4577"
+        },
+        {
+          "number": 4515,
+          "title": "feat(hig): adopt web product and native settings pilots",
+          "state": "MERGED",
+          "mergedAt": "2026-10-14T16:51:23Z",
+          "mergeCommit": {
+            "oid": "176d0062ceb930b85907f5ddf5c56e50973722a4"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4515"
+        },
+        {
+          "number": 4603,
+          "title": "ci: run every GitHub Actions job on the JWS Mac mini runner group",
+          "state": "MERGED",
+          "mergedAt": "2026-10-18T03:29:46Z",
+          "mergeCommit": {
+            "oid": "d9bdbd488ffa708b7fd4d7608e19f24c32a26f5e"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4603"
+        },
+        {
+          "number": 4592,
+          "title": "ci: speed up workflows with turbo affected, parallel mobile exports, and bun cache",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T18:10:53Z",
+          "mergeCommit": {
+            "oid": "c663a8093406d51f347a74107ed8a41fe350f355"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4592"
+        },
+        {
+          "number": 4605,
+          "title": "fix(ci): stop saving Playwright browsers as a GHA cache on the Mac minis",
+          "state": "MERGED",
+          "mergedAt": "2026-10-18T05:22:25Z",
+          "mergeCommit": {
+            "oid": "fff9d4bc68379cbacb9ce11c4dbd705b64146f3d"
+          },
+          "url": "https://github.com/bloxwap/monorepo/pull/4605"
+        }
+      ],
+      "remainingBySurface": [
+        {
+          "origin": "bloxwap.app",
+          "gaps": [
+            "other signed-in flows still on the legacy renderer: HYPE/Solana/unified sends, withdraw, deposit, position close and trigger confirmations, papertrade amount pad, size/leverage picker",
+            "toasts with a tap action or custom icon, InfoCard/InfoPanel and the account sheet's Vaul drawer stay legacy (no HIG equivalent yet)",
+            "components/ui/dialog still serves tournament-join-modal, referral-prompt, builder-task-dialog and agent-task-dialog",
+            "physical iOS tap and audible/tactile observation (bloxwap/hig#55)",
+            "fork retirement after the rollback window (exceptions expire 2027-01-15, bloxwap/hig#110)"
+          ]
+        },
+        {
+          "origin": "bloxwap.pro",
+          "gaps": [
+            "HIG Table / MarketRow components themselves: no column alignment, row props, state rows or precision options yet (see pilots/pro.md); Pro uses the Table markup contract and NumberReadout",
+            "mark/index prices and funding countdown stay on NumberFlow (animated reels)",
+            "authenticated order submission, fills and signed-in account/portfolio tables captured in a browser",
+            "fork retirement (ui/segmented, ui/button, ui/input stay for rollback)"
+          ]
+        },
+        {
+          "origin": "bloxwap.com",
+          "gaps": [
+            "duplicate host 48px/reduced-motion values kept so the rollback binding stays complete",
+            "nav brand/Docs/Blog links below 48px on touch and the two live-embed iframes without a visible focus ring (outside the migrated sections; recorded in marketing-sections-2)"
+          ]
+        },
+        {
+          "origin": "React Native",
+          "gaps": [
+            "physical iOS/Android VoiceOver/TalkBack navigation",
+            "audible/tactile output and acoustic latency",
+            "account sheet container and other Gorhom sheets on ui-native Sheet (upstream hig#118)",
+            "coloured NumberFlow readouts (PnL, live chart, position rail, history, cards) on ui-native (upstream hig#117)",
+            "bundle delta over the pilot budget (about +84 KB raw cumulative; +11.4 KB in hig#110)",
+            "upstream hig#86 RN 0.83 Android per-app RTL (app passes direction)",
+            "upstream hig#119 RadioGroup options, hig#120 Toast at large text, hig#121 busy suffix spacing"
+          ]
+        }
+      ],
+      "adoptionRef": "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/docs/hig/adoption.json",
+      "retiredWorkarounds": {
+        "busyLabelComposer": false,
+        "providerColorSpaceConfigured": true,
+        "directButtonP3Override": false,
+        "wwwCommittedFontFiles": 0,
+        "localDirectionLogicStillPresent": true,
+        "refs": [
+          "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/apps/mobile/src/hig/button.tsx",
+          "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/apps/mobile/src/hig/provider.tsx"
+        ]
+      }
+    },
+    "chart": {
+      "head": "2c952f6ac1f1d1993761b7314302b1871fb0dfd3",
+      "branch": "main",
+      "packages": {
+        "apps/docs/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-native-fonts": "file:../../vendor/bloxwap-hig/bloxwap-hig-native-fonts-0.1.0-candidate.sha872906a9.tgz"
+          },
+          "ref": "https://github.com/bloxwap/chart/blob/2c952f6ac1f1d1993761b7314302b1871fb0dfd3/apps/docs/package.json"
+        }
+      },
+      "relevantPRs": [
+        {
+          "number": 55,
+          "title": "docs: use HIG token roles from @bloxwap/hig-tokens/css; delete hig-roles.generated.css",
+          "state": "OPEN",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "url": "https://github.com/bloxwap/chart/pull/55"
+        },
+        {
+          "number": 54,
+          "title": "docs: use HIG token roles, drop hig-roles.generated.css (hig#66)",
+          "state": "CLOSED",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "url": "https://github.com/bloxwap/chart/pull/54"
+        },
+        {
+          "number": 56,
+          "title": "Refresh Chart docs onto HIG 872906a9 candidate and drop HIG workarounds",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T19:01:38Z",
+          "mergeCommit": {
+            "oid": "2c952f6ac1f1d1993761b7314302b1871fb0dfd3"
+          },
+          "url": "https://github.com/bloxwap/chart/pull/56"
+        },
+        {
+          "number": 53,
+          "title": "Consume HIG 7c67a07 packages in Chart docs",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T02:26:47Z",
+          "mergeCommit": {
+            "oid": "a3b0f6b3c6e3df55a270db2aae2346a28afa4c96"
+          },
+          "url": "https://github.com/bloxwap/chart/pull/53"
+        },
+        {
+          "number": 52,
+          "title": "Adopt HIG tokens, typography and accessible states in Chart docs",
+          "state": "MERGED",
+          "mergedAt": "2026-10-14T02:08:53Z",
+          "mergeCommit": {
+            "oid": "c4dff80d045e4b566fb90eaae05f865c1078afc4"
+          },
+          "url": "https://github.com/bloxwap/chart/pull/52"
+        }
+      ],
+      "stillPresent": {
+        "nativeFontsOGDependency": true,
+        "OGFaces": [
+          "BloxwapSans-Bold.ttf",
+          "BloxwapSans-Black.ttf"
+        ],
+        "ref": "https://github.com/bloxwap/chart/blob/2c952f6ac1f1d1993761b7314302b1871fb0dfd3/apps/docs/lib/og-card.tsx",
+        "legacyPeerDepsNoteRef": "https://github.com/bloxwap/chart/blob/2c952f6ac1f1d1993761b7314302b1871fb0dfd3/vendor/bloxwap-hig/README.md"
+      }
+    },
+    "sfx": {
+      "head": "924eafe85599e0f8cc97902863bb8a0809433046",
+      "branch": "main",
+      "packages": {
+        "apps/docs/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-native-fonts": "file:../../vendor/bloxwap-hig/bloxwap-hig-native-fonts-0.1.0-candidate.sha872906a9.tgz"
+          },
+          "ref": "https://github.com/bloxwap/sfx/blob/924eafe85599e0f8cc97902863bb8a0809433046/apps/docs/package.json"
+        }
+      },
+      "relevantPRs": [
+        {
+          "number": 51,
+          "title": "feat(engine): per-play AbortSignal cancellation for HIG root-scoped sounds",
+          "state": "OPEN",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "url": "https://github.com/bloxwap/sfx/pull/51"
+        },
+        {
+          "number": 52,
+          "title": "Refresh SFX docs onto HIG 872906a9 candidate and drop HIG workarounds",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T19:01:47Z",
+          "mergeCommit": {
+            "oid": "924eafe85599e0f8cc97902863bb8a0809433046"
+          },
+          "url": "https://github.com/bloxwap/sfx/pull/52"
+        },
+        {
+          "number": 50,
+          "title": "feat(docs): consume HIG packages instead of copied CSS and fonts",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T02:41:01Z",
+          "mergeCommit": {
+            "oid": "7d0b3c8e3194bc708940d2973a27295839353b47"
+          },
+          "url": "https://github.com/bloxwap/sfx/pull/50"
+        },
+        {
+          "number": 45,
+          "title": "Integrate HIG semantic sound preferences, approved WAV assets and docs",
+          "state": "MERGED",
+          "mergedAt": "2026-10-14T02:10:29Z",
+          "mergeCommit": {
+            "oid": "f68d375b5ee4309742cf171c7d135199f32e5066"
+          },
+          "url": "https://github.com/bloxwap/sfx/pull/45"
+        }
+      ],
+      "stillPresent": {
+        "nativeFontsOGDependency": true,
+        "OGFaces": [
+          "BloxwapSans-Bold.ttf",
+          "BloxwapSans-Black.ttf"
+        ],
+        "ref": "https://github.com/bloxwap/sfx/blob/924eafe85599e0f8cc97902863bb8a0809433046/apps/docs/lib/og-card.tsx"
+      }
+    },
+    "agent-cli": {
+      "head": "76384c4911c9e69fafd17a55d3d004cf51a26ca0",
+      "branch": "main",
+      "packages": {
+        "apps/docs/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-native-fonts": "file:../../vendor/bloxwap-hig/bloxwap-hig-native-fonts-0.1.0-candidate.sha872906a9.tgz"
+          },
+          "ref": "https://github.com/bloxwap/agent-cli/blob/76384c4911c9e69fafd17a55d3d004cf51a26ca0/apps/docs/package.json"
+        }
+      },
+      "relevantPRs": [
+        {
+          "number": 48,
+          "title": "feat(docs): refresh HIG candidate to 872906a; drop Radix peers, font bridge and copied token values (bloxwap/hig#58)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T18:44:51Z",
+          "mergeCommit": {
+            "oid": "cfbc8a6b855bd7b2c08f49114d708c641729a1ab"
+          },
+          "url": "https://github.com/bloxwap/agent-cli/pull/48"
+        },
+        {
+          "number": 47,
+          "title": "feat(docs): consume HIG packages instead of copied CSS and fonts (bloxwap/hig#58)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T15:53:20Z",
+          "mergeCommit": {
+            "oid": "778c8f50cc54a868ec5fdf119fc63caddf5b3588"
+          },
+          "url": "https://github.com/bloxwap/agent-cli/pull/47"
+        },
+        {
+          "number": 45,
+          "title": "docs: Fumadocs site at apps/docs (npm workspace layout)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-14T02:54:45Z",
+          "mergeCommit": {
+            "oid": "28d6b07c60339001b4655ed6e8178e31dfbc9d56"
+          },
+          "url": "https://github.com/bloxwap/agent-cli/pull/45"
+        },
+        {
+          "number": 46,
+          "title": "fix(docs): serve local docs at root and highlight workflow",
+          "state": "MERGED",
+          "mergedAt": "2026-10-14T17:44:35Z",
+          "mergeCommit": {
+            "oid": "19ebad09c45c39e9b26124ba26c9e49bf142cbf6"
+          },
+          "url": "https://github.com/bloxwap/agent-cli/pull/46"
+        },
+        {
+          "number": 50,
+          "title": "fix: harden user-owned signing and release validation",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T18:38:38Z",
+          "mergeCommit": {
+            "oid": "afc5693f74fc2afdf5e59089d0e614d9b6c56943"
+          },
+          "url": "https://github.com/bloxwap/agent-cli/pull/50"
+        }
+      ],
+      "stillPresent": {
+        "nativeFontsOGDependency": true,
+        "OGFaces": [
+          "BloxwapSans-Bold.ttf",
+          "BloxwapSans-Black.ttf"
+        ],
+        "ref": "https://github.com/bloxwap/agent-cli/blob/76384c4911c9e69fafd17a55d3d004cf51a26ca0/apps/docs/lib/og-card.tsx"
+      }
+    },
+    "tapsiren": {
+      "head": "81d33ebb44dfcfca4d42fbf2b6471be9834c5094",
+      "branch": "main",
+      "packages": {
+        "workers/tapsiren/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-contracts": "0.1.0-candidate.sha872906a9",
+            "@bloxwap/hig-react": "0.1.0-candidate.sha872906a9",
+            "@bloxwap/hig-tokens": "0.1.0-candidate.sha872906a9",
+            "@bloxwap/hig-native-fonts": "0.1.0-candidate.sha872906a9"
+          },
+          "ref": "https://github.com/bloxwap/tapsiren/blob/81d33ebb44dfcfca4d42fbf2b6471be9834c5094/workers/tapsiren/package.json"
+        }
+      },
+      "relevantPRs": [
+        {
+          "number": 400,
+          "title": "ci: migrate every GitHub Actions job to self-hosted Mac mini runners",
+          "state": "OPEN",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "url": "https://github.com/bloxwap/tapsiren/pull/400"
+        },
+        {
+          "number": 399,
+          "title": "Adopt Bloxwap HIG tokens, fonts and HIG Link/button in tapsiren (public page; bloxwap/hig#60)",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T18:54:41Z",
+          "mergeCommit": {
+            "oid": "81d33ebb44dfcfca4d42fbf2b6471be9834c5094"
+          },
+          "url": "https://github.com/bloxwap/tapsiren/pull/399"
+        }
+      ],
+      "stillPresent": {
+        "ogNativeFontCopy": true,
+        "markFill": "#00F0FF",
+        "publicAssetsOutsideDriftScope": true,
+        "refs": [
+          "https://github.com/bloxwap/tapsiren/blob/81d33ebb44dfcfca4d42fbf2b6471be9834c5094/workers/tapsiren/scripts/copy-og-fonts.mjs",
+          "https://github.com/bloxwap/tapsiren/blob/81d33ebb44dfcfca4d42fbf2b6471be9834c5094/workers/tapsiren/public/tap-siren-mark.svg",
+          "https://github.com/bloxwap/tapsiren/blob/81d33ebb44dfcfca4d42fbf2b6471be9834c5094/hig-drift.json"
+        ]
+      }
+    },
+    "taptradetv": {
+      "head": "f7d94ae421b7acd65e533960cb0a17792cce4dff",
+      "branch": "main",
+      "packages": {
+        "apps/web/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha872906a9.tgz",
+            "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha872906a9.tgz"
+          },
+          "ref": "https://github.com/bloxwap/taptradetv/blob/f7d94ae421b7acd65e533960cb0a17792cce4dff/apps/web/package.json"
+        }
+      },
+      "relevantPRs": [
+        {
+          "number": 188,
+          "title": "Adopt Bloxwap HIG on the /sponsors auction and record per-app HIG decisions",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T19:18:04Z",
+          "mergeCommit": {
+            "oid": "0cf967e029900198767995d79e2c679d647c913e"
+          },
+          "url": "https://github.com/bloxwap/taptradetv/pull/188"
+        },
+        {
+          "number": 215,
+          "title": "ci: migrate every GitHub Actions job to self-hosted Mac mini runners",
+          "state": "OPEN",
+          "mergedAt": null,
+          "mergeCommit": null,
+          "url": "https://github.com/bloxwap/taptradetv/pull/215"
+        },
+        {
+          "number": 187,
+          "title": "security: upgrade next, patch proxy-addr, add Dependabot config",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T17:35:10Z",
+          "mergeCommit": {
+            "oid": "ad64d0d41d7e55e789fa208f474cc65e962c0e8e"
+          },
+          "url": "https://github.com/bloxwap/taptradetv/pull/187"
+        },
+        {
+          "number": 206,
+          "title": "chore(deps): integrate validated dependency upgrades",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T18:12:29Z",
+          "mergeCommit": {
+            "oid": "59dbe295deaca2eaa84d48e433a4b481a98263bd"
+          },
+          "url": "https://github.com/bloxwap/taptradetv/pull/206"
+        },
+        {
+          "number": 196,
+          "title": "feat: complete auction, broadcast, and contest integrations",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T17:56:50Z",
+          "mergeCommit": {
+            "oid": "abc93300b677db812cda017a97d6a1e61a2a5665"
+          },
+          "url": "https://github.com/bloxwap/taptradetv/pull/196"
+        },
+        {
+          "number": 211,
+          "title": "fix: restore Worker runtime and finish the compiler upgrade",
+          "state": "MERGED",
+          "mergedAt": "2026-10-16T18:51:22Z",
+          "mergeCommit": {
+            "oid": "4db038401fb2aa0c4773914d76da67b7398b607c"
+          },
+          "url": "https://github.com/bloxwap/taptradetv/pull/211"
+        }
+      ],
+      "stillPresent": {
+        "sponsorsTableReset": true,
+        "hostNoHIGDependency": true,
+        "hostCopiedTokenCSS": true,
+        "hostPaletteHex": true,
+        "refs": [
+          "https://github.com/bloxwap/taptradetv/blob/f7d94ae421b7acd65e533960cb0a17792cce4dff/apps/web/app/sponsors/sponsors-hig.css",
+          "https://github.com/bloxwap/taptradetv/blob/f7d94ae421b7acd65e533960cb0a17792cce4dff/apps/host/package.json",
+          "https://github.com/bloxwap/taptradetv/blob/f7d94ae421b7acd65e533960cb0a17792cce4dff/apps/host/src/styles/tokens.generated.css",
+          "https://github.com/bloxwap/taptradetv/blob/f7d94ae421b7acd65e533960cb0a17792cce4dff/apps/host/src/components/trader-avatar.tsx"
+        ]
+      }
+    },
+    "hyperliquid": {
+      "head": "18117d04c0f18ffefda1d73639f5e128b988a4a5",
+      "branch": "main",
+      "packages": {
+        "apps/docs/package.json": {
+          "dependencies": {
+            "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha7c67a07c.tgz",
+            "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha7c67a07c.tgz"
+          },
+          "ref": "https://github.com/bloxwap/hyperliquid/blob/18117d04c0f18ffefda1d73639f5e128b988a4a5/apps/docs/package.json"
+        }
+      },
+      "relevantPRs": [
+        {
+          "number": 180,
+          "title": "docs: consume HIG candidate packages for shared docs presentation",
+          "state": "MERGED",
+          "mergedAt": "2026-10-15T02:25:01Z",
+          "mergeCommit": {
+            "oid": "18117d04c0f18ffefda1d73639f5e128b988a4a5"
+          },
+          "url": "https://github.com/bloxwap/hyperliquid/pull/180"
+        },
+        {
+          "number": 179,
+          "title": "docs: migrate Hyperliquid to HIG shell presentation",
+          "state": "MERGED",
+          "mergedAt": "2026-10-14T02:38:41Z",
+          "mergeCommit": {
+            "oid": "33e42d7e510a3e2dfcf336b444147e54ed5b2c29"
+          },
+          "url": "https://github.com/bloxwap/hyperliquid/pull/179"
+        }
+      ]
+    }
+  },
+  "priorityRecommendations": [
+    {
+      "priority": 1,
+      "scope": "HIG-owned #110 software",
+      "task": "Extend web Table with column alignment, rowProps, loading/empty/error state rows, sticky header and hidden caption controls; MarketRow with price precision and presentation mode for host-owned cmdk selection. Preserve defaults and keyboard semantics.",
+      "ref": "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/docs/hig/pilots/pro.md#L44-L60",
+      "blockedByApproval": false
+    },
+    {
+      "priority": 2,
+      "scope": "#115 consumer refreshes",
+      "task": "Prepare coordinated new candidates; refresh Chart/SFX/agent-cli/Tapsiren OG imports to hig-og-fonts preserving Bold/Black faces; remove Chart legacy-peer-deps note; refresh TapTrade /sponsors and remove table reset; check /schedule after client navigation. Monorepo busy-name/P3 workarounds are already retired.",
+      "blockedByApproval": false
+    },
+    {
+      "priority": 3,
+      "scope": "#110 consumer follow-through",
+      "task": "After #117-#121 candidate, replace mobile language-picker rows and provider locale font map with RadioGroup description/lang and fontFamiliesByScript; migrate coloured readouts/eligible Gorhom sheets; keep animation differences and budget exceptions explicit.",
+      "blockedByApproval": false
+    },
+    {
+      "priority": 4,
+      "scope": "#124 browser reliability",
+      "task": "Bound monorepo WebKit app-flow cases, isolate contexts/audio resources and re-enable WebKit after three complete local and CI runs.",
+      "ref": "https://github.com/bloxwap/hig/issues/124",
+      "blockedByApproval": false
+    },
+    {
+      "priority": 5,
+      "scope": "#110 remaining product work",
+      "task": "Migrate web signed-in send variants, account drawer, row actions and remaining dialogs behind existing flags; add marketing touch target and iframe focus fixes. Retire rollback forks only after owning rollback windows close.",
+      "ref": "https://github.com/bloxwap/monorepo/blob/29812c9a4c42a63e10056c8e6196752cd93d9ca4/docs/hig/adoption.json",
+      "blockedByApproval": "Rollback deletion and reel-to-opacity design changes require owning decisions; routine reversible migrations do not."
+    },
+    {
+      "priority": 6,
+      "scope": "#100 host software",
+      "task": "Prepare tokens-only host migration preserving existing broadcast colors; replace copied token CSS/fonts and gather 1080p captures. Web red-accent decision is separately unresolved.",
+      "blockedByApproval": "Brand decision for future web routes remains unrecorded."
+    },
+    {
+      "priority": 7,
+      "scope": "#101 brand",
+      "task": "Prepare a reviewable mark/favicon HIG-role recolor and widened public drift scope; do not claim product-brand approval.",
+      "blockedByApproval": "Final brand choice or cyan exception not recorded."
+    },
+    {
+      "priority": 8,
+      "scope": "#55/#56/#57/#70 prerequisites",
+      "task": "Record physical observations and named approvals; configure release environment/npm identity and decide version; adopt cancellation only after SFX #51 ships, and imperative web haptics only after upstream #27 plus device certification.",
+      "blockedByApproval": "Physical devices, owner/release decisions and upstream releases are external prerequisites."
+    }
+  ],
+  "rawEvidenceNote": "Temporary audit source records were used for this read-only snapshot; source commit/PR URLs and observed outcomes are recorded below."
+}

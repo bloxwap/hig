@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-export const releasePackages=['contracts','tokens','native-fonts','og-fonts','feedback','react','native'].map(name=>`@bloxwap/hig-${name}`);
+export const releasePackages=['contracts','tokens','native-fonts','og-fonts','feedback','react','chart','native'].map(name=>`@bloxwap/hig-${name}`);
 export const releaseGateIds=['task-policy','source-audit','native-fonts','physical-devices','owning-migrations','upstream-feedback-gaps'];
 function currentException(blocker,today){
  const date=blocker.reviewBy;

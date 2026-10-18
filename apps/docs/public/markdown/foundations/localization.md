@@ -2,7 +2,7 @@
 
 Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents consume [`docs/foundations/glossary.json`](glossary.json). Machine-readable format profiles: [`docs/foundations/localization.json`](localization.json). Host owns locale selection, parsing and time zone; HIG formats display only.
 
-`HIGProvider` locale is a BCP 47 tag (`en-US` default on both platforms). An explicit direction (`ltr`/`rtl`) always wins. Native preserves OS RTL and also infers RTL from the app locale when Android React Native incorrectly reports LTR; hosts can pass their locale and direction explicitly, for example from their localization adapter. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
+`HIGProvider` locale is a BCP 47 tag (`en-US` default). Direction (`ltr`/`rtl`) is independent. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
 
 ## Shared helpers
 
@@ -65,6 +65,27 @@ Logical inline spacing, wrapping labels, no fixed-height clipping of translated 
 
 Long translations, Arabic/Hebrew RTL and large text remain part of the [platform checklist](platform.md#accessibility-and-localization-10). Physical-device observations are still pending.
 
+### Native direction from the host locale
+
+Issue #86. On native, `HIGProvider` follows `I18nManager.isRTL` when `direction` is unset. React Native 0.82 and later, including 0.83.10, do not report an Android per-app RTL locale through `I18nManager` (Android 13+ `cmd locale set-app-locales ar-EG`, or a per-app language picker). `I18nManager.isRTL` stays `false`, so an Arabic or Hebrew user would get a left-to-right HIG tree. RN 0.81.5 and iOS are not affected.
+
+Hosts that lay out right to left pass the locale's direction:
+
+```tsx
+import {getLocales} from 'expo-localization';
+import {HIGProvider, localeDirection} from '@bloxwap/hig-native/provider';
+
+const direction = localeDirection(getLocales()[0]); // 'rtl' for ar-EG; undefined keeps the I18nManager default
+<HIGProvider locale={getLocales()[0]?.languageTag} direction={direction}>{children}</HIGProvider>;
+```
+
+`localeDirection` (also exported from `@bloxwap/hig-contracts`) returns expo-localization's `textDirection` when present. Otherwise it reads the tag's script, then its language: `ar_EG`, `he-IL` and `az-Arab-IR` give `rtl`; `en-US`, `ar-Latn` and `en-u-nu-arab` give `ltr`. It accepts BCP 47 tags, Android/Java identifiers and objects with `textDirection`/`languageTag`, and returns `undefined` for no language (`''`, `und`). Without expo-localization, React Native's `I18nManager.getConstants().localeIdentifier` is the app's configuration locale on Android (from the RN 0.83 source; the gallery verifies the expo-localization path).
+
+- **Don't** pass a locale-derived direction in an app that disallows RTL (`I18nManager.allowRTL(false)`, or `android:supportsRtl="false"`). Leave `direction` unset so HIG follows the OS layout. HIG never derives direction on its own for this reason.
+- **Don't** expect `I18nManager.isRTL` to change on RN 0.83 Android. Native views HIG does not draw keep the host's direction.
+
+Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/53417) (0.82.0) made `I18nUtil.isDevicePreferredLanguageRTL` read `Locale.getAvailableLocales()[0]` instead of the app's locale. The bug is reported in [#54938](https://github.com/react/react-native/issues/54938) and fixed by [#57635](https://github.com/react/react-native/pull/57635), first released in 0.88.0. 0.83.10, 0.84.1, 0.85.3, 0.86.3 and 0.87.1 still have the bug. The native gallery passes `localeDirection(getLocales()[0])`, and its `os-arabic` Android emulator step asserts `rtl` on RN 0.81.5 and 0.83.10 (`evidence/native-sim/issue-86-88-89/`). A system-wide Arabic locale and physical devices are not yet tested (#55).
+
 ## Built-in component strings
 
 Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/react/src` or `packages/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig-contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
@@ -92,6 +113,8 @@ Resolution order, per key: the component prop, then the nearest `HIGProvider mes
 Rules:
 
 - **Visible text and accessible names come from the same key.** The Close, Dismiss and busy text is the button content, so it is also the accessible name. The Toast dismiss name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it, so voice-control users can say the label they see. `stale` and `required` are appended to both the visible text and the accessible name.
+- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is the visible `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
+- **Slider actions are labeled (#87).** The native Slider's increment and decrement accessibility actions carry `increase` and `decrease`. React Native 0.83 Android otherwise lists them with an empty label.
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
 - **RTL is a direction, not a translation.** Messages render inside the provider's `dir` (web) or `writingDirection` (native). The Unicode bidi algorithm places the ` · ` busy separator and parentheses. Do not add direction marks to messages.
@@ -108,7 +131,7 @@ Rules:
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
 | `loadingItems` | Loading items | List loading row | — |
-| `loadingChart` | Loading chart… | PriceChart fallback (web) | — |
+| `loadingChart` | Loading chart… | PriceChart fallback (web, `@bloxwap/hig-chart`) | — |
 | `noItems` | No items | List empty text | `empty` |
 | `noRows` | No rows | Table empty text (web) | — |
 | `retry` | Retry | List retry button | — |
@@ -124,8 +147,6 @@ Rules:
 | `searching` | Searching… | Search in-progress status | — |
 | `noResults` | No results | Search empty status | — |
 | `resultCount` `(count, locale)` | {count} result / {count} results | Search result count (native); use `Intl.PluralRules` for other plural forms | — |
-| `increment` | Increase | Native Slider increment action | — |
-| `decrement` | Decrease | Native Slider decrement action | — |
 | `back` | Back | BackButton (native) | — |
 | `menuDescription` | Available actions | Menu sheet description (native) | — |
 | `choose` | Choose | Select trigger before a choice (native) | — |
@@ -146,6 +167,8 @@ Rules:
 | `statusOnline` | online | StatusIndicator `online` | — |
 | `statusOffline` | offline | StatusIndicator `offline` | — |
 | `statusStale` | stale | StatusIndicator `stale` | — |
+| `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
+| `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 
@@ -153,6 +176,4 @@ Rules:
 
 See `tests/tokens.test.ts`, `tests/data.dom.test.tsx`, `tests/glossary.test.ts`, `tests/built-in-strings.test.ts`, `tests/messages.dom.test.tsx`, `tests/native/messages.test.cjs`, `docs/foundations/localization.json` and the data chapter. Cite HIG 0.1.0 with this chapter anchor and a commit permalink.
 
-## Native Button text and announcements
-
-Native Button labels and their busy suffix use HIG Text, including registered font weight, per-script tracking, and the provider's `maxFontSizeMultiplier`. A Button prop can override the cap. A busy button derives its accessible name from its visible children and localized suffix; an explicit `accessibilityLabel` wins, and an empty `busyLabel` keeps the action's name without the suffix. This prevents Android's busy state description from replacing the action name. Native Slider adjustment labels use `messages.increment` and `messages.decrement`, with English Increase/Decrease defaults.
+The native Button's busy suffix starts with the separator (`· Working`); the row supplies its visual gap. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.

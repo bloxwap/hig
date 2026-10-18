@@ -1,5 +1,5 @@
 import {execFileSync} from 'node:child_process';
-import {mkdtempSync,writeFileSync,existsSync} from 'node:fs';
+import {mkdtempSync,writeFileSync,existsSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
@@ -26,6 +26,26 @@ for(const [entry,[name,props]] of Object.entries(overlayFree)){
  assert.ok(result.outputFiles[0].contents.length>0);
  assert.equal(inputs.some(p=>/radix|overlay|dialog/.test(p)),false,`recipes/${entry} pulls overlay code: ${inputs.filter(p=>/radix|overlay|dialog/.test(p))}`);
 }
+// #95: the component CSS is scoped to HIG classes; page-wide element defaults are the opt-in ./css/base entry.
+// Both resolve through package exports in a bundler, and the scoped file carries no bare element rule.
+const cssBundle=async contents=>{const out=await build({stdin:{contents,resolveDir:directory,sourcefile:'styles.js'},absWorkingDir:directory,bundle:true,write:false,outdir:join(directory,'css-out'),logLevel:'silent'});return out.outputFiles.find(f=>f.path.endsWith('.css'))?.text??'';};
+const rulesOf=css=>[...css.replace(/\/\*[\s\S]*?\*\//g,'').matchAll(/([^{}@]+)\{[^{}]*\}/g)].flatMap(m=>{const parts=[];let depth=0,part='';for(const c of m[1]){if(c==='('||c==='[')depth++;if(c===')'||c===']')depth--;if(c===','&&!depth){parts.push(part);part='';}else part+=c;}return [...parts,part].map(s=>s.trim());}).filter(Boolean);
+const scoped=await cssBundle("import '@bloxwap/hig-react/css';"),base=await cssBundle("import '@bloxwap/hig-react/css/base';");
+assert.ok(scoped.includes('.hig-button'),'@bloxwap/hig-react/css bundles the component rules');
+const unscoped=rulesOf(scoped).filter(selector=>!/hig-|^(?:from|to|\d+%)$|^:root$/.test(selector));
+assert.deepEqual(unscoped,[],`@bloxwap/hig-react/css has selectors outside HIG classes: ${unscoped.join(' | ')}`);
+for(const selector of ['*',':focus-visible','table','th','td','input[type=range]'])assert.ok(rulesOf(base).some(s=>s.replace(/["']/g,'')===selector),`@bloxwap/hig-react/css/base keeps ${selector}`);
 // Guard the guard: the overlay recipe still needs its Dialog peer, so the bundle must fail here.
 await assert.rejects(bundle("export {TradeEntry} from '@bloxwap/hig-react/recipes/trade-entry';"),/@radix-ui\/react-dialog/,'trade-entry bundled without its dialog peer');
-console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, native, chart or feedback engines');
+// #96: the packed hig-react manifest names no @bloxwap/chart (no ./chart entry, no optional peer). The adapter is
+// @bloxwap/hig-chart, whose @bloxwap/chart peer is required; it renders its text summary and loading fallback on the server.
+const reactManifest=JSON.parse(readFileSync(join(directory,'node_modules/@bloxwap/hig-react/package.json'),'utf8'));
+assert.equal(JSON.stringify(reactManifest).includes('@bloxwap/chart'),false,'@bloxwap/hig-react still names @bloxwap/chart');
+assert.equal(Object.hasOwn(reactManifest.exports,'./chart'),false,'@bloxwap/hig-react still exports ./chart');
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','--strict-peer-deps',tarball('chart'),'@bloxwap/chart@0.3.0'],{cwd:directory,stdio:'pipe'});
+const chartManifest=JSON.parse(readFileSync(join(directory,'node_modules/@bloxwap/hig-chart/package.json'),'utf8'));
+assert.equal(chartManifest.peerDependencies['@bloxwap/chart'],'^0.3.0');assert.equal(chartManifest.peerDependenciesMeta?.['@bloxwap/chart'],undefined,'@bloxwap/hig-chart must not make @bloxwap/chart optional');
+assert.equal(existsSync(join(directory,'node_modules/@bloxwap/hig-chart/node_modules')),false,'@bloxwap/hig-chart nests its own hig-react, tokens or chart copy');
+writeFileSync(join(directory,'chart.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {PriceChart,chartTheme} from '@bloxwap/hig-chart';import {tokens} from '@bloxwap/hig-tokens';const html=renderToString(React.createElement(PriceChart,{summary:'BTC up 1% today',data:[]}));for(const text of ['<figcaption>BTC up 1% today</figcaption>','role=\"status\"','Loading chart'])if(!html.includes(text))throw Error('PriceChart SSR missing '+text+': '+html);if(chartTheme.series.downColor!==tokens.colors.sell.srgb)throw Error('chartTheme lost its token colors');");
+execFileSync(process.execPath,[join(directory,'chart.mjs')],{cwd:directory,stdio:'inherit'});
+console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, native, chart or feedback engines; scoped ./css and opt-in ./css/base resolve through exports; hig-react names no @bloxwap/chart and @bloxwap/hig-chart SSR renders with its required chart peer');

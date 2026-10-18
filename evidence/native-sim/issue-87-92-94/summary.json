@@ -1,0 +1,55 @@
+{
+  "issues": [87, 92, 94, 102],
+  "observedAt": "2026-10-16",
+  "evidenceKinds": {
+    "automated": "Native Jest with React Native Testing Library (tests/native/text-rules.test.cjs): #92 font-scale cap, suffix fontFamily and CJK tracking; #94 busy names for every fixture busy locale on iOS and Android; #102 Alert announcement and plainText; #87 Slider action labels.",
+    "Android emulator": "Release APK of the packed candidate on the Android emulator, driven by instrumentation with UiAutomation as the accessibility client (scripts/native-sim/android). Not a TalkBack, Voice Access or Switch Access user run.",
+    "iOS Simulator": "not run for this change; iOS behavior is covered by the automated tests only",
+    "physical hardware": "none; nothing here is a physical-device observation (device residuals: bloxwap/hig#55)"
+  },
+  "environment": {
+    "host": "macOS 27.2 (Apple silicon), JDK 17, Android SDK emulator",
+    "androidEmulator": "Medium_Phone_API_35, google/sdk_gphone64_arm64/emu64a:15/AE3A.240806.036 (read-only instance on console port 5600, shut down afterwards), 1260x2736 override at 480dpi",
+    "stack": "Expo SDK 55.0.31 prebuild, Release, React Native 0.83.10 New Architecture, Hermes (fixtures/native/profiles.json rn-0.83)"
+  },
+  "candidate": {
+    "version": "0.1.0-candidate.shae9123505",
+    "sourceCommit": "e912350 (this branch)",
+    "consumption": "scripts/native-sim/prepare-app.sh steps (Android only) copy fixtures/native to a scratch app and install only the packed tarballs.",
+    "published": false
+  },
+  "issue94": {
+    "file": "android/android-busy-name.json",
+    "method": "NativeVerificationTest#busyButtonName opens component=Button&state=busy&messages=<catalog> and reads the content description of the generated `Review order` example and of a host-label busy Button.",
+    "deviceLocaleEn": [
+      {"catalog": "en", "visible": "Review order · Working", "contentDescription": "Review order, busy"},
+      {"catalog": "en", "visible": "Log out · Working", "contentDescription": "Log out, busy"},
+      {"catalog": "fr", "visible": "Déconnexion · En cours", "contentDescription": "Déconnexion, busy"},
+      {"catalog": "ko", "visible": "로그아웃 · 처리 중", "contentDescription": "로그아웃, busy"}
+    ],
+    "appLocaleKo": {
+      "file": "android/ko-app-locale/android-busy-name.json",
+      "note": "With a ko-KR per-app locale, Android's busy state description is 처리 중. It appears once: the visible suffix is not repeated in the label.",
+      "results": [
+        {"visible": "Review order · 처리 중", "contentDescription": "Review order, 처리 중"},
+        {"visible": "로그아웃 · 처리 중", "contentDescription": "로그아웃, 처리 중", "busyWordCount": 1}
+      ]
+    },
+    "before": "bloxwap/hig#94 (RN 0.83, 0.1.0-candidate.shac32771dc): content description `busy` / `opération en cours` / `처리 중` with no label",
+    "captures": ["android/captures/android-busy-name-en.png", "android/captures/android-busy-name-fr.png", "android/captures/android-busy-name-ko.png"]
+  },
+  "issue87": {
+    "files": ["android/android-slider-action-labels.json", "android/android-slider.json"],
+    "labels": {
+      "en": {"scrollForward": "Increase", "scrollBackward": "Decrease"},
+      "fr (fixture catalog)": {"scrollForward": "Augmenter", "scrollBackward": "Diminuer"},
+      "ko (fixture catalog)": {"scrollForward": "증가", "scrollBackward": "감소"}
+    },
+    "before": "evidence/native-sim/rn-0.83/android/android-slider.json: `scrollForward (empty label)`, `scrollBackward (empty label)`",
+    "setProgress71": "Unchanged: setProgress is listed; 80 -> 80, repeated 80 no change, 42.4 snaps to 42, 150 clamps to 100; scrollForward 25 -> 30 -> 35, scrollBackward 35 -> 30.",
+    "disabled": "Disabled slider: enabled false, setProgress not listed, scrollForward and setProgress not performed, label stays `Volume preview: 100`; actions keep their labels."
+  },
+  "issue92": "Automated only (font-scale cap, family and tracking are style props checked in Jest). Capture android/captures/android-busy-name-ko.png shows the suffix in Bloxwap Sans SemiBold beside the label on the emulator.",
+  "issue102": "Automated only (native Jest).",
+  "pending": "TalkBack on a physical Android device: busy Button announcement and the Slider increase/decrease action list (bloxwap/hig#55)."
+}

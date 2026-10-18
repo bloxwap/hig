@@ -1,8 +1,12 @@
 import {it,expect,vi} from 'vitest';
-import {parseGalleryRoute,feedbackLog,recordingHapticBackend,recordingAudioBackend,dispatchLatency} from '../fixtures/native/native-verification';
+import {parseGalleryRoute,feedbackLog,recordingHapticBackend,recordingAudioBackend,dispatchLatency,soundCounts} from '../fixtures/native/native-verification';
 it('parses simulator deep links for the native gallery harness',()=>{
  expect(parseGalleryRoute('bloxwaphig://gallery?component=Slider&state=disabled&dir=rtl&diag=1&rows=20000')).toEqual({component:'Slider',state:'disabled',direction:'rtl',diagnostics:true,rows:10000});
  expect(parseGalleryRoute('bloxwaphig://gallery?dir=up&rows=-1&component=%E2%80%A6')).toEqual({component:'…'});
+ expect(parseGalleryRoute('bloxwaphig://gallery?component=Button&state=busy&messages=ko')).toEqual({component:'Button',state:'busy',messages:'ko'});
+ expect(parseGalleryRoute('bloxwaphig://gallery?messages=toString')).toEqual({});
+ expect(parseGalleryRoute('bloxwaphig://gallery?component=Alert&state=warning&colorSpace=display-p3')).toEqual({component:'Alert',state:'warning',colorSpace:'display-p3'});
+ expect(parseGalleryRoute('bloxwaphig://gallery?colorSpace=%23ff0000')).toEqual({});
  expect(parseGalleryRoute('bloxwaphig://gallery')).toBeNull();expect(parseGalleryRoute(null)).toBeNull();
 });
 it('records haptic and sound adapter calls without changing their outcome',async()=>{
@@ -21,13 +25,17 @@ it('measures emit-to-play dispatch for simulator/emulator runs',()=>{
  const summary=dispatchLatency.summary();expect(summary.count).toBe(20);expect(summary.p95).toBeLessThan(16);expect(player.play).toHaveBeenCalledTimes(21);
  expect(feedbackLog.entries(2).map(e=>e.result)).toEqual([expect.stringMatching(/^volume 1\.00 dispatch \d+\.\dms p95 \d+\.\dms$/),'volume 1.00']);
 });
-it('records SDK 54 duplicate completion callbacks without dispatching a second cue (#89)',()=>{
- feedbackLog.clear();let complete:((status:{didJustFinish:boolean;currentTime:number;duration:number})=>void)|undefined;
- const player={play:vi.fn(),pause:vi.fn(),seekTo:vi.fn(async()=>{}),remove:vi.fn(),volume:1,addListener:(_event:string,listener:typeof complete)=>{complete=listener;}};
- const backend=recordingAudioBackend({create:()=>player},new Map([['tick-asset','tick']]));
- backend.create('tick-asset').play();
- complete!({didJustFinish:true,currentTime:.09,duration:.08});complete!({didJustFinish:true,currentTime:.09,duration:.08});
- expect(player.play).toHaveBeenCalledTimes(1);
- expect(feedbackLog.entries(10).filter(entry=>entry.call==='play:tick')).toHaveLength(1);
- expect(feedbackLog.entries(10).filter(entry=>entry.call==='tick finished')).toHaveLength(2);
+it('counts play() calls against playbackStatusUpdate events per cue (#89)',()=>{
+ soundCounts.clear();let emit:(status:{didJustFinish?:boolean;playing?:boolean;currentTime?:number;duration?:number})=>void=()=>{};
+ const player={play:vi.fn(),pause:vi.fn(),seekTo:vi.fn(async()=>{}),remove:vi.fn(),volume:1,addListener:(_event:string,listener:typeof emit)=>{emit=listener;}};
+ const wrapped=recordingAudioBackend({create:()=>player},new Map([['tick-asset','tick']])).create('tick-asset');
+ // expo-audio 1.1 on Android: one play, a playing status, then two didJustFinish statuses (isPlaying and playback-state listeners).
+ wrapped.play();emit({playing:true});emit({playing:false,didJustFinish:true});emit({playing:false,didJustFinish:true});
+ // SDK 55: one didJustFinish per play.
+ wrapped.play();emit({playing:true});emit({playing:false,didJustFinish:true});
+ // A second play that never reports playing still resets the repeat check.
+ wrapped.play();emit({didJustFinish:true});
+ expect(soundCounts.get('tick')).toEqual({plays:3,statuses:6,starts:2,finishes:4,repeats:1});
+ expect(soundCounts.summary()).toBe('tick play 3 · start 2 · status 6 · didJustFinish 4 (repeat 1)');
+ soundCounts.clear();expect(soundCounts.summary()).toBe('none');
 });

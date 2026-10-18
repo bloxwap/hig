@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "sourceCommit": "35278bb83c4b8fbb493717428cd89f7667c84586",
+  "sourceCommit": "c05ef3552ce7e17b1ef6e0162e883eea6d50fb33",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,12 +8,13 @@
     "reactNative": "0.81.5"
   },
   "exports": {
+    "chart": 2,
     "contracts": 8,
     "feedback": 17,
     "native": 38,
     "native-fonts": 4,
-    "og-fonts": 4,
-    "react": 42,
+    "og-fonts": 6,
+    "react": 40,
     "tokens": 5
   },
   "sizes": {
@@ -40,8 +41,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 3901,
-      "gzip": 1923,
+      "raw": 4558,
+      "gzip": 2153,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -63,11 +64,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2247806,
-      "gzip": 628144
+      "raw": 2291097,
+      "gzip": 640951
     },
     "docsCSS": {
-      "raw": 111650
+      "raw": 111949
     },
     "fonts": {
       "raw": 592796

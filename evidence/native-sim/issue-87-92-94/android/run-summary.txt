@@ -1,0 +1,6 @@
+snapshot -e name 'baseline' -> OK (1 test)
+sliderAccessibilityActions  -> OK (1 test)
+sliderActionLabels -e catalogs 'en,fr,ko' -> OK (1 test)
+busyButtonName -e catalogs 'en,fr,ko' -> OK (1 test)
+busyButtonName -e catalogs 'ko' -> OK (1 test)
+busyButtonName -e catalogs 'en,fr,ko' -> OK (1 test)

@@ -6,11 +6,11 @@ Follow-ups #86–#89 and #92–#94 distinguish implementation checks from physic
 
 RN 0.83's `I18nManager.isRTL` can report false for an Arabic app locale. The regression is [upstream #54938](https://github.com/react/react-native/issues/54938), introduced by [#53417](https://github.com/react/react-native/pull/53417) and fixed by [#57635](https://github.com/react/react-native/pull/57635), with older-Android handling in [#58723](https://github.com/react/react-native/pull/58723).
 
-HIG preserves a true OS RTL value and falls back to the app locale's script when the OS value is false. Hosts can always override `direction` explicitly. When no locale is supplied, direction uses the app locale from `Intl.DateTimeFormat().resolvedOptions().locale`; display formatting keeps the existing `en-US` default. Pass the host's chosen locale for localized number/date formatting. The Android `os-arabic` harness snapshot now asserts HIG RTL, rather than treating a captured LTR tree as a pass. The OS diagnostic itself may still read false on affected RN versions.
+HIG defaults direction to `I18nManager.isRTL`. Hosts that support RTL pass `direction={localeDirection(getLocales()[0])}`, using `localeDirection` from `@bloxwap/hig-native/provider` and their localization adapter (for example Expo Localization). This handles an Arabic per-app locale even when RN's OS diagnostic still reports false. Hosts that disallow RTL leave direction unset. Formatting locale remains independent, with `en-US` as the default. The Android `os-arabic` harness asserts the explicit host direction. Historical local fallback measurements predate the merged public API.
 
 ## Slider action labels
 
-RN 0.83 exposes an empty accessibility action label when the host omits it. HIG supplies `messages.increment` and `messages.decrement` for both actions, with English Increase/Decrease defaults and host translation overrides. Disabled adjustments remain rejected. Automated labels and state checks do not establish what a person hears through TalkBack; physical reference flows remain in #55.
+RN 0.83 exposes an empty accessibility action label when the host omits it. HIG supplies `messages.increase` and `messages.decrease` for both actions, with English Increase/Decrease defaults and host translation overrides. Disabled adjustments remain rejected. Automated labels and state checks do not establish what a person hears through TalkBack; physical reference flows remain in #55.
 
 ## iOS Dynamic Type audit
 
@@ -28,4 +28,4 @@ Only the gallery recorder listens to `playbackStatusUpdate`. The HIG adapter dis
 
 Native Button uses HIG Text for both its label and localized busy suffix, preserving font registration, script spacing and scale caps. Its busy accessible name includes the visible label, with explicit host labels taking precedence. Mixed ReactNode status titles concatenate visible text without inserting extra spaces.
 
-`HIGProvider colorSpace='display-p3'` selects the canonical native P3 table throughout HIG controls. Default sRGB behavior stays available, and nested providers inherit the selected space. These are channel-selection and semantic tests, not comparisons of physical displays.
+`HIGProvider colorSpace='display-p3'` selects the canonical P3 table on iOS. Android and web resolve to sRGB. Native controls and host-drawn views read the resolved table through `useColors()`; nested providers inherit the selected space. These are channel-selection and semantic tests, not comparisons of physical displays.

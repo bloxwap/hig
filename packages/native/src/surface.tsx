@@ -1,7 +1,7 @@
 import React,{forwardRef} from 'react';
 import {Text as RNText,View,StyleSheet,type TextProps,type ViewProps} from 'react-native';
 import {nativeMetrics as tokens} from '@bloxwap/hig-tokens';
-import {useHIG} from './provider.js';
+import {useColors,useHIG} from './provider.js';
 import {plainText} from './text-content.js';
 export type TextScript='latin'|'ko'|'zh';
 /** Korean and Chinese companion faces are set at their own spacing (0em): Latin tracking spreads CJK glyphs apart. Hosts override per script through HIGProvider `letterSpacingByScript`. */
@@ -17,13 +17,13 @@ function scriptFont(families:Readonly<Record<string,string>>|undefined,weight:st
  weights.sort((a,b)=>Math.abs(a-Number(weight))-Math.abs(b-Number(weight))||a-b);
  return weights.length?families[weights[0]]:undefined;
 }
-export const Text=forwardRef<RNText,HIGTextProps>(function Text({style,script,maxFontSizeMultiplier,...props},ref){const env=useHIG();const {colors}=env;const resolved=StyleSheet.flatten(style);const requested=resolved?.fontWeight??400;const weight=requested==='normal'?400:requested==='bold'?700:requested;
+export const Text=forwardRef<RNText,HIGTextProps>(function Text({style,script,maxFontSizeMultiplier,...props},ref){const env=useHIG();const colors=useColors();const resolved=StyleSheet.flatten(style);const requested=resolved?.fontWeight??400;const weight=requested==='normal'?400:requested==='bold'?700:requested;
  const resolvedScript=script??detectScript(plainText(props.children),props.accessibilityLanguage??env.locale);const registered=resolved?.fontFamily?undefined:scriptFont(env.fontFamiliesByScript?.[resolvedScript],weight)??env.fontFamilies?.[weight];
  const tracking=resolvedScript==='latin'?undefined:{letterSpacing:(env.letterSpacingByScript?.[resolvedScript]??scriptLetterSpacing[resolvedScript])*(resolved?.fontSize??16)};
  return <RNText {...props} ref={ref} maxFontSizeMultiplier={maxFontSizeMultiplier??env.maxFontSizeMultiplier} style={[{color:colors.text,fontSize:16,lineHeight:24,fontFamily:env.fontFamily,writingDirection:env.direction},style,registered?{fontFamily:registered,fontWeight:'normal'}:undefined,tracking]}/>;});
 export const Heading=forwardRef<RNText,HIGTextProps>(function Heading({style,...props},ref){return <Text {...props} ref={ref} accessibilityRole='header' style={[{fontSize:24,lineHeight:30,fontWeight:'600'},style]}/>;});
 export function Stack({style,...props}:ViewProps){const env=useHIG();return <View {...props} style={[{direction:env.direction,gap:tokens.space.md},style]}/>;}
 export function Inline({style,...props}:ViewProps){const env=useHIG();return <View {...props} style={[{direction:env.direction,flexDirection:'row',flexWrap:'wrap',alignItems:'center',gap:tokens.space.md},style]}/>;}
-export function Surface({style,...props}:ViewProps){const env=useHIG();const {colors}=env;return <View {...props} style={[{direction:env.direction,backgroundColor:colors.surface,borderRadius:tokens.radius.xl,padding:tokens.space.xl},style]}/>;}
+export function Surface({style,...props}:ViewProps){const env=useHIG();const colors=useColors();return <View {...props} style={[{direction:env.direction,backgroundColor:colors.surface,borderRadius:tokens.radius.xl,padding:tokens.space.xl},style]}/>;}
 export const Card=Surface;
-export function Separator(){const {colors}=useHIG();return <View accessibilityRole='none' style={{height:1,backgroundColor:colors.border}}/>;}
+export function Separator(){const colors=useColors();return <View accessibilityRole='none' style={{height:1,backgroundColor:colors.border}}/>;}

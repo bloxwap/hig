@@ -10,9 +10,11 @@ for(const platform of ['react','native']){
  const directory=mkdtempSync(join(tmpdir(),`hig-packed-${platform}-examples-`));
  const dependencies={...JSON.parse(readFileSync(`fixtures/${platform==='react'?'web':'native'}/package.json`)).dependencies};
  for(const key of Object.keys(dependencies))if(key.startsWith('@bloxwap/hig-'))delete dependencies[key];
+ // PriceChart comes from @bloxwap/hig-chart, whose @bloxwap/chart peer is required (#96).
+ if(platform==='react')dependencies['@bloxwap/chart']='0.3.0';
  const devDependencies={typescript:'5.9.3','@types/react':'19.1.16','@types/node':'22.18.10',...(platform==='react'?{'@types/react-dom':'19.1.9'}:{})};
  writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module',dependencies,devDependencies}));
- const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes(platform==='react'?'hig-native':'hig-react')).map(n=>resolve('artifacts',n));
+ const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!(platform==='react'?['hig-native']:['hig-react','hig-chart']).some(p=>n.includes(p))).map(n=>resolve('artifacts',n));
  execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:directory,stdio:'pipe'});
  if(platform==='native')verifyNativeReact(directory);
  mkdirSync(join(directory,'examples'));

@@ -18,7 +18,7 @@ beforeEach(()=>{
  frames=new Map();nextFrame=1;
  jest.spyOn(global,'requestAnimationFrame').mockImplementation(callback=>{const id=nextFrame++;frames.set(id,callback);return id;});
  jest.spyOn(global,'cancelAnimationFrame').mockImplementation(id=>frames.delete(id));
- jest.spyOn(native,'findNodeHandle').mockImplementation(node=>node?._nativeTag??null);
+ jest.spyOn(native,'findNodeHandle').mockImplementation(node=>node?._nativeTag??31);
  jest.spyOn(AccessibilityInfo,'setAccessibilityFocus').mockImplementation(()=>{});
 });
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.restoreAllMocks();jest.clearAllMocks();});
@@ -26,7 +26,7 @@ const defaults={open:true,onOpenChange:jest.fn(),title:'Account',contentMode:'cu
 function element(props={},children=React.createElement(View,{testID:'card',style:{flex:1}},React.createElement(ScrollView,{testID:'caller-scroll'},React.createElement(Text,null,'Card body')))){
  return React.createElement(HIGProvider,{reducedMotion:true},React.createElement(GestureSheet,{...defaults,...props},children));
 }
-function mount(props,children){act(()=>{root=create(element(props,children),{createNodeMock:({props})=>({_nativeTag:props.accessibilityRole==='header'?31:17})});});return modal();}
+function mount(props,children){act(()=>{root=create(element(props,children));});return modal();}
 function update(props,children){act(()=>root.update(element(props,children)));return modal();}
 function modal(){return root.root.findAll(n=>n.props.testID==='backend')[0];}
 function flushFrames(){const pending=[...frames.values()];frames.clear();act(()=>pending.forEach(callback=>callback(0)));}
@@ -57,7 +57,8 @@ it('caller-rendered title supplies the open focus target without a duplicate hid
  expect(root.root.findAllByType(Text).filter(n=>n.props.accessibilityRole==='header')).toHaveLength(1);
  expect(root.root.findAllByType(Text).find(n=>n.props.accessibilityRole==='header').props.accessibilityLabel).toBeUndefined();
  act(()=>node.props.onChange(0));
- expect(AccessibilityInfo.setAccessibilityFocus).toHaveBeenCalledWith(titleRef.current._nativeTag);
+ expect(native.findNodeHandle).toHaveBeenCalledWith(titleRef.current);
+ expect(AccessibilityInfo.setAccessibilityFocus).toHaveBeenCalledWith(31);
  expect(node.props.accessibilityLabel).toBe('Account');
 });
 

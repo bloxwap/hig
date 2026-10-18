@@ -16,7 +16,7 @@ export interface HIGMessages {
  dismiss: string;
  /** Toast dismiss accessible name. Must contain `dismiss` (the visible label) so voice control still matches. */
  dismissNotice: (message: string, dismiss: string) => string;
- /** Visible and announced Button busy suffix (` · Working`). An empty string hides the suffix; busy state is still exposed. */
+ /** Visible and announced Button busy suffix (` · Working`). An empty string hides the suffix; busy state is still exposed. On Android the platform's busy state description replaces the suffix in the accessible name. */
  busy: string;
  /** Web Toast landmark name. */
  notifications: string;
@@ -58,10 +58,6 @@ export interface HIGMessages {
  noResults: string;
  /** Native Search result count status. Use Intl.PluralRules for locales with more plural forms. */
  resultCount: (count: number, locale: string) => string;
- /** Native Slider accessibility action to increase its value. */
- increment: string;
- /** Native Slider accessibility action to decrease its value. */
- decrement: string;
  /** Native BackButton. */
  back: string;
  /** Native Menu sheet description. */
@@ -102,6 +98,10 @@ export interface HIGMessages {
  statusOffline: string;
  /** StatusIndicator `stale` state. */
  statusStale: string;
+ /** Native Slider increment accessibility action label (Android action list; RN 0.83 otherwise exposes an empty label). */
+ increase: string;
+ /** Native Slider decrement accessibility action label. */
+ decrease: string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.
 export const close = 'Close';
@@ -129,8 +129,6 @@ export const search = 'Search';
 export const searching = 'Searching…';
 export const noResults = 'No results';
 export const resultCount = (count: number, locale: string) => `${new Intl.NumberFormat(locale).format(count)} ${count === 1 ? 'result' : 'results'}`;
-export const increment = 'Increase';
-export const decrement = 'Decrease';
 export const back = 'Back';
 export const menuDescription = 'Available actions';
 export const choose = 'Choose';
@@ -151,8 +149,10 @@ export const noActivity = 'No activity yet';
 export const statusOnline = 'online';
 export const statusOffline = 'offline';
 export const statusStale = 'stale';
+export const increase = 'Increase';
+export const decrease = 'Decrease';
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, increment, decrement, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale, increase, decrease};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**

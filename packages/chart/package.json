@@ -1,0 +1,32 @@
+{
+  "name": "@bloxwap/hig-chart",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "@bloxwap/chart": "^0.3.0",
+    "@bloxwap/hig-react": "0.1.0"
+  },
+  "dependencies": {
+    "@bloxwap/hig-tokens": "0.1.0",
+    "@bloxwap/hig-contracts": "0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloxwap/hig",
+    "directory": "packages/chart"
+  }
+}

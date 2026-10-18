@@ -28,6 +28,8 @@ adb logcat -c
 run galleryCaptures components "$COMPONENTS" prefix android
 run snapshot name baseline
 run sliderAccessibilityActions
+run sliderActionLabels catalogs en,fr,ko # #87: increase/decrease labels from the host catalog
+run busyButtonName catalogs en,fr,ko # #94: busy content description keeps the label
 run overlayFocusAndBack
 run listScrolling
 adb shell dumpsys gfxinfo $PKG > "$OUT/host/gfxinfo-after-list.txt"
@@ -39,7 +41,7 @@ run keyboardAvoidance
 # HIG per-root RTL, then OS RTL through an Arabic per-app locale (Android 13+).
 run galleryCaptures components "$SUBSET" prefix android-rtl query "&dir=rtl"
 adb shell am force-stop $PKG; adb shell cmd locale set-app-locales $PKG --locales ar-EG
-run snapshot name os-arabic
+run snapshot name os-arabic expectDirection rtl # #86: the gallery passes direction from expo-localization
 run galleryCaptures components "Button,Select,Field,Tabs,MarketRow,TradeEntry" prefix android-os-arabic
 adb shell am force-stop $PKG; adb shell cmd locale set-app-locales $PKG --locales ""
 # OS font scale 2.0 (largest Android setting).
