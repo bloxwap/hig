@@ -14,7 +14,7 @@ All data and actions are supplied by the host application.
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
 | `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. |
-| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation. `mode='presentation'` lets a host option own selection, with optional `icon`, `favorite`, and formatted `volume` slots. |
+| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
 
 Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
 
@@ -22,14 +22,15 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 <CommandItem onSelect={()=>openMarket(market.symbol)}>
   <MarketRow mode='presentation' symbol={market.symbol} name={market.name}
     price={market.price} priceOptions={{style:'decimal',maximumFractionDigits:8}}
-    change={market.change} icon={<MarketIcon symbol={market.symbol}/>}
+    change={market.change} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2}}
+    identity={<><strong>{market.symbol}</strong> {market.name}</>} icon={<MarketIcon symbol={market.symbol}/>}
     favorite={<FavoriteIndicator selected={market.favorite}/>}
     volume={<NumberReadout value={market.volume} options={{notation:'compact'}}/>}
     style={{gridTemplateColumns:'minmax(0,1fr) 12ch 8ch 10ch'}}/>
 </CommandItem>
 ```
 
-Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned.
+Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
 
 ## When to use and examples
 

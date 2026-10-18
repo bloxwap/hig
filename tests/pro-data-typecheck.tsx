@@ -8,7 +8,7 @@ const highlights:TableRowProps={'data-market':'BTC',className:'current-market','
 export const proDataTypecheck=<>
  <Table caption='Positions' rows={[{id:'BTC',value:1}]} keyFor={row=>row.id} columns={columns} rowProps={()=>highlights} captionHidden stickyHeader loading state={<p>Refreshing</p>}/>
  <MarketRow symbol='BTC' name='Bitcoin' price={1} change={1} onSelect={()=>{}}/>
- <MarketRow mode='presentation' symbol='BTC' name='Bitcoin' price={1} change={1} priceOptions={{style:'decimal',maximumFractionDigits:8}} icon={<span/>} favorite={<span/>} volume='1.2M'/>
+ <MarketRow mode='presentation' symbol='BTC' name='Bitcoin' price={1} change={1} priceOptions={{style:'decimal',maximumFractionDigits:8}} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'always'}} identity={<><strong>BTC</strong> Bitcoin</>} icon={<span/>} favorite={<span/>} volume='1.2M'/>
 </>;
 // @ts-expect-error Preserve native table-row semantics.
 const rowRole:TableRowProps={role:'button'};
@@ -22,4 +22,6 @@ const physicalAlignment:Column<Position>={key:'value',label:'Value',align:'right
 const missingAction:MarketRowProps={symbol:'BTC',name:'Bitcoin',price:1,change:1};
 // @ts-expect-error Presentation mode delegates selection to the host.
 const duplicateAction:MarketRowProps={mode:'presentation',symbol:'BTC',name:'Bitcoin',price:1,change:1,onSelect:()=>{}};
-void [rowRole,rowChildren,rowHTML,physicalAlignment,missingAction,duplicateAction];
+// @ts-expect-error Action mode keeps its named HIG button.
+const actionIdentity:MarketRowProps={symbol:'BTC',name:'Bitcoin',price:1,change:1,onSelect:()=>{},identity:<span>BTC</span>};
+void [actionIdentity,rowRole,rowChildren,rowHTML,physicalAlignment,missingAction,duplicateAction];

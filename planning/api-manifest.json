@@ -188,7 +188,7 @@
       },
       "MarketRow": {
         "entry": "recipes/market-row",
-        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect, priceOptions, mode, icon, favorite, volume, className, style }: MarketRowProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect, priceOptions, changeOptions, mode, identity, icon, favorite, volume, className, style }: MarketRowProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "BalanceCard": {
         "entry": "recipes/balance-card",
@@ -324,7 +324,7 @@
       },
       "MarketRowProps": {
         "entry": "recipes/market-row",
-        "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n} | {\n    mode: 'presentation';\n    onSelect?: never;\n});"
+        "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity, such as symbol/name with its existing compact layout. */\n    identity?: React.ReactNode;\n});"
       }
     },
     "native": {

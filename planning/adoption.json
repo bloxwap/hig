@@ -50,7 +50,9 @@
         "https://github.com/bloxwap/hig/pull/113",
         "https://github.com/bloxwap/hig/pull/114"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/hig/pull/126"
+      ],
       "validation": "npm run check, packed web/SSR/Next/Metro consumers, three-engine browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
       "exceptions": [
         {
@@ -71,7 +73,12 @@
       "remaining": "Roadmap #1: source branch implements native adoption APIs #117\u2013#121 and Pro Table/MarketRow gaps (#110); coordinated consumer refresh #115 and app-flow WebKit #124 are in progress. Physical devices #55, registry #56 and named-owner approvals #57 remain.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateImplementation": {
+        "pr": "https://github.com/bloxwap/hig/pull/126",
+        "sourceCommit": "fb12d143c74b54ace9abbf0a263f73dc606e999f",
+        "validation": "Node22 check150web125native; 212examples; packed web/boundary/shipped-import and both native export profiles; four iOS Simulator adoption checks (earlier e339 source, no physical approval)."
+      }
     },
     {
       "name": "hyperliquid",
@@ -110,7 +117,9 @@
         "https://github.com/bloxwap/chart/pull/53",
         "https://github.com/bloxwap/chart/pull/56"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/chart/pull/58"
+      ],
       "validation": "chart#56 CI green (build, test) on f80d109, merged as 2c952f6 (post-merge Coverage and Documentation green); independent verifier: npm ci with no .npmrc (34 Radix entries, 0 nested), lint, typecheck, 1869/1869 tests, docs build (30 pages, 1530 links, 25 cards), docs:check, docs:test (Chrome: single tab stop for InstallCommand in Tabs, HIG button on a loaded Bloxwap face); vendored tarballs byte-identical to a fresh hig@872906a9 candidate (docs/hig-adoption/hig-872906a9/)",
       "exceptions": [
         {
@@ -131,7 +140,17 @@
       "remaining": "Swap vendored tarballs for npm (#56); at the next refresh (candidate at or after 74f4f6a): switch the OG card to @bloxwap/hig-og-fonts (#99 fixed) and remove the legacy-peer-deps lockfile note from vendor/bloxwap-hig/README.md (#96 fixed; tracked in #115)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/chart",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/chart/pull/58",
+        "head": "97ad3fc2305cb3f8fee8e2e06187c7921aec34a6",
+        "evidence": "docs/hig-adoption/issue-115/verification.json",
+        "validation": "Clean normal no-lock install and npm ci; all non-HIG versions retained; lint/types; 1,869 tests; 30 HTML/1,530 links/25 byte-identical cards; Chrome browser checks; vendor -3,573,511 B.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative."
+      }
     },
     {
       "name": "font",
@@ -170,7 +189,9 @@
         "https://github.com/bloxwap/sfx/pull/50",
         "https://github.com/bloxwap/sfx/pull/52"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/sfx/pull/55"
+      ],
       "validation": "sfx#52 CI green (build, test, browser-tests, npm audit) on a628cec, merged as 924eafe (post-merge Tests, Coverage, Documentation, Browsers and Live docs smoke green); independent verifier: npm ci, lint, typecheck, 183 tests, docs build (18 HTML, 15 cards), docs:check, docs smoke 6/6 in Chromium and WebKit; Radix 48 (22 nested) to 34 (0 nested), export JS -10,594 B (evidence/hig/candidate-872906a9/)",
       "exceptions": [
         {
@@ -198,7 +219,18 @@
       "remaining": "Upstream voice cancellation (#70); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); npm (#56)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/sfx",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/sfx/pull/55",
+        "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
+        "evidence": "evidence/hig/og-font-refresh/report.json",
+        "validation": "Clean npm ci; build/lint/types; 190 tests; docs build/check; Chromium three smokes; all 15 cards and three captures identical to same-toolchain baseline.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+      }
     },
     {
       "name": "haptic",
@@ -271,7 +303,9 @@
         "https://github.com/bloxwap/agent-cli/pull/47",
         "https://github.com/bloxwap/agent-cli/pull/48"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/agent-cli/pull/55"
+      ],
       "validation": "agent-cli#48 CI green (CI, install smoke ubuntu/macos, Documentation with drift and docs:smoke 13/13) on cc5d405, merged as cfbc8a6 (post-merge CI, Install smoke, Documentation green); independent verifier: build, lint, typecheck, 71 tests, test:package, docs build (16 pages, 597 links, 13 cards at /agent-cli), docs:check, scoped drift passed (38 files, 0 dated exceptions), browser probe (links, search, copy/install, keyboard, 390px nav, loaded Bloxwap faces via HIG roles); tarballs byte-identical to a fresh hig@872906a9 candidate; before/after: CSS 150,822 to 153,404 B, JS 1,268,205 to 1,270,472 B, fonts unchanged, docs deps 21 to 20, Radix lockfile entries 90 to 62 (evidence/hig/docs-package-refresh/)",
       "exceptions": [
         {
@@ -285,7 +319,18 @@
       "remaining": "Swap vendored tarballs for npm (#56); same-line copy guard (bloxwap/agent-cli#49); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/agent-cli",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/agent-cli/pull/55",
+        "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
+        "evidence": "evidence/hig/og-font-refresh/report.json",
+        "validation": "Local build/lint/types/tests/package/docs/browser passed; CI, docs and four Linux/macOS Node22/24 install smoke jobs all green.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+      }
     },
     {
       "name": "taptradetv",
@@ -296,7 +341,9 @@
       "mergedPRs": [
         "https://github.com/bloxwap/taptradetv/pull/188"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/taptradetv/pull/216"
+      ],
       "validation": "taptradetv#188 CI green (Quality Gate with sha256 check and scoped drift 157 files, web/host previews) on d553fc6, merged as 0cf967e (post-merge Production green); independent verifier (bun 1.3.0): frozen install, lint, check-types, tests (root Vitest 394), build, OpenNext build:cf, drift passed; tarballs byte-identical to a fresh hig@872906a9 candidate. Browser (Playwright Chromium, production next start with a mock auction worker): 390px accept 44px and inputs 48px, keyboard dialog open/trap/confirm/price-moved/Escape focus return, Space toggles the switch, Bloxwap faces only on /sponsors routes, /schedule table unchanged after client navigation, rollback NEXT_PUBLIC_HIG_SPONSORS=0 restores the legacy renderers (<=0.45% pixel diff). Bytes on /sponsors: JS +45,731, CSS +56,541, fonts +458,664; / and /schedule fonts -134,132 (docs/hig/ in taptradetv)",
       "exceptions": [
         {
@@ -324,7 +371,18 @@
       "remaining": "Migrate the remaining apps/web routes and apps/host tokens-only, and decide the brand accent (#100); drop the sponsors-hig.css th/td reset at the next refresh (#95 fixed; #115); npm (#56)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/taptradetv",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/taptradetv/pull/216",
+        "head": "0324203a05a6968c855aee0d635d7bde2a168568",
+        "evidence": "docs/hig/evidence/issue-115/verification.json",
+        "validation": "Bun1.3 cold frozen install; lint/types/build; 301 tests; drift169files; strict Chromium/WebKit navigation preserves schedule cells/focus and reports no runtime errors. UTC-first hydration resolves prior formatter mismatch.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+      }
     },
     {
       "name": "tapsiren",
@@ -335,7 +393,9 @@
       "mergedPRs": [
         "https://github.com/bloxwap/tapsiren/pull/399"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/tapsiren/pull/401"
+      ],
       "validation": "tapsiren#399 PR CI green on 6cc14fd (HIG drift, Build, ESLint, preview deploy), merged as 81d33eb and deployed to tapsiren.com by the Production workflow. Automated (local, bun 1.3.0): install --frozen-lockfile, lint, tsc, bun test lib 3/3, next build; vendored tarballs byte-identical to a fresh HIG 872906a9 candidate build; scoped drift on workers/tapsiren/{app,components,lib} passed (8 files, 0 dated exceptions) and flags a planted palette. Browser (Playwright Chromium against tapsiren.com, 1440/390): 0px overflow, Bloxwap Sans/Mono loaded, CTAs are <a> with HIG button paint and the HIG focus ring, /api/og 200 PNG; evidence in workers/tapsiren/docs/hig-adoption/",
       "exceptions": [
         {
@@ -356,7 +416,18 @@
       "remaining": "Decide the product mark/favicon colour (#101, expires 2027-01-15); copy OG faces from @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); swap vendored tarballs for npm (#56)",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/tapsiren",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/tapsiren/pull/401",
+        "head": "1894d0e90def83abb0eee6a888f6e77b6228919b",
+        "evidence": "workers/tapsiren/docs/hig-adoption/issue-115/verification.json",
+        "validation": "Cold frozen install; lint/types/3tests/build/drift/actionlint; desktop+390px Chromium/WebKit fonts/focus; four font hashes and 166,597-byte OG identical; all eight remote checks green.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+      }
     },
     {
       "name": "bloxwap.github.io",
@@ -589,13 +660,25 @@
         "https://github.com/bloxwap/chart/pull/53",
         "https://github.com/bloxwap/chart/pull/56"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/chart/pull/58"
+      ],
       "validatedVersion": "0.1.0-candidate.sha872906a9",
       "validation": "chart#56 CI green (build, test) on f80d109, merged as 2c952f6 (post-merge Coverage and Documentation green); independent verifier: npm ci with no .npmrc (34 Radix entries, 0 nested), lint, typecheck, 1869/1869 tests, docs build (30 pages, 1530 links, 25 cards), docs:check, docs:test (Chrome: single tab stop for InstallCommand in Tabs, HIG button on a loaded Bloxwap face); vendored tarballs byte-identical to a fresh hig@872906a9 candidate (docs/hig-adoption/hig-872906a9/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
       "remaining": "Swap vendored tarballs for npm (#56); smaller OG font source (#99); lockfile regeneration needs the documented workaround until #96",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/sdk-docs.md"
+      "guide": "docs/migration/sdk-docs.md",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/chart/pull/58",
+        "head": "97ad3fc2305cb3f8fee8e2e06187c7921aec34a6",
+        "evidence": "docs/hig-adoption/issue-115/verification.json",
+        "validation": "Clean normal no-lock install and npm ci; all non-HIG versions retained; lint/types; 1,869 tests; 30 HTML/1,530 links/25 byte-identical cards; Chrome browser checks; vendor -3,573,511 B.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative."
+      }
     },
     {
       "name": "Font docs",
@@ -624,13 +707,26 @@
         "https://github.com/bloxwap/sfx/pull/50",
         "https://github.com/bloxwap/sfx/pull/52"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/sfx/pull/55"
+      ],
       "validatedVersion": "0.1.0-candidate.sha872906a9",
       "validation": "sfx#52 CI green (build, test, browser-tests, npm audit) on a628cec, merged as 924eafe (post-merge Tests, Coverage, Documentation, Browsers and Live docs smoke green); independent verifier: npm ci, lint, typecheck, 183 tests, docs build (18 HTML, 15 cards), docs:check, docs smoke 6/6 in Chromium and WebKit; Radix 48 (22 nested) to 34 (0 nested), export JS -10,594 B (evidence/hig/candidate-872906a9/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
       "remaining": "Upstream voice cancellation (#70); smaller OG font source (#99); npm (#56)",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/sdk-docs.md"
+      "guide": "docs/migration/sdk-docs.md",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/sfx/pull/55",
+        "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
+        "evidence": "evidence/hig/og-font-refresh/report.json",
+        "validation": "Clean npm ci; build/lint/types; 190 tests; docs build/check; Chromium three smokes; all 15 cards and three captures identical to same-toolchain baseline.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+      }
     },
     {
       "name": "Haptic docs",
@@ -659,13 +755,26 @@
         "https://github.com/bloxwap/agent-cli/pull/47",
         "https://github.com/bloxwap/agent-cli/pull/48"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/agent-cli/pull/55"
+      ],
       "validatedVersion": "0.1.0-candidate.sha872906a9",
       "validation": "agent-cli#48 CI green (CI, install smoke ubuntu/macos, Documentation with drift and docs:smoke 13/13) on cc5d405, merged as cfbc8a6 (post-merge CI, Install smoke, Documentation green); independent verifier: build, lint, typecheck, 71 tests, test:package, docs build (16 pages, 597 links, 13 cards at /agent-cli), docs:check, scoped drift passed (38 files, 0 dated exceptions), browser probe (links, search, copy/install, keyboard, 390px nav, loaded Bloxwap faces via HIG roles); tarballs byte-identical to a fresh hig@872906a9 candidate; before/after: CSS 150,822 to 153,404 B, JS 1,268,205 to 1,270,472 B, fonts unchanged, docs deps 21 to 20, Radix lockfile entries 90 to 62 (evidence/hig/docs-package-refresh/)",
       "rollback": "revert the squash merge of #48 (restores the 19c75619 tarballs, Radix peers and font bridge)",
       "remaining": "#56, #99",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/governance/new-repository.md"
+      "guide": "docs/governance/new-repository.md",
+      "candidateRefresh": {
+        "status": "validated locally; draft PR pending merge",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
+        "pr": "https://github.com/bloxwap/agent-cli/pull/55",
+        "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
+        "evidence": "evidence/hig/og-font-refresh/report.json",
+        "validation": "Local build/lint/types/tests/package/docs/browser passed; CI, docs and four Linux/macOS Node22/24 install smoke jobs all green.",
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+      }
     }
   ]
 }

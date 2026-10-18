@@ -1000,5 +1000,41 @@
       "blockedByApproval": "Physical devices, owner/release decisions and upstream releases are external prerequisites."
     }
   ],
-  "rawEvidenceNote": "Temporary audit source records were used for this read-only snapshot; source commit/PR URLs and observed outcomes are recorded below."
+  "rawEvidenceNote": "Temporary audit source records were used for this read-only snapshot; source commit/PR URLs and observed outcomes are recorded below.",
+  "feedbackApiRecheck": {
+    "observedAt": "2026-10-18T17:01:58.118679+00:00",
+    "sfx#51": {
+      "headRefOid": "e22597c188549dc51aabbe3c03c0308c7e169616",
+      "mergeCommit": {
+        "oid": "4f9fccefed7eb71a43a39eb88c9937310f7461a6"
+      },
+      "mergedAt": "2026-10-18T16:39:39Z",
+      "state": "MERGED",
+      "title": "feat(engine): per-play AbortSignal cancellation for HIG root-scoped sounds",
+      "updatedAt": "2026-10-18T16:39:39Z",
+      "url": "https://github.com/bloxwap/sfx/pull/51"
+    },
+    "haptic#30": {
+      "headRefOid": "c43bb25dfdce9f1e6066675d1daf66619f75a6dd",
+      "mergeCommit": {
+        "oid": "0f20a59344eeb70347bfb278f12f5d53db1abd3b"
+      },
+      "mergedAt": "2026-10-18T16:28:58Z",
+      "state": "MERGED",
+      "title": "Add imperative vibration API and device verification controls",
+      "updatedAt": "2026-10-18T16:31:28Z",
+      "url": "https://github.com/bloxwap/haptic/pull/30"
+    },
+    "haptic#27": {
+      "state": "OPEN",
+      "title": "Imperative haptic API for semantic controllers (iOS WebKit async gap from HIG)",
+      "updatedAt": "2026-10-18T16:29:44Z",
+      "url": "https://github.com/bloxwap/haptic/issues/27"
+    },
+    "registryVersions": {
+      "@bloxwap/sfx": "0.1.0",
+      "@bloxwap/haptic": "0.1.0"
+    },
+    "conclusion": "SFX per-play AbortSignal support and the Haptic imperative vibration API merged during this audit. Neither has a new npm release; HIG pins both optional peers to 0.1.0. Haptic issue #27 remains open: imperative vibration does not overcome WebKit trusted-native-event requirements. Physical output remains unverified."
+  }
 }

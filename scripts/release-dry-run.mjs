@@ -10,6 +10,9 @@ requireGeneratedFonts('The release dry run');
 const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 // Capture input state before quality/report generation updates tracked measurement evidence.
 const sourceTreeDirty=!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim();
+// Rebuild the captured packages and docs before staging. Ignored output can otherwise contain an
+// older API even when HEAD and the working tree are clean.
+execFileSync('npm',['run','build'],{stdio:'inherit'});
 const sourceVersion=JSON.parse(readFileSync('package.json','utf8')).version;
 const artifactVersion=channel==='candidate'?`${sourceVersion}-candidate.sha${commit.slice(0,8)}`:sourceVersion;
 const output=resolve(`artifacts/release-${channel}`);mkdirSync(output,{recursive:true});

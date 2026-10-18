@@ -59,3 +59,20 @@ it('keeps tiny prices, locale precision, zero and unknown values distinct in Mar
  expect([...document.querySelectorAll('.hig-market-price')].map(node=>node.textContent)).toEqual(['0,00001234','0,0','—']);
  expect(document.querySelector('[aria-live]')).toBeNull();
 });
+
+
+it('preserves a host market identity and signed fixed-percent strings after host rounding (#110)',async()=>{
+ const samples=[1.005,-.00001,-0,0,1.2,null];
+ const {rerender}=render(<></>);
+ for(const value of samples){
+  // Matches the host's toFixed rounding, sign and negative-zero rules before Percent formats it.
+  const rounded=value===null?null:Number(value.toFixed(2));
+  const expected=value===null?'—':`${value>0?'+':''}${value.toFixed(2)}%`;
+  rerender(<MarketRow mode='presentation' symbol='BTC' name='Bitcoin' identity={<><strong>BTC</strong><span>Bitcoin perpetual</span></>} price={1} change={rounded} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:value!==null&&value>0?'always':'auto',useGrouping:false}}/>);
+  expect(screen.getByText('BTC').tagName).toBe('STRONG');expect(screen.getByText('Bitcoin perpetual')).toBeTruthy();expect(screen.queryByText('Bitcoin (BTC)')).toBeNull();
+  expect(document.querySelector('.hig-market-change')?.textContent).toBe(expected);
+  expect(screen.queryByRole('button')).toBeNull();expect(document.querySelector('[tabindex]')).toBeNull();
+ }
+ rerender(<HIGProvider locale='de-DE'><MarketRow mode='presentation' symbol='BTC' name='Bitcoin' price={1} change={1.2} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'always'}}/></HIGProvider>);
+ expect(document.querySelector('.hig-market-change')?.textContent).toBe('+1,20\u00a0%');
+});
