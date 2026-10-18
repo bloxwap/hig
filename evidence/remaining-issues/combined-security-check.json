@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-18T20:06:32.602767+00:00",
+  "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+  "head": "18967782b6e9c51ca4d7b5404f388a219a7233a8",
+  "check": {
+    "id": 117775892500,
+    "conclusion": "failure",
+    "provider": "GitGuardian",
+    "incident": "https://dashboard.gitguardian.com/workspace/277063/incidents/38367521?occurrence=305001299"
+  },
+  "finding": {
+    "commit": "f786dfca0f74e4e98b0e174f65cff278b78bb17f",
+    "path": "docs/hig/evidence/integration/native-production/report.json",
+    "line": 317,
+    "classification": "Generic High Entropy Secret",
+    "actualData": "Public Git tree SHA-1 for the packages/tokens source directory at native commit88f3fe0.",
+    "verification": "git rev-parse 88f3fe0:packages/tokens equals recorded value; git cat-file -t returns tree. Independently verified by two agents; value omitted here."
+  },
+  "currentTree": {
+    "commit": "18967782b6e9c51ca4d7b5404f388a219a7233a8",
+    "change": "Source tree hashes now use explicit gitTreeSha1 fields; report/helper/provenance agree. All twelve public tree IDs verified; measurement values unchanged.",
+    "newOccurrenceReported": false
+  },
+  "disposition": "The latest provider result links only the original historical occurrence. The external security check remains failed and requires owner/provider false-positive review; no incident was ignored, suppression added, branch rewritten or check bypassed."
+}

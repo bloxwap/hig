@@ -53,7 +53,7 @@
       "openPRs": [
         "https://github.com/bloxwap/hig/pull/126"
       ],
-      "validation": "npm run check, packed web/SSR/Next/Metro consumers, three-engine browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
+      "validation": "npm run check, packed web/SSR/Next/Metro consumers, Chromium/WebKit browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
       "exceptions": [
         {
           "scope": "npm publication",
@@ -70,7 +70,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/55"
         }
       ],
-      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117\u2013#121, Pro Table/MarketRow and Dialog host APIs (#110). Five coordinated consumer refreshes (#115), WebKit resilience (#124), native and Pro owning migrations have validated draft PRs. Further app controls/drawers, native sheet sizing and Pro controls are in progress. Physical devices #55, registry #56 and named-owner approvals #57 remain.",
+      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117\u2013#121, Pro Table/MarketRow, optional web GestureSheet, status and custom native Dialog contracts (#110). Consumer refreshes (#115), WebKit resilience (#124) and combined owning adoption have validated drafts. Review/merge, physical devices #55, registry #56, named-owner visual/density/motion/bundle approvals #57 and future rollback retirement remain.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15",
@@ -78,9 +78,9 @@
         "pr": "https://github.com/bloxwap/hig/pull/126",
         "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
         "latestPackedCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
-        "lastGreenCICommit": "f5c022688ccf8b03d6a471f833320c4268512fd1",
-        "validation": "Full build/docs/lint/types,163 web / 161 native tests; quality560138 gzip bytes docs JS after removing duplicate client chapters; clean eight-archive candidate 0e239442 verified. Seven non-native payloads match ec6535bb excluding coordinated metadata. Both RN 0.81 / Expo 54 and RN 0.83 / Expo 55 packed regular, gesture and adoption Android/iOS exports and fonts pass; fresh packed web/boundaries,212 examples,SSR,seven-package staged install, full Chromium/WebKit browser, catalog (104 states), axe and Next pass. Native custom Dialog retains one Modal with host anatomy, Back, reduced motion and dismissal-aware focus. All previous f5 remote checks green; new remote checks follow this push.",
-        "ciVisibility": "Read-only repository runner listing returned zero repository-specific runners; organization runner listing requires unavailable admin:org scope. No runner availability is inferred.",
+        "lastGreenCICommit": "7d104f5feeb89234c576289b337ac50471661771",
+        "validation": "Full build/docs/lint/types,163 web / 161 native tests; quality560138 gzip bytes docs JS after removing duplicate client chapters; clean eight-archive candidate 0e239442 verified. Seven non-native payloads match ec6535bb excluding coordinated metadata. Both RN 0.81 / Expo 54 and RN 0.83 / Expo 55 packed regular, gesture and adoption Android/iOS exports and fonts pass; fresh packed web/boundaries,212 examples,SSR,seven-package staged install, full Chromium/WebKit browser, catalog (104 states), axe and Next pass. Native custom Dialog retains one Modal with host anatomy, Back, reduced motion and dismissal-aware focus. All quality/native/browser/candidate and docs checks passed at 7d104f5 (twelve successes, expected docs deploy skip).",
+        "ciVisibility": "Runner-list API exposes no repository-specific runners and organization listing requires unavailable admin scope; observed quality/native/browser/candidate/docs jobs at7d104f5 all completed successfully on shared runners.",
         "candidateVersion": "0.1.0-candidate.sha0e239442"
       }
     },
@@ -94,7 +94,9 @@
         "https://github.com/bloxwap/hyperliquid/pull/179",
         "https://github.com/bloxwap/hyperliquid/pull/180"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/hyperliquid/pull/183"
+      ],
       "validation": "CI green on 4eec557; independent verifier: bun run check, docs build (13 pages, 1168 links), Playwright 8/8, unmocked mainnet playground; export total -888,353 B, 9 copied files to 0 (apps/docs/design-review/hig-packages/)",
       "exceptions": [
         {
@@ -108,7 +110,19 @@
       "remaining": "Swap vendored tarballs for npm (#56); re-vendor a candidate at or after a40f1b6 to use Callout note/tip and drop the local edges (#69 fixed upstream)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/hyperliquid",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateRefresh": {
+        "status": "Validated locally; draft PR pending review/merge",
+        "version": "0.1.0-candidate.sha0e239442",
+        "higSourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+        "pr": "https://github.com/bloxwap/hyperliquid/pull/183",
+        "head": "4d9ecccc283e547fa28197363c6f41041ab500eb",
+        "evidence": "apps/docs/design-review/callout-refresh/verification.json",
+        "scope": "Coordinated tokens/contracts/react refresh; canonical note/tip severities and removal of obsolete local edges. Required OG-font split keeps existing Bold/Black cards; explicit base import and48px host button mapping preserve the prior page defaults.",
+        "validation": "Normal/frozen and independent empty-tree frozen Bun1.4 installs; only HIG lock records changed. Root check,docs types,20 docs tests,2087 SDK offline passes/244 skips,8 existing browser tests and16 paired Chrome/WebKit callout cases through200% pass. All14 OG cards and22 font hashes identical. Four exact clean-source archives verified; vendor -3561410 bytes,JS +554 gzip bytes,CSS +2160 gzip bytes.",
+        "ci": "All six checks passed on recorded final head; expected docs deploy skip. An initial new-test typing error was corrected; final docs types/build/browser/links pass remotely.",
+        "mergeEffect": "Retire local Callout and OG-font exceptions only after merge; default-branch candidate above remains authoritative."
+      }
     },
     {
       "name": "chart",
@@ -167,7 +181,9 @@
         "https://github.com/bloxwap/font/pull/10",
         "https://github.com/bloxwap/font/pull/11"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/font/pull/15"
+      ],
       "validation": "CI green on 44b8a002 (72 Playwright checks across Chromium/Firefox/WebKit); independent verifier: lint, typecheck, unit 7/7, docs build (27 HTML, 52 @font-face), Playwright 48/48, mutation check (evidence/hig-34/)",
       "exceptions": [
         {
@@ -181,7 +197,18 @@
       "remaining": "Font binaries in apps/docs are canonical to this repo (declare under canonical in hig-drift.json); npm (#56)",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/font",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateOwnership": {
+        "status": "Validated locally and remotely; draft pending review/merge",
+        "pr": "https://github.com/bloxwap/font/pull/15",
+        "head": "6e1f87f614b22b22ea9531a4c04fee62b557b3df",
+        "evidence": "docs/hig-ownership.md",
+        "rawEvidence": "evidence/hig-canonical-ownership/",
+        "scope": "Exact242 Font-owned docs binary files declared canonical. Scoped drift tooling independently pins clean0e239442; existing runtime7c67a07c predates that CLI and is unchanged. Read-only workflow; no runtime dependency or lock changes.",
+        "validation": "Actual383-file drift check,vendor guard,actionlint,lint,full types,7 units,27 HTML/24 OG/52 faces docs build and24 Chrome/WebKit checks pass. Negative controls catch token/palette/primitive CSS under fonts and unlisted font assets. All242 fonts/83545680 bytes andthree runtime archives unchanged.",
+        "ci": "Changes,drift,docs andGitGuardian passed; three expected unchanged-asset/browser-build skips.",
+        "mergeEffect": "Default-branch canonical declaration remains pending until merge; runtime version above is preserved."
+      }
     },
     {
       "name": "sfx",
@@ -230,11 +257,23 @@
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/sfx/pull/55",
-        "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
+        "head": "6d9f822ee9f946fd47f7a654b7c9d6aee86fc95a",
         "evidence": "evidence/hig/og-font-refresh/report.json",
-        "validation": "Clean npm ci; build/lint/types; 190 tests; docs build/check; Chromium three smokes; all 15 cards and three captures identical to same-toolchain baseline.",
+        "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
         "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
-        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
+        "initialValidation": {
+          "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
+          "validation": "Clean npm ci; build/lint/types; 190 tests; docs build/check; Chromium three smokes; all 15 cards and three captures identical to same-toolchain baseline.",
+          "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        },
+        "integration": {
+          "mainCommit": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+          "method": "Normal main merge/push required by strict up-to-date test/audit ruleset. All19 upstream changed files match main exactly.",
+          "evidence": "evidence/hig/og-font-refresh/main-sync-2026-10-18/report.json",
+          "validation": "191 tests/100%coverage,zero audit vulnerabilities,types/lint/size/bench,5exports/27packfiles,18HTML15cards,9 audio browser passes/one WebKit-specific skip and6 docsSmoke across Chromium/WebKit pass. Four exact e339 archives,lock,renderer/manifest andall15 OG cards unchanged.",
+          "mergeability": "Current-main integration pushed normally; latest remote checks linked fromPR."
+        }
       }
     },
     {
@@ -293,7 +332,9 @@
         "https://github.com/bloxwap/monorepo/pull/4614",
         "https://github.com/bloxwap/monorepo/pull/4615",
         "https://github.com/bloxwap/monorepo/pull/4616",
-        "https://github.com/bloxwap/monorepo/pull/4617"
+        "https://github.com/bloxwap/monorepo/pull/4617",
+        "https://github.com/bloxwap/monorepo/pull/4618",
+        "https://github.com/bloxwap/monorepo/pull/4619"
       ],
       "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603): marketing sections run in Chrome+WebKit, app-flows in Chrome only (#124)",
       "exceptions": [
@@ -308,7 +349,40 @@
       "remaining": "#110: remaining surfaces, then retire rollback flags and forks after the rollback window; upstream gaps #117-#121; app-flows WebKit stability (#124); consumer workarounds at next refresh incl. localeDirection for #86 and @bloxwap/hig-chart for #96 (#115); Hermes about +84 KB iOS / +85 KB Android over the 64 KB budget (#57); physical devices (#55)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/monorepo",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateIntegration": {
+        "status": "Full local validation and normal push passed; draft pending review/merge with live CI recorded separately.",
+        "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+        "head": "18967782b6e9c51ca4d7b5404f388a219a7233a8",
+        "version": "0.1.0-candidate.sha0e239442",
+        "higSourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+        "baseline": "29812c9a4c42a63e10056c8e6196752cd93d9ca4",
+        "evidence": "docs/hig/pilots/combined-rollout.md",
+        "verification": "docs/hig/evidence/integration/verification.json",
+        "validation": "36 lint,36 typecheck,31 serial test tasks;3683 app passes plus one existing expected failure,269 Pro passes,102 root script passes/two skips and font audit. Exact native88f3 subtree has3080 tests/261 suites,types,lint,enabled/rollback iOS/Android exports and actual simulator/emulator runtime. Integrated Chrome/WebKit controls/forms/dialogs/drawers/segmented/toast/payout/count proofs pass. #4618 all six checks pass plus expected gallery skip; #4617 all checks green, including automatic previews. #124 latest head18c has three consecutive successful remote attempts. Final-head web/browser,tests,accessibility,native exports andscreenshot checks pass remotely; last automatic preview was finishing at the dated snapshot. The only failed check is external GitGuardian historical-hash review.",
+        "costEvidence": {
+          "web": "docs/hig/evidence/integration/production/comparison.json",
+          "native": "docs/hig/evidence/integration/native-production/report.json",
+          "webGzipDeltaBytes": {
+            "appJs": 12044,
+            "appCss": 844,
+            "proJs": 8259,
+            "proCss": 1382,
+            "marketingWorker": 915,
+            "marketingHtml": 922
+          },
+          "nativeGzip9DeltaBytes": {
+            "ios": 19568,
+            "android": 15725
+          },
+          "scope": "Incremental against main existing HIG pilot; font/native asset payloads identical; measurements are not owner approval or runtime performance."
+        },
+        "remaining": "Review/merge, named-owner visual/density/motion/bundle decisions, wallet-authorized sessions, physical observations, registry publication and fork retirement after 2027-01-15.",
+        "mergeEffect": "Default-branch versions, fork inventories and exceptions above remain authoritative until merge.",
+        "ciObservedAt": "2026-10-18T20:36:43.162290+00:00",
+        "securityCheck": "GitGuardian flags the original public Git tree SHA-1 in historical f786 evidence. Verified exact Git tree object; current schema explicit, but external false-positive review is pending. No suppression or bypass.",
+        "ciEvidence": "evidence/remaining-issues/delivery-pr-checks-2026-10-18.json"
+      }
     },
     {
       "name": "agent-cli",
@@ -342,11 +416,23 @@
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/agent-cli/pull/55",
-        "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
+        "head": "acd7443f3c877650cff3f3e8739abe486dc32ac7",
         "evidence": "evidence/hig/og-font-refresh/report.json",
-        "validation": "Local build/lint/types/tests/package/docs/browser passed; CI, docs and four Linux/macOS Node22/24 install smoke jobs all green.",
+        "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
         "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
-        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
+        "initialValidation": {
+          "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
+          "validation": "Local build/lint/types/tests/package/docs/browser passed; CI, docs and four Linux/macOS Node22/24 install smoke jobs all green.",
+          "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        },
+        "integration": {
+          "mainCommit": "bb242b8ef95ae238a65b779d427bff3813e6b267",
+          "method": "Normal main merge and push; combined both appended progress records and retained upstream CI/testnet/npm-token changes.",
+          "evidence": "evidence/hig/og-font-refresh/main-integration/",
+          "validation": "Frozen npm ci,build/lint/types,232 CLI tests,packed-package install,docs production/check(2CSS tests),14 browser smoke and41-file pinned drift pass. Exact e339 four archives/lock/fonts unchanged; current13 OG hashes match historical manifest. Screenshot parity remains explicitly scoped to original76384 baseline.",
+          "mergeability": "MERGEABLE/CLEAN immediately after normal push; latest remote checks linked fromPR."
+        }
       }
     },
     {
@@ -450,11 +536,30 @@
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/tapsiren/pull/401",
-        "head": "1894d0e90def83abb0eee6a888f6e77b6228919b",
+        "head": "eef23f92dc1c2218db2b4ef5e6b289dd8af5934f",
         "evidence": "workers/tapsiren/docs/hig-adoption/issue-115/verification.json",
-        "validation": "Cold frozen install; lint/types/3tests/build/drift/actionlint; desktop+390px Chromium/WebKit fonts/focus; four font hashes and 166,597-byte OG identical; all eight remote checks green.",
+        "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
         "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
-        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        "ci": "All eight latest-head checks passed after main integration, including both configured previews. PR is MERGEABLE/CLEAN.",
+        "initialValidation": {
+          "head": "1894d0e90def83abb0eee6a888f6e77b6228919b",
+          "validation": "Cold frozen install; lint/types/3tests/build/drift/actionlint; desktop+390px Chromium/WebKit fonts/focus; four font hashes and 166,597-byte OG identical; all eight remote checks green.",
+          "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        },
+        "integration": {
+          "mainCommit": "e921ba88f4a62a509d049e35525e44f1a96b20f3",
+          "method": "Normal merge and push, preserving upstream runner/portable-shasum changes and candidate provenance.",
+          "evidence": "workers/tapsiren/docs/hig-adoption/issue-115/main-integration.json",
+          "validation": "Frozen Bun1.3 install,exact checksums,pinned e339 drift8files,actionlint,15 workspace lint tasks,types,3 library/23 ops-config/7 guard tests,production build and1440/390 Chromium/WebKit fonts/focus/no-overflow checks pass. OG remains byte-identical166597 bytes; cyan assets,archives,lock andproduct source unchanged.",
+          "mergeability": "MERGEABLE after normal push; current checks linked from PR."
+        }
+      },
+      "brandReview": {
+        "evidence": "evidence/brand-review/tapsiren/README.md",
+        "comparison": "evidence/brand-review/tapsiren/comparison.png",
+        "scope": "Current cyan and proposed clean0e HIG action.srgb variants preserve identical SVG path geometry. Sizes16/32/48/128 on actual dark canvas plus labeled diagnostic white.",
+        "status": "Review-only evidence; no product asset, favicon or brand decision changed. Owner response remains pending under#101.",
+        "repository": "bloxwap/hig"
       }
     },
     {
@@ -467,7 +572,9 @@
         "https://github.com/bloxwap/bloxwap.github.io/pull/26",
         "https://github.com/bloxwap/bloxwap.github.io/pull/28"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/bloxwap.github.io/pull/31"
+      ],
       "validation": "bloxwap.github.io#26 CI green (check, drift, Playwright 24/24) on c1e7359, merged as 9febbb5 (post-merge CI and Pages build green; live site loads assets/hig/tokens.css); independent verifier: hig@872906a9 tokens tarball rebuilt byte-identical, copied tokens.css/icon.svg byte-identical to the package, scoped drift passed (15 files, 3 dated exceptions), same tests on main fail 13/24 (320px overflow, focus ring, roles, fonts, portal links, OG), all four pages at 1440/390/320 and 200% text without horizontal scroll, every SDK docs link 200; before/after screenshots and byte report (home 8,178 to 603,056 B, fonts 592,796 B) in evidence/hig-61/",
       "exceptions": [
         {
@@ -495,7 +602,14 @@
       "remaining": "Build Pages in Actions so copies are not committed (bloxwap.github.io#25); check.mjs reads CSS function names such as tan() as colours (bloxwap.github.io#29, low priority); npm (#56). Shorthand colours and lockup scaling fixed in bloxwap.github.io#28 (#27)",
       "migrationGuide": "docs/installation.md",
       "url": "https://github.com/bloxwap/bloxwap.github.io",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "candidateCheckerFix": {
+        "pr": "https://github.com/bloxwap/bloxwap.github.io/pull/31",
+        "head": "a6a7b464459c536655491e4f940886f1269a786b",
+        "scope": "Issue#29 CSS color matcher excludes function names, accepts calc(tan(45deg)*1rem), still rejects actual tan colors.",
+        "validation": "Regression failed before fix;17 checker cases,scoped drift and28 Chromium E2E pass. Remote site CI and GitGuardian passed on recorded head.",
+        "mergeEffect": "Default-branch checklist above remains valid until merge; Pages#25 maintainer settings transition remains external."
+      }
     },
     {
       "name": "icons",
@@ -620,9 +734,15 @@
           "pr": "https://github.com/bloxwap/monorepo/pull/4617",
           "head": "fe5f9212e151967d4131e411c3a59e057ce3b173",
           "scope": "Four app drawers with optional HIG Vaul backend",
-          "validation": "64 browser cases, 32 geometry pairs, full normal workspace gate; required quality/browser/axe/native checks green, three automatic previews queued at observation."
+          "validation": "64 browser cases,32 geometry pairs, full normal workspace gate; all remote checks green including all automatic previews."
         }
-      ]
+      ],
+      "candidateIntegration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+        "version": "0.1.0-candidate.sha0e239442",
+        "evidence": "docs/hig/pilots/combined-rollout.md",
+        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+      }
     },
     {
       "name": "bloxwap.pro",
@@ -666,7 +786,13 @@
           "scope": "Pro domain dialogs and adaptive compact controls",
           "validation": "260 Pro tests, 36 consumer browser cases, 200% text contained; all remote checks green."
         }
-      ]
+      ],
+      "candidateIntegration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+        "version": "0.1.0-candidate.sha0e239442",
+        "evidence": "docs/hig/pilots/combined-rollout.md",
+        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+      }
     },
     {
       "name": "bloxwap.com",
@@ -697,7 +823,13 @@
           "scope": "Marketing48pxlink targets and embedded-frame focus",
           "validation": "32 Chromium/WebKit cases, 42 tests, Worker build; all remote checks green."
         }
-      ]
+      ],
+      "candidateIntegration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+        "version": "0.1.0-candidate.sha0e239442",
+        "evidence": "docs/hig/pilots/combined-rollout.md",
+        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+      }
     },
     {
       "name": "React Native app",
@@ -710,7 +842,9 @@
         "https://github.com/bloxwap/monorepo/pull/4602"
       ],
       "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4609"
+        "https://github.com/bloxwap/monorepo/pull/4609",
+        "https://github.com/bloxwap/monorepo/pull/4616",
+        "https://github.com/bloxwap/monorepo/pull/4618"
       ],
       "validatedVersion": "0.1.0-candidate.shab2f7740c",
       "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out \u00b7 Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
@@ -742,8 +876,20 @@
           "head": "7825d834ebf89e839de0573bc5d57eb0d4b54d59",
           "scope": "Native dynamic/inline sheets, static readouts and empty states",
           "validation": "3,076 tests, actual iOS/Android runtime and 2x login, exports/types/lint; all remote checks green."
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4618",
+          "head": "88f3fe0cdd007ed9cb81b88665af19f0ed125d6e",
+          "scope": "Five live Signals/Advanced custom HIG Dialog callers with accepted-close focus lifecycle",
+          "validation": "3080 tests/261 suites, actual iOS/Android default/large text/pending veto/retention/reopen/scroll checks, types/lint, four enabled/rollback exports; six remote checks pass plus expected gallery skip. Unique unsigned iPhone/iPad gallery prepared; development provisioning and installation authorization pending."
         }
-      ]
+      ],
+      "candidateIntegration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+        "version": "0.1.0-candidate.sha0e239442",
+        "evidence": "docs/hig/pilots/combined-rollout.md",
+        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+      }
     },
     {
       "name": "Hyperliquid docs",
@@ -754,13 +900,27 @@
         "https://github.com/bloxwap/hyperliquid/pull/179",
         "https://github.com/bloxwap/hyperliquid/pull/180"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/hyperliquid/pull/183"
+      ],
       "validatedVersion": "0.1.0-candidate.sha7c67a07c",
       "validation": "CI green on 4eec557; independent verifier: bun run check, docs build (13 pages, 1168 links), Playwright 8/8, unmocked mainnet playground; export total -888,353 B, 9 copied files to 0 (apps/docs/design-review/hig-packages/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
       "remaining": "Swap vendored tarballs for npm (#56); re-vendor a candidate at or after a40f1b6 to use Callout note/tip and drop the local edges (#69 fixed upstream)",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/sdk-docs.md"
+      "guide": "docs/migration/sdk-docs.md",
+      "candidateRefresh": {
+        "status": "Validated locally; draft PR pending review/merge",
+        "version": "0.1.0-candidate.sha0e239442",
+        "higSourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+        "pr": "https://github.com/bloxwap/hyperliquid/pull/183",
+        "head": "4d9ecccc283e547fa28197363c6f41041ab500eb",
+        "evidence": "apps/docs/design-review/callout-refresh/verification.json",
+        "scope": "Coordinated tokens/contracts/react refresh; canonical note/tip severities and removal of obsolete local edges. Required OG-font split keeps existing Bold/Black cards; explicit base import and48px host button mapping preserve the prior page defaults.",
+        "validation": "Normal/frozen and independent empty-tree frozen Bun1.4 installs; only HIG lock records changed. Root check,docs types,20 docs tests,2087 SDK offline passes/244 skips,8 existing browser tests and16 paired Chrome/WebKit callout cases through200% pass. All14 OG cards and22 font hashes identical. Four exact clean-source archives verified; vendor -3561410 bytes,JS +554 gzip bytes,CSS +2160 gzip bytes.",
+        "ci": "All six checks passed on recorded final head; expected docs deploy skip. An initial new-test typing error was corrected; final docs types/build/browser/links pass remotely.",
+        "mergeEffect": "Retire local Callout and OG-font exceptions only after merge; default-branch candidate above remains authoritative."
+      }
     },
     {
       "name": "Chart docs",
@@ -802,13 +962,26 @@
         "https://github.com/bloxwap/font/pull/10",
         "https://github.com/bloxwap/font/pull/11"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/font/pull/15"
+      ],
       "validatedVersion": "0.1.0-candidate.sha7c67a07c",
       "validation": "CI green on 44b8a002 (72 Playwright checks across Chromium/Firefox/WebKit); independent verifier: lint, typecheck, unit 7/7, docs build (27 HTML, 52 @font-face), Playwright 48/48, mutation check (evidence/hig-34/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
       "remaining": "Font binaries in apps/docs are canonical to this repo (declare under canonical in hig-drift.json); npm (#56)",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/sdk-docs.md"
+      "guide": "docs/migration/sdk-docs.md",
+      "candidateOwnership": {
+        "status": "Validated locally and remotely; draft pending review/merge",
+        "pr": "https://github.com/bloxwap/font/pull/15",
+        "head": "6e1f87f614b22b22ea9531a4c04fee62b557b3df",
+        "evidence": "docs/hig-ownership.md",
+        "rawEvidence": "evidence/hig-canonical-ownership/",
+        "scope": "Exact242 Font-owned docs binary files declared canonical. Scoped drift tooling independently pins clean0e239442; existing runtime7c67a07c predates that CLI and is unchanged. Read-only workflow; no runtime dependency or lock changes.",
+        "validation": "Actual383-file drift check,vendor guard,actionlint,lint,full types,7 units,27 HTML/24 OG/52 faces docs build and24 Chrome/WebKit checks pass. Negative controls catch token/palette/primitive CSS under fonts and unlisted font assets. All242 fonts/83545680 bytes andthree runtime archives unchanged.",
+        "ci": "Changes,drift,docs andGitGuardian passed; three expected unchanged-asset/browser-build skips.",
+        "mergeEffect": "Default-branch canonical declaration remains pending until merge; runtime version above is preserved."
+      }
     },
     {
       "name": "SFX docs",
@@ -834,11 +1007,23 @@
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/sfx/pull/55",
-        "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
+        "head": "6d9f822ee9f946fd47f7a654b7c9d6aee86fc95a",
         "evidence": "evidence/hig/og-font-refresh/report.json",
-        "validation": "Clean npm ci; build/lint/types; 190 tests; docs build/check; Chromium three smokes; all 15 cards and three captures identical to same-toolchain baseline.",
+        "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
         "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
-        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
+        "initialValidation": {
+          "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
+          "validation": "Clean npm ci; build/lint/types; 190 tests; docs build/check; Chromium three smokes; all 15 cards and three captures identical to same-toolchain baseline.",
+          "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        },
+        "integration": {
+          "mainCommit": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+          "method": "Normal main merge/push required by strict up-to-date test/audit ruleset. All19 upstream changed files match main exactly.",
+          "evidence": "evidence/hig/og-font-refresh/main-sync-2026-10-18/report.json",
+          "validation": "191 tests/100%coverage,zero audit vulnerabilities,types/lint/size/bench,5exports/27packfiles,18HTML15cards,9 audio browser passes/one WebKit-specific skip and6 docsSmoke across Chromium/WebKit pass. Four exact e339 archives,lock,renderer/manifest andall15 OG cards unchanged.",
+          "mergeability": "Current-main integration pushed normally; latest remote checks linked fromPR."
+        }
       }
     },
     {
@@ -882,11 +1067,23 @@
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/agent-cli/pull/55",
-        "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
+        "head": "acd7443f3c877650cff3f3e8739abe486dc32ac7",
         "evidence": "evidence/hig/og-font-refresh/report.json",
-        "validation": "Local build/lint/types/tests/package/docs/browser passed; CI, docs and four Linux/macOS Node22/24 install smoke jobs all green.",
+        "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
         "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
-        "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
+        "initialValidation": {
+          "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
+          "validation": "Local build/lint/types/tests/package/docs/browser passed; CI, docs and four Linux/macOS Node22/24 install smoke jobs all green.",
+          "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+        },
+        "integration": {
+          "mainCommit": "bb242b8ef95ae238a65b779d427bff3813e6b267",
+          "method": "Normal main merge and push; combined both appended progress records and retained upstream CI/testnet/npm-token changes.",
+          "evidence": "evidence/hig/og-font-refresh/main-integration/",
+          "validation": "Frozen npm ci,build/lint/types,232 CLI tests,packed-package install,docs production/check(2CSS tests),14 browser smoke and41-file pinned drift pass. Exact e339 four archives/lock/fonts unchanged; current13 OG hashes match historical manifest. Screenshot parity remains explicitly scoped to original76384 baseline.",
+          "mergeability": "MERGEABLE/CLEAN immediately after normal push; latest remote checks linked fromPR."
+        }
       }
     }
   ]

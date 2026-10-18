@@ -10,7 +10,7 @@
   {
     "id": "source-audit",
     "owner": "product monorepo maintainers",
-    "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain.",
+    "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain. Combined draft monorepo#4619 now includes equal-toolchain web/native production measurements against main29812c9, with complete source and asset hashes; these are review evidence, not bundle approval.",
     "status": "partial",
     "tracking": "https://github.com/bloxwap/hig/issues/57",
     "reviewBy": "2027-01-15"
@@ -34,7 +34,7 @@
   {
     "id": "owning-migrations",
     "owner": "each adopting repository maintainers",
-    "reason": "SDK docs and original web/native pilots are merged. Latest monorepo follow-ups #4594, #4598, #4599, #4602 and #4606 are merged at 29812c9a4. Remaining surfaces and rollback retirement are #110; cross-browser app-flow coverage #124; consumer package refreshes #115; TapTrade routes/host tokens and brand #100; Tapsiren mark #101. Consumer completion and owner decisions remain explicit.",
+    "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. Remaining HIG software is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607\u2013#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. Combined#4619 has a verified historical public-Git-tree-hash false positive pending external GitGuardian review. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain.",
     "status": "partial",
     "tracking": "https://github.com/bloxwap/hig/issues/110",
     "reviewBy": "2027-01-15"

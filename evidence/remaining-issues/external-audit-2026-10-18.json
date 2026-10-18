@@ -1036,5 +1036,14 @@
       "@bloxwap/haptic": "0.1.0"
     },
     "conclusion": "SFX per-play AbortSignal support and the Haptic imperative vibration API merged during this audit. Neither has a new npm release; HIG pins both optional peers to 0.1.0. Haptic issue #27 remains open: imperative vibration does not overcome WebKit trusted-native-event requirements. Physical output remains unverified."
+  },
+  "followupDelivery": {
+    "scope": "The initial audit snapshot above is retained. Later software, physical preparation and CI evidence is recorded separately; this does not change original observations or assert owner approvals.",
+    "library": "evidence/remaining-issues/combined-library-check.json",
+    "webKitLatestThreeAttempts": "evidence/remaining-issues/issue-124-ci.json",
+    "physicalPreparation": "evidence/physical/preparation-2026-10-18.json",
+    "draftHeadChecks": "evidence/remaining-issues/delivery-pr-checks-2026-10-18.json",
+    "externalCheck": "evidence/remaining-issues/combined-security-check.json",
+    "roadmap": "planning/roadmap-followups.md"
   }
 }
