@@ -41,8 +41,10 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
 it('keeps Linux visual baselines under tests/visual-baselines/linux and names Darwin separately',()=>{
  expect(visualBaselinePath('button-default','linux')).toBe('tests/visual-baselines/linux/button-default.png');
  expect(visualBaselinePath('slider-focus-compact','darwin')).toBe('tests/visual-baselines/darwin/slider-focus-compact.png');
- expect(readdirSync('tests/visual-baselines/linux').filter(f=>f.endsWith('.png')).sort()).toEqual([
+ const baselines=[
   'button-busy.png','button-default.png','button-disabled.png','field-default.png','field-error.png',
   'input-default.png','input-disabled.png','input-error.png','slider-focus-comfortable.png','slider-focus-compact.png'
- ]);
+ ];
+ expect(readdirSync('tests/visual-baselines/linux').filter(f=>f.endsWith('.png')).sort()).toEqual(baselines);
+ expect(readdirSync('tests/visual-baselines/darwin').filter(f=>f.endsWith('.png')).sort()).toEqual(baselines);
 });
