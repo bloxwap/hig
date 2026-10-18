@@ -76,8 +76,8 @@
       "exceptionExpires": "2027-01-15",
       "candidateImplementation": {
         "pr": "https://github.com/bloxwap/hig/pull/126",
-        "sourceCommit": "fb12d143c74b54ace9abbf0a263f73dc606e999f",
-        "validation": "Node22 check150web125native; 212examples; packed web/boundary/shipped-import and both native export profiles; four iOS Simulator adoption checks (earlier e339 source, no physical approval)."
+        "sourceCommit": "5abfb40864289df5cb2960cbbb30e4edab36f638",
+        "validation": "All five quality/candidate jobs green on5abfb408; local151web125native. Subsequent Dialog host API adds5meaningful DOM tests; full156web125native build/lint/types pass. Earlier four iOS Simulator core observations remain scoped to e339 source, separate owning runtime checks use exact5ab artifacts."
       }
     },
     {
@@ -149,7 +149,8 @@
         "head": "97ad3fc2305cb3f8fee8e2e06187c7921aec34a6",
         "evidence": "docs/hig-adoption/issue-115/verification.json",
         "validation": "Clean normal no-lock install and npm ci; all non-HIG versions retained; lint/types; 1,869 tests; 30 HTML/1,530 links/25 byte-identical cards; Chrome browser checks; vendor -3,573,511 B.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative."
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head."
       }
     },
     {
@@ -342,7 +343,8 @@
         "https://github.com/bloxwap/taptradetv/pull/188"
       ],
       "openPRs": [
-        "https://github.com/bloxwap/taptradetv/pull/216"
+        "https://github.com/bloxwap/taptradetv/pull/216",
+        "https://github.com/bloxwap/taptradetv/pull/217"
       ],
       "validation": "taptradetv#188 CI green (Quality Gate with sha256 check and scoped drift 157 files, web/host previews) on d553fc6, merged as 0cf967e (post-merge Production green); independent verifier (bun 1.3.0): frozen install, lint, check-types, tests (root Vitest 394), build, OpenNext build:cf, drift passed; tarballs byte-identical to a fresh hig@872906a9 candidate. Browser (Playwright Chromium, production next start with a mock auction worker): 390px accept 44px and inputs 48px, keyboard dialog open/trap/confirm/price-moved/Escape focus return, Space toggles the switch, Bloxwap faces only on /sponsors routes, /schedule table unchanged after client navigation, rollback NEXT_PUBLIC_HIG_SPONSORS=0 restores the legacy renderers (<=0.45% pixel diff). Bytes on /sponsors: JS +45,731, CSS +56,541, fonts +458,664; / and /schedule fonts -134,132 (docs/hig/ in taptradetv)",
       "exceptions": [
@@ -382,6 +384,16 @@
         "validation": "Bun1.3 cold frozen install; lint/types/build; 301 tests; drift169files; strict Chromium/WebKit navigation preserves schedule cells/focus and reports no runtime errors. UTC-first hydration resolves prior formatter mismatch.",
         "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
         "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
+      },
+      "hostTokensCandidate": {
+        "status": "validated locally; stacked draft pending merge",
+        "pr": "https://github.com/bloxwap/taptradetv/pull/217",
+        "dependsOn": "https://github.com/bloxwap/taptradetv/pull/216",
+        "head": "05c11b1accf1cf9dd05f91e3909f7389d32dbb73",
+        "version": "0.1.0-candidate.shae3390bbd",
+        "evidence": "docs/hig/evidence/issue-100-host",
+        "validation": "1920x1080 stage/admin geometry/text/keyboard and deterministic mocks; build/types/lint;970tests;OpenNext/workerd smokes; four seeded-avatar SVG identities preserved.",
+        "limits": "Static fonts +12,790,016B; cold English font responses +527,552B. This is measured candidate evidence, not owner bundle/brand approval; default-branch exceptions remain."
       }
     },
     {
@@ -677,7 +689,8 @@
         "head": "97ad3fc2305cb3f8fee8e2e06187c7921aec34a6",
         "evidence": "docs/hig-adoption/issue-115/verification.json",
         "validation": "Clean normal no-lock install and npm ci; all non-HIG versions retained; lint/types; 1,869 tests; 30 HTML/1,530 links/25 byte-identical cards; Chrome browser checks; vendor -3,573,511 B.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative."
+        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "ci": "All current PR checks passed on the recorded head."
       }
     },
     {

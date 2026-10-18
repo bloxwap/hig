@@ -1,0 +1,862 @@
+{
+  "issue": "https://github.com/bloxwap/hig/issues/124",
+  "pr": "https://github.com/bloxwap/monorepo/pull/4607",
+  "implementationCommit": "a4aa6e736b69531e9d9d56fdd3468df958f6dfdf",
+  "runId": 39145943938,
+  "acceptance": "Three consecutive successful remote CI attempts on the same implementation commit; both engines complete all90 feedback comparisons, remaining assertions and24 captures on every attempt.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "jobId": 117729685027,
+      "url": "https://github.com/bloxwap/monorepo/actions/runs/39145943938/job/117729685027",
+      "conclusion": "success",
+      "startedAt": "2026-10-18T16:38:49Z",
+      "completedAt": "2026-10-18T16:44:25Z",
+      "appFlowsStep": {
+        "name": "Verify app signed-in flows pilot (Chrome and WebKit)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-18T16:42:08Z",
+        "completed_at": "2026-10-18T16:43:59Z"
+      },
+      "logSha256": "477ec45e74cd89c61c0eda5fa01512b50db899a282eda5c63a0437a2705de755",
+      "engineReports": [
+        {
+          "engine": "chromium",
+          "browser": "149.0.7827.55",
+          "elapsedMs": 42864,
+          "browserProcesses": 9,
+          "feedbackCases": 90,
+          "cadence": {
+            "hig": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            },
+            "legacy": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "haptic:selection",
+                "sound:tick@1",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            }
+          },
+          "amount": {
+            "hig": {
+              "accessibleDescription": "$420.69 available",
+              "inputMode": "none",
+              "capsDecimals": "1.123456",
+              "ignoresLetters": "0",
+              "overBalanceSendDisabled": true,
+              "afterKeypad": "12.5",
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": true,
+                "text": "Send \u00b7 Working"
+              },
+              "fieldReadOnlyWhileBusy": true,
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "legacy": {
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": false,
+                "text": "Sending\u2026"
+              },
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "frenchBusyText": "Envoyer \u00b7 En cours"
+          },
+          "review": {
+            "hig": {
+              "amountText": "$125.51",
+              "amountLabel": "Amount: $125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": {
+                "role": null,
+                "border": "3px"
+              },
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "alert"
+              }
+            },
+            "legacy": {
+              "amountText": "$125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": null,
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "status"
+              }
+            }
+          },
+          "outcome": {
+            "hig": {
+              "regionLive": "polite",
+              "higSeverity": "success",
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            },
+            "legacy": {
+              "regionLive": "polite",
+              "higSeverity": null,
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            }
+          },
+          "screenshots": 24
+        },
+        {
+          "engine": "webkit",
+          "browser": "26.5",
+          "elapsedMs": 64646,
+          "browserProcesses": 9,
+          "feedbackCases": 90,
+          "cadence": {
+            "hig": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            },
+            "legacy": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "haptic:selection",
+                "sound:tick@1",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            }
+          },
+          "amount": {
+            "hig": {
+              "accessibleDescription": "$420.69 available",
+              "inputMode": "none",
+              "capsDecimals": "1.123456",
+              "ignoresLetters": "0",
+              "overBalanceSendDisabled": true,
+              "afterKeypad": "12.5",
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": true,
+                "text": "Send \u00b7 Working"
+              },
+              "fieldReadOnlyWhileBusy": true,
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "legacy": {
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": false,
+                "text": "Sending\u2026"
+              },
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "frenchBusyText": "Envoyer \u00b7 En cours"
+          },
+          "review": {
+            "hig": {
+              "amountText": "$125.51",
+              "amountLabel": "Amount: $125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": {
+                "role": null,
+                "border": "3px"
+              },
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "alert"
+              }
+            },
+            "legacy": {
+              "amountText": "$125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": null,
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "status"
+              }
+            }
+          },
+          "outcome": {
+            "hig": {
+              "regionLive": "polite",
+              "higSeverity": "success",
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            },
+            "legacy": {
+              "regionLive": "polite",
+              "higSeverity": null,
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            }
+          },
+          "screenshots": 24
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "jobId": 117733920298,
+      "url": "https://github.com/bloxwap/monorepo/actions/runs/39145943938/job/117733920298",
+      "conclusion": "success",
+      "startedAt": "2026-10-18T16:58:05Z",
+      "completedAt": "2026-10-18T17:04:18Z",
+      "appFlowsStep": {
+        "name": "Verify app signed-in flows pilot (Chrome and WebKit)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-18T17:01:58Z",
+        "completed_at": "2026-10-18T17:03:57Z"
+      },
+      "logSha256": "fd1cc647926bbed3636a604ae762b3373e28e6c6d11ad7ed1db6b50533a2ea8b",
+      "engineReports": [
+        {
+          "engine": "chromium",
+          "browser": "149.0.7827.55",
+          "elapsedMs": 44457,
+          "browserProcesses": 9,
+          "feedbackCases": 90,
+          "cadence": {
+            "hig": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            },
+            "legacy": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "haptic:selection",
+                "sound:tick@1",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            }
+          },
+          "amount": {
+            "hig": {
+              "accessibleDescription": "$420.69 available",
+              "inputMode": "none",
+              "capsDecimals": "1.123456",
+              "ignoresLetters": "0",
+              "overBalanceSendDisabled": true,
+              "afterKeypad": "12.5",
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": true,
+                "text": "Send \u00b7 Working"
+              },
+              "fieldReadOnlyWhileBusy": true,
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "legacy": {
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": false,
+                "text": "Sending\u2026"
+              },
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "frenchBusyText": "Envoyer \u00b7 En cours"
+          },
+          "review": {
+            "hig": {
+              "amountText": "$125.51",
+              "amountLabel": "Amount: $125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": {
+                "role": null,
+                "border": "3px"
+              },
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "alert"
+              }
+            },
+            "legacy": {
+              "amountText": "$125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": null,
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "status"
+              }
+            }
+          },
+          "outcome": {
+            "hig": {
+              "regionLive": "polite",
+              "higSeverity": "success",
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            },
+            "legacy": {
+              "regionLive": "polite",
+              "higSeverity": null,
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            }
+          },
+          "screenshots": 24
+        },
+        {
+          "engine": "webkit",
+          "browser": "26.5",
+          "elapsedMs": 70782,
+          "browserProcesses": 9,
+          "feedbackCases": 90,
+          "cadence": {
+            "hig": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            },
+            "legacy": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "haptic:selection",
+                "sound:tick@1",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            }
+          },
+          "amount": {
+            "hig": {
+              "accessibleDescription": "$420.69 available",
+              "inputMode": "none",
+              "capsDecimals": "1.123456",
+              "ignoresLetters": "0",
+              "overBalanceSendDisabled": true,
+              "afterKeypad": "12.5",
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": true,
+                "text": "Send \u00b7 Working"
+              },
+              "fieldReadOnlyWhileBusy": true,
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "legacy": {
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": false,
+                "text": "Sending\u2026"
+              },
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "frenchBusyText": "Envoyer \u00b7 En cours"
+          },
+          "review": {
+            "hig": {
+              "amountText": "$125.51",
+              "amountLabel": "Amount: $125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": {
+                "role": null,
+                "border": "3px"
+              },
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "alert"
+              }
+            },
+            "legacy": {
+              "amountText": "$125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": null,
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "status"
+              }
+            }
+          },
+          "outcome": {
+            "hig": {
+              "regionLive": "polite",
+              "higSeverity": "success",
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            },
+            "legacy": {
+              "regionLive": "polite",
+              "higSeverity": null,
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            }
+          },
+          "screenshots": 24
+        }
+      ]
+    },
+    {
+      "attempt": 3,
+      "jobId": 117735606392,
+      "url": "https://github.com/bloxwap/monorepo/actions/runs/39145943938/job/117735606392",
+      "conclusion": "success",
+      "startedAt": "2026-10-18T17:05:35Z",
+      "completedAt": "2026-10-18T17:11:54Z",
+      "appFlowsStep": {
+        "name": "Verify app signed-in flows pilot (Chrome and WebKit)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-18T17:09:43Z",
+        "completed_at": "2026-10-18T17:11:33Z"
+      },
+      "logSha256": "efe03f006c813e257bdf03d527d2bdda571970ed3737a44a3ea975a1086fcfa4",
+      "engineReports": [
+        {
+          "engine": "chromium",
+          "browser": "149.0.7827.55",
+          "elapsedMs": 42713,
+          "browserProcesses": 9,
+          "feedbackCases": 90,
+          "cadence": {
+            "hig": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            },
+            "legacy": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "haptic:selection",
+                "sound:tick@1",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            }
+          },
+          "amount": {
+            "hig": {
+              "accessibleDescription": "$420.69 available",
+              "inputMode": "none",
+              "capsDecimals": "1.123456",
+              "ignoresLetters": "0",
+              "overBalanceSendDisabled": true,
+              "afterKeypad": "12.5",
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": true,
+                "text": "Send \u00b7 Working"
+              },
+              "fieldReadOnlyWhileBusy": true,
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "legacy": {
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": false,
+                "text": "Sending\u2026"
+              },
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "frenchBusyText": "Envoyer \u00b7 En cours"
+          },
+          "review": {
+            "hig": {
+              "amountText": "$125.51",
+              "amountLabel": "Amount: $125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": {
+                "role": null,
+                "border": "3px"
+              },
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "alert"
+              }
+            },
+            "legacy": {
+              "amountText": "$125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": null,
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "status"
+              }
+            }
+          },
+          "outcome": {
+            "hig": {
+              "regionLive": "polite",
+              "higSeverity": "success",
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            },
+            "legacy": {
+              "regionLive": "polite",
+              "higSeverity": null,
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            }
+          },
+          "screenshots": 24
+        },
+        {
+          "engine": "webkit",
+          "browser": "26.5",
+          "elapsedMs": 64181,
+          "browserProcesses": 9,
+          "feedbackCases": 90,
+          "cadence": {
+            "hig": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            },
+            "legacy": {
+              "sameControlWithin80ms": [
+                "haptic:selection",
+                "haptic:selection",
+                "sound:tick@1",
+                "sound:tick@1"
+              ],
+              "twoOutcomesBackToBack": [
+                "haptic:medium",
+                "haptic:medium",
+                "sound:success@1",
+                "sound:success@1"
+              ],
+              "ctaPressThenClick": [
+                "haptic:medium",
+                "sound:press@1",
+                "sound:release@1"
+              ]
+            }
+          },
+          "amount": {
+            "hig": {
+              "accessibleDescription": "$420.69 available",
+              "inputMode": "none",
+              "capsDecimals": "1.123456",
+              "ignoresLetters": "0",
+              "overBalanceSendDisabled": true,
+              "afterKeypad": "12.5",
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": true,
+                "text": "Send \u00b7 Working"
+              },
+              "fieldReadOnlyWhileBusy": true,
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "legacy": {
+              "busy": {
+                "ariaBusy": "true",
+                "disabled": false,
+                "text": "Sending\u2026"
+              },
+              "events": [
+                "send:12.7"
+              ],
+              "errors": []
+            },
+            "frenchBusyText": "Envoyer \u00b7 En cours"
+          },
+          "review": {
+            "hig": {
+              "amountText": "$125.51",
+              "amountLabel": "Amount: $125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": {
+                "role": null,
+                "border": "3px"
+              },
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "alert"
+              }
+            },
+            "legacy": {
+              "amountText": "$125.51",
+              "tabStops": [
+                "Confirm send",
+                "Cancel"
+              ],
+              "cancelDisabledWhileBusy": true,
+              "warning": null,
+              "events": [
+                "confirm"
+              ],
+              "errors": [],
+              "feeUnavailable": {
+                "confirmDisabled": true,
+                "alertRole": "status"
+              }
+            }
+          },
+          "outcome": {
+            "hig": {
+              "regionLive": "polite",
+              "higSeverity": "success",
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            },
+            "legacy": {
+              "regionLive": "polite",
+              "higSeverity": null,
+              "nestedLiveRoles": 0,
+              "actionToastStillLegacyButton": true
+            }
+          },
+          "screenshots": 24
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The original intermittent navigation stall was not reproduced locally; bounded work and process rotation are resilience measures, not proof of a specific leak.",
+    "Automated browser checks do not certify physical sound/haptics or wallet-authorized production transactions."
+  ]
+}

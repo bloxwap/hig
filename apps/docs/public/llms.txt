@@ -316,11 +316,39 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 | Component | Key props and behavior |
 | --- | --- |
 | `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](../foundations/localization.md#built-in-component-strings). |
+| Web host composition | `title` remains required; `titleHidden` keeps its accessible name when the host renders a visible heading in the card. `description` is optional; `descriptionHidden` keeps supplied supporting text available to assistive technology. `contentRef` reaches the actual modal element. `contentProps` accepts layout classes/styles, DOM attributes and Radix focus/Escape/outside events; HIG retains ownership of the dialog id, role, naming associations, locale, direction, children and mounting behavior. Owned props and `dangerouslySetInnerHTML` are filtered at runtime for JavaScript callers too; the caller's object is left unchanged. |
+| Web close control | Omit `closeButton` for the current translated action, pass a ref-capable button element for a custom control, or pass `null` when the host supplies its own explicit dismissal action. Custom controls are composed with Radix Close; disabled buttons and `event.preventDefault()` retain their normal behavior. `closeLabel`/`cancelLabel` label only the default action. |
 | Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref (Menu and Select pass their own trigger). |
 | `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
 | Optional native `GestureSheet` | `contentMode='default'` scrolls the title, optional description, children and Close action. `contentMode='custom'` provides an unpadded, full-height content container; the host owns its header, back/close actions, safe-area content padding and scrolling. `title` remains required as the accessible name. Pass `titleRef` attached to the caller's accessible heading to focus it on open; without it, the sheet focuses its visually hidden title. |
 
 Native return focus is scheduled after the static Modal closes and canceled on reopen or unmount.
+
+A web card can keep its own visible heading and close geometry without replacing the modal's focus scope:
+
+```tsx
+<Dialog
+  open={open}
+  onOpenChange={(next) => {
+    if (!next && pending) return;
+    setOpen(next);
+  }}
+  title={t('reviewTitle')}
+  titleHidden
+  description={t('reviewDescription')}
+  descriptionHidden
+  contentRef={panelRef}
+  contentProps={{ className: 'host-review-card', style: { maxWidth: 420 } }}
+  closeButton={<button type='button' disabled={pending} aria-label={t('close')}>×</button>}
+>
+  <h2>{t('reviewTitle')}</h2>
+  {reviewContent}
+</Dialog>
+```
+
+Here `t`, `panelRef`, the card content and pending state belong to the host. The visible heading remains a real heading; the hidden Radix title supplies the modal's accessible name. An omitted description removes its ARIA association instead of referencing a missing element. `contentProps.onOpenAutoFocus` and `onCloseAutoFocus` can prevent the default focus choice; the host then supplies the intended focus target. Other content events retain Radix cancellation semantics. Controlled `onOpenChange` can reject a pending wallet close without unmounting the dialog or moving focus back to the trigger. `AlertDialog` continues to prevent outside-pointer dismissal even when a host observes that event.
+
+These web composition props apply to `Dialog`, `AlertDialog` and the static `Sheet` alias. They do not add drag gestures, detents or product keyboard heuristics to the static sheet.
 
 For a native card stack, import `GestureSheet` from `@bloxwap/hig-native/gesture-sheet` and render the caller's cards directly:
 

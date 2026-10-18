@@ -132,7 +132,7 @@
       },
       "Dialog": {
         "entry": "overlay",
-        "signature": "export declare function Dialog({ open, onOpenChange, title, description, trigger, children, closeLabel }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Dialog(props: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Sheet": {
         "entry": "overlay",
@@ -140,11 +140,15 @@
       },
       "AlertDialog": {
         "entry": "overlay",
-        "signature": "export declare function AlertDialog({ open, onOpenChange, title, description, trigger, children, cancelLabel }: AlertDialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function AlertDialog({ cancelLabel, ...props }: AlertDialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode; /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode;\n    /** Keep the required accessible title while the host supplies its visible heading. */\n    titleHidden?: boolean;\n    /** Keep supporting text available to assistive technology without rendering it visibly. */\n    descriptionHidden?: boolean;\n    contentProps?: DialogContentProps;\n    contentRef?: React.Ref<HTMLDivElement>;\n    /** Undefined keeps the standard action; null omits it. A custom ref-capable button is composed with Close. */\n    closeButton?: React.ReactElement | null;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n}"
+      },
+      "DialogContentProps": {
+        "entry": "overlay",
+        "signature": "export type DialogContentProps = Omit<React.ComponentPropsWithoutRef<typeof Modal.Content>, 'children' | 'asChild' | 'forceMount' | 'role' | 'dir' | 'lang' | 'id' | 'aria-labelledby' | 'aria-describedby' | 'dangerouslySetInnerHTML'>;"
       },
       "AlertDialogProps": {
         "entry": "overlay",
