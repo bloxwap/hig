@@ -1,13 +1,13 @@
 import {execFileSync} from 'node:child_process';
-import {mkdtempSync,writeFileSync,readFileSync,mkdirSync,readdirSync} from 'node:fs';
+import {writeFileSync,readFileSync,mkdirSync,readdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
-import {tmpdir} from 'node:os';
+import {scratchDir} from './scratch.mjs';
 import {examples,exampleCode} from './example-code.mjs';
 import {playgroundCode} from './playground-code.mjs';
 import {verifyNativeReact} from './native-compatibility.mjs';
 let count=0;
 for(const platform of ['react','native']){
- const directory=mkdtempSync(join(tmpdir(),`hig-packed-${platform}-examples-`));
+ const directory=scratchDir(`hig-packed-${platform}-examples-`);
  const dependencies={...JSON.parse(readFileSync(`fixtures/${platform==='react'?'web':'native'}/package.json`)).dependencies};
  for(const key of Object.keys(dependencies))if(key.startsWith('@bloxwap/hig-'))delete dependencies[key];
  // PriceChart comes from @bloxwap/hig-chart, whose @bloxwap/chart peer is required (#96).

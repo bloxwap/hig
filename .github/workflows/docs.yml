@@ -13,9 +13,13 @@ concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 15
     env:
       NEXT_PUBLIC_BASE_PATH: /hig
@@ -23,6 +27,8 @@ jobs:
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
@@ -30,6 +36,27 @@ jobs:
       - run: npm ci
       - run: npm run docs:build
       - run: npm run check -w hig-docs
+      - name: Require GNU tar (gtar) for Pages artifacts
+        run: |
+          set -euo pipefail
+          if ! command -v gtar >/dev/null 2>&1; then
+            if command -v brew >/dev/null 2>&1; then
+              for dir in "$(brew --prefix)/opt/gnu-tar/bin" "$(brew --prefix gnu-tar)/bin"; do
+                if [ -x "$dir/gtar" ]; then
+                  echo "$dir" >> "$GITHUB_PATH"
+                  PATH="$dir:$PATH"
+                  break
+                fi
+              done
+            fi
+          fi
+          if ! command -v gtar >/dev/null 2>&1; then
+            echo "actions/upload-pages-artifact on macOS needs gtar on PATH."
+            echo "Install on the runner with: brew install gnu-tar"
+            echo "See docs/ci-runners.md."
+            exit 1
+          fi
+          gtar --version | head -n 1
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: apps/docs/out
@@ -37,7 +64,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 10
     permissions:
       pages: write

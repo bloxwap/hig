@@ -16,9 +16,12 @@ permissions:
 concurrency:
   group: hig-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
 jobs:
   paths-filter:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
     outputs:
       code: ${{ github.event_name != 'pull_request' && 'true' || steps.filter.outputs.code }}
@@ -38,14 +41,19 @@ jobs:
   quality:
     needs: paths-filter
     if: needs.paths-filter.outputs.code == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
           cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
       - run: npm ci
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: font-cache
@@ -56,9 +64,7 @@ jobs:
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
-        run: |
-          python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
-          npm run generate:fonts
+        run: bash scripts/ci-generate-fonts.sh
       - run: npm run check
       - run: npm run examples:check
       - run: npm run quality
@@ -79,9 +85,9 @@ jobs:
       # saving from this job could race the browser job's full cache write.
       - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          path: ~/.cache/ms-playwright
+          path: ~/Library/Caches/ms-playwright
           key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
-      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npx playwright install chromium firefox webkit
       - run: npm run smoke:packed-next
         env:
           NEXT_TELEMETRY_DISABLED: '1'
@@ -105,14 +111,19 @@ jobs:
   native:
     needs: paths-filter
     if: needs.paths-filter.outputs.code == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
           cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
       - run: npm ci
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: font-cache
@@ -123,9 +134,7 @@ jobs:
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
-        run: |
-          python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
-          npm run generate:fonts
+        run: bash scripts/ci-generate-fonts.sh
       - run: npm run generate && node scripts/build.mjs
       - run: npm run smoke:packed
       - name: Packed native consumer, RN 0.81.5 / Expo 54 (Android and iOS Metro export)
@@ -136,14 +145,19 @@ jobs:
   browser:
     needs: paths-filter
     if: needs.paths-filter.outputs.code == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
           cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
       - run: npm ci
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: font-cache
@@ -154,22 +168,20 @@ jobs:
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
-        run: |
-          python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
-          npm run generate:fonts
+        run: bash scripts/ci-generate-fonts.sh
       - name: Read Playwright version
         id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          path: ~/.cache/ms-playwright
+          path: ~/Library/Caches/ms-playwright
           key: ${{ runner.os }}-ms-playwright-${{ steps.playwright.outputs.version }}
       - name: Build packages/docs and install Playwright
         run: |
           set -euo pipefail
           npm run build &
           build=$!
-          npx playwright install --with-deps chromium firefox webkit
+          npx playwright install chromium firefox webkit
           wait "$build"
       - name: Browser, visual and hydration gates
         run: node scripts/run-browser-gates.mjs
@@ -187,7 +199,7 @@ jobs:
   candidate:
     needs: [paths-filter, quality, native, browser]
     if: always() && !cancelled()
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
     steps:
       - name: Confirm candidate quality

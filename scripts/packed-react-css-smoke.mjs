@@ -12,9 +12,9 @@
 // component needs lives only in the opt-in base.
 import {execFileSync} from 'node:child_process';
 import {createServer} from 'node:http';
-import {mkdtempSync,mkdirSync,readFileSync,writeFileSync,existsSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {mkdirSync,readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {join,resolve,normalize,extname} from 'node:path';
+import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
 import {chromium,firefox,webkit} from '@playwright/test';
 
@@ -24,7 +24,7 @@ const port=Number(process.env.HIG_PACKED_REACT_CSS_PORT??4187);
 mkdirSync('artifacts',{recursive:true});
 const pack=name=>resolve('artifacts',JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}))[0].filename);
 const tarballs=['tokens','contracts','react'].map(pack);
-const dir=mkdtempSync(join(tmpdir(),'hig-react-css-scope-'));
+const dir=scratchDir('hig-react-css-scope-');
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',name:'hig-react-css-scope-consumer'},null,2));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs,'react@19.2.0','react-dom@19.2.0'],{cwd:dir,stdio:'pipe'});
 const exported=(pkg,key)=>{const manifest=JSON.parse(readFileSync(join(dir,'node_modules',pkg,'package.json'),'utf8'));const target=manifest.exports[key];assert.equal(typeof target,'string',`${pkg} exports ${key}`);const path=`node_modules/${pkg}/${target.replace(/^\.\//,'')}`;assert.ok(existsSync(join(dir,path)),`${path} is packed`);return path;};
