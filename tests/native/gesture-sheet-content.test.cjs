@@ -131,3 +131,43 @@ it('rejected custom-mode dismissals re-present once the host state settles',()=>
  flushFrames();expect(backend.methods.present).toHaveBeenCalledTimes(2);
  act(()=>node.props.onChange(0));expect(AccessibilityInfo.setAccessibilityFocus).toHaveBeenCalledWith(31);
 });
+
+it('preserves host card geometry, measured handles, backgrounds and imperative motion access',()=>{
+ const modalRef=React.createRef(),Handle=()=>React.createElement(View),Background=()=>React.createElement(View);
+ const Backdrop=()=>React.createElement(View),animationConfigs={duration:320};
+ let node=mount({modalRef,topInset:0,bottomInset:0,animateOnMount:false,animationConfigs,backdropComponent:Backdrop,handleComponent:Handle,handleStyle:{paddingTop:12,paddingBottom:8},handleIndicatorStyle:{height:6,width:100},backgroundComponent:Background,backgroundStyle:{borderTopLeftRadius:55}});
+ expect(node.props.topInset).toBe(0);expect(node.props.bottomInset).toBe(0);
+ expect(node.props.animateOnMount).toBe(false);expect(node.props.animationConfigs).toBe(animationConfigs);expect(node.props.backdropComponent).toBe(Backdrop);expect(node.props.overrideReduceMotion).toBe('always');
+ expect(node.props.handleComponent).toBe(Handle);expect(node.props.backgroundComponent).toBe(Background);
+ expect(StyleSheet.flatten(node.props.backgroundStyle)).toMatchObject({borderTopLeftRadius:55,borderRadius:require('@bloxwap/hig-tokens').nativeMetrics.radius.xl});
+ expect(StyleSheet.flatten(node.props.backgroundStyle).backgroundColor).toBe(require('@bloxwap/hig-tokens').nativeSrgb.surface);
+ expect(StyleSheet.flatten(node.props.handleStyle)).toEqual({paddingTop:12,paddingBottom:8});
+ expect(StyleSheet.flatten(node.props.handleIndicatorStyle)).toMatchObject({height:6,width:100});
+ expect(modalRef.current).toBe(backend.methods);
+ act(()=>modalRef.current.snapToIndex(1));expect(backend.methods.snapToIndex).toHaveBeenCalledWith(1);
+ node=update({modalRef,handleComponent:null,backdropComponent:null});expect(node.props.handleComponent).toBeNull();expect(node.props.backdropComponent).toBeNull();
+ act(()=>root.unmount());root=null;expect(modalRef.current).toBeNull();
+});
+
+it('defers nested Android Back to the host and preserves the default close policy when omitted',()=>{
+ let back;jest.spyOn(BackHandler,'addEventListener').mockImplementation((_,callback)=>{back=callback;return {remove:jest.fn()};});
+ const change=jest.fn(),defer=jest.fn(()=>false),consume=jest.fn(()=>true);
+ mount({onOpenChange:change,onHardwareBackPress:defer});
+ act(()=>expect(back()).toBe(false));expect(defer).toHaveBeenCalledTimes(1);expect(change).not.toHaveBeenCalled();
+ update({onOpenChange:change,onHardwareBackPress:consume});
+ act(()=>expect(back()).toBe(true));expect(consume).toHaveBeenCalledTimes(1);expect(change).not.toHaveBeenCalled();
+ update({onOpenChange:change});act(()=>expect(back()).toBe(true));expect(change).toHaveBeenCalledWith(false);
+});
+
+it('clears retained host card state once after an accepted dismissal, skipping rejected and interrupted closes',()=>{
+ const change=jest.fn(),closed=jest.fn();let node=mount({onOpenChange:change,onDismiss:closed});
+ act(()=>node.props.onDismiss());flushFrames();expect(closed).not.toHaveBeenCalled();
+ node=update({open:false,onOpenChange:change,onDismiss:closed});act(()=>node.props.onDismiss());
+ expect(closed).not.toHaveBeenCalled();flushFrames();expect(closed).toHaveBeenCalledTimes(1);
+ act(()=>node.props.onDismiss());flushFrames();expect(closed).toHaveBeenCalledTimes(1);
+ node=update({open:true,onOpenChange:change,onDismiss:closed});
+ node=update({open:false,onOpenChange:change,onDismiss:closed});act(()=>node.props.onDismiss());
+ update({open:true,onOpenChange:change,onDismiss:closed});flushFrames();expect(closed).toHaveBeenCalledTimes(1);
+ node=update({open:false,onOpenChange:change,onDismiss:closed});act(()=>node.props.onDismiss());flushFrames();
+ expect(closed).toHaveBeenCalledTimes(2);
+});
