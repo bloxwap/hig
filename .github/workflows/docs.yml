@@ -13,9 +13,16 @@ concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
+env:
+  TMPDIR: ${{ runner.temp }}
+
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 15
     env:
       NEXT_PUBLIC_BASE_PATH: /hig
@@ -30,6 +37,14 @@ jobs:
       - run: npm ci
       - run: npm run docs:build
       - run: npm run check -w hig-docs
+      - name: Require GNU tar (gtar) for Pages artifacts
+        run: |
+          set -euo pipefail
+          if ! command -v gtar >/dev/null 2>&1; then
+            echo "actions/upload-pages-artifact on macOS needs gtar (Homebrew gnu-tar). See docs/ci-runners.md."
+            exit 1
+          fi
+          gtar --version | head -n 1
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: apps/docs/out
@@ -37,7 +52,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 10
     permissions:
       pages: write

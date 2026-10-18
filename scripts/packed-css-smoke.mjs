@@ -3,9 +3,9 @@
 // come from packages/tokens/source.json so a new role is checked as soon as it is generated.
 import {execFileSync} from 'node:child_process';
 import {createServer} from 'node:http';
-import {mkdtempSync,mkdirSync,readFileSync,writeFileSync,readdirSync,existsSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {mkdirSync,readFileSync,writeFileSync,readdirSync,existsSync} from 'node:fs';
 import {join,resolve,normalize,extname} from 'node:path';
+import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
 import {chromium,firefox,webkit} from '@playwright/test';
 
@@ -16,7 +16,7 @@ const px=value=>`${value}px`;
 
 mkdirSync('artifacts',{recursive:true});
 const [pack]=JSON.parse(execFileSync('npm',['pack','./packages/tokens','--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
-const dir=mkdtempSync(join(tmpdir(),'hig-plain-css-consumer-'));
+const dir=scratchDir('hig-plain-css-consumer-');
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,name:'hig-plain-css-consumer'},null,2));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',resolve('artifacts',pack.filename)],{cwd:dir,stdio:'pipe'});
 assert.deepEqual(readdirSync(join(dir,'node_modules/@bloxwap')),['hig-tokens'],'the plain CSS consumer installs only the tokens tarball');

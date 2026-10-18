@@ -45,8 +45,11 @@ describe('generated font preflight (#98)',()=>{
   expect(fontGeneratorRequirements).toEqual(['fonttools[woff]==4.61.1','brotli==1.2.0']);
   expect(readFileSync('scripts/generate-native-fonts.py','utf8')).toContain('Requires fonttools[woff]==4.61.1 and brotli==1.2.0');
   expect(readFileSync('scripts/generate-native-fonts.py','utf8')).toContain("fontTools.__version__ != '4.61.1'");
-  const workflow=readFileSync('.github/workflows/quality.yml','utf8');
-  expect(workflow.match(/pip install "fonttools\[woff\]==4\.61\.1" "brotli==1\.2\.0"/g)?.length).toBe(workflow.match(/npm run generate:fonts/g)?.length);
+  const generator=readFileSync('scripts/ci-generate-fonts.sh','utf8');
+  expect(generator).toContain('"$venv/bin/pip" install --disable-pip-version-check "fonttools[woff]==4.61.1" "brotli==1.2.0"');
+  expect(generator).toContain('npm run generate:fonts');
+  expect(generator).toContain('RUNNER_TEMP');
+  expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-generate-fonts\.sh/g)?.length).toBe(3);
   expect(readFileSync('docs/governance/new-repository.md','utf8')).toContain('`fonttools[woff]==4.61.1` and `brotli==1.2.0`');
  });
 });

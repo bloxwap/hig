@@ -22,7 +22,7 @@ run() { # run <method> [key value ...]
   local method="$1"; shift; local args=()
   while [ $# -gt 1 ]; do args+=(-e "$1" "'$2'"); shift 2; done # quoted for the device shell
   adb shell am instrument -w -r ${args[@]+"${args[@]}"} -e class "$PKG.NativeVerificationTest#$method" "$PKG.test/androidx.test.runner.AndroidJUnitRunner" > "$OUT/logs/$method-$(date +%s).log" 2>&1
-  echo "$method ${args[*]+"${args[*]}"} -> $(grep -hE 'OK \(|FAILURES' "$OUT"/logs/$method-*.log | tail -1)" | tee -a "$OUT/logs/summary.txt"
+  echo "$method ${args[*]+"${args[*]}"} -> $(grep -hE 'OK \(|FAILURES' "$OUT"/logs/$method-*.log | tail -n 1)" | tee -a "$OUT/logs/summary.txt"
 }
 adb logcat -c
 run galleryCaptures components "$COMPONENTS" prefix android
