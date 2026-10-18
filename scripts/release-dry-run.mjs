@@ -8,6 +8,8 @@ const args=process.argv.slice(2);let channel='candidate';
 for(let i=0;i<args.length;i++){if(args[i]==='--channel'&&['candidate','stable-simulation'].includes(args[i+1])){channel=args[++i];}else throw Error('Dry-run only: supported argument is --channel candidate|stable-simulation. Publishing, releases and tags are prohibited.');}
 requireGeneratedFonts('The release dry run');
 const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+// Capture input state before quality/report generation updates tracked measurement evidence.
+const sourceTreeDirty=!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim();
 const sourceVersion=JSON.parse(readFileSync('package.json','utf8')).version;
 const artifactVersion=channel==='candidate'?`${sourceVersion}-candidate.sha${commit.slice(0,8)}`:sourceVersion;
 const output=resolve(`artifacts/release-${channel}`);mkdirSync(output,{recursive:true});
@@ -42,7 +44,7 @@ if(namingChart.length)throw Error(`${namingChart.join(', ')} declare @bloxwap/ch
 const chartAdapter={package:'@bloxwap/hig-chart',file:chartAdapterArtifact.file,bytes:chartAdapterArtifact.bytes,peer:'@bloxwap/chart',peerOptional:false,otherArtifactsNamingChart:namingChart};
 const blockers=JSON.parse(readFileSync('planning/release-blockers.json','utf8'));
 rmSync(join(output,'docs'),{recursive:true,force:true});cpSync('apps/docs/dist',join(output,'docs'),{recursive:true});
-const release={dryRun:true,published:false,tagsCreated:false,releasesCreated:false,channel,sourceCommit:commit,sourceTreeDirty:!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),sourceVersion,artifactVersion,docsGuidelineVersion:sourceVersion,versionPolicy:'Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.',artifacts,packedSizes,chartAdapter,quality:report.sizes,publishable:false,blockers,rollback:'No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback.'};
+const release={dryRun:true,published:false,tagsCreated:false,releasesCreated:false,channel,sourceCommit:commit,sourceTreeDirty,sourceVersion,artifactVersion,docsGuidelineVersion:sourceVersion,versionPolicy:'Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.',artifacts,packedSizes,chartAdapter,quality:report.sizes,publishable:false,blockers,rollback:'No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback.'};
 writeFileSync(join(output,'report.json'),JSON.stringify(release,null,2)+'\n');
 writeFileSync('evidence/release-dry-run.json',JSON.stringify(release,null,2)+'\n');
 writeFileSync(join(output,'CHANGELOG.md'),`# ${artifactVersion} (${channel}, dry run)\n\nSource: ${commit}; HIG contract/docs ${sourceVersion}.\n\nSemantic tokens and separate renderers; optional feedback; docs/playground/gallery; migration/quality governance. No npm publication, release, tag or deployment.\n\nStable publication is blocked by task policy and pending source/device/adoption evidence.\n`);

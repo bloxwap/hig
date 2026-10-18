@@ -31,6 +31,11 @@ XCTESTRUN="$(find "$BUILD/Build/Products" -maxdepth 1 -name '*.xctestrun' -print
 run() {
   local check="$1"; local prefix="$2"
   local result_bundle="$RESULTS/$check-$prefix-$(date +%s).xcresult"
+  # Xcode can reuse a previously installed UI-test bundle between category changes.
+  xcrun simctl uninstall "$UDID" com.bloxwap.hig.uitests.xctrunner >/dev/null 2>&1 || true
+  xcrun simctl uninstall "$UDID" com.bloxwap.hig.uitesthost >/dev/null 2>&1 || true
+  xcrun simctl install "$UDID" "$BUILD/Build/Products/Debug-iphonesimulator/HIGNativeSimUITests-Runner.app"
+  xcrun simctl install "$UDID" "$BUILD/Build/Products/Debug-iphonesimulator/HIGUITestHost.app"
   TEST_RUNNER_HIG_OUT="$OUT/$prefix" TEST_RUNNER_HIG_ADOPTION_PREFIX="$prefix" xcodebuild test-without-building -collect-test-diagnostics never -xctestrun "$XCTESTRUN" -destination "id=$UDID" -only-testing:"HIGNativeSimUITests/AdoptionVerificationUITests/$check" -resultBundlePath "$result_bundle" > "$LOGS/$check-$prefix.log" 2>&1
   xcrun xcresulttool get test-results summary --path "$result_bundle" --format json > "$OUT/$prefix/$check-xcresult.json"
   printf '%s %s passed\n' "$check" "$prefix" | tee -a "$OUT/summary.txt"
