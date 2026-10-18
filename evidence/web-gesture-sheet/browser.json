@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-10-18T18:34:44.692Z",
-  "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
+  "checkedAt": "2026-10-18T19:26:46.529Z",
+  "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
   "sourceDirty": true,
   "inputHashes": {
     "packages/react/src/gesture-sheet.tsx": "cc85a9ccb410f43df795de65e3952859ede7b104951c1a53245c2ba80bb7d97e",

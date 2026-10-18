@@ -858,5 +858,32 @@
   "limitations": [
     "The original intermittent navigation stall was not reproduced locally; bounded work and process rotation are resilience measures, not proof of a specific leak.",
     "Automated browser checks do not certify physical sound/haptics or wallet-authorized production transactions."
-  ]
+  ],
+  "followup": {
+    "implementationCommit": "68d1ba4410fdf96748da1b150ad54d990c98dec6",
+    "headCommit": "18c6dfa91cd50284440aea366c4842ee28cd1e4d",
+    "runId": 39156261438,
+    "url": "https://github.com/bloxwap/monorepo/actions/runs/39156261438",
+    "conclusion": "success",
+    "logSha256": "2300c6aa4c30511e1dff6235047c60c796f22d458d883f6742c26fb6f9e9c7e6",
+    "browserCleanup": "Explicit client disconnect before server close, within the same5s deadline; forced termination remains a failure. Eight session tests pass.",
+    "localDiagnostics": "One Chromium cleanup timeout after the change remains recorded. Full diagnostic retry Chromium+WebKit passed90feedback cases and24captures each; no functional assertion was weakened.",
+    "acceptanceScope": "Three attempts above certify the earlier implementation, not three reruns of this followup. Latest followup head has one successful remote run.",
+    "jobs": [
+      {
+        "name": "web",
+        "conclusion": "success",
+        "startedAt": "2026-10-18T18:53:53Z",
+        "completedAt": "2026-10-18T19:00:46Z",
+        "appFlowsStep": {
+          "name": "Verify app signed-in flows pilot (Chrome and WebKit)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-18T18:57:56Z",
+          "completed_at": "2026-10-18T18:59:48Z"
+        }
+      }
+    ]
+  }
 }

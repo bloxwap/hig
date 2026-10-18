@@ -4,20 +4,20 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "candidate",
-  "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
+  "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
   "sourceTreeDirty": false,
   "sourceVersion": "0.1.0",
-  "artifactVersion": "0.1.0-candidate.shaec6535bb",
+  "artifactVersion": "0.1.0-candidate.sha0e239442",
   "docsGuidelineVersion": "0.1.0",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig-chart",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-chart-0.1.0-candidate.shaec6535bb.tgz",
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-chart-0.1.0-candidate.sha0e239442.tgz",
       "bytes": 2044,
       "unpackedBytes": 4338,
-      "sha256": "f9ee5de18eacb8190f1500840d2b5ac229081a0820dca5f0ef886c234dc10387",
+      "sha256": "a41a7e849cb0ff55210cb504615ef0bbd6d627c9c501d977f86a0c8e194a560c",
       "files": [
         "LICENSE",
         "README.md",
@@ -26,8 +26,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shaec6535bb",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shaec6535bb"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha0e239442",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
       },
       "peers": [
         "react",
@@ -38,11 +38,11 @@
     },
     {
       "package": "@bloxwap/hig-contracts",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-contracts-0.1.0-candidate.shaec6535bb.tgz",
-      "bytes": 7205,
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-contracts-0.1.0-candidate.sha0e239442.tgz",
+      "bytes": 7206,
       "unpackedBytes": 22242,
-      "sha256": "4f931f8653bbe99cb84ea70c509114349aef33bfef96214ba36c95a30f61e9d9",
+      "sha256": "1f9305549e7d76224c188b7f22991561441e39e2b1d3bde27fd176810ab4d031",
       "files": [
         "LICENSE",
         "README.md",
@@ -61,11 +61,11 @@
     },
     {
       "package": "@bloxwap/hig-feedback",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-feedback-0.1.0-candidate.shaec6535bb.tgz",
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-feedback-0.1.0-candidate.sha0e239442.tgz",
       "bytes": 65823,
       "unpackedBytes": 130799,
-      "sha256": "ecaa1eb83cfb8c9c67dd515f9f4201c1a7df0346ba18065c913626041ee331eb",
+      "sha256": "d6cf19e791fa388cc16788c21c7367d356307dd617f916ca0748840cc51c6d79",
       "files": [
         "LICENSE",
         "README.md",
@@ -93,7 +93,7 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shaec6535bb"
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
       },
       "peers": [
         "react",
@@ -112,11 +112,11 @@
     },
     {
       "package": "@bloxwap/hig-native",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-native-0.1.0-candidate.shaec6535bb.tgz",
-      "bytes": 28003,
-      "unpackedBytes": 101677,
-      "sha256": "a963296cbf8862ded636e740518e78ce990a79e7b88556d17b0e4a4bc5da39bc",
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-native-0.1.0-candidate.sha0e239442.tgz",
+      "bytes": 28719,
+      "unpackedBytes": 104999,
+      "sha256": "b903d68bab7d2a0493f5e655d7f555f4c592165ac88424d0293320868f9a5f05",
       "files": [
         "LICENSE",
         "README.md",
@@ -169,8 +169,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shaec6535bb",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shaec6535bb"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha0e239442",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
       },
       "peers": [
         "react",
@@ -195,11 +195,11 @@
     },
     {
       "package": "@bloxwap/hig-native-fonts",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shaec6535bb.tgz",
-      "bytes": 4420492,
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha0e239442.tgz",
+      "bytes": 4420508,
       "unpackedBytes": 12069011,
-      "sha256": "bf51f8ef9983e9e9d3f0b3f3b6c8933a6a619f96676760962683a73c1572087e",
+      "sha256": "3f10cffc9b079211db9c314b054c2f6ca43d6bd2654ef53abb904e1cb31e36d5",
       "files": [
         "LICENSE",
         "README.md",
@@ -229,11 +229,11 @@
     },
     {
       "package": "@bloxwap/hig-og-fonts",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shaec6535bb.tgz",
-      "bytes": 844030,
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha0e239442.tgz",
+      "bytes": 844032,
       "unpackedBytes": 2195023,
-      "sha256": "497c03d2d86cd67789b5586e2d2a8cf33b9b4d755a6dd915c7b11d7302974d97",
+      "sha256": "05d0e920f0988bc105a5e9374a33783f6cca4fe27eea409cd97dc236fb7c2864",
       "files": [
         "LICENSE",
         "README.md",
@@ -255,11 +255,11 @@
     },
     {
       "package": "@bloxwap/hig-react",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-react-0.1.0-candidate.shaec6535bb.tgz",
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-react-0.1.0-candidate.sha0e239442.tgz",
       "bytes": 25592,
       "unpackedBytes": 108464,
-      "sha256": "465bad477a4481106bcbf8f3579f9d3622c7a0b41697efa8093720e53797cdaa",
+      "sha256": "32c8839ac38b9ba9be714c81f2952bfef94d76d875d2bd6991a999fbb820c024",
       "files": [
         "LICENSE",
         "README.md",
@@ -310,8 +310,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shaec6535bb",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shaec6535bb"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha0e239442",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
       },
       "peers": [
         "react",
@@ -332,11 +332,11 @@
     },
     {
       "package": "@bloxwap/hig-tokens",
-      "version": "0.1.0-candidate.shaec6535bb",
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.shaec6535bb.tgz",
+      "version": "0.1.0-candidate.sha0e239442",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz",
       "bytes": 8226,
       "unpackedBytes": 43413,
-      "sha256": "ec18ba4b3c1d63f6ae019021c154fc46c7f319d8cc6ad2103b4f1f48375bfd9a",
+      "sha256": "0bca5a6aa3317731166155de16f61e24e4fab9085b9e112bdc50e958f8c21d6e",
       "files": [
         "LICENSE",
         "README.md",
@@ -353,20 +353,20 @@
   ],
   "packedSizes": {
     "webTokens": {
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.shaec6535bb.tgz",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz",
       "bytes": 8226,
       "unpackedBytes": 43413,
       "fontFiles": 0
     },
     "nativeFonts": {
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shaec6535bb.tgz",
-      "bytes": 4420492,
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha0e239442.tgz",
+      "bytes": 4420508,
       "unpackedBytes": 12069011,
       "fontFiles": 15
     },
     "ogFonts": {
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shaec6535bb.tgz",
-      "bytes": 844030,
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha0e239442.tgz",
+      "bytes": 844032,
       "unpackedBytes": 2195023,
       "fontFiles": 5,
       "limit": 1000000
@@ -374,7 +374,7 @@
   },
   "chartAdapter": {
     "package": "@bloxwap/hig-chart",
-    "file": "bloxwap-hig-chart-0.1.0-candidate.shaec6535bb.tgz",
+    "file": "bloxwap-hig-chart-0.1.0-candidate.sha0e239442.tgz",
     "bytes": 2044,
     "peer": "@bloxwap/chart",
     "peerOptional": false,
@@ -427,8 +427,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2316728,
-      "gzip": 649698
+      "raw": 1961899,
+      "gzip": 560138
     },
     "docsCSS": {
       "raw": 114722
@@ -473,7 +473,7 @@
     {
       "id": "physical-devices",
       "owner": "HIG/native/haptic maintainers",
-      "reason": "iOS Simulator and Android emulator runs are recorded in evidence/native-sim/. Physical iOS/Android, VoiceOver/TalkBack with real input, display colour/font, audible and tactile observations are not available.",
+      "reason": "Simulator/emulator evidence remains separate. A paired iPhone 17 Pro and iPad Pro 13-inch (M4) are available as of 2026-10-18; no physical Android is connected. An isolated unsigned gallery uses a unique bundle ID; no valid gallery-specific provisioning profile covers these devices. No installation, account provisioning or physical certification has occurred. Real input, speech, display, audible and tactile observations remain pending.",
       "status": "blocked",
       "tracking": "https://github.com/bloxwap/hig/issues/55",
       "reviewBy": "2027-01-15"

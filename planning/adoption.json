@@ -64,7 +64,7 @@
         },
         {
           "scope": "physical-device certification",
-          "reason": "no physical iPhone/Android, VoiceOver/TalkBack, speaker or haptic hardware observations yet",
+          "reason": "Physical iPhone 17 Pro and iPad Pro 13-inch (M4) paired/available; no physical Android. Unique unsigned gallery built; no matching development profile, installation or physical input/display/speech/sound/haptic observations yet.",
           "owner": "HIG/native/haptic maintainers",
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/55"
@@ -76,12 +76,12 @@
       "exceptionExpires": "2027-01-15",
       "candidateImplementation": {
         "pr": "https://github.com/bloxwap/hig/pull/126",
-        "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
-        "latestPackedCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
-        "lastGreenCICommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
-        "validation": "Coordinated follow-up source passes full build/docs/lint/types, 163 web tests and 155 native tests. Adds optional web Vaul sheet, native dynamic/inline sheet with real nested scrolling, opaque formatted readout values, native EmptyState and semantic web Badge. iOS26.5 Simulator and Android Emulator inline lifecycle/dynamic checks pass; All eight archives are packed from clean ec6535bb, sourceTreeDirty=false; SHA-256 verified. Fresh seven-package release consumer, regular/gesture/adoption Android+iOS exports on both RN profiles, full Chromium/WebKit browser/catalog/axe/Next gates, packed boundaries and 212 examples pass. Earlier 4f source passes all remote quality/native/browser/candidate and docs checks.",
+        "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+        "latestPackedCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+        "lastGreenCICommit": "f5c022688ccf8b03d6a471f833320c4268512fd1",
+        "validation": "Full build/docs/lint/types,163 web / 161 native tests; quality560138 gzip bytes docs JS after removing duplicate client chapters; clean eight-archive candidate 0e239442 verified. Seven non-native payloads match ec6535bb excluding coordinated metadata. Both RN 0.81 / Expo 54 and RN 0.83 / Expo 55 packed regular, gesture and adoption Android/iOS exports and fonts pass; fresh packed web/boundaries,212 examples,SSR,seven-package staged install, full Chromium/WebKit browser, catalog (104 states), axe and Next pass. Native custom Dialog retains one Modal with host anatomy, Back, reduced motion and dismissal-aware focus. All previous f5 remote checks green; new remote checks follow this push.",
         "ciVisibility": "Read-only repository runner listing returned zero repository-specific runners; organization runner listing requires unavailable admin:org scope. No runner availability is inferred.",
-        "candidateVersion": "0.1.0-candidate.shaec6535bb"
+        "candidateVersion": "0.1.0-candidate.sha0e239442"
       }
     },
     {
@@ -285,7 +285,15 @@
       "openPRs": [
         "https://github.com/bloxwap/monorepo/pull/4607",
         "https://github.com/bloxwap/monorepo/pull/4608",
-        "https://github.com/bloxwap/monorepo/pull/4609"
+        "https://github.com/bloxwap/monorepo/pull/4609",
+        "https://github.com/bloxwap/monorepo/pull/4610",
+        "https://github.com/bloxwap/monorepo/pull/4611",
+        "https://github.com/bloxwap/monorepo/pull/4612",
+        "https://github.com/bloxwap/monorepo/pull/4613",
+        "https://github.com/bloxwap/monorepo/pull/4614",
+        "https://github.com/bloxwap/monorepo/pull/4615",
+        "https://github.com/bloxwap/monorepo/pull/4616",
+        "https://github.com/bloxwap/monorepo/pull/4617"
       ],
       "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603): marketing sections run in Chrome+WebKit, app-flows in Chrome only (#124)",
       "exceptions": [
@@ -565,7 +573,9 @@
       "openPRs": [
         "https://github.com/bloxwap/monorepo/pull/4610",
         "https://github.com/bloxwap/monorepo/pull/4611",
-        "https://github.com/bloxwap/monorepo/pull/4612"
+        "https://github.com/bloxwap/monorepo/pull/4612",
+        "https://github.com/bloxwap/monorepo/pull/4615",
+        "https://github.com/bloxwap/monorepo/pull/4617"
       ],
       "validatedVersion": "0.1.0-candidate.shab2f7740c",
       "validation": "#4523 merged as b1b913dac (3,122 tests, 24-case settings matrix Chrome/Firefox CI). #4594 at d81cbf00: css/base imported in layout.tsx (#95), busy text from mobile.hig.busy (#82), billing buttons 48px->44px (#80); app tests 3457 pass, production builds pilot and NEXT_PUBLIC_HIG_PILOT=0, settings matrix identical to main, landing focus identical; JS +282 B raw, CSS +10,987 B raw. #4601 (verified at 1f2981b7; landed as #4606 29812c9a4, flows in Chrome only, #124): 96 direct sfx/haptics calls in 22 files through appCue(); browser (automated headless Chromium) 90 feedback cases match rollback, amount 12.7 on both builds, Confirm fires once, rollback screenshots pixel-identical to parent in 12/12; sheet Escape/focus return; tests 3539 pass; CI Chrome+Firefox flows step green. Verifier caveats: sheet.mjs asserts nothing and is not in CI; 80ms per-source dedupe",
@@ -598,7 +608,19 @@
           "pr": "https://github.com/bloxwap/monorepo/pull/4612",
           "head": "0872681edc1fa8aa59a531f47ddb3512a4e7e0dd",
           "scope": "27 ordinary button consumer modules, semantic action links and remaining financial amount fields",
-          "validation": "3638 app tests plus one expected failure; full workspace gate; 240 actual consumer browser cases; twenty exact rollback captures. Latest quality running at observation; configured automatic preview and screenshot/security checks green."
+          "validation": "3,638 app tests plus one expected failure; full workspace gate; 240 actual consumer browser cases; twenty exact rollback captures. All remote checks green."
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4615",
+          "head": "0ec5cf2b2be550cb5c4dae24f6f275d67481af4f",
+          "scope": "Remaining app forms and explicit status tones",
+          "validation": "3,638 app tests, 160 browser cases; all 27 remote checks passed or intentionally skipped."
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4617",
+          "head": "fe5f9212e151967d4131e411c3a59e057ce3b173",
+          "scope": "Four app drawers with optional HIG Vaul backend",
+          "validation": "64 browser cases, 32 geometry pairs, full normal workspace gate; required quality/browser/axe/native checks green, three automatic previews queued at observation."
         }
       ]
     },
@@ -636,7 +658,15 @@
         "evidence": "docs/hig/evidence/pro-data-components/verification.json",
         "validation": "250 tests in 37 suites, lint/types, production build; Chromium/WebKit before/after/rollback exact table cells, columns and row heights, market keyboard and command menu behavior. Normal full workspace pre-push passed. A settings browser harness readiness fix follows a CI WebKit initial-focus race; all current PR checks now pass. JS +2312 B gzip, CSS +719 B.",
         "mergeEffect": "Default-branch versions and exceptions above remain authoritative until merge."
-      }
+      },
+      "candidateFollowups": [
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4613",
+          "head": "1a8d8314d05312a233fcf16a5c8b0aecdb0ac6f6",
+          "scope": "Pro domain dialogs and adaptive compact controls",
+          "validation": "260 Pro tests, 36 consumer browser cases, 200% text contained; all remote checks green."
+        }
+      ]
     },
     {
       "name": "bloxwap.com",
@@ -659,6 +689,14 @@
       "forksWithoutFlagOnConsumers": [],
       "retired": [
         "apps/www/public/fonts (23 files, 12,970,019 B) deleted and gitignored by #4598 (031b29814); faces copied from @bloxwap/font at build with SHA-256 pins"
+      ],
+      "candidateFollowups": [
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4614",
+          "head": "9317f29ad668f342291c309452164561e2509d5e",
+          "scope": "Marketing48pxlink targets and embedded-frame focus",
+          "validation": "32 Chromium/WebKit cases, 42 tests, Worker build; all remote checks green."
+        }
       ]
     },
     {
@@ -697,7 +735,15 @@
         "evidence": "docs/hig/evidence/native-app/adoption-117-121/report.json",
         "validation": "3066 tests in 257 suites; lint/types; flag-on/off iOS/Android exports. Actual simulator/emulator runs cover account custom GestureSheet, nested scrolling, Toast normal/AX5/2x recovery, French back context, Korean/Han language options and constrained readout typography/tone. All current PR checks, including Android export, pass. Financial reels remain pending the motion decision.",
         "mergeEffect": "Default-branch versions and exceptions above remain authoritative until merge."
-      }
+      },
+      "candidateFollowups": [
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4616",
+          "head": "7825d834ebf89e839de0573bc5d57eb0d4b54d59",
+          "scope": "Native dynamic/inline sheets, static readouts and empty states",
+          "validation": "3,076 tests, actual iOS/Android runtime and 2x login, exports/types/lint; all remote checks green."
+        }
+      ]
     },
     {
       "name": "Hyperliquid docs",

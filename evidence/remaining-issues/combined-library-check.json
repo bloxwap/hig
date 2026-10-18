@@ -1,6 +1,6 @@
 {
   "observedAt": "2026-10-18",
-  "baseCommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
+  "baseCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
   "sourceDirtyAtCheck": true,
   "sourceHashes": {
     "packages/native/src/gesture-sheet.tsx": "a9ffdf4e4640121cf1250e4844ee9d2162d9af93f81c7f398a36eda881874d60",
@@ -8,15 +8,16 @@
     "packages/native/src/status.tsx": "afe83a2b2ecb4dd8ae24136fa000fe758940ec30485cad7939dba23de3a4749b",
     "packages/react/src/gesture-sheet.tsx": "cc85a9ccb410f43df795de65e3952859ede7b104951c1a53245c2ba80bb7d97e",
     "packages/react/src/status.tsx": "fb3764fe7723dee98ace53a26a1b058b6343d71a18730fa9dbe2ee5660b1ab12",
-    "packages/react/src/styles.css": "69b96ec3f75da7bfbd37af4581850b9a0616b2031821ea571a6892ab3ae1fa3d"
+    "packages/react/src/styles.css": "69b96ec3f75da7bfbd37af4581850b9a0616b2031821ea571a6892ab3ae1fa3d",
+    "packages/native/src/overlay.tsx": "a1eebceabdfe740e18254b1121e92db911baa379058f4c1f1f1afade817cae5e"
   },
   "checks": {
     "fullCheck": {
       "passed": true,
       "webTests": 163,
       "webFiles": 27,
-      "nativeTests": 155,
-      "nativeSuites": 14,
+      "nativeTests": 161,
+      "nativeSuites": 15,
       "build": true,
       "docs": true,
       "lint": true,
@@ -34,18 +35,25 @@
     "nativeRuntime": "iOS26.5 Simulator two XCTest cases; Android Emulator lifecycle/scroll/dynamic checks pass. See evidence/native-inline/report.json.",
     "webGestureRuntime": "Six actual pointer/wheel/focus cases in each of Chromium and WebKit; see evidence/web-gesture-sheet/verification.json.",
     "allBrowserGates": "pass: Chromium/WebKit web acceptance, Pro layout, optional web gesture, feedback, docs, 64-component/104-state catalog axe/visual/runtime, Next hydration/keyboard/raw amount/font",
-    "releaseArtifact": "pass: seven staged packages clean-installed with aligned versions and SSR"
+    "releaseArtifact": "pass: seven staged packages clean-installed with aligned versions and SSR",
+    "docsClientPayload": {
+      "gzip": 560138,
+      "previousGzip": 650010,
+      "chaptersAndApiRemainServerRendered": true,
+      "browser": "Full docs routes/playground/code/search/200%/axe pass; catalog64components104states pass"
+    }
   },
   "limits": [
-    "No physical device, owner signoff, registry publication or manual deployment."
+    "No physical installation or certification, owner signoff, registry publication, or manual deployment. Unique unsigned arm64 gallery prepared; see evidence/physical/preparation-2026-10-18.json."
   ],
   "candidate": {
-    "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
-    "version": "0.1.0-candidate.shaec6535bb",
+    "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+    "version": "0.1.0-candidate.sha0e239442",
     "sourceTreeDirty": false,
     "archives": 8,
     "sha256": "All match authoritative artifacts/release-candidate/report.json",
     "reactBytes": 25592,
-    "nativeBytes": 28003
+    "nativeBytes": 28719,
+    "nonNativePayloads": "Seven package payloads byte-identical to ec6535bb excluding coordinated package.json metadata."
   }
 }
