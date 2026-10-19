@@ -1,0 +1,123 @@
+{
+  "purpose": "Exact merged upstream implementations and recording Web Audio fake for HIG #70 compatibility/cancellation tests; no physical actuation",
+  "license": "MIT; exact upstream licenses retained beside source",
+  "files": [
+    {
+      "file": "sfx/engine.ts",
+      "repository": "bloxwap/sfx",
+      "commit": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+      "sourcePath": "packages/sfx/src/engine.ts",
+      "url": "https://github.com/bloxwap/sfx/blob/1be6630fe0bdea2cf08f5ffb1948beb51ec49caf/packages/sfx/src/engine.ts",
+      "gitBlobSha": "c9f18d0a0644a96546e26d5a1bb804d9ef80491a",
+      "sha256": "87f49c50e5887ce5448b2dbb0ad44d7a3bc8c803cc59d43112dda0fe5b732664",
+      "bytes": 24107
+    },
+    {
+      "file": "sfx/recipes.ts",
+      "repository": "bloxwap/sfx",
+      "commit": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+      "sourcePath": "packages/sfx/src/recipes.ts",
+      "url": "https://github.com/bloxwap/sfx/blob/1be6630fe0bdea2cf08f5ffb1948beb51ec49caf/packages/sfx/src/recipes.ts",
+      "gitBlobSha": "7c2730d42bba5008dcc20c5e860b3d02efe4a97b",
+      "sha256": "f6b85f4217e49bcc54777aa62f2eca3de6899ebe566040c7ce773afe2a9b6ed2",
+      "bytes": 16440
+    },
+    {
+      "file": "sfx/fake-audio.ts",
+      "repository": "bloxwap/sfx",
+      "commit": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+      "sourcePath": "packages/sfx/test/fake-audio.ts",
+      "url": "https://github.com/bloxwap/sfx/blob/1be6630fe0bdea2cf08f5ffb1948beb51ec49caf/packages/sfx/test/fake-audio.ts",
+      "gitBlobSha": "f3bbb683de4d558383f7b125f74b50e9994f12a4",
+      "sha256": "96f874c199044fa16b8ad1a0e2ec967022e2c2e0e2b137886f60b5778fbba753",
+      "bytes": 10070
+    },
+    {
+      "file": "sfx/public-index.txt",
+      "repository": "bloxwap/sfx",
+      "commit": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+      "sourcePath": "packages/sfx/src/index.ts",
+      "url": "https://github.com/bloxwap/sfx/blob/1be6630fe0bdea2cf08f5ffb1948beb51ec49caf/packages/sfx/src/index.ts",
+      "gitBlobSha": "0350739903661eda0417bb94ec6678b813d6bef9",
+      "sha256": "47066e1dae7e734a4f827ad90b566fffeb96ad379db93e57d0e16a9533c68126",
+      "bytes": 623
+    },
+    {
+      "file": "sfx/LICENSE",
+      "repository": "bloxwap/sfx",
+      "commit": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+      "sourcePath": "packages/sfx/LICENSE",
+      "url": "https://github.com/bloxwap/sfx/blob/1be6630fe0bdea2cf08f5ffb1948beb51ec49caf/packages/sfx/LICENSE",
+      "gitBlobSha": "90859dcad8ca0bcb105413b583e242ee2042101b",
+      "sha256": "e2c5216671b434c8b41cea0d3109afc6b2b338f9c91989fdb02292b9d93669ed",
+      "bytes": 1064
+    },
+    {
+      "file": "haptic/trigger.ts",
+      "repository": "bloxwap/haptic",
+      "commit": "8b1ab578e2f06fbf2cd941697b1a93440e396bc9",
+      "sourcePath": "packages/haptic/src/trigger.ts",
+      "url": "https://github.com/bloxwap/haptic/blob/8b1ab578e2f06fbf2cd941697b1a93440e396bc9/packages/haptic/src/trigger.ts",
+      "gitBlobSha": "9d786a8c1f7795f9f0e1fc6cb3ce5ec415f1198e",
+      "sha256": "8c457eced0e17640fee0fa272dca7789734e16193e19cee6792a3295048eeee7",
+      "bytes": 4904
+    },
+    {
+      "file": "haptic/platform.ts",
+      "repository": "bloxwap/haptic",
+      "commit": "8b1ab578e2f06fbf2cd941697b1a93440e396bc9",
+      "sourcePath": "packages/haptic/src/platform.ts",
+      "url": "https://github.com/bloxwap/haptic/blob/8b1ab578e2f06fbf2cd941697b1a93440e396bc9/packages/haptic/src/platform.ts",
+      "gitBlobSha": "d8fbda61d345d5c5c954f7eb1fc1b86e41d1f891",
+      "sha256": "e28b1437cb4b07bbfbdd7e130406948bb5fb102a9024ddce36bce7ff49e4a11a",
+      "bytes": 877
+    },
+    {
+      "file": "haptic/feedback.ts",
+      "repository": "bloxwap/haptic",
+      "commit": "8b1ab578e2f06fbf2cd941697b1a93440e396bc9",
+      "sourcePath": "packages/haptic/src/feedback.ts",
+      "url": "https://github.com/bloxwap/haptic/blob/8b1ab578e2f06fbf2cd941697b1a93440e396bc9/packages/haptic/src/feedback.ts",
+      "gitBlobSha": "0aa4974232fbcbd55d9fc7782d5301a0e5aad5a8",
+      "sha256": "89d67a68dbeec4c0a084685a171f39145b21cdee8ee72f91969a4c16aa5987b1",
+      "bytes": 4080
+    },
+    {
+      "file": "haptic/public-index.txt",
+      "repository": "bloxwap/haptic",
+      "commit": "8b1ab578e2f06fbf2cd941697b1a93440e396bc9",
+      "sourcePath": "packages/haptic/src/index.ts",
+      "url": "https://github.com/bloxwap/haptic/blob/8b1ab578e2f06fbf2cd941697b1a93440e396bc9/packages/haptic/src/index.ts",
+      "gitBlobSha": "ea0dde2b86662060cd8cd7bc8cb67e010ea545ca",
+      "sha256": "f44007b6c0a30b053592b77f67f557b81beb54ae85a247b329f05b536be57310",
+      "bytes": 429
+    },
+    {
+      "file": "haptic/LICENSE",
+      "repository": "bloxwap/haptic",
+      "commit": "8b1ab578e2f06fbf2cd941697b1a93440e396bc9",
+      "sourcePath": "packages/haptic/LICENSE",
+      "url": "https://github.com/bloxwap/haptic/blob/8b1ab578e2f06fbf2cd941697b1a93440e396bc9/packages/haptic/LICENSE",
+      "gitBlobSha": "90859dcad8ca0bcb105413b583e242ee2042101b",
+      "sha256": "e2c5216671b434c8b41cea0d3109afc6b2b338f9c91989fdb02292b9d93669ed",
+      "bytes": 1064
+    }
+  ],
+  "releasedCompatibilityDependencies": {
+    "@bloxwap/sfx": {
+      "version": "0.1.0",
+      "integrity": "sha512-cFkuhHJugIwxsmsNuREO4isS+K3h/Qoa7uvFhPj25euspzQ9N9qcBRb7ZqTRSMnctH5WQWTMXTpYwPqYJvBKOg==",
+      "resolved": "https://registry.npmjs.org/@bloxwap/sfx/-/sfx-0.1.0.tgz"
+    },
+    "@bloxwap/haptic": {
+      "version": "0.1.0",
+      "integrity": "sha512-GZI5wxLNHKPwpu1Q1mGZWRQjLLVP1lZ2UyC2moB/w+R7WwWZ5cINMsPVE5U/eRL4GzJqOi7w2Qwo5K+3DkOx2Q==",
+      "resolved": "https://registry.npmjs.org/@bloxwap/haptic/-/haptic-0.1.0.tgz"
+    },
+    "web-haptics": {
+      "version": "0.0.6",
+      "integrity": "sha512-eCzcf1LDi20+Fr0x9V3OkX92k0gxEQXaHajmhXHitsnk6SxPeshv8TBtBRqxyst8HI1uf2FyFVE7QS3jo1gkrw==",
+      "resolved": "https://registry.npmjs.org/web-haptics/-/web-haptics-0.0.6.tgz"
+    }
+  }
+}

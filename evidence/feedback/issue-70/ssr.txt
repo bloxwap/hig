@@ -1,0 +1,5 @@
+
+> bloxwap-hig-workspace@0.1.0 smoke:ssr
+> node fixtures/ssr/smoke.mjs
+
+SSR deterministic token render passed
