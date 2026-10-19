@@ -1,7 +1,7 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import * as sfx from '@bloxwap/sfx';
 import * as haptic from '@bloxwap/haptic';
-import {FakeAudioContext,FakeOfflineAudioContext,tick} from '@bloxwap/sfx/fake-audio';
+import {FakeAudioContext,FakeOfflineAudioContext,tick} from './test-utils/fake-audio';
 import {createWebSoundAdapter} from '../packages/feedback/src/web-sound';
 import {createBrowserHapticAdapter} from '../packages/feedback/src/browser-haptic';
 import {FeedbackController} from '../packages/feedback/src/contract';
@@ -89,16 +89,18 @@ describe('optional canonical Haptic backend with 0.2.0',()=>{
   const vibrate=vi.fn<(pattern:number|number[])=>boolean>(()=>true),createElement=vi.fn();
   const activation={hasBeenActive:false};const doc={hidden:false,createElement};
   vi.stubGlobal('navigator',{vibrate,userActivation:activation});vi.stubGlobal('document',doc);
-  const trigger=vi.spyOn(haptic,'triggerHaptic');const adapter=createBrowserHapticAdapter(haptic);adapters.push(adapter);
-  expect(adapter.capability.available).toBe(false);await adapter.play(event(),prefs);expect(trigger).not.toHaveBeenCalled();
+  const adapter=createBrowserHapticAdapter(haptic);adapters.push(adapter);
+  expect(adapter.capability.available).toBe(false);await adapter.play(event(),prefs);expect(vibrate).not.toHaveBeenCalled();
   activation.hasBeenActive=true;expect(adapter.capability.available).toBe(true);
-  await adapter.play(event(),{...prefs,haptics:false});expect(trigger).not.toHaveBeenCalled();
-  await adapter.play(event('warning'),prefs);expect(trigger).toHaveBeenCalledWith('warning');expect(vibrate).toHaveBeenCalledOnce();
+  await adapter.play(event(),{...prefs,haptics:false});expect(vibrate).not.toHaveBeenCalled();
+  await adapter.play(event('warning'),prefs);expect(vibrate).toHaveBeenCalledOnce();
   expect(vibrate.mock.calls[0][0]).toBeInstanceOf(Array);expect(adapter.capability.observed).toBe(false);
-  doc.hidden=true;expect(adapter.capability.available).toBe(false);await adapter.play(event('success'),prefs);expect(trigger).toHaveBeenCalledTimes(1);
-  doc.hidden=false;vibrate.mockReturnValue(false);await expect(adapter.play(event('error'),prefs)).resolves.toBeUndefined();expect(adapter.capability.observed).toBe(false);
+  doc.hidden=true;expect(adapter.capability.available).toBe(false);await adapter.play(event('success'),prefs);expect(vibrate).toHaveBeenCalledTimes(1);
+  doc.hidden=false;vibrate.mockReturnValue(false);await expect(adapter.play(event('error'),prefs)).resolves.toBeUndefined();
+  expect(vibrate).toHaveBeenCalledTimes(2);expect(adapter.capability.observed).toBe(false);
   expect(createElement).not.toHaveBeenCalled();
-  adapter.dispose?.();expect(adapter.capability.available).toBe(false);await adapter.play(event('success'),prefs);expect(trigger).toHaveBeenCalledTimes(2);
+  adapter.dispose?.();expect(adapter.capability.available).toBe(false);const beforeDispose=vibrate.mock.calls.length;
+  await adapter.play(event('success'),prefs);expect(vibrate).toHaveBeenCalledTimes(beforeDispose);
  });
 
  it('reports iOS unavailable even during a trusted activation and never manufactures a physical tap',async()=>{
