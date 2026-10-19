@@ -26,15 +26,15 @@
   {
     "id": "physical-devices",
     "owner": "HIG/native/haptic maintainers",
-    "reason": "Simulator/emulator evidence remains separate. A paired iPhone 17 Pro and iPad Pro 13-inch (M4) are available as of 2026-10-18; no physical Android is connected. An isolated unsigned gallery uses a unique bundle ID; no valid gallery-specific provisioning profile covers these devices. No installation, account provisioning or physical certification has occurred. Real input, speech, display, audible and tactile observations remain pending.",
-    "status": "blocked",
+    "reason": "Resolved by dated, owner-approved exception on 2026-10-19 (evidence/physical/owner-attestation-2026-10-19.md, PR #131): the owner attests every #55 checklist item works on physical hardware. This is an owner attestation, not a recorded device observation; automated, browser, iOS Simulator and Android emulator evidence remains separately labeled. Any future contradicting physical run voids the exception for that item and requires a linked failure issue. Upstream physical tactile tracking stays open at bloxwap/haptic#9.",
+    "status": "excepted",
     "tracking": "https://github.com/bloxwap/hig/issues/55",
     "reviewBy": "2027-01-15"
   },
   {
     "id": "owning-migrations",
     "owner": "each adopting repository maintainers",
-    "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. The first remaining-surface batch is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607\u2013#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. The task user explicitly accepted Combined#4619's verified historical public Git tree hash finding as a false positive; that finding does not block further work. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain. The resumed batch adds optional native SwitchRow anatomy and upstream-compatible feedback adapters in HIG source. Additional controls within the existing sponsor pilot and native ordinary fields/actions/switches are undergoing actual-caller/runtime validation in isolated follow-ups.",
+    "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. The first remaining-surface batch is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607–#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. The task user explicitly accepted Combined#4619's verified historical public Git tree hash finding as a false positive; that finding does not block further work. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain. The resumed batch adds optional native SwitchRow anatomy and upstream-compatible feedback adapters in HIG source. Additional controls within the existing sponsor pilot and native ordinary fields/actions/switches are undergoing actual-caller/runtime validation in isolated follow-ups.",
     "status": "partial",
     "tracking": "https://github.com/bloxwap/hig/issues/110",
     "reviewBy": "2027-01-15"
