@@ -4,20 +4,20 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "candidate",
-  "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+  "sourceCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
   "sourceTreeDirty": false,
   "sourceVersion": "0.1.0",
-  "artifactVersion": "0.1.0-candidate.sha0e239442",
+  "artifactVersion": "0.1.0-candidate.shac32d8408",
   "docsGuidelineVersion": "0.1.0",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig-chart",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-chart-0.1.0-candidate.sha0e239442.tgz",
-      "bytes": 2044,
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-chart-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 2045,
       "unpackedBytes": 4338,
-      "sha256": "a41a7e849cb0ff55210cb504615ef0bbd6d627c9c501d977f86a0c8e194a560c",
+      "sha256": "8e59f00e6f5fcc45fcf73c89e8a1b39c700bf32d4670b2db98dd6849eda08457",
       "files": [
         "LICENSE",
         "README.md",
@@ -26,8 +26,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.sha0e239442",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.shac32d8408",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
       },
       "peers": [
         "react",
@@ -38,11 +38,11 @@
     },
     {
       "package": "@bloxwap/hig-contracts",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-contracts-0.1.0-candidate.sha0e239442.tgz",
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-contracts-0.1.0-candidate.shac32d8408.tgz",
       "bytes": 7206,
       "unpackedBytes": 22242,
-      "sha256": "1f9305549e7d76224c188b7f22991561441e39e2b1d3bde27fd176810ab4d031",
+      "sha256": "db86329fdb3903a93400367e57a9e352c54b781648f77d2b0b80bf746394a08a",
       "files": [
         "LICENSE",
         "README.md",
@@ -61,11 +61,11 @@
     },
     {
       "package": "@bloxwap/hig-feedback",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-feedback-0.1.0-candidate.sha0e239442.tgz",
-      "bytes": 65823,
-      "unpackedBytes": 130799,
-      "sha256": "d6cf19e791fa388cc16788c21c7367d356307dd617f916ca0748840cc51c6d79",
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-feedback-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 66575,
+      "unpackedBytes": 133612,
+      "sha256": "a1cc4fde2927a670baf139306b543a38fc5ae4b2172ce8890a2a63e87c51f086",
       "files": [
         "LICENSE",
         "README.md",
@@ -93,7 +93,7 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
+        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
       },
       "peers": [
         "react",
@@ -112,11 +112,11 @@
     },
     {
       "package": "@bloxwap/hig-native",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-native-0.1.0-candidate.sha0e239442.tgz",
-      "bytes": 28719,
-      "unpackedBytes": 104999,
-      "sha256": "b903d68bab7d2a0493f5e655d7f555f4c592165ac88424d0293320868f9a5f05",
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-native-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 29279,
+      "unpackedBytes": 107479,
+      "sha256": "b742477325e6eede2a4a370f966226784a2c9a5a0fb9edc8816f5301f363ccc2",
       "files": [
         "LICENSE",
         "README.md",
@@ -162,6 +162,8 @@
         "dist/status.js",
         "dist/surface.d.ts",
         "dist/surface.js",
+        "dist/switch-row.d.ts",
+        "dist/switch-row.js",
         "dist/switch.d.ts",
         "dist/switch.js",
         "dist/text-content.d.ts",
@@ -169,8 +171,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.sha0e239442",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.shac32d8408",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
       },
       "peers": [
         "react",
@@ -195,11 +197,11 @@
     },
     {
       "package": "@bloxwap/hig-native-fonts",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha0e239442.tgz",
-      "bytes": 4420508,
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 4420491,
       "unpackedBytes": 12069011,
-      "sha256": "3f10cffc9b079211db9c314b054c2f6ca43d6bd2654ef53abb904e1cb31e36d5",
+      "sha256": "330a3a4b1a116df9071434a01dd28eca9287aeb2c26fe2ef34b8fd336c7f633c",
       "files": [
         "LICENSE",
         "README.md",
@@ -229,11 +231,11 @@
     },
     {
       "package": "@bloxwap/hig-og-fonts",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha0e239442.tgz",
-      "bytes": 844032,
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 844029,
       "unpackedBytes": 2195023,
-      "sha256": "05d0e920f0988bc105a5e9374a33783f6cca4fe27eea409cd97dc236fb7c2864",
+      "sha256": "8c67f508e19d294ef6d1978b5d6db9985c69a51af0416690962fdcdbb876f947",
       "files": [
         "LICENSE",
         "README.md",
@@ -255,11 +257,11 @@
     },
     {
       "package": "@bloxwap/hig-react",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-react-0.1.0-candidate.sha0e239442.tgz",
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-react-0.1.0-candidate.shac32d8408.tgz",
       "bytes": 25592,
       "unpackedBytes": 108464,
-      "sha256": "32c8839ac38b9ba9be714c81f2952bfef94d76d875d2bd6991a999fbb820c024",
+      "sha256": "7cf7a0e58b99229c537e44a25c9ba828c789bfc27f88cfa6aba620220b6a07ad",
       "files": [
         "LICENSE",
         "README.md",
@@ -310,8 +312,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.sha0e239442",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.sha0e239442"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.shac32d8408",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
       },
       "peers": [
         "react",
@@ -332,11 +334,11 @@
     },
     {
       "package": "@bloxwap/hig-tokens",
-      "version": "0.1.0-candidate.sha0e239442",
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz",
+      "version": "0.1.0-candidate.shac32d8408",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.shac32d8408.tgz",
       "bytes": 8226,
       "unpackedBytes": 43413,
-      "sha256": "0bca5a6aa3317731166155de16f61e24e4fab9085b9e112bdc50e958f8c21d6e",
+      "sha256": "3e30e07c9d07d15e47b0c9c596acd3e1c6bd2a46c8574b78f8aa5912de8d1900",
       "files": [
         "LICENSE",
         "README.md",
@@ -353,20 +355,20 @@
   ],
   "packedSizes": {
     "webTokens": {
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.shac32d8408.tgz",
       "bytes": 8226,
       "unpackedBytes": 43413,
       "fontFiles": 0
     },
     "nativeFonts": {
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha0e239442.tgz",
-      "bytes": 4420508,
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 4420491,
       "unpackedBytes": 12069011,
       "fontFiles": 15
     },
     "ogFonts": {
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha0e239442.tgz",
-      "bytes": 844032,
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 844029,
       "unpackedBytes": 2195023,
       "fontFiles": 5,
       "limit": 1000000
@@ -374,8 +376,8 @@
   },
   "chartAdapter": {
     "package": "@bloxwap/hig-chart",
-    "file": "bloxwap-hig-chart-0.1.0-candidate.sha0e239442.tgz",
-    "bytes": 2044,
+    "file": "bloxwap-hig-chart-0.1.0-candidate.shac32d8408.tgz",
+    "bytes": 2045,
     "peer": "@bloxwap/chart",
     "peerOptional": false,
     "otherArtifactsNamingChart": []
@@ -414,8 +416,25 @@
         "packages/native/dist/text-content.js",
         "packages/native/dist/surface.js",
         "packages/native/dist/roles.js",
+        "packages/native/dist/switch-row.js",
         "packages/native/dist/switch.js",
         "nativeSwitch.js"
+      ]
+    },
+    "nativeSwitchRow": {
+      "raw": 1715,
+      "gzip": 921,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/roles.js",
+        "packages/native/dist/switch-row.js",
+        "packages/native/dist/switch.js",
+        "nativeSwitchRow.js"
       ]
     },
     "feedbackContract": {
@@ -427,8 +446,8 @@
       ]
     },
     "docsJS": {
-      "raw": 1961899,
-      "gzip": 560138
+      "raw": 1962397,
+      "gzip": 560326
     },
     "docsCSS": {
       "raw": 114722
@@ -457,7 +476,7 @@
     {
       "id": "source-audit",
       "owner": "product monorepo maintainers",
-      "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain.",
+      "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain. Combined draft monorepo#4619 now includes equal-toolchain web/native production measurements against main29812c9, with complete source and asset hashes; these are review evidence, not bundle approval.",
       "status": "partial",
       "tracking": "https://github.com/bloxwap/hig/issues/57",
       "reviewBy": "2027-01-15"
@@ -481,7 +500,7 @@
     {
       "id": "owning-migrations",
       "owner": "each adopting repository maintainers",
-      "reason": "SDK docs and original web/native pilots are merged. Latest monorepo follow-ups #4594, #4598, #4599, #4602 and #4606 are merged at 29812c9a4. Remaining surfaces and rollback retirement are #110; cross-browser app-flow coverage #124; consumer package refreshes #115; TapTrade routes/host tokens and brand #100; Tapsiren mark #101. Consumer completion and owner decisions remain explicit.",
+      "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. The first remaining-surface batch is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607–#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. The task user explicitly accepted Combined#4619's verified historical public Git tree hash finding as a false positive; that finding does not block further work. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain. The resumed batch adds optional native SwitchRow anatomy and upstream-compatible feedback adapters in HIG source. Additional controls within the existing sponsor pilot and native ordinary fields/actions/switches are undergoing actual-caller/runtime validation in isolated follow-ups.",
       "status": "partial",
       "tracking": "https://github.com/bloxwap/hig/issues/110",
       "reviewBy": "2027-01-15"
@@ -489,7 +508,7 @@
     {
       "id": "upstream-feedback-gaps",
       "owner": "SFX/Haptic maintainers",
-      "reason": "SFX and Haptic npm releases remain 0.1.0. SFX AbortSignal PR #51 merged as 4f9fcce and Haptic imperative vibration PR #30 merged as 0f20a59 during the audit; their new APIs are not yet released. Haptic issue #27 remains open because imperative vibration does not provide trusted-native-event iOS web output. Native dispatch preloading is implemented and tested; physical audible/tactile latency remains #55.",
+      "reason": "HIG source now adopts merged SFX per-root AbortSignal cancellation and optional canonical Haptic imperative injection (draft #127, all remote checks green), with exact MIT upstream fixtures and actual npm 0.1 compatibility tests. SFX/Haptic registry releases remain 0.1.0, so active voice cancellation and imperative exports require a later upstream release; released 0.1 behavior remains tested. Haptic issue #27 stays open because imperative vibration cannot bypass trusted-native-event iOS requirements. Native preloading/dispatch remains implemented; physical audible/tactile latency is #55.",
       "status": "partial",
       "tracking": "https://github.com/bloxwap/hig/issues/70",
       "reviewBy": "2027-01-15"

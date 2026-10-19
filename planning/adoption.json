@@ -76,12 +76,12 @@
       "exceptionExpires": "2027-01-15",
       "candidateImplementation": {
         "pr": "https://github.com/bloxwap/hig/pull/126",
-        "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
-        "latestPackedCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+        "sourceCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
+        "latestPackedCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
         "lastGreenCICommit": "7d104f5feeb89234c576289b337ac50471661771",
-        "validation": "Full build/docs/lint/types,163 web / 161 native tests; quality560138 gzip bytes docs JS after removing duplicate client chapters; clean eight-archive candidate 0e239442 verified. Seven non-native payloads match ec6535bb excluding coordinated metadata. Both RN 0.81 / Expo 54 and RN 0.83 / Expo 55 packed regular, gesture and adoption Android/iOS exports and fonts pass; fresh packed web/boundaries,212 examples,SSR,seven-package staged install, full Chromium/WebKit browser, catalog (104 states), axe and Next pass. Native custom Dialog retains one Modal with host anatomy, Back, reduced motion and dismissal-aware focus. All quality/native/browser/candidate and docs checks passed at 7d104f5 (twelve successes, expected docs deploy skip).",
+        "validation": "Latest integrated source passes build/docs/lint/types,174 web / 165 native tests,212 public-import examples,SSR,quality and four SwitchRow Chromium/WebKit checks. Eight exact archives packed from clean c32d8408; all SHA-256 values verified. Six package payloads match previous 0e excluding coordinated manifests; only native and feedback payloads change. Seven staged packages clean-install with aligned versions and SSR/feedback. Exact new five-package native consumers clean-install and export SwitchRow/default Switch/Button/provider on Android and iOS for RN 0.81 / Expo 54 and RN 0.83 / Expo 55. Current-head remote checks await the normal push. Previous0e browser,simulator/emulator and production baseline records retain their original scope.",
         "ciVisibility": "Runner-list API exposes no repository-specific runners and organization listing requires unavailable admin scope; observed quality/native/browser/candidate/docs jobs at7d104f5 all completed successfully on shared runners.",
-        "candidateVersion": "0.1.0-candidate.sha0e239442",
+        "candidateVersion": "0.1.0-candidate.shac32d8408",
         "resumedSourceWork": {
           "feedback": {
             "pr": "https://github.com/bloxwap/hig/pull/127",
@@ -98,8 +98,17 @@
             "ordinarySwitchGzipBytes": 2153,
             "unchangedCapBytes": 2200
           },
-          "nextCandidate": "New clean source pack pending;0e candidate and previous consumer evidence remain immutable."
-        }
+          "nextCandidate": "Clean c32d8408 candidate built, exact packed native profiles pass, and isolated native owning follow-up is validating its five matching archives; original 0e candidate remains immutable."
+        },
+        "previousCleanCandidates": [
+          {
+            "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+            "latestPackedCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+            "candidateVersion": "0.1.0-candidate.sha0e239442",
+            "validation": "Full build/docs/lint/types,163 web / 161 native tests; quality560138 gzip bytes docs JS after removing duplicate client chapters; clean eight-archive candidate 0e239442 verified. Seven non-native payloads match ec6535bb excluding coordinated metadata. Both RN 0.81 / Expo 54 and RN 0.83 / Expo 55 packed regular, gesture and adoption Android/iOS exports and fonts pass; fresh packed web/boundaries,212 examples,SSR,seven-package staged install, full Chromium/WebKit browser, catalog (104 states), axe and Next pass. Native custom Dialog retains one Modal with host anatomy, Back, reduced motion and dismissal-aware focus. All quality/native/browser/candidate and docs checks passed at 7d104f5 (twelve successes, expected docs deploy skip)."
+          }
+        ],
+        "reportSha256": "d4d20c10175aa7655b263a1d14da908c6d55b045ddf2eb87e33e23febf136d01"
       }
     },
     {

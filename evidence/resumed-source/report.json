@@ -16,5 +16,11 @@
   "nativeSwitchRowGzipBytes": 921,
   "unchangedSwitchCapBytes": 2200,
   "sourceCheckLogSha256": "bc38361df0f522e4eb169b979d32d8893370c78486bf580f66477beefd203b34",
-  "scope": "Integrated feedback adapters and SwitchRow source; owning native/sponsor runtime proofs are separate. No physical or owner certification."
+  "scope": "Integrated feedback adapters and SwitchRow source; owning native/sponsor runtime proofs are separate. No physical or owner certification.",
+  "candidate": "candidate.json",
+  "packedNative": [
+    "candidate-native-rn-0.81.json",
+    "candidate-native-rn-0.83.json"
+  ],
+  "reproducePackedNative": "node evidence/resumed-source/candidate-native-smoke.mjs <rn-0.81|rn-0.83>"
 }
