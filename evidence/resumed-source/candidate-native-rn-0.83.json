@@ -1,0 +1,68 @@
+{
+  "sourceCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
+  "sourceTreeDirty": false,
+  "version": "0.1.0-candidate.shac32d8408",
+  "profile": "rn-0.83",
+  "runtime": {
+    "react": "19.2.0",
+    "renderer": "19.2.0",
+    "reactNative": "0.83.10"
+  },
+  "modules": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/slider": "5.1.2",
+    "expo-asset": "55.0.20",
+    "expo-audio": "55.0.18",
+    "expo-constants": "55.0.17",
+    "expo-font": "55.0.8",
+    "expo-haptics": "55.0.18",
+    "expo-localization": "55.0.19",
+    "expo-modules-core": "55.0.26",
+    "react-native": "0.83.10",
+    "react-native-gesture-handler": "2.30.1",
+    "react-native-worklets": "0.7.4",
+    "react-native-reanimated": "4.2.1",
+    "react-native-safe-area-context": "5.6.2",
+    "react-native-svg": "15.15.3"
+  },
+  "peers": {
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-svg": "15.15.3",
+    "@react-native-community/slider": "5.1.2",
+    "react-native-safe-area-context": "5.6.2",
+    "@gorhom/bottom-sheet": "5.2.14",
+    "react-native-reanimated": "4.2.1",
+    "react-native-worklets": "0.7.4",
+    "react-native-gesture-handler": "2.30.1",
+    "@bloxwap/sfx": "0.1.0",
+    "expo-audio": "55.0.18",
+    "expo-haptics": "55.0.18"
+  },
+  "installedPackages": [
+    "@bloxwap/hig-contracts",
+    "@bloxwap/hig-tokens",
+    "@bloxwap/hig-feedback",
+    "@bloxwap/hig-native",
+    "@bloxwap/hig-native-fonts"
+  ],
+  "exports": [
+    {
+      "file": "dist-switch/_expo/static/js/android/index-12845232afcff27883128efadca15654.hbc",
+      "bytes": 1729675,
+      "sha256": "ec05dcce45514ace8f6debf72dedc375db199c22788a04b1441f0bac049b0953"
+    },
+    {
+      "file": "dist-switch/_expo/static/js/ios/index-c119f95d0aa4233e8c2d088084fcb4b6.hbc",
+      "bytes": 1718392,
+      "sha256": "0024a6e61fd75b69a1c271b080a4c0ff2c257faa7509bb96915fb71be9a349c8"
+    }
+  ],
+  "checks": [
+    "exact five coordinated candidate archive SHA-256 values",
+    "clean install with exact profile React and Expo native modules",
+    "declared peer versions accepted",
+    "public SwitchRow/default Switch/Button/provider imports bundled for Android and iOS"
+  ],
+  "scope": "Clean packed Metro exports; owning native runtime observations are recorded separately; no physical certification"
+}

@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "source": {
+    "baseCommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
+    "workingTreeDirty": true,
+    "note": "Runtime used the built source under review before the coordinated source commit; compare gesture-sheet.js hash with the final clean candidate.",
+    "sha256": {
+      "packages/native/src/gesture-sheet.tsx": "a9ffdf4e4640121cf1250e4844ee9d2162d9af93f81c7f398a36eda881874d60",
+      "packages/native/dist/gesture-sheet.js": "725c96dd60b7967f78671d8d317212c6d4a7aca3dc70086bb71e73e8875baa8c",
+      "packages/native/src/data.tsx": "ed7d1858a7abfc684b60ae2966edf587b49c03438c51f76dbbb4c8b61ca94873",
+      "packages/native/src/status.tsx": "afe83a2b2ecb4dd8ae24136fa000fe758940ec30485cad7939dba23de3a4749b",
+      "fixtures/native/inline-sheet-check.tsx": "066cfb1dac646ecd3caf465e6145f11bce81c615e3fec2c415f86f552bbd1e9b",
+      "scripts/native-sim/ios/UITests/InlineSheetVerificationUITests.swift": "0f7730c34f1a00b19fe6e23fb80d046b679c0f2f89808d1beed44800fd319a78",
+      "scripts/native-sim/inline-sheet-android.py": "6470ddd5632bfff79c66eefb0231189046c6fdde33a98c7d237b9c12e5d9fafe"
+    }
+  },
+  "runtime": {
+    "react-native": "0.83.10",
+    "expo": "55.0.31",
+    "@gorhom/bottom-sheet": "5.2.14",
+    "react-native-reanimated": "4.2.1",
+    "react-native-worklets": "0.7.4",
+    "react-native-gesture-handler": "2.30.1"
+  },
+  "ios": {
+    "device": "iPhone 16 Pro Simulator",
+    "os": "26.5 (23F77)",
+    "udid": "4591E5AB-3241-4203-A0BE-B147D88AB6CA",
+    "passedTests": 2,
+    "failedTests": 0,
+    "bundleSha256": "f245741bb92ca29eaa415bd940fe8adfb6b8eddaf9caf3ad4d2dad68c3275196",
+    "result": "ios/xcresult-summary.json"
+  },
+  "android": {
+    "device": "Medium Phone API 35 Emulator",
+    "serial": "emulator-5554",
+    "viewportPixels": [
+      1260,
+      2736
+    ],
+    "densityDpi": 480,
+    "fontScale": 1.0,
+    "apkSha256": "7f6523eeea49f050892ad1b849eee0469ccad946098937cbae6fab28e315096a",
+    "sourceMapGestureSheetSha256": "725c96dd60b7967f78671d8d317212c6d4a7aca3dc70086bb71e73e8875baa8c",
+    "result": "android/report.json"
+  },
+  "policy": {
+    "reducedMotion": true,
+    "dynamicComposition": "Bounded plain React Native ScrollView with content panning disabled. Mixed header/footer and registered Gorhom scrollables use host-measured fixed sizing instead.",
+    "claimsExcluded": [
+      "physical hardware",
+      "VoiceOver or TalkBack speech",
+      "haptic output",
+      "normal-motion timing",
+      "signed production build"
+    ]
+  },
+  "rawArtifacts": ".validation-tmp/native-inline (ignored; build logs, full xcresult bundles and prepared consumer stay outside selected evidence)"
+}

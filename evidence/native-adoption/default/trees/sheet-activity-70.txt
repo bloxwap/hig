@@ -1,0 +1,114 @@
+Optional(Attributes: Application, 0x10ad0aa80, pid: 83777, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, 0x10ad0aa80, pid: 83777, label: 'Bloxwap HIG Gallery'
+    Window (Main), 0x10ad083c0, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10ad08500, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x10ad08640, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x10ad08780, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x10ad088c0, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x10ad08a00, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x10ad08b40, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10ad08c80, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10ad09e00, {{0.0, 0.0}, {402.0, 874.0}}
+                    Button, 0x10ad09f40, {{16.0, 78.0}, {73.7, 48.0}}, label: 'Type'
+                    Button, 0x10ad0a440, {{97.7, 78.0}, {94.0, 48.0}}, label: 'Notices'
+                    Button, 0x10ad0b200, {{199.7, 78.0}, {81.0, 48.0}}, label: 'Sheet'
+                    StaticText, 0x10ad0b340, {{16.0, 138.0}, {370.0, 20.0}}, identifier: 'adoption-ready', label: 'Adoption sheet · scale 1.00 · locale en-US'
+                      StaticText, 0x10ad0af80, {{16.0, 138.0}, {370.0, 20.0}}, label: 'Adoption sheet · scale 1.00 · locale en-US'
+                    StaticText, 0x10ad0b0c0, {{16.0, 170.0}, {370.0, 20.0}}, identifier: 'adoption-result', label: 'Ready'
+                      StaticText, 0x10ad0a940, {{16.0, 170.0}, {370.0, 20.0}}, label: 'Ready'
+                    Button, 0x10ad0a800, {{16.0, 202.0}, {139.0, 48.0}}, identifier: 'adoption-open-sheet', label: 'Open account'
+                    StaticText, 0x10ad0a580, {{16.0, 262.0}, {370.0, 48.0}}, label: 'Each card owns its header, nested scrolling and close action.'
+                      StaticText, 0x10ad0a6c0, {{16.0, 262.0}, {370.0, 48.0}}, label: 'Each card owns its header, nested scrolling and close action.'
+                  Button, 0x10ad0a300, {{0.0, 0.0}, {402.0, 874.0}}, label: 'Bottom sheet backdrop'
+                  Other, 0x10ad0a080, {{0.0, 62.0}, {402.0, 778.0}}
+                    Other, 0x10ad0a1c0, {{0.0, 295.4}, {402.0, 624.0}}
+                      Other, 0x10ad09cc0, {{0.0, 295.4}, {402.0, 24.0}}
+                        Other, 0x10ad08f00, {{0.0, 295.4}, {402.0, 24.0}}, label: 'Bottom sheet handle'
+                      Other, 0x10ad09a40, {{0.0, 295.4}, {402.0, 624.0}}, label: 'Bottom Sheet'
+                      Other, 0x10ad09b80, {{0.0, 319.4}, {402.0, 600.0}}, label: 'Activity'
+                        StaticText, 0x10ad09900, {{16.0, 319.4}, {370.0, 30.0}}, identifier: 'adoption-card-title', label: 'Activity'
+                          StaticText, 0x10ad09680, {{16.0, 319.4}, {370.0, 30.0}}, label: 'Activity'
+                        Button, 0x10ad097c0, {{16.0, 361.4}, {153.7, 48.0}}, identifier: 'adoption-switch-card', label: 'Back to account'
+                        Button, 0x10ad09400, {{181.7, 361.4}, {77.0, 48.0}}, identifier: 'adoption-close-sheet', label: 'Done'
+                        Other, 0x10ad09540, {{16.0, 421.4}, {370.0, 402.7}}, identifier: 'adoption-card-scroll'
+                          ScrollView, 0x10ad092c0, {{16.0, 421.4}, {370.0, 402.7}}
+                            Other, 0x10ad09180, {{16.0, 421.4}, {370.0, 1152.0}}
+                              Other, 0x10ad09040, {{16.0, 421.4}, {370.0, 1152.0}}
+                                StaticText, 0x10ad08dc0, {{16.0, 421.4}, {370.0, 24.0}}, label: 'Activity row 1'
+                                  StaticText, 0x10ac41cc0, {{16.0, 421.4}, {370.0, 24.0}}, label: 'Activity row 1'
+                                StaticText, 0x10ac40000, {{16.0, 457.4}, {370.0, 24.0}}, label: 'Activity row 2'
+                                  StaticText, 0x10ac40140, {{16.0, 457.4}, {370.0, 24.0}}, label: 'Activity row 2'
+                                StaticText, 0x10ac40280, {{16.0, 493.4}, {370.0, 24.0}}, label: 'Activity row 3'
+                                  StaticText, 0x10ac403c0, {{16.0, 493.4}, {370.0, 24.0}}, label: 'Activity row 3'
+                                StaticText, 0x10ac40500, {{16.0, 529.4}, {370.0, 24.0}}, label: 'Activity row 4'
+                                  StaticText, 0x10ac41540, {{16.0, 529.4}, {370.0, 24.0}}, label: 'Activity row 4'
+                                StaticText, 0x10ac41680, {{16.0, 565.4}, {370.0, 24.0}}, label: 'Activity row 5'
+                                  StaticText, 0x10ac417c0, {{16.0, 565.4}, {370.0, 24.0}}, label: 'Activity row 5'
+                                StaticText, 0x10ac41900, {{16.0, 601.4}, {370.0, 24.0}}, label: 'Activity row 6'
+                                  StaticText, 0x10ac41a40, {{16.0, 601.4}, {370.0, 24.0}}, label: 'Activity row 6'
+                                StaticText, 0x10ac41b80, {{16.0, 637.4}, {370.0, 24.0}}, label: 'Activity row 7'
+                                  StaticText, 0x1169b8000, {{16.0, 637.4}, {370.0, 24.0}}, label: 'Activity row 7'
+                                StaticText, 0x1169b8140, {{16.0, 673.4}, {370.0, 24.0}}, label: 'Activity row 8'
+                                  StaticText, 0x1169b8280, {{16.0, 673.4}, {370.0, 24.0}}, label: 'Activity row 8'
+                                StaticText, 0x1169b83c0, {{16.0, 709.4}, {370.0, 24.0}}, label: 'Activity row 9'
+                                  StaticText, 0x1169b8500, {{16.0, 709.4}, {370.0, 24.0}}, label: 'Activity row 9'
+                                StaticText, 0x1169b8640, {{16.0, 745.4}, {370.0, 24.0}}, label: 'Activity row 10'
+                                  StaticText, 0x1169b8780, {{16.0, 745.4}, {370.0, 24.0}}, label: 'Activity row 10'
+                                StaticText, 0x1169b88c0, {{16.0, 781.4}, {370.0, 24.0}}, label: 'Activity row 11'
+                                  StaticText, 0x1169b8a00, {{16.0, 781.4}, {370.0, 24.0}}, label: 'Activity row 11'
+                                StaticText, 0x1169b8b40, {{16.0, 817.4}, {370.0, 24.0}}, label: 'Activity row 12'
+                                  StaticText, 0x1169b8c80, {{16.0, 817.4}, {370.0, 24.0}}, label: 'Activity row 12'
+                                StaticText, 0x1169b8dc0, {{16.0, 853.4}, {370.0, 24.0}}, label: 'Activity row 13'
+                                  StaticText, 0x1169b8f00, {{16.0, 853.4}, {370.0, 24.0}}, label: 'Activity row 13'
+                                StaticText, 0x1169b9040, {{16.0, 889.4}, {370.0, 24.0}}, label: 'Activity row 14'
+                                  StaticText, 0x1169b9180, {{16.0, 889.4}, {370.0, 24.0}}, label: 'Activity row 14'
+                                StaticText, 0x1169b92c0, {{16.0, 925.4}, {370.0, 24.0}}, label: 'Activity row 15'
+                                  StaticText, 0x1169b9400, {{16.0, 925.4}, {370.0, 24.0}}, label: 'Activity row 15'
+                                StaticText, 0x1169b9540, {{16.0, 961.4}, {370.0, 24.0}}, label: 'Activity row 16'
+                                  StaticText, 0x1169b9680, {{16.0, 961.4}, {370.0, 24.0}}, label: 'Activity row 16'
+                                StaticText, 0x1169b97c0, {{16.0, 997.4}, {370.0, 24.0}}, label: 'Activity row 17'
+                                  StaticText, 0x1169b9900, {{16.0, 997.4}, {370.0, 24.0}}, label: 'Activity row 17'
+                                StaticText, 0x1169b9a40, {{16.0, 1033.4}, {370.0, 24.0}}, label: 'Activity row 18'
+                                  StaticText, 0x1169b9b80, {{16.0, 1033.4}, {370.0, 24.0}}, label: 'Activity row 18'
+                                StaticText, 0x1169b9cc0, {{16.0, 1069.4}, {370.0, 24.0}}, label: 'Activity row 19'
+                                  StaticText, 0x1169b9e00, {{16.0, 1069.4}, {370.0, 24.0}}, label: 'Activity row 19'
+                                StaticText, 0x1169b9f40, {{16.0, 1105.4}, {370.0, 24.0}}, label: 'Activity row 20'
+                                  StaticText, 0x1169ba080, {{16.0, 1105.4}, {370.0, 24.0}}, label: 'Activity row 20'
+                                StaticText, 0x1169ba1c0, {{16.0, 1141.4}, {370.0, 24.0}}, label: 'Activity row 21'
+                                  StaticText, 0x1169ba300, {{16.0, 1141.4}, {370.0, 24.0}}, label: 'Activity row 21'
+                                StaticText, 0x1169ba440, {{16.0, 1177.4}, {370.0, 24.0}}, label: 'Activity row 22'
+                                  StaticText, 0x1169ba580, {{16.0, 1177.4}, {370.0, 24.0}}, label: 'Activity row 22'
+                                StaticText, 0x1169ba6c0, {{16.0, 1213.4}, {370.0, 24.0}}, label: 'Activity row 23'
+                                  StaticText, 0x1169ba800, {{16.0, 1213.4}, {370.0, 24.0}}, label: 'Activity row 23'
+                                StaticText, 0x1169ba940, {{16.0, 1249.4}, {370.0, 24.0}}, label: 'Activity row 24'
+                                  StaticText, 0x1169baa80, {{16.0, 1249.4}, {370.0, 24.0}}, label: 'Activity row 24'
+                                StaticText, 0x1169babc0, {{16.0, 1285.4}, {370.0, 24.0}}, label: 'Activity row 25'
+                                  StaticText, 0x1169bad00, {{16.0, 1285.4}, {370.0, 24.0}}, label: 'Activity row 25'
+                                StaticText, 0x1169bae40, {{16.0, 1321.4}, {370.0, 24.0}}, label: 'Activity row 26'
+                                  StaticText, 0x1169baf80, {{16.0, 1321.4}, {370.0, 24.0}}, label: 'Activity row 26'
+                                StaticText, 0x1169bb0c0, {{16.0, 1357.4}, {370.0, 24.0}}, label: 'Activity row 27'
+                                  StaticText, 0x1169bb200, {{16.0, 1357.4}, {370.0, 24.0}}, label: 'Activity row 27'
+                                StaticText, 0x1169bb340, {{16.0, 1393.4}, {370.0, 24.0}}, label: 'Activity row 28'
+                                  StaticText, 0x1169bb480, {{16.0, 1393.4}, {370.0, 24.0}}, label: 'Activity row 28'
+                                StaticText, 0x1169bb5c0, {{16.0, 1429.4}, {370.0, 24.0}}, label: 'Activity row 29'
+                                  StaticText, 0x1169bb700, {{16.0, 1429.4}, {370.0, 24.0}}, label: 'Activity row 29'
+                                StaticText, 0x1169bb840, {{16.0, 1465.4}, {370.0, 24.0}}, label: 'Activity row 30'
+                                  StaticText, 0x1169bb980, {{16.0, 1465.4}, {370.0, 24.0}}, label: 'Activity row 30'
+                                Button, 0x1169bbac0, {{16.0, 1501.4}, {122.3, 48.0}}, identifier: 'adoption-card-end', label: 'End activity'
+                            Other, 0x1169bbc00, {{353.0, 421.4}, {30.0, 390.2}}, label: 'Vertical scroll bar, 3 pages', value: 0%
+                              Other, 0x1169bbd40, {{380.0, 424.4}, {3.0, 134.3}}
+                            Other, 0x1169bbe80, {{28.5, 791.1}, {345.1, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                              Other, 0x1169bc000, {{31.5, 818.1}, {339.0, 3.0}}
+                            Other, 0x1169bc140, {{353.0, 421.4}, {30.0, 390.2}}, label: 'Vertical scroll bar, 3 pages', value: 0%
+                              Other, 0x1169bc280, {{380.0, 424.4}, {3.0, 134.3}}
+                            Other, 0x1169bc3c0, {{28.5, 791.1}, {345.1, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                              Other, 0x1169bc500, {{31.5, 818.1}, {339.0, 3.0}}
+Path to element:
+ →Application, 0x10ad0aa80, pid: 83777, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, 0x1169bc640, pid: 83777, label: 'Bloxwap HIG Gallery'
+  }
+)

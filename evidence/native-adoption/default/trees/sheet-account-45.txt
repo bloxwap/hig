@@ -1,0 +1,110 @@
+Optional(Attributes: Application, 0x10ac41400, pid: 83777, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, 0x10ac41400, pid: 83777, label: 'Bloxwap HIG Gallery'
+    Window (Main), 0x10ac40640, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10ac40780, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x10ac408c0, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x10ac40a00, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x10ac40b40, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x10ac40c80, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x10ac40dc0, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10ac40f00, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10ac41040, {{0.0, 0.0}, {402.0, 874.0}}
+                    Button, 0x10ac41180, {{16.0, 78.0}, {73.7, 48.0}}, label: 'Type'
+                    Button, 0x10ac412c0, {{97.7, 78.0}, {94.0, 48.0}}, label: 'Notices'
+                    Button, 0x10ac41e00, {{199.7, 78.0}, {81.0, 48.0}}, label: 'Sheet'
+                    StaticText, 0x10ac41f40, {{16.0, 138.0}, {370.0, 20.0}}, identifier: 'adoption-ready', label: 'Adoption sheet · scale 1.00 · locale en-US'
+                      StaticText, 0x10ac42080, {{16.0, 138.0}, {370.0, 20.0}}, label: 'Adoption sheet · scale 1.00 · locale en-US'
+                    StaticText, 0x10ac421c0, {{16.0, 170.0}, {370.0, 20.0}}, identifier: 'adoption-result', label: 'Ready'
+                      StaticText, 0x10ac42300, {{16.0, 170.0}, {370.0, 20.0}}, label: 'Ready'
+                    Button, 0x10ac42440, {{16.0, 202.0}, {139.0, 48.0}}, identifier: 'adoption-open-sheet', label: 'Open account'
+                    StaticText, 0x10ac42580, {{16.0, 262.0}, {370.0, 48.0}}, label: 'Each card owns its header, nested scrolling and close action.'
+                      StaticText, 0x10ac426c0, {{16.0, 262.0}, {370.0, 48.0}}, label: 'Each card owns its header, nested scrolling and close action.'
+                  Button, 0x10ac42800, {{0.0, 0.0}, {402.0, 874.0}}, label: 'Bottom sheet backdrop'
+                  Other, 0x10ac42940, {{0.0, 62.0}, {402.0, 778.0}}
+                    Other, 0x10ac42a80, {{0.0, 489.9}, {402.0, 748.0}}
+                      Other, 0x10ac42bc0, {{0.0, 489.9}, {402.0, 24.0}}
+                        Other, 0x10ac42d00, {{0.0, 489.9}, {402.0, 24.0}}, label: 'Bottom sheet handle'
+                      Other, 0x10ac42e40, {{0.0, 489.9}, {402.0, 748.0}}, label: 'Bottom Sheet'
+                      Other, 0x10ac42f80, {{0.0, 513.9}, {402.0, 724.0}}, label: 'Account'
+                        StaticText, 0x10ac430c0, {{16.0, 513.9}, {370.0, 30.0}}, identifier: 'adoption-card-title', label: 'Account'
+                          StaticText, 0x10ac43200, {{16.0, 513.9}, {370.0, 30.0}}, label: 'Account'
+                        Button, 0x10ac43340, {{16.0, 555.9}, {94.0, 48.0}}, identifier: 'adoption-switch-card', label: 'Activity'
+                        Button, 0x10ac43480, {{122.0, 555.9}, {77.0, 48.0}}, identifier: 'adoption-close-sheet', label: 'Done'
+                        Other, 0x10ac435c0, {{16.0, 615.9}, {370.0, 519.3}}, identifier: 'adoption-card-scroll'
+                          ScrollView, 0x10ac43700, {{16.0, 615.9}, {370.0, 519.3}}
+                            Other, 0x10ac43840, {{16.0, 615.9}, {370.0, 1152.0}}
+                              Other, 0x10ac43980, {{16.0, 615.9}, {370.0, 1152.0}}
+                                StaticText, 0x10ac43ac0, {{16.0, 615.9}, {370.0, 24.0}}, label: 'Account row 1'
+                                  StaticText, 0x10ac43c00, {{16.0, 615.9}, {370.0, 24.0}}, label: 'Account row 1'
+                                StaticText, 0x10ac43d40, {{16.0, 651.9}, {370.0, 24.0}}, label: 'Account row 2'
+                                  StaticText, 0x10ac43e80, {{16.0, 651.9}, {370.0, 24.0}}, label: 'Account row 2'
+                                StaticText, 0x10726af80, {{16.0, 687.9}, {370.0, 24.0}}, label: 'Account row 3'
+                                  StaticText, 0x10726b0c0, {{16.0, 687.9}, {370.0, 24.0}}, label: 'Account row 3'
+                                StaticText, 0x10726b200, {{16.0, 723.9}, {370.0, 24.0}}, label: 'Account row 4'
+                                  StaticText, 0x10726b340, {{16.0, 723.9}, {370.0, 24.0}}, label: 'Account row 4'
+                                StaticText, 0x10726abc0, {{16.0, 759.9}, {370.0, 24.0}}, label: 'Account row 5'
+                                  StaticText, 0x10726ad00, {{16.0, 759.9}, {370.0, 24.0}}, label: 'Account row 5'
+                                StaticText, 0x10726aa80, {{16.0, 795.9}, {370.0, 24.0}}, label: 'Account row 6'
+                                  StaticText, 0x10ac48000, {{16.0, 795.9}, {370.0, 24.0}}, label: 'Account row 6'
+                                StaticText, 0x10ac48140, {{16.0, 831.9}, {370.0, 24.0}}, label: 'Account row 7'
+                                  StaticText, 0x10ac48280, {{16.0, 831.9}, {370.0, 24.0}}, label: 'Account row 7'
+                                StaticText, 0x10ac483c0, {{16.0, 867.9}, {370.0, 24.0}}, label: 'Account row 8'
+                                  StaticText, 0x10ac48500, {{16.0, 867.9}, {370.0, 24.0}}, label: 'Account row 8'
+                                StaticText, 0x10ac48640, {{16.0, 903.9}, {370.0, 24.0}}, label: 'Account row 9'
+                                  StaticText, 0x10ac48780, {{16.0, 903.9}, {370.0, 24.0}}, label: 'Account row 9'
+                                StaticText, 0x10ac488c0, {{16.0, 939.9}, {370.0, 24.0}}, label: 'Account row 10'
+                                  StaticText, 0x10ac48a00, {{16.0, 939.9}, {370.0, 24.0}}, label: 'Account row 10'
+                                StaticText, 0x10ac48b40, {{16.0, 975.9}, {370.0, 24.0}}, label: 'Account row 11'
+                                  StaticText, 0x10ac48c80, {{16.0, 975.9}, {370.0, 24.0}}, label: 'Account row 11'
+                                StaticText, 0x10ac48dc0, {{16.0, 1011.9}, {370.0, 24.0}}, label: 'Account row 12'
+                                  StaticText, 0x10ac48f00, {{16.0, 1011.9}, {370.0, 24.0}}, label: 'Account row 12'
+                                StaticText, 0x10ac49040, {{16.0, 1047.9}, {370.0, 24.0}}, label: 'Account row 13'
+                                  StaticText, 0x10ac49180, {{16.0, 1047.9}, {370.0, 24.0}}, label: 'Account row 13'
+                                StaticText, 0x10ac492c0, {{16.0, 1083.9}, {370.0, 24.0}}, label: 'Account row 14'
+                                  StaticText, 0x10ac49400, {{16.0, 1083.9}, {370.0, 24.0}}, label: 'Account row 14'
+                                StaticText, 0x10ac49540, {{16.0, 1119.9}, {370.0, 24.0}}, label: 'Account row 15'
+                                  StaticText, 0x10ac49680, {{16.0, 1119.9}, {370.0, 24.0}}, label: 'Account row 15'
+                                StaticText, 0x10ac497c0, {{16.0, 1155.9}, {370.0, 24.0}}, label: 'Account row 16'
+                                  StaticText, 0x10ac49900, {{16.0, 1155.9}, {370.0, 24.0}}, label: 'Account row 16'
+                                StaticText, 0x10ac49a40, {{16.0, 1191.9}, {370.0, 24.0}}, label: 'Account row 17'
+                                  StaticText, 0x10ac49b80, {{16.0, 1191.9}, {370.0, 24.0}}, label: 'Account row 17'
+                                StaticText, 0x10ac49cc0, {{16.0, 1227.9}, {370.0, 24.0}}, label: 'Account row 18'
+                                  StaticText, 0x10ac49e00, {{16.0, 1227.9}, {370.0, 24.0}}, label: 'Account row 18'
+                                StaticText, 0x10ac49f40, {{16.0, 1263.9}, {370.0, 24.0}}, label: 'Account row 19'
+                                  StaticText, 0x10ac4a080, {{16.0, 1263.9}, {370.0, 24.0}}, label: 'Account row 19'
+                                StaticText, 0x10ac4a1c0, {{16.0, 1299.9}, {370.0, 24.0}}, label: 'Account row 20'
+                                  StaticText, 0x10ac4a300, {{16.0, 1299.9}, {370.0, 24.0}}, label: 'Account row 20'
+                                StaticText, 0x10ac4a440, {{16.0, 1335.9}, {370.0, 24.0}}, label: 'Account row 21'
+                                  StaticText, 0x10ac4a580, {{16.0, 1335.9}, {370.0, 24.0}}, label: 'Account row 21'
+                                StaticText, 0x10ac4a6c0, {{16.0, 1371.9}, {370.0, 24.0}}, label: 'Account row 22'
+                                  StaticText, 0x10ac4a800, {{16.0, 1371.9}, {370.0, 24.0}}, label: 'Account row 22'
+                                StaticText, 0x10ac4a940, {{16.0, 1407.9}, {370.0, 24.0}}, label: 'Account row 23'
+                                  StaticText, 0x10ac4aa80, {{16.0, 1407.9}, {370.0, 24.0}}, label: 'Account row 23'
+                                StaticText, 0x10ac4abc0, {{16.0, 1443.9}, {370.0, 24.0}}, label: 'Account row 24'
+                                  StaticText, 0x10ac4ad00, {{16.0, 1443.9}, {370.0, 24.0}}, label: 'Account row 24'
+                                StaticText, 0x10ac4ae40, {{16.0, 1479.9}, {370.0, 24.0}}, label: 'Account row 25'
+                                  StaticText, 0x10ac4af80, {{16.0, 1479.9}, {370.0, 24.0}}, label: 'Account row 25'
+                                StaticText, 0x10ac4b0c0, {{16.0, 1515.9}, {370.0, 24.0}}, label: 'Account row 26'
+                                  StaticText, 0x10ac4b200, {{16.0, 1515.9}, {370.0, 24.0}}, label: 'Account row 26'
+                                StaticText, 0x10ac4b340, {{16.0, 1551.9}, {370.0, 24.0}}, label: 'Account row 27'
+                                  StaticText, 0x10ac4b480, {{16.0, 1551.9}, {370.0, 24.0}}, label: 'Account row 27'
+                                StaticText, 0x10ac4b5c0, {{16.0, 1587.9}, {370.0, 24.0}}, label: 'Account row 28'
+                                  StaticText, 0x10ac4b700, {{16.0, 1587.9}, {370.0, 24.0}}, label: 'Account row 28'
+                                StaticText, 0x10ac4b840, {{16.0, 1623.9}, {370.0, 24.0}}, label: 'Account row 29'
+                                  StaticText, 0x10ac4b980, {{16.0, 1623.9}, {370.0, 24.0}}, label: 'Account row 29'
+                                StaticText, 0x10ac4bac0, {{16.0, 1659.9}, {370.0, 24.0}}, label: 'Account row 30'
+                                  StaticText, 0x10ac4bc00, {{16.0, 1659.9}, {370.0, 24.0}}, label: 'Account row 30'
+                                Button, 0x10ac4bd40, {{16.0, 1695.9}, {127.3, 48.0}}, identifier: 'adoption-card-end', label: 'End account'
+                            Other, 0x10ac4be80, {{62.0, 1102.2}, {278.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                              Other, 0x10ad08000, {{65.0, 1129.2}, {272.0, 3.0}}
+                            Other, 0x10ad08140, {{62.0, 1102.2}, {278.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                              Other, 0x10ad08280, {{65.0, 1129.2}, {272.0, 3.0}}
+Path to element:
+ →Application, 0x10ac41400, pid: 83777, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, 0x10ad083c0, pid: 83777, label: 'Bloxwap HIG Gallery'
+  }
+)

@@ -2,7 +2,7 @@
   {
     "id": "task-policy",
     "owner": "HIG maintainers",
-    "reason": "npm credentials and trusted publishing are not configured for the @bloxwap scope on the release machine; automation stays dry-run only (no npm publish, tags or releases). The candidate dry run packs 8 artifacts (including @bloxwap/hig-chart and @bloxwap/hig-og-fonts), stops with an actionable message when the generated fonts are missing (#98), and its committed report is copied from Linux CI (evidence/ci-refresh.json).",
+    "reason": "Read-only 2026-10-18 checks find all eight HIG names unavailable on the public npm registry (E404), local npm auth E401, and no npm-release GitHub environment. A manual guarded workflow and exact-artifact verifier are prepared locally. Trusted-publisher configuration requires npm organization access and is not inferred from public lookups.",
     "status": "blocked",
     "tracking": "https://github.com/bloxwap/hig/issues/56",
     "reviewBy": "2027-01-15"
@@ -10,7 +10,7 @@
   {
     "id": "source-audit",
     "owner": "product monorepo maintainers",
-    "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain.",
+    "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain. Combined draft monorepo#4619 now includes equal-toolchain web/native production measurements against main29812c9, with complete source and asset hashes; these are review evidence, not bundle approval.",
     "status": "partial",
     "tracking": "https://github.com/bloxwap/hig/issues/57",
     "reviewBy": "2027-01-15"
@@ -26,23 +26,23 @@
   {
     "id": "physical-devices",
     "owner": "HIG/native/haptic maintainers",
-    "reason": "iOS Simulator and Android emulator runs are recorded in evidence/native-sim/. Physical iOS/Android, VoiceOver/TalkBack with real input, display colour/font, audible and tactile observations are not available.",
-    "status": "blocked",
+    "reason": "Resolved by dated, owner-approved exception on 2026-10-19 (evidence/physical/owner-attestation-2026-10-19.md, PR #131): the owner attests every #55 checklist item works on physical hardware. This is an owner attestation, not a recorded device observation; automated, browser, iOS Simulator and Android emulator evidence remains separately labeled. Any future contradicting physical run voids the exception for that item and requires a linked failure issue. Upstream physical tactile tracking stays open at bloxwap/haptic#9.",
+    "status": "excepted",
     "tracking": "https://github.com/bloxwap/hig/issues/55",
     "reviewBy": "2027-01-15"
   },
   {
     "id": "owning-migrations",
     "owner": "each adopting repository maintainers",
-    "reason": "Five SDK docs migrations are merged (hyperliquid#180; chart#56, font#11, sfx#52 and haptic#28 on candidate 872906a9), as are agent-cli#48, taptradetv#188 (/sponsors), tapsiren#399, bloxwap.github.io#26/#28 and the product web and native migrations (monorepo#4522, #4523, #4525, #4540). The web pilots' candidate refresh is #109, remaining monorepo surfaces #110, consumer workaround removal after #92-#99 is #115; taptradetv's remaining routes and apps/host (#100) and the tapsiren mark (#101) have dated exceptions.",
+    "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. The first remaining-surface batch is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607–#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. The task user explicitly accepted Combined#4619's verified historical public Git tree hash finding as a false positive; that finding does not block further work. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain. The resumed batch adds optional native SwitchRow anatomy and upstream-compatible feedback adapters in HIG source. Additional controls within the existing sponsor pilot and native ordinary fields/actions/switches are undergoing actual-caller/runtime validation in isolated follow-ups.",
     "status": "partial",
-    "tracking": "https://github.com/bloxwap/hig/issues/36",
+    "tracking": "https://github.com/bloxwap/hig/issues/110",
     "reviewBy": "2027-01-15"
   },
   {
     "id": "upstream-feedback-gaps",
     "owner": "SFX/Haptic maintainers",
-    "reason": "No per-root SFX voice handle/cancellation or imperative iOS async haptic API; explicit adapters/alternatives documented",
+    "reason": "HIG source now adopts merged SFX per-root AbortSignal cancellation and optional canonical Haptic imperative injection (draft #127, all remote checks green), with exact MIT upstream fixtures and actual npm 0.1 compatibility tests. SFX/Haptic registry releases remain 0.1.0, so active voice cancellation and imperative exports require a later upstream release; released 0.1 behavior remains tested. Haptic issue #27 stays open because imperative vibration cannot bypass trusted-native-event iOS requirements. Native preloading/dispatch remains implemented; physical audible/tactile latency is #55.",
     "status": "partial",
     "tracking": "https://github.com/bloxwap/hig/issues/70",
     "reviewBy": "2027-01-15"

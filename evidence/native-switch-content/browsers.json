@@ -1,0 +1,77 @@
+{
+  "renderer": "react-native-web 0.21.4 through the public native package exports; not iOS/Android accessibility certification",
+  "results": [
+    {
+      "engine": "chromium",
+      "version": "141.0.7390.37",
+      "width": 390,
+      "checks": [
+        "one named switch and no nested tab stops",
+        "Space/Enter/pointer each activate once",
+        "held Space ignores repeat",
+        "pending rejects direct click and Space",
+        "busy state preserved",
+        "Tab leaves custom row in one step",
+        "default native input still works",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    },
+    {
+      "engine": "chromium",
+      "version": "141.0.7390.37",
+      "width": 1280,
+      "checks": [
+        "one named switch and no nested tab stops",
+        "Space/Enter/pointer each activate once",
+        "held Space ignores repeat",
+        "pending rejects direct click and Space",
+        "busy state preserved",
+        "Tab leaves custom row in one step",
+        "default native input still works",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "version": "26.0",
+      "width": 390,
+      "checks": [
+        "one named switch and no nested tab stops",
+        "Space/Enter/pointer each activate once",
+        "held Space ignores repeat",
+        "pending rejects direct click and Space",
+        "busy state preserved",
+        "Tab leaves custom row in one step",
+        "default native input still works",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "version": "26.0",
+      "width": 1280,
+      "checks": [
+        "one named switch and no nested tab stops",
+        "Space/Enter/pointer each activate once",
+        "held Space ignores repeat",
+        "pending rejects direct click and Space",
+        "busy state preserved",
+        "Tab leaves custom row in one step",
+        "default native input still works",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    }
+  ]
+}

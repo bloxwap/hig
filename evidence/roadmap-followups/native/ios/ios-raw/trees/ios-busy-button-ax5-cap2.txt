@@ -1,0 +1,96 @@
+Optional(Attributes: Application, 0x10682c8c0, pid: 4748, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, 0x10682c8c0, pid: 4748, label: 'Bloxwap HIG Gallery'
+    Window (Main), 0x10682ca00, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10682df40, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x10682e080, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x10682e1c0, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x10682e300, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x10682e440, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x10682e580, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10682dcc0, {{0.0, 0.0}, {402.0, 874.0}}
+                    Other, 0x10682c140, {{0.0, 62.0}, {402.0, 778.0}}
+                      ScrollView, 0x10682c3c0, {{0.0, 62.0}, {402.0, 778.0}}
+                        Other, 0x10682c500, {{0.0, -1702.0}, {402.0, 6127.0}}
+                          Other, 0x10682c640, {{0.0, -1702.0}, {402.0, 6127.0}}
+                            Other, 0x10682c780, {{24.0, -1678.0}, {32.0, 32.0}}, label: 'Bloxwap'
+                            StaticText, 0x10682db80, {{24.0, -1634.0}, {354.0, 321.7}}, label: 'Native HIG gallery'
+                              StaticText, 0x10682de00, {{24.0, -1634.0}, {354.0, 321.7}}, label: 'Native HIG gallery'
+                            Button, 0x10682cc80, {{24.0, -1300.3}, {354.0, 195.7}}, label: 'Component: Button'
+                            Button, 0x10682cdc0, {{24.0, -1092.7}, {320.3, 72.0}}, label: 'Example state: busy'
+                            StaticText, 0x10682cf00, {{24.0, -1008.7}, {354.0, 343.0}}, label: '0.1.0 · pinned Bloxwap Sans static faces registered'
+                              StaticText, 0x10682d040, {{24.0, -1008.7}, {354.0, 343.0}}, label: '0.1.0 · pinned Bloxwap Sans static faces registered'
+                            StaticText, 0x10682d180, {{24.0, -653.7}, {354.0, 96.0}}, label: 'Runtime: ios 26.5 · RN 0.83.10 · Hermes yes'
+                              StaticText, 0x10682d2c0, {{24.0, -653.7}, {354.0, 96.0}}, label: 'Runtime: ios 26.5 · RN 0.83.10 · Hermes yes'
+                            Other, 0x10682d400, {{24.0, -653.7}, {354.0, 1000.0}}, identifier: 'native-diagnostics'
+                            StaticText, 0x10682d540, {{24.0, -557.7}, {354.0, 144.0}}, label: 'Font scale: 3.57 (PixelRatio 3.57) · window 402x874 @3x'
+                              StaticText, 0x10682d680, {{24.0, -557.7}, {354.0, 144.0}}, label: 'Font scale: 3.57 (PixelRatio 3.57) · window 402x874 @3x'
+                            StaticText, 0x10682d7c0, {{24.0, -413.7}, {354.0, 96.0}}, label: 'OS RTL: false · HIG direction: ltr'
+                              StaticText, 0x10682d900, {{24.0, -413.7}, {354.0, 96.0}}, label: 'OS RTL: false · HIG direction: ltr'
+                            StaticText, 0x10682da40, {{24.0, -317.7}, {354.0, 96.0}}, label: 'OS reduce motion: false · screen reader: false'
+                              StaticText, 0x10682cb40, {{24.0, -317.7}, {354.0, 96.0}}, label: 'OS reduce motion: false · screen reader: false'
+                            StaticText, 0x10682e6c0, {{24.0, -221.7}, {354.0, 144.0}}, label: 'Feedback calls: #1 sound configure called | #2 sound configure resolved'
+                              StaticText, 0x10682e800, {{24.0, -221.7}, {354.0, 144.0}}, label: 'Feedback calls: #1 sound configure called | #2 sound configure resolved'
+                            StaticText, 0x10682e940, {{24.0, -77.7}, {354.0, 144.0}}, label: 'Mixed script: Bloxwap 한국어 中文 العربية Ελληνικά ₿ 0.0001'
+                              StaticText, 0x10682ea80, {{24.0, -77.7}, {354.0, 144.0}}, label: 'Mixed script: Bloxwap 한국어 中文 العربية Ελληνικά ₿ 0.0001'
+                            StaticText, 0x10682ebc0, {{24.0, 66.3}, {354.0, 48.0}}, label: '1,111.11'
+                              StaticText, 0x10682ed00, {{24.0, 66.3}, {354.0, 48.0}}, label: '1,111.11'
+                            StaticText, 0x10682ee40, {{24.0, 114.3}, {354.0, 48.0}}, label: '8,888.88'
+                              StaticText, 0x10682ef80, {{24.0, 114.3}, {354.0, 48.0}}, label: '8,888.88'
+                            Other, 0x10682f0c0, {{24.0, 162.3}, {354.0, 184.0}}
+                            StaticText, 0x10682f200, {{44.0, 182.3}, {314.0, 48.0}}, label: 'Code ligatures'
+                              StaticText, 0x10682f340, {{44.0, 182.3}, {314.0, 48.0}}, label: 'Code ligatures'
+                            StaticText, 0x10682f480, {{44.0, 230.3}, {314.0, 96.0}}, label: 'a >= b && c !== d => 0x10'
+                              StaticText, 0x10682f5c0, {{44.0, 230.3}, {314.0, 96.0}}, label: 'a >= b && c !== d => 0x10'
+                            Button, 0x10682f700, {{24.0, 358.3}, {354.0, 251.7}}, label: 'Review order · Working', value: busy, Disabled
+                            Other, 0x10682f840, {{24.0, 622.0}, {354.0, 1035.0}}
+                            StaticText, 0x10682f980, {{44.0, 642.0}, {314.0, 321.7}}, label: 'Review BTC order'
+                              StaticText, 0x10682fac0, {{44.0, 642.0}, {314.0, 321.7}}, label: 'Review BTC order'
+                            StaticText, 0x10682fc00, {{44.0, 975.7}, {314.0, 171.7}}, label: 'Amount (BTC)'
+                              StaticText, 0x10682fd40, {{44.0, 975.7}, {314.0, 171.7}}, label: 'Amount (BTC)'
+                            Other, 0x10682fe80, {{44.0, 1155.3}, {314.0, 94.3}}
+                              TextField, 0x102e23340, {{45.0, 1156.3}, {312.0, 92.3}}, label: 'Amount (BTC)', value: 0.01
+                            StaticText, 0x102e22bc0, {{44.0, 1257.7}, {314.0, 171.7}}, label: 'Available: 0.25 BTC'
+                              StaticText, 0x102e22d00, {{44.0, 1257.7}, {314.0, 171.7}}, label: 'Available: 0.25 BTC'
+                            Button, 0x102e22a80, {{44.0, 1441.3}, {314.0, 195.7}}, label: 'Review order'
+                            Other, 0x102e22940, {{24.0, 1669.0}, {354.0, 297.7}}
+                            StaticText, 0x102e23480, {{44.0, 1689.0}, {314.0, 171.7}}, label: 'Sample balance'
+                              StaticText, 0x102e235c0, {{44.0, 1689.0}, {314.0, 171.7}}, label: 'Sample balance'
+                            StaticText, 0x102e23700, {{44.0, 1860.7}, {314.0, 86.0}}, label: '$1,250.45'
+                              StaticText, 0x102e23840, {{44.0, 1860.7}, {314.0, 86.0}}, label: '$1,250.45'
+                            Button, 0x102e23980, {{24.0, 1990.7}, {354.0, 195.7}}, label: 'Bitcoin (BTC)'
+                            StaticText, 0x102e23e80, {{24.0, 2198.3}, {274.3, 86.0}}, label: '$67,234.56'
+                              StaticText, 0x102e23c00, {{24.0, 2198.3}, {274.3, 86.0}}, label: '$67,234.56'
+                            StaticText, 0x102e23d40, {{24.0, 2296.3}, {109.0, 86.0}}, label: '2.5%'
+                              StaticText, 0x102e23ac0, {{24.0, 2296.3}, {109.0, 86.0}}, label: '2.5%'
+                            Switch, 0x102e22e40, {{24.0, 2406.3}, {354.0, 86.0}}, label: 'Sound', value: 0
+                            Switch, 0x102e22f80, {{24.0, 2504.3}, {354.0, 86.0}}, label: 'Haptics', value: 0
+                            StaticText, 0x102e230c0, {{24.0, 2602.3}, {354.0, 86.0}}, label: 'Volume: 30'
+                              StaticText, 0x102e23200, {{24.0, 2602.3}, {354.0, 86.0}}, label: 'Volume: 30'
+                            Other, 0x106834000, {{24.0, 2688.3}, {354.0, 48.0}}, label: 'Volume', value: 30%
+                            Switch, 0x106834140, {{24.0, 2748.3}, {354.0, 86.0}}, label: 'Motion', value: 1
+                            Other, 0x106834280, {{24.0, 2846.3}, {354.0, 621.0}}
+                            StaticText, 0x1068343c0, {{48.0, 2867.3}, {309.0, 321.7}}, label: 'Sample outcome'
+                              StaticText, 0x106834500, {{48.0, 2867.3}, {309.0, 321.7}}, label: 'Sample outcome'
+                            StaticText, 0x106834640, {{48.0, 3189.0}, {309.0, 257.3}}, label: 'Demo only; no trade is submitted.'
+                              StaticText, 0x106834780, {{48.0, 3189.0}, {309.0, 257.3}}, label: 'Demo only; no trade is submitted.'
+                            Other, 0x1068348c0, {{24.0, 3479.3}, {354.0, 921.7}}
+                            StaticText, 0x106834a00, {{44.0, 3499.3}, {314.0, 514.3}}, label: 'npm install ./bloxwap-hig-native-0.1.0.tgz'
+                              StaticText, 0x106834b40, {{44.0, 3499.3}, {314.0, 514.3}}, label: 'npm install ./bloxwap-hig-native-0.1.0.tgz'
+                            Button, 0x106834c80, {{44.0, 4013.7}, {314.0, 281.3}}, label: 'Copy install command'
+                        Other, 0x106834dc0, {{369.0, 62.0}, {30.0, 750.0}}, label: 'Vertical scroll bar, 8 pages', value: 33%
+                          Other, 0x106834f00, {{396.0, 279.3}, {3.0, 94.3}}
+                        Other, 0x106835040, {{28.0, 807.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x106835180, {{31.0, 834.0}, {340.0, 3.0}}
+                        Other, 0x1068352c0, {{369.0, 62.0}, {30.0, 750.0}}, label: 'Vertical scroll bar, 8 pages', value: 33%
+                          Other, 0x106835400, {{396.0, 279.3}, {3.0, 94.3}}
+                        Other, 0x106835540, {{28.0, 807.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x106835680, {{31.0, 834.0}, {340.0, 3.0}}
+Path to element:
+ →Application, 0x10682c8c0, pid: 4748, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, 0x1068357c0, pid: 4748, label: 'Bloxwap HIG Gallery'
+  }
+)

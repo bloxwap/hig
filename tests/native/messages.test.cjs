@@ -22,26 +22,26 @@ const buttonText=node=>node.findAllByType(RNText).map(n=>[].concat(n.props.child
 
 it('native defaults stay English without a provider',()=>{
  const tree=mount(h(View,null,h(Dialog,{open:true,onOpenChange:()=>{},title:'Review',description:'Verify amount'},null),h(Toast,{notices:[{id:'1',message:'Copied',severity:'success'}],onDismiss:()=>{}}),h(Button,{busy:true},'Confirm')));
- expect(texts(tree)).toEqual(expect.arrayContaining(['Close','Dismiss',' · Working']));
+ expect(texts(tree)).toEqual(expect.arrayContaining(['Close','Dismiss','· Working']));
  expect(pressables(tree).some(p=>p.props.accessibilityLabel==='Dismiss Copied')).toBe(true);
 });
 it('native provider messages translate Close, Dismiss and busy; visible text and labels agree',()=>{
  const dismissed=jest.fn();
  const tree=mount(h(HIGProvider,{locale:'fr-FR',messages:fr},h(Dialog,{open:true,onOpenChange:()=>{},title:'Vérifier',description:'Montant'},null),h(Toast,{notices:[{id:'1',message:'Copié',severity:'success'}],onDismiss:dismissed}),h(Button,{busy:true},'Confirmer')));
  const all=texts(tree);
- expect(all).toEqual(expect.arrayContaining(['Fermer','Ignorer',' · En cours']));
+ expect(all).toEqual(expect.arrayContaining(['Fermer','Ignorer','· En cours']));
  expect(all.join('|')).not.toMatch(/Close|Dismiss|Working/);
  const close=pressables(tree).find(p=>buttonText(p)==='Fermer');expect(close).toBeTruthy();expect(close.props.accessibilityLabel).toBeUndefined();
  const dismiss=pressables(tree).find(p=>p.props.accessibilityLabel==='Ignorer : Copié');
  expect(buttonText(dismiss)).toBe('Ignorer');expect(dismiss.props.accessibilityLabel).toContain(buttonText(dismiss));
  act(()=>dismiss.props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(dismissed).toHaveBeenCalledWith('1');
- const busy=pressables(tree).find(p=>buttonText(p)==='Confirmer · En cours');expect(busy.props.accessibilityState).toEqual({disabled:true,busy:true});
+ const busy=pressables(tree).find(p=>buttonText(p)==='Confirmer· En cours');expect(busy.props.accessibilityState).toEqual({disabled:true,busy:true});
 });
 it('native RTL roots render translated labels with RTL writing direction',()=>{
  const tree=mount(h(HIGProvider,{locale:'ar-EG',direction:'rtl',messages:ar},h(Dialog,{open:true,onOpenChange:()=>{},title:'مراجعة',description:'تحقق من المبلغ'},h(Button,{busy:true},'تأكيد')),h(Toast,{notices:[{id:'1',message:'تم النسخ',severity:'success'}],onDismiss:()=>{}}),h(Pagination,{page:2,total:10,onPageChange:()=>{}})));
  const close=pressables(tree).find(p=>buttonText(p)==='إغلاق');expect(close).toBeTruthy();
  const label=close.findAllByType(RNText)[0];expect([].concat(label.props.style).find(s=>s&&s.writingDirection).writingDirection).toBe('rtl');
- expect(pressables(tree).find(p=>buttonText(p)==='تأكيد · جارٍ التنفيذ').props.accessibilityState.busy).toBe(true);
+ expect(pressables(tree).find(p=>buttonText(p)==='تأكيد· جارٍ التنفيذ').props.accessibilityState.busy).toBe(true);
  const dismiss=pressables(tree).find(p=>p.props.accessibilityLabel==='تجاهل تم النسخ');expect(buttonText(dismiss)).toBe('تجاهل');
  expect(texts(tree)).toEqual(expect.arrayContaining(['الصفحة ٢ من ١٠','السابق','التالي']));
 });

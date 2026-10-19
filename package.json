@@ -48,14 +48,17 @@
     "smoke:packed-fumadocs": "node scripts/packed-fumadocs-smoke.mjs",
     "smoke:release-artifact": "node scripts/release-artifact-smoke.mjs",
     "generate:fonts": "python3 scripts/generate-native-fonts.py",
-    "generate:glossary": "node scripts/generate-glossary.mjs"
+    "generate:glossary": "node scripts/generate-glossary.mjs",
+    "smoke:packed-og-fonts": "npm run smoke:packed-og",
+    "release:verify": "node scripts/verify-release.mjs",
+    "smoke:registry": "node scripts/registry-smoke.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@bloxwap/chart": "0.3.0",
     "@bloxwap/font": "0.1.2",
-    "@bloxwap/haptic": "^0.1.0",
-    "@bloxwap/sfx": "^0.1.0",
+    "@bloxwap/haptic": "^0.2.0",
+    "@bloxwap/sfx": "^0.2.0",
     "@eslint/js": "9.39.1",
     "@gorhom/bottom-sheet": "5.2.14",
     "@playwright/test": "^1.56.1",
@@ -90,6 +93,7 @@
     "turbo": "2.11.8",
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.1",
+    "vaul": "1.1.2",
     "vite": "6.4.1",
     "vitest": "3.2.4"
   }

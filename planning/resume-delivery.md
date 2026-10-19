@@ -1,14 +1,11 @@
-# Resume remote delivery
+# Current delivery state · 2026-10-18
 
-All five local branches form one stack. The environment token rejects repository Contents writes with HTTP 403; `gh pr list` is empty and the remote has only main. No PR URL exists. Use a credential with Contents, Pull requests and Workflows write access for this repository, then deliver the already committed stack. Do not merge, publish, tag or create a release.
+Work continues on `hig/roadmap-followups`, integrating current upstream `main` (`02b9053`) and the native adoption fixes. Previous local work is preserved by checkpoint `c05ef35`. The original milestone branch stack and Contents-403 blocker are historical.
 
-```sh
-git push origin hig/m1-foundations hig/m2-components hig/m3-feedback hig/m4-docs hig/m5-release-adoption
-gh pr create -R bloxwap/hig --base main --head hig/m1-foundations --title 'M1: HIG foundations, architecture and platform fixtures' --body-file planning/prs/m1.md
-gh pr create -R bloxwap/hig --base hig/m1-foundations --head hig/m2-components --title 'M2: separate React and React Native components and recipes' --body-file planning/prs/m2.md
-gh pr create -R bloxwap/hig --base hig/m2-components --head hig/m3-feedback --title 'M3: semantic feedback, optional sound and haptic adapters' --body-file planning/prs/m3.md
-gh pr create -R bloxwap/hig --base hig/m3-feedback --head hig/m4-docs --title 'M4: HIG playground, versioned docs and example catalog' --body-file planning/prs/m4.md
-gh pr create -R bloxwap/hig --base hig/m4-docs --head hig/m5-release-adoption --title 'M5: quality gates, dry-run artifacts and migration kits' --body-file planning/prs/m5.md
-```
+[roadmap-followups.md](roadmap-followups.md) records current software and outstanding acceptance. Read-only GitHub/npm/device observations are under `evidence/remaining-issues/`. Native simulator observations have separate scope from physical-device certification.
 
-Record actual PR URLs in `planning/issue-coverage.json`/`.md` and each adoption row only after creation succeeds. All source/device/owning-repository limitations remain even when delivery becomes available. Reviewers can use per-milestone evidence and five saved PR body files locally now.
+Canonical software is in [HIG draft #126](https://github.com/bloxwap/hig/pull/126); latest clean source `c32d8408` is packed as `0.1.0-candidate.shac32d8408`; the original `0e239442` archives and their recorded consumer proofs remain preserved. The combined owning rollout is [monorepo draft #4619](https://github.com/bloxwap/monorepo/pull/4619) in isolated worktree `/Users/joeblau/Developer/bloxwap/.worktrees/hig-110-rollout`, branch `hig/issue-110-rollout`. WebKit draft #4607 passes three consecutive latest-head CI attempts; native Dialog draft #4618 is fully green. The original monorepo checkout's uncommitted work remains preserved. Hyperliquid's Callout/OG-font refresh is draft#183; Pages checker draft#31 is green; Font canonical ownership is green draft#15. Hyperliquid#183 also passes all final-head checks. The task user accepted Combined#4619's exact historical public Git tree hash finding as a false positive and instructed continuing; it is not a work blocker. The feedback source follow-up is green draft #127; optional native SwitchRow anatomy passes full source and browser gates without increasing the Switch budget. These source changes are integrated on the canonical feature branch with the fresh clean c32d8408 candidate. Additional sponsor controls and native fields/actions/switches are undergoing owning runtime checks in isolated follow-ups.
+
+No publication, version tag, production deployment or owner approval has occurred. Report actual PR URLs only after a PR exists. Preserve the complete remaining scope when continuing.
+
+The further ordinary-control audit found native action and selector gaps. Direct custom Button content and host-delegating native Link now pass source/browser gates; a new clean candidate is being packed for isolated profile/navigation and wallet/trade action follow-ups. TapTrade sponsor controls are draft#220; StreamViewer focus/timer fix is fully green draft#219. Current native target/hint proof additionally corrects large-text action reachability; its draft remains in preparation.

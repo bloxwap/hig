@@ -1,0 +1,1 @@
+Visual pixel regression: 4.44% exceeds 2%

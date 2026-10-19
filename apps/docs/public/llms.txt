@@ -51,7 +51,7 @@ Source: docs/architecture/platform-matrix.md
 | Native colour roles | CSS severity/data attributes | `Switch` `tone`, `Alert` `severity`/`tone` take token roles only; raw colours fall back. The Android Switch thumb uses the `text` token instead of the app theme accent | native Jest (#67); iOS Simulator and Android emulator captures (`evidence/native-sim/issue-67-71/`) |
 | Native colour space | CSS sRGB with P3 in `@supports` | `HIGProvider colorSpace` `srgb` (default) or `display-p3`; every component paints from `useColors()`; iOS `display-p3` uses `nativeColors.iosDisplayP3`, Android and web stay sRGB; no raw colours | native Jest (#93: P3 values for action/warning/negative/info, direct-import guard); iOS Simulator capture as a Display P3 host (`evidence/native-sim/issue-93/`); physical display pending (#55) |
 | Selection/range | Built-in input/select | OS Switch/community Slider, radio/check Pressables, Modal chooser; Android Slider adds `ACTION_SET_PROGRESS` through the autolinked `HIGAdjustableView` (plain View without native linking) | contract tests; Android emulator UiAutomation (#71): set-progress listed, 80 applied once, snapped/clamped, absent and rejected while disabled; iOS Simulator increment/decrement unchanged (`evidence/native-sim/issue-67-71/`) |
-| Dialog/sheet/menu | Radix scoped primitives | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
+| Dialog/sheet/menu | Radix scoped primitives; optional Vaul GestureSheet entry | Modal and explicit close/back; optional Gorhom GestureSheet entry | DOM nested focus/Escape plus real Chromium/WebKit sheet drag, scroll and snap checks; mocked native focus/back/detents plus separate packed Android/iOS gesture entry |
 | Tooltip/popover | Radix hover/focus/anchored | persistent HelpText/modal | no RN hover claim |
 | Navigation/search | href/callback adapters | host route/back callbacks | tab/search/disclosure contracts |
 | Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
@@ -62,7 +62,7 @@ Source: docs/architecture/platform-matrix.md
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the optional gesture-sheet entry; base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Vaul is isolated behind the web gesture-sheet entry; Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the native gesture-sheet entry. Base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 
 ## CI runners · HIG 0.1.0
@@ -158,6 +158,10 @@ RN external Link uses Linking; routes belong to host. Native fontFamily only aft
 ## Validation and citation
 
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+Native `Button contentMode="custom"` renders host Text/View children directly, preserving layouts with separate identity and trailing nodes. The root retains minimum target, disabled/busy, propagation, ref and accepted-feedback behavior. Hosts own visible busy content in this mode; `busyLabel` still controls the accessible busy suffix. Keep child content noninteractive and give icon-only actions an accessible label.
+
+Native `Link` accepts a forwarded View ref, root Pressable props and `contentMode="custom"` for host label/icon nodes. Required `href` retains its destination. Without `onPress`, it opens through Linking and reports failures to `onError`; a supplied `onPress` replaces that navigation so host WebBrowser/route handlers run exactly once. Disabled links reject activation. The root always has link semantics.
 
 
 ## Charts · HIG 0.1.0
@@ -271,9 +275,31 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig-react/data`
 | --- | --- |
 | Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
-| `Table` | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. |
+| `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
 
 Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
+
+Native readouts, including `Usd`, `Percent`, and `AnimatedNumberReadout`, accept `tone="text" | "positive" | "negative" | "muted"`, `testID`, and a constrained typography `style`. The style accepts `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, and `textAlign`, including registered styles and arrays. The tone resolves through the provider palette; it is explicit rather than inferred from the sign. Colour and tabular numeric glyphs stay controlled by the readout. Font scale follows HIG Text and the provider; `maxFontSizeMultiplier` can override its cap.
+
+For a branded 20 px equity pill, use `<NumberReadout value={equity} label="Equity" testID="equity" style={{fontFamily:'BloxwapMonoSemiBold',fontSize:20,lineHeight:28}} />` with a registered host font. For signed PnL, add `tone={pnl < 0 ? 'negative' : 'positive'}` and `options={{signDisplay:'always'}}`. The same props on `AnimatedNumberReadout` style and identify the final text reading; opacity motion stays on its wrapper.
+
+Native readouts also accept `formattedValue` for a host's existing static display format, such as `<NumberReadout value={90} formattedValue="01:30" label="Time remaining" />`. The host owns this opaque display text and its localization; never parse it for submission or calculations. A finite numeric `value` is still required: `null`, `undefined`, `NaN`, and infinities display the canonical unknown dash even if text is supplied. An empty string falls back to the usual locale and `options` formatting. Stale text, the accessible label, semantic tone, and tabular typography still apply to the resulting reading. Existing moving digit reels need an explicit motion decision before switching to a static readout.
+
+Web tables keep a visible caption and ordinary headers by default. Set `captionHidden` when a visible section already names the table: the caption remains its accessible name. `stickyHeader` pins header cells within a bounded scroll region; give the region a height through `style` or `className`. `tableClassName` styles the table itself. Sorting still belongs to the host, and sort buttons retain native keyboard activation and `aria-sort`.
+
+```tsx
+<Table caption='Positions' captionHidden stickyHeader style={{maxHeight:320}}
+  rows={positions} keyFor={row=>row.id}
+  rowProps={row=>({className:row.current?'current-market':undefined,'aria-current':row.current?'true':undefined})}
+  columns={[
+    {key:'market',label:'Market',render:row=>row.symbol},
+    {key:'balance',label:'Balance',align:'end',render:row=><NumberReadout value={row.balance}/>},
+  ]}
+  loading={refreshing}
+  state={error?<div role='alert'>{error}<button type='button' onClick={retry}>Retry</button></div>:undefined}/>
+```
+
+The `state` slot is content for one cell spanning all columns; it can contain an empty explanation, loading skeleton, or error and retry UI. Pass content rather than `tr`/`td` elements. Existing data rows remain visible. Without a custom state, `loading` exposes the provider's `loading` message and `aria-busy`; an empty, idle table shows `noRows`. `state={null}` suppresses that fallback. Give custom errors an alert role and custom loading content a status role when an announcement is appropriate. `rowProps` cannot replace the row's native role or HIG's cells with `children`/HTML. Row callbacks do not add a selection keyboard model; use native controls inside cells for actions.
 
 ## When to use and examples
 
@@ -291,7 +317,7 @@ Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden pa
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/pro-data.dom.test.tsx`, `tests/pro-data-typecheck.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 ## Optional number motion
 
@@ -352,10 +378,125 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig-react/ov
 | Component | Key props and behavior |
 | --- | --- |
 | `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](../foundations/localization.md#built-in-component-strings). |
+| Web host composition | `title` remains required; `titleHidden` keeps its accessible name when the host renders a visible heading in the card. `description` is optional; `descriptionHidden` keeps supplied supporting text available to assistive technology. `contentRef` reaches the actual modal element. `contentProps` accepts layout classes/styles, DOM attributes and Radix focus/Escape/outside events; HIG retains ownership of the dialog id, role, naming associations, locale, direction, children and mounting behavior. Owned props and `dangerouslySetInnerHTML` are filtered at runtime for JavaScript callers too; the caller's object is left unchanged. |
+| Web close control | Omit `closeButton` for the current translated action, pass a ref-capable button element for a custom control, or pass `null` when the host supplies its own explicit dismissal action. Custom controls are composed with Radix Close; disabled buttons and `event.preventDefault()` retain their normal behavior. `closeLabel`/`cancelLabel` label only the default action. |
+| Optional web `GestureSheet` | A separate Vaul modal root owns real drag, snap points, scroll handoff and focus scope. The Dialog title/description, trigger, close control and `contentRef` contracts apply. `backendProps` retains typed Vaul flags and snap-point options; `contentProps` retains host layout, DOM data attributes, focus/Escape/outside events and pointer capture events. `handleProps`/`handleRef` customize the actual backend handle; `handle={false}` omits it. `overlayProps` observes outside-pointer actions or retains host overlay styling. |
 | Native focus targets | `initialFocusRef` and `returnFocusRef` accept live focus targets. Initial focus defaults to the title; the host supplies the trigger ref (Menu and Select pass their own trigger). |
 | `Menu` | `label` and items with `label`, optional `disabled`, and `onSelect`. |
+| Optional native `GestureSheet` | `contentMode='default'` scrolls the title, optional description, children and Close action. `contentMode='custom'` provides an unpadded, full-height content container; the host owns its header, back/close actions, safe-area content padding and scrolling. `title` remains required as the accessible name. Pass `titleRef` attached to the caller's accessible heading to focus it on open; without it, the sheet focuses its visually hidden title. |
 
-Native return focus is scheduled after the static Modal closes and canceled on reopen or unmount.
+Native `Dialog` and its aliases support `contentMode='custom'`: host content/actions, required `title`, one HIG Modal owning Back, accessibility escape and focus. `titleRef` targets the host heading (otherwise hidden); `initialFocusRef` overrides it, `returnFocusRef` targets the trigger. Rejected close retains focus.
+
+`stageComponent` accepts `GestureHandlerRootView`; `stageStyle`/`stageTestID` configure it. `backdrop` supplies the scrim/action; `contentStyle`/`testID` configure the surface. Preserve accessible descendants and close policy; never nest Modals.
+
+`animationType` defaults to `none`; reduced motion forces `none`. Animated iOS focus return waits for [iOS-only `onDismiss`](https://reactnative.dev/docs/modal#ondismiss); Android restores next frame. Keep mounted with `open={false}` through dismissal. Reopen/unmount cancels restoration.
+
+A web card can keep its own visible heading and close geometry without replacing the modal's focus scope:
+
+```tsx
+<Dialog
+  open={open}
+  onOpenChange={(next) => {
+    if (!next && pending) return;
+    setOpen(next);
+  }}
+  title={t('reviewTitle')}
+  titleHidden
+  description={t('reviewDescription')}
+  descriptionHidden
+  contentRef={panelRef}
+  contentProps={{ className: 'host-review-card', style: { maxWidth: 420 } }}
+  closeButton={<button type='button' disabled={pending} aria-label={t('close')}>×</button>}
+>
+  <h2>{t('reviewTitle')}</h2>
+  {reviewContent}
+</Dialog>
+```
+
+Here `t`, `panelRef`, the card content and pending state belong to the host. The visible heading remains a real heading; the hidden Radix title supplies the modal's accessible name. An omitted description removes its ARIA association instead of referencing a missing element. `contentProps.onOpenAutoFocus` and `onCloseAutoFocus` can prevent the default focus choice; the host then supplies the intended focus target. Other content events retain Radix cancellation semantics. Controlled `onOpenChange` can reject a pending wallet close without unmounting the dialog or moving focus back to the trigger. `AlertDialog` continues to prevent outside-pointer dismissal even when a host observes that event.
+
+These web composition props apply to `Dialog`, `AlertDialog` and the static `Sheet` alias. They do not add drag gestures, detents or product keyboard heuristics to the static sheet.
+
+For a native card stack, import `GestureSheet` from `@bloxwap/hig-native/gesture-sheet` and render the caller's cards directly:
+
+```tsx
+const titleRef = useRef<Text>(null);
+
+<GestureSheet
+  open={open}
+  onOpenChange={setOpen}
+  title={card.title}
+  titleRef={titleRef}
+  contentMode='custom'
+  snapPoints={card.snapPoints}
+  returnFocusRef={triggerRef}
+>
+  <View style={{ flex: 1 }}>
+    <Heading ref={titleRef}>{card.title}</Heading>
+    {card.content}
+    <Button onPress={() => setOpen(false)}>Done</Button>
+  </View>
+</GestureSheet>
+```
+
+Here `Text` and `View` are React Native types/components, and the host supplies the card state and its own accessible back/close labels. Custom content can use its own Gorhom scrollable or list without an outer scroll view. `snapPoints` may change while open: the current detent index is retained, or clamped to the highest remaining index if its detent was removed. Detent changes keep the sheet mounted and do not repeat open focus. Keep at least one sorted snap point; `initialIndex` applies to the next presentation. Focus return, Android Back, reduced-motion and dismissible backdrop behavior apply in both content modes.
+
+For content-sized native cards, set `enableDynamicSizing` and omit `snapPoints`. This chooses one backend-measured detent rather than adding a competing fixed point. In custom mode HIG uses Gorhom's `BottomSheetView` to report intrinsic layout; it keeps a plain full-height `View` in fixed mode so nested scrollable registration stays with the caller. Choose the sizing mode for the presentation and avoid `flex: 1` or a full-height constraint on content that should determine its own height. Bound a long card's own scroll view. Default anatomy continues to use the backend scroll view. Mixed headers/footers and nested registered Gorhom scrollables compete for the backend's content-height measurement: their scroll content can replace the whole card height. Use host-measured fixed snap points for that composition. A content-sized card can instead bound a plain React Native `ScrollView` and set `enableContentPanningGesture={false}`, retaining the handle gesture and its own scroll gesture. This follows [Gorhom dynamic sizing](https://gorhom.dev/react-native-bottom-sheet/dynamic-sizing).
+
+```tsx
+<GestureSheet
+  open={open}
+  onOpenChange={setOpen}
+  title='Size and leverage'
+  contentMode='custom'
+  enableDynamicSizing
+  maxDynamicContentSize={availableHeight}
+>
+  <View>{contentSizedCard}</View>
+</GestureSheet>
+```
+
+`maxDynamicContentSize` is an optional finite positive ceiling in native points; the backend container height is the default. The dynamic detent uses index `0`. Changing content or the ceiling keeps the presentation and card state; height updates do not repeat open focus. A fixed sheet still requires a nonempty `snapPoints` list. `enableContentPanningGesture` passes through to the backend, allowing hosts with an independently scrolling list to disable content panning without changing their close/Back actions.
+
+Host card stacks may also supply `onDismiss` to clear retained card state only after an accepted close settles. Rejected closes and interrupted reopenings do not call it. `onHardwareBackPress` can consume Android Back (`true`) or defer to the host's nested-card dispatcher (`false`); omitting it keeps the default dismissal behavior.
+
+`topInset` and `bottomInset` default to safe-area values; use `0` for an intentional flush edge. `handleComponent` (including `null` for an overlay handle), `handleStyle`, `handleIndicatorStyle`, `backgroundComponent` and `backgroundStyle` retain host geometry and decoration. The backend measures the rendered handle. Use `useColors()` in custom backgrounds. `modalRef` exposes the optional backend's imperative motion methods; hosts must keep controlled `open` in sync with `present()`/`dismiss()`. Focus return and settled `onDismiss` remain controlled by the HIG wrapper. `animateOnMount`, `animationConfigs` and `backdropComponent` retain host entry motion and backdrop styling; the reduced-motion mapping still applies. A custom backdrop must honor the host dismissal policy.
+
+Keyboard policies are typed backend options: `keyboardBehavior`, `keyboardBlurBehavior` and `android_keyboardInputMode`. Defaults remain HIG's `interactive`, `restore` and `adjustResize`. A host retaining an existing Gorhom policy can explicitly pass `none` for blur and `adjustPan` on Android. See [Gorhom keyboard handling](https://gorhom.dev/react-native-bottom-sheet/keyboard-handling).
+
+For a screen-level drawer that must prepare and retain its native children while closed, choose `presentation='inline'`. HIG uses the public persistent `BottomSheet` backend; the default remains `presentation='modal'` with `BottomSheetModal`. Inline content stays mounted at index `-1`, hidden from accessibility and touch, and registers no Back listener while closed. Opening and reopening keep child/controller/list state. Rejected closes restore the last open detent; accepted closes return focus and call `onDismiss` once after settling. Use `sheetRef` for the inline backend's actual `expand`, `close` and `snapToIndex` methods; `modalRef` is only available in modal mode and exposes `present`/`dismiss`. Imperative calls must keep controlled `open` in sync. `onChange` observes backend index/position/type after HIG updates its index, focus and close request; it cannot replace those handlers. This lets a host change its animation policy after the opening detent settles. `containerStyle` retains sibling overlay order. Hosts own screen-level backdrop/container layering for inline presentation. No modal portal provider is required for inline sheets.
+
+## Optional web gesture backend
+
+Install `vaul ^1.1.2` and import `GestureSheet` from `@bloxwap/hig-react/gesture-sheet`. Core `overlay`, Button and overlay-free recipes do not import or install Vaul. The backend supplies its own motion CSS when loaded; HIG's explicitly imported component CSS supplies scoped surface, text, geometry and reduced-motion rules. See the official [Vaul anatomy and API](https://vaul.emilkowal.ski/api) and the verified [1.1.2 source](https://github.com/emilkowalski/vaul/blob/v1.1.2/src/index.tsx).
+
+```tsx
+import {GestureSheet} from '@bloxwap/hig-react/gesture-sheet';
+
+<GestureSheet
+  open={open}
+  onOpenChange={(next) => { if (next || !pending) setOpen(next); }}
+  title={t('markets')}
+  titleHidden
+  contentMode='custom'
+  contentRef={panelRef}
+  contentProps={{ className: 'host-market-card', style: { bottom: viewportBottom, maxHeight: availableHeight } }}
+  backendProps={{ handleOnly: false, repositionInputs: false, shouldScaleBackground: true, dismissible: !pending }}
+  handleProps={{ style: { width: 100 }, preventCycle: true }}
+  closeButton={null}
+>
+  <h2>{t('markets')}</h2>
+  {hostHeaderAndScrollableContent}
+</GestureSheet>
+```
+
+`contentMode='default'` provides padded, scrolling anatomy. `custom` leaves padding and scrolling with the host. The required accessible title remains available when hidden; render a real visible heading when the host card needs one. `closeButton={null}` means the host must retain an explicit accessible close/Back action. `handleOnly=true` requires the actual handle for dragging. Handle styles, classes and capture events are customizable; HIG filters replacements for the backend's handle pointer/click handlers, hidden state and reserved `data-vaul-*` attributes. Frozen caller prop objects remain unchanged.
+
+Backend defaults remain Vaul's: `handleOnly=false`, `repositionInputs=true`, `shouldScaleBackground=false`, `dismissible=true` and `autoFocus=false`. Retain existing host flags explicitly. With `autoFocus=false`, hosts may use `contentProps.onOpenAutoFocus` to focus their heading/search control without requesting a software keyboard automatically. `shouldScaleBackground=true` requires the host's `[data-vaul-drawer-wrapper]` around the page. Physical `backendProps.direction` is independent of the provider's text direction. Snap points retain Vaul's viewport geometry; a full-height snapping panel should supply its own full-height layout. The modal root stays controlled and modal; there is no second nested HIG Dialog root.
+
+The host can reject `onOpenChange(false)` while pending; HIG restores Vaul's last resting motion styles after a rejected drag without remounting card state. Use `dismissible=false` as well when pending should prevent dismissal attempts altogether. Backend `onAnimationEnd` is observed only when its reported state still matches controlled `open`, so rejected closes and stale opposite-state callbacks cannot clear retained card state. Programmatic state changes keep the backend's callback behavior. Reduced motion removes the sheet/overlay animation and transition; drag and snap selection still work. Viewport measurements, editable-input blur policy, animated content-height utilities, safe-area padding and product-specific keyboard accessory reserves stay in the host.
+
+`scripts/gesture-sheet-browser-smoke.mjs` exercises the real Vaul backend in Chromium and WebKit: drag/scroll handoff, handle-only drag, controlled veto with retained input identity, nondismissible state, snap expansion, focus trap/Escape/return, viewport resizing, host styles/refs and reduced motion. Evidence in `evidence/web-gesture-sheet/` records the exact source baseline and dirty state. Desktop viewport resizing does not certify physical mobile software-keyboard behavior; that remains a host/device observation.
 
 ## When to use and examples
 
@@ -395,6 +536,23 @@ All data and actions are supplied by the host application.
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
 | `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. |
+| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
+
+Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
+
+```tsx
+<CommandItem onSelect={()=>openMarket(market.symbol)}>
+  <MarketRow mode='presentation' symbol={market.symbol} name={market.name}
+    price={market.price} priceOptions={{style:'decimal',maximumFractionDigits:8}}
+    change={market.change} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2}}
+    identity={<><strong>{market.symbol}</strong> {market.name}</>} icon={<MarketIcon symbol={market.symbol}/>}
+    favorite={<FavoriteIndicator selected={market.favorite}/>}
+    volume={<NumberReadout value={market.volume} options={{notation:'compact'}}/>}
+    style={{gridTemplateColumns:'minmax(0,1fr) 12ch 8ch 10ch'}}/>
+</CommandItem>
+```
+
+Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
 
 ## When to use and examples
 
@@ -412,7 +570,7 @@ M2 supplies visual recipes; M3 adds semantic feedback composition because #26 de
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/pro-data.dom.test.tsx`, `tests/pro-data-typecheck.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
 ## Selection controls · HIG 0.1.0
@@ -431,12 +589,29 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig-react/
 | Control | Key props and behavior |
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
-| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. |
-| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. Native increment/decrement accessibility actions are labeled from HIGProvider `messages.increase`/`messages.decrease`. |
+| Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. Native options also accept `description` (a second line) and `lang` (the label's BCP-47 language). |
+| `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. Native increment/decrement actions use HIGProvider `messages.increase`/`messages.decrease`. |
 
 ## When to use and examples
 
 Do: control selection from accepted host state. Don’t: emit a success cue on every render or repeated slider value.
+
+Native language pickers can keep the native name and a translated description in one radio row:
+
+```tsx
+<HIGProvider locale='en-US' fontFamiliesByScript={{
+  latin: {400: 'BloxwapSansRegular'},
+  ko: {400: 'BloxwapSansKRRegular'},
+  zh: {400: 'BloxwapSansSCRegular'},
+}}>
+  <RadioGroup label='Language' value={language} onValueChange={setLanguage} options={[
+    {value: 'ko', label: '한국어', description: 'Korean', lang: 'ko-KR'},
+    {value: 'zh', label: '简体中文', description: 'Chinese', lang: 'zh-Hans'},
+  ]}/>
+</HIGProvider>
+```
+
+Register each face before passing its name. `Text` chooses `fontFamiliesByScript` by the label's glyphs, independently of the app locale; `lang` supplies `accessibilityLanguage` and resolves shared CJK punctuation. Descriptions use the app language. A script map selects the requested static weight, or its nearest registered weight; the existing `fontFamilies`/`fontFamily` remain the fallback. Explicit text `script` and style `fontFamily` override detection and registered family selection respectively. Native radios expose the label, supporting description as an accessibility hint, checked/disabled state and the explicit `activate` accessibility action; disabled rows reject both touch and accessibility activation. Per-option language is passed to React Native's `accessibilityLanguage`; pronunciation support depends on the platform and installed voices.
 
 ## States, interaction and accessibility
 
@@ -450,7 +625,9 @@ SegmentedControl is single-choice radio semantics, not navigation. Native picker
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, `tests/native/language-options.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+`SwitchRow` from `@bloxwap/hig-native/switch` (also `selection`) wraps an existing host row in one switch target. It takes the same required `label`, `checked` / `defaultChecked`, `disabled` and `onCheckedChange` contract as `Switch`, plus required noninteractive `children` and root Pressable props. Keep the visible label, description and track noninteractive: the root owns activation and hides the content from accessibility to avoid duplicate targets. Put the description in `accessibilityHint`. Root `style` supports pressed callbacks; `accessibilityState` preserves `busy` while HIG owns checked/disabled state. Disable the row explicitly during pending requests; busy alone is descriptive. The Expo web row supports Space, Enter and pointer activation. Tree shaking an ESM import of ordinary `Switch` removes this optional anatomy.
 
 
 ## Status & feedback · HIG 0.1.0
@@ -468,11 +645,27 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 
 | Component | Key props and behavior |
 | --- | --- |
+| `Badge` | Quiet label; web adds explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`), standard span props and a forwarded span ref. The neutral default retains its appearance. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
 | `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the accent edge from a token role on web and native: info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
 | `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own edge colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
-| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. `dismissLabel` overrides the visible Dismiss text; the accessible name is `messages.dismissNotice(message, dismissLabel)` and always contains it. |
+| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides visible Dismiss text; its accessible name contains that text. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |
+
+Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy. Its `description` is optional; omitted or empty text leaves no blank description node. Pass decorative `illustration` content before the heading; HIG hides the whole illustration subtree from VoiceOver/TalkBack navigation while keeping the heading and action accessible. The host controls the illustration's dimensions and spacing. Root `ViewProps`, including `style`, `testID` and layout events, pass to the Surface. `titleStyle` and `descriptionStyle` reach the actual text nodes; `maxFontSizeMultiplier` caps both, or inherits the provider policy when omitted. Text keeps the provider palette and heading semantics unless the host explicitly styles it.
+
+```tsx
+<EmptyState
+  title={t('noMarkets')}
+  illustration={<BrandMark width={64} height={64} />}
+  style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', padding: 0, gap: 12 }}
+  titleStyle={{ fontSize: 20, lineHeight: 28, textAlign: 'center' }}
+  maxFontSizeMultiplier={2}
+  action={<Button onPress={clearFilters}>{t('browseAll')}</Button>}
+/>
+```
+
+The mark and clear-filter action remain host-owned. `tests/native/empty-state.test.cjs` verifies default anatomy, omitted descriptions, decorative accessibility metadata, real text/root props and accepted action delivery; these wiring checks are not physical-device accessibility certification.
 
 ## When to use and examples
 
@@ -486,7 +679,19 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 
 ## Platform mapping and limits
 
-Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.
+Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. On native, messages use body-size semibold text and descriptions use a separate body-size line; neither truncates or disables text scaling. The stack scrolls within `maxHeight`, including nested host scroll views. A notice with `closable={false}` has no Dismiss action; host recovery actions remain available. Without `onDismiss`, notices have no Dismiss buttons. No notice expires automatically: remove it from the controlled `notices` array when its host lifetime ends; keep failures with recovery actions until explicitly resolved. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.
+
+```tsx
+// Native: compact notices with large-text scrolling and a persistent failure.
+<Toast
+  maxHeight={320}
+  notices={[
+    { id: 'saved', message: 'Saved', description: 'Your changes are ready.', severity: 'success' },
+    { id: 'retry', message: 'Transfer failed', description: 'Check your balance and retry.', severity: 'error', closable: false },
+  ]}
+  onDismiss={removeNotice}
+/>
+```
 
 ## Validation and citation
 
@@ -504,11 +709,17 @@ Issues #22–#24. Base imports do not load adapters. Individual `web-sound`, `br
 
 Install `@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@0.1.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
 
-The upstream engine is shared and does not expose per-root voice handles. HIG reference-counts its users and disposes the engine after its last default adapter. Muting/cancellation prevents pending playback; it cannot surgically stop an already-running voice for one root. A host that also owns the upstream global engine should inject/own the lifecycle rather than use the default HIG lifecycle. Full per-root active-voice cancellation is an explicit upstream API gap, not a claimed capability. Upstream [sfx#51](https://github.com/bloxwap/sfx/pull/51) adds a per-play `AbortSignal`; HIG adopts it only once it ships in a released `@bloxwap/sfx` (tracked in #70).
+HIG passes one adapter-local `AbortSignal` to each play. Muting, backgrounding, explicit cancellation and disposal abort that root's plays; the next accepted request gets a fresh signal. With the engine merged in [sfx#51](https://github.com/bloxwap/sfx/pull/51), this stops buffered and live voices while other roots and host-owned voices continue. Generations still discard superseded startup/unlock requests. HIG reference-counts default adapters and disposes the shared engine after the last user. A host that also owns that engine should inject/own its lifecycle.
+
+**Released compatibility:** published `@bloxwap/sfx@0.1.0` ignores the additional signal option. It remains compatible, and cancellation still prevents pending HIG playback, but its already-running voices continue. The signal-aware engine exists in merged source, not an npm release yet. Active-voice cancellation is forward-ready source support; released adoption remains pending in #70. No global `stopAll()` workaround is used.
 
 ## Browser and physical-tap haptics
 
-`createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
+`createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Its existing default and `{vibrate}` injection retain their patterns and work with published `@bloxwap/haptic@0.1.0`; neither imports Haptic. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
+
+The optional `ImperativeHapticBackend` injection accepts the exact `canTriggerHaptic` and `triggerHaptic` functions merged in [haptic#30](https://github.com/bloxwap/haptic/pull/30): `createBrowserHapticAdapter({canTriggerHaptic, triggerHaptic})`. These exports are absent from published `0.1.0`; use the injection only with a host-owned source build until they ship. HIG probes capability at request time, so activation and document visibility are current, and delegates the semantic cue to upstream's presets. Rejection/failure cannot change the primary action. `observed` stays false. The adapter adds no eager import, helper DOM or physical-tap simulation.
+
+The merged imperative API still reports iOS unavailable, including during transient activation. It cannot replace eligible physical targets or express iOS async outcome patterns. Neither the browser Vibration API nor this upstream API provides a per-root cancellation handle: `cancel()`/`dispose()` retain the existing `navigator.vibrate(0)` stop when available, which is document-wide. This is distinct from SFX's per-root voice cancellation.
 
 For approved iOS physical action targets, install `@bloxwap/haptic@0.1.0` and wrap a single ref-capable HIG button in `HapticFeedbackTarget eligible`. The wrapper uses upstream `HapticTarget`, preserves the target/handler/ref, enables only the physical-tap route and disables debug audio/helper switch visibility. Thus browser vibration comes from the semantic adapter and is not duplicated by the wrapper. HIG preferences still gate the wrapper.
 
@@ -527,6 +738,8 @@ Regenerate with `npm run generate:cues`. `assets/manifest.json` pins package/rec
 Install `expo-haptics` (`~15.0.7` on Expo SDK 54, `~55.0.18` on SDK 55) in the native host. `expoHapticBackend(Haptics)` bridges selection, impact light/medium/heavy and notification success/warning/error. `createNativeHapticAdapter` reports API availability separately from observation. Unsupported hardware, backgrounding, preferences and failed backend calls are no-ops that do not change primary actions. Android notification/impact approximation and OS suppression must be observed on devices before support is certified.
 
 ## Simulated lifecycle regression evidence
+
+Pinned, unmodified MIT source fixtures from SFX `1be6630` and Haptic `8b1ab578` test the adapters against the merged implementations, with source hashes and licenses in `tests/fixtures/upstream-feedback/`. The SFX tests use upstream's recording AudioContext fake to cover buffered/live root isolation, controller mute/background, cancellation during unlock, reuse and last-default-user engine disposal. The actual npm `0.1.0` package is separately tested to preserve playback and retain its active-cancellation limitation. Haptic tests use the actual merged capability/trigger functions with fake browser globals, cover changing activation/visibility, rejection, SSR and iOS unavailability, and preserve the released fallback. These tests request no physical sound or haptics.
 
 The Linux tests inject native player and haptic backends. Pending configure/seek requests are superseded by the newest request; cancellation, backgrounding, zero volume and disposal stop pending playback. Failed configuration can retry. Explicit impact intent reaches the native backend even for an otherwise silent press preset. Pause/remove failures cannot prevent other cached players from being released. A dispatch test drives 400 cues through `FeedbackController` with simulated slow bridge calls (configure 60 ms, seek 40 ms). It asserts that every cue reaches `player.play()` inside `emit()` and that p95 stays under one 16 ms frame. The native gallery stamps each emit and logs `dispatch`/`p95` on every play for simulator and emulator runs. These tests establish dispatch/lifecycle behavior, not observed sound, tactile output, acoustic latency (#55) or OS audio-session behavior.
 
@@ -1000,6 +1213,44 @@ Rules:
 
 See `tests/tokens.test.ts`, `tests/data.dom.test.tsx`, `tests/glossary.test.ts`, `tests/built-in-strings.test.ts`, `tests/messages.dom.test.tsx`, `tests/native/messages.test.cjs`, `docs/foundations/localization.json` and the data chapter. Cite HIG 0.1.0 with this chapter anchor and a commit permalink.
 
+The native Button's busy suffix starts with the separator (`· Working`); the row supplies its visual gap. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.
+
+
+## Native runtime differences · HIG 0.1.0
+Source: docs/foundations/native-runtime-differences.md
+
+# Native runtime differences · HIG 0.1.0
+
+Follow-ups #86–#89 and #92–#94 distinguish implementation checks from physical-device certification in #55. The supported packed consumers remain React Native 0.81.5 / Expo 54 and React Native 0.83.10 / Expo 55. Historical simulator/emulator captures remain in `evidence/native-sim/`; their results are not overwritten by software tests.
+
+## Android locale direction
+
+RN 0.83's `I18nManager.isRTL` can report false for an Arabic app locale. The regression is [upstream #54938](https://github.com/react/react-native/issues/54938), introduced by [#53417](https://github.com/react/react-native/pull/53417) and fixed by [#57635](https://github.com/react/react-native/pull/57635), with older-Android handling in [#58723](https://github.com/react/react-native/pull/58723).
+
+HIG defaults direction to `I18nManager.isRTL`. Hosts that support RTL pass `direction={localeDirection(getLocales()[0])}`, using `localeDirection` from `@bloxwap/hig-native/provider` and their localization adapter (for example Expo Localization). This handles an Arabic per-app locale even when RN's OS diagnostic still reports false. Hosts that disallow RTL leave direction unset. Formatting locale remains independent, with `en-US` as the default. The Android `os-arabic` harness asserts the explicit host direction. Historical local fallback measurements predate the merged public API.
+
+## Slider action labels
+
+RN 0.83 exposes an empty accessibility action label when the host omits it. HIG supplies `messages.increase` and `messages.decrease` for both actions, with English Increase/Decrease defaults and host translation overrides. Disabled adjustments remain rejected. Automated labels and state checks do not establish what a person hears through TalkBack; physical reference flows remain in #55.
+
+## iOS Dynamic Type audit
+
+The historical RN 0.81.5 / Expo 54 run recorded 68 TextInput Dynamic Type heuristic findings. The RN 0.83.10 / Expo 55 run recorded none, while the large-text captures and text-field counts matched. The note in `evidence/native-sim/native-sim.json` applies to RN 0.81.5 only.
+
+Source comparison of the release tags establishes that `RCTUITextField.mm` is byte-identical and the Fabric text-input view has no new UIFontMetrics/scaling behavior. The font utility changed to honor default font handlers in [React Native #53755](https://github.com/react/react-native/pull/53755). That refactor has not been isolated as the cause of the audit change. We therefore do not claim a UIFontMetrics fix or a physical accessibility pass. Root-cause attribution for #88 and device VoiceOver/largest-size checks remain open.
+
+## Audio completion diagnostics
+
+Expo Audio 1.1's Android playback status derives `didJustFinish` from the player's ended state. Both the playback-state listener and status polling can report that state. The SDK 54 captures show two completion callbacks after one recorded `play:tick`; SDK 55 shows one. A completion callback is not an extra play.
+
+Only the gallery recorder listens to `playbackStatusUpdate`. The HIG adapter dispatches preloaded players without waiting for or replaying completion events. `tests/native-verification.test.ts` injects two completion callbacks and asserts exactly one backend `play()` call while preserving both raw diagnostic events. No runtime completion de-duplication is needed unless the adapter later depends on completion. Dispatch timing and audible latency remain distinct; speaker, silent-mode and interruption observations remain in #55.
+
+## Native text and color follow-ups
+
+Native Button uses HIG Text for both its label and localized busy suffix, preserving font registration, script spacing and scale caps. Its busy accessible name includes the visible label, with explicit host labels taking precedence. Mixed ReactNode status titles concatenate visible text without inserting extra spaces.
+
+`HIGProvider colorSpace='display-p3'` selects the canonical P3 table on iOS. Android and web resolve to sRGB. Native controls and host-drawn views read the resolved table through `useColors()`; nested providers inherit the selected space. These are channel-selection and semantic tests, not comparisons of physical displays.
+
 
 ## Foundation and platform rules · HIG 0.1.0
 Source: docs/foundations/platform.md
@@ -1051,6 +1302,13 @@ Component review checklist: keyboard completion; labeled controls/errors; busy/d
 Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import `@bloxwap/hig-tokens/mark.svg` on web; both web and RN geometry renderers are available from their brand entries. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives have source provenance and drift checks. Physical device visual comparison remains unperformed.
 
 Font-loading note: `@bloxwap/font/css` references all supported families/scripts, which may increase deployed asset bytes even with on-demand browser loading. The Latin web fixture instead uses two explicit @font-face rules with package asset URLs (Sans and Mono). Add only the scripts/italics used by each consumer. Do not assume a Latin-only fixture certifies mixed-script rendering.
+
+
+## Native text in multiple scripts
+
+Register each required companion face with the host font loader, then pass its registration name through `HIGProvider fontFamiliesByScript`, for example `{latin: {400: 'BloxwapSansRegular'}, ko: {400: 'BloxwapSansKRRegular', 600: 'BloxwapSansKRSemiBold'}, zh: {400: 'BloxwapSansSCRegular'}}`. The provider's `fontFamilies` remains the fallback. Nested providers inherit the script map when it is omitted.
+
+HIG Text detects Hangul or Han in each run even when the provider locale is English. Shared CJK punctuation follows the run's `accessibilityLanguage`, then the provider locale; `script` can select a face explicitly. If a script map has fewer weights, Text chooses its nearest registered weight. Explicit `style.fontFamily` wins. Hosts load these optional faces themselves; declaring a map does not load a font. Native RadioGroup options accept `lang` for the spoken label and `description` for its translated second line.
 
 
 ## Principles and content · HIG 0.1.0
@@ -1403,7 +1661,7 @@ npm run release:dry-run -- --channel candidate
 npm run release:dry-run -- --channel stable-simulation
 ```
 
-Candidate mode stages `0.1.0-candidate.sha<commit>` package metadata and matching internal dependency versions. Stable-simulation stages the coordinated source version. Runtime contract/docs source version and source commit are recorded explicitly; neither source files nor git refs are version-mutated by the dry run. Both produce local tarballs, checked export/types/CSS/assets/files/dependency manifests, hashes, changelog, copied docs artifact and provenance report. `npm pack --ignore-scripts` packs already validated outputs, never publishes. Physical claims remain pending in every report.
+Candidate mode stages `0.1.0-candidate.sha<commit>` package metadata and matching internal dependency versions. Stable-simulation stages the coordinated source version. Runtime contract/docs source version and source commit are recorded explicitly; neither source files nor git refs are version-mutated by the dry run. Each dry run rebuilds packages and docs before staging so ignored output cannot retain an older API. Both produce local tarballs, checked export/types/CSS/assets/files/dependency manifests, hashes, changelog, copied docs artifact and provenance report. `npm pack --ignore-scripts` packs already validated outputs, never publishes. Physical claims remain pending in every report.
 
 The release dry run, `npm run quality`, `smoke:packed-native` and `smoke:packed-og` first check that the generated TTF faces exist and match their manifests (#98). If any face is missing or stale, they stop before building anything. The message names `npm run generate:fonts` and its Python pins and lists the affected files, instead of failing with a raw `ENOENT`. `packedSizes` in the report records the packed and unpacked bytes and the font-file counts of `@bloxwap/hig-tokens` (no fonts), `@bloxwap/hig-native-fonts` and `@bloxwap/hig-og-fonts`. The dry run fails if any other package contains a font binary, or if `@bloxwap/hig-og-fonts` reaches 1,000,000 B packed (#99). `smoke:packed-og` builds the documented `app/og/route.tsx` handler with Turbopack (the Next 16 default) and with `--webpack`. It serves each build with `next start`, and also as moved standalone output. Every face's SHA-256 has to match, so a loader that bundles only one face fails here.
 
@@ -1429,6 +1687,16 @@ Semver:
 Deprecation names the alternative, a migration codemod or checklist, and the owning consumers from `planning/adoption.json`. A deprecated export keeps working for at least one minor release and 30 days, and is removed only in the next major release after consumer PRs are merged or have dated exceptions (see the contribution chapter). Keep code/examples/API/citations at the same source commit; separate package prerelease identifiers are explicit in artifact metadata.
 
 Rollback for an owning pilot: keep the previous package artifacts and lockfile, disable the host feature flag, restore prior renderer/backend imports and rebuild. Keep saved feedback/business data backward-compatible; never erase prior choices. Remove old assets only after production and physical-device proof. A future published rollback would require separate release authorization and package provenance; this task performs none.
+
+## Maintainer-controlled registry publication (#56)
+
+The local dry-run command remains unable to publish, create tags, or create releases. The separate `publish.yml` workflow is manual and accepts an existing version tag only. Before its publishing job can start, it requires configured reviewers on the `npm-release` GitHub environment and a successful candidate quality run for that exact commit. The environment then supplies the maintainer review gate.
+
+The workflow rebuilds stable-simulation artifacts and runs `release:verify`: the tag, source commit and coordinated version must match; the complete eight-package set and every tarball hash must match; and all release blockers must be cleared or have a dated, named-owner approval link. Expired or undocumented exceptions fail. Uncommitted source changes fail. It never creates the tag or GitHub release for the maintainer.
+
+An npm org owner must configure trusted publishing for each package name for `bloxwap/hig`, workflow `publish.yml`, environment `npm-release`, and approve the first registry version. The workflow pins npm 11.6.1 and Node 22.22.0, meeting [npm's trusted-publishing requirements](https://docs.npmjs.com/trusted-publishers/). Scope/name setup and any first-publish bootstrapping remain owner actions; no token is requested or stored by HIG tooling. Current local `npm whoami` returns E401 and `@bloxwap/hig-tokens` is not available from the public registry, so publication remains blocked.
+
+Only after those gates does the workflow publish the exact verified tarballs with provenance. `smoke:registry` checks the registry tarball SHA-256 values and source-linked attestations, then runs independent web/SSR, Next hydration/font, and both native Metro/Expo consumers against registry versions. These registry checks have not been run successfully before publication. A failed post-publish check requires a maintainer response and a new version; automation never unpublishes or overwrites a registry version.
 
 
 ## Installation and citation · HIG 0.1.0
@@ -1468,6 +1736,8 @@ These are the rules that `@bloxwap/hig-react/css` applied to the whole page befo
 ### Radix overlay peers and Fumadocs
 
 The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig-react/overlay`, `@bloxwap/hig-react/recipes` or `@bloxwap/hig-react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
+
+The separate optional `@bloxwap/hig-react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
 
 ## SSR and Next client boundaries
 

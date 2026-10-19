@@ -13,16 +13,15 @@ import {FeedbackController,type FeedbackPreferences} from '@bloxwap/hig-feedback
 import {createWebSoundAdapter} from '@bloxwap/hig-feedback/web-sound';
 import {createBrowserHapticAdapter} from '@bloxwap/hig-feedback/browser-haptic';
 import {jsonStorage} from '@bloxwap/hig-feedback/preferences';
-import generated from './content.json';
+import generated from './demo-content.json';
 import {basePath} from '../lib/site';
 const Example=lazy(()=>import('./examples').then(m=>({default:m.Example})));
-interface Page {route:string;title:string;source:string;markdown?:string;html?:string;toc:{label:string;id:string}[];section:string;component?:string}
-interface Entry {name:string;slug:string;entry:string;family:string;route:string;source:string;nativeSupport:string;states:string[];a11y:string;feedback:string;code:{react:Record<string,string>;native:Record<string,string>};api:{react:{entry:string;signature:string}|null;native:{entry:string;signature:string}|null}}
-const content=generated as unknown as {version:string;status:string;pages:Page[];catalog:Entry[]};
+interface Entry {name:string;route:string;nativeSupport:string;states:string[]}
+const content=generated;
 const base=basePath+'/';
 const sourceRef='main';
 const url=(route='')=>base+(route?'docs/'+route+'/':'');
-type CodeData=Record<string,Entry['code']>;
+type CodeData=Record<string,{react:Record<string,string>;native:Record<string,string>}>;
 function sourceCode(entry:Entry,platform:'react'|'native',density:string,state:string,codes:CodeData|null){return (codes?.[entry.name]?.[platform]?.[state]??codes?.[entry.name]?.[platform]?.default??'Loading example code…').replace('density="comfortable"',`density="${platform==='native'?'comfortable':density}"`);}
 function Code({code}: {code:string}){const [status,setStatus]=useState('');return <div className='code-window'><div className='code-toolbar'><span>TypeScript · candidate imports</span><Button intent='ghost' onClick={()=>{navigator.clipboard.writeText(code).then(()=>setStatus('Copied')).catch(()=>setStatus('Copy failed. Select code and copy manually.'));}}>Copy code</Button></div><pre tabIndex={0}><code>{code}</code></pre><p role='status' className='copy-status'>{status}</p></div>;}
 function ComponentPreview({entry,state,onStateChange,density,codes}: {entry:Entry;state:string;onStateChange:(state:string)=>void;density:string;codes:CodeData|null}) {

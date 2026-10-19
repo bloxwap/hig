@@ -6,7 +6,7 @@
     844
   ],
   "reducedMotion": true,
-  "executedStates": 102,
+  "executedStates": 104,
   "components": 64,
   "availableComponents": 64,
   "scope": "full shipped state matrix",
@@ -21,7 +21,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/button-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -34,7 +34,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/button-busy.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -47,7 +47,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/button-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -56,7 +56,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/icon-button-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -65,7 +65,7 @@
       "state": "busy",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/icon-button-busy.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -74,7 +74,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/icon-button-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -83,7 +83,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/link-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -92,7 +92,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/text-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -101,7 +101,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/heading-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -110,7 +110,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/stack-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -119,7 +119,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/inline-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -128,7 +128,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/surface-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -137,7 +137,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/card-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -146,7 +146,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/separator-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -159,7 +159,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/field-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -172,7 +172,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/field-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -181,7 +181,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/label-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -194,7 +194,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/input-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -207,7 +207,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/input-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -220,7 +220,7 @@
         "channelTolerance": 24
       },
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/input-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -229,7 +229,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/text-area-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -238,7 +238,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/text-area-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -247,7 +247,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/amount-input-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -256,7 +256,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/amount-input-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -265,7 +265,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/amount-input-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -274,7 +274,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/search-input-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -283,7 +283,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/search-input-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -292,7 +292,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/checkbox-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -301,7 +301,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/checkbox-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -310,7 +310,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/switch-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -319,7 +319,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/switch-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -328,7 +328,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/radio-group-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -337,7 +337,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/radio-group-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -346,7 +346,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/segmented-control-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -355,7 +355,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/segmented-control-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -364,7 +364,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/select-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -373,7 +373,7 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/select-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -382,7 +382,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/slider-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -391,16 +391,40 @@
       "state": "disabled",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/slider-disabled.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "Slider",
+      "state": "focus-comfortable",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
+      "render": "passed",
+      "capture": "artifacts/visual/slider-focus-comfortable.png",
+      "behaviorTests": "Keyboard focus ring geometry is asserted in scripts/acceptance-browser-smoke.mjs"
+    },
+    {
+      "name": "Slider",
+      "state": "focus-compact",
+      "regression": {
+        "changedRatio": 0,
+        "maxChangedRatio": 0.02,
+        "channelTolerance": 24
+      },
+      "render": "passed",
+      "capture": "artifacts/visual/slider-focus-compact.png",
+      "behaviorTests": "Keyboard focus ring geometry is asserted in scripts/acceptance-browser-smoke.mjs"
     },
     {
       "name": "Dialog",
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/dialog-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -409,7 +433,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/alert-dialog-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -418,7 +442,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/sheet-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -427,7 +451,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/menu-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -436,7 +460,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/popover-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -445,7 +469,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/tooltip-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -454,7 +478,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/tabs-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -463,7 +487,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/accordion-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -472,7 +496,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/breadcrumb-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -481,7 +505,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/navigation-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -490,7 +514,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/pagination-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -499,7 +523,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/search-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -508,7 +532,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/search-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -517,7 +541,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/search-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -526,7 +550,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/badge-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -535,7 +559,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/alert-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -544,7 +568,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/alert-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -553,7 +577,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/callout-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -562,7 +586,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/toast-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -571,7 +595,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/progress-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -580,7 +604,7 @@
       "state": "busy",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/progress-busy.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -589,7 +613,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/spinner-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -598,7 +622,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/skeleton-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -607,7 +631,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/empty-state-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -616,7 +640,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/avatar-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -625,7 +649,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/status-indicator-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -634,7 +658,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/status-indicator-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -643,7 +667,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/number-readout-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -652,7 +676,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/number-readout-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -661,7 +685,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/number-readout-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -697,7 +721,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/usd-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -706,7 +730,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/usd-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -715,7 +739,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/usd-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -724,7 +748,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/percent-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -733,7 +757,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/percent-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -742,7 +766,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/metric-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -751,7 +775,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/stat-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -760,7 +784,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/list-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -769,7 +793,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/list-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -778,7 +802,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/row-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -787,7 +811,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/table-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -796,7 +820,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/table-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -805,7 +829,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/brand-mark-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -814,7 +838,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/check-icon-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -823,7 +847,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/h-i-g-provider-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -832,7 +856,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/market-row-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -841,7 +865,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/market-row-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -850,7 +874,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/balance-card-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -859,7 +883,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/balance-card-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -868,7 +892,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/balance-card-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -877,7 +901,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/trade-entry-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -886,7 +910,7 @@
       "state": "busy",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/trade-entry-busy.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -895,7 +919,7 @@
       "state": "error",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/trade-entry-error.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -904,7 +928,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/install-command-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -913,7 +937,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/code-window-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -922,7 +946,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/marketing-hero-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -931,7 +955,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/activity-list-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -940,7 +964,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/activity-list-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -949,7 +973,7 @@
       "state": "default",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/price-chart-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
@@ -958,7 +982,7 @@
       "state": "empty",
       "regression": null,
       "render": "passed",
-      "accessibility": "no axe WCAG findings",
+      "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/price-chart-empty.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     }

@@ -1,0 +1,96 @@
+{
+  "status": "unsigned-device-build-passed; awaiting artifact review and unique development provisioning",
+  "recordedAt": "2026-10-18T19:27:30.618461+00:00",
+  "candidate": {
+    "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+    "version": "0.1.0-candidate.sha0e239442",
+    "sourceTreeDirty": false,
+    "reportSha256": "2874bfd8b00d47ef90cbf21f4dee1cd98c5522919c08c915b4ff8386d3a799ce",
+    "installedNativeOverlaySha256": "9552ab743f0a57b4b049e867533b198330175c8f98b56e355ea9779f16967d4a"
+  },
+  "availablePhysicalTargets": [
+    {
+      "model": "iPhone 17 Pro",
+      "os": "iOS 26.6",
+      "build": "23G71",
+      "paired": true,
+      "available": true
+    },
+    {
+      "model": "iPad Pro 13-inch (M4)",
+      "os": "iPadOS 27.0",
+      "build": "24A5430a",
+      "paired": true,
+      "available": true
+    }
+  ],
+  "physicalAndroidAttached": false,
+  "identity": {
+    "bundleIdentifier": "com.bloxwap.hig.review.20261018",
+    "displayName": "HIG Review Oct 18",
+    "scheme": "higreview20261018",
+    "targetedDeviceFamilies": [
+      1,
+      2
+    ],
+    "minimumOSVersion": "26.0",
+    "productionIdentityReused": false,
+    "associatedProductionDomains": false,
+    "entitlements": {},
+    "sections": [
+      "Native gallery",
+      "Adoption (CJK registration, styled readouts, notices, custom sheets)",
+      "Inert custom dialog"
+    ]
+  },
+  "build": {
+    "result": "passed",
+    "configuration": "Release",
+    "architecture": "arm64",
+    "platform": "iphoneos",
+    "sdk": "iphoneos27.2",
+    "xcode": "27.2 Beta3",
+    "reactNative": "0.83.10",
+    "expo": "55.0.31",
+    "codeSigningAllowed": false,
+    "logPath": "/Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-dialogs/.hig-reference/physical-gallery-build-final.log",
+    "appPath": "/Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-dialogs/.hig-reference/physical-gallery-build/Build/Products/Release-iphoneos/HIGReviewOct18.app",
+    "executableSha256": "76d6f1af40aaf7908a5e16e59b84df2dbf40ec70f6c6edf16205f8ea8b56a419",
+    "bundleSha256": "60bbab4db5c38a605fc3e4259b9041e593210af7ba9076ca88ec7fe83cbecb7b",
+    "archivePath": "/Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-dialogs/.hig-reference/physical-gallery-review/HIGReviewOct18-unsigned-iphoneos.zip",
+    "archiveBytes": 11628426,
+    "archiveSha256": "78135e49d19f3f4346b40604f4ef5047b7a79ad84ad7b31e4dbb2bd7e1cdeb52",
+    "sceneManifest": true,
+    "sceneLifecycleSource": "Existing monorepo host with-ios-scene-delegate.js copied into isolated fixture; SDK 27 host compatibility, not HIG component failure"
+  },
+  "signing": {
+    "appleDevelopmentIdentitiesAvailable": 2,
+    "galleryProfileCoversIPhone": false,
+    "galleryProfileCoversIPad": false,
+    "availableWildcardProfileCoversEither": false,
+    "onlyLocalProfileCoveringIPhoneIsProductionBundle": true,
+    "productionProfileExplicitlyExcluded": true,
+    "codeSignDiagnostic": "HIGReviewOct18.app: code object is not signed at all",
+    "requiredNextStep": "Review unsigned artifact and authorize/provide a development profile for this unique gallery ID and selected devices before any signing/provisioning/installation."
+  },
+  "physicalDeviceActions": {
+    "installed": false,
+    "provisioned": false,
+    "settingsChanged": false,
+    "productionAppOrDataReplaced": false
+  },
+  "limits": [
+    "No physical launch, VoiceOver/TalkBack navigation/speech, acoustic/haptic/silent-mode/interruption acceptance was performed.",
+    "Gallery contains inert examples and no production financial submission or authentication.",
+    "Unsigned arm64 artifact is reviewable but cannot install until a matching development profile is supplied."
+  ],
+  "fixtureSourceSha256": {
+    "App.tsx": "c0d52eb146419e794784c536f055e2ebc5208b16b5d48dbbba9eed8da4f43ed5",
+    "gallery-app.tsx": "4e4f4418a9c87962539fab74e6ed9df3a76102c93f997f5a255e781089659dac",
+    "adoption-check.tsx": "66490118de15cfec99cce84107554e0e8bbf331ddc72fe04c1afa34dea2e7c33",
+    "app.json": "ae63c7aa68f64480363fdf59ae1be0ba9ed745496cbf37e52683e503af381bb8",
+    "package.json": "59106127ab404b65b02fa52e42a1fd0e61543cbe3474374a87c333e6e902d91f",
+    "package-lock.json": "1f6f8904e57ea3ef744ddf45c2233159cbf3055fd5a4fc733638e91fc2fa2c61",
+    "with-ios-scene-delegate.js": "205e74b51c2145b64e291fdfe87a66fd4d52298727cbbbcf64fe03ad7a73dd2b"
+  }
+}

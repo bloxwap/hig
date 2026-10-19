@@ -15,7 +15,7 @@ console.log(`Packed native consumer profile ${profile}: ${nativeProfiles[profile
 const dir=scratchDir(`hig-native-consumer-${profile}-`);
 cpSync('fixtures/native',dir,{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/dist')&&!s.includes('/.expo')});
 writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
-const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')&&!n.includes('hig-chart')&&!n.includes('hig-og-fonts')).map(n=>resolve('artifacts',n));
+const tarballs=process.env.HIG_REGISTRY_VERSION?['contracts','tokens','feedback','native','native-fonts'].map(name=>`@bloxwap/hig-${name}@${process.env.HIG_REGISTRY_VERSION}`):readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!n.includes('hig-react')&&!n.includes('hig-chart')&&!n.includes('hig-og-fonts')).map(n=>resolve('artifacts',n));
 execFileSync('npm',['install','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 const runtime=verifyNativeReact(dir);console.log('Native runtime versions',runtime);console.log('Expo native modules',verifyExpoNativeModules(dir));
 // npm only warns on most peer conflicts in an Expo tree, so every declared HIG peer range must explicitly accept what was installed.
@@ -35,4 +35,9 @@ console.log('Packed native fonts: hashes match the generator manifest and Metro 
 writeFileSync(join(dir,'index.js'),readFileSync('fixtures/native/index-gesture.js'));
 execFileSync('npm',['run','bundle','--','--max-workers','2','--output-dir','dist-gesture'],{cwd:dir,stdio:'inherit'});
 console.log(`Packed optional gesture-sheet consumer (${profile}) exported Android/iOS with real Gorhom/Reanimated/Worklets peers`);
+writeFileSync(join(dir,'index.js'),readFileSync('fixtures/native/index-adoption.js'));
+execFileSync('npm',['run','bundle','--','--max-workers','2','--output-dir','dist-adoption'],{cwd:dir,stdio:'inherit'});
+const adoptionAssets=new Set(walk(join(dir,'dist-adoption')).filter(p=>statSync(p).size>100000).map(p=>sha(readFileSync(p))));
+for(const asset of ['BloxwapSansKR.ttf','BloxwapSansKR-SemiBold.ttf','BloxwapSansSC.ttf','BloxwapSansSC-SemiBold.ttf'])assert.ok(adoptionAssets.has(installedFonts.outputs[asset]),`Adoption entry bundles companion face ${asset}`);
+console.log(`Packed native adoption consumer (${profile}) exported custom sheet, large-text toasts, styled readouts and multilingual choices`);
 console.log(`Packed native consumer (${profile}: ${nativeProfiles[profile].stack}) exported Android and iOS from ${tarballs.length} independent tarballs`);

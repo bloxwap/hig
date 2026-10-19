@@ -1,0 +1,14 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.4 /Users/joeblau/Developer/bloxwap/.worktrees/hig-70-feedback
+
+ ✓ tests/feedback-upstream.test.ts (11 tests) 48ms
+stdout | tests/feedback-adapters.test.ts > keeps native dispatch p95 within one 16 ms frame while bridge round trips are slow
+native sound dispatch: n=400 p50=0.002ms p95=0.006ms
+
+ ✓ tests/feedback-adapters.test.ts (12 tests) 68ms
+
+ Test Files  2 passed (2)
+      Tests  23 passed (23)
+   Start at  17:04:10
+   Duration  282ms (transform 97ms, setup 0ms, collect 161ms, tests 116ms, environment 0ms, prepare 76ms)

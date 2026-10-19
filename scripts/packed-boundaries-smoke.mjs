@@ -11,8 +11,12 @@ execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...['t
 for(const peer of ['react','react-native','@bloxwap/sfx','@bloxwap/haptic','expo-audio','expo-haptics'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`root feedback unexpectedly installs ${peer}`);
 writeFileSync(join(directory,'root.mjs'),"import {FeedbackController} from '@bloxwap/hig-feedback';import {tokens} from '@bloxwap/hig-tokens';new FeedbackController().dispose();if(!tokens.colors.action)throw Error('Missing tokens');");
 execFileSync(process.execPath,[join(directory,'root.mjs')],{cwd:directory,stdio:'inherit'});
+// #70: even the injectable imperative browser adapter resolves without React or a Haptic peer.
+writeFileSync(join(directory,'browser-haptic.mjs'),"import assert from 'node:assert/strict';import {createBrowserHapticAdapter} from '@bloxwap/hig-feedback/browser-haptic';const h=createBrowserHapticAdapter({canTriggerHaptic:()=>({available:true,mechanism:'browser-vibration',observed:false}),triggerHaptic:async cue=>{assert.equal(cue,'success');return {delivered:false,mechanism:'none'};}});await h.play({id:'packed',source:'boundary',intent:'success',origin:'programmatic'},{version:1,sound:false,haptics:true,volume:0,motion:false});assert.equal(h.capability.observed,false);h.dispose();");
+execFileSync(process.execPath,[join(directory,'browser-haptic.mjs')],{cwd:directory,stdio:'inherit'});
+await build({stdin:{contents:"export {createBrowserHapticAdapter} from '@bloxwap/hig-feedback/browser-haptic';",resolveDir:directory,sourcefile:'haptic-entry.js'},absWorkingDir:directory,bundle:true,write:false,format:'esm',platform:'browser',logLevel:'silent'});
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',tarball('react'),'react@19.1.0','react-dom@19.1.0'],{cwd:directory,stdio:'pipe'});
-for(const peer of ['@radix-ui/react-dialog','@radix-ui/react-dropdown-menu','react-native','@bloxwap/chart','@bloxwap/sfx','@bloxwap/haptic'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`button unexpectedly installs ${peer}`);
+for(const peer of ['@radix-ui/react-dialog','@radix-ui/react-dropdown-menu','vaul','react-native','@bloxwap/chart','@bloxwap/sfx','@bloxwap/haptic'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`button unexpectedly installs ${peer}`);
 writeFileSync(join(directory,'button.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {Button} from '@bloxwap/hig-react/button';if(!renderToString(React.createElement(Button,null,'Review')).includes('Review'))throw Error('SSR failed');");
 execFileSync(process.execPath,[join(directory,'button.mjs')],{cwd:directory,stdio:'inherit'});
 // Recipes without overlays must resolve, render and bundle with no Radix peer installed (#63).
@@ -25,6 +29,7 @@ for(const [entry,[name,props]] of Object.entries(overlayFree)){
  const inputs=Object.keys(result.metafile.inputs);
  assert.ok(result.outputFiles[0].contents.length>0);
  assert.equal(inputs.some(p=>/radix|overlay|dialog/.test(p)),false,`recipes/${entry} pulls overlay code: ${inputs.filter(p=>/radix|overlay|dialog/.test(p))}`);
+ assert.equal(inputs.some(p=>/[/\\]vaul[/\\]/.test(p)),false,`recipes/${entry} pulls the optional gesture backend`);
 }
 // #95: the component CSS is scoped to HIG classes; page-wide element defaults are the opt-in ./css/base entry.
 // Both resolve through package exports in a bundler, and the scoped file carries no bare element rule.
@@ -40,6 +45,13 @@ await assert.rejects(bundle("export {TradeEntry} from '@bloxwap/hig-react/recipe
 // #96: the packed hig-react manifest names no @bloxwap/chart (no ./chart entry, no optional peer). The adapter is
 // @bloxwap/hig-chart, whose @bloxwap/chart peer is required; it renders its text summary and loading fallback on the server.
 const reactManifest=JSON.parse(readFileSync(join(directory,'node_modules/@bloxwap/hig-react/package.json'),'utf8'));
+assert.equal(reactManifest.peerDependencies.vaul,'^1.1.2');assert.equal(reactManifest.peerDependenciesMeta.vaul.optional,true);
+await assert.rejects(bundle("export {GestureSheet} from '@bloxwap/hig-react/gesture-sheet';"),/vaul/,'gesture sheet bundled without its optional backend');
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','vaul@1.1.2'],{cwd:directory,stdio:'pipe'});
+const gesture=await bundle("export {GestureSheet} from '@bloxwap/hig-react/gesture-sheet';");
+assert.ok(Object.keys(gesture.metafile.inputs).some(p=>/[/\\]vaul[/\\]/.test(p)),'gesture entry does not contain the real backend');
+const ordinary=await bundle("export {TradeEntry} from '@bloxwap/hig-react/recipes/trade-entry';");
+assert.equal(Object.keys(ordinary.metafile.inputs).some(p=>/[/\\]vaul[/\\]/.test(p)),false,'ordinary Dialog pulls the optional gesture backend');
 assert.equal(JSON.stringify(reactManifest).includes('@bloxwap/chart'),false,'@bloxwap/hig-react still names @bloxwap/chart');
 assert.equal(Object.hasOwn(reactManifest.exports,'./chart'),false,'@bloxwap/hig-react still exports ./chart');
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','--strict-peer-deps',tarball('chart'),'@bloxwap/chart@0.3.0'],{cwd:directory,stdio:'pipe'});
@@ -48,4 +60,4 @@ assert.equal(chartManifest.peerDependencies['@bloxwap/chart'],'^0.3.0');assert.e
 assert.equal(existsSync(join(directory,'node_modules/@bloxwap/hig-chart/node_modules')),false,'@bloxwap/hig-chart nests its own hig-react, tokens or chart copy');
 writeFileSync(join(directory,'chart.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {PriceChart,chartTheme} from '@bloxwap/hig-chart';import {tokens} from '@bloxwap/hig-tokens';const html=renderToString(React.createElement(PriceChart,{summary:'BTC up 1% today',data:[]}));for(const text of ['<figcaption>BTC up 1% today</figcaption>','role=\"status\"','Loading chart'])if(!html.includes(text))throw Error('PriceChart SSR missing '+text+': '+html);if(chartTheme.series.downColor!==tokens.colors.sell.srgb)throw Error('chartTheme lost its token colors');");
 execFileSync(process.execPath,[join(directory,'chart.mjs')],{cwd:directory,stdio:'inherit'});
-console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, native, chart or feedback engines; scoped ./css and opt-in ./css/base resolve through exports; hig-react names no @bloxwap/chart and @bloxwap/hig-chart SSR renders with its required chart peer');
+console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, Vaul, native, chart or feedback engines; optional gesture entry resolves only after explicit Vaul install while ordinary Dialog excludes it; scoped ./css and opt-in ./css/base resolve through exports; hig-react names no @bloxwap/chart and @bloxwap/hig-chart SSR renders with its required chart peer');

@@ -68,11 +68,19 @@
       },
       "Column": {
         "entry": "data",
-        "signature": "export interface Column<T> {\n    key: string;\n    label: string;\n    render: (row: T) => React.ReactNode;\n    sort?: 'ascending' | 'descending';\n    onSort?: () => void;\n}"
+        "signature": "export interface Column<T> {\n    key: string;\n    label: string;\n    render: (row: T) => React.ReactNode; /** Logical alignment applies to both header and data cells. */\n    align?: 'start' | 'center' | 'end';\n    sort?: 'ascending' | 'descending';\n    onSort?: () => void;\n}"
+      },
+      "TableRowProps": {
+        "entry": "data",
+        "signature": "export type TableRowProps = Omit<React.HTMLAttributes<HTMLTableRowElement>, 'children' | 'dangerouslySetInnerHTML' | 'role'> & {\n    [name: `data-${string}`]: string | number | boolean | undefined;\n};"
+      },
+      "TableProps": {
+        "entry": "data",
+        "signature": "export interface TableProps<T> {\n    caption: string;\n    rows: readonly T[];\n    columns: readonly Column<T>[];\n    keyFor: (row: T) => string;\n    rowProps?: (row: T, index: number) => TableRowProps;\n    /** Host classes/style belong to the focusable scroll region; tableClassName styles the table itself. */\n    className?: string;\n    style?: React.CSSProperties;\n    tableClassName?: string;\n    /** Keep the accessible caption when a visible section heading already names this table. */\n    captionHidden?: boolean;\n    /** Set a bounded scroll-region height through style/className for vertical sticky scrolling. */\n    stickyHeader?: boolean;\n    /** Retains existing rows and suppresses an empty message while loading. */\n    loading?: boolean;\n    /** Content of one full-width state cell, such as an empty explanation, skeleton, or error/retry UI. Supply content, not tr/td elements. null hides the default state. */\n    state?: React.ReactNode;\n}"
       },
       "Table": {
         "entry": "data",
-        "signature": "export declare function Table<T>({ caption, rows, columns, keyFor }: {\n    caption: string;\n    rows: readonly T[];\n    columns: readonly Column<T>[];\n    keyFor: (row: T) => string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Table<T>({ caption, rows, columns, keyFor, rowProps, className, style, tableClassName, captionHidden, stickyHeader, loading, state }: TableProps<T>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Field": {
         "entry": "field",
@@ -97,6 +105,30 @@
       "SearchInput": {
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
+      },
+      "GestureSheetBackendProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetBackendProps = HostBackendProps<BackendProps>;"
+      },
+      "GestureSheetContentProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetContentProps = DialogContentProps & {\n    [key: `data-${string}`]: string | number | boolean | undefined;\n};"
+      },
+      "GestureSheetHandleProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetHandleProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Handle>, 'children' | 'aria-hidden' | 'dangerouslySetInnerHTML' | 'onClick' | 'onPointerDown' | 'onPointerMove' | 'onPointerCancel'>;"
+      },
+      "GestureSheetOverlayProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetOverlayProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Overlay>, 'children' | 'asChild' | 'forceMount' | 'dangerouslySetInnerHTML'>;"
+      },
+      "GestureSheetProps": {
+        "entry": "gesture-sheet",
+        "signature": "export interface GestureSheetProps extends Omit<DialogProps, 'contentProps'> {\n    contentProps?: GestureSheetContentProps;\n    /** Backend defaults are retained, including autoFocus=false and repositionInputs=true. */\n    backendProps?: GestureSheetBackendProps;\n    /** Default anatomy pads and scrolls the card; custom anatomy leaves layout and scrolling to the host. */\n    contentMode?: 'default' | 'custom';\n    /** The real backend drag handle is included by default. */\n    handle?: boolean;\n    handleProps?: GestureSheetHandleProps;\n    handleRef?: React.Ref<HTMLDivElement>;\n    overlayProps?: GestureSheetOverlayProps;\n}"
+      },
+      "GestureSheet": {
+        "entry": "gesture-sheet",
+        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -124,7 +156,7 @@
       },
       "Dialog": {
         "entry": "overlay",
-        "signature": "export declare function Dialog({ open, onOpenChange, title, description, trigger, children, closeLabel }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Dialog(props: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Sheet": {
         "entry": "overlay",
@@ -132,11 +164,15 @@
       },
       "AlertDialog": {
         "entry": "overlay",
-        "signature": "export declare function AlertDialog({ open, onOpenChange, title, description, trigger, children, cancelLabel }: AlertDialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function AlertDialog({ cancelLabel, ...props }: AlertDialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode; /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    trigger?: React.ReactNode;\n    children: React.ReactNode;\n    /** Keep the required accessible title while the host supplies its visible heading. */\n    titleHidden?: boolean;\n    /** Keep supporting text available to assistive technology without rendering it visibly. */\n    descriptionHidden?: boolean;\n    contentProps?: DialogContentProps;\n    contentRef?: React.Ref<HTMLDivElement>;\n    /** Undefined keeps the standard action; null omits it. A custom ref-capable button is composed with Close. */\n    closeButton?: React.ReactElement | null;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n}"
+      },
+      "DialogContentProps": {
+        "entry": "overlay",
+        "signature": "export type DialogContentProps = Omit<React.ComponentPropsWithoutRef<typeof Modal.Content>, 'children' | 'asChild' | 'forceMount' | 'role' | 'dir' | 'lang' | 'id' | 'aria-labelledby' | 'aria-describedby' | 'dangerouslySetInnerHTML'>;"
       },
       "AlertDialogProps": {
         "entry": "overlay",
@@ -180,7 +216,7 @@
       },
       "MarketRow": {
         "entry": "recipes/market-row",
-        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect, priceOptions, changeOptions, mode, identity, icon, favorite, volume, className, style }: MarketRowProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "BalanceCard": {
         "entry": "recipes/balance-card",
@@ -238,9 +274,17 @@
         "entry": "selection",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (value: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "BadgeTone": {
+        "entry": "status",
+        "signature": "export type BadgeTone = 'neutral' | 'positive' | 'negative' | 'warning' | 'info';"
+      },
+      "BadgeProps": {
+        "entry": "status",
+        "signature": "export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {\n    tone?: BadgeTone;\n}"
+      },
       "Badge": {
         "entry": "status",
-        "signature": "export declare function Badge({ children }: React.PropsWithChildren): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare const Badge: React.ForwardRefExoticComponent<BadgeProps & React.RefAttributes<HTMLSpanElement>>;"
       },
       "AlertSeverity": {
         "entry": "status",
@@ -313,6 +357,10 @@
       "Separator": {
         "entry": "surface",
         "signature": "export declare function Separator(props: React.HTMLAttributes<HTMLHRElement>): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "MarketRowProps": {
+        "entry": "recipes/market-row",
+        "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity, such as symbol/name with its existing compact layout. */\n    identity?: React.ReactNode;\n});"
       }
     },
     "native": {
@@ -330,7 +378,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode;\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean; /** Caps Dynamic Type / Android font scale for the label and busy suffix (2 = 200%). Defaults to HIGProvider `maxFontSizeMultiplier`, as for HIG Text. */\n    maxFontSizeMultiplier?: number;\n}"
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label and busy suffix. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
       },
       "busyAccessibilityLabel": {
         "entry": "button",
@@ -344,21 +392,33 @@
         "entry": "button",
         "signature": "export declare function IconButton({ label, children, ...props }: ButtonProps & {\n    label: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "LinkProps": {
+        "entry": "button",
+        "signature": "export interface LinkProps extends Omit<PressableProps, 'children' | 'onPress' | 'accessibilityRole' | 'role'> {\n    href: string;\n    children: React.ReactNode; /** Host navigation replaces Linking.openURL, so one press never opens both. */\n    onPress?: PressableProps['onPress'];\n    onError?: (error: unknown) => void;\n    /** Custom content renders host label/icon nodes directly. */ contentMode?: 'default' | 'custom';\n}"
+      },
       "Link": {
         "entry": "button",
-        "signature": "export declare function Link({ href, children, onError }: React.PropsWithChildren<{\n    href: string;\n    onError?: (error: unknown) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare const Link: React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<View>>;"
       },
       "Checkbox": {
         "entry": "checkbox",
         "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "NumberTone": {
+        "entry": "data",
+        "signature": "export type NumberTone = 'text' | 'positive' | 'negative' | 'muted';"
+      },
+      "NumberReadoutStyle": {
+        "entry": "data",
+        "signature": "export type NumberReadoutStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing' | 'textAlign'>;"
+      },
       "NumberProps": {
         "entry": "data",
-        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string; /** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */\n    maxFontSizeMultiplier?: number;\n}"
+        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions; /** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */\n    formattedValue?: string;\n    stale?: boolean;\n    label?: string; /** Explicit semantic meaning; sign alone never chooses the tone. */\n    tone?: NumberTone; /** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */\n    style?: StyleProp<NumberReadoutStyle>;\n    testID?: string; /** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */\n    maxFontSizeMultiplier?: number;\n}"
       },
       "NumberReadout": {
         "entry": "data",
-        "signature": "export declare function NumberReadout({ value, options, stale, label, maxFontSizeMultiplier }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function NumberReadout({ value, options, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier }: NumberProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Usd": {
         "entry": "data",
@@ -414,11 +474,11 @@
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
-        "signature": "export interface GestureSheetProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    /** Sorted increasing detents; percentages resolve against current container geometry. */\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    dismissible?: boolean;\n    returnFocusRef?: React.RefObject<View | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n}"
+        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Modal is the default. Inline retains the screen-level backend and its child state while closed. */\n{\n    presentation?: 'modal';\n    modalRef?: React.Ref<BottomSheetModal>;\n    sheetRef?: never;\n} | {\n    presentation: 'inline';\n    sheetRef?: React.Ref<BottomSheet>;\n    modalRef?: never;\n}) & (\n/** Fixed sizing keeps sorted increasing detents. Changes retain the current index or clamp a removed detent. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly (number | `${number}%`)[];\n}\n/** Content sizing uses one backend-measured detent, without competing fixed snap points. */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n});"
       },
       "GestureSheet": {
         "entry": "gesture-sheet",
-        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, snapPoints, initialIndex, dismissible, returnFocusRef, closeLabel }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, contentMode, titleRef, presentation, sheetRef, snapPoints, enableDynamicSizing, maxDynamicContentSize, enableContentPanningGesture, keyboardBehavior, keyboardBlurBehavior, android_keyboardInputMode, initialIndex, dismissible, returnFocusRef, closeLabel, onDismiss, onChange, onHardwareBackPress, topInset, bottomInset, modalRef, handleComponent, handleStyle, handleIndicatorStyle, backgroundComponent, backgroundStyle, containerStyle, animateOnMount, animationConfigs, backdropComponent }: GestureSheetProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -450,11 +510,11 @@
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | null>;\n    returnFocusRef?: React.RefObject<View | null>; /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */\n    closeLabel?: string;\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | RNText | null>;\n    returnFocusRef?: React.RefObject<View | RNText | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */ closeLabel?: string;\n    /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */ contentMode?: 'default' | 'custom';\n    /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */ titleRef?: React.RefObject<View | RNText | null>;\n    /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */ stageComponent?: React.ComponentType<ViewProps>;\n    stageStyle?: StyleProp<ViewStyle>;\n    stageTestID?: string;\n    /** Custom-mode backdrop, including the host's dismissal policy and decoration. */ backdrop?: React.ReactNode;\n    /** Custom-mode surface layout; no implicit padding or scroll view is added. */ contentStyle?: StyleProp<ViewStyle>;\n    /** Identifies the actual modal content surface in either mode. */ testID?: string;\n    /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */ animationType?: ModalProps['animationType'];\n}"
       },
       "Dialog": {
         "entry": "overlay",
-        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children, initialFocusRef, returnFocusRef, closeLabel }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Dialog({ open, onOpenChange, title, description, children, initialFocusRef, returnFocusRef, closeLabel, contentMode, titleRef, stageComponent: Stage, stageStyle, stageTestID, backdrop, contentStyle, testID, animationType }: DialogProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Sheet": {
         "entry": "overlay",
@@ -490,7 +550,7 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered static companion faces by script and weight. Text selects the detected script and nearest registered weight. */\n    fontFamiliesByScript?: Readonly<Partial<Record<'latin' | 'ko' | 'zh', Readonly<Record<string, string>>>>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
       },
       "HIGProviderProps": {
         "entry": "provider",
@@ -498,7 +558,7 @@
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, messages }: React.PropsWithChildren<HIGProviderProps>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, fontFamiliesByScript, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, messages }: React.PropsWithChildren<HIGProviderProps>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
@@ -558,7 +618,7 @@
       },
       "Choice": {
         "entry": "selection",
-        "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
+        "signature": "export interface Choice {\n    value: string;\n    label: string; /** Optional translated name or supporting text, shown below the option label. */\n    description?: string; /** BCP-47 language of the label, for native pronunciation and shared-script punctuation. */\n    lang?: string;\n    disabled?: boolean;\n}"
       },
       "CheckedProps": {
         "entry": "selection",
@@ -571,6 +631,14 @@
       "Switch": {
         "entry": "switch",
         "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, tone, onCheckedChange }: SwitchProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "SwitchRow": {
+        "entry": "selection",
+        "signature": "export declare function SwitchRow({ label, checked, defaultChecked, disabled, onCheckedChange, children, style, accessibilityState, ...props }: SwitchRowProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "SwitchRowProps": {
+        "entry": "selection",
+        "signature": "export interface SwitchRowProps extends CheckedProps, Omit<PressableProps, 'children' | 'onPress' | 'disabled' | 'role' | 'accessibilityRole' | 'accessibilityLabel' | 'accessibilityLabelledBy' | 'aria-label' | 'aria-labelledby' | 'aria-checked' | 'aria-disabled'> {\n    /** Custom anatomy is decorative. `label` names the switch and `accessibilityHint` describes it. */ children: React.ReactNode;\n}"
       },
       "Slider": {
         "entry": "slider",
@@ -598,11 +666,15 @@
       },
       "Notice": {
         "entry": "status",
-        "signature": "export interface Notice {\n    id: string;\n    message: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}"
+        "signature": "export interface Notice {\n    id: string;\n    message: string;\n    description?: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n    /** Defaults to true when Toast has an onDismiss handler. */\n    closable?: boolean;\n}"
+      },
+      "ToastProps": {
+        "entry": "status",
+        "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss button text; defaults to HIGProvider messages.dismiss. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
       },
       "Toast": {
         "entry": "status",
-        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void; /** Dismiss button text; defaults to HIGProvider `messages.dismiss`. The accessible label comes from `messages.dismissNotice` and contains it. */\n    dismissLabel?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel, maxHeight, testID }: ToastProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Spinner": {
         "entry": "status",
@@ -616,9 +688,13 @@
         "entry": "status",
         "signature": "export declare function Skeleton({ label }: {\n    label?: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "EmptyStateProps": {
+        "entry": "status",
+        "signature": "export interface EmptyStateProps extends Omit<ViewProps, 'children'> {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    /** Decorative content, hidden from accessibility; the title and description supply its meaning. */\n    illustration?: React.ReactNode;\n    titleStyle?: TextProps['style'];\n    descriptionStyle?: TextProps['style'];\n    /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */\n    maxFontSizeMultiplier?: number;\n}"
+      },
       "EmptyState": {
         "entry": "status",
-        "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function EmptyState({ title, description, action, illustration, titleStyle, descriptionStyle, maxFontSizeMultiplier, ...props }: EmptyStateProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "Avatar": {
         "entry": "status",

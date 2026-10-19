@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-18T20:06:32.602767+00:00",
+  "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+  "head": "18967782b6e9c51ca4d7b5404f388a219a7233a8",
+  "check": {
+    "id": 117775892500,
+    "conclusion": "failure",
+    "provider": "GitGuardian",
+    "incident": "https://dashboard.gitguardian.com/workspace/277063/incidents/38367521?occurrence=305001299"
+  },
+  "finding": {
+    "commit": "f786dfca0f74e4e98b0e174f65cff278b78bb17f",
+    "path": "docs/hig/evidence/integration/native-production/report.json",
+    "line": 317,
+    "classification": "Generic High Entropy Secret",
+    "actualData": "Public Git tree SHA-1 for the packages/tokens source directory at native commit88f3fe0.",
+    "verification": "git rev-parse 88f3fe0:packages/tokens equals recorded value; git cat-file -t returns tree. Independently verified by two agents; value omitted here."
+  },
+  "currentTree": {
+    "commit": "18967782b6e9c51ca4d7b5404f388a219a7233a8",
+    "change": "Source tree hashes now use explicit gitTreeSha1 fields; report/helper/provenance agree. All twelve public tree IDs verified; measurement values unchanged.",
+    "newOccurrenceReported": false
+  },
+  "disposition": "The task user explicitly accepted the verified public Git tree hash finding as a false positive and instructed continuing. This exact finding is not a blocker for HIG work. Provider account/status has not been modified.",
+  "userDecision": {
+    "recordedAt": "2026-10-18T23:58:59.502875+00:00",
+    "instruction": "this is not an issue ingore thi sand keep going",
+    "decision": "Accepted as a false positive; ignore this exact finding and continue HIG work.",
+    "scope": "GitGuardian incident38367521 occurrence305001299; public packages/tokens Git tree SHA-1 in historical f786dfc report only.",
+    "providerState": "Existing failure remains an observed external status. No check conclusion is forged and no blanket secret-scanner exclusion is added."
+  }
+}

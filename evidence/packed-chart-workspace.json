@@ -1,0 +1,12 @@
+{
+  "issue": 96,
+  "kind": "clean packed consumer",
+  "npm": "11.6.1",
+  "checks": [
+    "fresh lockfile with strict peers and no legacy-peer-deps",
+    "chart workspace symlink retained",
+    "npm ci preserves workspace imports",
+    "HIG Button SSR"
+  ],
+  "chartAdapter": "explicit host dependency; no chart peer on the shared renderer"
+}

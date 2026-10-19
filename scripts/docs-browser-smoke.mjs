@@ -8,6 +8,7 @@ try{
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
 const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const origin=process.env.HIG_DOCS_PREVIEW_URL??'http://localhost:4174/hig/';
+const settleLayout=async()=>{await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));await page.waitForFunction(()=>document.getAnimations().every(animation=>animation.playState!=='running'||animation.effect?.getTiming().iterations===Infinity));};
 const {pages}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
 for(const entry of pages){const response=await context.request.get(origin+'docs/'+entry.route+'/');assert.equal(response.ok(),true,entry.route);assert.match(await response.text(),/\/hig\/_next\//);}
 await page.goto(origin,{waitUntil:'networkidle'});
@@ -44,6 +45,7 @@ assert.equal(await page.locator('.component-card').count(),catalog.length,'Every
 for(const entry of catalog)assert.equal(await page.locator(`.component-card[href$="/docs/${entry.route}/"]`).count(),1,entry.name);
 await page.screenshot({path:`evidence/${stage}-catalog-mobile.png`,fullPage:true});
 await page.setViewportSize({width:1440,height:1000});
+await settleLayout();
 await page.screenshot({path:`evidence/${stage}-catalog-desktop.png`,fullPage:true});
 await page.setViewportSize({width:390,height:844});
 await page.goto(origin+'docs/',{waitUntil:'networkidle'});
@@ -71,6 +73,7 @@ assert.deepEqual(violations,[]);
 assert.deepEqual(errors,[]);
 await page.screenshot({path:`evidence/${stage}-component-mobile.png`,fullPage:true});
 await page.setViewportSize({width:1440,height:1000});
+await settleLayout();
 await page.screenshot({path:`evidence/${stage}-component-desktop.png`,fullPage:true});
 await page.goto(origin+'docs/guides/components/financial-data/',{waitUntil:'networkidle'});
 assert.equal(await page.getByRole('heading',{level:1,name:'Financial data',exact:true}).count(),1);

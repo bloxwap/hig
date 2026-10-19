@@ -1,0 +1,127 @@
+{
+  "sourceCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
+  "sourceTreeDirty": false,
+  "version": "0.1.0-candidate.shac32d8408",
+  "reportSha256": "d4d20c10175aa7655b263a1d14da908c6d55b045ddf2eb87e33e23febf136d01",
+  "artifacts": [
+    {
+      "package": "@bloxwap/hig-chart",
+      "file": "bloxwap-hig-chart-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 2045,
+      "sha256": "8e59f00e6f5fcc45fcf73c89e8a1b39c700bf32d4670b2db98dd6849eda08457",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-chart-0.1.0-candidate.shac32d8408.tgz"
+    },
+    {
+      "package": "@bloxwap/hig-contracts",
+      "file": "bloxwap-hig-contracts-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 7206,
+      "sha256": "db86329fdb3903a93400367e57a9e352c54b781648f77d2b0b80bf746394a08a",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-contracts-0.1.0-candidate.shac32d8408.tgz"
+    },
+    {
+      "package": "@bloxwap/hig-feedback",
+      "file": "bloxwap-hig-feedback-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 66575,
+      "sha256": "a1cc4fde2927a670baf139306b543a38fc5ae4b2172ce8890a2a63e87c51f086",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-feedback-0.1.0-candidate.shac32d8408.tgz"
+    },
+    {
+      "package": "@bloxwap/hig-native",
+      "file": "bloxwap-hig-native-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 29279,
+      "sha256": "b742477325e6eede2a4a370f966226784a2c9a5a0fb9edc8816f5301f363ccc2",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-native-0.1.0-candidate.shac32d8408.tgz",
+      "switch-row.jsSha256": "47ba55a7b56a36dc798bec37cf10dd5aa6f7c4c7d5285088a4b5f51a1395b8eb",
+      "switch-row.d.tsSha256": "b766525ae9a0a9ee131014649ace2e5b2487c5bbd3efd41548bd6e48e8eeed16"
+    },
+    {
+      "package": "@bloxwap/hig-native-fonts",
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 4420491,
+      "sha256": "330a3a4b1a116df9071434a01dd28eca9287aeb2c26fe2ef34b8fd336c7f633c",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-native-fonts-0.1.0-candidate.shac32d8408.tgz"
+    },
+    {
+      "package": "@bloxwap/hig-og-fonts",
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 844029,
+      "sha256": "8c67f508e19d294ef6d1978b5d6db9985c69a51af0416690962fdcdbb876f947",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-og-fonts-0.1.0-candidate.shac32d8408.tgz"
+    },
+    {
+      "package": "@bloxwap/hig-react",
+      "file": "bloxwap-hig-react-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 25592,
+      "sha256": "7cf7a0e58b99229c537e44a25c9ba828c789bfc27f88cfa6aba620220b6a07ad",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-react-0.1.0-candidate.shac32d8408.tgz"
+    },
+    {
+      "package": "@bloxwap/hig-tokens",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.shac32d8408.tgz",
+      "bytes": 8226,
+      "sha256": "3e30e07c9d07d15e47b0c9c596acd3e1c6bd2a46c8574b78f8aa5912de8d1900",
+      "path": "/Users/joeblau/Developer/bloxwap/src/hig/artifacts/release-candidate/bloxwap-hig-tokens-0.1.0-candidate.shac32d8408.tgz"
+    }
+  ],
+  "previousCleanCandidate": {
+    "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+    "version": "0.1.0-candidate.sha0e239442",
+    "reportSha256": "2874bfd8b00d47ef90cbf21f4dee1cd98c5522919c08c915b4ff8386d3a799ce",
+    "preservedArchives": 8
+  },
+  "payloadComparison": [
+    {
+      "package": "@bloxwap/hig-chart",
+      "payloadEqualExcludingCoordinatedManifest": true,
+      "changedFiles": []
+    },
+    {
+      "package": "@bloxwap/hig-contracts",
+      "payloadEqualExcludingCoordinatedManifest": true,
+      "changedFiles": []
+    },
+    {
+      "package": "@bloxwap/hig-feedback",
+      "payloadEqualExcludingCoordinatedManifest": false,
+      "changedFiles": [
+        "package/README.md",
+        "package/dist/browser-haptic.d.ts",
+        "package/dist/browser-haptic.js",
+        "package/dist/web-sound.js",
+        "package/dist/web.d.ts"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-native",
+      "payloadEqualExcludingCoordinatedManifest": false,
+      "changedFiles": [
+        "package/dist/selection.d.ts",
+        "package/dist/selection.js",
+        "package/dist/switch-row.d.ts",
+        "package/dist/switch-row.js",
+        "package/dist/switch.d.ts",
+        "package/dist/switch.js"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-native-fonts",
+      "payloadEqualExcludingCoordinatedManifest": true,
+      "changedFiles": []
+    },
+    {
+      "package": "@bloxwap/hig-og-fonts",
+      "payloadEqualExcludingCoordinatedManifest": true,
+      "changedFiles": []
+    },
+    {
+      "package": "@bloxwap/hig-react",
+      "payloadEqualExcludingCoordinatedManifest": true,
+      "changedFiles": []
+    },
+    {
+      "package": "@bloxwap/hig-tokens",
+      "payloadEqualExcludingCoordinatedManifest": true,
+      "changedFiles": []
+    }
+  ]
+}

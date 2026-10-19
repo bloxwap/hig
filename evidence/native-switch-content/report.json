@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-10-19T00:15:25.638453+00:00",
+  "sourceBaseCommit": "e91660d203c9590e67adfb5cc694922c34103d42",
+  "sourceFingerprint": {
+    "packages/native/src/switch-row.tsx": {
+      "sha256": "f288ee117571a316b2fb9adc8b2e006b1bdfa1c7d6684c6044a5ba1aa41fea66"
+    },
+    "packages/native/src/switch.tsx": {
+      "sha256": "49ee835735d719bfaa32b0222fa6a543c905799630631e6c8c422ca962fd0a34"
+    },
+    "packages/native/src/selection.tsx": {
+      "sha256": "63f7baa2970082fce1162c4afcb04fd0b6e16c19062d4719d246aee0f4357f61"
+    },
+    "fixtures/native/switch-check.tsx": {
+      "sha256": "2b1f2c53a386f29848c8a9b1909af66aa179cf257285560f43026ffb26a4553e"
+    },
+    "tests/native/switch-content.test.cjs": {
+      "sha256": "663117e9df3adb3cc59e369d7067df2dc06b60b72a15f3823f5becedfb98a6a5"
+    },
+    "tests/native/switch-typecheck.tsx": {
+      "sha256": "e5534d4dbb71f57c66f7c29d2d5161558b16cb54a6db29d815b8f17e4ff2316c"
+    },
+    "scripts/native-switch-browser-smoke.mjs": {
+      "sha256": "32a459cb7f60290230600f4cc79026a07110468799e89132968d20bec164b06e"
+    },
+    "scripts/quality.mjs": {
+      "sha256": "f234d54ebd3dbf4883b76cb2c302bf07f3918a2ad03478f0fb1f18d7970241a5"
+    },
+    "scripts/run-browser-gates.mjs": {
+      "sha256": "e074c3c5ecb25ad672c8da309fd3f440e24778e607a508a573da8fc1f8dc9302"
+    },
+    "docs/components/selection.md": {
+      "sha256": "084312808bc9e36d31e6aba9a7eb61cec1e90bf52dfca5863c02ddf43e752507"
+    }
+  },
+  "contract": "Optional SwitchRow export owns one labeled switch, state and activation around noninteractive host anatomy; existing Switch renderer retained.",
+  "checks": {
+    "fullCheck": {
+      "command": "npm run check",
+      "result": "pass",
+      "webTests": 163,
+      "nativeTests": 165,
+      "nativeSuites": 16
+    },
+    "quality": {
+      "command": "npm run quality",
+      "result": "pass",
+      "nativeSwitchGzipBytes": 2153,
+      "nativeSwitchRowGzipBytes": 921,
+      "sharedUnchangedLimitBytes": 2200
+    },
+    "browsers": {
+      "command": "node scripts/native-switch-browser-smoke.mjs",
+      "result": "pass",
+      "matrix": "Chromium/WebKit at 390px/1280px",
+      "report": "browsers.json"
+    }
+  },
+  "limits": "Browser and renderer tests do not certify physical iOS/Android accessibility, screen reader speech or tactile output. Owning native callers validate their actual runtime separately.",
+  "logs": {
+    "source-check.txt": {
+      "sha256": "31b10c123590828f9dcc3f4aecb0512450fe19fcf85740d6e75f5afb4b75c51b"
+    }
+  }
+}

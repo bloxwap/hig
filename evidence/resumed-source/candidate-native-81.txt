@@ -1,0 +1,25 @@
+
+> bundle
+> expo export --platform android --platform ios --max-workers 2 --output-dir dist-switch
+
+Starting Metro Bundler
+| (node:46640) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:46641) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Android ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (582/582)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.8% (553/572)
+iOS Bundled 2267ms index.js (572 modules)
+Android Bundled 3186ms index.js (582 modules)
+
+› ios bundles (1):
+_expo/static/js/ios/index-41fc866ee38b34d73054aca8823ff353.hbc (1.75 MB)
+
+› android bundles (1):
+_expo/static/js/android/index-b1ac679ec8f6914dde9c3e6d496c1a76.hbc (1.76 MB)
+
+› Files (1):
+metadata.json (244 B)
+
+Exported: dist-switch
+rn-0.81 exact c32 SwitchRow consumer passed in /var/folders/_k/883vgjk55hg79qfxf60d9lzh0000gn/T/hig-c32-rn-0.81-PmO0Ee

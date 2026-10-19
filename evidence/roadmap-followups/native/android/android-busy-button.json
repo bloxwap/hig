@@ -1,0 +1,26 @@
+{
+ "class": "android.widget.Button",
+ "contentDescription": "Review order · Working, busy",
+ "bounds": "72 1890 708 2034",
+ "dp": "212x48",
+ "clickable": true,
+ "focusable": true,
+ "enabled": false,
+ "actions": [
+  "click"
+ ],
+ "children": [
+  {
+   "class": "android.widget.TextView",
+   "text": "Review order",
+   "bounds": "132 1998 412 2070",
+   "dp": "93x24"
+  },
+  {
+   "class": "android.widget.TextView",
+   "text": " · Working",
+   "bounds": "436 1998 648 2070",
+   "dp": "71x24"
+  }
+ ]
+}

@@ -1,0 +1,5 @@
+
+> bloxwap-hig-workspace@0.1.0 smoke:packed-boundaries
+> node scripts/packed-boundaries-smoke.mjs
+
+Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, Vaul, native, chart or feedback engines; optional gesture entry resolves only after explicit Vaul install while ordinary Dialog excludes it; scoped ./css and opt-in ./css/base resolve through exports; hig-react names no @bloxwap/chart and @bloxwap/hig-chart SSR renders with its required chart peer
