@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {resolve,join} from 'node:path';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
-const profile=process.argv[2],report=JSON.parse(readFileSync('artifacts/release-candidate/report.json')),base=resolve('artifacts/release-candidate');
+const profile=process.argv[2],report=JSON.parse(readFileSync(resolve(process.argv[3]??'artifacts/release-candidate-c32d8408','report.json'))),base=resolve(process.argv[3]??'artifacts/release-candidate-c32d8408');
 assert.equal(report.sourceCommit,'c32d8408881cdd99344a66a0d25761312b19a621');assert.equal(report.sourceTreeDirty,false);
 const nativeNames=['contracts','tokens','feedback','native','native-fonts'].map(name=>'@bloxwap/hig-'+name),artifacts=report.artifacts.filter(item=>nativeNames.includes(item.package));assert.equal(artifacts.length,5);
 for(const item of artifacts)assert.equal(createHash('sha256').update(readFileSync(join(base,item.file))).digest('hex'),item.sha256);

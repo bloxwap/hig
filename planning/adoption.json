@@ -70,7 +70,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/55"
         }
       ],
-      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117\u2013#121, Pro Table/MarketRow, optional web GestureSheet, status and custom native Dialog contracts (#110). Consumer refreshes (#115), WebKit resilience (#124) and combined owning adoption have validated drafts. Review/merge, physical devices #55, registry #56, named-owner visual/density/motion/bundle approvals #57 and future rollback retirement remain.",
+      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117\u2013#121, Pro Table/MarketRow, optional web GestureSheet, status and custom native Dialog contracts (#110). Consumer refreshes (#115), WebKit resilience (#124) and combined owning adoption have validated drafts. Review/merge, physical devices #55, registry #56, named-owner visual/density/motion/bundle approvals #57 and future rollback retirement remain. Further ordinary native profile/navigation and wallet/trade support controls are being migrated in isolated follow-ups; custom selector anatomy remains a software API task.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15",
@@ -78,7 +78,6 @@
         "pr": "https://github.com/bloxwap/hig/pull/126",
         "sourceCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
         "latestPackedCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
-        "lastGreenCICommit": "7d104f5feeb89234c576289b337ac50471661771",
         "validation": "Latest integrated source passes build/docs/lint/types,174 web / 165 native tests,212 public-import examples,SSR,quality and four SwitchRow Chromium/WebKit checks. Eight exact archives packed from clean c32d8408; all SHA-256 values verified. Six package payloads match previous 0e excluding coordinated manifests; only native and feedback payloads change. Seven staged packages clean-install with aligned versions and SSR/feedback. Exact new five-package native consumers clean-install and export SwitchRow/default Switch/Button/provider on Android and iOS for RN 0.81 / Expo 54 and RN 0.83 / Expo 55. Current-head remote checks await the normal push. Previous0e browser,simulator/emulator and production baseline records retain their original scope.",
         "ciVisibility": "Runner-list API exposes no repository-specific runners and organization listing requires unavailable admin scope; observed quality/native/browser/candidate/docs jobs at7d104f5 all completed successfully on shared runners.",
         "candidateVersion": "0.1.0-candidate.shac32d8408",
@@ -98,7 +97,14 @@
             "ordinarySwitchGzipBytes": 2153,
             "unchangedCapBytes": 2200
           },
-          "nextCandidate": "Clean c32d8408 candidate built, exact packed native profiles pass, and isolated native owning follow-up is validating its five matching archives; original 0e candidate remains immutable."
+          "nextCandidate": "Clean c32d8408 candidate built, exact packed native profiles pass, and isolated native owning follow-up is validating its five matching archives; original 0e candidate remains immutable.",
+          "nativeActions": {
+            "sourceCommit": "d6f9185326f1dee1a14992db43bfa313a774776a",
+            "contract": "Button custom child layout and Link host navigation/ref/root props; default behavior retained",
+            "evidence": "evidence/native-action-content/report.json",
+            "validation": "174 web / 169 native; build/docs/lint/types/quality,212 examples,SSR and four actual browser cases pass",
+            "candidate": "New clean pack pending; existing c32 and0e candidates remain immutable"
+          }
         },
         "previousCleanCandidates": [
           {
@@ -108,7 +114,8 @@
             "validation": "Full build/docs/lint/types,163 web / 161 native tests; quality560138 gzip bytes docs JS after removing duplicate client chapters; clean eight-archive candidate 0e239442 verified. Seven non-native payloads match ec6535bb excluding coordinated metadata. Both RN 0.81 / Expo 54 and RN 0.83 / Expo 55 packed regular, gesture and adoption Android/iOS exports and fonts pass; fresh packed web/boundaries,212 examples,SSR,seven-package staged install, full Chromium/WebKit browser, catalog (104 states), axe and Next pass. Native custom Dialog retains one Modal with host anatomy, Back, reduced motion and dismissal-aware focus. All quality/native/browser/candidate and docs checks passed at 7d104f5 (twelve successes, expected docs deploy skip)."
           }
         ],
-        "reportSha256": "d4d20c10175aa7655b263a1d14da908c6d55b045ddf2eb87e33e23febf136d01"
+        "reportSha256": "d4d20c10175aa7655b263a1d14da908c6d55b045ddf2eb87e33e23febf136d01",
+        "recordedGreenCICommit": "e5cc5c2b7b6383551e54ba2bd69d2dc0174ec841"
       }
     },
     {
@@ -523,6 +530,21 @@
         "evidence": "docs/hig/evidence/issue-100-host",
         "validation": "1920x1080 stage/admin geometry/text/keyboard and deterministic mocks; build/types/lint;970tests;OpenNext/workerd smokes; four seeded-avatar SVG identities preserved.",
         "limits": "Static fonts +12,790,016B; cold English font responses +527,552B. This is measured candidate evidence, not owner bundle/brand approval; default-branch exceptions remain."
+      },
+      "additionalSponsorControls": {
+        "pr": "https://github.com/bloxwap/taptradetv/pull/220",
+        "head": "ff22cb5edfbeeee10d5b4c04904eb1a36985a170",
+        "base": "https://github.com/bloxwap/taptradetv/pull/216",
+        "scope": "Existing /sponsors route only; canonical controls and associated fields; account date hydration fixed; no global brand or new-route change",
+        "candidate": "0.1.0-candidate.sha0e239442",
+        "validation": "311 app tests;48 browser cases;4 SSR-cookie cases;all27 font files byte-identical;JS -11,543gzip /CSS +510gzip bytes",
+        "remote": "Normal push; checks running"
+      },
+      "streamViewerFocus": {
+        "pr": "https://github.com/bloxwap/taptradetv/pull/219",
+        "head": "a001bcb941ab616abaad2036d3da9a74a7b35572",
+        "validation": "4 actual component tests;8 Chromium/WebKit cases;resting pixels unchanged;all10 remote checks including automatic previews pass",
+        "scope": "Focus keeps video controls visible; pointer/blur/source/unmount timer lifecycle retained; no HIG archive or media change"
       }
     },
     {
