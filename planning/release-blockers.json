@@ -26,8 +26,8 @@
   {
     "id": "physical-devices",
     "owner": "HIG/native/haptic maintainers",
-    "reason": "iOS Simulator and Android emulator runs are recorded in evidence/native-sim/. Physical iOS/Android, VoiceOver/TalkBack with real input, display colour/font, audible and tactile observations are not available.",
-    "status": "blocked",
+    "reason": "Resolved by dated, owner-approved exception on 2026-10-19 (evidence/physical/owner-attestation-2026-10-19.md): the owner attests every #55 checklist item works on physical hardware. This is an owner attestation, not a recorded device observation; automated, browser, iOS Simulator and Android emulator evidence remains separately labeled. Any future contradicting physical run voids the exception for that item and requires a linked failure issue. Upstream physical tactile tracking stays open at bloxwap/haptic#9.",
+    "status": "excepted",
     "tracking": "https://github.com/bloxwap/hig/issues/55",
     "reviewBy": "2027-01-15"
   },
