@@ -5389,5 +5389,11 @@
       ]
     }
   ],
-  "historicalSnapshotSha256": "3444c8031ed22f58dabdc2344671ba2f6df52585ad294f6b473da0839ec022cd"
+  "historicalSnapshotSha256": "3444c8031ed22f58dabdc2344671ba2f6df52585ad294f6b473da0839ec022cd",
+  "userAcceptedFinding": {
+    "recordedAt": "2026-10-18T23:58:59.502875+00:00",
+    "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+    "incident": "https://dashboard.gitguardian.com/workspace/277063/incidents/38367521?occurrence=305001299",
+    "decision": "User accepted exact historical public Git tree hash finding as false positive and instructed continuing. Raw dated check results above remain unchanged; the finding is not a HIG-work blocker."
+  }
 }
