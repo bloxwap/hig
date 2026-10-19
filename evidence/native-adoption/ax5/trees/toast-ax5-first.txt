@@ -1,0 +1,99 @@
+Optional(Attributes: Application, 0x10686c280, pid: 95971, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, 0x10686c280, pid: 95971, label: 'Bloxwap HIG Gallery'
+    Window (Main), 0x10686c3c0, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10686c500, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x10686c640, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x10686c780, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x10686c8c0, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x10686ca00, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x10686cb40, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10686cc80, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10686cdc0, {{0.0, 0.0}, {402.0, 874.0}}
+                    Button, 0x10686cf00, {{16.0, 78.0}, {83.7, 55.3}}, label: 'Type'
+                    Button, 0x10686d040, {{107.7, 78.0}, {110.3, 55.3}}, label: 'Notices'
+                    Button, 0x10686d180, {{226.0, 78.0}, {93.0, 55.3}}, label: 'Sheet'
+                    StaticText, 0x10686d2c0, {{16.0, 145.3}, {370.0, 26.0}}, identifier: 'adoption-ready', label: 'Adoption toast · scale 3.57 · locale en-US'
+                      StaticText, 0x10686d400, {{16.0, 145.3}, {370.0, 26.0}}, label: 'Adoption toast · scale 3.57 · locale en-US'
+                    StaticText, 0x10686d540, {{16.0, 183.3}, {370.0, 26.0}}, identifier: 'adoption-result', label: 'Ready'
+                      StaticText, 0x10686d680, {{16.0, 183.3}, {370.0, 26.0}}, label: 'Ready'
+                    Other, 0x10686d7c0, {{16.0, 221.3}, {370.0, 524.3}}, identifier: 'adoption-toast'
+                    Other, 0x10686d900, {{16.0, 221.3}, {370.0, 524.3}}, label: 'Notifications'
+                      ScrollView, 0x10686da40, {{16.0, 221.3}, {370.0, 524.3}}
+                        Other, 0x10686db80, {{16.0, 221.3}, {370.0, 6031.3}}
+                          Other, 0x10686dcc0, {{16.0, 221.3}, {370.0, 6031.3}}
+                            Other, 0x10686de00, {{16.0, 221.3}, {370.0, 760.7}}
+                            StaticText, 0x10686df40, {{32.0, 234.3}, {341.0, 171.7}}, label: 'Request 1 failed'
+                              StaticText, 0x10686e080, {{32.0, 234.3}, {341.0, 171.7}}, label: 'Request 1 failed'
+                            StaticText, 0x10686e1c0, {{32.0, 406.0}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x10686e300, {{32.0, 406.0}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x10686e440, {{32.0, 749.0}, {225.3, 110.0}}, identifier: 'adoption-retry-1', label: 'Retry 1'
+                              StaticText, 0x10686e580, {{52.0, 761.0}, {185.3, 86.0}}, label: 'Retry 1'
+                                StaticText, 0x10686e6c0, {{52.0, 761.0}, {185.3, 86.0}}, label: 'Retry 1'
+                            Button, 0x10686e800, {{32.0, 859.0}, {235.0, 110.0}}, label: 'Dismiss Request 1 failed'
+                              StaticText, 0x10686e940, {{52.0, 871.0}, {195.0, 86.0}}, label: 'Dismiss'
+                                StaticText, 0x10686ea80, {{52.0, 871.0}, {195.0, 86.0}}, label: 'Dismiss'
+                            Other, 0x10686ebc0, {{16.0, 990.0}, {370.0, 650.7}}
+                            StaticText, 0x10686ed00, {{32.0, 1003.0}, {341.0, 171.7}}, label: 'Request 2 failed'
+                              StaticText, 0x10686ee40, {{32.0, 1003.0}, {341.0, 171.7}}, label: 'Request 2 failed'
+                            StaticText, 0x10686ef80, {{32.0, 1174.7}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x10686f0c0, {{32.0, 1174.7}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x10686f200, {{32.0, 1517.7}, {225.3, 110.0}}, identifier: 'adoption-retry-2', label: 'Retry 2'
+                            Other, 0x10686f340, {{16.0, 1648.7}, {370.0, 760.7}}
+                            StaticText, 0x10686f480, {{32.0, 1661.7}, {341.0, 171.7}}, label: 'Request 3 failed'
+                              StaticText, 0x10686f5c0, {{32.0, 1661.7}, {341.0, 171.7}}, label: 'Request 3 failed'
+                            StaticText, 0x10686f700, {{32.0, 1833.3}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x10686f840, {{32.0, 1833.3}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x10686f980, {{32.0, 2176.3}, {225.3, 110.0}}, identifier: 'adoption-retry-3', label: 'Retry 3'
+                            Button, 0x10686fac0, {{32.0, 2286.3}, {235.0, 110.0}}, label: 'Dismiss Request 3 failed'
+                            Other, 0x10686fc00, {{16.0, 2417.3}, {370.0, 760.7}}
+                            StaticText, 0x10686fd40, {{32.0, 2430.3}, {341.0, 171.7}}, label: 'Request 4 failed'
+                              StaticText, 0x10686fe80, {{32.0, 2430.3}, {341.0, 171.7}}, label: 'Request 4 failed'
+                            StaticText, 0x103666940, {{32.0, 2602.0}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x103667480, {{32.0, 2602.0}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x1036675c0, {{32.0, 2945.0}, {225.3, 110.0}}, identifier: 'adoption-retry-4', label: 'Retry 4'
+                            Button, 0x103667700, {{32.0, 3055.0}, {235.0, 110.0}}, label: 'Dismiss Request 4 failed'
+                            Other, 0x103667840, {{16.0, 3186.0}, {370.0, 760.7}}
+                            StaticText, 0x103667980, {{32.0, 3199.0}, {341.0, 171.7}}, label: 'Request 5 failed'
+                              StaticText, 0x103667e80, {{32.0, 3199.0}, {341.0, 171.7}}, label: 'Request 5 failed'
+                            StaticText, 0x103667c00, {{32.0, 3370.7}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x103667d40, {{32.0, 3370.7}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x103667ac0, {{32.0, 3713.7}, {225.3, 110.0}}, identifier: 'adoption-retry-5', label: 'Retry 5'
+                            Button, 0x106874000, {{32.0, 3823.7}, {235.0, 110.0}}, label: 'Dismiss Request 5 failed'
+                            Other, 0x106874140, {{16.0, 3954.7}, {370.0, 760.7}}
+                            StaticText, 0x106874280, {{32.0, 3967.7}, {341.0, 171.7}}, label: 'Request 6 failed'
+                              StaticText, 0x1068743c0, {{32.0, 3967.7}, {341.0, 171.7}}, label: 'Request 6 failed'
+                            StaticText, 0x106874500, {{32.0, 4139.3}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x106874640, {{32.0, 4139.3}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x106874780, {{32.0, 4482.3}, {225.3, 110.0}}, identifier: 'adoption-retry-6', label: 'Retry 6'
+                            Button, 0x1068748c0, {{32.0, 4592.3}, {235.0, 110.0}}, label: 'Dismiss Request 6 failed'
+                            Other, 0x106874a00, {{16.0, 4723.3}, {370.0, 760.7}}
+                            StaticText, 0x106874b40, {{32.0, 4736.3}, {341.0, 171.7}}, label: 'Request 7 failed'
+                              StaticText, 0x106874c80, {{32.0, 4736.3}, {341.0, 171.7}}, label: 'Request 7 failed'
+                            StaticText, 0x106874dc0, {{32.0, 4908.0}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x106874f00, {{32.0, 4908.0}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x106875040, {{32.0, 5251.0}, {225.3, 110.0}}, identifier: 'adoption-retry-7', label: 'Retry 7'
+                            Button, 0x106875180, {{32.0, 5361.0}, {235.0, 110.0}}, label: 'Dismiss Request 7 failed'
+                            Other, 0x1068752c0, {{16.0, 5492.0}, {370.0, 760.7}}
+                            StaticText, 0x106875400, {{32.0, 5505.0}, {341.0, 171.7}}, label: 'Request 8 failed'
+                              StaticText, 0x106875540, {{32.0, 5505.0}, {341.0, 171.7}}, label: 'Request 8 failed'
+                            StaticText, 0x106875680, {{32.0, 5676.7}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                              StaticText, 0x1068757c0, {{32.0, 5676.7}, {341.0, 343.0}}, label: 'Check your connection before retrying.'
+                            Button, 0x106875900, {{32.0, 6019.7}, {225.3, 110.0}}, identifier: 'adoption-retry-8', label: 'Retry 8'
+                            Button, 0x106875a40, {{32.0, 6129.7}, {235.0, 110.0}}, label: 'Dismiss Request 8 failed'
+                        Other, 0x106875b80, {{353.0, 221.3}, {30.0, 524.3}}, label: 'Vertical scroll bar, 12 pages', value: 0%
+                          Other, 0x106875cc0, {{380.0, 224.3}, {3.0, 132.3}}
+                        Other, 0x106875e00, {{16.0, 712.7}, {370.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x106875f40, {{65.0, 739.7}, {272.0, 3.0}}
+                        Other, 0x106876080, {{353.0, 221.3}, {30.0, 524.3}}, label: 'Vertical scroll bar, 12 pages', value: 0%
+                          Other, 0x1068761c0, {{380.0, 224.3}, {3.0, 132.3}}
+                        Other, 0x106876300, {{16.0, 712.7}, {370.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x106876440, {{65.0, 739.7}, {272.0, 3.0}}
+Path to element:
+ →Application, 0x10686c280, pid: 95971, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, 0x106876580, pid: 95971, label: 'Bloxwap HIG Gallery'
+  }
+)

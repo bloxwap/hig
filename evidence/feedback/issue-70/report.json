@@ -1,0 +1,153 @@
+{
+  "issue": "https://github.com/bloxwap/hig/issues/70",
+  "checkedAt": "2026-10-19T00:05:34.438554+00:00",
+  "sourceBaseline": "3561b12a4887c9e09ac79409fe1fb4cd5ab3ef83",
+  "stackBase": "hig/roadmap-followups",
+  "scope": "Forward-ready adapter source; no coordinated candidate regeneration or publication",
+  "upstream": {
+    "sfx": {
+      "main": "1be6630fe0bdea2cf08f5ffb1948beb51ec49caf",
+      "mergedApi": "https://github.com/bloxwap/sfx/pull/51",
+      "releaseTested": "0.1.0",
+      "releasedSignalSupport": false
+    },
+    "haptic": {
+      "main": "8b1ab578e2f06fbf2cd941697b1a93440e396bc9",
+      "mergedApi": "https://github.com/bloxwap/haptic/pull/30",
+      "releaseTested": "0.1.0",
+      "releasedImperativeExports": false
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": "packages/feedback/src/web-sound.ts",
+      "sha256": "399778d71c2bf8f5ce0abd0426476c1cfb30730b0c462af71c3fb3eb88c4cf08"
+    },
+    {
+      "path": "packages/feedback/src/browser-haptic.ts",
+      "sha256": "51ca20332a629b237e265cb33c65ae613c5a6754e2c41aaf84db3679e9b9ad1b"
+    },
+    {
+      "path": "packages/feedback/src/web.tsx",
+      "sha256": "52ded5ef7f228095b3d6019f54121a0d9ca1e2803aecec4aa4645036d6570158"
+    },
+    {
+      "path": "tests/feedback-upstream.test.ts",
+      "sha256": "ecfeed069b8c132a935f54997d4da745ff1046510cb300fffc7132fce02cc9fd"
+    },
+    {
+      "path": "tests/feedback-adapters.test.ts",
+      "sha256": "8fce39008a771af6f698110fc51762ae2013d18d2ab0bcfe893ee65c3af2b334"
+    },
+    {
+      "path": "scripts/packed-boundaries-smoke.mjs",
+      "sha256": "f421102e4f45ffb11f0d36449ca4a158e0abb7747bac849313bb961c785be488"
+    }
+  ],
+  "fixtureProvenance": "../../../tests/fixtures/upstream-feedback/provenance.json",
+  "fixtureManifestSha256": "cd678be83db807bccda11ea3672170ef8cbeb258d5123fe6a625c1b4ef842e2e",
+  "releasedCompatibilityDependencies": {
+    "@bloxwap/sfx": {
+      "version": "0.1.0",
+      "integrity": "sha512-cFkuhHJugIwxsmsNuREO4isS+K3h/Qoa7uvFhPj25euspzQ9N9qcBRb7ZqTRSMnctH5WQWTMXTpYwPqYJvBKOg==",
+      "resolved": "https://registry.npmjs.org/@bloxwap/sfx/-/sfx-0.1.0.tgz"
+    },
+    "@bloxwap/haptic": {
+      "version": "0.1.0",
+      "integrity": "sha512-GZI5wxLNHKPwpu1Q1mGZWRQjLLVP1lZ2UyC2moB/w+R7WwWZ5cINMsPVE5U/eRL4GzJqOi7w2Qwo5K+3DkOx2Q==",
+      "resolved": "https://registry.npmjs.org/@bloxwap/haptic/-/haptic-0.1.0.tgz"
+    },
+    "web-haptics": {
+      "version": "0.0.6",
+      "integrity": "sha512-eCzcf1LDi20+Fr0x9V3OkX92k0gxEQXaHajmhXHitsnk6SxPeshv8TBtBRqxyst8HI1uf2FyFVE7QS3jo1gkrw==",
+      "resolved": "https://registry.npmjs.org/web-haptics/-/web-haptics-0.0.6.tgz"
+    }
+  },
+  "environment": {
+    "node": "v22.22.0",
+    "platform": "macOS ARM64",
+    "deviceActuation": false
+  },
+  "checks": [
+    {
+      "command": "npx vitest run tests/feedback-adapters.test.ts tests/feedback-upstream.test.ts",
+      "result": "passed",
+      "log": "focused-tests.txt",
+      "sha256": "94e1061d9937e7c3088d4e53f1c412067c1432683312759f64474759b4491341",
+      "originalLogSha256": "ee93d7cea78db88530d0117a5d22547885b323813cd5de4daf3e35f523cf012b"
+    },
+    {
+      "command": "eslint feedback source, adapter tests, pinned fixtures and packed-boundary tool",
+      "result": "passed",
+      "log": "focused-lint.txt",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "originalLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "NEXT_TELEMETRY_DISABLED=1 npm run check",
+      "result": "passed",
+      "log": "full-check.txt",
+      "sha256": "f0035963f2c8b6f30d6933bf0e02e4c5b7430ec8f9eca4dab2e306494d8bcb8e",
+      "originalLogSha256": "18676bd7a70f3359bf1a46d0ac7f80785aa8b3e49212004eb7e34f7dacfa20c5"
+    },
+    {
+      "command": "tsc --noEmit",
+      "result": "passed",
+      "log": "types.txt",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "originalLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "npm run smoke:ssr",
+      "result": "passed",
+      "log": "ssr.txt",
+      "sha256": "c061b796c7bcf2a884c9470acf05814506554c4311d6e275336632b29ff78d7b",
+      "originalLogSha256": "c061b796c7bcf2a884c9470acf05814506554c4311d6e275336632b29ff78d7b"
+    },
+    {
+      "command": "npm run smoke:packed",
+      "result": "passed",
+      "log": "packed.txt",
+      "sha256": "599d8f76edfad171468c852e188fb7c4e71ee0998987c7e4422f8d55f77968df",
+      "originalLogSha256": "599d8f76edfad171468c852e188fb7c4e71ee0998987c7e4422f8d55f77968df"
+    },
+    {
+      "command": "npm run smoke:packed-boundaries",
+      "result": "passed",
+      "log": "boundaries.txt",
+      "sha256": "0b626b71877d13b467a5b844891a30f79ca500b462002a8923446825449c6eaf",
+      "originalLogSha256": "0b626b71877d13b467a5b844891a30f79ca500b462002a8923446825449c6eaf"
+    }
+  ],
+  "results": {
+    "focusedTests": 23,
+    "newUpstreamIntegrationTests": 11,
+    "webTests": 174,
+    "nativeTests": 161,
+    "nativeSuites": 15,
+    "packedOptionalBrowserEntryWithoutPeers": true,
+    "fullProductionDocsBuild": true
+  },
+  "sourceBehavior": {
+    "sfx": "One lazily allocated AbortController per adapter/cancel cycle; generations/refcount/global engine ownership preserved; source implementation cancels all owned buffered/live voices and leaves other roots/host voices playing; reuses a fresh scope after cancel.",
+    "haptic": "Optional exact public canTriggerHaptic/triggerHaptic functions are structurally injected. Capability is probed for each request; no default eager import or helper DOM. Default/vibrate fallback patterns preserved; disposal stops future playback.",
+    "oldRelease": "SFX0.1.0 accepts the extra option but cannot stop active voices; Haptic0.1.0 fallback retains behavior without nonexistent exports. Tests assert those limitations."
+  },
+  "limitations": [
+    "These upstream APIs are merged but remain absent from npm releases; source integration does not complete released adoption.",
+    "The merged Haptic API reports imperative iOS output unavailable, including during transient activation. Eligible physical targets remain separate.",
+    "Browser vibration cancellation remains document-wide because no per-root handle exists.",
+    "All upstream AudioContext/vibration operations are recording fakes; there is no physical output, acoustic/tactile/assistive-technology certification or device actuation.",
+    "Native preloaded dispatch remains unchanged; existing native simulation/device requirements stay separately tracked."
+  ],
+  "verificationNotes": [
+    "First boundary invocation preceded local tarball creation and failed ENOENT. Running the repository order (smoke:packed then boundaries) passed; no product, assertion or timeout change.",
+    "After full check, strengthened the multi-voice scope assertion and added the packed no-peer browser boundary; focused tests/types/lint and the boundary check passed on final content.",
+    "Saved logs normalize only carriage returns, trailing horizontal whitespace and final blank lines; original hashes retained."
+  ],
+  "dependencyLockChanged": false,
+  "coordinatedCandidateRegenerated": false,
+  "published": false,
+  "deployed": false,
+  "remoteChecks": "Pending normal push and draft PR; final exact-head CI reported to parent separately."
+}

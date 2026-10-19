@@ -1,0 +1,10 @@
+{
+  "kind": "automated browser",
+  "issue": 95,
+  "browser": "141.0.7390.37",
+  "checks": [
+    "plain table, cells, range, focus outline, box sizing, and severity unchanged by component CSS",
+    "HIG table and button keep component styles",
+    "global defaults require explicit css/base import"
+  ]
+}

@@ -1,0 +1,640 @@
+[
+ {
+  "class": "android.widget.FrameLayout",
+  "bounds": "0 0 1260 2736",
+  "dp": "420x912",
+  "children": [
+   {
+    "class": "android.widget.LinearLayout",
+    "bounds": "0 0 1260 2736",
+    "dp": "420x912",
+    "important": false,
+    "children": [
+     {
+      "class": "android.widget.FrameLayout",
+      "bounds": "0 0 1260 2736",
+      "dp": "420x912",
+      "important": false,
+      "children": [
+       {
+        "class": "android.widget.LinearLayout",
+        "id": "com.bloxwap.hig.gallery:id\/action_bar_root",
+        "bounds": "0 0 1260 2736",
+        "dp": "420x912",
+        "important": false,
+        "children": [
+         {
+          "class": "android.widget.FrameLayout",
+          "id": "android:id\/content",
+          "bounds": "0 0 1260 2736",
+          "dp": "420x912",
+          "important": false,
+          "children": [
+           {
+            "class": "android.widget.FrameLayout",
+            "bounds": "0 0 1260 2736",
+            "dp": "420x912",
+            "important": false,
+            "children": [
+             {
+              "class": "android.view.ViewGroup",
+              "bounds": "0 0 1260 2736",
+              "dp": "420x912",
+              "important": false,
+              "children": [
+               {
+                "class": "android.view.ViewGroup",
+                "bounds": "0 0 1260 2736",
+                "dp": "420x912",
+                "important": false,
+                "children": [
+                 {
+                  "class": "android.widget.ScrollView",
+                  "bounds": "0 72 1260 2664",
+                  "dp": "420x864",
+                  "focusable": true,
+                  "actions": [
+                   "scrollForward"
+                  ],
+                  "children": [
+                   {
+                    "class": "android.view.ViewGroup",
+                    "bounds": "0 72 1260 2664",
+                    "dp": "420x864",
+                    "important": false,
+                    "children": [
+                     {
+                      "class": "com.horcrux.svg.SvgView",
+                      "contentDescription": "Bloxwap",
+                      "bounds": "72 144 168 240",
+                      "dp": "32x32",
+                      "focusable": true,
+                      "children": [
+                       {
+                        "class": "com.horcrux.svg.GroupView",
+                        "bounds": "72 144 168 240",
+                        "dp": "32x32",
+                        "important": false,
+                        "children": [
+                         {
+                          "class": "com.horcrux.svg.RectView",
+                          "bounds": "72 144 168 240",
+                          "dp": "32x32",
+                          "important": false
+                         },
+                         {
+                          "class": "com.horcrux.svg.GroupView",
+                          "bounds": "95 167 145 217",
+                          "dp": "17x17",
+                          "important": false,
+                          "children": [
+                           {
+                            "class": "com.horcrux.svg.PathView",
+                            "bounds": "95 167 106 178",
+                            "dp": "4x4",
+                            "important": false
+                           },
+                           {
+                            "class": "com.horcrux.svg.PathView",
+                            "bounds": "96 168 144 216",
+                            "dp": "16x16",
+                            "important": false
+                           },
+                           {
+                            "class": "com.horcrux.svg.PathView",
+                            "bounds": "134 206 145 217",
+                            "dp": "4x4",
+                            "important": false
+                           }
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.view.View",
+                      "text": "Native HIG gallery",
+                      "bounds": "72 276 1188 366",
+                      "dp": "372x30",
+                      "heading": true
+                     },
+                     {
+                      "class": "android.widget.Button",
+                      "contentDescription": "Component: Button",
+                      "bounds": "72 402 602 546",
+                      "dp": "177x48",
+                      "clickable": true,
+                      "focusable": true,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Component: Button",
+                        "bounds": "132 438 542 510",
+                        "dp": "137x24"
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.widget.Button",
+                      "contentDescription": "Example state: busy",
+                      "bounds": "72 582 614 726",
+                      "dp": "181x48",
+                      "clickable": true,
+                      "focusable": true,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Example state: busy",
+                        "bounds": "132 618 554 690",
+                        "dp": "141x24"
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "0.1.0 · pinned Bloxwap Sans static faces registered",
+                      "bounds": "72 762 1188 834",
+                      "dp": "372x24"
+                     },
+                     {
+                      "class": "android.view.ViewGroup",
+                      "id": "native-diagnostics",
+                      "bounds": "72 870 1188 1926",
+                      "dp": "372x352"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Runtime: android 35 · RN 0.83.10 · Hermes yes",
+                      "bounds": "72 870 1188 942",
+                      "dp": "372x24"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Font scale: 1.00 (PixelRatio 1.00) · window 420x912 @3x",
+                      "bounds": "72 942 1188 1086",
+                      "dp": "372x48"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "OS RTL: false · HIG direction: ltr",
+                      "bounds": "72 1086 1188 1158",
+                      "dp": "372x24"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "OS reduce motion: false · screen reader: false",
+                      "bounds": "72 1158 1188 1230",
+                      "dp": "372x24"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Feedback calls: #1 sound configure called | #2 sound configure resolved",
+                      "bounds": "72 1230 1188 1374",
+                      "dp": "372x48"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Mixed script: Bloxwap 한국어 中文 العربية Ελληνικά ₿ 0.0001",
+                      "bounds": "72 1374 1188 1518",
+                      "dp": "372x48"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "1,111.11",
+                      "bounds": "72 1518 1188 1590",
+                      "dp": "372x24"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "8,888.88",
+                      "bounds": "72 1590 1188 1662",
+                      "dp": "372x24"
+                     },
+                     {
+                      "class": "android.view.ViewGroup",
+                      "bounds": "72 1662 1188 1926",
+                      "dp": "372x88",
+                      "important": false
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Code ligatures",
+                      "bounds": "132 1722 1128 1794",
+                      "dp": "332x24"
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "a >= b && c !== d => 0x10",
+                      "bounds": "132 1794 1128 1866",
+                      "dp": "332x24",
+                      "focusable": true
+                     },
+                     {
+                      "class": "android.widget.Button",
+                      "contentDescription": "Review order · Working, busy",
+                      "bounds": "72 1962 708 2106",
+                      "dp": "212x48",
+                      "clickable": true,
+                      "focusable": true,
+                      "enabled": false,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Review order",
+                        "bounds": "132 1998 412 2070",
+                        "dp": "93x24"
+                       },
+                       {
+                        "class": "android.widget.TextView",
+                        "text": " · Working",
+                        "bounds": "436 1998 648 2070",
+                        "dp": "71x24"
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.view.ViewGroup",
+                      "bounds": "72 2142 1188 2664",
+                      "dp": "372x174",
+                      "important": false
+                     },
+                     {
+                      "class": "android.view.View",
+                      "text": "Review BTC order",
+                      "bounds": "132 2202 1128 2292",
+                      "dp": "332x30",
+                      "heading": true
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Amount (BTC)",
+                      "bounds": "132 2328 1128 2400",
+                      "dp": "332x24"
+                     },
+                     {
+                      "class": "android.widget.EditText",
+                      "text": "0.01",
+                      "contentDescription": "Amount (BTC)",
+                      "hint": "",
+                      "bounds": "132 2424 1128 2568",
+                      "dp": "332x48",
+                      "clickable": true,
+                      "focusable": true,
+                      "editable": true,
+                      "inputType": 24578,
+                      "actions": [
+                       "click",
+                       "longClick",
+                       "setText"
+                      ]
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Available: 0.25 BTC",
+                      "bounds": "132 2592 1128 2664",
+                      "dp": "332x24"
+                     },
+                     {
+                      "class": "android.widget.Button",
+                      "contentDescription": "Review order",
+                      "bounds": "132 2700 1128 2664",
+                      "dp": "332x-12",
+                      "clickable": true,
+                      "focusable": true,
+                      "visible": false,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Review order",
+                        "bounds": "490 2736 770 2664",
+                        "dp": "93x-24",
+                        "visible": false
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.view.ViewGroup",
+                      "bounds": "72 2940 1188 2664",
+                      "dp": "372x-92",
+                      "visible": false,
+                      "important": false
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Sample balance",
+                      "bounds": "132 3000 1128 2664",
+                      "dp": "332x-112",
+                      "visible": false
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "$1,250.45",
+                      "bounds": "132 3072 1128 2664",
+                      "dp": "332x-136",
+                      "visible": false
+                     },
+                     {
+                      "class": "android.widget.Button",
+                      "contentDescription": "Bitcoin (BTC)",
+                      "bounds": "72 3276 458 2664",
+                      "dp": "129x-204",
+                      "clickable": true,
+                      "focusable": true,
+                      "visible": false,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Bitcoin (BTC)",
+                        "bounds": "132 3312 398 2664",
+                        "dp": "89x-216",
+                        "visible": false
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "$67,234.56",
+                      "bounds": "661 3276 893 2664",
+                      "dp": "77x-204",
+                      "visible": false
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "2.5%",
+                      "bounds": "1096 3276 1188 2664",
+                      "dp": "31x-204",
+                      "visible": false
+                     },
+                     {
+                      "class": "android.widget.Switch",
+                      "contentDescription": "Sound",
+                      "bounds": "72 3492 1188 2664",
+                      "dp": "372x-276",
+                      "clickable": true,
+                      "focusable": true,
+                      "checked": true,
+                      "visible": false,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Sound",
+                        "bounds": "72 3496 203 2664",
+                        "dp": "44x-277",
+                        "visible": false
+                       },
+                       {
+                        "class": "android.view.ViewGroup",
+                        "bounds": "239 3492 379 2664",
+                        "dp": "47x-276",
+                        "visible": false,
+                        "important": false,
+                        "children": [
+                         {
+                          "class": "android.widget.Switch",
+                          "stateDescription": "ON",
+                          "bounds": "239 3492 379 2664",
+                          "dp": "47x-276",
+                          "clickable": true,
+                          "focusable": true,
+                          "checked": true,
+                          "visible": false,
+                          "important": false,
+                          "actions": [
+                           "click"
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.widget.Switch",
+                      "contentDescription": "Haptics",
+                      "bounds": "72 3672 1188 2664",
+                      "dp": "372x-336",
+                      "clickable": true,
+                      "focusable": true,
+                      "checked": true,
+                      "visible": false,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Haptics",
+                        "bounds": "72 3676 227 2664",
+                        "dp": "52x-337",
+                        "visible": false
+                       },
+                       {
+                        "class": "android.view.ViewGroup",
+                        "bounds": "263 3672 403 2664",
+                        "dp": "47x-336",
+                        "visible": false,
+                        "important": false,
+                        "children": [
+                         {
+                          "class": "android.widget.Switch",
+                          "stateDescription": "ON",
+                          "bounds": "263 3672 403 2664",
+                          "dp": "47x-336",
+                          "clickable": true,
+                          "focusable": true,
+                          "checked": true,
+                          "visible": false,
+                          "important": false,
+                          "actions": [
+                           "click"
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Volume: 30",
+                      "bounds": "72 3852 1188 2664",
+                      "dp": "372x-396",
+                      "visible": false
+                     },
+                     {
+                      "class": "android.widget.SeekBar",
+                      "contentDescription": "Volume",
+                      "bounds": "72 3924 1188 2664",
+                      "dp": "372x-420",
+                      "focusable": true,
+                      "visible": false,
+                      "range": "0.0..100.0 now 30.0",
+                      "actions": [
+                       "Increase",
+                       "Decrease",
+                       "setProgress"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.SeekBar",
+                        "stateDescription": "30%",
+                        "bounds": "72 3969 1188 2664",
+                        "dp": "372x-435",
+                        "focusable": true,
+                        "visible": false,
+                        "important": false,
+                        "range": "0.0..100.0 now 30.0",
+                        "actions": [
+                         "scrollBackward",
+                         "scrollForward",
+                         "setProgress"
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.widget.Switch",
+                      "contentDescription": "Motion",
+                      "bounds": "72 4104 1188 2664",
+                      "dp": "372x-480",
+                      "clickable": true,
+                      "focusable": true,
+                      "checked": true,
+                      "visible": false,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Motion",
+                        "bounds": "72 4108 215 2664",
+                        "dp": "48x-481",
+                        "visible": false
+                       },
+                       {
+                        "class": "android.view.ViewGroup",
+                        "bounds": "251 4104 391 2664",
+                        "dp": "47x-480",
+                        "visible": false,
+                        "important": false,
+                        "children": [
+                         {
+                          "class": "android.widget.Switch",
+                          "stateDescription": "ON",
+                          "bounds": "251 4104 391 2664",
+                          "dp": "47x-480",
+                          "clickable": true,
+                          "focusable": true,
+                          "checked": true,
+                          "visible": false,
+                          "important": false,
+                          "actions": [
+                           "click"
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.view.ViewGroup",
+                      "bounds": "72 4284 1188 2664",
+                      "dp": "372x-540",
+                      "visible": false
+                     },
+                     {
+                      "class": "android.view.View",
+                      "text": "Sample outcome",
+                      "bounds": "144 4347 1125 2664",
+                      "dp": "327x-561",
+                      "heading": true,
+                      "visible": false
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "Demo only; no trade is submitted.",
+                      "bounds": "144 4437 1125 2664",
+                      "dp": "327x-591",
+                      "visible": false
+                     },
+                     {
+                      "class": "android.view.ViewGroup",
+                      "bounds": "72 4608 1188 2664",
+                      "dp": "372x-648",
+                      "visible": false,
+                      "important": false
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "text": "npm install .\/bloxwap-hig-native-0.1.0.tgz",
+                      "bounds": "132 4668 1128 2664",
+                      "dp": "332x-668",
+                      "focusable": true,
+                      "visible": false
+                     },
+                     {
+                      "class": "android.widget.Button",
+                      "contentDescription": "Copy install command",
+                      "bounds": "132 4812 720 2664",
+                      "dp": "196x-716",
+                      "clickable": true,
+                      "focusable": true,
+                      "visible": false,
+                      "actions": [
+                       "click"
+                      ],
+                      "children": [
+                       {
+                        "class": "android.widget.TextView",
+                        "text": "Copy install command",
+                        "bounds": "192 4848 660 2664",
+                        "dp": "156x-728",
+                        "visible": false
+                       }
+                      ]
+                     },
+                     {
+                      "class": "android.widget.TextView",
+                      "bounds": "132 4956 1128 2664",
+                      "dp": "332x-764",
+                      "visible": false
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]

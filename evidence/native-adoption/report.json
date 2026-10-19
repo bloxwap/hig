@@ -1,0 +1,154 @@
+{
+  "generatedAt": "2026-10-18T16:34:14.785Z",
+  "scope": "Current workspace JS and generated static fonts copied into a prepared iOS Simulator app; separate from packed-install validation.",
+  "simulator": "061B087F-1BF5-4548-AA37-BD2355667D01",
+  "versions": {
+    "expo": "55.0.31",
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "@gorhom/bottom-sheet": "5.2.14",
+    "react-native-reanimated": "4.2.1",
+    "react-native-worklets": "0.7.4"
+  },
+  "checks": [
+    {
+      "test": "testTypographyAndBusySpacing",
+      "prefix": "default",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "061B087F-1BF5-4548-AA37-BD2355667D01",
+          "deviceName": "HIG Native iPhone 16 Pro",
+          "modelName": "iPhone 16 Pro",
+          "osBuildNumber": "23F77",
+          "osVersion": "26.5",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "animatedFrame": "{{16, 666}, {370, 30}}",
+        "animatedUpdatedLabel": "Animated balance: 1,251.25",
+        "busyFrame": "{{16, 776}, {168.33332824707031, 48}}",
+        "busyLabel": "Log out · Working",
+        "environment": "Adoption type · scale 1.00 · locale en-US",
+        "negativeFrame": "{{16, 752}, {370, 30}}",
+        "positiveFrame": "{{16, 706}, {370, 30}}",
+        "registration": "Registered faces: BloxwapSansRegular, BloxwapSansSemiBold, BloxwapMonoRegular, BloxwapSansKRRegular, BloxwapSansKRSemiBold, BloxwapSansSCRegular, BloxwapSansSCSemiBold"
+      }
+    },
+    {
+      "test": "testToastRecoveryAndDismissal",
+      "prefix": "default",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "061B087F-1BF5-4548-AA37-BD2355667D01",
+          "deviceName": "HIG Native iPhone 16 Pro",
+          "modelName": "iPhone 16 Pro",
+          "osBuildNumber": "23F77",
+          "osVersion": "26.5",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "dismissedRequest": 8,
+        "environment": "Adoption toast · scale 1.00 · locale en-US",
+        "recoveredRequest": 8,
+        "remainingRequest7": true,
+        "scrollSwipesToLastRecovery": 2,
+        "viewportFrame": "{{16, 202}, {370, 524.33331298828125}}"
+      }
+    },
+    {
+      "test": "testCustomSheetCardStack",
+      "prefix": "default",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "061B087F-1BF5-4548-AA37-BD2355667D01",
+          "deviceName": "HIG Native iPhone 16 Pro",
+          "modelName": "iPhone 16 Pro",
+          "osBuildNumber": "23F77",
+          "osVersion": "26.5",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "accountTitleY": 513.8999938964844,
+        "activityTitleY": 319.3999938964844,
+        "builtInCloseCount": 0,
+        "callerCloseCount": 1,
+        "nestedScrollSwipes": 1,
+        "triggerHittableAfterClose": true
+      }
+    },
+    {
+      "test": "testToastRecoveryAndDismissal",
+      "prefix": "ax5",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "061B087F-1BF5-4548-AA37-BD2355667D01",
+          "deviceName": "HIG Native iPhone 16 Pro",
+          "modelName": "iPhone 16 Pro",
+          "osBuildNumber": "23F77",
+          "osVersion": "26.5",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "dismissedRequest": 8,
+        "environment": "Adoption toast · scale 3.57 · locale en-US",
+        "recoveredRequest": 8,
+        "remainingRequest7": true,
+        "scrollSwipesToLastRecovery": 8,
+        "viewportFrame": "{{16, 221.33332824707031}, {370, 524.3333740234375}}"
+      }
+    }
+  ],
+  "sources": {
+    "packages/native/src/provider.tsx": "3367a8b42b7e9fe07659004b5575e58e81061cb31a6387a8a558f3668bfa9b80",
+    "packages/native/src/surface.tsx": "d75a589b02fc4b89cbb14154886b61c8e4c434b2637bcb5bbb5d3e165b4f1bd5",
+    "packages/native/src/radio-group.tsx": "836a673dc626a5ed7c68aed31c541cae10abd87329e6074e7de6467efefdffeb",
+    "packages/native/src/data.tsx": "54c5fffb056d9fa23a7c2aacc4f3b6ab78259835ab92738d654df3adb3e7edf8",
+    "packages/native/src/animated-number.tsx": "d280335f9c5f9a0eda2a6a3340f7946633f0881beb014aed834a645200dc5ca2",
+    "packages/native/src/status.tsx": "1a27d65e73b0e2f58c5d9af9a20234df7c091704505bc0d841d02c439d31478d",
+    "packages/native/src/button.tsx": "e9a3757e40ad14df611ccd2dd6003cc4adc53d9d8bac103d3717d8c4ad1725a6",
+    "packages/native/src/gesture-sheet.tsx": "2c9ab304e9a4d6cb00edc82f9d7f0c157b6e6711ac0bba4d599999b7a26579fa",
+    "fixtures/native/adoption-check.tsx": "66490118de15cfec99cce84107554e0e8bbf331ddc72fe04c1afa34dea2e7c33",
+    "fixtures/native/index-adoption.js": "5fef4ed0e6eb94bf14542416ec9d89640bc61d9199062183be8b4cdc387e5139",
+    "scripts/native-sim/ios/UITests/AdoptionVerificationUITests.swift": "642a8c06692072c5cb567b28d2a3aed5fbd4987979b3024d22efb0a32744a711"
+  },
+  "runtime": {
+    "packages/native/dist/provider.js": "bdcb434b4c496c382593b065ca5b192b3b7dc9ef420ce25039b5f584c38b9ab2",
+    "packages/native/dist/surface.js": "f45e15702f5a1621f76f053270f7baaba0dbecafe00d8ef0d2f19ad91d11b5bb",
+    "packages/native/dist/radio-group.js": "3545fc13c9761265bf4b8d44ecf00f0d657a58473b6cf137ab5239f59c9ed9be",
+    "packages/native/dist/data.js": "7926c882c30de7a2abdb82ddb193ce01f03cd858c9a7a613840469c80a909b02",
+    "packages/native/dist/animated-number.js": "6bad2bed55d5bd0e6b92bb3071b662924e46d1a0ed514c0ca260a0e5b79c68fd",
+    "packages/native/dist/status.js": "fb9d742e2d9d8caf03d22b112e43f16f35ad6c06769bf72748105c341f527433",
+    "packages/native/dist/button.js": "ea4a5d28fcadaf3f48bab48bdd99031470ce7975b7e30290c8c5730faef20136",
+    "packages/native/dist/gesture-sheet.js": "419e784a7f8cbf7838bd3d9b1d240e8b0a112b4e52f7014063e1f3e4ef2dd76d"
+  },
+  "fonts": {
+    "packages/native-fonts/fonts/BloxwapSans.ttf": "778520981b42b408c19e43fc6d62e513ff0c47bd9870d62159e2e74cda2f79f5",
+    "packages/native-fonts/fonts/BloxwapSans-SemiBold.ttf": "7257cb505ec841dae8f5ff3160c629d08003bfd31b9d94334dd4a31798444c8c",
+    "packages/native-fonts/fonts/BloxwapMono.ttf": "6469eea2fc3fbad052301a6e0febf0182aef280b888acbbf1390c623ff168b65",
+    "packages/native-fonts/fonts/BloxwapSansKR.ttf": "d8eae9352bd2d4ae09eeecdb3ffd9cf9c914982f24db3ff816bb16d8ea329c1e",
+    "packages/native-fonts/fonts/BloxwapSansKR-SemiBold.ttf": "0897de89055aa2d30722a5bee8a97443a373c5105b726846508477ae49a03e8c",
+    "packages/native-fonts/fonts/BloxwapSansSC.ttf": "1a6802ac902328f3cd5040d7400a2e9e46f15871fa6ea2c9d8138dfffb8333cb",
+    "packages/native-fonts/fonts/BloxwapSansSC-SemiBold.ttf": "9af551f298cc13fdffe4f58e7373099f1a84d3caca86a67399acf2cc35970d4b"
+  },
+  "limits": [
+    "Simulator touch, layout and accessibility-tree observations; VoiceOver and physical devices were not exercised.",
+    "AX5 runtime coverage is the notification recovery/dismissal flow; other adoption checks use the normal content size.",
+    "Android runtime adoption behavior was not observed by this run."
+  ]
+}

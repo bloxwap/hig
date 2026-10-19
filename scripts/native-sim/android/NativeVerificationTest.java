@@ -1,5 +1,8 @@
 package com.bloxwap.hig.gallery;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
@@ -334,7 +337,17 @@ public class NativeVerificationTest {
     // The adjustable element is the HIG wrapper (RN reports it as a SeekBar); the backend SeekBar is hidden.
     AccessibilityNodeInfo slider = waitFor(n -> "Volume preview".contentEquals(label(n)) && n.isImportantForAccessibility() && (n.getRangeInfo() != null || String.valueOf(n.getClassName()).endsWith("SeekBar")), 12000);
     r.put("found", slider != null);
+    assertNotNull("Slider adjustable node must be exposed", slider);
     if (slider != null) {
+      int labeledAdjustments = 0;
+      for (AccessibilityNodeInfo.AccessibilityAction action : slider.getActionList()) {
+        if (action.getId() == AccessibilityNodeInfo.ACTION_SCROLL_FORWARD || action.getId() == AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+          assertNotNull("Slider action needs a localized label", action.getLabel());
+          assertTrue("Slider action label must not be blank", action.getLabel().toString().trim().length() > 0);
+          labeledAdjustments++;
+        }
+      }
+      assertTrue("Both increment and decrement must be labeled", labeledAdjustments == 2);
       r.put("initial", node(slider));
       r.put("initialLabel", label(byLabelPrefix("Volume preview: ")));
       JSONArray steps = new JSONArray();
@@ -584,6 +597,16 @@ public class NativeVerificationTest {
   }
 
   @Test
+  public void busyButtonName() throws Exception {
+    open("component=Button&state=busy&diag=1&fontScaleCap=2");
+    AccessibilityNodeInfo button = waitFor(n -> n.getContentDescription() != null && n.getContentDescription().toString().contains("Review order") && !n.isEnabled(), 12000);
+    assertNotNull("Busy button must retain its visible action name in the native content description", button);
+    write("android-busy-button.json", node(button).toString(1));
+    write("trees/android-busy-button.json", tree().toString(1));
+    capture("android-busy-button");
+  }
+
+  @Test
   public void snapshot() throws Exception {
     String name = arg("name", "snapshot");
     open(arg("query", "component=Button&state=default&diag=1"));
@@ -593,6 +616,10 @@ public class NativeVerificationTest {
     AccessibilityNodeInfo motion = waitFor(n -> label(n).startsWith("OS reduce motion:") && !label(n).contains("null"), 15000);
     AccessibilityNodeInfo scale = waitFor(n -> label(n).startsWith("Font scale:"), 3000);
     AccessibilityNodeInfo rtl = waitFor(n -> label(n).startsWith("OS RTL:"), 3000);
+    if (name.equals("os-arabic")) {
+      assertNotNull("Native direction diagnostics must be present", rtl);
+      assertTrue("Arabic app locale must select HIG RTL, including RN 0.83's OS RTL regression", label(rtl).contains("HIG direction: rtl"));
+    }
     JSONObject r = new JSONObject().put("name", name).put("diagnostics", diagnostics());
     r.put("runtime", runtime == null ? JSONObject.NULL : label(runtime)).put("fontScale", scale == null ? JSONObject.NULL : label(scale)).put("rtl", rtl == null ? JSONObject.NULL : label(rtl)).put("motion", motion == null ? JSONObject.NULL : label(motion));
     // #86: expectDirection asserts the HIG direction the host passes (React Native 0.83 Android leaves I18nManager.isRTL false for a per-app RTL locale).

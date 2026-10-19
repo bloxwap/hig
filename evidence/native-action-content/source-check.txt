@@ -1,0 +1,234 @@
+
+> bloxwap-hig-workspace@0.1.0 check
+> npm run build && npm run lint && npm run typecheck && npm test
+
+
+> bloxwap-hig-workspace@0.1.0 build
+> npm run generate && node scripts/build.mjs && npm run build:docs
+
+
+> bloxwap-hig-workspace@0.1.0 generate
+> node scripts/generate.mjs && node scripts/generate-native-fonts-index.mjs && node scripts/generate-brand.mjs
+
+Brand favicon/OG derivatives generated from approved SVG
+vite v6.4.1 building for production...
+transforming...
+packages/react/dist/provider.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/provider.js" was ignored.
+packages/react/dist/button.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/button.js" was ignored.
+packages/react/dist/field.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/field.js" was ignored.
+packages/react/dist/selection.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/selection.js" was ignored.
+packages/react/dist/overlay.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/overlay.js" was ignored.
+packages/react/dist/navigation.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/navigation.js" was ignored.
+packages/react/dist/status.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/status.js" was ignored.
+packages/feedback/dist/react.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/feedback/dist/react.js" was ignored.
+packages/feedback/dist/web-haptic.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/feedback/dist/web-haptic.js" was ignored.
+packages/react/dist/recipes.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes.js" was ignored.
+packages/react/dist/dialog.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/dialog.js" was ignored.
+node_modules/@radix-ui/react-popover/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dropdown-menu/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tooltip/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" was ignored.
+node_modules/@bloxwap/haptic/dist/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
+node_modules/@bloxwap/haptic/dist/index.js (2:0): Module level directives cause errors when bundled, "use client" in "node_modules/@bloxwap/haptic/dist/index.js" was ignored.
+packages/react/dist/recipes/market-row.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes/market-row.js" was ignored.
+packages/react/dist/recipes/balance-card.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes/balance-card.js" was ignored.
+packages/react/dist/recipes/trade-entry.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes/trade-entry.js" was ignored.
+packages/react/dist/recipes/install-command.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes/install-command.js" was ignored.
+packages/react/dist/recipes/code-window.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes/code-window.js" was ignored.
+packages/react/dist/recipes/marketing-hero.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes/marketing-hero.js" was ignored.
+packages/react/dist/recipes/activity-list.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/recipes/activity-list.js" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popover/node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popover/node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tooltip/node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tooltip/node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-menu/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/dist/index.mjs" was ignored.
+node_modules/web-haptics/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/web-haptics/dist/index.mjs" was ignored.
+packages/react/dist/data.js (1:0): Module level directives cause errors when bundled, "use client" in "packages/react/dist/data.js" was ignored.
+node_modules/@radix-ui/react-dialog/node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-menu/node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-menu/node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-menu/node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+node_modules/web-haptics/dist/chunk-4NSAIXAB.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/web-haptics/dist/chunk-4NSAIXAB.mjs" was ignored.
+node_modules/@radix-ui/react-roving-focus/node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+✓ 155 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                    0.41 kB │ gzip:  0.27 kB
+dist/acceptance.html                               0.44 kB │ gzip:  0.29 kB
+dist/assets/BloxwapMono-Variable-DhndyL8z.woff2  281.95 kB
+dist/assets/BloxwapSans-Variable-DmclqDx1.woff2  310.85 kB
+dist/assets/status-B6CyGxnO.css                   18.82 kB │ gzip:  4.37 kB
+dist/assets/acceptance-CbroKiki.js                 2.76 kB │ gzip:  1.36 kB
+dist/assets/index-KQUmtaMo.js                     14.62 kB │ gzip:  5.62 kB
+dist/assets/main-DadaxAEi.js                      25.37 kB │ gzip:  9.22 kB
+dist/assets/status-C-LUiuxe.js                   297.79 kB │ gzip: 94.89 kB
+✓ built in 635ms
+
+> bloxwap-hig-workspace@0.1.0 build:docs
+> node scripts/build-docs.mjs
+
+Glossary: 14 terms; 1 approved locale(s)
+Docs: 96 routes; 64 components; 32 Markdown chapters
+
+> hig-docs@0.1.0 build
+> fumadocs-mdx && next build --webpack
+
+[MDX] generated files in 6.829499999999996ms
+▲ Next.js 16.4.0 (webpack)
+[MDX] generated files in 7.322000000000003ms
+✓ Running next.config.mjs took 128ms
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-action-slots/apps/docs/node_modules/fumadocs-mdx/dist/eval-DxGmVc3G.js for build dependencies failed at 'import(pathToFileURL(outfile).href)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-action-slots/apps/docs/node_modules/fumadocs-mdx/dist/load-from-file-DOcUY7bU.js for build dependencies failed at 'import(url.href)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-action-slots/apps/docs/node_modules/fumadocs-mdx/dist/load-from-file-DOcUY7bU.js for build dependencies failed at 'import(url.href)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+Found 2 warnings while optimizing generated CSS:
+
+Issue #1:
+[2m│   }[22m
+[2m│   .\[\&_\:\:highlight\(fd-search\)\]\:text-fd-primary {[22m
+[2m│[22m     & ::highlight(fd-search) {
+[2m┆[22m                   [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│       color: var(--color-fd-primary);[22m
+[2m│     }[22m
+
+Issue #2:
+[2m│   }[22m
+[2m│   .\[\&_\:\:highlight\(fd-search\)\]\:underline {[22m
+[2m│[22m     & ::highlight(fd-search) {
+[2m┆[22m                   [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│       text-decoration-line: underline;[22m
+[2m│     }[22m
+
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-action-slots/apps/docs/node_modules/fumadocs-mdx/dist/load-from-file-DOcUY7bU.js for build dependencies failed at 'import(url.href)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+✓ Compiled successfully in 9.4s
+  Running TypeScript ...
+  Finished TypeScript in 1581ms ...
+  Collecting page data using 6 workers ...
+  Generating static pages using 6 workers (0/102) ...
+  Generating static pages using 6 workers (25/102) 
+  Generating static pages using 6 workers (50/102) 
+  Generating static pages using 6 workers (76/102) 
+✓ Generating static pages using 6 workers (102/102) in 823ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├   /docs/[[...slug]]
+│ ├ ● /docs/catalog
+│ ├ ● /docs/components/accordion
+│ ├ ● /docs/components/activity-list
+│ └ ● [+95 more paths]
+└ ○ /search.json
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+
+> bloxwap-hig-workspace@0.1.0 lint
+> eslint . && node scripts/check-drift.mjs && node scripts/check-built-in-strings.mjs
+
+Token, native font manifest, brand and glossary generation drift passed
+Built-in string check passed: React and React Native copy comes from HIGProvider messages or props
+
+> bloxwap-hig-workspace@0.1.0 typecheck
+> tsc --noEmit && npm run check -w hig-docs
+
+
+> hig-docs@0.1.0 check
+> fumadocs-mdx && next typegen && tsc --noEmit
+
+[MDX] generated files in 6.969540999999992ms
+[MDX] generated files in 6.774916999999988ms
+Generating route types...
+✓ Types generated successfully
+
+> bloxwap-hig-workspace@0.1.0 test
+> npm run test:web && npm run test:native
+
+
+> bloxwap-hig-workspace@0.1.0 test:web
+> vitest run
+
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.4 /Users/joeblau/Developer/bloxwap/.worktrees/hig-110-native-action-slots
+
+ ✓ tests/pro-data.dom.test.tsx (7 tests) 154ms
+ ✓ tests/components.dom.test.tsx (22 tests) 383ms
+ ✓ tests/messages.dom.test.tsx (5 tests) 175ms
+ ✓ tests/gesture-sheet.dom.test.tsx (4 tests) 740ms
+   ✓ optional web gesture sheet > retains nondismissible backend policy and only reports accepted settled states  572ms
+ ✓ tests/dialog-custom.dom.test.tsx (5 tests) 194ms
+ ✓ tests/data.dom.test.tsx (6 tests) 112ms
+ ✓ tests/feedback-react.dom.test.tsx (5 tests) 216ms
+ ✓ tests/chart.dom.test.tsx (1 test) 313ms
+   ✓ PriceChart keeps the text summary, shows the host-localized fallback, then mounts the engine with the token theme (#96)  313ms
+ ✓ tests/tabs-focus.dom.test.tsx (1 test) 50ms
+ ✓ tests/feedback-upstream.test.ts (11 tests) 50ms
+stdout | tests/feedback-adapters.test.ts > keeps native dispatch p95 within one 16 ms frame while bridge round trips are slow
+native sound dispatch: n=400 p50=0.002ms p95=0.002ms
+
+ ✓ tests/feedback-adapters.test.ts (12 tests) 68ms
+ ✓ tests/fonts.test.ts (9 tests) 173ms
+ ✓ tests/quality.test.ts (8 tests) 197ms
+ ✓ tests/glossary.test.ts (4 tests) 18ms
+ ✓ tests/built-in-strings.test.ts (15 tests) 117ms
+ ✓ tests/native-compatibility.test.ts (5 tests) 29ms
+ ✓ tests/tokens.test.ts (11 tests) 13ms
+ ✓ tests/drift.test.ts (7 tests) 102ms
+ ✓ tests/native-verification.test.ts (4 tests) 4ms
+ ✓ tests/ci-runners.test.ts (2 tests) 3ms
+ ✓ tests/feedback.test.ts (13 tests) 4ms
+ ✓ tests/docs.test.ts (5 tests) 29ms
+ ✓ tests/release-verification.test.ts (1 test) 12ms
+ ✓ tests/locale-direction.test.ts (3 tests) 2ms
+ ✓ tests/codemods.test.ts (3 tests) 6ms
+ ✓ tests/visual.test.ts (2 tests) 5ms
+ ✓ tests/color-space.test.ts (1 test) 2ms
+ ✓ tests/release.test.ts (2 tests) 135ms
+
+ Test Files  28 passed (28)
+      Tests  174 passed (174)
+   Start at  17:45:19
+   Duration  5.33s (transform 316ms, setup 0ms, collect 1.84s, tests 3.31s, environment 1.87s, prepare 875ms)
+
+
+> bloxwap-hig-workspace@0.1.0 test:native
+> jest --config jest.native.config.cjs
+
+PASS tests/native/text-rules.test.cjs
+PASS tests/native/color-space.test.cjs
+PASS tests/native/gesture-sheet-content.test.cjs
+PASS tests/native/gesture-sheet-inline.test.cjs
+PASS tests/native/messages.test.cjs
+PASS tests/native/gesture-sheet-dynamic.test.cjs
+PASS tests/native/dialog-content.test.cjs
+PASS tests/native/language-options.test.cjs
+PASS tests/native/readout-styles.test.cjs
+PASS tests/native/switch-content.test.cjs
+PASS tests/native/empty-state.test.cjs
+PASS tests/native/toast-layout.test.cjs
+PASS tests/native/readout-formatted.test.cjs
+PASS tests/native/button-spacing.test.cjs
+PASS tests/native/gesture-sheet.test.cjs
+PASS tests/native/action-content.test.cjs
+PASS tests/native/components.test.cjs
+
+Test Suites: 17 passed, 17 total
+Tests:       169 passed, 169 total
+Snapshots:   0 total
+Time:        2.877 s, estimated 5 s
+Ran all test suites.

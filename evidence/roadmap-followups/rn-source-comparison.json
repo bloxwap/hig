@@ -1,0 +1,59 @@
+{
+  "issue": 88,
+  "kind": "source inspection; not a root-cause attribution",
+  "repository": "https://github.com/react/react-native",
+  "tags": [
+    "v0.81.5",
+    "v0.83.10"
+  ],
+  "files": {
+    "textfield": "packages/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.mm",
+    "inputview": "packages/react-native/React/Fabric/Mounting/ComponentViews/TextInput/RCTTextInputComponentView.mm",
+    "fontutils": "packages/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm"
+  },
+  "results": [
+    {
+      "file": "textfield",
+      "versions": {
+        "0.81.5": {
+          "bytes": 8661,
+          "sha256": "44132443aadb2d8758ac2940f3b14cd320cfb4e1746ef234e1a7365faecb3e94"
+        },
+        "0.83.10": {
+          "bytes": 8661,
+          "sha256": "44132443aadb2d8758ac2940f3b14cd320cfb4e1746ef234e1a7365faecb3e94"
+        }
+      },
+      "byteIdentical": true
+    },
+    {
+      "file": "inputview",
+      "versions": {
+        "0.81.5": {
+          "bytes": 35479,
+          "sha256": "b587d1f438b78a57363b555c36983323a4571f8da01a3a9e33cbf6d219b4b6bd"
+        },
+        "0.83.10": {
+          "bytes": 35632,
+          "sha256": "c4fb3c8b25420339188bd99fa1e3669b62a2c5278b06a45e511555a149043a33"
+        }
+      },
+      "byteIdentical": false
+    },
+    {
+      "file": "fontutils",
+      "versions": {
+        "0.81.5": {
+          "bytes": 15769,
+          "sha256": "f87f584f0684c61331312786911585cc428765da8dcb8b7d2ae6de097dbbd4bb"
+        },
+        "0.83.10": {
+          "bytes": 16913,
+          "sha256": "e83193188b1326e9519b15e93089dfd890c77eb0c2834dd95b4f56c69101595a"
+        }
+      },
+      "byteIdentical": false
+    }
+  ],
+  "conclusion": "RCTUITextField is byte-identical. TextInput component-view changes concern accessory cleanup; font utility changes include default font handlers (#53755). These comparisons do not identify why Xcode changes its Dynamic Type heuristic result. Attribution and physical-device checks remain open."
+}

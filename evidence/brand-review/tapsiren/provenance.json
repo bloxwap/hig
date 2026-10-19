@@ -1,0 +1,165 @@
+{
+  "status": "review-only; owner decision required",
+  "trackingIssue": "https://github.com/bloxwap/hig/issues/101",
+  "generatedAt": "2026-10-18T20:19:47.473939+00:00",
+  "sources": {
+    "tapsirenCurrentMain": {
+      "repository": "https://github.com/bloxwap/tapsiren",
+      "commit": "e921ba88f4a62a509d049e35525e44f1a96b20f3",
+      "files": {
+        "workers/tapsiren/public/tap-siren-mark.svg": {
+          "bytes": 5116,
+          "sha256": "60d94567068cde27d1369407eaad282e2e6404edc8b6cb10b2d7772d8cc8caf6",
+          "url": "https://github.com/bloxwap/tapsiren/blob/e921ba88f4a62a509d049e35525e44f1a96b20f3/workers/tapsiren/public/tap-siren-mark.svg"
+        },
+        "workers/tapsiren/public/favicon.ico": {
+          "bytes": 18094,
+          "sha256": "1ab4d5caded9e4e149407bf20b89971648e7fa16f6b9d44de89a14f61e346538",
+          "url": "https://github.com/bloxwap/tapsiren/blob/e921ba88f4a62a509d049e35525e44f1a96b20f3/workers/tapsiren/public/favicon.ico"
+        },
+        "workers/tapsiren/lib/tap-siren-mark.ts": {
+          "bytes": 5135,
+          "sha256": "ebee01623273e26d3a6ad9814a972bb5f0b18c236979dbaab1b845e4f1aeb913",
+          "url": "https://github.com/bloxwap/tapsiren/blob/e921ba88f4a62a509d049e35525e44f1a96b20f3/workers/tapsiren/lib/tap-siren-mark.ts"
+        },
+        "workers/tapsiren/app/globals.css": {
+          "bytes": 10125,
+          "sha256": "4c6f3eb0580a018d74ae8cc8a3e2b613495e9a3aded6abbaceaea9929f150b6a",
+          "url": "https://github.com/bloxwap/tapsiren/blob/e921ba88f4a62a509d049e35525e44f1a96b20f3/workers/tapsiren/app/globals.css"
+        },
+        "workers/tapsiren/app/page.tsx": {
+          "bytes": 36841,
+          "sha256": "8d3396c80b553f175009910ecf2bb75dacc33e932e935f7a4be3e16268d27710",
+          "url": "https://github.com/bloxwap/tapsiren/blob/e921ba88f4a62a509d049e35525e44f1a96b20f3/workers/tapsiren/app/page.tsx"
+        },
+        "workers/tapsiren/app/layout.tsx": {
+          "bytes": 2123,
+          "sha256": "2383af4c499d973c9c16f1503e493cba9615351427a0c79883b326b0bbf71067",
+          "url": "https://github.com/bloxwap/tapsiren/blob/e921ba88f4a62a509d049e35525e44f1a96b20f3/workers/tapsiren/app/layout.tsx"
+        }
+      }
+    },
+    "tapsirenCandidate": {
+      "commit": "1894d0e90def83abb0eee6a888f6e77b6228919b",
+      "pullRequest": "https://github.com/bloxwap/tapsiren/pull/401",
+      "markAndSharedGeometryByteIdenticalToCurrentMain": true,
+      "worktree": "/Users/joeblau/Developer/bloxwap/.worktrees/hig-115-tapsiren"
+    },
+    "hig": {
+      "repository": "https://github.com/bloxwap/hig",
+      "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+      "candidateVersion": "0.1.0-candidate.sha0e239442",
+      "sourceTreeDirtyAtRelease": false,
+      "files": {
+        "packages/tokens/source.json": {
+          "sha256": "55cf9b3ea1e8d946d8d7f1c8cb19e6de650eb05c2fa06398d99b343ba7e0a89d",
+          "url": "https://github.com/bloxwap/hig/blob/0e2394428a3971e677e0a97ef5259ac4ca1ec064/packages/tokens/source.json"
+        },
+        "packages/tokens/generated/tokens.css": {
+          "sha256": "23b13c5b2dd7de3e3d57899dc6af01906f534eb81c9a4c05480160e28c7d4beb",
+          "url": "https://github.com/bloxwap/hig/blob/0e2394428a3971e677e0a97ef5259ac4ca1ec064/packages/tokens/generated/tokens.css"
+        }
+      },
+      "cleanReleaseReportSha256": "2874bfd8b00d47ef90cbf21f4dee1cd98c5522919c08c915b4ff8386d3a799ce"
+    }
+  },
+  "options": {
+    "current": {
+      "filename": "current-cyan.svg",
+      "color": "#00F0FF",
+      "source": "Exact current-main/candidate public SVG bytes"
+    },
+    "proposed": {
+      "filename": "proposed-hig-action-srgb.svg",
+      "role": "--hig-action",
+      "sourceField": "colors.action.srgb",
+      "sRGB": "#00ff3f",
+      "displayP3SourceChannels": [
+        0,
+        1,
+        0.24
+      ],
+      "source": "Only fill attribute replaced with pinned canonical sRGB role value; not approval"
+    }
+  },
+  "geometry": {
+    "viewBox": "0 0 128 128",
+    "pathCount": 1,
+    "pathUtf8Bytes": 4920,
+    "pathSha256": "9de0cb78131710603b26cdd3a6a78037d018e8c1dd238427749b0e0c005f54f0",
+    "sharedPageAndSvgPathIdentical": true,
+    "bothReviewOptionsPathIdentical": true,
+    "onlySvgDifference": "fill=\"#00F0FF\" \u2192 fill=\"#00ff3f\""
+  },
+  "backgrounds": [
+    {
+      "label": "Actual dark page canvas",
+      "cssRole": "--hig-background",
+      "authored": "oklch(0.145 0 0)",
+      "sRGBFallback": "#0a0a0a",
+      "source": "Tapsiren globals.css resolves HIG role; clean0e generated tokens.css supplies values"
+    },
+    {
+      "label": "Diagnostic light canvas",
+      "value": "#ffffff",
+      "actualProductTheme": false,
+      "reason": "Reviewed product source declares HIG dark only; white is a browser/favicon legibility comparison, not an invented light theme"
+    }
+  ],
+  "render": {
+    "sizesCssPx": [
+      16,
+      32,
+      48,
+      128
+    ],
+    "format": "code-native SVG plus Chromium PNG",
+    "colorScope": "Portable sRGB mark fills; no wide-gamut display/sensory acceptance claim",
+    "faviconScope": "SVG rendered at favicon sizes; ICO binary is recorded unchanged, not generated/replaced",
+    "browser": "Chromium",
+    "version": "141.0.7390.37",
+    "deviceScaleFactor": 1,
+    "viewportCssPx": {
+      "width": 1040,
+      "height": 782
+    },
+    "svgUseCount": 16,
+    "svgPathCount": 1,
+    "pageErrors": []
+  },
+  "productChanges": false,
+  "brandApproval": false,
+  "ownerDecisionRequired": true,
+  "nextOwnerDecision": "Choose approved product cyan exception or approve HIG-role recolor, then separately implement mark/ICO consistency and public/ drift coverage per HIG#101.",
+  "originalCheckout": {
+    "path": "/Users/joeblau/Developer/tapsiren/src/monorepo",
+    "commit": "edf090bfb9d76c398eb38631e3d1514a97fe15ac",
+    "cleanAndUnmodified": true
+  },
+  "generatedFiles": {
+    "comparison.svg": {
+      "bytes": 10922,
+      "sha256": "5da57bffb8fffb540c33f1c338ec7144629d2fd6ba6c2f59f33292712480dd84"
+    },
+    "current-cyan.svg": {
+      "bytes": 5116,
+      "sha256": "60d94567068cde27d1369407eaad282e2e6404edc8b6cb10b2d7772d8cc8caf6"
+    },
+    "proposed-hig-action-srgb.svg": {
+      "bytes": 5116,
+      "sha256": "e47c0fb8083ab3f85e8164bf0d222841e20e71c18c00ac9d54c9accfb29afded"
+    },
+    "comparison.png": {
+      "bytes": 90813,
+      "sha256": "bd16a4f1cfbf7b64dc4af0c198c177108f9336dc6ce822eb5dd53cc71ea944a2"
+    }
+  },
+  "validation": {
+    "svgGeometryAndViewBoxIdentical": true,
+    "svgBytesDifferOnlyInFill": true,
+    "generatedAssetHashesVerified": true,
+    "comparisonPngVisuallyInspected": true,
+    "noClippedOrMissingSamplesObserved": true,
+    "svgSamplesRendered": 16
+  }
+}

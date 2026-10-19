@@ -1,0 +1,70 @@
+
+> bloxwap-hig-workspace@0.1.0 quality
+> node scripts/quality.mjs && node scripts/drift.mjs
+
+{
+  "exports": {
+    "chart": 2,
+    "contracts": 8,
+    "feedback": 17,
+    "native": 38,
+    "native-fonts": 4,
+    "og-fonts": 6,
+    "react": 42,
+    "tokens": 5
+  },
+  "sizes": {
+    "button": {
+      "raw": 1335,
+      "gzip": 760
+    },
+    "field": {
+      "raw": 789,
+      "gzip": 347
+    },
+    "nativeSwitch": {
+      "raw": 4558,
+      "gzip": 2153
+    },
+    "nativeSwitchRow": {
+      "raw": 1715,
+      "gzip": 921
+    },
+    "nativeLink": {
+      "raw": 3442,
+      "gzip": 1662
+    },
+    "feedbackContract": {
+      "raw": 2951,
+      "gzip": 996
+    },
+    "docsJS": {
+      "raw": 1962401,
+      "gzip": 560329
+    },
+    "docsCSS": {
+      "raw": 114722
+    },
+    "fonts": {
+      "raw": 592796
+    },
+    "nativeFonts": {
+      "raw": 1278880
+    },
+    "nativeCues": {
+      "raw": 103618
+    }
+  }
+}
+Scoped anti-drift: passed (90 files, 2 dated exceptions)
+Native custom action layout, link navigation, busy and accessibility checks passed in Chromium/WebKit at both widths
+
+> bloxwap-hig-workspace@0.1.0 smoke:ssr
+> node fixtures/ssr/smoke.mjs
+
+SSR deterministic token render passed
+
+> bloxwap-hig-workspace@0.1.0 examples:check
+> node scripts/check-examples.mjs
+
+Copyable examples: 212 web/native state modules typechecked against actual package exports

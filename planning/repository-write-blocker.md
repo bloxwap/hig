@@ -1,5 +1,7 @@
 # Repository write blocker · 2026-10-13
 
+Historical snapshot. This access blocker has been resolved; later deliveries are merged. See `planning/resume-delivery.md` and `planning/roadmap-followups.md` for the current state. The failures below describe the original environment only.
+
 Authenticated account: joeblau. GitHub reports repository ADMIN, but the current token cannot write repository contents.
 
 Verified failures:

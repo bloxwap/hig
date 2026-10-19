@@ -1,12 +1,26 @@
 {
   "version": "0.1.0",
   "framework": "Next 16.4.0 webpack",
+  "consumer": "workspace fixture",
   "checks": [
     "production server/client boundary",
     "no hydration/page/console errors",
     "raw locale amount retained",
     "keyboard accepted action once",
-    "Bloxwap Sans loader compiled"
+    "Bloxwap Sans/Mono Next loaders compiled",
+    ".hig-button/.hig-number computed font is a loaded Bloxwap face (document.fonts.check + FontFace status)"
   ],
+  "fonts": {
+    "button": {
+      "fontFamily": "BloxwapSans, \"Bloxwap Sans Scripts\", ui-rounded, system-ui, sans-serif, system-ui, sans-serif",
+      "check": true,
+      "loaded": true
+    },
+    "number": {
+      "fontFamily": "BloxwapMono, \"Bloxwap Mono Scripts\", ui-monospace, SFMono-Regular, Menlo, monospace, ui-monospace, monospace",
+      "check": true,
+      "loaded": true
+    }
+  },
   "browser": "141.0.7390.37"
 }

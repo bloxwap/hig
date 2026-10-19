@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-19T00:48:24.961353+00:00",
+  "sourceBaseCommit": "e5cc5c2b7b6383551e54ba2bd69d2dc0174ec841",
+  "sourceFingerprint": {
+    "packages/native/src/button.tsx": {
+      "sha256": "2988d18725b3843e0a908c5d737d9908a77f7a653dce1d1b60198b3483ff78f8"
+    },
+    "tests/native/action-content.test.cjs": {
+      "sha256": "302d612ccca8ef739f5497da9443edb742a42ad0199f5638a5055c4e4a8ac73e"
+    },
+    "tests/native/action-typecheck.tsx": {
+      "sha256": "64d8fa4dc92c778a3aa5fa82ecc83226cb20f81b4b5b4c9b1f9059c72d995a6f"
+    },
+    "fixtures/native/action-check.tsx": {
+      "sha256": "1c34732ba1e4fd6887ddfa2324a20a7ba38d09bba00854219319b135df815ab8"
+    },
+    "scripts/native-action-browser-smoke.mjs": {
+      "sha256": "f6aa21346ae73e8165b5738033cf845aeca4f72ba0c47ae9cad5af37082ad528"
+    },
+    "scripts/quality.mjs": {
+      "sha256": "3051e8862685f17cf95292c8da7e39b78a33f4f3796b55d6fae1bfa84b29f3cb"
+    },
+    "scripts/run-browser-gates.mjs": {
+      "sha256": "6d3c033cdcb60aaccf752c8d1188d338aefdd0baf1d18f79f03756f3bc27c726"
+    },
+    "docs/components/actions-surfaces.md": {
+      "sha256": "d8aa68d6991404a80f2370927c3b582a7877e5d06da1d4b09706f6de817fe499"
+    }
+  },
+  "contract": [
+    "Button custom content renders host nodes directly while root guards/ref/feedback stay canonical",
+    "Link forwards root/ref props, keeps link role, custom navigation replaces Linking exactly once",
+    "Expo web Link exposes a real href and cancels duplicate default navigation; disabled links have no href",
+    "Pure forwardRef annotations prevent an unused native Button from entering a Link-only bundle"
+  ],
+  "checks": {
+    "fullCheck": {
+      "result": "pass",
+      "webTests": 174,
+      "nativeTests": 169
+    },
+    "postOptimizationLintAndTypes": "pass; only pure annotations changed after full check",
+    "quality": "pass; unchanged existing budgets",
+    "ssr": "pass",
+    "examples": 212,
+    "browserCases": 4
+  },
+  "sizes": {
+    "nativeButton": {
+      "gzipBytes": 2335,
+      "previousC32GzipBytes": 2302,
+      "deltaBytes": 33
+    },
+    "nativeLink": {
+      "gzipBytes": 1662,
+      "limitBytes": 2200
+    },
+    "ordinarySwitch": {
+      "gzipBytes": 2153,
+      "unchanged": true
+    }
+  },
+  "limits": "Renderer/browser/Metro evidence is software proof; no physical certification or owner approval."
+}

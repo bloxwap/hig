@@ -1,17 +1,20 @@
+import {assertGeneratedFonts} from './font-preflight.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync,cpSync,readdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {scratchDir} from './scratch.mjs';
+assertGeneratedFonts();
 const dir=scratchDir('hig-consumer-');
 mkdirSync('artifacts',{recursive:true});
 const manifests=readdirSync('packages').map(p=>JSON.parse(readFileSync(`packages/${p}/package.json`,'utf8')));
 const tarballs=[];
 for(const manifest of manifests){
+ if(process.env.HIG_REGISTRY_VERSION){if(!['@bloxwap/hig-native','@bloxwap/hig-native-fonts'].includes(manifest.name))tarballs.push(`${manifest.name}@${process.env.HIG_REGISTRY_VERSION}`);continue;}
  const name=manifest.name.replace('@bloxwap/hig-','');
  const pack=JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
  if(name!=='native'&&name!=='native-fonts')tarballs.push(resolve('artifacts',pack[0].filename));
 }
-writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',devDependencies:{vite:'6.4.1'},dependencies:{...JSON.parse(readFileSync('fixtures/web/package.json','utf8')).dependencies,'@bloxwap/haptic':'0.1.0','@bloxwap/sfx':'0.1.0','@bloxwap/font':'0.1.2','@bloxwap/chart':'0.3.0',react:'19.1.0','react-dom':'19.1.0'}},null,2));
+writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',devDependencies:{vite:'6.4.1'},dependencies:{...JSON.parse(readFileSync('fixtures/web/package.json','utf8')).dependencies,'@bloxwap/haptic':'^0.2.0','@bloxwap/sfx':'^0.2.0','@bloxwap/font':'0.1.2','@bloxwap/chart':'0.3.0',react:'19.1.0','react-dom':'19.1.0'}},null,2));
 const consumerManifest=JSON.parse(readFileSync(join(dir,'package.json'),'utf8'));for(const key of Object.keys(consumerManifest.dependencies))if(key.startsWith('@bloxwap/hig-'))delete consumerManifest.dependencies[key];writeFileSync(join(dir,'package.json'),JSON.stringify(consumerManifest));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 writeFileSync(join(dir,'smoke.mjs'),`import assert from 'node:assert/strict';

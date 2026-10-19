@@ -1,3 +1,4 @@
+import {execFileSync} from 'node:child_process';
 import {verifyNativeReact,verifyExpoNativeModules} from './native-compatibility.mjs';
 import {readFileSync,readdirSync,existsSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -18,11 +19,11 @@ export async function qualityReport(){
  const nativeRuntime=verifyNativeReact('fixtures/native');verifyExpoNativeModules('fixtures/native');
  const packages=readdirSync('packages');const exports=Object.fromEntries(packages.map(p=>[p,checkExports(`packages/${p}`)]));checkPlatformImports('packages/react','web');checkPlatformImports('packages/chart','web');checkPlatformImports('packages/native','native');checkChartBoundary();
  const budgets=JSON.parse(readFileSync('planning/budgets.json','utf8'));const sizes={};
- for(const [name,input] of Object.entries({button:"export {Button} from '@bloxwap/hig-react/button';",field:"export {AmountInput} from '@bloxwap/hig-react/field';",nativeSwitch:"export {Switch} from '@bloxwap/hig-native/switch';",feedbackContract:"export {FeedbackController} from '@bloxwap/hig-feedback';"})){
+ for(const [name,input] of Object.entries({button:"export {Button} from '@bloxwap/hig-react/button';",field:"export {AmountInput} from '@bloxwap/hig-react/field';",nativeSwitch:"export {Switch} from '@bloxwap/hig-native/switch';",nativeSwitchRow:"export {SwitchRow} from '@bloxwap/hig-native/switch';",nativeLink:"export {Link} from '@bloxwap/hig-native/button';",feedbackContract:"export {FeedbackController} from '@bloxwap/hig-feedback';"})){
   const result=await build({stdin:{contents:input,resolveDir:resolve('.'),sourcefile:`${name}.js`},write:false,bundle:true,minify:true,format:'esm',platform:'neutral',metafile:true,external:['react','react-dom','react-native','react/jsx-runtime']});
   const gzip=gzipSync(result.outputFiles[0].contents).length;sizes[name]={raw:result.outputFiles[0].contents.length,gzip,inputs:Object.keys(result.metafile.inputs)};
-  assertBudget(name,gzip,budgets[name].gzip);
-  if(name==='nativeSwitch'&&sizes[name].inputs.some(p=>/slider|svg|overlay|feedback|sfx|haptic|chart|react-dom/.test(p)))throw Error('Single native Switch imports unrelated runtime');
+  assertBudget(name,gzip,budgets[['nativeSwitchRow','nativeLink'].includes(name)?'nativeSwitch':name].gzip);
+  if((name.startsWith('nativeSwitch')||name==='nativeLink')&&sizes[name].inputs.some(p=>/slider|svg|overlay|feedback|sfx|haptic|chart|react-dom/.test(p)))throw Error('Single native Switch imports unrelated runtime');
  }
  const assetRoot='apps/docs/dist/_next/static';
  function files(dir){return readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(`${dir}/${e.name}`):[`${dir}/${e.name}`]);}
@@ -35,7 +36,7 @@ export async function qualityReport(){
  sizes.nativeFonts={raw:['BloxwapSans.ttf','BloxwapSans-SemiBold.ttf','BloxwapMono.ttf'].reduce((sum,asset)=>sum+readFileSync(`packages/native-fonts/fonts/${asset}`).length,0),scope:'Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded'};
  sizes.nativeCues={raw:checkCueHashes()};
  for(const name of ['docsJS','docsCSS','fonts','nativeFonts','nativeCues']){const rule=budgets[name];for(const metric of Object.keys(rule))assertBudget(`${name}.${metric}`,sizes[name][metric],rule[metric]);}
- const report={version:'0.1.0',nativeRuntime,exports,sizes,baseline:'HIG candidate measurements; representative authenticated source React/Metro baselines in evidence/issue-1-18; deployed production deltas not claimed',physicalDevices:'pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof'};
+ const report={version:'0.1.0',sourceCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourceTreeDirty:!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),nativeRuntime,exports,sizes,baseline:'HIG candidate measurements; representative authenticated source React/Metro baselines in evidence/issue-1-18; deployed production deltas not claimed',physicalDevices:'pending; API/browser/Metro checks are not tactile or VoiceOver/TalkBack proof'};
  writeFileSync('evidence/quality-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({exports,sizes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,{raw:v.raw,gzip:v.gzip}]))},null,2));return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){requireGeneratedFonts('npm run quality');await qualityReport();}

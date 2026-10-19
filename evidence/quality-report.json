@@ -1,5 +1,7 @@
 {
   "version": "0.1.0",
+  "sourceCommit": "839cbe141af3cccc6f16ab46b5d9abd3e326d4d7",
+  "sourceTreeDirty": false,
   "nativeRuntime": {
     "react": "19.1.0",
     "renderer": "19.1.0",
@@ -12,7 +14,7 @@
     "native": 38,
     "native-fonts": 4,
     "og-fonts": 6,
-    "react": 40,
+    "react": 42,
     "tokens": 5
   },
   "sizes": {
@@ -39,8 +41,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4282,
-      "gzip": 2018,
+      "raw": 4558,
+      "gzip": 2153,
       "inputs": [
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
@@ -49,8 +51,39 @@
         "packages/native/dist/text-content.js",
         "packages/native/dist/surface.js",
         "packages/native/dist/roles.js",
+        "packages/native/dist/switch-row.js",
         "packages/native/dist/switch.js",
         "nativeSwitch.js"
+      ]
+    },
+    "nativeSwitchRow": {
+      "raw": 1715,
+      "gzip": 921,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/roles.js",
+        "packages/native/dist/switch-row.js",
+        "packages/native/dist/switch.js",
+        "nativeSwitchRow.js"
+      ]
+    },
+    "nativeLink": {
+      "raw": 3442,
+      "gzip": 1662,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/contracts/dist/index.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/button.js",
+        "nativeLink.js"
       ]
     },
     "feedbackContract": {
@@ -62,11 +95,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2270700,
-      "gzip": 634855
+      "raw": 1962397,
+      "gzip": 560326
     },
     "docsCSS": {
-      "raw": 111949
+      "raw": 114722
     },
     "fonts": {
       "raw": 592796

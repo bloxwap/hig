@@ -5,6 +5,7 @@
     "all generated production routes/base-safe assets",
     "200% text without viewport overflow",
     "source links target existing main branch",
+    "controls use the shipped Bloxwap font face",
     "production /hig/ base",
     "direct component deep link",
     "mobile navigation/search",
@@ -14,7 +15,7 @@
     "busy/default states",
     "keyboard-capable previews",
     "no overflow or page errors",
-    "zero axe WCAG findings"
+    "axe serious/critical check"
   ],
   "violations": [],
   "physicalNative": "not observed; runnable Expo gallery only"

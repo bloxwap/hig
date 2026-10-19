@@ -1,0 +1,11 @@
+# Native inline and dynamic sheet verification
+
+Passed on an iPhone 16 Pro iOS 26.5 simulator (2 XCTest cases, 0 failures) and a Medium Phone API 35 Android emulator. The prepared release consumer uses RN 0.83.10, Expo 55.0.31 and Gorhom 5.2.14. Exact runtime versions, source and binary hashes are in [report.json](report.json).
+
+The persistent inline fixture prepares its controller once while closed and exposes no closed sheet controls in the accessibility tree. Opening, editing `BTC`, choosing ETH and scrolling to the final action preserves the mounted controller, query, selection and list offset through rejected close and accepted close/reopen. Rejected close restores geometry without a settled dismissal; accepted close settles once. Android additionally verifies that closed-sheet Back reaches the host fallback and open-sheet Back closes the sheet. The final action is touchable after reopening. Captures and selected accessibility trees accompany the platform result JSON.
+
+The dynamic fixture grows from short content to a taller card and shrinks again, respects a 560 dp ceiling and retains a reachable Close action. Its supported composition is one explicitly bounded plain React Native ScrollView with content panning disabled. Mixed card headers/footers and registered Gorhom scrollables require host-measured fixed sizing, as described in the overlay guide. The fixed inline content wrapper has a bounded viewport; the test rejects a scroll viewport extending below the screen.
+
+Runtime used the built source before the coordinated clean candidate commit. The tested GestureSheet JavaScript SHA-256 is `725c96dd60b7967f78671d8d317212c6d4a7aca3dc70086bb71e73e8875baa8c`; Android's generated bundle source map contains the same bytes. Dependency-only JavaScript changes require a fresh Gradle JS bundle rather than relying on its cached task. Final candidate provenance must be compared with this hash.
+
+Both runs set reduced motion. This evidence covers simulator/emulator touch, layout, accessible-tree visibility and lifecycle assertions; it does not claim physical-device, VoiceOver/TalkBack speech, haptic, normal-motion timing or signed-production validation. Raw xcresult bundles, build logs and backups remain under ignored `.validation-tmp/native-inline/`.

@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-10-16",
+  "sourceCommit": "35278bb83c4b8fbb493717428cd89f7667c84586",
+  "sourceTreeDirty": true,
+  "checks": {
+    "buildLintTypes": "passed",
+    "webTests": 127,
+    "nativeTests": 65,
+    "copyableExampleModules": 212,
+    "qualityBudgets": "passed",
+    "ssr": "passed",
+    "cssIsolation": "passed",
+    "packedWeb": "passed",
+    "packedNext": "passed",
+    "packedNativeProfiles": [
+      "rn-0.81 / Expo 54: Android+iOS and gesture entry passed",
+      "rn-0.83 / Expo 55: Android+iOS and gesture entry passed"
+    ],
+    "chartWorkspaceStrictPeers": "passed",
+    "ogFontsHashAndRender": "passed",
+    "docsBrowser": "passed",
+    "chromiumAcceptance": "passed",
+    "webkitAcceptance": "passed",
+    "firefoxAcceptance": "not completed: browser launch sandbox/framebuffer errors",
+    "catalog": {
+      "components": 64,
+      "states": 102,
+      "captures": 104,
+      "runtime": "passed",
+      "axe": "zero violations",
+      "historicalBaselineComparison": "four failures, reproduced with HEAD CSS; HEAD/branch pixel-identical"
+    },
+    "candidate": "seven packages packed and clean artifact consumer passed",
+    "stableSimulation": "seven packages packed; artifact verifier rejects six outstanding release gates",
+    "workflowSyntax": "actionlint passed"
+  },
+  "notPerformed": [
+    "registry publication or post-publication consumers",
+    "physical-device certification",
+    "owner or native-speaker approvals",
+    "product brand decisions",
+    "RN 0.83 TextInput audit root-cause attribution"
+  ],
+  "linkedEvidence": [
+    "native/summary.json",
+    "visual-comparison.json",
+    "rn-source-comparison.json",
+    "../css-isolation.json",
+    "../packed-chart-workspace.json",
+    "../packed-og-fonts.json",
+    "../quality-report.json",
+    "../release-dry-run.json"
+  ]
+}

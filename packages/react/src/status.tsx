@@ -4,7 +4,10 @@ import {notificationDelta} from '@bloxwap/hig-contracts/announcements';
 import {Button} from './button.js';
 import * as en from '@bloxwap/hig-contracts/messages';
 import {useHIG} from './provider.js';
-export function Badge({children}:React.PropsWithChildren){return <span className='hig-badge'>{children}</span>;}
+export type BadgeTone='neutral'|'positive'|'negative'|'warning'|'info';
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>{/** Explicit meaning; never inferred from text or a number's sign. */tone?:BadgeTone}
+/** A quiet status label. The host owns announcements and may supply typography or an accessible name. */
+export const Badge=React.forwardRef<HTMLSpanElement,BadgeProps>(function Badge({children,tone='neutral',className,...props},ref){const accent=['positive','negative','warning','info'].includes(tone)?tone:undefined;return <span {...props} ref={ref} className={['hig-badge',className].filter(Boolean).join(' ')} data-tone={accent}>{children}</span>;});
 /** `note` and `tip` are documentation callout severities: note uses the `info` token role and tip the `positive` role, like info and success. */
 export type AlertSeverity='info'|'success'|'warning'|'error'|'note'|'tip';
 /** Severity sets the accent edge from a token role (info/note → info, success/tip → positive, warning → warning, error → negative). The title may be any inline node, such as text with a code span. */

@@ -50,8 +50,8 @@
   },
   "peerDependencies": {
     "react": "^19.1.0",
-    "@bloxwap/sfx": "0.1.0",
-    "@bloxwap/haptic": "0.1.0",
+    "@bloxwap/sfx": "^0.2.0",
+    "@bloxwap/haptic": "^0.2.0",
     "expo-audio": "~1.1.1 || ~55.0.18",
     "expo-haptics": "~15.0.7 || ~55.0.18"
   },

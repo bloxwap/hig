@@ -1,7 +1,7 @@
-# Execution and known blockers
+# Execution and remaining acceptance · 2026-10-18
 
-M1 foundations → M2 renderers and visual recipes → M3 semantic feedback and recipe composition → M4 docs and examples → M5 quality, dry-run artifacts and migration kits. One stacked branch/PR each; no merge, release, tag or publication.
+The original milestone deliveries and issues #2–#36 have closed. The current roadmap issue #1 remains open. Continue from the live issue audit and [roadmap follow-ups](roadmap-followups.md); do not recreate the historical five-branch delivery stack.
 
-#26 depends on #25 despite milestone order: M2 owns visual recipes; M3 completes optional feedback. #1 remains partial until all required acceptance checks are established. #2–#5 are M1 work, not independent milestone trackers.
+Current software work covers native adoption gaps #117–#121, Pro Table/MarketRow contracts under #110, app-flow WebKit stability #124, and consumer candidate refreshes #115. Merged software is distinct from completed consumer adoption or physical certification.
 
-External blockers: inaccessible monorepo and product-origin pages; no physical iOS/Android devices; no published native font manifest; no permission to change other repos; publication explicitly prohibited. Implement local work and record per-issue residual requirements in each PR. No baseline size improvement can be claimed without a comparable consumer build.
+Remaining external prerequisites are physical-device certification (#55), registry release setup (#56), named-owner parity/performance/translation approvals (#57), unreleased upstream feedback APIs (#70), and product brand decisions (#100/#101). Product rollout and rollback-fork retirement remain #110. Actual evidence and dated exceptions must be maintained; no approval is inferred from passing checks.

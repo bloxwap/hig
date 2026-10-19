@@ -1,0 +1,73 @@
+{
+  "renderer": "react-native-web 0.21.4 through the public native package exports; not iOS/Android accessibility certification",
+  "results": [
+    {
+      "engine": "chromium",
+      "version": "141.0.7390.37",
+      "width": 390,
+      "checks": [
+        "direct identity/trailing child layout at opposite host edges",
+        "pointer/Enter activate once",
+        "custom link keeps link semantics and replaces URL navigation once",
+        "no extra page or URL change",
+        "busy/disabled queued clicks rejected",
+        "Tab leaves one button owner",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    },
+    {
+      "engine": "chromium",
+      "version": "141.0.7390.37",
+      "width": 1280,
+      "checks": [
+        "direct identity/trailing child layout at opposite host edges",
+        "pointer/Enter activate once",
+        "custom link keeps link semantics and replaces URL navigation once",
+        "no extra page or URL change",
+        "busy/disabled queued clicks rejected",
+        "Tab leaves one button owner",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "version": "26.0",
+      "width": 390,
+      "checks": [
+        "direct identity/trailing child layout at opposite host edges",
+        "pointer/Enter activate once",
+        "custom link keeps link semantics and replaces URL navigation once",
+        "no extra page or URL change",
+        "busy/disabled queued clicks rejected",
+        "Tab leaves one button owner",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "version": "26.0",
+      "width": 1280,
+      "checks": [
+        "direct identity/trailing child layout at opposite host edges",
+        "pointer/Enter activate once",
+        "custom link keeps link semantics and replaces URL navigation once",
+        "no extra page or URL change",
+        "busy/disabled queued clicks rejected",
+        "Tab leaves one button owner",
+        "axe WCAG2/2.1/2.2 AA clear",
+        "no runtime errors"
+      ],
+      "violations": [],
+      "errors": []
+    }
+  ]
+}

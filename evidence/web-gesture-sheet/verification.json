@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-18T18:22:59.657Z",
+  "sourceCommit": "4f6f777bad583055840ae28c2d738989cd89e6e4",
+  "sourceDirty": true,
+  "sourceFiles": {
+    "packages/react/src/gesture-sheet.tsx": "cc85a9ccb410f43df795de65e3952859ede7b104951c1a53245c2ba80bb7d97e",
+    "packages/react/src/styles.css": "69b96ec3f75da7bfbd37af4581850b9a0616b2031821ea571a6892ab3ae1fa3d",
+    "packages/react/package.json": "3488bac81475e9ad3499cf6f495ee8443280071129d77665d898dc1b81c9c1a5",
+    "scripts/gesture-sheet-browser-smoke.mjs": "5bd4c7c56602b8dd5d43ccb76bd9da075f69b8aee361afdefa4ddd9e0bc7e5d3"
+  },
+  "node": "22.22.0",
+  "backend": "vaul@1.1.2",
+  "checks": {
+    "npm run check": {
+      "passed": true,
+      "webTests": 163,
+      "webFiles": 27,
+      "nativeTests": 151,
+      "nativeSuites": 13,
+      "build": true,
+      "docsProductionBuild": true,
+      "lint": true,
+      "types": true,
+      "scope": "Completed before the subsequent additive web Badge and native EmptyState APIs; parent reruns the coordinated full check before the clean candidate."
+    },
+    "focusedDom": {
+      "passed": true,
+      "tests": 9
+    },
+    "browser": {
+      "passed": true,
+      "casesByEngine": {
+        "chromium": 6,
+        "webkit": 6
+      },
+      "versions": {
+        "chromium": "141.0.7390.37",
+        "webkit": "26.0"
+      },
+      "refreshedAfterWebBadgeCss": true
+    },
+    "packedBoundary": {
+      "passed": true,
+      "install": "fresh temporary npm consumer",
+      "localReactArchiveVersion": "0.1.0",
+      "localReactArchiveBytes": 25260,
+      "candidate": false,
+      "withoutVaul": [
+        "Button SSR",
+        "overlay-free recipe SSR and bundles",
+        "ordinary Dialog bundle"
+      ],
+      "withVaul": "GestureSheet bundles only after explicit vaul@1.1.2 install"
+    }
+  },
+  "limits": [
+    "Desktop Playwright pointer drag and wheel scrolling; physical mobile touch and software-keyboard behavior remain host/device acceptance.",
+    "Source is a dirty working-tree observation before the parent creates a clean coordinated source commit and candidate.",
+    "No publication or manual deployment."
+  ],
+  "coordinatedValidation": {
+    "sourceCommit": "ec6535bbb31fca45d6af07160b865a08f2490b75",
+    "sourceTreeDirty": false,
+    "candidateVersion": "0.1.0-candidate.shaec6535bb",
+    "webTests": 163,
+    "nativeTests": 155,
+    "fullBrowserSuite": "pass",
+    "releaseArtifact": "pass"
+  }
+}
