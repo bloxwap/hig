@@ -4,20 +4,20 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "candidate",
-  "sourceCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
+  "sourceCommit": "839cbe141af3cccc6f16ab46b5d9abd3e326d4d7",
   "sourceTreeDirty": false,
   "sourceVersion": "0.1.0",
-  "artifactVersion": "0.1.0-candidate.shac32d8408",
+  "artifactVersion": "0.1.0-candidate.sha839cbe14",
   "docsGuidelineVersion": "0.1.0",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig-chart",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-chart-0.1.0-candidate.shac32d8408.tgz",
-      "bytes": 2045,
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-chart-0.1.0-candidate.sha839cbe14.tgz",
+      "bytes": 2044,
       "unpackedBytes": 4338,
-      "sha256": "8e59f00e6f5fcc45fcf73c89e8a1b39c700bf32d4670b2db98dd6849eda08457",
+      "sha256": "79d4ef15040bd244c766d411a561752d6e5d96e2cfaeceb6aac786846af600b7",
       "files": [
         "LICENSE",
         "README.md",
@@ -26,8 +26,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shac32d8408",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha839cbe14",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha839cbe14"
       },
       "peers": [
         "react",
@@ -38,11 +38,11 @@
     },
     {
       "package": "@bloxwap/hig-contracts",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-contracts-0.1.0-candidate.shac32d8408.tgz",
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-contracts-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 7206,
       "unpackedBytes": 22242,
-      "sha256": "db86329fdb3903a93400367e57a9e352c54b781648f77d2b0b80bf746394a08a",
+      "sha256": "172e49312446557d6259e50948c3e20d83ad271e1373412e29684da23174a599",
       "files": [
         "LICENSE",
         "README.md",
@@ -61,11 +61,11 @@
     },
     {
       "package": "@bloxwap/hig-feedback",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-feedback-0.1.0-candidate.shac32d8408.tgz",
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-feedback-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 66575,
       "unpackedBytes": 133612,
-      "sha256": "a1cc4fde2927a670baf139306b543a38fc5ae4b2172ce8890a2a63e87c51f086",
+      "sha256": "cff3fbb22d5989f75d9980f1f4392960f29ad43b11d647efa0708bbc6938cdfe",
       "files": [
         "LICENSE",
         "README.md",
@@ -93,7 +93,7 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha839cbe14"
       },
       "peers": [
         "react",
@@ -112,11 +112,11 @@
     },
     {
       "package": "@bloxwap/hig-native",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-native-0.1.0-candidate.shac32d8408.tgz",
-      "bytes": 29279,
-      "unpackedBytes": 107479,
-      "sha256": "b742477325e6eede2a4a370f966226784a2c9a5a0fb9edc8816f5301f363ccc2",
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-native-0.1.0-candidate.sha839cbe14.tgz",
+      "bytes": 29569,
+      "unpackedBytes": 108700,
+      "sha256": "873982f82db07baaf511e34019645cb2643f8f0633737ac5d4060bbe17439a4d",
       "files": [
         "LICENSE",
         "README.md",
@@ -171,8 +171,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shac32d8408",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha839cbe14",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha839cbe14"
       },
       "peers": [
         "react",
@@ -197,11 +197,11 @@
     },
     {
       "package": "@bloxwap/hig-native-fonts",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 4420491,
       "unpackedBytes": 12069011,
-      "sha256": "330a3a4b1a116df9071434a01dd28eca9287aeb2c26fe2ef34b8fd336c7f633c",
+      "sha256": "1b0704b71f136b730d8fd2c099525cb158122735928454517a56d4945915ef94",
       "files": [
         "LICENSE",
         "README.md",
@@ -231,11 +231,11 @@
     },
     {
       "package": "@bloxwap/hig-og-fonts",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 844029,
       "unpackedBytes": 2195023,
-      "sha256": "8c67f508e19d294ef6d1978b5d6db9985c69a51af0416690962fdcdbb876f947",
+      "sha256": "97cfc956fadef8fc6ff1e9ef6e9ac9db82359cf001c02038695237c74ad03f89",
       "files": [
         "LICENSE",
         "README.md",
@@ -257,11 +257,11 @@
     },
     {
       "package": "@bloxwap/hig-react",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-react-0.1.0-candidate.shac32d8408.tgz",
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-react-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 25592,
       "unpackedBytes": 108464,
-      "sha256": "7cf7a0e58b99229c537e44a25c9ba828c789bfc27f88cfa6aba620220b6a07ad",
+      "sha256": "86f477d02fcc9e6827535514e6e19436e59c2c88278939d32d5d169d6bb38fd8",
       "files": [
         "LICENSE",
         "README.md",
@@ -312,8 +312,8 @@
         "package.json"
       ],
       "dependencies": {
-        "@bloxwap/hig-tokens": "0.1.0-candidate.shac32d8408",
-        "@bloxwap/hig-contracts": "0.1.0-candidate.shac32d8408"
+        "@bloxwap/hig-tokens": "0.1.0-candidate.sha839cbe14",
+        "@bloxwap/hig-contracts": "0.1.0-candidate.sha839cbe14"
       },
       "peers": [
         "react",
@@ -334,11 +334,11 @@
     },
     {
       "package": "@bloxwap/hig-tokens",
-      "version": "0.1.0-candidate.shac32d8408",
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.shac32d8408.tgz",
+      "version": "0.1.0-candidate.sha839cbe14",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 8226,
       "unpackedBytes": 43413,
-      "sha256": "3e30e07c9d07d15e47b0c9c596acd3e1c6bd2a46c8574b78f8aa5912de8d1900",
+      "sha256": "e72b233ceb9d5bab9e63743ccd95a1d27870dc5e71c692f67235697d2da9d3f5",
       "files": [
         "LICENSE",
         "README.md",
@@ -355,19 +355,19 @@
   ],
   "packedSizes": {
     "webTokens": {
-      "file": "bloxwap-hig-tokens-0.1.0-candidate.shac32d8408.tgz",
+      "file": "bloxwap-hig-tokens-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 8226,
       "unpackedBytes": 43413,
       "fontFiles": 0
     },
     "nativeFonts": {
-      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "file": "bloxwap-hig-native-fonts-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 4420491,
       "unpackedBytes": 12069011,
       "fontFiles": 15
     },
     "ogFonts": {
-      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.shac32d8408.tgz",
+      "file": "bloxwap-hig-og-fonts-0.1.0-candidate.sha839cbe14.tgz",
       "bytes": 844029,
       "unpackedBytes": 2195023,
       "fontFiles": 5,
@@ -376,8 +376,8 @@
   },
   "chartAdapter": {
     "package": "@bloxwap/hig-chart",
-    "file": "bloxwap-hig-chart-0.1.0-candidate.shac32d8408.tgz",
-    "bytes": 2045,
+    "file": "bloxwap-hig-chart-0.1.0-candidate.sha839cbe14.tgz",
+    "bytes": 2044,
     "peer": "@bloxwap/chart",
     "peerOptional": false,
     "otherArtifactsNamingChart": []
@@ -435,6 +435,20 @@
         "packages/native/dist/switch-row.js",
         "packages/native/dist/switch.js",
         "nativeSwitchRow.js"
+      ]
+    },
+    "nativeLink": {
+      "raw": 3442,
+      "gzip": 1662,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/contracts/dist/index.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/button.js",
+        "nativeLink.js"
       ]
     },
     "feedbackContract": {
