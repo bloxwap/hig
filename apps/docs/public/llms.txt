@@ -159,6 +159,10 @@ RN external Link uses Linking; routes belong to host. Native fontFamily only aft
 
 See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
+Native `Button contentMode="custom"` renders host Text/View children directly, preserving layouts with separate identity and trailing nodes. The root retains minimum target, disabled/busy, propagation, ref and accepted-feedback behavior. Hosts own visible busy content in this mode; `busyLabel` still controls the accessible busy suffix. Keep child content noninteractive and give icon-only actions an accessible label.
+
+Native `Link` accepts a forwarded View ref, root Pressable props and `contentMode="custom"` for host label/icon nodes. Required `href` retains its destination. Without `onPress`, it opens through Linking and reports failures to `onError`; a supplied `onPress` replaces that navigation so host WebBrowser/route handlers run exactly once. Disabled links reject activation. The root always has link semantics.
+
 
 ## Charts · HIG 0.1.0
 Source: docs/components/chart.md

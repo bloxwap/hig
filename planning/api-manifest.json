@@ -378,7 +378,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode;\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label and busy suffix. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label and busy suffix. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
       },
       "busyAccessibilityLabel": {
         "entry": "button",
@@ -392,9 +392,13 @@
         "entry": "button",
         "signature": "export declare function IconButton({ label, children, ...props }: ButtonProps & {\n    label: string;\n}): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "LinkProps": {
+        "entry": "button",
+        "signature": "export interface LinkProps extends Omit<PressableProps, 'children' | 'onPress' | 'accessibilityRole' | 'role'> {\n    href: string;\n    children: React.ReactNode; /** Host navigation replaces Linking.openURL, so one press never opens both. */\n    onPress?: PressableProps['onPress'];\n    onError?: (error: unknown) => void;\n    /** Custom content renders host label/icon nodes directly. */ contentMode?: 'default' | 'custom';\n}"
+      },
       "Link": {
         "entry": "button",
-        "signature": "export declare function Link({ href, children, onError }: React.PropsWithChildren<{\n    href: string;\n    onError?: (error: unknown) => void;\n}>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare const Link: React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<View>>;"
       },
       "Checkbox": {
         "entry": "checkbox",
