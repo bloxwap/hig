@@ -1,11 +1,7 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-import {readFileSync} from 'node:fs';
-import {createHash} from 'node:crypto';
-import * as releasedSfx from '@bloxwap/sfx';
-import * as releasedHaptic from '@bloxwap/haptic';
-import * as mergedSfx from './fixtures/upstream-feedback/sfx/engine';
-import * as mergedHaptic from './fixtures/upstream-feedback/haptic/trigger';
-import {FakeAudioContext,FakeOfflineAudioContext,tick} from './fixtures/upstream-feedback/sfx/fake-audio';
+import * as sfx from '@bloxwap/sfx';
+import * as haptic from '@bloxwap/haptic';
+import {FakeAudioContext,FakeOfflineAudioContext,tick} from '@bloxwap/sfx/fake-audio';
 import {createWebSoundAdapter} from '../packages/feedback/src/web-sound';
 import {createBrowserHapticAdapter} from '../packages/feedback/src/browser-haptic';
 import {FeedbackController} from '../packages/feedback/src/contract';
@@ -14,7 +10,7 @@ import type {FeedbackAdapter,FeedbackEvent} from '../packages/contracts/src/feed
 const prefs={version:1 as const,sound:true,haptics:true,volume:.4,motion:false};
 const event=(intent:FeedbackEvent['intent']='activate',id:string=intent):FeedbackEvent=>({id,source:'upstream-check',intent,origin:'keyboard'});
 let adapters:FeedbackAdapter[]=[];
-function sound(load:Parameters<typeof createWebSoundAdapter>[0]=async()=>mergedSfx){const adapter=createWebSoundAdapter(load);adapters.push(adapter);return adapter;}
+function sound(load:Parameters<typeof createWebSoundAdapter>[0]=async()=>sfx){const adapter=createWebSoundAdapter(load);adapters.push(adapter);return adapter;}
 
 beforeEach(()=>{
  FakeAudioContext.reset();FakeOfflineAudioContext.reset();
@@ -25,41 +21,33 @@ beforeEach(()=>{
 });
 afterEach(async()=>{
  for(const adapter of adapters)adapter.dispose?.();adapters=[];
- await tick();mergedSfx.dispose();releasedSfx.dispose();
+ await tick();sfx.dispose();
  vi.doUnmock('@bloxwap/sfx');vi.restoreAllMocks();vi.unstubAllGlobals();
 });
 
-it('uses unchanged pinned upstream implementations and the actual old released packages',()=>{
- const provenance=JSON.parse(readFileSync(new URL('./fixtures/upstream-feedback/provenance.json',import.meta.url),'utf8')) as {files:{file:string;sha256:string;bytes:number}[]};
- for(const record of provenance.files){const bytes=readFileSync(new URL(`./fixtures/upstream-feedback/${record.file}`,import.meta.url));expect(bytes.length).toBe(record.bytes);expect(createHash('sha256').update(bytes).digest('hex')).toBe(record.sha256);}
- const packageVersion=(name:string)=>JSON.parse(readFileSync(new URL(`../node_modules/@bloxwap/${name}/package.json`,import.meta.url),'utf8')).version;
- expect(packageVersion('sfx')).toBe('0.1.0');expect(packageVersion('haptic')).toBe('0.1.0');
- expect('canTriggerHaptic' in releasedHaptic).toBe(false);expect('triggerHaptic' in releasedHaptic).toBe(false);
-});
-
-describe('SFX per-root cancellation against merged #51',()=>{
+describe('SFX per-root cancellation with 0.2.0',()=>{
  it('cancels only one root, renews its scope, and leaves host-owned playback running',async()=>{
   const clock=vi.spyOn(performance,'now').mockReturnValue(0);
-  await mergedSfx.preload(['tick','toggle','success','error']);
+  await sfx.preload(['tick','toggle','success','error']);
   const a=sound(),b=sound();
-  await a.play(event(),prefs);await a.play(event('success'),prefs);await b.play(event('toggle'),prefs);mergedSfx.play('error');
+  await a.play(event(),prefs);await a.play(event('success'),prefs);await b.play(event('toggle'),prefs);sfx.play('error');
   const sources=FakeAudioContext.instances[0].of('source');
-  expect(mergedSfx.activeVoices()).toBe(4);
+  expect(sfx.activeVoices()).toBe(4);
   a.cancel?.();await tick();
   expect(sources[0].stoppedAt).toBe(0);expect(sources[1].stoppedAt).toBe(0);expect(sources[2].stoppedAt).toBeUndefined();expect(sources[3].stoppedAt).toBeUndefined();
-  expect(mergedSfx.activeVoices()).toBe(2);
+  expect(sfx.activeVoices()).toBe(2);
   clock.mockReturnValue(1000);
-  await a.play(event('success'),prefs);expect(mergedSfx.activeVoices()).toBe(3);
-  a.dispose?.();await tick();expect(mergedSfx.activeVoices()).toBe(2);
-  await a.play(event('success','after-dispose'),prefs);expect(mergedSfx.activeVoices()).toBe(2);
+  await a.play(event('success'),prefs);expect(sfx.activeVoices()).toBe(3);
+  a.dispose?.();await tick();expect(sfx.activeVoices()).toBe(2);
+  await a.play(event('success','after-dispose'),prefs);expect(sfx.activeVoices()).toBe(2);
  });
 
  it('aborts the live synthesis path without stopping another root',async()=>{
   const a=sound(),b=sound();
   await a.play(event(),prefs);await b.play(event('toggle'),prefs);
-  expect(mergedSfx.activeVoices()).toBe(2);
-  a.cancel?.();expect(mergedSfx.activeVoices()).toBe(1);
-  b.dispose?.();expect(mergedSfx.activeVoices()).toBe(0);
+  expect(sfx.activeVoices()).toBe(2);
+  a.cancel?.();expect(sfx.activeVoices()).toBe(1);
+  b.dispose?.();expect(sfx.activeVoices()).toBe(0);
  });
 
  it('drops a canceled unlock request and still accepts a later request after resume',async()=>{
@@ -68,51 +56,40 @@ describe('SFX per-root cancellation against merged #51',()=>{
   const a=sound();const pending=a.play(event(),prefs);await tick();
   expect(resume).toBeTypeOf('function');a.cancel?.();
   const next=a.play(event('success'),prefs);resume();await pending;await next;
-  expect(mergedSfx.activeVoices()).toBe(1);
-  a.cancel?.();await tick();expect(mergedSfx.activeVoices()).toBe(0);
+  expect(sfx.activeVoices()).toBe(1);
+  a.cancel?.();await tick();expect(sfx.activeVoices()).toBe(0);
  });
 
  it('routes controller mute/background cancellation through the adapter and can resume',async()=>{
-  await mergedSfx.preload(['tick','toggle','success']);
+  await sfx.preload(['tick','toggle','success']);
   let clock=0;const a=sound();const controller=new FeedbackController({sound:a,preferences:prefs,now:()=>clock+=1000});
-  controller.emit(event());await tick();expect(mergedSfx.activeVoices()).toBe(1);
-  controller.updatePreferences({volume:0});await tick();expect(mergedSfx.activeVoices()).toBe(0);
-  controller.updatePreferences({volume:.4});controller.emit(event('toggle'));await tick();expect(mergedSfx.activeVoices()).toBe(1);
-  controller.setBackground(true);await tick();expect(mergedSfx.activeVoices()).toBe(0);
-  controller.emit(event('success'));await tick();expect(mergedSfx.activeVoices()).toBe(0);
-  controller.setBackground(false);controller.emit(event('success','foreground'));await tick();expect(mergedSfx.activeVoices()).toBe(1);
-  controller.dispose();await tick();expect(mergedSfx.activeVoices()).toBe(0);
+  controller.emit(event());await tick();expect(sfx.activeVoices()).toBe(1);
+  controller.updatePreferences({volume:0});await tick();expect(sfx.activeVoices()).toBe(0);
+  controller.updatePreferences({volume:.4});controller.emit(event('toggle'));await tick();expect(sfx.activeVoices()).toBe(1);
+  controller.setBackground(true);await tick();expect(sfx.activeVoices()).toBe(0);
+  controller.emit(event('success'));await tick();expect(sfx.activeVoices()).toBe(0);
+  controller.setBackground(false);controller.emit(event('success','foreground'));await tick();expect(sfx.activeVoices()).toBe(1);
+  controller.dispose();await tick();expect(sfx.activeVoices()).toBe(0);
  });
 
  it('retains shared default engine ownership until the last adapter disposes',async()=>{
-  await mergedSfx.preload(['tick','toggle']);
-  const dispose=vi.fn(mergedSfx.dispose);vi.doMock('@bloxwap/sfx',()=>({...mergedSfx,dispose}));
+  await sfx.preload(['tick','toggle']);
+  const dispose=vi.fn(sfx.dispose);vi.doMock('@bloxwap/sfx',()=>({...sfx,dispose}));
   const a=createWebSoundAdapter(),b=createWebSoundAdapter();adapters.push(a,b);
   await a.play(event(),prefs);await b.play(event('toggle'),prefs);
-  expect(FakeAudioContext.constructed).toBe(1);expect(mergedSfx.activeVoices()).toBe(2);
-  a.dispose?.();await tick();expect(dispose).not.toHaveBeenCalled();expect(mergedSfx.activeVoices()).toBe(1);
+  expect(FakeAudioContext.constructed).toBe(1);expect(sfx.activeVoices()).toBe(2);
+  a.dispose?.();await tick();expect(dispose).not.toHaveBeenCalled();expect(sfx.activeVoices()).toBe(1);
   expect(FakeAudioContext.instances[0].closed).toBe(false);
   b.dispose?.();await tick();expect(dispose).toHaveBeenCalledOnce();expect(FakeAudioContext.instances[0].closed).toBe(true);
  });
 });
 
-it('keeps actual released SFX 0.1.0 playback working while honestly retaining its active-cancel limitation',async()=>{
- await releasedSfx.preload(['tick','toggle']);
- const a=sound(async()=>releasedSfx);
- await a.play(event(),prefs);expect(releasedSfx.activeVoices()).toBe(1);
- a.cancel?.();await tick();expect(releasedSfx.activeVoices()).toBe(1);
- await a.play(event('toggle'),prefs);expect(releasedSfx.activeVoices()).toBe(2);
- a.dispose?.();await tick();expect(releasedSfx.activeVoices()).toBe(2);
- // A host-injected engine keeps ownership. Cleanup here is the test host's responsibility.
- releasedSfx.dispose();expect(FakeAudioContext.instances[0].closed).toBe(true);
-});
-
-describe('optional canonical Haptic backend against merged #30',()=>{
+describe('optional canonical Haptic backend with 0.2.0',()=>{
  it('rechecks current activation/visibility, uses upstream presets and creates no helper DOM',async()=>{
   const vibrate=vi.fn<(pattern:number|number[])=>boolean>(()=>true),createElement=vi.fn();
   const activation={hasBeenActive:false};const doc={hidden:false,createElement};
   vi.stubGlobal('navigator',{vibrate,userActivation:activation});vi.stubGlobal('document',doc);
-  const trigger=vi.spyOn(mergedHaptic,'triggerHaptic');const adapter=createBrowserHapticAdapter(mergedHaptic);adapters.push(adapter);
+  const trigger=vi.spyOn(haptic,'triggerHaptic');const adapter=createBrowserHapticAdapter(haptic);adapters.push(adapter);
   expect(adapter.capability.available).toBe(false);await adapter.play(event(),prefs);expect(trigger).not.toHaveBeenCalled();
   activation.hasBeenActive=true;expect(adapter.capability.available).toBe(true);
   await adapter.play(event(),{...prefs,haptics:false});expect(trigger).not.toHaveBeenCalled();
@@ -127,22 +104,22 @@ describe('optional canonical Haptic backend against merged #30',()=>{
  it('reports iOS unavailable even during a trusted activation and never manufactures a physical tap',async()=>{
   const createElement=vi.fn();vi.stubGlobal('document',{hidden:false,createElement});
   vi.stubGlobal('navigator',{platform:'iPhone',userAgent:'AppleWebKit',userActivation:{hasBeenActive:true,isActive:true}});
-  const adapter=createBrowserHapticAdapter(mergedHaptic);adapters.push(adapter);
+  const adapter=createBrowserHapticAdapter(haptic);adapters.push(adapter);
   expect(adapter.capability).toMatchObject({available:false,mechanism:'none',observed:false,reason:'trusted-physical-tap-required'});
   await adapter.play(event('success'),prefs);await Promise.resolve();await adapter.play(event('error'),prefs);
   expect(createElement).not.toHaveBeenCalled();
-  expect(await mergedHaptic.triggerHaptic('success')).toEqual({delivered:false,mechanism:'none',reason:'trusted-physical-tap-required'});
+  expect(await haptic.triggerHaptic('success')).toEqual({delivered:false,mechanism:'none',reason:'trusted-physical-tap-required'});
  });
 
  it('is silent under SSR and isolates a failed injected probe or request',async()=>{
   vi.stubGlobal('document',undefined);vi.stubGlobal('navigator',undefined);
-  const ssr=createBrowserHapticAdapter(mergedHaptic);expect(ssr.capability.available).toBe(false);expect(()=>ssr.play(event(),prefs)).not.toThrow();
+  const ssr=createBrowserHapticAdapter(haptic);expect(ssr.capability.available).toBe(false);expect(()=>ssr.play(event(),prefs)).not.toThrow();
   const failed=createBrowserHapticAdapter({canTriggerHaptic:()=>{throw Error('capability');},triggerHaptic:vi.fn()});expect(failed.capability.available).toBe(false);
   const rejecting=createBrowserHapticAdapter({canTriggerHaptic:()=>({available:true,mechanism:'browser-vibration',observed:false}),triggerHaptic:async()=>{throw Error('backend');}});
   await expect(rejecting.play(event(),prefs)).resolves.toBeUndefined();
  });
 
- it('preserves the default/released 0.1.0 fallback patterns and cancellation without loading a new API',()=>{
+ it('preserves the default fallback patterns and cancellation without injecting custom backend',()=>{
   const vibrate=vi.fn(()=>true);vi.stubGlobal('navigator',{vibrate});
   const adapter=createBrowserHapticAdapter();adapters.push(adapter);
   expect(adapter.capability).toMatchObject({available:true,mechanism:'browser-vibration',observed:false});
