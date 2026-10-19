@@ -81,7 +81,25 @@
         "lastGreenCICommit": "7d104f5feeb89234c576289b337ac50471661771",
         "validation": "Full build/docs/lint/types,163 web / 161 native tests; quality560138 gzip bytes docs JS after removing duplicate client chapters; clean eight-archive candidate 0e239442 verified. Seven non-native payloads match ec6535bb excluding coordinated metadata. Both RN 0.81 / Expo 54 and RN 0.83 / Expo 55 packed regular, gesture and adoption Android/iOS exports and fonts pass; fresh packed web/boundaries,212 examples,SSR,seven-package staged install, full Chromium/WebKit browser, catalog (104 states), axe and Next pass. Native custom Dialog retains one Modal with host anatomy, Back, reduced motion and dismissal-aware focus. All quality/native/browser/candidate and docs checks passed at 7d104f5 (twelve successes, expected docs deploy skip).",
         "ciVisibility": "Runner-list API exposes no repository-specific runners and organization listing requires unavailable admin scope; observed quality/native/browser/candidate/docs jobs at7d104f5 all completed successfully on shared runners.",
-        "candidateVersion": "0.1.0-candidate.sha0e239442"
+        "candidateVersion": "0.1.0-candidate.sha0e239442",
+        "resumedSourceWork": {
+          "feedback": {
+            "pr": "https://github.com/bloxwap/hig/pull/127",
+            "sourceCommit": "623e4cc25dee14613f2b5d5ce8d6abd13ff88e62",
+            "testedHead": "bd0194b3b79384ed4860dc2704936ffd322f6260",
+            "checks": "12 SUCCESS; expected main-only docs deploy SKIP",
+            "releaseLimit": "SFX/Haptic npm 0.1.0 limitations retained"
+          },
+          "nativeSwitchRow": {
+            "sourceCommit": "ff18e1be25acb6badc245114cb9acfbd1a342287",
+            "evidence": "evidence/native-switch-content/report.json",
+            "tests": "163 web / 165 native, build/docs/lint/types/quality and 4 browser cases pass",
+            "gzipBytes": 921,
+            "ordinarySwitchGzipBytes": 2153,
+            "unchangedCapBytes": 2200
+          },
+          "nextCandidate": "New clean source pack pending;0e candidate and previous consumer evidence remain immutable."
+        }
       }
     },
     {

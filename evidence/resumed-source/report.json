@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-19T00:17:32.463359+00:00",
+  "sourceCommit": "2d36de43f8cf7f45774d951e8abca0f9fe82fff2",
+  "commands": [
+    "npm run check",
+    "npm run quality",
+    "npm run smoke:ssr",
+    "npm run examples:check",
+    "node scripts/native-switch-browser-smoke.mjs"
+  ],
+  "result": "pass",
+  "webTests": 174,
+  "nativeTests": 165,
+  "publicImportExamples": 212,
+  "nativeSwitchGzipBytes": 2153,
+  "nativeSwitchRowGzipBytes": 921,
+  "unchangedSwitchCapBytes": 2200,
+  "sourceCheckLogSha256": "bc38361df0f522e4eb169b979d32d8893370c78486bf580f66477beefd203b34",
+  "scope": "Integrated feedback adapters and SwitchRow source; owning native/sponsor runtime proofs are separate. No physical or owner certification."
+}
