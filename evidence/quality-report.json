@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
-  "sourceCommit": "c32d8408881cdd99344a66a0d25761312b19a621",
-  "sourceTreeDirty": false,
+  "sourceCommit": "e5cc5c2b7b6383551e54ba2bd69d2dc0174ec841",
+  "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
     "renderer": "19.1.0",
@@ -72,6 +72,20 @@
         "nativeSwitchRow.js"
       ]
     },
+    "nativeLink": {
+      "raw": 3442,
+      "gzip": 1662,
+      "inputs": [
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/contracts/dist/index.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/button.js",
+        "nativeLink.js"
+      ]
+    },
     "feedbackContract": {
       "raw": 2951,
       "gzip": 996,
@@ -81,8 +95,8 @@
       ]
     },
     "docsJS": {
-      "raw": 1962397,
-      "gzip": 560326
+      "raw": 1962401,
+      "gzip": 560329
     },
     "docsCSS": {
       "raw": 114722

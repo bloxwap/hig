@@ -1,0 +1,18 @@
+
+> bloxwap-hig-workspace@0.1.0 lint
+> eslint . && node scripts/check-drift.mjs && node scripts/check-built-in-strings.mjs
+
+Token, native font manifest, brand and glossary generation drift passed
+Built-in string check passed: React and React Native copy comes from HIGProvider messages or props
+
+> bloxwap-hig-workspace@0.1.0 typecheck
+> tsc --noEmit && npm run check -w hig-docs
+
+
+> hig-docs@0.1.0 check
+> fumadocs-mdx && next typegen && tsc --noEmit
+
+[MDX] generated files in 6.736625000000004ms
+[MDX] generated files in 6.522333000000003ms
+Generating route types...
+✓ Types generated successfully
