@@ -628,6 +628,14 @@
         "entry": "switch",
         "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, tone, onCheckedChange }: SwitchProps): import(\"react/jsx-runtime\").JSX.Element;"
       },
+      "SwitchRow": {
+        "entry": "selection",
+        "signature": "export declare function SwitchRow({ label, checked, defaultChecked, disabled, onCheckedChange, children, style, accessibilityState, ...props }: SwitchRowProps): import(\"react/jsx-runtime\").JSX.Element;"
+      },
+      "SwitchRowProps": {
+        "entry": "selection",
+        "signature": "export interface SwitchRowProps extends CheckedProps, Omit<PressableProps, 'children' | 'onPress' | 'disabled' | 'role' | 'accessibilityRole' | 'accessibilityLabel' | 'accessibilityLabelledBy' | 'aria-label' | 'aria-labelledby' | 'aria-checked' | 'aria-disabled'> {\n    /** Custom anatomy is decorative. `label` names the switch and `accessibilityHint` describes it. */ children: React.ReactNode;\n}"
+      },
       "Slider": {
         "entry": "slider",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (v: number) => void;\n}): import(\"react/jsx-runtime\").JSX.Element;"

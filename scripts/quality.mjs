@@ -19,11 +19,11 @@ export async function qualityReport(){
  const nativeRuntime=verifyNativeReact('fixtures/native');verifyExpoNativeModules('fixtures/native');
  const packages=readdirSync('packages');const exports=Object.fromEntries(packages.map(p=>[p,checkExports(`packages/${p}`)]));checkPlatformImports('packages/react','web');checkPlatformImports('packages/chart','web');checkPlatformImports('packages/native','native');checkChartBoundary();
  const budgets=JSON.parse(readFileSync('planning/budgets.json','utf8'));const sizes={};
- for(const [name,input] of Object.entries({button:"export {Button} from '@bloxwap/hig-react/button';",field:"export {AmountInput} from '@bloxwap/hig-react/field';",nativeSwitch:"export {Switch} from '@bloxwap/hig-native/switch';",feedbackContract:"export {FeedbackController} from '@bloxwap/hig-feedback';"})){
+ for(const [name,input] of Object.entries({button:"export {Button} from '@bloxwap/hig-react/button';",field:"export {AmountInput} from '@bloxwap/hig-react/field';",nativeSwitch:"export {Switch} from '@bloxwap/hig-native/switch';",nativeSwitchRow:"export {SwitchRow} from '@bloxwap/hig-native/switch';",feedbackContract:"export {FeedbackController} from '@bloxwap/hig-feedback';"})){
   const result=await build({stdin:{contents:input,resolveDir:resolve('.'),sourcefile:`${name}.js`},write:false,bundle:true,minify:true,format:'esm',platform:'neutral',metafile:true,external:['react','react-dom','react-native','react/jsx-runtime']});
   const gzip=gzipSync(result.outputFiles[0].contents).length;sizes[name]={raw:result.outputFiles[0].contents.length,gzip,inputs:Object.keys(result.metafile.inputs)};
-  assertBudget(name,gzip,budgets[name].gzip);
-  if(name==='nativeSwitch'&&sizes[name].inputs.some(p=>/slider|svg|overlay|feedback|sfx|haptic|chart|react-dom/.test(p)))throw Error('Single native Switch imports unrelated runtime');
+  assertBudget(name,gzip,budgets[name==='nativeSwitchRow'?'nativeSwitch':name].gzip);
+  if(name.startsWith('nativeSwitch')&&sizes[name].inputs.some(p=>/slider|svg|overlay|feedback|sfx|haptic|chart|react-dom/.test(p)))throw Error('Single native Switch imports unrelated runtime');
  }
  const assetRoot='apps/docs/dist/_next/static';
  function files(dir){return readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(`${dir}/${e.name}`):[`${dir}/${e.name}`]);}
