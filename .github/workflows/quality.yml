@@ -53,7 +53,9 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
-          cache: npm
+          # Minis keep ~/.npm on disk. Do not add cache: npm (1.1–1.3 GB at ~1 MB/s).
+          # setup-node v5+ auto-caches npm when packageManager is set; keep this pin
+          # or set package-manager-cache: false if the action is upgraded.
       - name: Install CPython 3.12
         run: bash scripts/ci-setup-python.sh
       - run: npm ci
@@ -91,8 +93,10 @@ jobs:
       - run: npm run smoke:packed-react-css
       - run: npm run release:dry-run -- --channel candidate
       - run: npm run smoke:release-artifact -- candidate
+      # Dry-run and smoke:release-artifact already ran above. publish.yml rebuilds
+      # rather than downloading these. Upload on failure for review (visuals, tarballs).
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: always()
+        if: failure()
         with:
           name: hig-candidate-review-${{ github.sha }}
           path: |
@@ -117,7 +121,9 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
-          cache: npm
+          # Minis keep ~/.npm on disk. Do not add cache: npm (1.1–1.3 GB at ~1 MB/s).
+          # setup-node v5+ auto-caches npm when packageManager is set; keep this pin
+          # or set package-manager-cache: false if the action is upgraded.
       - name: Install CPython 3.12
         run: bash scripts/ci-setup-python.sh
       - run: npm ci
@@ -151,7 +157,9 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
-          cache: npm
+          # Minis keep ~/.npm on disk. Do not add cache: npm (1.1–1.3 GB at ~1 MB/s).
+          # setup-node v5+ auto-caches npm when packageManager is set; keep this pin
+          # or set package-manager-cache: false if the action is upgraded.
       - name: Install CPython 3.12
         run: bash scripts/ci-setup-python.sh
       - run: npm ci
@@ -178,7 +186,7 @@ jobs:
       - name: Browser, visual and hydration gates
         run: node scripts/run-browser-gates.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: always()
+        if: failure()
         with:
           name: hig-candidate-browser-${{ github.sha }}
           path: |

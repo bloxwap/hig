@@ -17,7 +17,7 @@ There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `su
 - Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
 
-Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default.
+Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default. `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Generated native/OG font faces still use `actions/cache` (~4 MB).
 
 ## Playwright
 
@@ -38,14 +38,14 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 | Job | Role |
 | --- | --- |
 | `paths-filter` | Same PR path filter as before; docs-only PRs skip the heavy jobs |
-| `quality` | `check`, examples, quality gates, SSR and packed smokes, Playwright packed-next/css, release dry-run |
+| `quality` | `check`, examples, quality gates, SSR and packed smokes, Playwright packed-next/css, release dry-run. Review artifacts upload only when the job fails; `publish.yml` rebuilds instead of downloading them |
 | `native` | Packed native Metro export for both supported RN/Expo profiles |
-| `browser` | Chromium and WebKit browser, visual, and hydration gates |
+| `browser` | Chromium and WebKit browser, visual, and hydration gates. Captures upload only when the job fails |
 | `candidate` | Aggregator so the required check reports on docs-only PRs |
 
 ### Documentation (`docs.yml`)
 
 | Job | Role |
 | --- | --- |
-| `build` | Static docs build, typecheck, GitHub Pages artifact |
+| `build` | Static docs build and typecheck. GitHub Pages artifact only on `main` (same condition as deploy); pull requests still build and validate |
 | `deploy` | GitHub Pages deploy from `main` |
