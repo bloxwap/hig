@@ -21,6 +21,8 @@ defaults:
     shell: bash
 jobs:
   paths-filter:
+    # Security: never run fork PR code on the self-hosted runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
     outputs:
@@ -40,7 +42,8 @@ jobs:
 
   quality:
     needs: paths-filter
-    if: needs.paths-filter.outputs.code == 'true'
+    # Security: never run fork PR code on the self-hosted runner.
+    if: (needs.paths-filter.outputs.code == 'true') && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
     steps:
@@ -103,7 +106,8 @@ jobs:
 
   native:
     needs: paths-filter
-    if: needs.paths-filter.outputs.code == 'true'
+    # Security: never run fork PR code on the self-hosted runner.
+    if: (needs.paths-filter.outputs.code == 'true') && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
     steps:
@@ -136,7 +140,8 @@ jobs:
 
   browser:
     needs: paths-filter
-    if: needs.paths-filter.outputs.code == 'true'
+    # Security: never run fork PR code on the self-hosted runner.
+    if: (needs.paths-filter.outputs.code == 'true') && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
     steps:
@@ -185,7 +190,8 @@ jobs:
   # docs-only PRs are not stuck on "Waiting for status to be reported."
   candidate:
     needs: [paths-filter, quality, native, browser]
-    if: always() && !cancelled()
+    # Security: never run fork PR code on the self-hosted runner.
+    if: (always() && !cancelled()) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
     steps:
