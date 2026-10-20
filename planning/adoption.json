@@ -70,7 +70,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/55"
         }
       ],
-      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117\u2013#121, Pro Table/MarketRow, optional web GestureSheet, status and custom native Dialog contracts (#110). Consumer refreshes (#115), WebKit resilience (#124) and combined owning adoption have validated drafts. Review/merge, physical devices #55, registry #56, named-owner visual/density/motion/bundle approvals #57 and future rollback retirement remain. Further ordinary native profile/navigation and wallet/trade support controls are being migrated in isolated follow-ups; custom selector anatomy remains a software API task.",
+      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117–#121, Pro Table/MarketRow, optional web GestureSheet, status and custom native Dialog contracts (#110). Consumer refreshes (#115), WebKit resilience (#124) and combined owning adoption have validated drafts. Review/merge, physical devices #55, registry #56, named-owner visual/density/motion/bundle approvals #57 and future rollback retirement remain. Further ordinary native profile/navigation and wallet/trade support controls are being migrated in isolated follow-ups; custom selector anatomy remains a software API task.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15",
@@ -473,16 +473,19 @@
       "name": "taptradetv",
       "applicability": "decided 2026-10-15 (#59), per app: apps/web = product UI (public taptrade.tv incl. the /sponsors auction); packages/ui = product UI shared by apps/web; apps/host = broadcast/capture surface (stage / and /view captured into the 1080p RTMP feed) with an internal operator console (/admin); apps/auction = product backend with an internal staff console (no HIG runtime); apps/contest = product backend (no UI); apps/deck = internal tool (Figma deck iframe, brand/content only); apps/capture and apps/stream = broadcast/capture with no UI",
       "owner": "bloxwap/taptradetv maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha872906a9",
-      "status": "in progress: apps/web /sponsors auction migrated (HIG Button, Field, Input, TextArea, Dialog, Switch, NumberReadout; tokens CSS in a hig cascade layer; Bloxwap fonts from @bloxwap/font; Geist removed). Rest of apps/web and packages/ui and apps/host under dated exceptions; auction, contest, deck, capture and stream decided: no HIG runtime",
+      "higVersion": "0.1.0-candidate.sha0e239442",
+      "status": "migrated: taptradetv#223 merged the remaining apps/web routes, shared packages/ui media controls and requested apps/host tokens-only migration. All web routes use canonical HIG tokens/controls and Bloxwap fonts; host copied token CSS and non-Bloxwap fonts are removed. Host primitive and artwork scope remains separate.",
       "mergedPRs": [
-        "https://github.com/bloxwap/taptradetv/pull/188"
+        "https://github.com/bloxwap/taptradetv/pull/188",
+        "https://github.com/bloxwap/taptradetv/pull/216",
+        "https://github.com/bloxwap/taptradetv/pull/223"
       ],
       "openPRs": [
-        "https://github.com/bloxwap/taptradetv/pull/216",
-        "https://github.com/bloxwap/taptradetv/pull/217"
+        "https://github.com/bloxwap/taptradetv/pull/217",
+        "https://github.com/bloxwap/taptradetv/pull/219",
+        "https://github.com/bloxwap/taptradetv/pull/220"
       ],
-      "validation": "taptradetv#188 CI green (Quality Gate with sha256 check and scoped drift 157 files, web/host previews) on d553fc6, merged as 0cf967e (post-merge Production green); independent verifier (bun 1.3.0): frozen install, lint, check-types, tests (root Vitest 394), build, OpenNext build:cf, drift passed; tarballs byte-identical to a fresh hig@872906a9 candidate. Browser (Playwright Chromium, production next start with a mock auction worker): 390px accept 44px and inputs 48px, keyboard dialog open/trap/confirm/price-moved/Escape focus return, Space toggles the switch, Bloxwap faces only on /sponsors routes, /schedule table unchanged after client navigation, rollback NEXT_PUBLIC_HIG_SPONSORS=0 restores the legacy renderers (<=0.45% pixel diff). Bytes on /sponsors: JS +45,731, CSS +56,541, fonts +458,664; / and /schedule fonts -134,132 (docs/hig/ in taptradetv)",
+      "validation": "Frozen Bun 1.3.0; Node 24.15.0 final tests/types/lint; 476 root tests, 970 host tests, 24 workflow tests, 20 Turbo lint/type tasks. Web/host Next builds; 42 Chromium/WebKit site-route cases, 16 authenticated sponsor cases, two navigation-isolation checks; fresh 1920x1080 host stage/admin captures preserve geometry/text/avatar markup/keyboard/fullscreen. Exact candidate/source/archive/install guards; scoped drift 409 files. Host lint retains 10 existing warnings. All 10 PR checks passed on head 6f87c8156a3295f578538c0ae83f9513e47b9464, including Quality Gate, web/host workerd HTTP and five automatic previews. Merged as 959595c9e9581513a863b700d850c93afc6359b2.",
       "exceptions": [
         {
           "scope": "vendor/bloxwap-hig/*.tgz",
@@ -492,44 +495,37 @@
           "tracking": "https://github.com/bloxwap/hig/issues/56"
         },
         {
-          "scope": "apps/web outside app/sponsors and packages/ui (app/components/ui shadcn forks, shadcn roles in app/globals.css, Nunito; remaining /sponsors card/badge/upload pieces)",
-          "reason": "route-by-route migration behind the /sponsors pilot; TapTrade.tv red accent versus the HIG action role awaits the owner",
+          "scope": "apps/host/src/components/ui/{button,dialog,number,select,skeleton,switch}.tsx; cqh broadcast type/spacing geometry; decorative seeded avatar artwork in src/components/trader-avatar.tsx",
+          "reason": "The completed tokens-only migration removes copied token CSS and non-Bloxwap fonts while preserving captured 16:9 geometry, operator interactions and exact avatar identities. Full host primitive replacement remains a separate captured-surface review; avatar artwork is not a semantic token.",
           "owner": "bloxwap/taptradetv maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/100"
-        },
-        {
-          "scope": "apps/host (src/styles/tokens.generated.css and bloxwap.css, palette hex in src/app/globals.css and src/components/trader-avatar.tsx, Geist/Geist Mono/Space Grotesk, src/components/ui/{button,dialog,number,select,skeleton,switch}.tsx)",
-          "reason": "broadcast/capture surface: token and font changes alter the encoded stream and need capture evidence; the console shares the stage token file",
-          "owner": "bloxwap/taptradetv maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/100"
+          "tracking": "https://github.com/bloxwap/hig/issues/36"
         }
       ],
-      "remaining": "Migrate the remaining apps/web routes and apps/host tokens-only, and decide the brand accent (#100); drop the sponsors-hig.css th/td reset at the next refresh (#95 fixed; #115); npm (#56)",
+      "remaining": "Full host primitive adoption and artwork scope remain outside the completed #100 tokens-only migration (#36); formal owner governance/bundle review (#57); npm (#56). Original drafts #217/#219/#220 are superseded by merged #223.",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/taptradetv",
       "exceptionExpires": "2027-01-15",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged as taptradetv#216 on 2026-10-19; present in the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/taptradetv/pull/216",
         "head": "0324203a05a6968c855aee0d635d7bde2a168568",
         "evidence": "docs/hig/evidence/issue-115/verification.json",
         "validation": "Bun1.3 cold frozen install; lint/types/build; 301 tests; drift169files; strict Chromium/WebKit navigation preserves schedule cells/focus and reports no runtime errors. UTC-first hydration resolves prior formatter mismatch.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "mergeEffect": "The #115 refresh was integrated in #216; merged #223 subsequently advances the default-branch candidate to sha0e239442.",
         "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
       },
       "hostTokensCandidate": {
-        "status": "validated locally; stacked draft pending merge",
+        "status": "integrated and revalidated by merged #223; original draft #217 is superseded",
         "pr": "https://github.com/bloxwap/taptradetv/pull/217",
         "dependsOn": "https://github.com/bloxwap/taptradetv/pull/216",
         "head": "05c11b1accf1cf9dd05f91e3909f7389d32dbb73",
         "version": "0.1.0-candidate.shae3390bbd",
         "evidence": "docs/hig/evidence/issue-100-host",
         "validation": "1920x1080 stage/admin geometry/text/keyboard and deterministic mocks; build/types/lint;970tests;OpenNext/workerd smokes; four seeded-avatar SVG identities preserved.",
-        "limits": "Static fonts +12,790,016B; cold English font responses +527,552B. This is measured candidate evidence, not owner bundle/brand approval; default-branch exceptions remain."
+        "limits": "Static fonts +12,790,016B; historical cold English font responses +527,552B. Recorded migration evidence is not formal owner bundle/brand signoff. The copied-token and non-Bloxwap-font exceptions are retired; host primitives and avatar artwork remain separate."
       },
       "additionalSponsorControls": {
         "pr": "https://github.com/bloxwap/taptradetv/pull/220",
@@ -538,14 +534,52 @@
         "scope": "Existing /sponsors route only; canonical controls and associated fields; account date hydration fixed; no global brand or new-route change",
         "candidate": "0.1.0-candidate.sha0e239442",
         "validation": "311 app tests;48 browser cases;4 SSR-cookie cases;all27 font files byte-identical;JS -11,543gzip /CSS +510gzip bytes",
-        "remote": "Normal push; checks running"
+        "remote": "Integrated by merged #223, including the later Node 26 browser-install correction; original draft #220 is superseded"
       },
       "streamViewerFocus": {
         "pr": "https://github.com/bloxwap/taptradetv/pull/219",
         "head": "a001bcb941ab616abaad2036d3da9a74a7b35572",
         "validation": "4 actual component tests;8 Chromium/WebKit cases;resting pixels unchanged;all10 remote checks including automatic previews pass",
-        "scope": "Focus keeps video controls visible; pointer/blur/source/unmount timer lifecycle retained; no HIG archive or media change"
-      }
+        "scope": "Focus keeps video controls visible; pointer/blur/source/unmount timer lifecycle retained; no HIG archive or media change",
+        "status": "Focus/timer behavior and four component regressions integrated with canonical HIG media controls by merged #223; original draft #219 is superseded"
+      },
+      "completeMigration": {
+        "status": "merged in taptradetv#223; present in the default branch",
+        "pr": "https://github.com/bloxwap/taptradetv/pull/223",
+        "head": "6f87c8156a3295f578538c0ae83f9513e47b9464",
+        "candidate": "0.1.0-candidate.sha0e239442",
+        "scope": "All remaining apps/web routes, shared packages/ui media controls, remaining sponsor leaves, and apps/host tokens-only. Copied host token CSS and non-Bloxwap fonts are removed; calendar/sidebar retain host layout around canonical leaves.",
+        "brandPolicy": "Implementation retains the red TapTrade.tv mark/decorative accents and uses HIG green actions and HIG negative errors/losses, following the existing sponsor pilot. No formal brand/bundle signoff is asserted.",
+        "evidence": "https://github.com/bloxwap/taptradetv/tree/6f87c8156a3295f578538c0ae83f9513e47b9464/docs/hig/evidence/issue-100-complete",
+        "validation": "Frozen Bun 1.3.0; Node 24.15.0 final tests/types/lint; 476 root tests, 970 host tests, 24 workflow tests, 20 Turbo lint/type tasks. Web/host Next builds; 42 Chromium/WebKit site-route cases, 16 authenticated sponsor cases, two navigation-isolation checks; fresh 1920x1080 host stage/admin captures preserve geometry/text/avatar markup/keyboard/fullscreen. Exact candidate/source/archive/install guards; scoped drift 409 files. Host lint retains 10 existing warnings.",
+        "sizeDelta": {
+          "webRawBytes": {
+            "js": -64172,
+            "css": -21972,
+            "fonts": -137344
+          },
+          "webGzipBytes": {
+            "js": -22994,
+            "css": -3569,
+            "fonts": -137489
+          },
+          "hostRawBytes": {
+            "js": 2,
+            "css": 35447,
+            "fonts": 12790016
+          }
+        },
+        "rollback": "Revert #223 for site-wide rollback. NEXT_PUBLIC_HIG_SPONSORS=0 selects earlier sponsor controllers but leaves shared HIG components, CSS and fonts active.",
+        "mergeEffect": "Default-branch HIG version is sha0e239442. Retired web/packages-ui migration exceptions and host copied-token/non-Bloxwap-font exceptions. Narrow host primitive/geometry/avatar scope remains under #36; the vendor exception remains under #56.",
+        "mergeCommit": "959595c9e9581513a863b700d850c93afc6359b2",
+        "mergedAt": "2026-10-20T03:50:29Z",
+        "ci": "All 10 checks passed on the recorded head, including production-browser Quality Gate, web/host workerd HTTP smokes and automatic web/host/capture/deck/stream previews."
+      },
+      "supersededPRs": [
+        "https://github.com/bloxwap/taptradetv/pull/217",
+        "https://github.com/bloxwap/taptradetv/pull/219",
+        "https://github.com/bloxwap/taptradetv/pull/220"
+      ]
     },
     {
       "name": "tapsiren",
@@ -896,7 +930,7 @@
         "https://github.com/bloxwap/monorepo/pull/4618"
       ],
       "validatedVersion": "0.1.0-candidate.shab2f7740c",
-      "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out \u00b7 Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
+      "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out · Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
       "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
       "remaining": "app still sets direction itself although hig#86 is now closed (localeDirection in c4d45a3, next refresh); upstream #117-#121; Hermes over the 64 KB budget (#57); physical devices (#55); fork retirement after the rollback window (#110)",
       "exceptionExpires": "2027-01-15",
