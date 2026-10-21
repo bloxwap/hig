@@ -1,8 +1,9 @@
 import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync,cpSync,rmSync} from 'node:fs';
+import {useTsc} from './compiler.mjs';
 execFileSync(process.execPath,['scripts/generate-examples.mjs'],{stdio:'inherit'});
 execFileSync(process.execPath,['scripts/generate-docs.mjs'],{stdio:'inherit'});
-execFileSync('npm',['run','build','-w','hig-docs'],{stdio:'inherit'});
+execFileSync('npm',['run',useTsc?'build:tsc':'build','-w','hig-docs'],{stdio:'inherit'});
 // Static hosting has no redirect engine: export explicit legacy redirect documents.
 const {pages}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
 const base=(process.env.NEXT_PUBLIC_BASE_PATH??'/hig');
