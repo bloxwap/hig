@@ -15,7 +15,7 @@ permissions:
   contents: read
 concurrency:
   group: hig-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 defaults:
   run:
     shell: bash
