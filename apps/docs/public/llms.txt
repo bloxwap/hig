@@ -87,7 +87,7 @@ There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `su
 - Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
 
-Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default. `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Generated native/OG font faces still use `actions/cache` (~4 MB).
+Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default. `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality and docs jobs cache generated native/OG font faces (~4 MB). The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
 
 ## Playwright
 
@@ -119,6 +119,10 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 | --- | --- |
 | `build` | Static docs build and typecheck. GitHub Pages artifact only on `main` (same condition as deploy); pull requests still build and validate |
 | `deploy` | GitHub Pages deploy from `main` |
+
+### Registry publication (`publish.yml`)
+
+The `publish` job runs on the same self-hosted Mac minis after a maintainer publishes a GitHub release with a `v*` tag, or manually dispatches an existing tag. It checks out that tag and re-runs `check`, `quality`, stable-simulation dry run and `verify-release` before publishing verified tarballs using the organization `NPM_TOKEN` secret. All `planning/release-blockers.json` gates must be cleared, satisfied or validly approved-exception. No npm trusted publishing, provenance attestations or environment reviewers are required. After publication it installs Chromium and runs registry hash and consumer smokes. See the [release policy](governance/release.md) for owner approval requirements.
 
 
 ## Actions & surfaces · HIG 0.1.0
@@ -707,21 +711,19 @@ Issues #22–#24. Base imports do not load adapters. Individual `web-sound`, `br
 
 ## Web sound
 
-Install `@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@0.1.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
+Install `@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@^0.2.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
 
-HIG passes one adapter-local `AbortSignal` to each play. Muting, backgrounding, explicit cancellation and disposal abort that root's plays; the next accepted request gets a fresh signal. With the engine merged in [sfx#51](https://github.com/bloxwap/sfx/pull/51), this stops buffered and live voices while other roots and host-owned voices continue. Generations still discard superseded startup/unlock requests. HIG reference-counts default adapters and disposes the shared engine after the last user. A host that also owns that engine should inject/own its lifecycle.
-
-**Released compatibility:** published `@bloxwap/sfx@0.1.0` ignores the additional signal option. It remains compatible, and cancellation still prevents pending HIG playback, but its already-running voices continue. The signal-aware engine exists in merged source, not an npm release yet. Active-voice cancellation is forward-ready source support; released adoption remains pending in #70. No global `stopAll()` workaround is used.
+HIG passes one adapter-local `AbortSignal` to each play. Muting, backgrounding, explicit cancellation and disposal abort that root's plays; the next accepted request gets a fresh signal. This stops buffered and live voices while other roots and host-owned voices continue. Generations still discard superseded startup/unlock requests. HIG reference-counts default adapters and disposes the shared engine after the last user. A host that also owns that engine should inject/own its lifecycle.
 
 ## Browser and physical-tap haptics
 
-`createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Its existing default and `{vibrate}` injection retain their patterns and work with published `@bloxwap/haptic@0.1.0`; neither imports Haptic. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
+`createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Its existing default and `{vibrate}` injection retain their patterns; neither requires importing Haptic. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
 
-The optional `ImperativeHapticBackend` injection accepts the exact `canTriggerHaptic` and `triggerHaptic` functions merged in [haptic#30](https://github.com/bloxwap/haptic/pull/30): `createBrowserHapticAdapter({canTriggerHaptic, triggerHaptic})`. These exports are absent from published `0.1.0`; use the injection only with a host-owned source build until they ship. HIG probes capability at request time, so activation and document visibility are current, and delegates the semantic cue to upstream's presets. Rejection/failure cannot change the primary action. `observed` stays false. The adapter adds no eager import, helper DOM or physical-tap simulation.
+The optional `ImperativeHapticBackend` injection accepts the `canTriggerHaptic` and `triggerHaptic` functions from `@bloxwap/haptic@^0.2.0`: `createBrowserHapticAdapter({canTriggerHaptic, triggerHaptic})`. HIG probes capability at request time, so activation and document visibility are current, and delegates the semantic cue to upstream's presets. Rejection/failure cannot change the primary action. `observed` stays false. The adapter adds no eager import, helper DOM or physical-tap simulation.
 
-The merged imperative API still reports iOS unavailable, including during transient activation. It cannot replace eligible physical targets or express iOS async outcome patterns. Neither the browser Vibration API nor this upstream API provides a per-root cancellation handle: `cancel()`/`dispose()` retain the existing `navigator.vibrate(0)` stop when available, which is document-wide. This is distinct from SFX's per-root voice cancellation.
+The imperative API reports iOS unavailable, including during transient activation. It cannot replace eligible physical targets or express iOS async outcome patterns. Neither the browser Vibration API nor this upstream API provides a per-root cancellation handle: `cancel()`/`dispose()` retain the existing `navigator.vibrate(0)` stop when available, which is document-wide. This is distinct from SFX's per-root voice cancellation.
 
-For approved iOS physical action targets, install `@bloxwap/haptic@0.1.0` and wrap a single ref-capable HIG button in `HapticFeedbackTarget eligible`. The wrapper uses upstream `HapticTarget`, preserves the target/handler/ref, enables only the physical-tap route and disables debug audio/helper switch visibility. Thus browser vibration comes from the semantic adapter and is not duplicated by the wrapper. HIG preferences still gate the wrapper.
+For approved iOS physical action targets, install `@bloxwap/haptic@^0.2.0` and wrap a single ref-capable HIG button in `HapticFeedbackTarget eligible`. The wrapper uses upstream `HapticTarget`, preserves the target/handler/ref, enables only the physical-tap route and disables debug audio/helper switch visibility. Thus browser vibration comes from the semantic adapter and is not duplicated by the wrapper. HIG preferences still gate the wrapper.
 
 **Do** pre-approve the target with `eligible` after disabled/busy/policy checks. **Don't** wrap an action whose eligibility is decided only by an async click callback, or promise a programmable iOS success/error pattern. The OS physical tick occurs before delegated handlers; a later preventDefault cannot retract that tick. That cancellation limitation, physical-tap intensity limits and device/VoiceOver checks remain upstream [haptic#9](https://github.com/bloxwap/haptic/issues/9) / [haptic#7](https://github.com/bloxwap/haptic/issues/7). The missing imperative iOS API for semantic controllers is [haptic#27](https://github.com/bloxwap/haptic/issues/27) (tracked in #70). No wrapper is required for basic actions.
 
@@ -739,7 +741,7 @@ Install `expo-haptics` (`~15.0.7` on Expo SDK 54, `~55.0.18` on SDK 55) in the n
 
 ## Simulated lifecycle regression evidence
 
-Pinned, unmodified MIT source fixtures from SFX `1be6630` and Haptic `8b1ab578` test the adapters against the merged implementations, with source hashes and licenses in `tests/fixtures/upstream-feedback/`. The SFX tests use upstream's recording AudioContext fake to cover buffered/live root isolation, controller mute/background, cancellation during unlock, reuse and last-default-user engine disposal. The actual npm `0.1.0` package is separately tested to preserve playback and retain its active-cancellation limitation. Haptic tests use the actual merged capability/trigger functions with fake browser globals, cover changing activation/visibility, rejection, SSR and iOS unavailability, and preserve the released fallback. These tests request no physical sound or haptics.
+The SFX tests use the published `@bloxwap/sfx@^0.2.0` package with its recording AudioContext fake to cover buffered/live root isolation, controller mute/background, cancellation during unlock, reuse and last-default-user engine disposal. Haptic tests use the published `@bloxwap/haptic@^0.2.0` capability/trigger functions with fake browser globals, cover changing activation/visibility, rejection, SSR and iOS unavailability, and preserve the released fallback. These tests request no physical sound or haptics.
 
 The Linux tests inject native player and haptic backends. Pending configure/seek requests are superseded by the newest request; cancellation, backgrounding, zero volume and disposal stop pending playback. Failed configuration can retry. Explicit impact intent reaches the native backend even for an otherwise silent press preset. Pause/remove failures cannot prevent other cached players from being released. A dispatch test drives 400 cues through `FeedbackController` with simulated slow bridge calls (configure 60 ms, seek 40 ms). It asserts that every cue reaches `player.play()` inside `emit()` and that p95 stays under one 16 ms frame. The native gallery stamps each emit and logs `dispatch`/`p95` on every play for simulator and emulator runs. These tests establish dispatch/lifecycle behavior, not observed sound, tactile output, acoustic latency (#55) or OS audio-session behavior.
 
@@ -1642,7 +1644,7 @@ Source: docs/governance/release.md
 
 # Release candidates, semver and rollback · HIG 0.1.0
 
-Issue #32. This task's automation is **dry-run only**. It never invokes npm publication, GitHub release or git tag creation. Unsupported flags fail before artifact creation. No npm credentials are requested or used.
+Issue #32. The local release automation is **dry-run only**. It never invokes npm publication, GitHub release or git tag creation. Unsupported flags fail before artifact creation. The dry run does not request or use npm credentials; registry publication is confined to the maintainer-controlled workflow described below.
 
 ```sh
 npm ci
@@ -1671,7 +1673,7 @@ CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/ex
 
 Publication gates are tracked in `planning/release-blockers.json`:
 
-- npm credentials are not configured on the release machine (#56).
+- Maintainer publication approval and organization `NPM_TOKEN` configuration (#56).
 - Physical devices and assistive technology (#55).
 - Upstream feedback gaps (#70).
 - Owning product migrations that are still open (#33, #35).
@@ -1690,13 +1692,13 @@ Rollback for an owning pilot: keep the previous package artifacts and lockfile, 
 
 ## Maintainer-controlled registry publication (#56)
 
-The local dry-run command remains unable to publish, create tags, or create releases. The separate `publish.yml` workflow is manual and accepts an existing version tag only. Before its publishing job can start, it requires configured reviewers on the `npm-release` GitHub environment and a successful candidate quality run for that exact commit. The environment then supplies the maintainer review gate.
+The local dry-run command remains unable to publish, create tags, or create releases. The separate `publish.yml` workflow runs on Joe's self-hosted Apple silicon Mac minis (`[self-hosted, macOS, ARM64]`). Publishing a GitHub release with a `v*` tag triggers it; maintainers can also dispatch it manually with a required existing tag such as `v0.1.0`. It validates the tag and checks out `refs/tags/<tag>` so every gate runs against that tag commit. Release publication and dispatch require maintainer approval and access.
 
-The workflow rebuilds stable-simulation artifacts and runs `release:verify`: the tag, source commit and coordinated version must match; the complete eight-package set and every tarball hash must match; and all release blockers must be cleared or have a dated, named-owner approval link. Expired or undocumented exceptions fail. Uncommitted source changes fail. It never creates the tag or GitHub release for the maintainer.
+The workflow re-runs `npm run check`, `npm run quality`, the stable-simulation release dry run, and `node scripts/verify-release.mjs` in that order. The tag, source commit and coordinated version must match; the complete eight-package set and every tarball hash must match. Every gate in `planning/release-blockers.json` must be `cleared`, `satisfied`, or have a valid `approved-exception` with a named approver, approval link and unexpired review date. Expired or undocumented exceptions and uncommitted source changes fail. It never creates the tag or GitHub release for the maintainer.
 
-An npm org owner must configure trusted publishing for each package name for `bloxwap/hig`, workflow `publish.yml`, environment `npm-release`, and approve the first registry version. The workflow pins npm 11.6.1 and Node 22.22.0, meeting [npm's trusted-publishing requirements](https://docs.npmjs.com/trusted-publishers/). Scope/name setup and any first-publish bootstrapping remain owner actions; no token is requested or stored by HIG tooling. Current local `npm whoami` returns E401 and `@bloxwap/hig-tokens` is not available from the public registry, so publication remains blocked.
+An npm org owner must configure the organization `NPM_TOKEN` secret for this repository and authorize publication of all eight package names. The workflow uses Node 22.22.0 and its bundled npm, reports the npm version, and never installs npm globally on the shared minis. Token publishing does not use npm trusted publishing, an `npm-release` environment, OIDC, or npm provenance attestations. Scope/name setup and first-publish authorization remain owner actions.
 
-Only after those gates does the workflow publish the exact verified tarballs with provenance. `smoke:registry` checks the registry tarball SHA-256 values and source-linked attestations, then runs independent web/SSR, Next hydration/font, and both native Metro/Expo consumers against registry versions. These registry checks have not been run successfully before publication. A failed post-publish check requires a maintainer response and a new version; automation never unpublishes or overwrites a registry version.
+Only after those gates does the workflow publish the exact verified tarballs in dependency order. Already published versions are logged and skipped so an interrupted run can resume. `smoke:registry` checks registry tarball SHA-256 equality against the verified artifacts, then runs independent web/SSR, Next hydration/font, and both native Metro/Expo consumers against registry versions. These checks do not require provenance attestations. A failed post-publish check requires a maintainer response and a new version; automation never unpublishes or overwrites a registry version. A skipped version with different bytes still fails the registry hash check.
 
 
 ## Installation and citation · HIG 0.1.0

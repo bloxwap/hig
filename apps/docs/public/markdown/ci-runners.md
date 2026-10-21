@@ -17,7 +17,7 @@ There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `su
 - Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
 
-Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default. `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Generated native/OG font faces still use `actions/cache` (~4 MB).
+Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default. `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality and docs jobs cache generated native/OG font faces (~4 MB). The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
 
 ## Playwright
 
@@ -49,3 +49,7 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 | --- | --- |
 | `build` | Static docs build and typecheck. GitHub Pages artifact only on `main` (same condition as deploy); pull requests still build and validate |
 | `deploy` | GitHub Pages deploy from `main` |
+
+### Registry publication (`publish.yml`)
+
+The `publish` job runs on the same self-hosted Mac minis after a maintainer publishes a GitHub release with a `v*` tag, or manually dispatches an existing tag. It checks out that tag and re-runs `check`, `quality`, stable-simulation dry run and `verify-release` before publishing verified tarballs using the organization `NPM_TOKEN` secret. All `planning/release-blockers.json` gates must be cleared, satisfied or validly approved-exception. No npm trusted publishing, provenance attestations or environment reviewers are required. After publication it installs Chromium and runs registry hash and consumer smokes. See the [release policy](governance/release.md) for owner approval requirements.

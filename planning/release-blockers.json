@@ -2,7 +2,7 @@
   {
     "id": "task-policy",
     "owner": "HIG maintainers",
-    "reason": "Read-only 2026-10-18 checks find all eight HIG names unavailable on the public npm registry (E404), local npm auth E401, and no npm-release GitHub environment. A manual guarded workflow and exact-artifact verifier are prepared locally. Trusted-publisher configuration requires npm organization access and is not inferred from public lookups.",
+    "reason": "Publication requires maintainer approval and organization NPM_TOKEN configuration for token publishing from the self-hosted Mac minis via publish.yml. The workflow re-runs all release gates on the tag commit; an npm-release environment and npm trusted publishing are no longer required. Package scope access and first publication authorization remain npm organization owner decisions.",
     "status": "blocked",
     "tracking": "https://github.com/bloxwap/hig/issues/56",
     "reviewBy": "2027-01-15"
