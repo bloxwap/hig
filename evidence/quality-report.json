@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
-  "sourceCommit": "839cbe141af3cccc6f16ab46b5d9abd3e326d4d7",
-  "sourceTreeDirty": false,
+  "sourceCommit": "c0a0083aeeef049e00ff4ad54c1ab6681d79a5e3",
+  "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
     "renderer": "19.1.0",
@@ -24,6 +24,8 @@
       "inputs": [
         "packages/contracts/dist/messages.js",
         "packages/contracts/dist/index.js",
+        "packages/tokens/dist/theme.js",
+        "packages/tokens/dist/index.js",
         "packages/react/dist/provider.js",
         "packages/react/dist/button.js",
         "button.js"
@@ -35,15 +37,18 @@
       "inputs": [
         "packages/contracts/dist/messages.js",
         "packages/contracts/dist/index.js",
+        "packages/tokens/dist/theme.js",
+        "packages/tokens/dist/index.js",
         "packages/react/dist/provider.js",
         "packages/react/dist/field.js",
         "field.js"
       ]
     },
     "nativeSwitch": {
-      "raw": 4558,
-      "gzip": 2153,
+      "raw": 4216,
+      "gzip": 2073,
       "inputs": [
+        "packages/tokens/dist/theme.js",
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
         "packages/contracts/dist/messages.js",
@@ -57,9 +62,10 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 1715,
-      "gzip": 921,
+      "raw": 2006,
+      "gzip": 1074,
       "inputs": [
+        "packages/tokens/dist/theme.js",
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/index.js",
         "packages/contracts/dist/messages.js",
@@ -73,9 +79,10 @@
       ]
     },
     "nativeLink": {
-      "raw": 3442,
-      "gzip": 1662,
+      "raw": 3100,
+      "gzip": 1584,
       "inputs": [
+        "packages/tokens/dist/theme.js",
         "packages/tokens/dist/index.js",
         "packages/contracts/dist/messages.js",
         "packages/contracts/dist/index.js",
@@ -95,11 +102,11 @@
       ]
     },
     "docsJS": {
-      "raw": 1962397,
-      "gzip": 560326
+      "raw": 1998200,
+      "gzip": 571489
     },
     "docsCSS": {
-      "raw": 114722
+      "raw": 116093
     },
     "fonts": {
       "raw": 592796

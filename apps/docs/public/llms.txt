@@ -70,15 +70,15 @@ Source: docs/ci-runners.md
 
 # CI runners · HIG 0.1.0
 
-Every GitHub Actions job in this repository runs on self-hosted Apple silicon Mac minis:
+GitHub Actions jobs run on self-hosted Apple silicon Mac minis, except for the `prerequisites` and `publish` jobs in `publish.yml`:
 
 ```yaml
 runs-on: [self-hosted, macOS, ARM64]
 ```
 
-There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
+Only those two trusted-publishing jobs use GitHub-hosted `ubuntu-24.04`. All other jobs remain self-hosted and do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
 
-## Required on every runner
+## Required on every Mac mini
 
 - macOS on Apple silicon, with the Actions runner registered using the labels `self-hosted`, `macOS`, and `ARM64`
 - Git
@@ -87,11 +87,11 @@ There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `su
 - Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
 
-Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default. `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality and docs jobs cache generated native/OG font faces (~4 MB). The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
+Node 24.22.1 is installed per self-hosted job by `actions/setup-node`. It does not need to be the login-shell default. On the minis, `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality and docs jobs cache generated native/OG font faces (~4 MB). The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
 
 ## Playwright
 
-Jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. Browsers stay on disk at `~/Library/Caches/ms-playwright` across jobs on a mini; do not save that folder with `actions/cache` (it stalls 11+ minutes because the directory is shared). Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
+Mac mini jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. Browsers stay on disk at `~/Library/Caches/ms-playwright` across jobs on a mini; do not save that folder with `actions/cache` (it stalls 11+ minutes because the directory is shared). Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
 
 ## Visual baselines
 
@@ -122,7 +122,11 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 
 ### Registry publication (`publish.yml`)
 
-The `publish` job runs on the same self-hosted Mac minis after a maintainer publishes a GitHub release with a `v*` tag, or manually dispatches an existing tag. It checks out that tag and re-runs `check`, `quality`, stable-simulation dry run and `verify-release` before publishing verified tarballs using the organization `NPM_TOKEN` secret. All `planning/release-blockers.json` gates must be cleared, satisfied or validly approved-exception. No npm trusted publishing, provenance attestations or environment reviewers are required. After publication it installs Chromium and runs registry hash and consumer smokes. See the [release policy](governance/release.md) for owner approval requirements.
+The `prerequisites` and `publish` jobs are the only GitHub-hosted runner exceptions. [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) requires a supported hosted runner and npm CLI >=11.5.1. Both jobs use `ubuntu-24.04`; publishing uses Node 24.22.1 and explicitly installs the repository's pinned npm@11.6.1 globally on the ephemeral runner. It uses pinned `actions/setup-python` with Python 3.12 and the portable `ci-generate-fonts.sh` venv, plus `npx playwright install --with-deps chromium` for registry consumers.
+
+A published GitHub release with a `v*` tag or a manual dispatch with an existing tag starts the workflow. `prerequisites` requires configured reviewers on `npm-release` and a successful `quality.yml` run for the resolved tag commit, including when dispatch runs from another branch. `publish` waits for the `npm-release` environment approval, checks out `refs/tags/<tag>` without persisted credentials, checks that its SHA still matches the prerequisite result, and re-runs the release gates. It publishes verified tarballs with OIDC and `--provenance`, without a long-lived npm token. Registry checks verify every tarball hash and require source-linked provenance for packages published by this run; already published versions are skipped for resumability.
+
+Before the next release, an npm owner must configure a Trusted Publisher on each of the eight `@bloxwap/hig-*` packages: repository `bloxwap/hig`, workflow `publish.yml`, environment `npm-release`. A repository maintainer must configure required reviewers on that GitHub environment. See the [release policy](governance/release.md) for the package list and approval requirements.
 
 
 ## Actions & surfaces · HIG 0.1.0
@@ -1725,8 +1729,7 @@ customizable primary-colour provider, on 2026-10-23; see
 [the release authorization](../../evidence/release/owner-authorization-2026-10-23.md)
 and [PR #141](https://github.com/bloxwap/hig/pull/141).
 
-The organization token and released SFX/Haptic 0.2.0 backends satisfy their
-respective setup gates. Physical-device and native-font acceptance use the
+The first release used an organization token; future releases require the trusted-publisher setup below. Released SFX/Haptic 0.2.0 backends satisfy their setup gates. Physical-device and native-font acceptance use the
 existing dated owner attestation from PR #131. Source-parity and owning-product
 rollout have scoped, named-owner exceptions for this pre-1.0 package release,
 reviewable through 2027-01-15; remaining v1 work stays open in #57 and #110.
@@ -1745,13 +1748,17 @@ Rollback for an owning pilot: keep the previous package artifacts and lockfile, 
 
 ## Maintainer-controlled registry publication (#56)
 
-The local dry-run command remains unable to publish, create tags, or create releases. The separate `publish.yml` workflow runs on Joe's self-hosted Apple silicon Mac minis (`[self-hosted, macOS, ARM64]`). Publishing a GitHub release with a `v*` tag triggers it; maintainers can also dispatch it manually with a required existing tag such as `v0.1.0`. It validates the tag and checks out `refs/tags/<tag>` so every gate runs against that tag commit. Release publication and dispatch require maintainer approval and access.
+The local dry-run command remains unable to publish, create tags, or create releases. The separate `publish.yml` workflow has two GitHub-hosted `ubuntu-24.04` jobs, `prerequisites` and `publish`, as the explicit exception to the self-hosted runner policy. Publishing a GitHub release with a `v*` tag triggers it; maintainers can also dispatch it manually with a required existing tag such as `v0.1.0`. It validates the tag and checks out `refs/tags/<tag>` so every gate runs against that tag commit. Before publication, `prerequisites` fails unless the `npm-release` environment has required reviewers and `quality.yml` succeeded for this exact tag commit. Manual dispatch resolves the input tag SHA instead of using the dispatch branch SHA. The `publish` job needs these prerequisites, waits for `npm-release` environment approval, and verifies that the checked-out tag still matches the approved SHA. Checkout does not persist credentials.
 
 The workflow re-runs `npm run check`, `npm run quality`, the stable-simulation release dry run, and `node scripts/verify-release.mjs` in that order. The tag, source commit and coordinated version must match; the complete eight-package set and every tarball hash must match. Every gate in `planning/release-blockers.json` must be `cleared`, `satisfied`, or have a valid `approved-exception` with a named approver, approval link and unexpired review date. Expired or undocumented exceptions and uncommitted source changes fail. It never creates the tag or GitHub release for the maintainer.
 
-An npm org owner must configure the organization `NPM_TOKEN` secret for this repository and authorize publication of all eight package names. The workflow uses Node 22.22.0 and its bundled npm, reports the npm version, and never installs npm globally on the shared minis. Token publishing does not use npm trusted publishing, an `npm-release` environment, OIDC, or npm provenance attestations. Scope/name setup and first-publish authorization remain owner actions.
+An npm owner must configure a **Trusted Publisher for each of the eight packages before the next release**: `@bloxwap/hig-contracts`, `@bloxwap/hig-tokens`, `@bloxwap/hig-feedback`, `@bloxwap/hig-react`, `@bloxwap/hig-native`, `@bloxwap/hig-chart`, `@bloxwap/hig-native-fonts`, and `@bloxwap/hig-og-fonts`. Every entry must specify repository **bloxwap/hig**, workflow **publish.yml**, and environment **npm-release**. A GitHub maintainer must configure required reviewers on that environment. These are owner setup actions; changing the workflow does not configure them.
 
-Only after those gates does the workflow publish the exact verified tarballs in dependency order. Already published versions are logged and skipped so an interrupted run can resume. `smoke:registry` checks registry tarball SHA-256 equality against the verified artifacts, then runs independent web/SSR, Next hydration/font, and both native Metro/Expo consumers against registry versions. These checks do not require provenance attestations. A failed post-publish check requires a maintainer response and a new version; automation never unpublishes or overwrites a registry version. A skipped version with different bytes still fails the registry hash check.
+Publication uses `contents: read` and `id-token: write`, OIDC trusted publishing, and `npm publish --provenance`, with no long-lived npm token. The ephemeral hosted runner uses Node 24.22.1 and explicitly installs npm@11.6.1 (the repository's `packageManager` pin), satisfying the [npm trusted-publishing CLI minimum of 11.5.1](https://docs.npmjs.com/trusted-publishers/). Python 3.12 comes from pinned `actions/setup-python`; `ci-generate-fonts.sh` installs pinned fonttools and brotli into a temporary venv. Playwright installs Chromium with `--with-deps` on Ubuntu. The shared minis retain their existing setup policy.
+
+Only after those gates does the workflow publish the exact verified tarballs in dependency order. Already published versions are logged and skipped so an interrupted run can resume. Successful publishes are recorded in `artifacts/published-packages.txt`; the workflow passes this file as `HIG_PROVENANCE_PACKAGES_FILE` to `smoke:registry`. Registry smoke always checks every tarball's SHA-256 against the verified artifact and requires source-linked provenance attestations for every package in that manifest. Skipped packages, including the token-published 0.1.0 release of 2026-10-23, do not require attestations. A standalone smoke without the manifest checks hashes and consumers only; a supplied missing or invalid manifest fails closed. The manifest is uploaded with the verification artifacts.
+
+Registry smoke then runs independent web/SSR, Next hydration/font, and both native Metro/Expo consumers against registry versions. A failed post-publish check requires a maintainer response and a new version; automation never unpublishes or overwrites a registry version. A skipped version with different bytes still fails the registry hash check.
 
 
 ## Installation and citation · HIG 0.1.0

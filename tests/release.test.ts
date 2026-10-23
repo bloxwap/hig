@@ -9,3 +9,33 @@ it('keeps local release automation dry-run only and records physical acceptance 
  expect(physical).toMatchObject({status:'approved-exception',approvedBy:'joeblau',approval:'https://github.com/bloxwap/hig/pull/131'});
  expect(physical!.reviewBy).toMatch(/^\d{4}-\d{2}-\d{2}$/);expect(physical!.reason).toContain('owner attestation');
 });
+
+it('gates OIDC publishing on environment reviewers and quality for the checked-out tag commit',()=>{
+ const workflow=readFileSync('.github/workflows/publish.yml','utf8');
+ const prerequisites=workflow.split('  prerequisites:')[1].split('  publish:')[0];
+ const publish=workflow.split('  publish:')[1];
+ expect(prerequisites).toContain('contents: read');
+ expect(prerequisites).toContain('actions: read');
+ expect(prerequisites).toContain('deployments: read');
+ expect(prerequisites).toContain('select(.type == "required_reviewers")');
+ expect(prerequisites).toContain('test "$reviewers" -gt 0');
+ expect(prerequisites).toContain('gh api "repos/$GH_REPO/commits/$RELEASE_TAG" --jq .sha');
+ expect(prerequisites).toContain('release_sha="$GITHUB_SHA"');
+ expect(prerequisites).toContain('--workflow quality.yml --commit "$release_sha" --status success');
+ expect(prerequisites).toContain('test "$runs" -gt 0');
+ expect(publish).toContain('needs: prerequisites');
+ expect(publish).toContain('environment: npm-release');
+ expect(publish).toContain('id-token: write');
+ expect(publish).toContain('ref: refs/tags/${{ env.RELEASE_TAG }}');
+ expect(publish).toContain('persist-credentials: false');
+ expect(publish).toContain('test "$(git rev-parse HEAD)" = "$RELEASE_SHA"');
+ expect(publish).toContain("node-version: '24.22.1'");
+ expect(publish).toContain('npm install --global npm@11.6.1');
+ expect(workflow).not.toMatch(/NPM_TOKEN|NODE_AUTH_TOKEN/);
+ expect(publish).toContain('npm publish "$archive" --access public --provenance');
+ expect(publish).toContain('echo "$name@$version" >> artifacts/published-packages.txt');
+ expect(publish).toContain('HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt');
+ expect(publish).toContain('Skipping $name@$version: already published');
+ expect(publish).toContain('scripts/verify-release.mjs');
+ expect(publish).toContain('npm run smoke:registry');
+});
