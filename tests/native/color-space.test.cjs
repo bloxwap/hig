@@ -40,7 +40,7 @@ describe('provider colour table selection',()=>{
   expect(seen).toEqual({none:nativeSrgb,default:nativeSrgb,p3,nested:p3,override:nativeSrgb});
  });
  it('the iosDisplayP3 values the issue names differ from the sRGB numbers (#93 table)',()=>{
-  expect({action:p3.action,positive:p3.positive,warning:p3.warning,negative:p3.negative,info:p3.info}).toEqual({action:'#00ff3d',positive:'#00ff3d',warning:'#ebb63e',negative:'#ec6762',info:'#2eb8ff'});
+  expect({action:p3.action,positive:p3.positive,warning:p3.warning,negative:p3.negative,info:p3.info}).toEqual({action:'#00ff3d',positive:'#00ff3d',warning:'#fffa2e',negative:'#ff3d9e',info:'#2eb8ff'});
   for(const role of ['action','warning','negative','info'])expect(p3[role]).not.toBe(nativeSrgb[role]);
  });
 });
@@ -53,7 +53,7 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
   expect(accent({severity:'error'})).toBe(p3.negative);
   expect(accent({severity:'success'})).toBe(p3.positive);
   expect(accent({severity:'error',tone:'action'})).toBe(p3.action);
-  expect(accent({severity:'warning',tone:'#f5b300'})).toBe(p3.warning);
+  expect(accent({severity:'warning',tone:'#fffb38'})).toBe(p3.warning);
  }));
  it('Switch track for action and every tone role',()=>withOS('ios',()=>{
   const sw=props=>mount(React.createElement(Switch,{label:'Sound',...props})).findByType(RN.Switch).props;

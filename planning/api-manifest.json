@@ -192,7 +192,7 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink; /** Brand accent as opaque sRGB hex (#RGB or #RRGGBB). Nested providers inherit it; omitted at the root, Bloxwap green applies. */\n    primaryColor?: string; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
       },
       "HIGProviderProps": {
         "entry": "provider",
@@ -200,11 +200,19 @@
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, messages }: React.PropsWithChildren<HIGProviderProps>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, primaryColor, messages }: React.PropsWithChildren<HIGProviderProps>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
         "signature": "export declare const useHIG: () => HIGContext;"
+      },
+      "useThemeStyle": {
+        "entry": "provider",
+        "signature": "export declare function useThemeStyle(): React.CSSProperties | undefined;"
+      },
+      "useColors": {
+        "entry": "provider",
+        "signature": "export declare function useColors(): Readonly<Record<keyof typeof nativeSrgb, string>>;"
       },
       "useMessages": {
         "entry": "provider",
@@ -288,7 +296,7 @@
       },
       "AlertSeverity": {
         "entry": "status",
-        "signature": "export type AlertSeverity = 'info' | 'success' | 'warning' | 'error' | 'note' | 'tip';"
+        "signature": "export type AlertSeverity = 'default' | 'info' | 'success' | 'warning' | 'error' | 'note' | 'tip';"
       },
       "Alert": {
         "entry": "status",
@@ -550,7 +558,7 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered static companion faces by script and weight. Text selects the detected script and nearest registered weight. */\n    fontFamiliesByScript?: Readonly<Partial<Record<'latin' | 'ko' | 'zh', Readonly<Record<string, string>>>>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    primaryColor?: string;\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered static companion faces by script and weight. Text selects the detected script and nearest registered weight. */\n    fontFamiliesByScript?: Readonly<Partial<Record<'latin' | 'ko' | 'zh', Readonly<Record<string, string>>>>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
       },
       "HIGProviderProps": {
         "entry": "provider",
@@ -558,7 +566,7 @@
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, fontFamiliesByScript, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, messages }: React.PropsWithChildren<HIGProviderProps>): import(\"react/jsx-runtime\").JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, fontFamiliesByScript, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, primaryColor, messages }: React.PropsWithChildren<HIGProviderProps>): import(\"react/jsx-runtime\").JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
@@ -567,6 +575,10 @@
       "useColors": {
         "entry": "provider",
         "signature": "export declare function useColors(): HIGColors;"
+      },
+      "useBrandColors": {
+        "entry": "provider",
+        "signature": "export declare function useBrandColors(): HIGColors;"
       },
       "useMessages": {
         "entry": "provider",
@@ -650,7 +662,7 @@
       },
       "AlertSeverity": {
         "entry": "status",
-        "signature": "export type AlertSeverity = keyof typeof severityRole;"
+        "signature": "export type AlertSeverity = keyof typeof severityRole | 'default';"
       },
       "Badge": {
         "entry": "status",

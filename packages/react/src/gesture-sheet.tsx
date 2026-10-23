@@ -2,7 +2,7 @@
 import React,{useCallback,useEffect,useRef} from 'react';
 import {Drawer,type DialogProps as BackendProps} from 'vaul';
 import * as en from '@bloxwap/hig-contracts/messages';
-import {useHIG} from './provider.js';
+import {useHIG,useThemeStyle} from './provider.js';
 import {Button} from './button.js';
 import type {DialogProps,DialogContentProps} from './dialog.js';
 
@@ -43,6 +43,7 @@ const BODY_POSITION=['position','top','left','right','height'];
 /** Optional web gesture backend. Install vaul separately; the core overlay entry never imports it. */
 export function GestureSheet({open,onOpenChange,title,description,trigger,children,titleHidden,descriptionHidden,contentProps,contentRef,closeButton,closeLabel,backendProps,contentMode='default',handle=true,handleProps,handleRef,overlayProps}:GestureSheetProps){
  const {messages,direction,locale,reducedMotion}=useHIG();
+ const themeStyle=useThemeStyle();
  const currentOpen=useRef(open);currentOpen.current=open;
  const panel=useRef<HTMLDivElement>(null),backdrop=useRef<HTMLDivElement>(null),motion=useRef<(()=>void)|null>(null),frame=useRef<number|null>(null);
  const refCleanup=useRef<(()=>void)|null>(null),releasePosition=useRef<(()=>void)|null>(null);
@@ -51,7 +52,7 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
  useEffect(()=>()=>{if(frame.current!==null)cancelAnimationFrame(frame.current);releasePosition.current?.();},[]);
  useEffect(()=>{if(!open){motion.current=null;releasePosition.current?.();releasePosition.current=null;}},[open]);
  const {onAnimationEnd,...backend}=safeProps(backendProps,OWNED_ROOT);
- const {className,onPointerDownCapture,onFocusOutside,onInteractOutside,...content}=safeProps(contentProps,OWNED_CONTENT);
+ const {className,onPointerDownCapture,onFocusOutside,onInteractOutside,style,...content}=safeProps(contentProps,OWNED_CONTENT);
  const {className:overlayClass,...overlay}=safeProps(overlayProps,OWNED_OVERLAY);
  const {className:handleClass,...grip}=safeProps(handleProps,OWNED_HANDLE);
  const requestOpen=(next:boolean)=>{
@@ -74,7 +75,7 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
   <Drawer.Portal>
    <Drawer.Overlay {...overlay} ref={backdrop} className={['hig-backdrop','hig-gesture-backdrop',overlayClass].filter(Boolean).join(' ')} data-hig-motion={reducedMotion?'reduced':'full'}/>
    <Drawer.Content {...content} {...(!description?{'aria-describedby':undefined}:{})} ref={setPanel}
-    className={['hig-gesture-sheet',className].filter(Boolean).join(' ')} role='dialog' dir={direction} lang={locale}
+    className={['hig-gesture-sheet',className].filter(Boolean).join(' ')} role='dialog' dir={direction} lang={locale} style={{...themeStyle,...style}}
     onPointerDownCapture={event=>{const restorePanel=snapshotStyles(panel.current,MOTION_PROPERTIES),restoreOverlay=snapshotStyles(backdrop.current,['opacity','transition']),restoreBackground=backend.shouldScaleBackground?snapshotStyles(document.querySelector<HTMLElement>('[data-vaul-drawer-wrapper]'),BACKGROUND_PROPERTIES):()=>{};motion.current=()=>{restorePanel();restoreOverlay();restoreBackground();};onPointerDownCapture?.(event);}}
     onInteractOutside={event=>{if(event.detail.originalEvent.type==='focusin')onFocusOutside?.(event as Parameters<NonNullable<GestureSheetContentProps['onFocusOutside']>>[0]);onInteractOutside?.(event);}}
     data-hig-content-mode={contentMode} data-hig-motion={reducedMotion?'reduced':'full'}>

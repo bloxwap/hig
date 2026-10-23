@@ -67,7 +67,12 @@
       ]
     },
     "sell": {
-      "srgb": "#ff5c5c"
+      "srgb": "#ff479c",
+      "p3": [
+        1,
+        0.24,
+        0.62
+      ]
     },
     "positive": {
       "srgb": "#00ff3f",
@@ -78,10 +83,20 @@
       ]
     },
     "negative": {
-      "srgb": "#ff5c5c"
+      "srgb": "#ff479c",
+      "p3": [
+        1,
+        0.24,
+        0.62
+      ]
     },
     "warning": {
-      "srgb": "#f5b300"
+      "srgb": "#fffb38",
+      "p3": [
+        1,
+        0.98,
+        0.18
+      ]
     },
     "info": {
       "srgb": "#35b5ff",

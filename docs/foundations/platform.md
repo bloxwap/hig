@@ -4,9 +4,57 @@
 
 Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
 
+### Primary brand colour
+
+Set `primaryColor` on `HIGProvider` to apply another brand's accent. For example,
+Tap Trade TV can use a red primary colour:
+
+```tsx
+import {HIGProvider} from '@bloxwap/hig-react/provider';
+// Native: import {HIGProvider} from '@bloxwap/hig-native/provider';
+
+<HIGProvider primaryColor='#ff0000'>
+  <App />
+</HIGProvider>
+```
+
+The red above is an example; supply the brand's exact hex. Both providers accept
+opaque sRGB `#RGB` or `#RRGGBB` values. Other formats, including transparent
+colours and CSS variables, throw a descriptive error. Omit the prop at the root
+to retain the existing Bloxwap green and wide-gamut defaults. Nested providers
+inherit the primary colour unless they supply another one. Separate roots can
+use different brands; changing or removing the prop updates mounted components.
+
+The override sets `action` and `focus`, plus `onAction` to black or white for the
+higher text contrast (at least 4.5:1 on the primary fill). Buttons, links,
+selection controls, progress indicators, action tones, and chart crosshair
+labels follow the accent. Success/error/warning/info and buy/sell roles keep
+their existing meanings and colours. Destructive buttons keep their dark label
+on the negative fill. The approved Bloxwap mark retains its original colours;
+another brand supplies its own logo.
+
+Web applies scoped CSS variables on the provider wrapper and on HIG portalled
+overlays, including Dialog, GestureSheet, Menu, Popover, and Tooltip. Import the
+normal token and component CSS. `useThemeStyle()` from the web provider entry
+returns the primary variables for a host-owned portal's root. Both platforms
+export `useColors()` for host-drawn content (web returns sRGB values for canvas).
+Native converts the sRGB input when an iOS provider selects `display-p3`; Android
+and react-native-web keep sRGB input channels. A nested provider can change colour
+space while inheriting the brand accent.
+
+The [default palette contrast report](../../evidence/contrast.json) covers the
+default theme. Custom accents also need review against the surfaces where they
+appear, particularly link text and focus rings; automatic label selection only
+guarantees contrast on the primary fill. Choose an accent with enough contrast
+for the dark surfaces your product uses.
+
+Tokens-only hosts can call `resolvePrimaryColor` from `@bloxwap/hig-tokens` and
+apply the resulting `action`, `focus`, and `onAction` roles to a scoped element.
+Keep these three roles together so primary labels remain readable.
+
 ### Native colour space
 
-React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff5c5c` is read as P3 channels and paints a more saturated red than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog, GestureSheet and the brand mark) then paints from that table through `useColors()`. Hosts choose a table and never pass raw colours. Nested providers inherit the value, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
+React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff479c` is read as P3 channels and paints a more saturated pink than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog and GestureSheet) then paints from that table through `useColors()`, with the primary brand override applied if present. The Bloxwap mark uses `useBrandColors()` to retain its approved colours in the same colour space. Hosts choose a table and can configure the primary accent through `primaryColor`. Nested providers inherit both settings, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
 
 | `HIGProvider colorSpace` | iOS | Android | react-native-web |
 | --- | --- | --- | --- |
@@ -16,11 +64,11 @@ React Native reads a hex colour's channels in the app's default colour space. Th
 | Role | `nativeSrgb` | `iosDisplayP3` |
 | --- | --- | --- |
 | action / positive / buy / focus | `#00ff3f` | `#00ff3d` |
-| warning | `#f5b300` | `#ebb63e` |
-| negative / sell | `#ff5c5c` | `#ec6762` |
+| warning | `#fffb38` | `#fffa2e` |
+| negative / sell | `#ff479c` | `#ff3d9e` |
 | info | `#35b5ff` | `#2eb8ff` |
 
-Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and iOS Simulator captures of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). In the sRGB screenshots, `display-p3` paints warning and negative as exactly the sRGB tokens (`#f5b300`, `#ff5c5c`), while `srgb` on the same host paints them oversaturated (`#ffaf00`, `#ff4a54`). Action and info are wider than sRGB, so the screenshot clips them. Physical display comparison is tracked in #55.
+Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and iOS Simulator captures of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). Those captures predate the pink/neon-yellow tone adoption: in them, `display-p3` paints warning and negative as exactly the then-current sRGB tokens (`#f5b300`, `#ff5c5c`), while `srgb` on the same host paints them oversaturated (`#ffaf00`, `#ff4a54`); the mechanism is unchanged. Action and info are wider than sRGB, so the screenshot clips them. Physical display comparison is tracked in #55.
 
 ## Typography (#7)
 

@@ -35,6 +35,15 @@ The four Radix packages are optional peers with caret ranges: `@radix-ui/react-d
 
 The separate optional `@bloxwap/hig-react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
 
+## Brand accent
+
+Pass `primaryColor` to the web or native `HIGProvider` to theme primary actions
+for another brand, for example `<HIGProvider primaryColor='#ff0000'>` for a red
+Tap Trade TV theme. Use the brand's opaque sRGB hex (`#RGB` or `#RRGGBB`).
+HIG selects readable primary button text and inherits the accent through nested
+providers. Omit it to keep Bloxwap green. See [primary brand colour](foundations/platform.md#primary-brand-colour)
+for portal styling, native colour spaces, and contrast guidance.
+
 ## SSR and Next client boundaries
 
 Run `npm run smoke:ssr`, `npm run build:next` and `npm run smoke:packed-next`. Token/formatting imports and button/provider SSR are deterministic. Components with hooks carry `use client` in their emitted modules. In Next, import HIG CSS in the app layout (or in the route layouts that use HIG; the component CSS is scoped, see above) and put interactive example state in a client component; keep wallet/network logic with the host. Next's published Bloxwap font loaders remain owned upstream.

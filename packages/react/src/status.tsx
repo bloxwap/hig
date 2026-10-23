@@ -8,9 +8,9 @@ export type BadgeTone='neutral'|'positive'|'negative'|'warning'|'info';
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>{/** Explicit meaning; never inferred from text or a number's sign. */tone?:BadgeTone}
 /** A quiet status label. The host owns announcements and may supply typography or an accessible name. */
 export const Badge=React.forwardRef<HTMLSpanElement,BadgeProps>(function Badge({children,tone='neutral',className,...props},ref){const accent=['positive','negative','warning','info'].includes(tone)?tone:undefined;return <span {...props} ref={ref} className={['hig-badge',className].filter(Boolean).join(' ')} data-tone={accent}>{children}</span>;});
-/** `note` and `tip` are documentation callout severities: note uses the `info` token role and tip the `positive` role, like info and success. */
-export type AlertSeverity='info'|'success'|'warning'|'error'|'note'|'tip';
-/** Severity sets the accent edge from a token role (info/note → info, success/tip → positive, warning → warning, error → negative). The title may be any inline node, such as text with a code span. */
+/** `note` and `tip` are documentation callout severities: note uses the `info` token role and tip the `positive` role, like info and success. `default` is the neutral variant: border token stroke with a soft white glow instead of a tone. */
+export type AlertSeverity='default'|'info'|'success'|'warning'|'error'|'note'|'tip';
+/** Severity sets the glowing stroke from a token role (default → border, info/note → info, success/tip → positive, warning → warning, error → negative): a 2px tone border with a matching glow on a translucent surface. The title may be any inline node, such as text with a code span. */
 export function Alert({title,children,severity='info',action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;action?:React.ReactNode;announce?:boolean}>){return <section className='hig-surface' data-severity={severity} role={announce?(severity==='error'?'alert':'status'):undefined}><strong>{title}</strong>{children}{action}</section>;}
 export const Callout=Alert;
 export interface Notice {id:string;message:string;severity:'info'|'success'|'warning'|'error';action?:React.ReactNode}
@@ -30,7 +30,7 @@ export function Toast({notices,onDismiss,dismissLabel}: {notices:readonly Notice
   timer.current=setTimeout(()=>{timer.current=null;const notice=pending.current;pending.current=null;if(notice&&previous.current.get(notice.id)===JSON.stringify([notice.message,notice.severity]))setAnnouncement({message:notice.message,severity:notice.severity});},25);
  },[key]);
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
- return <aside aria-label={messages.notifications??en.notifications}>{unique.map(n=><Alert announce={false} key={n.id} title={n.message} severity={n.severity} action={<>{n.action}<Button intent='ghost' aria-label={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onClick={()=>onDismiss(n.id)}>{dismiss}</Button></>}/>)}<span className='hig-sr-only' role={announcement.severity==='error'?'alert':'status'} aria-atomic='true'>{announcement.message}</span></aside>;
+ return <aside className='hig-toast' aria-label={messages.notifications??en.notifications}>{unique.map(n=><Alert announce={false} key={n.id} title={n.message} severity={n.severity} action={<>{n.action}<Button intent='ghost' aria-label={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onClick={()=>onDismiss(n.id)}>{dismiss}</Button></>}/>)}<span className='hig-sr-only' role={announcement.severity==='error'?'alert':'status'} aria-atomic='true'>{announcement.message}</span></aside>;
 }
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
 export function Spinner({label}: {label?:string}){const {messages}=useHIG();return <span className='hig-spinner' role='status'><span className='hig-spinner-indicator' aria-hidden='true'/>{label??messages.loading??en.loading}…</span>;}

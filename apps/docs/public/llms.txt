@@ -646,9 +646,9 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/sta
 | Component | Key props and behavior |
 | --- | --- |
 | `Badge` | Quiet label; web adds explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`), standard span props and a forwarded span ref. The neutral default retains its appearance. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
-| `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the accent edge from a token role on web and native: info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
-| `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own edge colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
-| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides visible Dismiss text; its accessible name contains that text. |
+| `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the glowing stroke from a token role on web and native — a 2px tone border on all sides with a matching `0 0 24px` glow at 55% on a translucent (95%) surface, 16px radius: `default` → neutral (`border` token stroke, soft white 20px glow), info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own stroke colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
+| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Toast cards reuse the Alert glowing stroke at a pill (999) radius. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides visible Dismiss text; its accessible name contains that text. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, `description`, and an optional `action`. |
 
@@ -707,21 +707,19 @@ Issues #22–#24. Base imports do not load adapters. Individual `web-sound`, `br
 
 ## Web sound
 
-Install `@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@0.1.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
+Install `@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@^0.2.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
 
-HIG passes one adapter-local `AbortSignal` to each play. Muting, backgrounding, explicit cancellation and disposal abort that root's plays; the next accepted request gets a fresh signal. With the engine merged in [sfx#51](https://github.com/bloxwap/sfx/pull/51), this stops buffered and live voices while other roots and host-owned voices continue. Generations still discard superseded startup/unlock requests. HIG reference-counts default adapters and disposes the shared engine after the last user. A host that also owns that engine should inject/own its lifecycle.
-
-**Released compatibility:** published `@bloxwap/sfx@0.1.0` ignores the additional signal option. It remains compatible, and cancellation still prevents pending HIG playback, but its already-running voices continue. The signal-aware engine exists in merged source, not an npm release yet. Active-voice cancellation is forward-ready source support; released adoption remains pending in #70. No global `stopAll()` workaround is used.
+HIG passes one adapter-local `AbortSignal` to each play. Muting, backgrounding, explicit cancellation and disposal abort that root's plays; the next accepted request gets a fresh signal. This stops buffered and live voices while other roots and host-owned voices continue. Generations still discard superseded startup/unlock requests. HIG reference-counts default adapters and disposes the shared engine after the last user. A host that also owns that engine should inject/own its lifecycle.
 
 ## Browser and physical-tap haptics
 
-`createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Its existing default and `{vibrate}` injection retain their patterns and work with published `@bloxwap/haptic@0.1.0`; neither imports Haptic. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
+`createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Its existing default and `{vibrate}` injection retain their patterns; neither requires importing Haptic. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
 
-The optional `ImperativeHapticBackend` injection accepts the exact `canTriggerHaptic` and `triggerHaptic` functions merged in [haptic#30](https://github.com/bloxwap/haptic/pull/30): `createBrowserHapticAdapter({canTriggerHaptic, triggerHaptic})`. These exports are absent from published `0.1.0`; use the injection only with a host-owned source build until they ship. HIG probes capability at request time, so activation and document visibility are current, and delegates the semantic cue to upstream's presets. Rejection/failure cannot change the primary action. `observed` stays false. The adapter adds no eager import, helper DOM or physical-tap simulation.
+The optional `ImperativeHapticBackend` injection accepts the `canTriggerHaptic` and `triggerHaptic` functions from `@bloxwap/haptic@^0.2.0`: `createBrowserHapticAdapter({canTriggerHaptic, triggerHaptic})`. HIG probes capability at request time, so activation and document visibility are current, and delegates the semantic cue to upstream's presets. Rejection/failure cannot change the primary action. `observed` stays false. The adapter adds no eager import, helper DOM or physical-tap simulation.
 
-The merged imperative API still reports iOS unavailable, including during transient activation. It cannot replace eligible physical targets or express iOS async outcome patterns. Neither the browser Vibration API nor this upstream API provides a per-root cancellation handle: `cancel()`/`dispose()` retain the existing `navigator.vibrate(0)` stop when available, which is document-wide. This is distinct from SFX's per-root voice cancellation.
+The imperative API reports iOS unavailable, including during transient activation. It cannot replace eligible physical targets or express iOS async outcome patterns. Neither the browser Vibration API nor this upstream API provides a per-root cancellation handle: `cancel()`/`dispose()` retain the existing `navigator.vibrate(0)` stop when available, which is document-wide. This is distinct from SFX's per-root voice cancellation.
 
-For approved iOS physical action targets, install `@bloxwap/haptic@0.1.0` and wrap a single ref-capable HIG button in `HapticFeedbackTarget eligible`. The wrapper uses upstream `HapticTarget`, preserves the target/handler/ref, enables only the physical-tap route and disables debug audio/helper switch visibility. Thus browser vibration comes from the semantic adapter and is not duplicated by the wrapper. HIG preferences still gate the wrapper.
+For approved iOS physical action targets, install `@bloxwap/haptic@^0.2.0` and wrap a single ref-capable HIG button in `HapticFeedbackTarget eligible`. The wrapper uses upstream `HapticTarget`, preserves the target/handler/ref, enables only the physical-tap route and disables debug audio/helper switch visibility. Thus browser vibration comes from the semantic adapter and is not duplicated by the wrapper. HIG preferences still gate the wrapper.
 
 **Do** pre-approve the target with `eligible` after disabled/busy/policy checks. **Don't** wrap an action whose eligibility is decided only by an async click callback, or promise a programmable iOS success/error pattern. The OS physical tick occurs before delegated handlers; a later preventDefault cannot retract that tick. That cancellation limitation, physical-tap intensity limits and device/VoiceOver checks remain upstream [haptic#9](https://github.com/bloxwap/haptic/issues/9) / [haptic#7](https://github.com/bloxwap/haptic/issues/7). The missing imperative iOS API for semantic controllers is [haptic#27](https://github.com/bloxwap/haptic/issues/27) (tracked in #70). No wrapper is required for basic actions.
 
@@ -739,7 +737,7 @@ Install `expo-haptics` (`~15.0.7` on Expo SDK 54, `~55.0.18` on SDK 55) in the n
 
 ## Simulated lifecycle regression evidence
 
-Pinned, unmodified MIT source fixtures from SFX `1be6630` and Haptic `8b1ab578` test the adapters against the merged implementations, with source hashes and licenses in `tests/fixtures/upstream-feedback/`. The SFX tests use upstream's recording AudioContext fake to cover buffered/live root isolation, controller mute/background, cancellation during unlock, reuse and last-default-user engine disposal. The actual npm `0.1.0` package is separately tested to preserve playback and retain its active-cancellation limitation. Haptic tests use the actual merged capability/trigger functions with fake browser globals, cover changing activation/visibility, rejection, SSR and iOS unavailability, and preserve the released fallback. These tests request no physical sound or haptics.
+The SFX tests use the published `@bloxwap/sfx@^0.2.0` package with its recording AudioContext fake to cover buffered/live root isolation, controller mute/background, cancellation during unlock, reuse and last-default-user engine disposal. Haptic tests use the published `@bloxwap/haptic@^0.2.0` capability/trigger functions with fake browser globals, cover changing activation/visibility, rejection, SSR and iOS unavailability, and preserve the released fallback. These tests request no physical sound or haptics.
 
 The Linux tests inject native player and haptic backends. Pending configure/seek requests are superseded by the newest request; cancellation, backgrounding, zero volume and disposal stop pending playback. Failed configuration can retry. Explicit impact intent reaches the native backend even for an otherwise silent press preset. Pause/remove failures cannot prevent other cached players from being released. A dispatch test drives 400 cues through `FeedbackController` with simulated slow bridge calls (configure 60 ms, seek 40 ms). It asserts that every cue reaches `player.play()` inside `emit()` and that p95 stays under one 16 ms frame. The native gallery stamps each emit and logs `dispatch`/`p95` on every play for simulator and emulator runs. These tests establish dispatch/lifecycle behavior, not observed sound, tactile output, acoustic latency (#55) or OS audio-session behavior.
 
@@ -1261,9 +1259,57 @@ Source: docs/foundations/platform.md
 
 Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
 
+### Primary brand colour
+
+Set `primaryColor` on `HIGProvider` to apply another brand's accent. For example,
+Tap Trade TV can use a red primary colour:
+
+```tsx
+import {HIGProvider} from '@bloxwap/hig-react/provider';
+// Native: import {HIGProvider} from '@bloxwap/hig-native/provider';
+
+<HIGProvider primaryColor='#ff0000'>
+  <App />
+</HIGProvider>
+```
+
+The red above is an example; supply the brand's exact hex. Both providers accept
+opaque sRGB `#RGB` or `#RRGGBB` values. Other formats, including transparent
+colours and CSS variables, throw a descriptive error. Omit the prop at the root
+to retain the existing Bloxwap green and wide-gamut defaults. Nested providers
+inherit the primary colour unless they supply another one. Separate roots can
+use different brands; changing or removing the prop updates mounted components.
+
+The override sets `action` and `focus`, plus `onAction` to black or white for the
+higher text contrast (at least 4.5:1 on the primary fill). Buttons, links,
+selection controls, progress indicators, action tones, and chart crosshair
+labels follow the accent. Success/error/warning/info and buy/sell roles keep
+their existing meanings and colours. Destructive buttons keep their dark label
+on the negative fill. The approved Bloxwap mark retains its original colours;
+another brand supplies its own logo.
+
+Web applies scoped CSS variables on the provider wrapper and on HIG portalled
+overlays, including Dialog, GestureSheet, Menu, Popover, and Tooltip. Import the
+normal token and component CSS. `useThemeStyle()` from the web provider entry
+returns the primary variables for a host-owned portal's root. Both platforms
+export `useColors()` for host-drawn content (web returns sRGB values for canvas).
+Native converts the sRGB input when an iOS provider selects `display-p3`; Android
+and react-native-web keep sRGB input channels. A nested provider can change colour
+space while inheriting the brand accent.
+
+The [default palette contrast report](../../evidence/contrast.json) covers the
+default theme. Custom accents also need review against the surfaces where they
+appear, particularly link text and focus rings; automatic label selection only
+guarantees contrast on the primary fill. Choose an accent with enough contrast
+for the dark surfaces your product uses.
+
+Tokens-only hosts can call `resolvePrimaryColor` from `@bloxwap/hig-tokens` and
+apply the resulting `action`, `focus`, and `onAction` roles to a scoped element.
+Keep these three roles together so primary labels remain readable.
+
 ### Native colour space
 
-React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff5c5c` is read as P3 channels and paints a more saturated red than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog, GestureSheet and the brand mark) then paints from that table through `useColors()`. Hosts choose a table and never pass raw colours. Nested providers inherit the value, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
+React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff479c` is read as P3 channels and paints a more saturated pink than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog and GestureSheet) then paints from that table through `useColors()`, with the primary brand override applied if present. The Bloxwap mark uses `useBrandColors()` to retain its approved colours in the same colour space. Hosts choose a table and can configure the primary accent through `primaryColor`. Nested providers inherit both settings, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
 
 | `HIGProvider colorSpace` | iOS | Android | react-native-web |
 | --- | --- | --- | --- |
@@ -1273,11 +1319,11 @@ React Native reads a hex colour's channels in the app's default colour space. Th
 | Role | `nativeSrgb` | `iosDisplayP3` |
 | --- | --- | --- |
 | action / positive / buy / focus | `#00ff3f` | `#00ff3d` |
-| warning | `#f5b300` | `#ebb63e` |
-| negative / sell | `#ff5c5c` | `#ec6762` |
+| warning | `#fffb38` | `#fffa2e` |
+| negative / sell | `#ff479c` | `#ff3d9e` |
 | info | `#35b5ff` | `#2eb8ff` |
 
-Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and iOS Simulator captures of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). In the sRGB screenshots, `display-p3` paints warning and negative as exactly the sRGB tokens (`#f5b300`, `#ff5c5c`), while `srgb` on the same host paints them oversaturated (`#ffaf00`, `#ff4a54`). Action and info are wider than sRGB, so the screenshot clips them. Physical display comparison is tracked in #55.
+Neutral roles (background, surface, nested, text, muted, faint, border, onAction) have the same hex in both tables. Use `useColors()` to read the resolved table for host-drawn views next to HIG components. Evidence is native Jest (#93) and iOS Simulator captures of the gallery built as a Display P3 host (`evidence/native-sim/issue-93/`). Those captures predate the pink/neon-yellow tone adoption: in them, `display-p3` paints warning and negative as exactly the then-current sRGB tokens (`#f5b300`, `#ff5c5c`), while `srgb` on the same host paints them oversaturated (`#ffaf00`, `#ff4a54`); the mechanism is unchanged. Action and info are wider than sRGB, so the screenshot clips them. Physical display comparison is tracked in #55.
 
 ## Typography (#7)
 
@@ -1738,6 +1784,15 @@ These are the rules that `@bloxwap/hig-react/css` applied to the whole page befo
 The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig-react/overlay`, `@bloxwap/hig-react/recipes` or `@bloxwap/hig-react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
 
 The separate optional `@bloxwap/hig-react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
+
+## Brand accent
+
+Pass `primaryColor` to the web or native `HIGProvider` to theme primary actions
+for another brand, for example `<HIGProvider primaryColor='#ff0000'>` for a red
+Tap Trade TV theme. Use the brand's opaque sRGB hex (`#RGB` or `#RRGGBB`).
+HIG selects readable primary button text and inherits the accent through nested
+providers. Omit it to keep Bloxwap green. See [primary brand colour](foundations/platform.md#primary-brand-colour)
+for portal styling, native colour spaces, and contrast guidance.
 
 ## SSR and Next client boundaries
 

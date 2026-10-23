@@ -10,10 +10,10 @@
   --hig-onAction: #0a0a0a;
   --hig-focus: #00ff3f;
   --hig-buy: #00ff3f;
-  --hig-sell: #ff5c5c;
+  --hig-sell: #ff479c;
   --hig-positive: #00ff3f;
-  --hig-negative: #ff5c5c;
-  --hig-warning: #f5b300;
+  --hig-negative: #ff479c;
+  --hig-warning: #fffb38;
   --hig-info: #35b5ff;
   --hig-space-xs: 0.25rem;
   --hig-space-sm: 0.5rem;
@@ -111,6 +111,9 @@
   --hig-onAction: color(display-p3 0.04 0.04 0.04);
   --hig-focus: color(display-p3 0 1 0.24);
   --hig-buy: color(display-p3 0 1 0.24);
+  --hig-sell: color(display-p3 1 0.24 0.62);
   --hig-positive: color(display-p3 0 1 0.24);
+  --hig-negative: color(display-p3 1 0.24 0.62);
+  --hig-warning: color(display-p3 1 0.98 0.18);
   --hig-info: color(display-p3 0.18 0.72 1);
 } }
