@@ -4,7 +4,7 @@ import {join} from 'node:path';
 // @ts-expect-error Executable JavaScript baseline path helper.
 import {visualBaselinePath} from '../scripts/visual-baseline.mjs';
 
-const workflows=['quality.yml','docs.yml'].map(name=>[name,readFileSync(join('.github/workflows',name),'utf8')] as const);
+const workflows=['quality.yml','docs.yml','publish.yml'].map(name=>[name,readFileSync(join('.github/workflows',name),'utf8')] as const);
 
 it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo or Playwright --with-deps',()=>{
  for(const [name,text] of workflows){

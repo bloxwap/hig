@@ -2,7 +2,7 @@
 import React from 'react';
 import * as Modal from '@radix-ui/react-dialog';
 import * as en from '@bloxwap/hig-contracts/messages';
-import {useHIG} from './provider.js';
+import {useHIG,useThemeStyle} from './provider.js';
 import {Button} from './button.js';
 /** Layout, focus and dismissal events on the owned Radix content element. */
 export type DialogContentProps = Omit<React.ComponentPropsWithoutRef<typeof Modal.Content>,
@@ -29,17 +29,18 @@ export interface DialogProps {
 export interface AlertDialogProps extends Omit<DialogProps,'closeLabel'> {/** Decline button text and accessible name; defaults to HIGProvider `messages.cancel`. */cancelLabel?:string}
 function DialogFrame({open,onOpenChange,title,description,trigger,children,closeLabel,titleHidden,descriptionHidden,contentProps,contentRef,closeButton,alert=false}:DialogProps&{alert?:boolean}){
  const {messages,direction,locale}=useHIG();
+ const themeStyle=useThemeStyle();
  // JavaScript callers receive the same ownership guarantees as typed callers. Copy first;
  // a host may share or freeze its props object across several modal instances.
  const safeContent=Object.fromEntries(Object.entries(contentProps??{}).filter(([key])=>!OWNED_CONTENT_PROPS.has(key))) as DialogContentProps;
- const {className,onPointerDownOutside,...content}=safeContent;
+ const {className,onPointerDownOutside,style,...content}=safeContent;
  return <Modal.Root open={open} onOpenChange={onOpenChange}>
   {trigger&&<Modal.Trigger asChild>{trigger}</Modal.Trigger>}
   <Modal.Portal>
    <Modal.Overlay className='hig-backdrop'/>
    <Modal.Content {...content} {...(!description?{'aria-describedby':undefined}:{})}
     ref={contentRef} role={alert?'alertdialog':'dialog'}
-    className={['hig-dialog',className].filter(Boolean).join(' ')} dir={direction} lang={locale}
+    className={['hig-dialog',className].filter(Boolean).join(' ')} dir={direction} lang={locale} style={{...themeStyle,...style}}
     onPointerDownOutside={event=>{onPointerDownOutside?.(event);if(alert)event.preventDefault();}}>
     <Modal.Title className={titleHidden?'hig-sr-only':undefined}>{title}</Modal.Title>
     {description&&<Modal.Description className={descriptionHidden?'hig-sr-only':undefined}>{description}</Modal.Description>}

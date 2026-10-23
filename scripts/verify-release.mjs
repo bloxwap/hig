@@ -28,7 +28,7 @@ export function verifyReleaseArtifacts(report,{directory,sourceCommit,sourceVers
  return releasePackages.map(name=>{
   const artifact=report.artifacts.find(artifact=>artifact.package===name);
   assert.equal(artifact.version,sourceVersion,`${name}: coordinated version`);
-  assert.equal(artifact.file,`${name.slice('@bloxwap/'.length)}-${sourceVersion}.tgz`,`${name}: expected tarball filename`);
+  assert.equal(artifact.file,`${name.slice(1).replace('/','-')}-${sourceVersion}.tgz`,`${name}: expected tarball filename`);
   const file=resolve(directory,artifact.file);const bytes=readFileSync(file);
   assert.equal(createHash('sha256').update(bytes).digest('hex'),artifact.sha256,`${name}: tarball hash mismatch`);
   return file;

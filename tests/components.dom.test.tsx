@@ -69,7 +69,13 @@ describe('DOM behavior contracts',()=>{
   const note=screen.getByText('createChart').closest('section')!;expect(note.getAttribute('data-severity')).toBe('note');expect(note.querySelector('strong')?.textContent).toBe('Use createChart');expect(note.querySelector('strong code')).toBeTruthy();
   expect(screen.getByText('Tip').closest('section')!.getAttribute('data-severity')).toBe('tip');
   const css=readFileSync('packages/react/src/styles.css','utf8');
-  for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']])expect(css).toMatch(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{[^}]*var\\(--hig-${role}\\)`));
+  for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']])expect(css).toMatch(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{[^}]*border:2px solid var\\(--hig-${role}\\);box-shadow:0 0 24px color-mix\\(in srgb,var\\(--hig-${role}\\) 55%,transparent\\)`));
+  // Neutral default: border-token stroke with the soft white glow, and toast cards are pills on a translucent 16px panel base.
+  expect(css).toMatch(/\[data-severity='default'\][^{]*\{[^}]*border:2px solid var\(--hig-border\);box-shadow:0 0 20px rgba\(255,255,255,0\.12\)/);
+  expect(css).toMatch(/:where\(\.hig-surface\)\[data-severity\]\s*\{[^}]*border-radius:16px;background:color-mix\(in srgb,var\(--hig-surface\) 95%,transparent\)/);
+  expect(css).toMatch(/:where\(\.hig-toast\) :where\(\.hig-surface\)\[data-severity\]\s*\{[^}]*border-radius:999px/);
+  render(<Toast notices={[{id:'n',message:'Copied',severity:'success'}]} onDismiss={()=>{}}/>);
+  expect(document.querySelector('aside.hig-toast section.hig-surface[data-severity=success]')).toBeTruthy();
  });
  it('scopes component CSS to HIG classes and keeps every focusable part inside the scoped focus ring (#95)',()=>{
   const css=readFileSync('packages/react/src/styles.css','utf8').replace(/\/\*[\s\S]*?\*\//g,'');

@@ -41,37 +41,37 @@
     {
       "fg": "negative",
       "bg": "background",
-      "ratio": 6.54,
+      "ratio": 6.25,
       "aa": true
     },
     {
       "fg": "negative",
       "bg": "surface",
-      "ratio": 5.92,
+      "ratio": 5.66,
       "aa": true
     },
     {
       "fg": "negative",
       "bg": "nested",
-      "ratio": 5,
+      "ratio": 4.78,
       "aa": true
     },
     {
       "fg": "warning",
       "bg": "background",
-      "ratio": 10.68,
+      "ratio": 18.01,
       "aa": true
     },
     {
       "fg": "warning",
       "bg": "surface",
-      "ratio": 9.67,
+      "ratio": 16.31,
       "aa": true
     },
     {
       "fg": "warning",
       "bg": "nested",
-      "ratio": 8.17,
+      "ratio": 13.77,
       "aa": true
     },
     {
@@ -131,19 +131,19 @@
     {
       "fg": "sell",
       "bg": "background",
-      "ratio": 6.54,
+      "ratio": 6.25,
       "aa": true
     },
     {
       "fg": "sell",
       "bg": "surface",
-      "ratio": 5.92,
+      "ratio": 5.66,
       "aa": true
     },
     {
       "fg": "sell",
       "bg": "nested",
-      "ratio": 5,
+      "ratio": 4.78,
       "aa": true
     },
     {
@@ -167,13 +167,13 @@
     {
       "fg": "onAction",
       "bg": "negative",
-      "ratio": 6.54,
+      "ratio": 6.25,
       "aa": true
     },
     {
       "fg": "onAction",
       "bg": "warning",
-      "ratio": 10.68,
+      "ratio": 18.01,
       "aa": true
     },
     {
@@ -197,7 +197,7 @@
     {
       "fg": "onAction",
       "bg": "sell",
-      "ratio": 6.54,
+      "ratio": 6.25,
       "aa": true
     }
   ],

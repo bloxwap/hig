@@ -6,16 +6,17 @@ import {formatNumber} from '@bloxwap/hig-contracts';
 import {Button} from './button.js';
 import * as en from '@bloxwap/hig-contracts/messages';
 import {useColors,useHIG} from './provider.js';
+import {withAlpha} from '@bloxwap/hig-tokens';
 import {blockText,plainText} from './text-content.js';
 import {roleColor,type AccentRole} from './roles.js';
 export type {AccentRole} from './roles.js';
 const severityRole={info:'info',note:'info',success:'positive',tip:'positive',warning:'warning',error:'negative'} as const;
-/** `note` and `tip` are documentation callout severities that reuse the info and positive token roles. */
-export type AlertSeverity=keyof typeof severityRole;
+/** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (border stroke, soft white glow). */
+export type AlertSeverity=keyof typeof severityRole|'default';
 function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
 export function Badge({children}:React.PropsWithChildren){const colors=useColors();return <Text style={{backgroundColor:colors.nested,borderRadius:9999,padding:8}}>{children}</Text>;}
-/** Severity sets the accent role (info/note → info, success/tip → positive, warning, error → negative); `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
-export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const accent=roleColor(tone,severityRole[severity]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{borderWidth:1,borderStartWidth:4,borderColor:accent}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
+/** Severity sets the glowing stroke from a token role (info/note → info, success/tip → positive, warning, error → negative, default → neutral border); `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
+export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.border:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{borderWidth:2,borderColor:accent,borderRadius:16,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:neutral?`0 0 20px ${withAlpha(colors.text,0.12)}`:`0 0 24px ${withAlpha(accent,0.55)}`}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
 export const Callout=Alert;
 export interface Notice {
  id:string;
@@ -56,7 +57,7 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <View testID={testID} style={{maxHeight:maxHeight??height*.6,flexShrink:1}}>
   <ScrollView style={{flexGrow:0,flexShrink:1}} nestedScrollEnabled keyboardShouldPersistTaps='handled' accessibilityLabel={messages.notifications??en.notifications}>
-   <Stack style={{gap:8}}>{unique.map(n=><Surface key={n.id} accessibilityLiveRegion='none' style={{padding:12,borderWidth:1,borderStartWidth:4,borderColor:colors[severityRole[n.severity]]}}>
+   <Stack style={{gap:8}}>{unique.map(n=><Surface key={n.id} accessibilityLiveRegion='none' style={{padding:12,borderWidth:2,borderColor:colors[severityRole[n.severity]],borderRadius:999,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:`0 0 24px ${withAlpha(colors[severityRole[n.severity]],0.55)}`}}>
     <Text style={{fontWeight:'600'}}>{n.message}</Text>
     {n.description?<Text>{n.description}</Text>:null}
     {n.action}

@@ -193,7 +193,7 @@ it('native switch keeps react-native-web semantics on Expo web (no nested intera
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
 });
 it('native switch and alert accept token colour roles only (#67)',()=>{
- const {Switch}=require('../../packages/native/src/switch');const {Alert}=require('../../packages/native/src/status');const RN=require('react-native');const {nativeSrgb:colors}=require('../../packages/tokens/dist/index.js');
+ const {Switch}=require('../../packages/native/src/switch');const {Alert}=require('../../packages/native/src/status');const RN=require('react-native');const {nativeSrgb:colors,withAlpha}=require('../../packages/tokens/dist/index.js');
  const track=props=>{const tree=mount(React.createElement(Switch,{label:'Sound',...props}));const value=tree.findByType(RN.Switch).props.trackColor;act(()=>root.unmount());root=null;return value;};
  expect(track({})).toEqual({true:colors.action,false:colors.nested});
  expect(track({tone:'positive'}).true).toBe(colors.positive);
@@ -213,7 +213,13 @@ it('native switch and alert accept token colour roles only (#67)',()=>{
  expect(accent({severity:'tip'}).borderColor).toBe(colors.positive);
  expect(accent({severity:'error',tone:'action'}).borderColor).toBe(colors.action);
  expect(accent({severity:'error',tone:'rgb(1,2,3)'}).borderColor).toBe(colors.negative);
- expect(accent({}).borderStartWidth).toBe(4);
+ // Bloxwap glowing stroke: 2px tone border on every side, tone glow at 55%, 16dp radius, translucent surface.
+ const base=accent({});expect(base.borderWidth).toBe(2);expect(base.borderStartWidth).toBeUndefined();expect(base.borderRadius).toBe(16);
+ expect(base.backgroundColor).toBe(withAlpha(colors.surface,0.95));expect(base.boxShadow).toBe(`0 0 24px ${withAlpha(colors.info,0.55)}`);
+ expect(accent({severity:'error'}).boxShadow).toBe(`0 0 24px ${withAlpha(colors.negative,0.55)}`);
+ // Neutral default: border-token stroke with the soft white glow.
+ const neutral=accent({severity:'default'});expect(neutral.borderColor).toBe(colors.border);expect(neutral.boxShadow).toBe(`0 0 20px ${withAlpha(colors.text,0.12)}`);
+ expect(accent({severity:'default',tone:'warning'}).borderColor).toBe(colors.warning);
 });
 it('native Text caps font scale from the prop or the provider and readouts pass it through (#67)',()=>{
  const {HIGProvider}=require('../../packages/native/src/provider');const {Text,Heading}=require('../../packages/native/src/surface');const {Text:RNText}=require('react-native');

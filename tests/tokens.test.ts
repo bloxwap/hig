@@ -5,7 +5,7 @@ import contrast from '../evidence/contrast.json';
 import {fontManifest} from '../packages/native-fonts/src/index';
 import {readFileSync,existsSync} from 'node:fs';
 describe('platform contracts',()=>{
- it('keeps direction aliases',()=>{expect(tokens.colors.buy.srgb).toBe(tokens.colors.positive.srgb);expect(tokens.colors.sell.srgb).toBe('#ff5c5c');});
+ it('keeps direction aliases',()=>{expect(tokens.colors.buy.srgb).toBe(tokens.colors.positive.srgb);expect(tokens.colors.sell.srgb).toBe(tokens.colors.negative.srgb);});
  it('keeps CSS out of RN',()=>{for(const color of Object.values(nativeColors.android))expect(color).toMatch(/^#[0-9a-f]{6}$/);expect(nativeColors.iosP3.action.components).toEqual([0,1,.24]);});
  it('validates alpha',()=>{expect(withAlpha('#00ff3f',.5)).toBe('#00ff3f80');expect(()=>withAlpha('red',2)).toThrow();});
  it('checks approved text pairs',()=>{expect(contrast.pairs.every(p=>p.aa)).toBe(true);});

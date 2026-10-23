@@ -60,7 +60,7 @@ const cell=['paddingTop','paddingInlineStart','textAlign','borderBottomWidth','b
 const focus=['outlineStyle','outlineWidth','outlineColor','outlineOffset'];
 const probes={
  plain:{'plain-table':['borderCollapse','width',...box],'plain-th':[...cell,...box],'plain-td':[...cell,...box],'plain-range':['accentColor','minHeight','width','height',...box],'plain-button':[...box],'plain-box':[...box,'offsetWidth'],'plain-severity':['borderInlineStartWidth','borderInlineStartStyle']},
- hig:{'hig-button':['minHeight','borderRadius',...box],'hig .hig-table':['borderCollapse','width',...box],'hig .hig-table th':[...cell,...box],'hig .hig-table td':[...cell,...box],'hig .hig-range':['accentColor','minHeight','width',...box],'hig [data-severity]':['borderInlineStartWidth','borderInlineStartStyle','borderInlineStartColor']},
+ hig:{'hig-button':['minHeight','borderRadius',...box],'hig .hig-table':['borderCollapse','width',...box],'hig .hig-table th':[...cell,...box],'hig .hig-table td':[...cell,...box],'hig .hig-range':['accentColor','minHeight','width',...box],'hig [data-severity]':['borderInlineStartWidth','borderInlineStartStyle','borderInlineStartColor','borderTopWidth','borderInlineEndWidth','borderBottomWidth','boxShadow']},
 };
 async function read(page,map){return page.evaluate(map=>Object.fromEntries(Object.entries(map).map(([key,props])=>{const el=key.includes(' ')?document.querySelector(`#${key.split(' ')[0]} ${key.split(' ').slice(1).join(' ')}`):document.getElementById(key);if(!el)return [key,null];const s=getComputedStyle(el);return [key,Object.fromEntries(props.map(p=>[p,p==='offsetWidth'?el.offsetWidth:s[p]]))];})),map);}
 async function focusRing(page,id){
@@ -108,7 +108,9 @@ try{
    assert.equal(hig.hig['hig .hig-table'].borderCollapse,'collapse',`${engine}: Table keeps collapsed borders`);
    assert.equal(hig.hig['hig .hig-range'].minHeight,'48px',`${engine}: Slider keeps its 48px target`);
    assert.equal(hig.hig['hig-button'].boxSizing,'border-box',`${engine}: HIG elements keep border-box`);
-   assert.equal(hig.hig['hig [data-severity]'].borderInlineStartWidth,'3px',`${engine}: Alert keeps its severity rule`);
+   for(const side of ['borderInlineStartWidth','borderTopWidth','borderInlineEndWidth','borderBottomWidth'])assert.equal(hig.hig['hig [data-severity]'][side],'2px',`${engine}: Alert keeps its full severity frame (${side})`);
+   assert.equal(hig.hig['hig [data-severity]'].borderInlineStartStyle,'solid',`${engine}: Alert keeps its severity border`);
+   assert.notEqual(hig.hig['hig [data-severity]'].boxShadow,'none',`${engine}: Alert keeps its severity glow`);
    assert.equal(hig.higFocus.outlineWidth,'2px',`${engine}: HIG button keeps the focus ring`);
    assert.equal(hig.higFocus.outlineOffset,'3px',`${engine}: HIG button keeps the ring offset`);
    assert.deepEqual(hig.hig,base.hig,`${engine}: HIG components compute differently with and without the base`);

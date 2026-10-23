@@ -19,3 +19,10 @@ it('PriceChart keeps the text summary, shows the host-localized fallback, then m
  expect(JSON.parse(engine.dataset.preset!)).toEqual(chartTheme);expect(engine.dataset.height).toBe('240');
  expect(chartTheme.series?.upColor).toBe(tokens.colors.buy.srgb);expect(chartTheme.series?.downColor).toBe(tokens.colors.sell.srgb);
 });
+
+it('PriceChart follows the primary accent and leaves trading direction colours intact',async()=>{
+ render(<HIGProvider primaryColor='#f00'><PriceChart summary='Tap Trade TV' data={[]}/></HIGProvider>);
+ const engine=await screen.findByTestId('engine');const preset=JSON.parse(engine.dataset.preset!);
+ expect(preset.crosshair.labelBackground).toBe('#ff0000');expect(preset.crosshair.labelColor).toBe('#000000');
+ expect(preset.series).toEqual(chartTheme.series);
+});

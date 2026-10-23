@@ -1,65 +1,76 @@
 name: Maintainer-approved npm release
 on:
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag (e.g. v0.1.0)
+        required: true
+        type: string
 permissions:
   contents: read
-  actions: read
-  deployments: read
 concurrency:
   group: hig-npm-release
   cancel-in-progress: false
+defaults:
+  run:
+    shell: bash
 jobs:
-  prerequisites:
-    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
-    runs-on: ubuntu-24.04
+  publish:
+    # Security: only maintainer-controlled release/dispatch events run code on the minis.
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v')
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 60
     env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
     steps:
-      - name: Require configured maintainer approval and successful quality gates
-        shell: bash
+      - name: Validate release tag
         run: |
           set -euo pipefail
-          reviewers=$(gh api "repos/$GH_REPO/environments/npm-release" --jq '[.protection_rules[] | select(.type == "required_reviewers") | .reviewers[]] | length')
-          test "$reviewers" -gt 0 || { echo 'Configure required reviewers on the npm-release environment first.' >&2; exit 1; }
-          runs=$(gh run list --workflow quality.yml --commit "$GITHUB_SHA" --status success --limit 1 --json databaseId --jq length)
-          test "$runs" -gt 0 || { echo 'Run the candidate quality workflow successfully for this exact tag commit first.' >&2; exit 1; }
-  publish:
-    needs: prerequisites
-    environment: npm-release
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+          [[ "$RELEASE_TAG" =~ ^v ]] || { echo 'Release tag must start with v' >&2; exit 1; }
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          persist-credentials: false
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.22.0'
           registry-url: https://registry.npmjs.org
-          cache: npm
-      - run: npm install --global npm@11.6.1
+          # Minis keep ~/.npm on disk. Do not add cache: npm (1.1–1.3 GB at ~1 MB/s).
+          # setup-node v5+ auto-caches npm when packageManager is set; keep this pin
+          # or set package-manager-cache: false if the action is upgraded.
+      - name: Install CPython 3.12
+        run: bash scripts/ci-setup-python.sh
+      - name: Report bundled npm version
+        run: npm --version
       - run: npm ci
-      - run: python3 -m pip install 'fonttools[woff]==4.61.1' 'brotli==1.2.0'
-      - run: npm run generate:fonts
+      - name: Generate native fonts
+        run: bash scripts/ci-generate-fonts.sh
       - run: npm run check
       - run: npm run quality
       - run: npm run release:dry-run -- --channel stable-simulation
       - name: Verify source version, gates, exact package set and tarball hashes
+        run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
+      - name: Publish the verified tarballs with the organization token
         env:
-          HIG_RELEASE_TAG: ${{ github.ref_name }}
-        run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$HIG_RELEASE_TAG" --output artifacts/verified-release.txt
-      - name: Publish the verified tarballs through npm trusted publishing
-        shell: bash
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -euo pipefail
           while IFS= read -r archive; do
-            npm publish "$archive" --access public --provenance
+            name=$(tar -xOf "$archive" package/package.json | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>console.log(JSON.parse(s).name))')
+            version=$(tar -xOf "$archive" package/package.json | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>console.log(JSON.parse(s).version))')
+            if published=$(npm view "$name@$version" version) && [ "$published" = "$version" ]; then
+              echo "Skipping $name@$version: already published"
+            else
+              npm publish "$archive" --access public
+            fi
           done < artifacts/verified-release.txt
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
       - run: npm run smoke:registry
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: hig-registry-verification-${{ github.sha }}
