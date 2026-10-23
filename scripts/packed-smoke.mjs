@@ -19,9 +19,10 @@ const consumerManifest=JSON.parse(readFileSync(join(dir,'package.json'),'utf8'))
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 writeFileSync(join(dir,'smoke.mjs'),`import assert from 'node:assert/strict';
 import React from 'react'; import {renderToString} from 'react-dom/server';
-import {tokens} from '@bloxwap/hig-tokens'; import {formatNumber,formatLeverage,formatTicker} from '@bloxwap/hig-contracts';
+import {tokens,resolvePrimaryColor} from '@bloxwap/hig-tokens'; import {formatNumber,formatLeverage,formatTicker} from '@bloxwap/hig-contracts';
 assert.equal(tokens.colors.action.srgb,'#00ff3f'); assert.equal(formatNumber(null),'—'); assert.equal(formatLeverage(10),'10×'); assert.equal(formatTicker(1,'USDC'),'1\u00a0USDC');
-${manifests.some(m=>m.name==='@bloxwap/hig-react')?"const {Button}=await import('@bloxwap/hig-react/button'); assert.match(renderToString(React.createElement(Button,null,'Review order')),/Review order/);":"assert.match(renderToString(React.createElement('button',null,'Review order')),/Review order/);"}
+assert.deepEqual(resolvePrimaryColor('#f00'),{action:'#ff0000',focus:'#ff0000',onAction:'#000000'}); assert.equal(resolvePrimaryColor('#f00','display-p3').action,'#ea3323');
+${manifests.some(m=>m.name==='@bloxwap/hig-react')?"const {Button}=await import('@bloxwap/hig-react/button'); const {HIGProvider}=await import('@bloxwap/hig-react/provider'); assert.match(renderToString(React.createElement(Button,null,'Review order')),/Review order/); assert.match(renderToString(React.createElement(HIGProvider,{primaryColor:'#f00'},React.createElement(Button,null,'Watch live'))),/--hig-action:#ff0000;--hig-focus:#ff0000;--hig-onAction:#000000/);":"assert.match(renderToString(React.createElement('button',null,'Review order')),/Review order/);"}
 ${manifests.some(m=>m.name==='@bloxwap/hig-chart')?"const {PriceChart,chartTheme}=await import('@bloxwap/hig-chart'); assert.equal(chartTheme.series.upColor,tokens.colors.buy.srgb); assert.match(renderToString(React.createElement(PriceChart,{summary:'BTC up 1%',data:[]})),/<figcaption>BTC up 1%<\\/figcaption>/);":''}
 console.log('Packed consumer: independent token/contracts imports and SSR render passed');`);
 execFileSync(process.execPath,[join(dir,'smoke.mjs')],{cwd:dir,stdio:'inherit'});
