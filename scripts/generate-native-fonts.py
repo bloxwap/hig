@@ -5,7 +5,7 @@
 Writes every static face to packages/native-fonts/fonts and copies the OG_FACES subset,
 byte for byte, to packages/og-fonts/fonts for Satori/next-og hosts (#99).
 
-Requires fonttools[woff]==4.61.1 and brotli==1.2.0. By default uses the installed
+Requires fonttools[woff]==4.61.1 and brotli==1.2.1. By default uses the installed
 npm dependency; --package-dir accepts an extracted npm package for offline rebuilds.
 """
 import argparse
@@ -14,8 +14,9 @@ import json
 import shutil
 from pathlib import Path
 import fontTools
-if fontTools.__version__ != '4.61.1':
-    raise RuntimeError('Use fonttools[woff]==4.61.1 and brotli==1.2.0 for reproducible generation')
+import brotli
+if fontTools.__version__ != '4.61.1' or brotli.__version__ != '1.2.1':
+    raise RuntimeError('Use fonttools[woff]==4.61.1 and brotli==1.2.1 for reproducible generation')
 from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
 
