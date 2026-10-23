@@ -20,7 +20,7 @@ site, then deploys it to GitHub Pages. Pull requests build without deploying.
 ```sh
 npm ci
 npm run check
-python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"
+python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.1"
 npm run generate:fonts
 npm run smoke:ssr
 npm run bundle -w hig-native-fixture

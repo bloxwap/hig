@@ -17,7 +17,7 @@ function checkoutWithoutFonts(){
 }
 function expectActionable(output:string){
  expect(output).toContain('npm run generate:fonts');
- expect(output).toContain('python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.0"');
+ expect(output).toContain('python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.1"');
  expect(output).toContain('packages/native-fonts/fonts/BloxwapSans.ttf');
  expect(output).not.toContain('ENOENT');
 }
@@ -42,16 +42,17 @@ describe('generated font preflight (#98)',()=>{
   expect(generatedFontsMessage(status,'Test')).toContain('1 generated font file(s) do not match their manifest SHA-256: packages/og-fonts/fonts/BloxwapSans.ttf');
  });
  it('names the same Python pins as the generator, CI and the setup guide',()=>{
-  expect(fontGeneratorRequirements).toEqual(['fonttools[woff]==4.61.1','brotli==1.2.0']);
-  expect(readFileSync('scripts/generate-native-fonts.py','utf8')).toContain('Requires fonttools[woff]==4.61.1 and brotli==1.2.0');
+  expect(fontGeneratorRequirements).toEqual(['fonttools[woff]==4.61.1','brotli==1.2.1']);
+  expect(readFileSync('scripts/generate-native-fonts.py','utf8')).toContain('Requires fonttools[woff]==4.61.1 and brotli==1.2.1');
   expect(readFileSync('scripts/generate-native-fonts.py','utf8')).toContain("fontTools.__version__ != '4.61.1'");
+  expect(readFileSync('scripts/generate-native-fonts.py','utf8')).toContain("brotli.__version__ != '1.2.1'");
   const generator=readFileSync('scripts/ci-generate-fonts.sh','utf8');
-  expect(generator).toContain('"$venv/bin/pip" install --disable-pip-version-check "fonttools[woff]==4.61.1" "brotli==1.2.0"');
+  expect(generator).toContain('"$venv/bin/pip" install --disable-pip-version-check "fonttools[woff]==4.61.1" "brotli==1.2.1"');
   expect(generator).toContain('npm run generate:fonts');
   expect(generator).toContain('RUNNER_TEMP');
   expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-generate-fonts\.sh/g)?.length).toBe(3);
   expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
-  expect(readFileSync('docs/governance/new-repository.md','utf8')).toContain('`fonttools[woff]==4.61.1` and `brotli==1.2.0`');
+  expect(readFileSync('docs/governance/new-repository.md','utf8')).toContain('`fonttools[woff]==4.61.1` and `brotli==1.2.1`');
  });
 });
 
