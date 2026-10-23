@@ -82,7 +82,7 @@ Only those two trusted-publishing jobs use GitHub-hosted `ubuntu-24.04`. All oth
 
 - macOS on Apple silicon, with the Actions runner registered using the labels `self-hosted`, `macOS`, and `ARM64`
 - Git
-- Python 3.10+ with the standard-library `venv` module (`fonttools` 4.61.1 requires `>=3.10`). GitHub's `actions/setup-python` macOS builds mkdir `/Users/runner/hostedtoolcache` and fail on these minis (`Permission denied`). CI therefore installs relocatable CPython 3.12 into `$RUNNER_TEMP` with a pinned `uv` 0.13.1 binary (`scripts/ci-setup-python.sh`). The login-shell Python does not have to be 3.12. Cache misses create `$RUNNER_TEMP/hig-fonttools` and install `fonttools[woff]==4.61.1` and `brotli==1.2.0` there; they do not write to system site-packages
+- Python 3.10+ with the standard-library `venv` module (`fonttools` 4.61.1 requires `>=3.10`). GitHub's `actions/setup-python` macOS builds mkdir `/Users/runner/hostedtoolcache` and fail on these minis (`Permission denied`). CI therefore installs relocatable CPython 3.12 into `$RUNNER_TEMP` with a pinned `uv` 0.13.1 binary (`scripts/ci-setup-python.sh`). The login-shell Python does not have to be 3.12. Cache misses create `$RUNNER_TEMP/hig-fonttools` and install `fonttools[woff]==4.61.1` and `brotli==1.2.1` there; they do not write to system site-packages
 - Network access to npm, GitHub, and Playwright browser downloads
 - Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
@@ -1422,7 +1422,7 @@ Source `spacing.ts` and `type.ts` explicitly set both rem roots to 16; native sp
 
 ## Native font generation and registration
 
-Install `fonttools[woff]==4.61.1` and `brotli==1.2.0`, then run `npm run generate:fonts` before native consumer commands. `scripts/generate-native-fonts.py` derives static faces exclusively from the installed `@bloxwap/font@0.1.2` variable WOFF2 files, verifying all four input hashes before writing. It adapts the monorepo's generator and preserves its naming/weight metadata. The generated manifest contains input/output SHA256, PostScript names, Expo registration keys, weights, scripts and byte counts; OFL attribution ships beside the faces. Generated TTF files are build outputs, not per-repository committed binary copies. Local tarballs include them through `@bloxwap/hig-native-fonts/fonts/*` (moved out of the web tokens package in #64); consumers register only needed faces.
+Install `fonttools[woff]==4.61.1` and `brotli==1.2.1`, then run `npm run generate:fonts` before native consumer commands. `scripts/generate-native-fonts.py` derives static faces exclusively from the installed `@bloxwap/font@0.1.2` variable WOFF2 files, verifying all four input hashes before writing. It adapts the monorepo's generator and preserves its naming/weight metadata. The generated manifest contains input/output SHA256, PostScript names, Expo registration keys, weights, scripts and byte counts; OFL attribution ships beside the faces. Generated TTF files are build outputs, not per-repository committed binary copies. Local tarballs include them through `@bloxwap/hig-native-fonts/fonts/*` (moved out of the web tokens package in #64); consumers register only needed faces.
 
 The Expo fixture registers Sans Regular/SemiBold and Mono Regular through `expo-font`, waits for loading, exposes failure visibly and passes explicit 400/600 family keys to the native provider. Text, headings and buttons select registered static weight families, avoiding an invalid variable family name or synthesized weight. Expo web uses feedback.web.ts browser adapters; Android/iOS retain the native backend. Korean/Simplified Chinese Regular/SemiBold faces can be registered by host locale policy; other scripts use an explicit host/system fallback. Pixel remains a scoped web accent, not a native body-font requirement. Font registration in Expo web and Metro builds does not certify native rasterization, native Dynamic Type, or multilingual physical-device layout.
 
@@ -1597,7 +1597,7 @@ npm ci && npm run generate:fonts && npm run build
 npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
 ```
 
-`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
+`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.1`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
 
 - Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
 - Record their SHA-256 hashes and the source commit in a README or `provenance.json`.
@@ -1703,7 +1703,7 @@ npm ci
 npm run check
 npm run examples:check
 npm run quality
-npm run generate:fonts   # Python with fonttools[woff]==4.61.1 and brotli==1.2.0
+npm run generate:fonts   # Python with fonttools[woff]==4.61.1 and brotli==1.2.1
 npm run smoke:packed
 npm run smoke:packed-og
 npm run smoke:packed-native

@@ -7,7 +7,7 @@ npm ci
 npm run check
 npm run examples:check
 npm run quality
-npm run generate:fonts   # Python with fonttools[woff]==4.61.1 and brotli==1.2.0
+npm run generate:fonts   # Python with fonttools[woff]==4.61.1 and brotli==1.2.1
 npm run smoke:packed
 npm run smoke:packed-og
 npm run smoke:packed-native

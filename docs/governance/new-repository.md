@@ -24,7 +24,7 @@ npm ci && npm run generate:fonts && npm run build
 npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
 ```
 
-`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.0`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
+`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.1`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
 
 - Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
 - Record their SHA-256 hashes and the source commit in a README or `provenance.json`.
