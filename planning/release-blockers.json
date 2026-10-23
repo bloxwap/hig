@@ -2,48 +2,56 @@
   {
     "id": "task-policy",
     "owner": "HIG maintainers",
-    "reason": "Publication requires maintainer approval and organization NPM_TOKEN configuration for token publishing from the self-hosted Mac minis via publish.yml. The workflow re-runs all release gates on the tag commit; an npm-release environment and npm trusted publishing are no longer required. Package scope access and first publication authorization remain npm organization owner decisions.",
-    "status": "blocked",
+    "reason": "On 2026-10-23 repository owner joeblau explicitly requested the PR/CI/merge workflow and publication of the customizable HIG provider (PR #141; evidence/release/owner-authorization-2026-10-23.md). No HIG package has previously been published. The organization NPM_TOKEN secret is configured for all repositories; the reviewed self-hosted publishing workflow verifies immutable tag, coordinated package set and artifact hashes before publication. The local artifact command remains dry-run only.",
+    "status": "satisfied",
     "tracking": "https://github.com/bloxwap/hig/issues/56",
     "reviewBy": "2027-01-15"
   },
   {
     "id": "source-audit",
     "owner": "product monorepo maintainers",
-    "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain. Combined draft monorepo#4619 now includes equal-toolchain web/native production measurements against main29812c9, with complete source and asset hashes; these are review evidence, not bundle approval.",
-    "status": "partial",
+    "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain. Combined draft monorepo#4619 now includes equal-toolchain web/native production measurements against main29812c9, with complete source and asset hashes; these are review evidence, not bundle approval. Scoped pre-1.0 publication exception: the owner explicitly authorized publishing the customizable provider on 2026-10-23 (PR #141; evidence/release/owner-authorization-2026-10-23.md). Outstanding v1 parity, owner assignments and production rollout work remain tracked by this issue and are not claimed complete; consumers keep prior lockfiles/artifacts for rollback. Review by 2027-01-15.",
+    "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/57",
-    "reviewBy": "2027-01-15"
+    "reviewBy": "2027-01-15",
+    "approvedBy": "joeblau",
+    "approval": "https://github.com/bloxwap/hig/pull/141"
   },
   {
     "id": "native-fonts",
     "owner": "Font/native maintainers",
-    "reason": "HIG generates 15 pinned static native TTFs from Font 0.1.2 with hash checks, shipped in @bloxwap/hig-native-fonts and no longer in the web tokens package (#64, PR #75); registration and Dynamic Type/large-text layouts were observed on the iOS Simulator and Android emulator (#53). Physical rasterization remains (#55).",
-    "status": "partial",
+    "reason": "HIG generates 15 pinned static native TTFs from Font 0.1.2 with hash checks, shipped in @bloxwap/hig-native-fonts and no longer in the web tokens package (#64, PR #75); registration and Dynamic Type/large-text layouts were observed on the iOS Simulator and Android emulator (#53). Physical rasterization remains (#55). Physical rasterization is covered by the dated owner-approved exception for every #55 checklist item, including #7, in evidence/physical/owner-attestation-2026-10-19.md and merged PR #131. This is an owner attestation, not an automated physical observation; any contradictory result voids the relevant exception.",
+    "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/55",
-    "reviewBy": "2027-01-15"
+    "reviewBy": "2027-01-15",
+    "approvedBy": "joeblau",
+    "approval": "https://github.com/bloxwap/hig/pull/131"
   },
   {
     "id": "physical-devices",
     "owner": "HIG/native/haptic maintainers",
     "reason": "Resolved by dated, owner-approved exception on 2026-10-19 (evidence/physical/owner-attestation-2026-10-19.md, PR #131): the owner attests every #55 checklist item works on physical hardware. This is an owner attestation, not a recorded device observation; automated, browser, iOS Simulator and Android emulator evidence remains separately labeled. Any future contradicting physical run voids the exception for that item and requires a linked failure issue. Upstream physical tactile tracking stays open at bloxwap/haptic#9.",
-    "status": "excepted",
+    "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/55",
-    "reviewBy": "2027-01-15"
+    "reviewBy": "2027-01-15",
+    "approvedBy": "joeblau",
+    "approval": "https://github.com/bloxwap/hig/pull/131"
   },
   {
     "id": "owning-migrations",
     "owner": "each adopting repository maintainers",
-    "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. The first remaining-surface batch is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607–#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. The task user explicitly accepted Combined#4619's verified historical public Git tree hash finding as a false positive; that finding does not block further work. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain. The resumed batch adds optional native SwitchRow anatomy and upstream-compatible feedback adapters in HIG source. Additional controls within the existing sponsor pilot and native ordinary fields/actions/switches are undergoing actual-caller/runtime validation in isolated follow-ups.",
-    "status": "partial",
+    "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. The first remaining-surface batch is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607\u2013#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. The task user explicitly accepted Combined#4619's verified historical public Git tree hash finding as a false positive; that finding does not block further work. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain. The resumed batch adds optional native SwitchRow anatomy and upstream-compatible feedback adapters in HIG source. Additional controls within the existing sponsor pilot and native ordinary fields/actions/switches are undergoing actual-caller/runtime validation in isolated follow-ups. Scoped pre-1.0 publication exception: the owner explicitly authorized publishing the customizable provider on 2026-10-23 (PR #141; evidence/release/owner-authorization-2026-10-23.md). Outstanding v1 parity, owner assignments and production rollout work remain tracked by this issue and are not claimed complete; consumers keep prior lockfiles/artifacts for rollback. Review by 2027-01-15.",
+    "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/110",
-    "reviewBy": "2027-01-15"
+    "reviewBy": "2027-01-15",
+    "approvedBy": "joeblau",
+    "approval": "https://github.com/bloxwap/hig/pull/141"
   },
   {
     "id": "upstream-feedback-gaps",
     "owner": "SFX/Haptic maintainers",
-    "reason": "HIG source now adopts merged SFX per-root AbortSignal cancellation and optional canonical Haptic imperative injection (draft #127, all remote checks green), with exact MIT upstream fixtures and actual npm 0.1 compatibility tests. SFX/Haptic registry releases remain 0.1.0, so active voice cancellation and imperative exports require a later upstream release; released 0.1 behavior remains tested. Haptic issue #27 stays open because imperative vibration cannot bypass trusted-native-event iOS requirements. Native preloading/dispatch remains implemented; physical audible/tactile latency is #55.",
-    "status": "partial",
+    "reason": "SFX and Haptic 0.2.0 are now published, pinned in the lockfile, and required by the feedback package peers. HIG uses the released per-root AbortSignal cancellation and canonical optional imperative Haptic backend; actual upstream-runtime tests verify cancellation isolation and capability checks. iOS trusted-event restrictions remain explicit, and physical audible/tactile claims retain the separate #55 owner-attested exception. No new hardware observation is claimed.",
+    "status": "satisfied",
     "tracking": "https://github.com/bloxwap/hig/issues/70",
     "reviewBy": "2027-01-15"
   }

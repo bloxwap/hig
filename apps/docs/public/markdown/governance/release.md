@@ -27,14 +27,19 @@ The chart adapter ships as its own artifact, `@bloxwap/hig-chart` (#96). The dry
 
 CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/example/visual/accessibility/budget gates and uploads review artifacts. A provenance record identifies source commit, package/contract/docs versions and hashes; it is not an npm registry provenance attestation or a release. Artifact inspection checks exports, licenses, optional peers and only approved assets. No example app implementation is included in runtime packages.
 
-Publication gates are tracked in `planning/release-blockers.json`:
+Publication gates are tracked in `planning/release-blockers.json`. The owner
+explicitly authorized the first coordinated npm publication, including the
+customizable primary-colour provider, on 2026-10-23; see
+[the release authorization](../../evidence/release/owner-authorization-2026-10-23.md)
+and [PR #141](https://github.com/bloxwap/hig/pull/141).
 
-- Maintainer publication approval and organization `NPM_TOKEN` configuration (#56).
-- Physical devices and assistive technology (#55).
-- Upstream feedback gaps (#70).
-- Owning product migrations that are still open (#33, #35).
-
-A dry run cannot turn these into passes, and renaming a candidate does not publish v1.
+The organization token and released SFX/Haptic 0.2.0 backends satisfy their
+respective setup gates. Physical-device and native-font acceptance use the
+existing dated owner attestation from PR #131. Source-parity and owning-product
+rollout have scoped, named-owner exceptions for this pre-1.0 package release,
+reviewable through 2027-01-15; remaining v1 work stays open in #57 and #110.
+These exceptions do not turn unobserved product or physical checks into passes.
+The immutable-tag, package-set, tarball-hash and CI checks still apply.
 
 Semver:
 
