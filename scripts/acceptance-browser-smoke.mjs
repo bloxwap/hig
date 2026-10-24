@@ -17,7 +17,7 @@ async function assertSliderRingClear(page,engine){
   await slider.evaluate(el=>el.blur());
   const rest={label:await region(label),next:await region(next),slider:await region(slider,8)};
   await page.getByRole('button',{name:'Submit amount'}).focus();await page.keyboard.press('Tab');
-  assert.equal(await slider.evaluate(el=>el===document.activeElement&&el.matches(':focus-visible')),true,`${engine}/${density} slider keyboard focus`);
+  await expect.poll(()=>slider.evaluate(el=>el===document.activeElement&&el.matches(':focus-visible')),{message:`${engine}/${density} slider keyboard focus`}).toBe(true);
   assert.ok(changedPixels(await region(slider,8),rest.slider)>0,`${engine}/${density} focus ring is visible`);
   assert.equal(changedPixels(await region(label),rest.label),0,`${engine}/${density} focus ring overlaps the slider label`);
   assert.equal(changedPixels(await region(next),rest.next),0,`${engine}/${density} focus ring overlaps the next control`);
