@@ -5,6 +5,7 @@
 - Update the supported Node toolchain and locked dependencies, including PostCSS and Brotli security fixes.
 - Keep release artifacts, generated documentation and consumer smoke checks aligned with the coordinated package version.
 - Isolate preview server ports and stop browser checks when their own server exits, fixing collisions between concurrent CI jobs.
+- Run WebKit keyboard checks with process-scoped macOS keyboard navigation, preserving the same strict focus and visual assertions across runner preferences.
 - Refresh adoption records for merged consumer migrations and the first successful npm publication.
 - Preserve the existing pre-1.0 owner exceptions for product acceptance and physical-device observations.
 

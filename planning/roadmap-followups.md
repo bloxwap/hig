@@ -40,7 +40,7 @@ five generated asset hashes match the tested artifact.
 | Pages | [#36](https://github.com/bloxwap/bloxwap.github.io/pull/36) | Merged, registry tokens and generated assets. |
 | Font | [#39](https://github.com/bloxwap/font/pull/39) | Merged, exact 0.1.0; canonical source drift tooling remains independently pinned. |
 | TapTrade | [#253](https://github.com/bloxwap/taptradetv/pull/253) | Software checks pass; required dependency audit fails on existing advisories, including Zod 3 with no compatible patched release. Main remains on its candidate. |
-| Monorepo | [#4737](https://github.com/bloxwap/monorepo/pull/4737) | Draft; full validation, CI and required human signoff pending. Main retains the recorded web/native candidates. |
+| Monorepo | [#4737](https://github.com/bloxwap/monorepo/pull/4737) | Draft; full local quality passed. Final CI and required human signoff pending. Main retains the recorded web/native candidates. |
 
 App-flows Chromium/WebKit execution and bounded browser cleanup landed through
 monorepo #4619/#4629. Three-run acceptance evidence remains in

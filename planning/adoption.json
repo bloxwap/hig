@@ -439,10 +439,10 @@
       ],
       "registryMigration": {
         "version": "0.1.0",
-        "status": "draft PR; full validation and required human signoff pending",
-        "validation": "Frozen registry installs, lint/types, 17 focused native suites/189 tests, three platform exports and Chromium/WebKit 90 feedback comparisons/24 captures pass. Full workspace validation, CI harness adjustments and required human signoff remain pending. Main retains the recorded web/native candidates until merge.",
+        "status": "draft PR; full local quality passed, final CI and required human signoff pending",
+        "validation": "Full bun run quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native first-head CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI and required human signoff remain pending; main retains the recorded candidates until merge.",
         "pr": "https://github.com/bloxwap/monorepo/pull/4737",
-        "head": "2404a1d1656a7147d2e5ec726a7fb288afda14f0"
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4"
       }
     },
     {
