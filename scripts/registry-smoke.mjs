@@ -2,13 +2,14 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import {readRegistryDist} from './registry-metadata.mjs';
 
 const report=JSON.parse(readFileSync('artifacts/release-stable-simulation/report.json','utf8'));
 const version=report.artifactVersion;
 assert.equal(version,JSON.parse(readFileSync('package.json','utf8')).version);
 const results=[];
 for(const artifact of report.artifacts){
- const dist=JSON.parse(execFileSync('npm',['view',`${artifact.package}@${version}`,'dist','--json'],{encoding:'utf8'}));
+ const dist=await readRegistryDist(artifact.package,version);
  const response=await fetch(dist.tarball);assert(response.ok,`${artifact.package}: registry tarball is available`);
  const hash=createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex');
  assert.equal(hash,artifact.sha256,`${artifact.package}: registry bytes match the reviewed artifact`);
