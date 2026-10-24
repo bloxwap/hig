@@ -1,3 +1,4 @@
+import {launchBrowser} from './browser-launcher.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
 // #66: a plain CSS consumer styles with the radius/type/motion/density roles from the packed
 // @bloxwap/hig-tokens/css alone. The page has no script and never reads the manifest; expectations
@@ -76,7 +77,7 @@ const results=[];
 try{
  for(const engine of engines){
   const launcher={chromium,webkit}[engine];if(!launcher)throw Error(`Unsupported browser ${engine}`);
-  const browser=await launcher.launch({headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
+  const browser=await launchBrowser(launcher,{headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
   try{
    for(const reducedMotion of ['no-preference','reduce']){
     const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion});const page=await context.newPage();
