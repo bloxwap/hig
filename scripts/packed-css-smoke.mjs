@@ -1,3 +1,4 @@
+import {workspaceVersion} from './workspace-version.mjs';
 // #66: a plain CSS consumer styles with the radius/type/motion/density roles from the packed
 // @bloxwap/hig-tokens/css alone. The page has no script and never reads the manifest; expectations
 // come from packages/tokens/source.json so a new role is checked as soon as it is generated.
@@ -95,5 +96,5 @@ try{
 }finally{server.close();}
 
 mkdirSync('evidence',{recursive:true});
-writeFileSync('evidence/packed-css-roles.json',JSON.stringify({version:'0.1.0',issue:'bloxwap/hig#66',kind:'automated browser (headless Playwright); no physical-device claim',platform:`${process.platform} ${process.arch}`,consumer:'plain HTML + CSS, only the packed @bloxwap/hig-tokens tarball installed, no script, no manifest read',stylesheet:`@import ./${cssPath} (exports["./css"])`,roles:{radius,type,motion,density:densityKeys},checks:['radius roles compute to source.json px','type size/line-height/weight longhands and font shorthand (Bloxwap Sans first)','motion durations and standard easing','motion durations 0s under prefers-reduced-motion: reduce and [data-hig-motion=reduced]','density control/target/gap follow [data-hig-density=compact]','only page, consumer CSS and token CSS requested'],results},null,2)+'\n');
+writeFileSync('evidence/packed-css-roles.json',JSON.stringify({version:workspaceVersion,issue:'bloxwap/hig#66',kind:'automated browser (headless Playwright); no physical-device claim',platform:`${process.platform} ${process.arch}`,consumer:'plain HTML + CSS, only the packed @bloxwap/hig-tokens tarball installed, no script, no manifest read',stylesheet:`@import ./${cssPath} (exports["./css"])`,roles:{radius,type,motion,density:densityKeys},checks:['radius roles compute to source.json px','type size/line-height/weight longhands and font shorthand (Bloxwap Sans first)','motion durations and standard easing','motion durations 0s under prefers-reduced-motion: reduce and [data-hig-motion=reduced]','density control/target/gap follow [data-hig-density=compact]','only page, consumer CSS and token CSS requested'],results},null,2)+'\n');
 console.log(`Packed plain CSS consumer: radius/type/motion/density roles verified in ${engines.join(', ')} from ${pack.filename} alone`);

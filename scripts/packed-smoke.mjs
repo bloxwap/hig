@@ -1,3 +1,4 @@
+import {workspaceVersion} from './workspace-version.mjs';
 import {assertGeneratedFonts} from './font-preflight.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync,cpSync,readdirSync} from 'node:fs';
@@ -28,5 +29,5 @@ console.log('Packed consumer: independent token/contracts imports and SSR render
 execFileSync(process.execPath,[join(dir,'smoke.mjs')],{cwd:dir,stdio:'inherit'});
 cpSync('fixtures/web',join(dir,'web'),{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/dist')});
 execFileSync(join(dir,'node_modules/.bin/vite'),['build','web'],{cwd:dir,stdio:'inherit'});
-writeFileSync('evidence/packed-smoke.json',JSON.stringify({version:'0.1.0',packages:manifests.map(m=>m.name),install:'clean temporary consumer from local tarballs',ssr:'passed',webBuild:'passed',native:'Metro smoke uses real RN peer workspace separately'},null,2)+'\n');
+writeFileSync('evidence/packed-smoke.json',JSON.stringify({version:workspaceVersion,packages:manifests.map(m=>m.name),install:'clean temporary consumer from local tarballs',ssr:'passed',webBuild:'passed',native:'Metro smoke uses real RN peer workspace separately'},null,2)+'\n');
 console.log(`Packed artifacts: ${tarballs.length}; no publication performed`);
