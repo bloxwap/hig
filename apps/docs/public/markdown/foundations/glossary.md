@@ -1,4 +1,4 @@
-# Trading glossary · HIG 0.1.0
+# Trading glossary · HIG 0.1.1
 
 Issue #46. Locked before any locale translation. Machine-readable source: `docs/foundations/glossary.json` (also exported as `/hig/glossary.json`). Formatting rules: [localization guide](localization.md).
 

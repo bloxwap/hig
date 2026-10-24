@@ -1,6 +1,6 @@
 # @bloxwap/hig-og-fonts
 
-Version 0.1.0 candidate. Five static Latin Bloxwap Sans/Mono TTF faces for Open Graph card renderers: Satori, `next/og` `ImageResponse` and `@vercel/og`. Satori reads TTF/OTF but not WOFF2, and `@bloxwap/font` ships only WOFF2.
+Version 0.1.1. Five static Latin Bloxwap Sans/Mono TTF faces for Open Graph card renderers: Satori, `next/og` `ImageResponse` and `@vercel/og`. Satori reads TTF/OTF but not WOFF2, and `@bloxwap/font` ships only WOFF2.
 
 | Face | File | Weight |
 | --- | --- | --- |

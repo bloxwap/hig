@@ -2,10 +2,14 @@ import assert from 'node:assert/strict';
 
 const repository='https://github.com/bloxwap/hig';
 const predicateType='https://slsa.dev/provenance/v1';
-// Only this recorded token-published release predates trusted publishing. A skipped
-// package in a resumed release still requires provenance for every later version.
+// Only these recorded token-published releases predate trusted publishing. A
+// skipped package in a resumed release still needs provenance for later versions.
+const tokenReleases=new Map([
+ ['0.1.0','bdf8d07014fea5e69ea51a061b82707661a9d701'],
+ ['0.1.1','6f4dd060e0985be644d255154aa7a0277cdde27f']
+]);
 export function requiresRegistryProvenance(artifact,sourceCommit){
- return !(artifact.version==='0.1.0'&&sourceCommit==='bdf8d07014fea5e69ea51a061b82707661a9d701');
+ return tokenReleases.get(artifact.version)!==sourceCommit;
 }
 
 // npm audit signatures verifies the signature/certificate/transparency bundle in

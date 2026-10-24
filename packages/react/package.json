@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig-react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "files": [
@@ -122,8 +122,8 @@
     }
   },
   "dependencies": {
-    "@bloxwap/hig-tokens": "0.1.0",
-    "@bloxwap/hig-contracts": "0.1.0"
+    "@bloxwap/hig-tokens": "0.1.1",
+    "@bloxwap/hig-contracts": "0.1.1"
   },
   "repository": {
     "type": "git",

@@ -19,8 +19,10 @@ function statement(){
 }
 const response=(payload:unknown,kind=predicateType)=>async()=>({ok:true,json:async()=>({attestations:[{predicateType:kind,bundle:{dsseEnvelope:{payloadType:'application/vnd.in-toto+json',payload:Buffer.from(JSON.stringify(payload)).toString('base64')}}}]})});
 
-it('exempts only the recorded token release, including when a later publication is resumed',()=>{
+it('exempts only the recorded token releases, including when a later publication is resumed',()=>{
  expect(requiresRegistryProvenance({...artifact,version:'0.1.0'},'bdf8d07014fea5e69ea51a061b82707661a9d701')).toBe(false);
+ expect(requiresRegistryProvenance(artifact,'6f4dd060e0985be644d255154aa7a0277cdde27f')).toBe(false);
+ expect(requiresRegistryProvenance({...artifact,version:'0.1.2'},'6f4dd060e0985be644d255154aa7a0277cdde27f')).toBe(true);
  expect(requiresRegistryProvenance({...artifact,version:'0.1.0'},commit)).toBe(true);
  expect(requiresRegistryProvenance(artifact,commit)).toBe(true);
 });

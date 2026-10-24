@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig-chart",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "files": [
@@ -18,11 +18,11 @@
   "peerDependencies": {
     "react": "^19.1.0",
     "@bloxwap/chart": "^0.3.0",
-    "@bloxwap/hig-react": "0.1.0"
+    "@bloxwap/hig-react": "0.1.1"
   },
   "dependencies": {
-    "@bloxwap/hig-tokens": "0.1.0",
-    "@bloxwap/hig-contracts": "0.1.0"
+    "@bloxwap/hig-tokens": "0.1.1",
+    "@bloxwap/hig-contracts": "0.1.1"
   },
   "repository": {
     "type": "git",
