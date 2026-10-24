@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+- Update the supported Node toolchain and locked dependencies, including PostCSS and Brotli security fixes.
+- Keep release artifacts, generated documentation and consumer smoke checks aligned with the coordinated package version.
+- Refresh adoption records for merged consumer migrations and the first successful npm publication.
+- Preserve the existing pre-1.0 owner exceptions for product acceptance and physical-device observations.
+
 ## 0.1.0
 
 - Initial coordinated release of contracts, tokens, native fonts, OG fonts, feedback, React, chart and React Native packages.
