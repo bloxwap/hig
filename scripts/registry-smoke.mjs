@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {join} from 'node:path';
 import {scratchDir} from './scratch.mjs';
+import {readRegistryDist} from './registry-metadata.mjs';
 
 const report=JSON.parse(readFileSync('artifacts/release-stable-simulation/report.json','utf8'));
 const version=report.artifactVersion;
@@ -17,7 +18,7 @@ for(const spec of published)assert(report.artifacts.some(artifact=>spec===`${art
 const results=[];
 const provenanceRequired=[];
 for(const artifact of report.artifacts){
- const dist=JSON.parse(execFileSync('npm',['view',`${artifact.package}@${version}`,'dist','--json'],{encoding:'utf8'}));
+ const dist=await readRegistryDist(artifact.package,version);
  const response=await fetch(dist.tarball);assert(response.ok,`${artifact.package}: registry tarball is available`);
  const bytes=Buffer.from(await response.arrayBuffer());
  const hash=createHash('sha256').update(bytes).digest('hex');
