@@ -1,3 +1,4 @@
+import {workspaceVersion} from './workspace-version.mjs';
 import {chromium} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
@@ -95,7 +96,7 @@ await page.goto(origin+'docs/guides/installation/',{waitUntil:'networkidle'});
 await page.screenshot({path:`evidence/${stage}-guide-desktop.png`,fullPage:true});
 await page.goto(origin,{waitUntil:'networkidle'});await page.setViewportSize({width:390,height:844});
 await page.screenshot({path:`evidence/${stage}-playground-mobile.png`,fullPage:true});
-writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:'0.1.0',browser:await browser.version(),checks:['all generated production routes/base-safe assets','200% text without viewport overflow','source links target existing main branch','controls use the shipped Bloxwap font face','production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
+writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:workspaceVersion,browser:await browser.version(),checks:['all generated production routes/base-safe assets','200% text without viewport overflow','source links target existing main branch','controls use the shipped Bloxwap font face','production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
 console.log('Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed');
 
 }finally{await browser.close();}

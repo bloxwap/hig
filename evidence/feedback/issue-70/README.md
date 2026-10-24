@@ -1,5 +1,12 @@
 # HIG #70 adapter source evidence
 
+[Acceptance closeout](verification.md), reviewed 2026-10-23, links the released
+upstream APIs, retained simulator/emulator dispatch measurements and fresh
+25-test regression result. Its [machine-readable record](closeout-2026-10-23.json)
+includes hashes and preserves the remaining upstream iOS and physical limits.
+
+## Historical source validation
+
 [Report](report.json) records the source baseline, exact upstream commits, installed released
 artifacts, source/log hashes and local validation.
 
