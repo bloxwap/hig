@@ -56,6 +56,31 @@
       "url": "https://github.com/bloxwap/monorepo/pull/4629",
       "mergedAt": "2026-10-20T01:08:34Z",
       "mergeCommit": "fe050a0a00457c97fd8fe8415bf9e5655a1c0711"
+    },
+    {
+      "url": "https://github.com/bloxwap/hyperliquid/pull/217",
+      "mergedAt": "2026-10-24T05:22:27Z",
+      "mergeCommit": "ac8488db6a61ba4066dc5573be8a917ce7b95603"
+    },
+    {
+      "url": "https://github.com/bloxwap/haptic/pull/49",
+      "mergedAt": "2026-10-24T05:20:43Z",
+      "mergeCommit": "23db715c1233e44bfbd3536444b90e0dcd9008c5"
+    },
+    {
+      "url": "https://github.com/bloxwap/bloxwap.github.io/pull/36",
+      "mergedAt": "2026-10-24T05:23:14Z",
+      "mergeCommit": "522e0995ebd0d50d3a724f46d7a655894fc787a8"
+    },
+    {
+      "url": "https://github.com/bloxwap/bloxwap.github.io/pull/31",
+      "mergedAt": "2026-10-24T05:19:02Z",
+      "mergeCommit": "0b649d56123d8304c98a0784e2f0daebcd03c0a7"
+    },
+    {
+      "url": "https://github.com/bloxwap/font/pull/39",
+      "mergedAt": "2026-10-24T05:26:23Z",
+      "mergeCommit": "693d9e1ad7e55cfc3dd26d30bb86d3f073964bff"
     }
   ],
   "supersededPRs": [
@@ -122,8 +147,8 @@
   ],
   "stillOpenPRs": [
     {
-      "url": "https://github.com/bloxwap/bloxwap.github.io/pull/31",
-      "draft": true
+      "url": "https://github.com/bloxwap/taptradetv/pull/253",
+      "draft": false
     }
   ],
   "publication": {
@@ -249,6 +274,45 @@
       "version": "0.1.0",
       "status": "merged",
       "validation": "Exact four-package registry migration with no runtime vendor archives; all eight remote checks passed."
+    },
+    "hyperliquid": {
+      "pr": "https://github.com/bloxwap/hyperliquid/pull/217",
+      "mergeCommit": "ac8488db6a61ba4066dc5573be8a917ce7b95603",
+      "mergedAt": "2026-10-24T05:22:27Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact four-package registry migration; four candidate archives removed. Frozen install, root/docs checks, 20 docs tests, 13-page export with 14 social cards and 10 Chromium tests passed; remote gates passed."
+    },
+    "haptic": {
+      "pr": "https://github.com/bloxwap/haptic/pull/49",
+      "mergeCommit": "23db715c1233e44bfbd3536444b90e0dcd9008c5",
+      "mergedAt": "2026-10-24T05:20:43Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact three-package registry migration; runtime archives removed. Clean npm ci, lint, types, 146 units, production export and 27 Chromium/WebKit/mobile Chromium docs checks passed; remote gates passed."
+    },
+    "bloxwap.github.io": {
+      "pr": "https://github.com/bloxwap/bloxwap.github.io/pull/36",
+      "mergeCommit": "522e0995ebd0d50d3a724f46d7a655894fc787a8",
+      "mergedAt": "2026-10-24T05:23:14Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "evidence": "docs/hig-registry-verification.json",
+      "validation": "Exact registry hig-tokens; candidate archive and committed generated assets removed. CI generates and uploads the same tested Pages artifact. 17 checker tests, 28 browser tests and 28 assembled-artifact browser tests pass; four before/after screenshot pairs are byte-identical. All three copied-asset drift exceptions retired; all PR checks pass.",
+      "deployment": {
+        "workflow": "https://github.com/bloxwap/bloxwap.github.io/actions/runs/40066052311",
+        "status": "success",
+        "configuration": "Pages build_type changed from legacy to workflow and verified after merge, preventing a competing branch build.",
+        "liveVerification": "https://bloxwap.github.io/assets/provenance.json matches the tested artifact; all five generated asset SHA-256 values match."
+      }
+    },
+    "font": {
+      "pr": "https://github.com/bloxwap/font/pull/39",
+      "mergeCommit": "693d9e1ad7e55cfc3dd26d30bb86d3f073964bff",
+      "mergedAt": "2026-10-24T05:26:23Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact contracts, React and tokens 0.1.0 registry migration; no runtime vendor archives. Frozen Bun install, lint, types, 7 package tests, 4 font-binary tests, 7 docs tests, canonical drift over 199 files, production export and 54 Chromium/WebKit checks pass. All remote assets, docs, browser, drift and security checks pass. The source CLI remains independently pinned to 0e239442 because the runtime packages do not ship it."
     }
   },
   "productBrandApproval": {
@@ -256,5 +320,18 @@
     "approval": "https://github.com/bloxwap/tapsiren/pull/422",
     "color": "#00f0ff",
     "mergeCommit": "191ffcaa3cf7673f794a2f2153175a77a303ab7e"
+  },
+  "pendingRegistryMigrations": {
+    "taptradetv": {
+      "pr": "https://github.com/bloxwap/taptradetv/pull/253",
+      "version": "0.1.0",
+      "status": "open; required dependency audit fails",
+      "validation": "Clean frozen install, lint, types, 1,543 tests, both builds and Chromium/WebKit checks pass. Remote Worker smokes/GitGuardian pass. Required dependency audit still flags pre-existing body-parser, undici and Zod; Zod 3 consumers have no compatible patched release. No override or audit bypass applied. Main remains the recorded candidate until merge."
+    },
+    "monorepo": {
+      "version": "0.1.0",
+      "status": "local implementation; validation running, no PR yet",
+      "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
+    }
   }
 }

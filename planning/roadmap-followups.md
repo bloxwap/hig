@@ -8,7 +8,7 @@ Historical validation reports keep their original commit, toolchain and scope.
 
 | Issue | Delivered | Remaining acceptance |
 | --- | --- | --- |
-| #56 | Eight HIG packages published as 0.1.0 from `bdf8d070`. [Release](https://github.com/bloxwap/hig/releases/tag/v0.1.0) and [publish run](https://github.com/bloxwap/hig/actions/runs/39970447895) passed tag/package/hash verification and registry web, SSR, Next and both native consumers. Chart [#78](https://github.com/bloxwap/chart/pull/78), SFX [#80](https://github.com/bloxwap/sfx/pull/80) agent-cli [#68](https://github.com/bloxwap/agent-cli/pull/68) and Tapsiren [#430](https://github.com/bloxwap/tapsiren/pull/430) now consume exact registry versions. | Remaining consumers must merge validated registry migrations. The first release used the approved token workflow; npm OIDC provenance is tracked in [HIG #147](https://github.com/bloxwap/hig/pull/147). |
+| #56 | Eight HIG packages published as 0.1.0 from `bdf8d070`. [Release](https://github.com/bloxwap/hig/releases/tag/v0.1.0) and [publish run](https://github.com/bloxwap/hig/actions/runs/39970447895) passed tag/package/hash verification and registry web, SSR, Next and both native consumers. Eight consumers have merged registry migrations, listed below. | TapTrade and monorepo registry migrations remain. The first release used the approved token workflow; npm OIDC provenance is tracked in [HIG #147](https://github.com/bloxwap/hig/pull/147). |
 | #115 | Native busy-name, type scaling, P3 and locale-direction adoption is on monorepo main. Chart, SFX, agent-cli, Tapsiren and TapTrade refreshes are merged. Their OG-font, peer and CSS workarounds are retired in the matrix. | Software acceptance is complete. Merged PRs and native simulator/emulator evidence are listed in `planning/adoption.json` → `consumerRefreshAcceptance`. Registry migration remains #56. |
 | #110 | [monorepo #4619](https://github.com/bloxwap/monorepo/pull/4619), [#4620](https://github.com/bloxwap/monorepo/pull/4620) and [#4629](https://github.com/bloxwap/monorepo/pull/4629) integrated web/native surfaces, ordinary native controls and host actions. Drafts #4607–#4618 are closed and incorporated by these integrations. | Product owner decisions, real wallet-session acceptance and rollback retirement remain. The existing exception expires 2027-01-15; this reconciliation does not renew it or remove rollback support. |
 | #101 | [Tapsiren #422](https://github.com/bloxwap/tapsiren/pull/422) records Joe's requested restoration of `#00f0ff` cyan and confirms the SVG/favicon already use it. | Product identity is approved separately from HIG's default accent; the pending colour-decision exception is retired. |
@@ -23,8 +23,24 @@ declared canonical binary ownership. TapTrade
 [#223](https://github.com/bloxwap/taptradetv/pull/223) incorporated drafts
 #217/#219/#220 and completed web/host-token migration; its host font cost remains
 an owner review item. Pages [#31](https://github.com/bloxwap/bloxwap.github.io/pull/31)
-remains a draft checker fix at this snapshot, separate from asset-generation
-work in #25.
+merged its checker fix, and [#36](https://github.com/bloxwap/bloxwap.github.io/pull/36)
+merged registry adoption and CI asset generation, retiring all three copied-asset
+exceptions and resolving Pages #25. Its [main deployment](https://github.com/bloxwap/bloxwap.github.io/actions/runs/40066052311)
+succeeded; Pages now uses the workflow build type, and live provenance plus all
+five generated asset hashes match the tested artifact.
+
+| Consumer | Registry migration | State |
+| --- | --- | --- |
+| Chart | [#78](https://github.com/bloxwap/chart/pull/78) | Merged, exact 0.1.0. |
+| SFX | [#80](https://github.com/bloxwap/sfx/pull/80) | Merged, exact 0.1.0. |
+| agent-cli | [#68](https://github.com/bloxwap/agent-cli/pull/68) | Merged, exact 0.1.0. |
+| Tapsiren | [#430](https://github.com/bloxwap/tapsiren/pull/430) | Merged, exact 0.1.0. |
+| Hyperliquid | [#217](https://github.com/bloxwap/hyperliquid/pull/217) | Merged, exact 0.1.0. |
+| Haptic | [#49](https://github.com/bloxwap/haptic/pull/49) | Merged, exact 0.1.0. |
+| Pages | [#36](https://github.com/bloxwap/bloxwap.github.io/pull/36) | Merged, registry tokens and generated assets. |
+| Font | [#39](https://github.com/bloxwap/font/pull/39) | Merged, exact 0.1.0; canonical source drift tooling remains independently pinned. |
+| TapTrade | [#253](https://github.com/bloxwap/taptradetv/pull/253) | Software checks pass; required dependency audit fails on existing advisories, including Zod 3 with no compatible patched release. Main remains on its candidate. |
+| Monorepo | Registry migration in local validation | No PR yet; main retains web `sha0e239442` and mobile `sha839cbe14`. Human signoff remains required. |
 
 App-flows Chromium/WebKit execution and bounded browser cleanup landed through
 monorepo #4619/#4629. Three-run acceptance evidence remains in
