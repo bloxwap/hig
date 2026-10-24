@@ -16,8 +16,11 @@ async function assertSliderRingClear(page,engine){
   await page.evaluate(d=>{for(const el of document.querySelectorAll('[data-hig-density]'))el.setAttribute('data-hig-density',d);},density);
   await slider.evaluate(el=>el.blur());
   const rest={label:await region(label),next:await region(next),slider:await region(slider,8)};
-  await page.getByRole('button',{name:'Submit amount'}).focus();await page.keyboard.press('Tab');
-  await expect.poll(()=>slider.evaluate(el=>el===document.activeElement&&el.matches(':focus-visible')),{message:`${engine}/${density} slider keyboard focus`}).toBe(true);
+  // Safari uses Option+Tab for every control when macOS keyboard navigation is off.
+  const tabKey=engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab';
+  await page.getByRole('button',{name:'Submit amount'}).focus();await page.keyboard.press(tabKey);
+  try{await expect.poll(()=>slider.evaluate(el=>({active:el===document.activeElement,visible:el.matches(':focus-visible')})),{message:`${engine}/${density} slider keyboard focus`}).toEqual({active:true,visible:true});}
+  catch(error){console.error('Slider keyboard focus state',await page.evaluate(()=>({active:document.activeElement?.outerHTML,hasFocus:document.hasFocus(),visibility:document.visibilityState})));await page.screenshot({path:`evidence/issue-69/${engine}-slider-focus-${density}-failure.png`,fullPage:true});throw error;}
   assert.ok(changedPixels(await region(slider,8),rest.slider)>0,`${engine}/${density} focus ring is visible`);
   assert.equal(changedPixels(await region(label),rest.label),0,`${engine}/${density} focus ring overlaps the slider label`);
   assert.equal(changedPixels(await region(next),rest.next),0,`${engine}/${density} focus ring overlaps the next control`);
