@@ -12,7 +12,7 @@ import {chromium,webkit} from '@playwright/test';
 
 const source=JSON.parse(readFileSync('packages/tokens/source.json','utf8'));
 const engines=(process.env.HIG_PACKED_CSS_BROWSERS??'chromium,webkit').split(',').map(s=>s.trim()).filter(Boolean);
-const port=Number(process.env.HIG_PACKED_CSS_PORT??4181);
+const port=Number(process.env.HIG_PACKED_CSS_PORT??0);
 const px=value=>`${value}px`;
 
 mkdirSync('artifacts',{recursive:true});
@@ -54,7 +54,7 @@ const requests=[];
 const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8'};
 const server=createServer((req,res)=>{const path=decodeURIComponent(new URL(req.url,'http://x').pathname);requests.push(path);const file=normalize(join(dir,path==='/'?'index.html':path));if(!file.startsWith(dir)||!existsSync(file)||!types[extname(file)]){res.writeHead(404).end();return;}res.writeHead(200,{'content-type':types[extname(file)]}).end(readFileSync(file));});
 await new Promise((ok,fail)=>{server.once('error',fail);server.listen(port,'127.0.0.1',ok);});
-const url=`http://127.0.0.1:${port}/`;
+const url=`http://127.0.0.1:${server.address().port}/`;
 
 const rem=value=>px(value);
 function expected(scope){

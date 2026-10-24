@@ -4,6 +4,7 @@ import {writeFileSync,readFileSync,cpSync,readdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {scratchDir} from './scratch.mjs';
+import {availablePorts} from './preview-ports.mjs';
 const dir=scratchDir('hig-next-consumer-');
 const manifest=JSON.parse(readFileSync('fixtures/next/package.json','utf8'));
 for(const key of Object.keys(manifest.dependencies))if(key.startsWith('@bloxwap/hig-'))delete manifest.dependencies[key];
@@ -15,7 +16,7 @@ execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tar
 execFileSync('npm',['run','build'],{cwd:dir,stdio:'inherit',env:{...process.env,NEXT_TELEMETRY_DISABLED:'1'}});
 const html=readFileSync(join(dir,'.next/server/app/index.html'),'utf8');assert.match(html,/Server display:/);assert.match(html,/Review order/);const font=html.match(/href="([^"]+\.woff2)"[^>]*as="font"/);assert.ok(font,'Next preloads a font');const emitted=readFileSync(join(dir,'.next',font[1].replace(/^\/_next\//,'')));const published=readFileSync(join(dir,'node_modules/@bloxwap/font/fonts/BloxwapSans/BloxwapSans-Variable.woff2'));assert.ok(emitted.equals(published),'Next emitted the pinned published Sans font bytes');
 // #65: serve the packed consumer and require loaded Bloxwap faces on HIG controls in a real browser.
-const port=process.env.HIG_PACKED_NEXT_PORT??'4180',url=`http://127.0.0.1:${port}`;
+const port=process.env.HIG_PACKED_NEXT_PORT??String((await availablePorts(1))[0]),url=`http://127.0.0.1:${port}`;
 const server=spawn(process.execPath,[join(dir,'node_modules/next/dist/bin/next'),'start','--hostname','127.0.0.1','--port',port],{cwd:dir,stdio:'inherit',env:{...process.env,NEXT_TELEMETRY_DISABLED:'1'}});
 try{
  let up=false;for(let i=0;i<120&&!up;i++){if(server.exitCode!==null)throw Error('Packed Next server exited');try{up=(await fetch(url)).ok;}catch{/* Server may still be starting. */}if(!up)await delay(500);}
