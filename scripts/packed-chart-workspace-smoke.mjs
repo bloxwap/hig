@@ -1,3 +1,4 @@
+import {packedTarball,workspaceVersion} from './workspace-version.mjs';
 // #96: a host shaped like bloxwap/chart keeps its workspace @bloxwap/chart when it regenerates package-lock.json
 // from scratch with strict peers. The host is an npm workspace whose packages/chart provides @bloxwap/chart 0.3.0
 // and whose apps/docs depends on @bloxwap/chart plus the packed HIG tarballs through file: specs, as chart's docs
@@ -18,7 +19,7 @@ import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 
-const tarball=name=>resolve(`artifacts/bloxwap-hig-${name}-0.1.0.tgz`);
+const tarball=packedTarball;
 for(const name of ['react','chart','tokens','contracts'])assert.ok(existsSync(tarball(name)),`Run smoke:packed first: missing ${tarball(name)}`);
 // The workspace copy of @bloxwap/chart is the published 0.3.0 build that HIG itself develops against.
 const chartSource=resolve('node_modules/@bloxwap/chart');
@@ -140,7 +141,7 @@ for(client of npmClients(scratch)){
 rmSync(scratch,{recursive:true,force:true});
 assert.ok(runs.some(r=>r.npm===pinnedNpm),`no run used the pinned npm ${pinnedNpm}`);
 
-const evidence={version:'0.1.0',issue:'bloxwap/hig#96',evidence:'automated (local tarballs, clean temporary npm workspaces); no publication',platform:`${process.platform} ${process.arch}`,node:process.version,
+const evidence={version:workspaceVersion,issue:'bloxwap/hig#96',evidence:'automated (local tarballs, clean temporary npm workspaces); no publication',platform:`${process.platform} ${process.arch}`,node:process.version,
  host:{shape:'npm workspace like bloxwap/chart: packages/chart provides @bloxwap/chart, apps/docs depends on it by version and on HIG tarballs through file: specs',chart:`@bloxwap/chart ${chartVersion} (published build copied into packages/chart)`,install:'rm package-lock.json + node_modules; npm install with legacy-peer-deps=false, strict-peer-deps=true; then npm ci; then npm install (no lockfile change)'},
  runs};
 writeFileSync('evidence/packed-chart-workspace-smoke.json',JSON.stringify(evidence,null,2)+'\n');
