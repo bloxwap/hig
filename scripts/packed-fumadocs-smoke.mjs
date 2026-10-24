@@ -7,7 +7,7 @@ import {scratchDir} from './scratch.mjs';
 // #63: a packed hig-react consumer next to Fumadocs installs with strict peers and shares one Radix tree.
 const fumadocs='16.17.3';
 const directory=scratchDir('hig-fumadocs-');
-const tarball=packedTarball;
+const tarball=name=>packedTarball(name);
 for(const name of ['react','tokens','contracts'])assert.ok(existsSync(tarball(name)),`Run smoke:packed first: missing ${tarball(name)}`);
 writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module',dependencies:{
  '@bloxwap/hig-react':`file:${tarball('react')}`,'@bloxwap/hig-tokens':`file:${tarball('tokens')}`,'@bloxwap/hig-contracts':`file:${tarball('contracts')}`,
