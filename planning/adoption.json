@@ -371,7 +371,9 @@
         "https://github.com/bloxwap/monorepo/pull/4620",
         "https://github.com/bloxwap/monorepo/pull/4629"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4737"
+      ],
       "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603); marketing sections and app-flows run in Chrome+WebKit. The #124 implementation from monorepo#4607 landed through monorepo#4619 (2af39981e): per-case, run and cleanup bounds, browser-process rotation after 24 contexts, and CI job/step timeouts. Three consecutive local and CI WebKit runs passed all 90 feedback comparisons and 24 captures per engine. Fresh local verification on c976f7747 (2026-10-23) passed three WebKit runs and one Chromium run at the same counts. The original intermittent stall was not reproduced, so process rotation is a resilience mitigation",
       "exceptions": [
         {
@@ -437,8 +439,10 @@
       ],
       "registryMigration": {
         "version": "0.1.0",
-        "status": "local implementation; validation running, no PR yet",
-        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
+        "status": "draft PR; full validation and required human signoff pending",
+        "validation": "Frozen registry installs, lint/types, 17 focused native suites/189 tests, three platform exports and Chromium/WebKit 90 feedback comparisons/24 captures pass. Full workspace validation, CI harness adjustments and required human signoff remain pending. Main retains the recorded web/native candidates until merge.",
+        "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+        "head": "2404a1d1656a7147d2e5ec726a7fb288afda14f0"
       }
     },
     {
