@@ -1,0 +1,78 @@
+{
+  "issue": 70,
+  "reviewedAt": "2026-10-23",
+  "sourceCommit": "2fc00b38b98b9182633639471564633981e683ca",
+  "outcome": "HIG acceptance complete; upstream iOS imperative haptics remain unavailable and tracked separately.",
+  "upstream": [
+    {
+      "package": "@bloxwap/sfx",
+      "installedVersion": "0.2.1",
+      "mergedAPI": "https://github.com/bloxwap/sfx/pull/51",
+      "higAdoption": "https://github.com/bloxwap/hig/pull/127",
+      "behavior": "Adapter-local AbortSignal cancels only that root, including live and buffered voices."
+    },
+    {
+      "package": "@bloxwap/haptic",
+      "installedVersion": "0.3.0",
+      "mergedAPI": "https://github.com/bloxwap/haptic/pull/30",
+      "higAdoption": "https://github.com/bloxwap/hig/pull/126",
+      "behavior": "Optional canonical capability/trigger injection; iOS imperative route correctly reports unavailable."
+    }
+  ],
+  "historicalRuntimeMeasurements": {
+    "observedAt": "2026-10-15",
+    "candidate": "0.1.0-candidate.shab4fb82c1",
+    "environmentEvidence": "evidence/native-sim/rn-0.83/summary.json",
+    "metric": "JavaScript FeedbackController emit to native player.play dispatch; not speaker latency",
+    "budgetMilliseconds": 16,
+    "results": [
+      {
+        "profile": "RN 0.81.5 / Expo 54",
+        "platform": "ios",
+        "p95Milliseconds": 5.2,
+        "evidence": "evidence/native-sim/rn-0.83/control-rn-0.81.5/ios/ios-feedback.json",
+        "sha256": "0291bc40058e8e21fe99fe37d2ef83dcdef214f83c5a55d684b536877040e00c"
+      },
+      {
+        "profile": "RN 0.81.5 / Expo 54",
+        "platform": "android",
+        "p95Milliseconds": 9.8,
+        "evidence": "evidence/native-sim/rn-0.83/control-rn-0.81.5/android/android-feedback.json",
+        "sha256": "1e8b3597e155d8180d208e3b0f03b20bc0a4d8614a0969d3a8316eeb3b0e3139"
+      },
+      {
+        "profile": "RN 0.83.10 / Expo 55",
+        "platform": "ios",
+        "p95Milliseconds": 2.3,
+        "evidence": "evidence/native-sim/rn-0.83/ios/ios-feedback.json",
+        "sha256": "7a558164103e98bbf885bbff0ff59c68cedbfefbac34f2678f4ba59dfa11f839"
+      },
+      {
+        "profile": "RN 0.83.10 / Expo 55",
+        "platform": "android",
+        "p95Milliseconds": 5.7,
+        "evidence": "evidence/native-sim/rn-0.83/android/android-feedback.json",
+        "sha256": "6f1342515e28f44de4b864c7069bb33e317a57321d4d9aef3b3d25e2852606dc"
+      }
+    ],
+    "nativeAdapterUnchangedSince": "329a75a0eb4219139e83b252e93a4f7a4fceed9c",
+    "nativeAdapterSha256": "1f6588ebed8027ea9d0c27963445b492e3765e718a5c357376903bb708b6ee56"
+  },
+  "freshVerification": {
+    "command": "npm run test:web -- tests/feedback-adapters.test.ts tests/feedback-upstream.test.ts tests/native-verification.test.ts",
+    "filesPassed": 3,
+    "testsPassed": 25,
+    "assertions": [
+      "400 native cues dispatch synchronously under the 16 ms p95 budget with simulated slow configure/seek bridge calls.",
+      "Published SFX root cancellation, mute/background handling and shared engine lifecycle.",
+      "Published Haptic capability/visibility handling, SSR safety and truthful iOS unavailability.",
+      "Native recording harness measures dispatch and counts duplicate playback-status events."
+    ]
+  },
+  "limitations": [
+    "The simulator/emulator measurements are retained historical evidence, not a new 2026-10-23 runtime run.",
+    "No physical speaker, tactile output or acoustic latency measurement is performed or claimed.",
+    "Imperative iOS haptics remain unavailable: https://github.com/bloxwap/haptic/issues/27; physical certification remains upstream https://github.com/bloxwap/haptic/issues/9.",
+    "HIG physical acceptance is separately owner-attested in evidence/physical/owner-attestation-2026-10-19.md; it is not an automated device observation."
+  ]
+}
