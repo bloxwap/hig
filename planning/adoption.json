@@ -353,10 +353,10 @@
         "https://github.com/bloxwap/monorepo/pull/4598",
         "https://github.com/bloxwap/monorepo/pull/4599",
         "https://github.com/bloxwap/monorepo/pull/4602",
-        "https://github.com/bloxwap/monorepo/pull/4606"
+        "https://github.com/bloxwap/monorepo/pull/4606",
+        "https://github.com/bloxwap/monorepo/pull/4619"
       ],
       "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4607",
         "https://github.com/bloxwap/monorepo/pull/4608",
         "https://github.com/bloxwap/monorepo/pull/4609",
         "https://github.com/bloxwap/monorepo/pull/4610",
@@ -367,10 +367,9 @@
         "https://github.com/bloxwap/monorepo/pull/4615",
         "https://github.com/bloxwap/monorepo/pull/4616",
         "https://github.com/bloxwap/monorepo/pull/4617",
-        "https://github.com/bloxwap/monorepo/pull/4618",
-        "https://github.com/bloxwap/monorepo/pull/4619"
+        "https://github.com/bloxwap/monorepo/pull/4618"
       ],
-      "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603): marketing sections run in Chrome+WebKit, app-flows in Chrome only (#124)",
+      "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603); marketing sections and app-flows run in Chrome+WebKit. The #124 implementation from monorepo#4607 landed through monorepo#4619 (2af39981e): per-case, run and cleanup bounds, browser-process rotation after 24 contexts, and CI job/step timeouts. Three consecutive local and CI WebKit runs passed all 90 feedback comparisons and 24 captures per engine. Fresh local verification on c976f7747 (2026-10-23) passed three WebKit runs and one Chromium run at the same counts. The original intermittent stall was not reproduced, so process rotation is a resilience mitigation",
       "exceptions": [
         {
           "scope": "retired forks kept as rollback renderers (apps/pro ui/segmented, ui/button, ui/input; apps/app components/ui; packages/ui-native Button/Sheet/Toast). Forks with no flag-on consumers: packages/ui-native Button, ToastViewport and FlowUsd (apps/mobile); none yet in apps/app components/ui or apps/pro ui/*",
@@ -380,12 +379,12 @@
           "tracking": "https://github.com/bloxwap/hig/issues/110"
         }
       ],
-      "remaining": "#110: remaining surfaces, then retire rollback flags and forks after the rollback window; upstream gaps #117-#121; app-flows WebKit stability (#124); consumer workarounds at next refresh incl. localeDirection for #86 and @bloxwap/hig-chart for #96 (#115); Hermes about +84 KB iOS / +85 KB Android over the 64 KB budget (#57); physical devices (#55)",
+      "remaining": "#110: remaining surfaces, then retire rollback flags and forks after the rollback window; upstream gaps #117-#121; consumer workarounds at next refresh incl. localeDirection for #86 and @bloxwap/hig-chart for #96 (#115); Hermes about +84 KB iOS / +85 KB Android over the 64 KB budget (#57); physical devices (#55)",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/monorepo",
       "exceptionExpires": "2027-01-15",
       "candidateIntegration": {
-        "status": "Full local validation and normal push passed; draft pending review/merge with live CI recorded separately.",
+        "status": "Merged 2026-10-19 through monorepo#4619 as 2af39981e; the validated head and dated evidence below are preserved.",
         "pr": "https://github.com/bloxwap/monorepo/pull/4619",
         "head": "18967782b6e9c51ca4d7b5404f388a219a7233a8",
         "version": "0.1.0-candidate.sha0e239442",

@@ -1,3 +1,4 @@
+import {launchBrowser} from './browser-launcher.mjs';
 import {chromium,webkit,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
@@ -17,7 +18,8 @@ async function assertSliderRingClear(page,engine){
   await slider.evaluate(el=>el.blur());
   const rest={label:await region(label),next:await region(next),slider:await region(slider,8)};
   await page.getByRole('button',{name:'Submit amount'}).focus();await page.keyboard.press('Tab');
-  assert.equal(await slider.evaluate(el=>el===document.activeElement&&el.matches(':focus-visible')),true,`${engine}/${density} slider keyboard focus`);
+  try{await expect.poll(()=>slider.evaluate(el=>({active:el===document.activeElement,visible:el.matches(':focus-visible')})),{message:`${engine}/${density} slider keyboard focus`}).toEqual({active:true,visible:true});}
+  catch(error){console.error('Slider keyboard focus state',await page.evaluate(()=>({active:document.activeElement?.outerHTML,hasFocus:document.hasFocus(),visibility:document.visibilityState})));await page.screenshot({path:`evidence/issue-69/${engine}-slider-focus-${density}-failure.png`,fullPage:true});throw error;}
   assert.ok(changedPixels(await region(slider,8),rest.slider)>0,`${engine}/${density} focus ring is visible`);
   assert.equal(changedPixels(await region(label),rest.label),0,`${engine}/${density} focus ring overlaps the slider label`);
   assert.equal(changedPixels(await region(next),rest.next),0,`${engine}/${density} focus ring overlaps the next control`);
@@ -28,7 +30,7 @@ async function assertSliderRingClear(page,engine){
 const browsers={chromium,webkit};
 if(process.env.HIG_BROWSER)assert(process.env.HIG_BROWSER in browsers,'HIG_BROWSER must be chromium or webkit');
 for(const [engine,launcher] of Object.entries(browsers).filter(([engine])=>!process.env.HIG_BROWSER||process.env.HIG_BROWSER===engine)){
- const browser=await launcher.launch({headless:true});
+ const browser=await launchBrowser(launcher,{headless:true});
  try{
   const context=await browser.newContext({viewport:{width:320,height:900},reducedMotion:'reduce'});const page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));

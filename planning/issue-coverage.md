@@ -195,4 +195,7 @@ All five PRs merged after `bun run quality`, green CI and the human `signoff`; p
 
 - [#109](https://github.com/bloxwap/hig/issues/109) is closed: all three origins run the same candidate as mobile.
 - [#110](https://github.com/bloxwap/hig/issues/110) stays open. The `apps/www/public/fonts` exception is retired. The rollback-renderer exception (expires 2027-01-15) remains, with the surfaces listed in `planning/adoption.json` still to migrate and upstream gaps #117–#121.
-- New: [#124](https://github.com/bloxwap/hig/issues/124). Firefox cannot run on the monorepo Mac mini runners (monorepo#4603), and app-flows times out in WebKit, so CI runs app-flows in Chrome only.
+## #124 closeout · 2026-10-23
+
+- [#124](https://github.com/bloxwap/hig/issues/124) is resolved by [monorepo#4619](https://github.com/bloxwap/monorepo/pull/4619), merged as `2af39981e`. The app-flows runner bounds each case, the complete run and cleanup, and rotates browser processes after 24 fresh contexts. CI runs app-flows in Chrome and WebKit with both job and step timeouts.
+- [Three consecutive CI attempts](https://github.com/bloxwap/monorepo/blob/main/docs/hig/evidence/app-flows/issue-124/ci.json) and three consecutive local WebKit runs passed all 90 feedback comparisons, the remaining flow assertions and 24 captures per engine. Fresh verification on monorepo `c976f7747` repeated that result: three WebKit 26.5 runs and one Chromium 149 run, with 11 lifecycle/artifact tests passing and no browser processes left running. The original intermittent navigation stall was not reproduced, so process rotation is a resilience mitigation, not a confirmed root-cause fix.
