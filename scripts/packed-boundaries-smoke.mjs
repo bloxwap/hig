@@ -1,3 +1,4 @@
+import {packedTarball} from './workspace-version.mjs';
 import {execFileSync} from 'node:child_process';
 import {writeFileSync,existsSync,readFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
@@ -6,7 +7,7 @@ import {build} from 'esbuild';
 import {scratchDir} from './scratch.mjs';
 const directory=scratchDir('hig-boundaries-');
 writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module'}));
-const tarball=name=>resolve(`artifacts/bloxwap-hig-${name}-0.1.0.tgz`);
+const tarball=packedTarball;
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...['tokens','contracts','feedback'].map(tarball)],{cwd:directory,stdio:'pipe'});
 for(const peer of ['react','react-native','@bloxwap/sfx','@bloxwap/haptic','expo-audio','expo-haptics'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`root feedback unexpectedly installs ${peer}`);
 writeFileSync(join(directory,'root.mjs'),"import {FeedbackController} from '@bloxwap/hig-feedback';import {tokens} from '@bloxwap/hig-tokens';new FeedbackController().dispose();if(!tokens.colors.action)throw Error('Missing tokens');");
