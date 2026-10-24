@@ -20,7 +20,7 @@ import assert from 'node:assert/strict';
 import {chromium,webkit} from '@playwright/test';
 
 const engines=(process.env.HIG_PACKED_REACT_CSS_BROWSERS??'chromium,webkit').split(',').map(s=>s.trim()).filter(Boolean);
-const port=Number(process.env.HIG_PACKED_REACT_CSS_PORT??4187);
+const port=Number(process.env.HIG_PACKED_REACT_CSS_PORT??0);
 
 mkdirSync('artifacts',{recursive:true});
 const pack=name=>resolve('artifacts',JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}))[0].filename);
@@ -82,7 +82,7 @@ try{
    for(const name of Object.keys(pages)){
     const context=await browser.newContext({viewport:{width:390,height:844}});const page=await context.newPage();
     const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-    await page.goto(`http://127.0.0.1:${port}/${name}.html`,{waitUntil:'load'});
+    await page.goto(`http://127.0.0.1:${server.address().port}/${name}.html`,{waitUntil:'load'});
     assert.equal(await page.evaluate(()=>document.scripts.length),0,`${engine} ${name}: page runs no script`);
     assert.equal(await page.evaluate(()=>document.styleSheets.length),pages[name].length,`${engine} ${name}: every stylesheet loaded`);
     const plainFocus=await focusRing(page,'plain-button'),higFocus=await focusRing(page,'hig-button');
