@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "observedAt": "2026-10-23",
   "inventoryEvidence": "planning/org-inventory-2026-10-15.json",
   "inventoryScope": "All 15 repositories visible to the authenticated token on 2026-10-15 (gh repo list bloxwap); none archived.",
@@ -9,8 +9,8 @@
       "name": "hig",
       "applicability": "canonical guidelines, tokens, React/React Native renderers, feedback contract and docs",
       "owner": "bloxwap/hig maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0 (published npm release; canonical source)",
-      "status": "canonical source; all eight coordinated packages published to npm",
+      "higVersion": "0.1.1 (coordinated source and GitHub release)",
+      "status": "canonical source; coordinated 0.1.1 source tagged and released on GitHub",
       "mergedPRs": [
         "https://github.com/bloxwap/hig/pull/37",
         "https://github.com/bloxwap/hig/pull/39",
@@ -49,9 +49,13 @@
         "https://github.com/bloxwap/hig/pull/112",
         "https://github.com/bloxwap/hig/pull/113",
         "https://github.com/bloxwap/hig/pull/114",
-        "https://github.com/bloxwap/hig/pull/126"
+        "https://github.com/bloxwap/hig/pull/126",
+        "https://github.com/bloxwap/hig/pull/148",
+        "https://github.com/bloxwap/hig/pull/149"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/hig/pull/147"
+      ],
       "validation": "npm run check, packed web/SSR/Next/Metro consumers, Chromium/WebKit browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
       "exceptions": [
         {
@@ -64,7 +68,7 @@
           "approval": "https://github.com/bloxwap/hig/pull/131"
         }
       ],
-      "remaining": "Consumer registry migration (#56), named-owner parity/density/motion/bundle and locale decisions (#57) and rollback retirement (#110). #115 consumer fixes are merged. Physical acceptance remains the dated owner attestation in PR #131, not an automated observation.",
+      "remaining": "Monorepo and TapTrade registry migrations (#56); named-owner parity, density, motion, bundle and locale decisions (#57); rollback retirement (#110); npm trusted-publisher configuration (#147). Issues #70, #101 and #115 are closed. Physical acceptance retains the dated owner attestation in #131.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15",
@@ -115,21 +119,43 @@
         "mergeCommit": "727a4d073a1df3d829397871aebc24e11b31c140"
       },
       "publication": {
-        "version": "0.1.0",
-        "tag": "v0.1.0",
-        "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
-        "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
-        "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
-        "conclusion": "success",
-        "verifiedSteps": [
-          "artifact source/tag/package set and hashes",
-          "publish all eight packages",
-          "registry hash comparisons",
-          "web/SSR registry consumer",
-          "Next registry consumer",
-          "RN 0.81 and RN 0.83 registry consumers"
-        ],
-        "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+        "version": "0.1.1",
+        "tag": "v0.1.1",
+        "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
+        "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
+        "githubPublishedAt": "2026-10-24T05:43:18Z",
+        "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
+        "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
+        "provenance": "The token publication workflow remains active; npm trusted-publisher configuration is tracked in PR #147."
+      },
+      "publicationHistory": [
+        {
+          "version": "0.1.0",
+          "tag": "v0.1.0",
+          "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
+          "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
+          "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
+          "conclusion": "success",
+          "verifiedSteps": [
+            "artifact source/tag/package set and hashes",
+            "publish all eight packages",
+            "registry hash comparisons",
+            "web/SSR registry consumer",
+            "Next registry consumer",
+            "RN 0.81 and RN 0.83 registry consumers"
+          ],
+          "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+        }
+      ],
+      "supersededPRs": [
+        "https://github.com/bloxwap/hig/pull/143"
+      ],
+      "releaseInfrastructure": {
+        "superseded": "PR #143 was closed after its WebKit/process-isolation work was incorporated by merged #149.",
+        "trustedPublishing": {
+          "pr": "https://github.com/bloxwap/hig/pull/147",
+          "status": "GitHub reviewer environment configured; npm trusted-publisher configuration remains pending"
+        }
       }
     },
     {
@@ -438,11 +464,16 @@
         "https://github.com/bloxwap/monorepo/pull/4618"
       ],
       "registryMigration": {
-        "version": "0.1.0",
-        "status": "draft PR; full local quality passed, final CI and required human signoff pending",
-        "validation": "Full bun run quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native first-head CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI and required human signoff remain pending; main retains the recorded candidates until merge.",
         "pr": "https://github.com/bloxwap/monorepo/pull/4737",
-        "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4",
+        "version": "0.1.0",
+        "status": "ready for review; 61 automated checks passed, one skipped; required human signoff remains",
+        "validation": "Full local quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI completed with 61 passing checks and one intentional skip. Required human signoff remains; main retains the recorded candidates until merge.",
+        "automatedChecks": {
+          "passed": 61,
+          "skipped": 1,
+          "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+        }
       }
     },
     {
@@ -809,7 +840,9 @@
         "https://github.com/bloxwap/monorepo/pull/4606",
         "https://github.com/bloxwap/monorepo/pull/4619"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4737"
+      ],
       "validatedVersion": "0.1.0-candidate.sha0e239442",
       "validation": "#4523 merged as b1b913dac (3,122 tests, 24-case settings matrix Chrome/Firefox CI). #4594 at d81cbf00: css/base imported in layout.tsx (#95), busy text from mobile.hig.busy (#82), billing buttons 48px->44px (#80); app tests 3457 pass, production builds pilot and NEXT_PUBLIC_HIG_PILOT=0, settings matrix identical to main, landing focus identical; JS +282 B raw, CSS +10,987 B raw. #4601 (verified at 1f2981b7; landed as #4606 29812c9a4, flows in Chrome only, #124): 96 direct sfx/haptics calls in 22 files through appCue(); browser (automated headless Chromium) 90 feedback cases match rollback, amount 12.7 on both builds, Confirm fires once, rollback screenshots pixel-identical to parent in 12/12; sheet Escape/focus return; tests 3539 pass; CI Chrome+Firefox flows step green. Verifier caveats: sheet.mjs asserts nothing and is not in CI; 80ms per-source dedupe",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
@@ -888,9 +921,16 @@
         "forksWithoutFlagOnConsumers": []
       },
       "registryMigration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4",
         "version": "0.1.0",
-        "status": "local implementation; validation running, no PR yet",
-        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
+        "status": "ready for review; 61 automated checks passed, one skipped; required human signoff remains",
+        "validation": "Full local quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI completed with 61 passing checks and one intentional skip. Required human signoff remains; main retains the recorded candidates until merge.",
+        "automatedChecks": {
+          "passed": 61,
+          "skipped": 1,
+          "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+        }
       }
     },
     {
@@ -905,7 +945,9 @@
         "https://github.com/bloxwap/monorepo/pull/4599",
         "https://github.com/bloxwap/monorepo/pull/4619"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4737"
+      ],
       "validatedVersion": "0.1.0-candidate.sha0e239442",
       "validation": "#4522 merged as 137660fc7. #4594 at d81cbf00 (production next start, automated Chromium 1440x1000): leaderboard rows 38px and order-ticket slider 6px on main, pilot and rollback; compact buttons and amount field 36px (field becomes pill); css/base in @layer hig; pro 216 tests. #4599 at 2e0724da: base, pilot and rollback identical on every geometry measure (stats strip 48px/stat 28px, market-list rows 36px, demo-table rows 36px, leaderboard 38px, column right edges); market-list keyboard unchanged; one new Tab stop per table region; number parity 51 edge values per format (verifier fuzz ~20,000 values, Node 22 and 24); 232 tests; JS +6,280 B raw / CSS +219 B; CI Chrome+Firefox",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0; revert 8fe4859c",
@@ -956,9 +998,16 @@
         "forksWithoutFlagOnConsumers": []
       },
       "registryMigration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4",
         "version": "0.1.0",
-        "status": "local implementation; validation running, no PR yet",
-        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
+        "status": "ready for review; 61 automated checks passed, one skipped; required human signoff remains",
+        "validation": "Full local quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI completed with 61 passing checks and one intentional skip. Required human signoff remains; main retains the recorded candidates until merge.",
+        "automatedChecks": {
+          "passed": 61,
+          "skipped": 1,
+          "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+        }
       }
     },
     {
@@ -973,7 +1022,9 @@
         "https://github.com/bloxwap/monorepo/pull/4598",
         "https://github.com/bloxwap/monorepo/pull/4619"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4737"
+      ],
       "validatedVersion": "0.1.0-candidate.sha0e239442",
       "validation": "#4525 merged as 38d7360fe. #4594: page HTML byte-identical main vs PR. #4598 at db6e3ab4 (wrangler dev, automated Chromium; Firefox in CI): smallest section text 10px->12px (rollback 10px), setup chips HIG badge 12/18 pill, cards 20px/14px/180ms; 24/24 served font paths match pinned SHA-256; same three font files and faces before/after; 10 Tab stops unchanged; apps/www/public/fonts removed (23 files, 12,970,019 B) and copied at build time; deployed preview served 23/23 fonts; Worker +1,762 B raw",
       "rollback": "HIG_MARKETING_PILOT=0",
@@ -1009,9 +1060,16 @@
         "forksWithoutFlagOnConsumers": []
       },
       "registryMigration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4",
         "version": "0.1.0",
-        "status": "local implementation; validation running, no PR yet",
-        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
+        "status": "ready for review; 61 automated checks passed, one skipped; required human signoff remains",
+        "validation": "Full local quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI completed with 61 passing checks and one intentional skip. Required human signoff remains; main retains the recorded candidates until merge.",
+        "automatedChecks": {
+          "passed": 61,
+          "skipped": 1,
+          "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+        }
       }
     },
     {
@@ -1027,7 +1085,9 @@
         "https://github.com/bloxwap/monorepo/pull/4620",
         "https://github.com/bloxwap/monorepo/pull/4629"
       ],
-      "openPRs": [],
+      "openPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4737"
+      ],
       "validatedVersion": "0.1.0-candidate.sha839cbe14",
       "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out · Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
       "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
@@ -1091,9 +1151,16 @@
         ]
       },
       "registryMigration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4",
         "version": "0.1.0",
-        "status": "local implementation; validation running, no PR yet",
-        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
+        "status": "ready for review; 61 automated checks passed, one skipped; required human signoff remains",
+        "validation": "Full local quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI completed with 61 passing checks and one intentional skip. Required human signoff remains; main retains the recorded candidates until merge.",
+        "automatedChecks": {
+          "passed": 61,
+          "skipped": 1,
+          "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+        }
       }
     },
     {
@@ -1356,25 +1423,18 @@
   ],
   "stateEvidence": "evidence/adoption/state-2026-10-23.json",
   "publication": {
-    "version": "0.1.0",
-    "tag": "v0.1.0",
-    "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
-    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
-    "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
-    "conclusion": "success",
-    "verifiedSteps": [
-      "artifact source/tag/package set and hashes",
-      "publish all eight packages",
-      "registry hash comparisons",
-      "web/SSR registry consumer",
-      "Next registry consumer",
-      "RN 0.81 and RN 0.83 registry consumers"
-    ],
-    "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+    "version": "0.1.1",
+    "tag": "v0.1.1",
+    "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
+    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
+    "githubPublishedAt": "2026-10-24T05:43:18Z",
+    "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
+    "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
+    "provenance": "The token publication workflow remains active; npm trusted-publisher configuration is tracked in PR #147."
   },
   "consumerRefreshAcceptance": {
     "issue": "https://github.com/bloxwap/hig/issues/115",
-    "status": "implemented and merged; adoption records reconciled",
+    "status": "closed; implemented, merged and adoption records reconciled",
     "prs": [
       "https://github.com/bloxwap/monorepo/pull/4602",
       "https://github.com/bloxwap/monorepo/pull/4619",
@@ -1385,6 +1445,26 @@
       "https://github.com/bloxwap/tapsiren/pull/401"
     ],
     "validation": "Merged consumer refreshes retain their linked build/browser and exact candidate evidence. Native simulator/emulator results are recorded in monorepo#4602 and #4619. Current mobile provider uses localeDirection, display-p3 and inherited type scaling; the obsolete busy-name helper is absent. Chart retains its workspace link without the former peer workaround. OG consumers use the separate hig-og-fonts package. TapTrade navigation preserves schedule cell and focus styles.",
-    "limits": "Registry migration is tracked separately in #56. This closeout does not assert new physical-device observations or owner acceptance."
-  }
+    "limits": "Registry migration is tracked separately in #56. This closeout does not assert new physical-device observations or owner acceptance.",
+    "closedAt": "2026-10-24T05:42:35Z"
+  },
+  "publicationHistory": [
+    {
+      "version": "0.1.0",
+      "tag": "v0.1.0",
+      "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
+      "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
+      "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
+      "conclusion": "success",
+      "verifiedSteps": [
+        "artifact source/tag/package set and hashes",
+        "publish all eight packages",
+        "registry hash comparisons",
+        "web/SSR registry consumer",
+        "Next registry consumer",
+        "RN 0.81 and RN 0.83 registry consumers"
+      ],
+      "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+    }
+  ]
 }

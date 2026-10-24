@@ -6,12 +6,20 @@ evidence and the initial dependency snapshot are in
 [`evidence/adoption/`](../evidence/adoption/state-2026-10-23.json).
 Historical validation reports keep their original commit, toolchain and scope.
 
+The current coordinated source is **0.1.1**, released on GitHub from
+[`6f4dd060`](https://github.com/bloxwap/hig/commit/6f4dd060e0985be644d255154aa7a0277cdde27f).
+The [release](https://github.com/bloxwap/hig/releases/tag/v0.1.1) links the tagged
+source; its [publication workflow](https://github.com/bloxwap/hig/actions/runs/40067359944)
+records npm publication, tarball verification and registry-consumer results.
+The successful 0.1.0 publication is retained as history below; consumer versions
+continue to describe what each repository actually installs.
+
 | Issue | Delivered | Remaining acceptance |
 | --- | --- | --- |
 | #56 | Eight HIG packages published as 0.1.0 from `bdf8d070`. [Release](https://github.com/bloxwap/hig/releases/tag/v0.1.0) and [publish run](https://github.com/bloxwap/hig/actions/runs/39970447895) passed tag/package/hash verification and registry web, SSR, Next and both native consumers. Eight consumers have merged registry migrations, listed below. | TapTrade and monorepo registry migrations remain. The first release used the approved token workflow; npm OIDC provenance is tracked in [HIG #147](https://github.com/bloxwap/hig/pull/147), with the GitHub reviewer environment configured and npm owner setup still pending. |
-| #115 | Native busy-name, type scaling, P3 and locale-direction adoption is on monorepo main. Chart, SFX, agent-cli, Tapsiren and TapTrade refreshes are merged. Their OG-font, peer and CSS workarounds are retired in the matrix. | Software acceptance is complete. Merged PRs and native simulator/emulator evidence are listed in `planning/adoption.json` → `consumerRefreshAcceptance`. Registry migration remains #56. |
+| #115 | Closed. Native busy-name, type scaling, P3 and locale-direction adoption is on monorepo main. Chart, SFX, agent-cli, Tapsiren and TapTrade refreshes are merged. Their OG-font, peer and CSS workarounds are retired in the matrix. | Software acceptance is complete. Merged PRs and native simulator/emulator evidence are listed in `planning/adoption.json` → `consumerRefreshAcceptance`. Registry migration remains #56. |
 | #110 | [monorepo #4619](https://github.com/bloxwap/monorepo/pull/4619), [#4620](https://github.com/bloxwap/monorepo/pull/4620) and [#4629](https://github.com/bloxwap/monorepo/pull/4629) integrated web/native surfaces, ordinary native controls and host actions. Drafts #4607–#4618 are closed and incorporated by these integrations. | Product owner decisions, real wallet-session acceptance and rollback retirement remain. The existing exception expires 2027-01-15; this reconciliation does not renew it or remove rollback support. |
-| #101 | [Tapsiren #422](https://github.com/bloxwap/tapsiren/pull/422) records Joe's requested restoration of `#00f0ff` cyan and confirms the SVG/favicon already use it. | Product identity is approved separately from HIG's default accent; the pending colour-decision exception is retired. |
+| #101 | Closed. [Tapsiren #422](https://github.com/bloxwap/tapsiren/pull/422) records Joe's requested restoration of `#00f0ff` cyan and confirms the SVG/favicon already use it. | Product identity is approved separately from HIG's default accent; the pending colour-decision exception is retired. |
 | #70 | Closed through [HIG #148](https://github.com/bloxwap/hig/pull/148). Released SFX cancellation and optional Haptic injection are adopted; recorded iOS/Android dispatch p95 is 2.3–9.8 ms across both supported native profiles, below 16 ms. | Physical output remains separate from API dispatch; unsupported imperative iOS output is tracked upstream. |
 | #55 | Closed by the dated owner attestation in [HIG #131](https://github.com/bloxwap/hig/pull/131). | No new physical observation is claimed. Contradictory device evidence voids the affected exception; upstream haptic#9 remains separate. |
 | #57 | Source comparisons, migrations, bundle measurements and browser/native evidence are available. See the [owner review package](../evidence/adoption/owner-decisions-2026-10-23.md). | Named-owner decisions and native-speaker approval remain; release authorization and automated tests do not supply them. |
@@ -40,13 +48,15 @@ five generated asset hashes match the tested artifact.
 | Pages | [#36](https://github.com/bloxwap/bloxwap.github.io/pull/36) | Merged, registry tokens and generated assets. |
 | Font | [#39](https://github.com/bloxwap/font/pull/39) | Merged, exact 0.1.0; canonical source drift tooling remains independently pinned. |
 | TapTrade | [#253](https://github.com/bloxwap/taptradetv/pull/253) | Software checks pass; required dependency audit fails on existing advisories, including Zod 3 with no compatible patched release. Main remains on its candidate. |
-| Monorepo | [#4737](https://github.com/bloxwap/monorepo/pull/4737) | Draft; full local quality passed. Final CI and required human signoff pending. Main retains the recorded web/native candidates. |
+| Monorepo | [#4737](https://github.com/bloxwap/monorepo/pull/4737) | Ready for review; all 61 automated checks passed with one intentional skip. Required human signoff remains. Main retains the recorded web/native candidates. |
 
 App-flows Chromium/WebKit execution and bounded browser cleanup landed through
 monorepo #4619/#4629. Three-run acceptance evidence remains in
 `docs/hig/evidence/app-flows/issue-124/` there. Process rotation is a resilience
 mitigation; the original intermittent stall was not reproduced locally and is
-not assigned a confirmed root cause.
+not assigned a confirmed root cause. HIG [#143](https://github.com/bloxwap/hig/pull/143)
+was closed after its work was incorporated by merged
+[#149](https://github.com/bloxwap/hig/pull/149).
 
 Pre-1.0 exceptions in `planning/release-blockers.json` remain supported by
 [PR #141](https://github.com/bloxwap/hig/pull/141) through 2027-01-15. They permit

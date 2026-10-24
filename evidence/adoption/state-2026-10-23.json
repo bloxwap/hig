@@ -143,30 +143,35 @@
     {
       "url": "https://github.com/bloxwap/monorepo/pull/4607",
       "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
+    },
+    {
+      "url": "https://github.com/bloxwap/hig/pull/143",
+      "incorporatedBy": "https://github.com/bloxwap/hig/pull/149"
     }
   ],
   "stillOpenPRs": [
     {
       "url": "https://github.com/bloxwap/taptradetv/pull/253",
       "draft": false
+    },
+    {
+      "url": "https://github.com/bloxwap/monorepo/pull/4737",
+      "draft": false
+    },
+    {
+      "url": "https://github.com/bloxwap/hig/pull/147",
+      "draft": false
     }
   ],
   "publication": {
-    "version": "0.1.0",
-    "tag": "v0.1.0",
-    "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
-    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
-    "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
-    "conclusion": "success",
-    "verifiedSteps": [
-      "artifact source/tag/package set and hashes",
-      "publish all eight packages",
-      "registry hash comparisons",
-      "web/SSR registry consumer",
-      "Next registry consumer",
-      "RN 0.81 and RN 0.83 registry consumers"
-    ],
-    "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+    "version": "0.1.1",
+    "tag": "v0.1.1",
+    "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
+    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
+    "githubPublishedAt": "2026-10-24T05:43:18Z",
+    "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
+    "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
+    "provenance": "The token publication workflow remains active; npm trusted-publisher configuration is tracked in PR #147."
   },
   "issueRecommendations": {
     "1": {
@@ -207,7 +212,7 @@
       "scopeException": "PR141 allows pre-1.0 package availability through2027-01-15; explicitly does not claim this v1 acceptance complete."
     },
     "115": {
-      "disposition": "Close after updating adoption.json",
+      "disposition": "Closed after merged reconciliation in #149",
       "reason": "Every linked refresh PR merged, and current monorepo main imports localeDirection, display-p3 and inherited type scaling without the obsolete busy-name helper.",
       "evidence": [
         "https://github.com/bloxwap/monorepo/pull/4602",
@@ -329,9 +334,57 @@
       "validation": "Clean frozen install, lint, types, 1,543 tests, both builds and Chromium/WebKit checks pass. Remote Worker smokes/GitGuardian pass. Required dependency audit still flags pre-existing body-parser, undici and Zod; Zod 3 consumers have no compatible patched release. No override or audit bypass applied. Main remains the recorded candidate until merge."
     },
     "monorepo": {
+      "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+      "head": "d572d695455464da46d4964d3a2f08104cef50a4",
       "version": "0.1.0",
-      "status": "local implementation; validation running, no PR yet",
-      "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
+      "status": "ready for review; 61 automated checks passed, one skipped; required human signoff remains",
+      "validation": "Full local quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI completed with 61 passing checks and one intentional skip. Required human signoff remains; main retains the recorded candidates until merge.",
+      "automatedChecks": {
+        "passed": 61,
+        "skipped": 1,
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+      }
     }
+  },
+  "publicationHistory": [
+    {
+      "version": "0.1.0",
+      "tag": "v0.1.0",
+      "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
+      "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
+      "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
+      "conclusion": "success",
+      "verifiedSteps": [
+        "artifact source/tag/package set and hashes",
+        "publish all eight packages",
+        "registry hash comparisons",
+        "web/SSR registry consumer",
+        "Next registry consumer",
+        "RN 0.81 and RN 0.83 registry consumers"
+      ],
+      "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+    }
+  ],
+  "closedIssues": [
+    {
+      "number": 70,
+      "closedAt": "2026-10-24T05:26:50Z",
+      "implementation": "https://github.com/bloxwap/hig/pull/148"
+    },
+    {
+      "number": 101,
+      "closedAt": "2026-10-24T05:42:35Z",
+      "approval": "https://github.com/bloxwap/tapsiren/pull/422"
+    },
+    {
+      "number": 115,
+      "closedAt": "2026-10-24T05:42:35Z",
+      "reconciliation": "https://github.com/bloxwap/hig/pull/149"
+    }
+  ],
+  "trustedPublishing": {
+    "pr": "https://github.com/bloxwap/hig/pull/147",
+    "githubEnvironment": "npm-release reviewer environment configured",
+    "remaining": "npm trusted-publisher configuration; token workflow remains active"
   }
 }
