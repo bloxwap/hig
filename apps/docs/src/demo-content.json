@@ -66,7 +66,7 @@
     },
     {
       "route": "guides/foundations/glossary",
-      "title": "Trading glossary · HIG 0.1.0"
+      "title": "Trading glossary · HIG 0.1.1"
     },
     {
       "route": "guides/foundations/localization",
@@ -106,11 +106,11 @@
     },
     {
       "route": "guides/governance/release",
-      "title": "Release candidates, semver and rollback · HIG 0.1.0"
+      "title": "Release candidates, semver and rollback · HIG 0.1.1"
     },
     {
       "route": "guides/installation",
-      "title": "Installation and citation · HIG 0.1.0"
+      "title": "Installation and citation · HIG 0.1.1"
     },
     {
       "route": "guides/migration/native",
