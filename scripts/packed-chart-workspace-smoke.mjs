@@ -19,7 +19,7 @@ import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 
-const tarball=packedTarball;
+const tarball=name=>packedTarball(name);
 for(const name of ['react','chart','tokens','contracts'])assert.ok(existsSync(tarball(name)),`Run smoke:packed first: missing ${tarball(name)}`);
 // The workspace copy of @bloxwap/chart is the published 0.3.0 build that HIG itself develops against.
 const chartSource=resolve('node_modules/@bloxwap/chart');
