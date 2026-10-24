@@ -2,7 +2,7 @@
   {
     "id": "task-policy",
     "owner": "HIG maintainers",
-    "reason": "On 2026-10-23 repository owner joeblau explicitly requested the PR/CI/merge workflow and publication of the customizable HIG provider (PR #141; evidence/release/owner-authorization-2026-10-23.md). No HIG package has previously been published. The organization NPM_TOKEN secret is configured for all repositories; the reviewed self-hosted publishing workflow verifies immutable tag, coordinated package set and artifact hashes before publication. The local artifact command remains dry-run only.",
+    "reason": "The owner authorized coordinated publication in PR #141 (evidence/release/owner-authorization-2026-10-23.md). All eight packages were published as 0.1.0 from bdf8d07014fea5e69ea51a061b82707661a9d701; release workflow 39970447895 passed artifact verification and independent registry consumers. Future versions retain immutable-tag, package-set, tarball-hash and CI gates. The local artifact command remains dry-run only.",
     "status": "satisfied",
     "tracking": "https://github.com/bloxwap/hig/issues/56",
     "reviewBy": "2027-01-15"
@@ -10,7 +10,7 @@
   {
     "id": "source-audit",
     "owner": "product monorepo maintainers",
-    "reason": "Source audit and representative migrations exist (monorepo#4515, #4522, #4523, #4525 and #4540 merged with measured before/after builds). Owner-approved production visual and bundle baselines remain. Combined draft monorepo#4619 now includes equal-toolchain web/native production measurements against main29812c9, with complete source and asset hashes; these are review evidence, not bundle approval. Scoped pre-1.0 publication exception: the owner explicitly authorized publishing the customizable provider on 2026-10-23 (PR #141; evidence/release/owner-authorization-2026-10-23.md). Outstanding v1 parity, owner assignments and production rollout work remain tracked by this issue and are not claimed complete; consumers keep prior lockfiles/artifacts for rollback. Review by 2027-01-15.",
+    "reason": "Source audits and representative migrations are merged, including combined monorepo#4619 and native #4620/#4629. Equal-toolchain web/native measurements are linked from docs/hig/pilots/combined-rollout.md in the owning repository. They are review evidence, not owner approval. The pre-1.0 publication exception authorized by joeblau in PR #141 remains scoped to package availability; v1 parity, named owners, production baselines and rollout acceptance remain in #57. Consumers retain rollback artifacts. Review by 2027-01-15.",
     "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/57",
     "reviewBy": "2027-01-15",
@@ -40,7 +40,7 @@
   {
     "id": "owning-migrations",
     "owner": "each adopting repository maintainers",
-    "reason": "Original SDK docs and web/native pilots remain merged on monorepo main29812c9a4. The first remaining-surface batch is implemented in validated draft PRs: canonical APIs hig#126; combined app/Pro/marketing/native rollout monorepo#4619 (integrating #4607\u2013#4618); coordinated consumer refreshes #115 and TapTrade host#217. Hyperliquid Callout/OG-font refresh is draft#183; Pages checker is green draft#31; Font canonical ownership is green draft#15. All three additional owning drafts pass remote checks. The task user explicitly accepted Combined#4619's verified historical public Git tree hash finding as a false positive; that finding does not block further work. Review/merge, named owner/motion/bundle/brand decisions, actual wallet sessions, physical observations, registry publication and future rollback retirement remain. The resumed batch adds optional native SwitchRow anatomy and upstream-compatible feedback adapters in HIG source. Additional controls within the existing sponsor pilot and native ordinary fields/actions/switches are undergoing actual-caller/runtime validation in isolated follow-ups. Scoped pre-1.0 publication exception: the owner explicitly authorized publishing the customizable provider on 2026-10-23 (PR #141; evidence/release/owner-authorization-2026-10-23.md). Outstanding v1 parity, owner assignments and production rollout work remain tracked by this issue and are not claimed complete; consumers keep prior lockfiles/artifacts for rollback. Review by 2027-01-15.",
+    "reason": "Combined monorepo#4619 and native #4620/#4629 are merged. Consumer refreshes chart#58, sfx#55, agent-cli#55, tapsiren#401, taptradetv#216/#223 and hyperliquid#183 are merged; font#15 declares canonical asset ownership. #115 fixes are complete. HIG 0.1.0 is published, while consumer registry migrations remain in #56. Named-owner visual/motion/bundle decisions, real wallet-session acceptance and rollback retirement remain in #57/#110. The pre-1.0 availability exception from joeblau in PR #141 does not claim those items complete. Review by 2027-01-15.",
     "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/110",
     "reviewBy": "2027-01-15",
