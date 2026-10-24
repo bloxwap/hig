@@ -19,6 +19,7 @@ it('gates OIDC publishing on environment reviewers and quality for the checked-o
  expect(prerequisites).toContain('deployments: read');
  expect(prerequisites).toContain('select(.type == "required_reviewers")');
  expect(prerequisites).toContain('test "$reviewers" -gt 0');
+ expect(prerequisites).toContain('test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"');
  expect(prerequisites).toContain('gh api "repos/$GH_REPO/commits/$RELEASE_TAG" --jq .sha');
  expect(prerequisites).toContain('release_sha="$GITHUB_SHA"');
  expect(prerequisites).toContain('--workflow quality.yml --commit "$release_sha" --status success');

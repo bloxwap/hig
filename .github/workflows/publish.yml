@@ -36,6 +36,7 @@ jobs:
           set -euo pipefail
           [[ "$RELEASE_TAG" =~ ^v ]] || { echo 'Release tag must start with v' >&2; exit 1; }
           git check-ref-format "refs/tags/$RELEASE_TAG"
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG" || { echo 'Dispatch this workflow with --ref set to the release tag so OIDC provenance identifies the tagged source.' >&2; exit 1; }
           if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
             release_sha=$(gh api "repos/$GH_REPO/commits/$RELEASE_TAG" --jq .sha)
           else
