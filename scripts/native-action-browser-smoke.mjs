@@ -1,3 +1,4 @@
+import {launchBrowser} from './browser-launcher.mjs';
 import {build} from 'esbuild';
 import {createRequire} from 'node:module';
 import {dirname} from 'node:path';
@@ -12,7 +13,7 @@ const server=createServer((req,res)=>{res.setHeader('content-type',req.url==='/a
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const results=[];
 try{for(const [engine,launcher] of Object.entries({chromium,webkit})){
- const browser=await launcher.launch({headless:true});
+ const browser=await launchBrowser(launcher,{headless:true});
  try{for(const width of [390,1280]){
   const context=await browser.newContext({viewport:{width,height:844}}),page=await context.newPage(),errors=[];page.on('pageerror',error=>{errors.push(error.message);console.error(error.message);});
   await page.goto(`http://127.0.0.1:${server.address().port}/`);

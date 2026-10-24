@@ -1,3 +1,4 @@
+import {launchBrowser} from './browser-launcher.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
 // #95: @bloxwap/hig-react/css must not restyle elements outside HIG components. A host that loads it on
 // some routes only (taptradetv's /sponsors) keeps the stylesheet after a client navigation, so any
@@ -76,7 +77,7 @@ const results=[];
 try{
  for(const engine of engines){
   const launcher={chromium,webkit}[engine];if(!launcher)throw Error(`Unsupported browser ${engine}`);
-  const browser=await launcher.launch({headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
+  const browser=await launchBrowser(launcher,{headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
   try{
    const seen={};
    for(const name of Object.keys(pages)){
