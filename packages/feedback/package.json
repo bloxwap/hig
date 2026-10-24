@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig-feedback",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "files": [
@@ -46,7 +46,7 @@
     }
   },
   "dependencies": {
-    "@bloxwap/hig-contracts": "0.1.0"
+    "@bloxwap/hig-contracts": "0.1.1"
   },
   "peerDependencies": {
     "react": "^19.1.0",

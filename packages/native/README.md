@@ -1,6 +1,6 @@
 # @bloxwap/hig-native
 
-Candidate 0.1.0. Import individual entries; see docs/components for platform and accessibility contracts.
+Version 0.1.1. Import individual entries; see docs/components for platform and accessibility contracts.
 
 Set a brand accent with `<HIGProvider primaryColor='#ff0000'>` from
 `@bloxwap/hig-native/provider`. It accepts opaque sRGB hex (`#RGB` or `#RRGGBB`),

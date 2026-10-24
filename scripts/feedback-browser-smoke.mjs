@@ -1,9 +1,10 @@
+import {launchBrowser} from './browser-launcher.mjs';
 import {chromium,webkit} from '@playwright/test';
 import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 const results=[];
 for(const engine of ['chromium','webkit']){
- const browser=await ({chromium,webkit}[engine]).launch({headless:true});
+ const browser=await launchBrowser({chromium,webkit}[engine],{headless:true});
  try{
   const page=await browser.newPage({reducedMotion:'reduce'});const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto((process.env.HIG_PREVIEW_URL??'http://localhost:4173')+'/?simulateFeedback=1');

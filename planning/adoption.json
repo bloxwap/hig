@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "observedAt": "2026-10-18",
+  "observedAt": "2026-10-23",
   "inventoryEvidence": "planning/org-inventory-2026-10-15.json",
   "inventoryScope": "All 15 repositories visible to the authenticated token on 2026-10-15 (gh repo list bloxwap); none archived.",
   "policy": "Owners are recorded as repository maintainer roles until #57 records named owners. Every exception has scope, reason, owner, expiry (at most 180 days) and a tracking issue. Statuses link only merged or open PRs that exist.",
@@ -9,8 +9,8 @@
       "name": "hig",
       "applicability": "canonical guidelines, tokens, React/React Native renderers, feedback contract and docs",
       "owner": "bloxwap/hig maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0 (source of truth); candidates built per commit",
-      "status": "canonical source; not published to npm",
+      "higVersion": "0.1.0 (published npm release; canonical source)",
+      "status": "canonical source; all eight coordinated packages published to npm",
       "mergedPRs": [
         "https://github.com/bloxwap/hig/pull/37",
         "https://github.com/bloxwap/hig/pull/39",
@@ -48,29 +48,23 @@
         "https://github.com/bloxwap/hig/pull/111",
         "https://github.com/bloxwap/hig/pull/112",
         "https://github.com/bloxwap/hig/pull/113",
-        "https://github.com/bloxwap/hig/pull/114"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/hig/pull/114",
         "https://github.com/bloxwap/hig/pull/126"
       ],
+      "openPRs": [],
       "validation": "npm run check, packed web/SSR/Next/Metro consumers, Chromium/WebKit browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
       "exceptions": [
         {
-          "scope": "npm publication",
-          "reason": "npm credentials are not configured on the release machine; dry-run artifacts only",
-          "owner": "HIG maintainers",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        },
-        {
           "scope": "physical-device certification",
-          "reason": "Physical iPhone 17 Pro and iPad Pro 13-inch (M4) paired/available; no physical Android. Unique unsigned gallery built; no matching development profile, installation or physical input/display/speech/sound/haptic observations yet.",
+          "reason": "Dated owner-approved exception recorded in PR #131 and evidence/physical/owner-attestation-2026-10-19.md; this is owner attestation, not new recorded physical observations. Contradictory evidence voids the affected exception.",
           "owner": "HIG/native/haptic maintainers",
           "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/55"
+          "tracking": "https://github.com/bloxwap/hig/issues/55",
+          "approvedBy": "joeblau",
+          "approval": "https://github.com/bloxwap/hig/pull/131"
         }
       ],
-      "remaining": "Roadmap #1: draft #126 implements native adoption APIs #117–#121, Pro Table/MarketRow, optional web GestureSheet, status and custom native Dialog contracts (#110). Consumer refreshes (#115), WebKit resilience (#124) and combined owning adoption have validated drafts. Review/merge, physical devices #55, registry #56, named-owner visual/density/motion/bundle approvals #57 and future rollback retirement remain. Further ordinary native profile/navigation and wallet/trade support controls are being migrated in isolated follow-ups; custom selector anatomy remains a software API task.",
+      "remaining": "Consumer registry migration (#56), named-owner parity/density/motion/bundle and locale decisions (#57) and rollback retirement (#110). #115 consumer fixes are merged. Physical acceptance remains the dated owner attestation in PR #131, not an automated observation.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15",
@@ -115,38 +109,50 @@
           }
         ],
         "reportSha256": "d4d20c10175aa7655b263a1d14da908c6d55b045ddf2eb87e33e23febf136d01",
-        "recordedGreenCICommit": "e5cc5c2b7b6383551e54ba2bd69d2dc0174ec841"
+        "recordedGreenCICommit": "e5cc5c2b7b6383551e54ba2bd69d2dc0174ec841",
+        "status": "merged; present on the default branch",
+        "mergedAt": "2026-10-19T17:31:32Z",
+        "mergeCommit": "727a4d073a1df3d829397871aebc24e11b31c140"
+      },
+      "publication": {
+        "version": "0.1.0",
+        "tag": "v0.1.0",
+        "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
+        "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
+        "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
+        "conclusion": "success",
+        "verifiedSteps": [
+          "artifact source/tag/package set and hashes",
+          "publish all eight packages",
+          "registry hash comparisons",
+          "web/SSR registry consumer",
+          "Next registry consumer",
+          "RN 0.81 and RN 0.83 registry consumers"
+        ],
+        "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
       }
     },
     {
       "name": "hyperliquid",
       "applicability": "SDK docs and interactive demos (apps/docs)",
       "owner": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha7c67a07c",
-      "status": "migrated (docs consume vendored HIG packages)",
+      "higVersion": "0.1.0",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/hyperliquid/pull/179",
-        "https://github.com/bloxwap/hyperliquid/pull/180"
+        "https://github.com/bloxwap/hyperliquid/pull/180",
+        "https://github.com/bloxwap/hyperliquid/pull/183",
+        "https://github.com/bloxwap/hyperliquid/pull/217"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/hyperliquid/pull/183"
-      ],
+      "openPRs": [],
       "validation": "CI green on 4eec557; independent verifier: bun run check, docs build (13 pages, 1168 links), Playwright 8/8, unmocked mainnet playground; export total -888,353 B, 9 copied files to 0 (apps/docs/design-review/hig-packages/)",
-      "exceptions": [
-        {
-          "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarballs",
-          "owner": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        }
-      ],
-      "remaining": "Swap vendored tarballs for npm (#56); re-vendor a candidate at or after a40f1b6 to use Callout note/tip and drop the local edges (#69 fixed upstream)",
+      "exceptions": [],
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/hyperliquid",
       "exceptionExpires": "2027-01-15",
       "candidateRefresh": {
-        "status": "Validated locally; draft PR pending review/merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.sha0e239442",
         "higSourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
         "pr": "https://github.com/bloxwap/hyperliquid/pull/183",
@@ -155,85 +161,84 @@
         "scope": "Coordinated tokens/contracts/react refresh; canonical note/tip severities and removal of obsolete local edges. Required OG-font split keeps existing Bold/Black cards; explicit base import and48px host button mapping preserve the prior page defaults.",
         "validation": "Normal/frozen and independent empty-tree frozen Bun1.4 installs; only HIG lock records changed. Root check,docs types,20 docs tests,2087 SDK offline passes/244 skips,8 existing browser tests and16 paired Chrome/WebKit callout cases through200% pass. All14 OG cards and22 font hashes identical. Four exact clean-source archives verified; vendor -3561410 bytes,JS +554 gzip bytes,CSS +2160 gzip bytes.",
         "ci": "All six checks passed on recorded final head; expected docs deploy skip. An initial new-test typing error was corrected; final docs types/build/browser/links pass remotely.",
-        "mergeEffect": "Retire local Callout and OG-font exceptions only after merge; default-branch candidate above remains authoritative."
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
+        "mergedAt": "2026-10-19T15:58:34Z",
+        "mergeCommit": "8056522454517528de0b94550e272d9679f83740"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/hyperliquid/pull/217",
+        "mergeCommit": "ac8488db6a61ba4066dc5573be8a917ce7b95603",
+        "mergedAt": "2026-10-24T05:22:27Z",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact four-package registry migration; four candidate archives removed. Frozen install, root/docs checks, 20 docs tests, 13-page export with 14 social cards and 10 Chromium tests passed; remote gates passed."
       }
     },
     {
       "name": "chart",
       "applicability": "SDK docs and chart demo (apps/docs)",
       "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha872906a9",
-      "status": "migrated (docs consume vendored HIG packages)",
+      "higVersion": "0.1.0",
+      "status": "migrated; docs consume published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/chart/pull/52",
         "https://github.com/bloxwap/chart/pull/53",
-        "https://github.com/bloxwap/chart/pull/56"
+        "https://github.com/bloxwap/chart/pull/56",
+        "https://github.com/bloxwap/chart/pull/58",
+        "https://github.com/bloxwap/chart/pull/78"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/chart/pull/58"
-      ],
+      "openPRs": [],
       "validation": "chart#56 CI green (build, test) on f80d109, merged as 2c952f6 (post-merge Coverage and Documentation green); independent verifier: npm ci with no .npmrc (34 Radix entries, 0 nested), lint, typecheck, 1869/1869 tests, docs build (30 pages, 1530 links, 25 cards), docs:check, docs:test (Chrome: single tab stop for InstallCommand in Tabs, HIG button on a loaded Bloxwap face); vendored tarballs byte-identical to a fresh hig@872906a9 candidate (docs/hig-adoption/hig-872906a9/)",
-      "exceptions": [
-        {
-          "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarballs",
-          "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        },
-        {
-          "scope": "vendor/bloxwap-hig/bloxwap-hig-native-fonts-*.tgz (4,420,375 B) as a build-time devDependency",
-          "reason": "the Satori OG renderer needs two static TTFs; @bloxwap/hig-og-fonts (#99, hig#106) replaces it at the next candidate refresh",
-          "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/115"
-        }
-      ],
-      "remaining": "Swap vendored tarballs for npm (#56); at the next refresh (candidate at or after 74f4f6a): switch the OG card to @bloxwap/hig-og-fonts (#99 fixed) and remove the legacy-peer-deps lockfile note from vendor/bloxwap-hig/README.md (#96 fixed; tracked in #115)",
+      "exceptions": [],
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/chart",
       "exceptionExpires": "2027-01-15",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/chart/pull/58",
         "head": "97ad3fc2305cb3f8fee8e2e06187c7921aec34a6",
         "evidence": "docs/hig-adoption/issue-115/verification.json",
         "validation": "Clean normal no-lock install and npm ci; all non-HIG versions retained; lint/types; 1,869 tests; 30 HTML/1,530 links/25 byte-identical cards; Chrome browser checks; vendor -3,573,511 B.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
-        "ci": "All current PR checks passed on the recorded head."
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
+        "ci": "All current PR checks passed on the recorded head.",
+        "mergedAt": "2026-10-19T15:53:38Z",
+        "mergeCommit": "dd00701195f7481bf438337ba4e9692ddf26d596"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/chart/pull/78",
+        "mergeCommit": "fcf074264ac0513e4ca4459180cbe5e345240194",
+        "version": "0.1.0",
+        "status": "merged",
+        "evidence": "docs/hig-adoption/registry-verification.json",
+        "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       }
     },
     {
       "name": "font",
       "applicability": "font source (canonical owner of Bloxwap font binaries) and SDK docs (apps/docs)",
       "owner": "bloxwap/font maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha7c67a07c",
-      "status": "migrated (docs consume vendored HIG packages)",
+      "higVersion": "0.1.0",
+      "status": "migrated; docs install published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/font/pull/10",
-        "https://github.com/bloxwap/font/pull/11"
+        "https://github.com/bloxwap/font/pull/11",
+        "https://github.com/bloxwap/font/pull/15",
+        "https://github.com/bloxwap/font/pull/39"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/font/pull/15"
-      ],
+      "openPRs": [],
       "validation": "CI green on 44b8a002 (72 Playwright checks across Chromium/Firefox/WebKit); independent verifier: lint, typecheck, unit 7/7, docs build (27 HTML, 52 @font-face), Playwright 48/48, mutation check (evidence/hig-34/)",
-      "exceptions": [
-        {
-          "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm",
-          "owner": "bloxwap/font maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        }
-      ],
-      "remaining": "Font binaries in apps/docs are canonical to this repo (declare under canonical in hig-drift.json); npm (#56)",
+      "exceptions": [],
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence and independently pinned canonical source drift tooling are preserved.",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/font",
       "exceptionExpires": "2027-01-15",
       "candidateOwnership": {
-        "status": "Validated locally and remotely; draft pending review/merge",
+        "status": "merged; present on the default branch",
         "pr": "https://github.com/bloxwap/font/pull/15",
         "head": "6e1f87f614b22b22ea9531a4c04fee62b557b3df",
         "evidence": "docs/hig-ownership.md",
@@ -241,23 +246,34 @@
         "scope": "Exact242 Font-owned docs binary files declared canonical. Scoped drift tooling independently pins clean0e239442; existing runtime7c67a07c predates that CLI and is unchanged. Read-only workflow; no runtime dependency or lock changes.",
         "validation": "Actual383-file drift check,vendor guard,actionlint,lint,full types,7 units,27 HTML/24 OG/52 faces docs build and24 Chrome/WebKit checks pass. Negative controls catch token/palette/primitive CSS under fonts and unlisted font assets. All242 fonts/83545680 bytes andthree runtime archives unchanged.",
         "ci": "Changes,drift,docs andGitGuardian passed; three expected unchanged-asset/browser-build skips.",
-        "mergeEffect": "Default-branch canonical declaration remains pending until merge; runtime version above is preserved."
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
+        "mergedAt": "2026-10-19T15:58:27Z",
+        "mergeCommit": "f1af0acefc66c35b04a0ac94e2f22bd16baac6cd"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/font/pull/39",
+        "mergeCommit": "693d9e1ad7e55cfc3dd26d30bb86d3f073964bff",
+        "mergedAt": "2026-10-24T05:26:23Z",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact contracts, React and tokens 0.1.0 registry migration; no runtime vendor archives. Frozen Bun install, lint, types, 7 package tests, 4 font-binary tests, 7 docs tests, canonical drift over 199 files, production export and 54 Chromium/WebKit checks pass. All remote assets, docs, browser, drift and security checks pass. The source CLI remains independently pinned to 0e239442 because the runtime packages do not ship it."
       }
     },
     {
       "name": "sfx",
       "applicability": "sound engine owner and SDK docs (apps/docs)",
       "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha872906a9",
-      "status": "migrated (docs consume vendored HIG packages)",
+      "higVersion": "0.1.0",
+      "status": "migrated; docs consume published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/sfx/pull/45",
         "https://github.com/bloxwap/sfx/pull/50",
-        "https://github.com/bloxwap/sfx/pull/52"
+        "https://github.com/bloxwap/sfx/pull/52",
+        "https://github.com/bloxwap/sfx/pull/55",
+        "https://github.com/bloxwap/sfx/pull/80"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/sfx/pull/55"
-      ],
+      "openPRs": [],
       "validation": "sfx#52 CI green (build, test, browser-tests, npm audit) on a628cec, merged as 924eafe (post-merge Tests, Coverage, Documentation, Browsers and Live docs smoke green); independent verifier: npm ci, lint, typecheck, 183 tests, docs build (18 HTML, 15 cards), docs:check, docs smoke 6/6 in Chromium and WebKit; Radix 48 (22 nested) to 34 (0 nested), export JS -10,594 B (evidence/hig/candidate-872906a9/)",
       "exceptions": [
         {
@@ -266,35 +282,21 @@
           "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/36"
-        },
-        {
-          "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarballs",
-          "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        },
-        {
-          "scope": "vendor/bloxwap-hig/bloxwap-hig-native-fonts-*.tgz (4,420,375 B) as a build-time devDependency",
-          "reason": "the Satori OG renderer needs two static TTFs; @bloxwap/hig-og-fonts (#99, hig#106) replaces it at the next candidate refresh",
-          "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/115"
         }
       ],
-      "remaining": "Upstream voice cancellation (#70); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); npm (#56)",
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/sfx",
       "exceptionExpires": "2027-01-15",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/sfx/pull/55",
         "head": "6d9f822ee9f946fd47f7a654b7c9d6aee86fc95a",
         "evidence": "evidence/hig/og-font-refresh/report.json",
         "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
         "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
         "initialValidation": {
           "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
@@ -307,42 +309,53 @@
           "evidence": "evidence/hig/og-font-refresh/main-sync-2026-10-18/report.json",
           "validation": "191 tests/100%coverage,zero audit vulnerabilities,types/lint/size/bench,5exports/27packfiles,18HTML15cards,9 audio browser passes/one WebKit-specific skip and6 docsSmoke across Chromium/WebKit pass. Four exact e339 archives,lock,renderer/manifest andall15 OG cards unchanged.",
           "mergeability": "Current-main integration pushed normally; latest remote checks linked fromPR."
-        }
+        },
+        "mergedAt": "2026-10-19T16:28:31Z",
+        "mergeCommit": "928f52571cfc5f7f4f6b594d79d0c61f5fb686c6"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/sfx/pull/80",
+        "mergeCommit": "2c4fc6f4678db7abf791d6ed74a4f3fdddfffce8",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       }
     },
     {
       "name": "haptic",
       "applicability": "haptic engine owner and SDK docs (apps/docs)",
       "owner": "bloxwap/haptic maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha872906a9",
-      "status": "migrated (docs consume vendored HIG packages)",
+      "higVersion": "0.1.0",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/haptic/pull/25",
         "https://github.com/bloxwap/haptic/pull/26",
-        "https://github.com/bloxwap/haptic/pull/28"
+        "https://github.com/bloxwap/haptic/pull/28",
+        "https://github.com/bloxwap/haptic/pull/49"
       ],
       "openPRs": [],
       "validation": "haptic#28 CI green (build with four Playwright projects, verify) on 4b367d7, merged as daa7794 (post-merge Tests and Documentation green); independent verifier: npm ci, lint (tokens package has no fonts), build, typecheck, docs:check, 79 tests, docs build, Playwright 21/21 (chromium, webkit, mobile-chromium); lockfile 608 to 560 entries, 0 nested Radix, vendored HIG bytes 4,446,466 to 34,514 (.github/evidence/hig-refresh-872906a9/)",
-      "exceptions": [
-        {
-          "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarballs",
-          "owner": "bloxwap/haptic maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        }
-      ],
-      "remaining": "Physical haptic certification upstream (bloxwap/haptic#9, #55); npm (#56)",
+      "exceptions": [],
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately. Physical haptic certification remains upstream at bloxwap/haptic#9; HIG #55 retains its separate dated owner attestation.",
       "migrationGuide": "docs/migration/sdk-docs.md",
       "url": "https://github.com/bloxwap/haptic",
-      "exceptionExpires": "2027-01-15"
+      "exceptionExpires": "2027-01-15",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/haptic/pull/49",
+        "mergeCommit": "23db715c1233e44bfbd3536444b90e0dcd9008c5",
+        "mergedAt": "2026-10-24T05:20:43Z",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact three-package registry migration; runtime archives removed. Clean npm ci, lint, types, 146 units, production export and 27 Chromium/WebKit/mobile Chromium docs checks passed; remote gates passed."
+      }
     },
     {
       "name": "monorepo",
       "applicability": "product web (bloxwap.app, bloxwap.pro), marketing Worker (bloxwap.com) and React Native app",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "higVersion": "web: 0.1.0-candidate.shab2f7740c (artifacts/hig); mobile: 0.1.0-candidate.shab2f7740c (apps/mobile/vendor/bloxwap-hig)",
-      "status": "pilots and #109/#110 surface PRs merged on all three web origins and the native app; remaining surfaces, upstream gaps and fork retirement tracked in #110",
+      "higVersion": "web: 0.1.0-candidate.sha0e239442; mobile: 0.1.0-candidate.sha839cbe14",
+      "status": "combined HIG rollout merged in #4619; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4522",
@@ -354,37 +367,29 @@
         "https://github.com/bloxwap/monorepo/pull/4599",
         "https://github.com/bloxwap/monorepo/pull/4602",
         "https://github.com/bloxwap/monorepo/pull/4606",
-        "https://github.com/bloxwap/monorepo/pull/4619"
+        "https://github.com/bloxwap/monorepo/pull/4619",
+        "https://github.com/bloxwap/monorepo/pull/4620",
+        "https://github.com/bloxwap/monorepo/pull/4629"
       ],
       "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4608",
-        "https://github.com/bloxwap/monorepo/pull/4609",
-        "https://github.com/bloxwap/monorepo/pull/4610",
-        "https://github.com/bloxwap/monorepo/pull/4611",
-        "https://github.com/bloxwap/monorepo/pull/4612",
-        "https://github.com/bloxwap/monorepo/pull/4613",
-        "https://github.com/bloxwap/monorepo/pull/4614",
-        "https://github.com/bloxwap/monorepo/pull/4615",
-        "https://github.com/bloxwap/monorepo/pull/4616",
-        "https://github.com/bloxwap/monorepo/pull/4617",
-        "https://github.com/bloxwap/monorepo/pull/4618"
+        "https://github.com/bloxwap/monorepo/pull/4737"
       ],
       "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603); marketing sections and app-flows run in Chrome+WebKit. The #124 implementation from monorepo#4607 landed through monorepo#4619 (2af39981e): per-case, run and cleanup bounds, browser-process rotation after 24 contexts, and CI job/step timeouts. Three consecutive local and CI WebKit runs passed all 90 feedback comparisons and 24 captures per engine. Fresh local verification on c976f7747 (2026-10-23) passed three WebKit runs and one Chromium run at the same counts. The original intermittent stall was not reproduced, so process rotation is a resilience mitigation",
       "exceptions": [
         {
-          "scope": "retired forks kept as rollback renderers (apps/pro ui/segmented, ui/button, ui/input; apps/app components/ui; packages/ui-native Button/Sheet/Toast). Forks with no flag-on consumers: packages/ui-native Button, ToastViewport and FlowUsd (apps/mobile); none yet in apps/app components/ui or apps/pro ui/*",
-          "reason": "host rollback flags NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT stay until the rollback window ends; screens not yet migrated still render ui/* forks with the flag on (see per-surface forksWithoutFlagOnConsumers)",
+          "scope": "Retained rollback flags and legacy renderers in apps/app, apps/pro and packages/ui-native; marketing static assets still tracked by the owning migration.",
+          "reason": "Combined migration and native follow-ups are merged. Retain rollback artifacts until owning-product acceptance and the retirement window are complete; historical pre-integration call-site inventories are kept separately.",
           "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/110"
         }
       ],
-      "remaining": "#110: remaining surfaces, then retire rollback flags and forks after the rollback window; upstream gaps #117-#121; consumer workarounds at next refresh incl. localeDirection for #86 and @bloxwap/hig-chart for #96 (#115); Hermes about +84 KB iOS / +85 KB Android over the 64 KB budget (#57); physical devices (#55)",
+      "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/monorepo",
       "exceptionExpires": "2027-01-15",
       "candidateIntegration": {
-        "status": "Merged 2026-10-19 through monorepo#4619 as 2af39981e; the validated head and dated evidence below are preserved.",
+        "status": "merged; present on the default branch",
         "pr": "https://github.com/bloxwap/monorepo/pull/4619",
         "head": "18967782b6e9c51ca4d7b5404f388a219a7233a8",
         "version": "0.1.0-candidate.sha0e239442",
@@ -410,49 +415,64 @@
           },
           "scope": "Incremental against main existing HIG pilot; font/native asset payloads identical; measurements are not owner approval or runtime performance."
         },
-        "remaining": "Review/merge, named-owner visual/density/motion/bundle decisions, wallet-authorized sessions, physical observations, registry publication and fork retirement after 2027-01-15.",
-        "mergeEffect": "Default-branch versions, fork inventories and exceptions above remain authoritative until merge.",
+        "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
         "ciObservedAt": "2026-10-18T20:36:43.162290+00:00",
         "securityCheck": "User explicitly accepted the verified historical public Git tree SHA-1 finding as a false positive and instructed continuing. That exact finding is not a HIG-work blocker; actual provider failure status remains recorded without forgery or blanket suppression.",
-        "ciEvidence": "evidence/remaining-issues/delivery-pr-checks-2026-10-18.json"
+        "ciEvidence": "evidence/remaining-issues/delivery-pr-checks-2026-10-18.json",
+        "mergedAt": "2026-10-19T13:32:42Z",
+        "mergeCommit": "2af39981e5cdf7eb802c78e34825cada05f5db18"
+      },
+      "supersededPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4607",
+        "https://github.com/bloxwap/monorepo/pull/4608",
+        "https://github.com/bloxwap/monorepo/pull/4609",
+        "https://github.com/bloxwap/monorepo/pull/4610",
+        "https://github.com/bloxwap/monorepo/pull/4611",
+        "https://github.com/bloxwap/monorepo/pull/4612",
+        "https://github.com/bloxwap/monorepo/pull/4613",
+        "https://github.com/bloxwap/monorepo/pull/4614",
+        "https://github.com/bloxwap/monorepo/pull/4615",
+        "https://github.com/bloxwap/monorepo/pull/4616",
+        "https://github.com/bloxwap/monorepo/pull/4617",
+        "https://github.com/bloxwap/monorepo/pull/4618"
+      ],
+      "registryMigration": {
+        "version": "0.1.0",
+        "status": "draft PR; full local quality passed, final CI and required human signoff pending",
+        "validation": "Full bun run quality passed: 37 lint, 37 typecheck and 32 workspace test tasks, plus root tests and font audit. Native first-head CI passed 268 suites/3213 tests, Expo Doctor 20/20 and both exports. Chromium/WebKit app flows passed 90 feedback comparisons and 24 captures per engine; the corrected hoisted-package drawer verifier passed 16 WebKit and four large-text cases. Final-head CI and required human signoff remain pending; main retains the recorded candidates until merge.",
+        "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4"
       }
     },
     {
       "name": "agent-cli",
       "applicability": "CLI package and Fumadocs docs site (apps/docs)",
       "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha872906a9",
-      "status": "migrated (docs consume vendored HIG packages)",
+      "higVersion": "0.1.0",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/agent-cli/pull/47",
-        "https://github.com/bloxwap/agent-cli/pull/48"
+        "https://github.com/bloxwap/agent-cli/pull/48",
+        "https://github.com/bloxwap/agent-cli/pull/55",
+        "https://github.com/bloxwap/agent-cli/pull/68"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/agent-cli/pull/55"
-      ],
+      "openPRs": [],
       "validation": "agent-cli#48 CI green (CI, install smoke ubuntu/macos, Documentation with drift and docs:smoke 13/13) on cc5d405, merged as cfbc8a6 (post-merge CI, Install smoke, Documentation green); independent verifier: build, lint, typecheck, 71 tests, test:package, docs build (16 pages, 597 links, 13 cards at /agent-cli), docs:check, scoped drift passed (38 files, 0 dated exceptions), browser probe (links, search, copy/install, keyboard, 390px nav, loaded Bloxwap faces via HIG roles); tarballs byte-identical to a fresh hig@872906a9 candidate; before/after: CSS 150,822 to 153,404 B, JS 1,268,205 to 1,270,472 B, fonts unchanged, docs deps 21 to 20, Radix lockfile entries 90 to 62 (evidence/hig/docs-package-refresh/)",
-      "exceptions": [
-        {
-          "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarballs",
-          "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        }
-      ],
-      "remaining": "Swap vendored tarballs for npm (#56); same-line copy guard (bloxwap/agent-cli#49); switch the OG card to @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115)",
+      "exceptions": [],
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/agent-cli",
       "exceptionExpires": "2027-01-15",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/agent-cli/pull/55",
         "head": "acd7443f3c877650cff3f3e8739abe486dc32ac7",
         "evidence": "evidence/hig/og-font-refresh/report.json",
         "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
         "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
         "initialValidation": {
           "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
@@ -465,7 +485,17 @@
           "evidence": "evidence/hig/og-font-refresh/main-integration/",
           "validation": "Frozen npm ci,build/lint/types,232 CLI tests,packed-package install,docs production/check(2CSS tests),14 browser smoke and41-file pinned drift pass. Exact e339 four archives/lock/fonts unchanged; current13 OG hashes match historical manifest. Screenshot parity remains explicitly scoped to original76384 baseline.",
           "mergeability": "MERGEABLE/CLEAN immediately after normal push; latest remote checks linked fromPR."
-        }
+        },
+        "mergedAt": "2026-10-19T16:28:40Z",
+        "mergeCommit": "853db776f4f54248f87aeade708f54e4d59b61dd"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/agent-cli/pull/68",
+        "mergeCommit": "5f1e34e9745d652cd3436562c53d600f86ce396b",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact four-package registry migration with no runtime vendor archives; all 10 remote checks, 286 CLI tests and 14 browser tests passed."
       }
     },
     {
@@ -480,15 +510,13 @@
         "https://github.com/bloxwap/taptradetv/pull/223"
       ],
       "openPRs": [
-        "https://github.com/bloxwap/taptradetv/pull/217",
-        "https://github.com/bloxwap/taptradetv/pull/219",
-        "https://github.com/bloxwap/taptradetv/pull/220"
+        "https://github.com/bloxwap/taptradetv/pull/253"
       ],
       "validation": "Frozen Bun 1.3.0; Node 24.15.0 final tests/types/lint; 476 root tests, 970 host tests, 24 workflow tests, 20 Turbo lint/type tasks. Web/host Next builds; 42 Chromium/WebKit site-route cases, 16 authenticated sponsor cases, two navigation-isolation checks; fresh 1920x1080 host stage/admin captures preserve geometry/text/avatar markup/keyboard/fullscreen. Exact candidate/source/archive/install guards; scoped drift 409 files. Host lint retains 10 existing warnings. All 10 PR checks passed on head 6f87c8156a3295f578538c0ae83f9513e47b9464, including Quality Gate, web/host workerd HTTP and five automatic previews. Merged as 959595c9e9581513a863b700d850c93afc6359b2.",
       "exceptions": [
         {
           "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarballs",
+          "reason": "HIG 0.1.0 is published; this consumer still uses its verified candidate pending a validated registry-migration PR.",
           "owner": "bloxwap/taptradetv maintainers (named assignment pending, #57)",
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/56"
@@ -501,7 +529,7 @@
           "tracking": "https://github.com/bloxwap/hig/issues/36"
         }
       ],
-      "remaining": "Full host primitive adoption and artwork scope remain outside the completed #100 tokens-only migration (#36); formal owner governance/bundle review (#57); npm (#56). Original drafts #217/#219/#220 are superseded by merged #223.",
+      "remaining": "Registry migration (#56); formal owner governance/bundle review (#57). Full host primitive adoption and avatar artwork remain outside the completed #100 tokens-only migration. Drafts #217/#219/#220 were superseded by merged #223.",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/taptradetv",
       "exceptionExpires": "2027-01-15",
@@ -517,14 +545,15 @@
         "ci": "All current PR checks passed on the recorded head; automatic repository preview jobs ran where configured."
       },
       "hostTokensCandidate": {
-        "status": "integrated and revalidated by merged #223; original draft #217 is superseded",
+        "status": "closed; incorporated by the merged integration PR",
         "pr": "https://github.com/bloxwap/taptradetv/pull/217",
         "dependsOn": "https://github.com/bloxwap/taptradetv/pull/216",
         "head": "05c11b1accf1cf9dd05f91e3909f7389d32dbb73",
         "version": "0.1.0-candidate.shae3390bbd",
         "evidence": "docs/hig/evidence/issue-100-host",
         "validation": "1920x1080 stage/admin geometry/text/keyboard and deterministic mocks; build/types/lint;970tests;OpenNext/workerd smokes; four seeded-avatar SVG identities preserved.",
-        "limits": "Static fonts +12,790,016B; historical cold English font responses +527,552B. Recorded migration evidence is not formal owner bundle/brand signoff. The copied-token and non-Bloxwap-font exceptions are retired; host primitives and avatar artwork remain separate."
+        "limits": "Static fonts +12,790,016B; historical cold English font responses +527,552B. Recorded migration evidence is not formal owner bundle/brand signoff. The copied-token and non-Bloxwap-font exceptions are retired; host primitives and avatar artwork remain separate.",
+        "incorporatedBy": "https://github.com/bloxwap/taptradetv/pull/223"
       },
       "additionalSponsorControls": {
         "pr": "https://github.com/bloxwap/taptradetv/pull/220",
@@ -533,17 +562,20 @@
         "scope": "Existing /sponsors route only; canonical controls and associated fields; account date hydration fixed; no global brand or new-route change",
         "candidate": "0.1.0-candidate.sha0e239442",
         "validation": "311 app tests;48 browser cases;4 SSR-cookie cases;all27 font files byte-identical;JS -11,543gzip /CSS +510gzip bytes",
-        "remote": "Integrated by merged #223, including the later Node 26 browser-install correction; original draft #220 is superseded"
+        "remote": "Integrated by merged #223, including the later Node 26 browser-install correction; original draft #220 is superseded",
+        "status": "closed; incorporated by the merged integration PR",
+        "incorporatedBy": "https://github.com/bloxwap/taptradetv/pull/223"
       },
       "streamViewerFocus": {
         "pr": "https://github.com/bloxwap/taptradetv/pull/219",
         "head": "a001bcb941ab616abaad2036d3da9a74a7b35572",
         "validation": "4 actual component tests;8 Chromium/WebKit cases;resting pixels unchanged;all10 remote checks including automatic previews pass",
         "scope": "Focus keeps video controls visible; pointer/blur/source/unmount timer lifecycle retained; no HIG archive or media change",
-        "status": "Focus/timer behavior and four component regressions integrated with canonical HIG media controls by merged #223; original draft #219 is superseded"
+        "status": "closed; incorporated by the merged integration PR",
+        "incorporatedBy": "https://github.com/bloxwap/taptradetv/pull/223"
       },
       "completeMigration": {
-        "status": "merged in taptradetv#223; present in the default branch",
+        "status": "merged; present on the default branch",
         "pr": "https://github.com/bloxwap/taptradetv/pull/223",
         "head": "6f87c8156a3295f578538c0ae83f9513e47b9464",
         "candidate": "0.1.0-candidate.sha0e239442",
@@ -569,7 +601,7 @@
           }
         },
         "rollback": "Revert #223 for site-wide rollback. NEXT_PUBLIC_HIG_SPONSORS=0 selects earlier sponsor controllers but leaves shared HIG components, CSS and fonts active.",
-        "mergeEffect": "Default-branch HIG version is sha0e239442. Retired web/packages-ui migration exceptions and host copied-token/non-Bloxwap-font exceptions. Narrow host primitive/geometry/avatar scope remains under #36; the vendor exception remains under #56.",
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
         "mergeCommit": "959595c9e9581513a863b700d850c93afc6359b2",
         "mergedAt": "2026-10-20T03:50:29Z",
         "ci": "All 10 checks passed on the recorded head, including production-browser Quality Gate, web/host workerd HTTP smokes and automatic web/host/capture/deck/stream previews."
@@ -578,50 +610,42 @@
         "https://github.com/bloxwap/taptradetv/pull/217",
         "https://github.com/bloxwap/taptradetv/pull/219",
         "https://github.com/bloxwap/taptradetv/pull/220"
-      ]
+      ],
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/taptradetv/pull/253",
+        "version": "0.1.0",
+        "status": "open; required dependency audit fails",
+        "validation": "Clean frozen install, lint, types, 1,543 tests, both builds and Chromium/WebKit checks pass. Remote Worker smokes/GitGuardian pass. Required dependency audit still flags pre-existing body-parser, undici and Zod; Zod 3 consumers have no compatible patched release. No override or audit bypass applied. Main remains the recorded candidate until merge."
+      }
     },
     {
       "name": "tapsiren",
       "applicability": "decided 2026-10-15 (#60): workers/tapsiren is a public, brand-facing marketing page (custom domains tapsiren.com and preview.tapsiren.com, OG/Twitter share card, CTAs to the Bloxwap Telegram and Discord), adopted as a docs or marketing site; strategy services, fly apps and tools have no UI",
       "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha872906a9",
-      "status": "migrated (public marketing page on HIG tokens CSS, Bloxwap fonts and HIG Link/button; OG card on HIG colours and Bloxwap TTFs)",
+      "higVersion": "0.1.0",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
-        "https://github.com/bloxwap/tapsiren/pull/399"
+        "https://github.com/bloxwap/tapsiren/pull/399",
+        "https://github.com/bloxwap/tapsiren/pull/401",
+        "https://github.com/bloxwap/tapsiren/pull/422",
+        "https://github.com/bloxwap/tapsiren/pull/430"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/tapsiren/pull/401"
-      ],
+      "openPRs": [],
       "validation": "tapsiren#399 PR CI green on 6cc14fd (HIG drift, Build, ESLint, preview deploy), merged as 81d33eb and deployed to tapsiren.com by the Production workflow. Automated (local, bun 1.3.0): install --frozen-lockfile, lint, tsc, bun test lib 3/3, next build; vendored tarballs byte-identical to a fresh HIG 872906a9 candidate build; scoped drift on workers/tapsiren/{app,components,lib} passed (8 files, 0 dated exceptions) and flags a planted palette. Browser (Playwright Chromium against tapsiren.com, 1440/390): 0px overflow, Bloxwap Sans/Mono loaded, CTAs are <a> with HIG button paint and the HIG focus ring, /api/og 200 PNG; evidence in workers/tapsiren/docs/hig-adoption/",
-      "exceptions": [
-        {
-          "scope": "workers/tapsiren/vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarballs",
-          "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        },
-        {
-          "scope": "workers/tapsiren/public/tap-siren-mark.svg and favicon.ico",
-          "reason": "product mark still drawn in the old cyan; recolouring the mark is a brand decision outside the drift scope",
-          "owner": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/101"
-        }
-      ],
-      "remaining": "Decide the product mark/favicon colour (#101, expires 2027-01-15); copy OG faces from @bloxwap/hig-og-fonts at the next refresh (#99 fixed; #115); swap vendored tarballs for npm (#56)",
+      "exceptions": [],
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately. Product identity cyan is approved by owner-directed #422.",
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/tapsiren",
       "exceptionExpires": "2027-01-15",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/tapsiren/pull/401",
         "head": "eef23f92dc1c2218db2b4ef5e6b289dd8af5934f",
         "evidence": "workers/tapsiren/docs/hig-adoption/issue-115/verification.json",
         "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
         "ci": "All eight latest-head checks passed after main integration, including both configured previews. PR is MERGEABLE/CLEAN.",
         "initialValidation": {
           "head": "1894d0e90def83abb0eee6a888f6e77b6228919b",
@@ -634,54 +658,54 @@
           "evidence": "workers/tapsiren/docs/hig-adoption/issue-115/main-integration.json",
           "validation": "Frozen Bun1.3 install,exact checksums,pinned e339 drift8files,actionlint,15 workspace lint tasks,types,3 library/23 ops-config/7 guard tests,production build and1440/390 Chromium/WebKit fonts/focus/no-overflow checks pass. OG remains byte-identical166597 bytes; cyan assets,archives,lock andproduct source unchanged.",
           "mergeability": "MERGEABLE after normal push; current checks linked from PR."
-        }
+        },
+        "mergedAt": "2026-10-19T15:57:43Z",
+        "mergeCommit": "8c6e4be80af183919ef56f897177e7c346b53b54"
       },
       "brandReview": {
         "evidence": "evidence/brand-review/tapsiren/README.md",
         "comparison": "evidence/brand-review/tapsiren/comparison.png",
         "scope": "Current cyan and proposed clean0e HIG action.srgb variants preserve identical SVG path geometry. Sizes16/32/48/128 on actual dark canvas plus labeled diagnostic white.",
-        "status": "Review-only evidence; no product asset, favicon or brand decision changed. Owner response remains pending under#101.",
+        "status": "resolved by owner-requested cyan restoration in tapsiren#422; original comparison retained as historical evidence",
         "repository": "bloxwap/hig"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "brandApproval": {
+        "status": "approved separately owned product identity",
+        "color": "#00f0ff",
+        "assets": [
+          "workers/tapsiren/public/tap-siren-mark.svg",
+          "workers/tapsiren/public/favicon.ico"
+        ],
+        "approvedBy": "joeblau",
+        "approval": "https://github.com/bloxwap/tapsiren/pull/422",
+        "mergeCommit": "191ffcaa3cf7673f794a2f2153175a77a303ab7e",
+        "scope": "Owner-requested cyan restoration. PR #422 explicitly records that the SVG and favicon already use this cyan. No asset recoloring is required for HIG #101."
+      },
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/tapsiren/pull/430",
+        "mergeCommit": "815991e250f532f73f1447daae4b780cb2773c5c",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact four-package registry migration with no runtime vendor archives; all eight remote checks passed."
       }
     },
     {
       "name": "bloxwap.github.io",
-      "applicability": "static root docs/marketing hub (plain HTML + styles.css, served by GitHub Pages with no build step)",
+      "applicability": "static root docs/marketing hub (plain HTML and styles.css; GitHub Actions generates assets, validates the assembled site and deploys that artifact to GitHub Pages)",
       "owner": "bloxwap/bloxwap.github.io maintainers (named assignment pending, #57)",
-      "higVersion": "0.1.0-candidate.sha872906a9",
-      "status": "migrated (styles.css uses 40 --hig-* roles and no literals; approved HIG mark as favicon; Bloxwap Sans/Mono from @bloxwap/font 0.1.2)",
+      "higVersion": "0.1.0",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/bloxwap.github.io/pull/26",
-        "https://github.com/bloxwap/bloxwap.github.io/pull/28"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/bloxwap.github.io/pull/28",
+        "https://github.com/bloxwap/bloxwap.github.io/pull/36",
         "https://github.com/bloxwap/bloxwap.github.io/pull/31"
       ],
+      "openPRs": [],
       "validation": "bloxwap.github.io#26 CI green (check, drift, Playwright 24/24) on c1e7359, merged as 9febbb5 (post-merge CI and Pages build green; live site loads assets/hig/tokens.css); independent verifier: hig@872906a9 tokens tarball rebuilt byte-identical, copied tokens.css/icon.svg byte-identical to the package, scoped drift passed (15 files, 3 dated exceptions), same tests on main fail 13/24 (320px overflow, focus ring, roles, fonts, portal links, OG), all four pages at 1440/390/320 and 200% text without horizontal scroll, every SDK docs link 200; before/after screenshots and byte report (home 8,178 to 603,056 B, fonts 592,796 B) in evidence/hig-61/",
-      "exceptions": [
-        {
-          "scope": "assets/hig/tokens.css (copied-token-definition, copied-palette)",
-          "reason": "GitHub Pages serves the repository with no build step, so scripts/sync-hig.mjs copies @bloxwap/hig-tokens/css byte-for-byte from the checksummed candidate tarball; npm run check fails if the copy differs",
-          "owner": "bloxwap/bloxwap.github.io maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        },
-        {
-          "scope": "assets/font/ (copied-font-binary)",
-          "reason": "no build step: sync-hig.mjs copies the two Latin faces from the lockfile-pinned @bloxwap/font 0.1.2 package; npm run check fails if they differ",
-          "owner": "bloxwap/bloxwap.github.io maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/bloxwap.github.io/issues/25"
-        },
-        {
-          "scope": "vendor/bloxwap-hig/*.tgz",
-          "reason": "HIG not on npm; checksummed candidate tarball (served publicly by Pages)",
-          "owner": "bloxwap/bloxwap.github.io maintainers (named assignment pending, #57)",
-          "expires": "2027-01-15",
-          "tracking": "https://github.com/bloxwap/hig/issues/56"
-        }
-      ],
-      "remaining": "Build Pages in Actions so copies are not committed (bloxwap.github.io#25); check.mjs reads CSS function names such as tan() as colours (bloxwap.github.io#29, low priority); npm (#56). Shorthand colours and lockup scaling fixed in bloxwap.github.io#28 (#27)",
+      "exceptions": [],
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "migrationGuide": "docs/installation.md",
       "url": "https://github.com/bloxwap/bloxwap.github.io",
       "exceptionExpires": "2027-01-15",
@@ -690,7 +714,25 @@
         "head": "a6a7b464459c536655491e4f940886f1269a786b",
         "scope": "Issue#29 CSS color matcher excludes function names, accepts calc(tan(45deg)*1rem), still rejects actual tan colors.",
         "validation": "Regression failed before fix;17 checker cases,scoped drift and28 Chromium E2E pass. Remote site CI and GitGuardian passed on recorded head.",
-        "mergeEffect": "Default-branch checklist above remains valid until merge; Pages#25 maintainer settings transition remains external."
+        "mergeEffect": "CSS function detection fix merged in #31; Pages asset generation and registry migration merged separately in #36.",
+        "status": "merged; present on the default branch",
+        "mergedAt": "2026-10-24T05:19:02Z",
+        "mergeCommit": "0b649d56123d8304c98a0784e2f0daebcd03c0a7"
+      },
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/bloxwap.github.io/pull/36",
+        "mergeCommit": "522e0995ebd0d50d3a724f46d7a655894fc787a8",
+        "mergedAt": "2026-10-24T05:23:14Z",
+        "version": "0.1.0",
+        "status": "merged",
+        "evidence": "docs/hig-registry-verification.json",
+        "validation": "Exact registry hig-tokens; candidate archive and committed generated assets removed. CI generates and uploads the same tested Pages artifact. 17 checker tests, 28 browser tests and 28 assembled-artifact browser tests pass; four before/after screenshot pairs are byte-identical. All three copied-asset drift exceptions retired; all PR checks pass.",
+        "deployment": {
+          "workflow": "https://github.com/bloxwap/bloxwap.github.io/actions/runs/40066052311",
+          "status": "success",
+          "configuration": "Pages build_type changed from legacy to workflow and verified after merge, preventing a competing branch build.",
+          "liveVerification": "https://bloxwap.github.io/assets/provenance.json matches the tested artifact; all five generated asset SHA-256 values match."
+        }
       }
     },
     {
@@ -759,142 +801,185 @@
       "name": "bloxwap.app",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "pilots merged (#4515, #4523); #4594 merged as dc88d78d9, #4606 merged as 29812c9a4 (#109/#110)",
+      "status": "combined HIG rollout merged in #4619; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4523",
         "https://github.com/bloxwap/monorepo/pull/4594",
-        "https://github.com/bloxwap/monorepo/pull/4606"
+        "https://github.com/bloxwap/monorepo/pull/4606",
+        "https://github.com/bloxwap/monorepo/pull/4619"
       ],
-      "openPRs": [
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha0e239442",
+      "validation": "#4523 merged as b1b913dac (3,122 tests, 24-case settings matrix Chrome/Firefox CI). #4594 at d81cbf00: css/base imported in layout.tsx (#95), busy text from mobile.hig.busy (#82), billing buttons 48px->44px (#80); app tests 3457 pass, production builds pilot and NEXT_PUBLIC_HIG_PILOT=0, settings matrix identical to main, landing focus identical; JS +282 B raw, CSS +10,987 B raw. #4601 (verified at 1f2981b7; landed as #4606 29812c9a4, flows in Chrome only, #124): 96 direct sfx/haptics calls in 22 files through appCue(); browser (automated headless Chromium) 90 feedback cases match rollback, amount 12.7 on both builds, Confirm fires once, rollback screenshots pixel-identical to parent in 12/12; sheet Escape/focus return; tests 3539 pass; CI Chrome+Firefox flows step green. Verifier caveats: sheet.mjs asserts nothing and is not in CI; 80ms per-source dedupe",
+      "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
+      "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
+      "exceptionExpires": "2027-01-15",
+      "guide": "docs/migration/products.md",
+      "candidateFollowups": [
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4610",
+          "head": "c74670ab6a2941c87bf99671418a085c0efea51e",
+          "scope": "Centered dialogs, pending-dismiss veto and controlled content/ref slots",
+          "validation": "Full workspace gate and Chromium/WebKit actual dialog captures passed. Required quality green; one configured automatic Preview was canceled after detect/alert completed. No claim that its configured deployment had not started.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4611",
+          "head": "33113d96ae249077beccabc496e5449fdc6694c8",
+          "scope": "Solana/unified amount entry and HYPE confirmation",
+          "validation": "3630 app tests plus one expected failure; full workspace gate; 120 actual consumer browser cases; ten exact rollback captures. Current checks green.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4612",
+          "head": "0872681edc1fa8aa59a531f47ddb3512a4e7e0dd",
+          "scope": "27 ordinary button consumer modules, semantic action links and remaining financial amount fields",
+          "validation": "3,638 app tests plus one expected failure; full workspace gate; 240 actual consumer browser cases; twenty exact rollback captures. All remote checks green.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4615",
+          "head": "0ec5cf2b2be550cb5c4dae24f6f275d67481af4f",
+          "scope": "Remaining app forms and explicit status tones",
+          "validation": "3,638 app tests, 160 browser cases; all 27 remote checks passed or intentionally skipped.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
+        },
+        {
+          "pr": "https://github.com/bloxwap/monorepo/pull/4617",
+          "head": "fe5f9212e151967d4131e411c3a59e057ce3b173",
+          "scope": "Four app drawers with optional HIG Vaul backend",
+          "validation": "64 browser cases,32 geometry pairs, full normal workspace gate; all remote checks green including all automatic previews.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
+        }
+      ],
+      "candidateIntegration": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4619",
+        "version": "0.1.0-candidate.sha0e239442",
+        "evidence": "docs/hig/pilots/combined-rollout.md",
+        "scope": "Merged in #4619; historical validation remains scoped to its recorded candidate. Later native controls/host actions landed in #4620/#4629.",
+        "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
+        "status": "merged; present on the default branch",
+        "mergedAt": "2026-10-19T13:32:42Z",
+        "mergeCommit": "2af39981e5cdf7eb802c78e34825cada05f5db18"
+      },
+      "supersededPRs": [
         "https://github.com/bloxwap/monorepo/pull/4610",
         "https://github.com/bloxwap/monorepo/pull/4611",
         "https://github.com/bloxwap/monorepo/pull/4612",
         "https://github.com/bloxwap/monorepo/pull/4615",
         "https://github.com/bloxwap/monorepo/pull/4617"
       ],
-      "validatedVersion": "0.1.0-candidate.shab2f7740c",
-      "validation": "#4523 merged as b1b913dac (3,122 tests, 24-case settings matrix Chrome/Firefox CI). #4594 at d81cbf00: css/base imported in layout.tsx (#95), busy text from mobile.hig.busy (#82), billing buttons 48px->44px (#80); app tests 3457 pass, production builds pilot and NEXT_PUBLIC_HIG_PILOT=0, settings matrix identical to main, landing focus identical; JS +282 B raw, CSS +10,987 B raw. #4601 (verified at 1f2981b7; landed as #4606 29812c9a4, flows in Chrome only, #124): 96 direct sfx/haptics calls in 22 files through appCue(); browser (automated headless Chromium) 90 feedback cases match rollback, amount 12.7 on both builds, Confirm fires once, rollback screenshots pixel-identical to parent in 12/12; sheet Escape/focus return; tests 3539 pass; CI Chrome+Firefox flows step green. Verifier caveats: sheet.mjs asserts nothing and is not in CI; 80ms per-source dedupe",
-      "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
-      "remaining": "HYPE/Solana/unified sends, withdraw, deposit, position close and trigger confirmations, papertrade amount pad, size/leverage picker; tap-action/icon toasts and the account drawer (no HIG equivalent); real wallet session not driven; fork retirement after the rollback window (#110)",
-      "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/products.md",
-      "forksWithoutFlagOnConsumers": [],
-      "forksStillUsedFlagOn": {
-        "apps/app/src/components/ui/dialog.tsx": "tournament-join-modal, referral-prompt, builder-task-dialog, agent-task-dialog",
-        "apps/app/src/components/ui/notification-card.tsx": "tap-action and custom-icon toasts, infoToast (InfoCard/InfoPanel)",
-        "apps/app/src/components/ui/number.tsx": "FlowNumber in 28 files",
-        "apps/app/src/components/ui/button.tsx": "37 files besides components/hig/button.tsx",
-        "apps/app/src/components/ui/drawer.tsx": "account sheet container (HIG has no drag-to-dismiss bottom drawer)"
+      "historicalForkInventory": {
+        "observedAt": "2026-10-18",
+        "scope": "Pre-integration snapshot retained for migration evidence; current retirement work is #110.",
+        "forksStillUsedFlagOn": {
+          "apps/app/src/components/ui/dialog.tsx": "tournament-join-modal, referral-prompt, builder-task-dialog, agent-task-dialog",
+          "apps/app/src/components/ui/notification-card.tsx": "tap-action and custom-icon toasts, infoToast (InfoCard/InfoPanel)",
+          "apps/app/src/components/ui/number.tsx": "FlowNumber in 28 files",
+          "apps/app/src/components/ui/button.tsx": "37 files besides components/hig/button.tsx",
+          "apps/app/src/components/ui/drawer.tsx": "account sheet container (HIG has no drag-to-dismiss bottom drawer)"
+        },
+        "forksWithoutFlagOnConsumers": []
       },
-      "candidateFollowups": [
-        {
-          "pr": "https://github.com/bloxwap/monorepo/pull/4610",
-          "head": "c74670ab6a2941c87bf99671418a085c0efea51e",
-          "scope": "Centered dialogs, pending-dismiss veto and controlled content/ref slots",
-          "validation": "Full workspace gate and Chromium/WebKit actual dialog captures passed. Required quality green; one configured automatic Preview was canceled after detect/alert completed. No claim that its configured deployment had not started."
-        },
-        {
-          "pr": "https://github.com/bloxwap/monorepo/pull/4611",
-          "head": "33113d96ae249077beccabc496e5449fdc6694c8",
-          "scope": "Solana/unified amount entry and HYPE confirmation",
-          "validation": "3630 app tests plus one expected failure; full workspace gate; 120 actual consumer browser cases; ten exact rollback captures. Current checks green."
-        },
-        {
-          "pr": "https://github.com/bloxwap/monorepo/pull/4612",
-          "head": "0872681edc1fa8aa59a531f47ddb3512a4e7e0dd",
-          "scope": "27 ordinary button consumer modules, semantic action links and remaining financial amount fields",
-          "validation": "3,638 app tests plus one expected failure; full workspace gate; 240 actual consumer browser cases; twenty exact rollback captures. All remote checks green."
-        },
-        {
-          "pr": "https://github.com/bloxwap/monorepo/pull/4615",
-          "head": "0ec5cf2b2be550cb5c4dae24f6f275d67481af4f",
-          "scope": "Remaining app forms and explicit status tones",
-          "validation": "3,638 app tests, 160 browser cases; all 27 remote checks passed or intentionally skipped."
-        },
-        {
-          "pr": "https://github.com/bloxwap/monorepo/pull/4617",
-          "head": "fe5f9212e151967d4131e411c3a59e057ce3b173",
-          "scope": "Four app drawers with optional HIG Vaul backend",
-          "validation": "64 browser cases,32 geometry pairs, full normal workspace gate; all remote checks green including all automatic previews."
-        }
-      ],
-      "candidateIntegration": {
-        "pr": "https://github.com/bloxwap/monorepo/pull/4619",
-        "version": "0.1.0-candidate.sha0e239442",
-        "evidence": "docs/hig/pilots/combined-rollout.md",
-        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+      "registryMigration": {
+        "version": "0.1.0",
+        "status": "local implementation; validation running, no PR yet",
+        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
       }
     },
     {
       "name": "bloxwap.pro",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "pilots merged (#4515, #4522); #4594 merged as dc88d78d9, #4599 merged as 3ca24bfce (#109/#110)",
+      "status": "combined HIG rollout merged in #4619; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4522",
         "https://github.com/bloxwap/monorepo/pull/4594",
-        "https://github.com/bloxwap/monorepo/pull/4599"
+        "https://github.com/bloxwap/monorepo/pull/4599",
+        "https://github.com/bloxwap/monorepo/pull/4619"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4608"
-      ],
-      "validatedVersion": "0.1.0-candidate.shab2f7740c",
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha0e239442",
       "validation": "#4522 merged as 137660fc7. #4594 at d81cbf00 (production next start, automated Chromium 1440x1000): leaderboard rows 38px and order-ticket slider 6px on main, pilot and rollback; compact buttons and amount field 36px (field becomes pill); css/base in @layer hig; pro 216 tests. #4599 at 2e0724da: base, pilot and rollback identical on every geometry measure (stats strip 48px/stat 28px, market-list rows 36px, demo-table rows 36px, leaderboard 38px, column right edges); market-list keyboard unchanged; one new Tab stop per table region; number parity 51 edge values per format (verifier fuzz ~20,000 values, Node 22 and 24); 232 tests; JS +6,280 B raw / CSS +219 B; CI Chrome+Firefox",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0; revert 8fe4859c",
-      "remaining": "signed-in tables not captured in a browser; HIG Table needs column alignment, per-row props and loading/empty/error rows and MarketRow price formatting before components replace markup; mark/index NumberFlow reels and 24px row actions are design decisions; fork retirement after the rollback window (#110)",
+      "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/products.md",
-      "forksWithoutFlagOnConsumers": [],
-      "forksStillUsedFlagOn": {
-        "apps/pro/src/components/ui/segmented.tsx": "still the flag-on renderer inside components/hig/segmented.tsx",
-        "apps/pro/src/components/ui/button.tsx": "17 direct consumers (account-panel row actions, TP/SL, leaderboard pagination, portfolio, connect-wallet, deposit/transfer/withdraw, account summary, chase runner, settings, mobile fallback)",
-        "apps/pro/src/components/ui/input.tsx": "5 direct consumers (TextWell/FieldLabel in TP/SL, transfer, withdraw, account summary, order-ticket labels)"
-      },
       "candidateMigration": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "closed; incorporated by the merged integration PR",
         "pr": "https://github.com/bloxwap/monorepo/pull/4608",
         "head": "857cc13c77273abde9ee56fb061cf495732eef4a",
         "version": "0.1.0-candidate.sha5abfb408",
         "evidence": "docs/hig/evidence/pro-data-components/verification.json",
         "validation": "250 tests in 37 suites, lint/types, production build; Chromium/WebKit before/after/rollback exact table cells, columns and row heights, market keyboard and command menu behavior. Normal full workspace pre-push passed. A settings browser harness readiness fix follows a CI WebKit initial-focus race; all current PR checks now pass. JS +2312 B gzip, CSS +719 B.",
-        "mergeEffect": "Default-branch versions and exceptions above remain authoritative until merge."
+        "mergeEffect": "This draft did not merge separately; its implementation was incorporated by the linked integration PR.",
+        "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
       },
       "candidateFollowups": [
         {
           "pr": "https://github.com/bloxwap/monorepo/pull/4613",
           "head": "1a8d8314d05312a233fcf16a5c8b0aecdb0ac6f6",
           "scope": "Pro domain dialogs and adaptive compact controls",
-          "validation": "260 Pro tests, 36 consumer browser cases, 200% text contained; all remote checks green."
+          "validation": "260 Pro tests, 36 consumer browser cases, 200% text contained; all remote checks green.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
         }
       ],
       "candidateIntegration": {
         "pr": "https://github.com/bloxwap/monorepo/pull/4619",
         "version": "0.1.0-candidate.sha0e239442",
         "evidence": "docs/hig/pilots/combined-rollout.md",
-        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+        "scope": "Merged in #4619; historical validation remains scoped to its recorded candidate. Later native controls/host actions landed in #4620/#4629.",
+        "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
+        "status": "merged; present on the default branch",
+        "mergedAt": "2026-10-19T13:32:42Z",
+        "mergeCommit": "2af39981e5cdf7eb802c78e34825cada05f5db18"
+      },
+      "supersededPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4608"
+      ],
+      "historicalForkInventory": {
+        "observedAt": "2026-10-18",
+        "scope": "Pre-integration snapshot retained for migration evidence; current retirement work is #110.",
+        "forksStillUsedFlagOn": {
+          "apps/pro/src/components/ui/segmented.tsx": "still the flag-on renderer inside components/hig/segmented.tsx",
+          "apps/pro/src/components/ui/button.tsx": "17 direct consumers (account-panel row actions, TP/SL, leaderboard pagination, portfolio, connect-wallet, deposit/transfer/withdraw, account summary, chase runner, settings, mobile fallback)",
+          "apps/pro/src/components/ui/input.tsx": "5 direct consumers (TextWell/FieldLabel in TP/SL, transfer, withdraw, account summary, order-ticket labels)"
+        },
+        "forksWithoutFlagOnConsumers": []
+      },
+      "registryMigration": {
+        "version": "0.1.0",
+        "status": "local implementation; validation running, no PR yet",
+        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
       }
     },
     {
       "name": "bloxwap.com",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "pilots merged (#4515, #4525); #4594 merged as dc88d78d9, #4598 merged as 031b29814 (#109/#110)",
+      "status": "combined HIG rollout merged in #4619; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4525",
         "https://github.com/bloxwap/monorepo/pull/4594",
-        "https://github.com/bloxwap/monorepo/pull/4598"
+        "https://github.com/bloxwap/monorepo/pull/4598",
+        "https://github.com/bloxwap/monorepo/pull/4619"
       ],
       "openPRs": [],
-      "validatedVersion": "0.1.0-candidate.shab2f7740c",
+      "validatedVersion": "0.1.0-candidate.sha0e239442",
       "validation": "#4525 merged as 38d7360fe. #4594: page HTML byte-identical main vs PR. #4598 at db6e3ab4 (wrangler dev, automated Chromium; Firefox in CI): smallest section text 10px->12px (rollback 10px), setup chips HIG badge 12/18 pill, cards 20px/14px/180ms; 24/24 served font paths match pinned SHA-256; same three font files and faces before/after; 10 Tab stops unchanged; apps/www/public/fonts removed (23 files, 12,970,019 B) and copied at build time; deployed preview served 23/23 fonts; Worker +1,762 B raw",
       "rollback": "HIG_MARKETING_PILOT=0",
-      "remaining": "touch targets below 48px in nav/footer and no visible focus ring on live-embed iframes (outside migrated sections); HIG_MARKETING_PILOT rollback CSS until the window ends (#110)",
+      "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/products.md",
-      "forksWithoutFlagOnConsumers": [],
       "retired": [
         "apps/www/public/fonts (23 files, 12,970,019 B) deleted and gitignored by #4598 (031b29814); faces copied from @bloxwap/font at build with SHA-256 pins"
       ],
@@ -903,96 +988,134 @@
           "pr": "https://github.com/bloxwap/monorepo/pull/4614",
           "head": "9317f29ad668f342291c309452164561e2509d5e",
           "scope": "Marketing48pxlink targets and embedded-frame focus",
-          "validation": "32 Chromium/WebKit cases, 42 tests, Worker build; all remote checks green."
+          "validation": "32 Chromium/WebKit cases, 42 tests, Worker build; all remote checks green.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
         }
       ],
       "candidateIntegration": {
         "pr": "https://github.com/bloxwap/monorepo/pull/4619",
         "version": "0.1.0-candidate.sha0e239442",
         "evidence": "docs/hig/pilots/combined-rollout.md",
-        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+        "scope": "Merged in #4619; historical validation remains scoped to its recorded candidate. Later native controls/host actions landed in #4620/#4629.",
+        "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
+        "status": "merged; present on the default branch",
+        "mergedAt": "2026-10-19T13:32:42Z",
+        "mergeCommit": "2af39981e5cdf7eb802c78e34825cada05f5db18"
+      },
+      "historicalForkInventory": {
+        "observedAt": "2026-10-18",
+        "scope": "Pre-integration snapshot retained for migration evidence; current retirement work is #110.",
+        "forksWithoutFlagOnConsumers": []
+      },
+      "registryMigration": {
+        "version": "0.1.0",
+        "status": "local implementation; validation running, no PR yet",
+        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
       }
     },
     {
       "name": "React Native app",
       "repository": "monorepo",
       "owner": "bloxwap/monorepo maintainers (named assignment pending, #57)",
-      "status": "full migration merged (#4540); #110 remaining surfaces merged in #4602 as edee3476c on candidate shab2f7740c (toasts, trade, account-sheet actions, readouts, language picker; drops #94/#93 workarounds)",
+      "status": "combined HIG rollout merged in #4619; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4540",
-        "https://github.com/bloxwap/monorepo/pull/4602"
+        "https://github.com/bloxwap/monorepo/pull/4602",
+        "https://github.com/bloxwap/monorepo/pull/4619",
+        "https://github.com/bloxwap/monorepo/pull/4620",
+        "https://github.com/bloxwap/monorepo/pull/4629"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/monorepo/pull/4609",
-        "https://github.com/bloxwap/monorepo/pull/4616",
-        "https://github.com/bloxwap/monorepo/pull/4618"
-      ],
-      "validatedVersion": "0.1.0-candidate.shab2f7740c",
+      "openPRs": [],
+      "validatedVersion": "0.1.0-candidate.sha839cbe14",
       "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out · Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
       "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
-      "remaining": "app still sets direction itself although hig#86 is now closed (localeDirection in c4d45a3, next refresh); upstream #117-#121; Hermes over the 64 KB budget (#57); physical devices (#55); fork retirement after the rollback window (#110)",
+      "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/native.md",
-      "forksWithoutFlagOnConsumers": [
-        "packages/ui-native/src/components/button.tsx (rollback-only: apps/mobile/src/hig/app-button.tsx, src/hig/settings-button.tsx, confirm-logout-card.tsx, edit-username-card.tsx)",
-        "packages/ui-native/src/components/toast.tsx ToastViewport (rollback-only in apps/mobile/app/_layout.tsx; the toast()/dismissToast() store API stays on both paths)",
-        "FlowUsd (ui-native number.tsx) in apps/mobile/src/hig/numbers.tsx and the demo-account breakdown (rollback-only)"
-      ],
-      "forksStillUsedFlagOn": {
-        "packages/ui-native/src/components/sheet.tsx": "src/profile/profile-sheet.tsx (account sheet, hig#118), size-lev-sheet.tsx, login-drawer.tsx, account/wallet-card-deck.tsx",
-        "packages/ui-native/src/components/number.tsx (NumberFlow)": "live-chart, position-rail, trade-history, market-picker, animated-number-text, trade-detail-card, account/wallet-card-primitives, account/position-card-renderers (hig#117)"
-      },
       "candidateMigration": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "closed; incorporated by the merged integration PR",
         "pr": "https://github.com/bloxwap/monorepo/pull/4609",
         "head": "1b0217d9d1e407c3ef07e418e3385501e37e0f36",
         "version": "0.1.0-candidate.sha5abfb408",
         "evidence": "docs/hig/evidence/native-app/adoption-117-121/report.json",
         "validation": "3066 tests in 257 suites; lint/types; flag-on/off iOS/Android exports. Actual simulator/emulator runs cover account custom GestureSheet, nested scrolling, Toast normal/AX5/2x recovery, French back context, Korean/Han language options and constrained readout typography/tone. All current PR checks, including Android export, pass. Financial reels remain pending the motion decision.",
-        "mergeEffect": "Default-branch versions and exceptions above remain authoritative until merge."
+        "mergeEffect": "This draft did not merge separately; its implementation was incorporated by the linked integration PR.",
+        "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
       },
       "candidateFollowups": [
         {
           "pr": "https://github.com/bloxwap/monorepo/pull/4616",
           "head": "7825d834ebf89e839de0573bc5d57eb0d4b54d59",
           "scope": "Native dynamic/inline sheets, static readouts and empty states",
-          "validation": "3,076 tests, actual iOS/Android runtime and 2x login, exports/types/lint; all remote checks green."
+          "validation": "3,076 tests, actual iOS/Android runtime and 2x login, exports/types/lint; all remote checks green.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
         },
         {
           "pr": "https://github.com/bloxwap/monorepo/pull/4618",
           "head": "88f3fe0cdd007ed9cb81b88665af19f0ed125d6e",
           "scope": "Five live Signals/Advanced custom HIG Dialog callers with accepted-close focus lifecycle",
-          "validation": "3080 tests/261 suites, actual iOS/Android default/large text/pending veto/retention/reopen/scroll checks, types/lint, four enabled/rollback exports; six remote checks pass plus expected gallery skip. Unique unsigned iPhone/iPad gallery prepared; development provisioning and installation authorization pending."
+          "validation": "3080 tests/261 suites, actual iOS/Android default/large text/pending veto/retention/reopen/scroll checks, types/lint, four enabled/rollback exports; six remote checks pass plus expected gallery skip. Unique unsigned iPhone/iPad gallery prepared; development provisioning and installation authorization pending.",
+          "status": "closed; incorporated by the merged integration PR",
+          "incorporatedBy": "https://github.com/bloxwap/monorepo/pull/4619"
         }
       ],
       "candidateIntegration": {
         "pr": "https://github.com/bloxwap/monorepo/pull/4619",
         "version": "0.1.0-candidate.sha0e239442",
         "evidence": "docs/hig/pilots/combined-rollout.md",
-        "scope": "Combined validated implementation; merged/default-branch records above retain their historical scope until merge."
+        "scope": "Merged in #4619; historical validation remains scoped to its recorded candidate. Later native controls/host actions landed in #4620/#4629.",
+        "remaining": "Registry migration (#56); owner visual/density/motion/bundle decisions, real wallet-session acceptance and production baselines (#57); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
+        "status": "merged; present on the default branch",
+        "mergedAt": "2026-10-19T13:32:42Z",
+        "mergeCommit": "2af39981e5cdf7eb802c78e34825cada05f5db18"
+      },
+      "supersededPRs": [
+        "https://github.com/bloxwap/monorepo/pull/4609",
+        "https://github.com/bloxwap/monorepo/pull/4616",
+        "https://github.com/bloxwap/monorepo/pull/4618"
+      ],
+      "historicalForkInventory": {
+        "observedAt": "2026-10-18",
+        "scope": "Pre-integration snapshot retained for migration evidence; current retirement work is #110.",
+        "forksStillUsedFlagOn": {
+          "packages/ui-native/src/components/sheet.tsx": "src/profile/profile-sheet.tsx (account sheet, hig#118), size-lev-sheet.tsx, login-drawer.tsx, account/wallet-card-deck.tsx",
+          "packages/ui-native/src/components/number.tsx (NumberFlow)": "live-chart, position-rail, trade-history, market-picker, animated-number-text, trade-detail-card, account/wallet-card-primitives, account/position-card-renderers (hig#117)"
+        },
+        "forksWithoutFlagOnConsumers": [
+          "packages/ui-native/src/components/button.tsx (rollback-only: apps/mobile/src/hig/app-button.tsx, src/hig/settings-button.tsx, confirm-logout-card.tsx, edit-username-card.tsx)",
+          "packages/ui-native/src/components/toast.tsx ToastViewport (rollback-only in apps/mobile/app/_layout.tsx; the toast()/dismissToast() store API stays on both paths)",
+          "FlowUsd (ui-native number.tsx) in apps/mobile/src/hig/numbers.tsx and the demo-account breakdown (rollback-only)"
+        ]
+      },
+      "registryMigration": {
+        "version": "0.1.0",
+        "status": "local implementation; validation running, no PR yet",
+        "validation": "Registry manifests/locks prepared for coordinated web/native 0.1.0; current main retains web sha0e239442 and mobile sha839cbe14 candidates. Required human signoff and owner #57/#110 acceptance remain separate."
       }
     },
     {
       "name": "Hyperliquid docs",
       "repository": "hyperliquid",
       "owner": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
-      "status": "migrated",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/hyperliquid/pull/179",
-        "https://github.com/bloxwap/hyperliquid/pull/180"
+        "https://github.com/bloxwap/hyperliquid/pull/180",
+        "https://github.com/bloxwap/hyperliquid/pull/183",
+        "https://github.com/bloxwap/hyperliquid/pull/217"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/hyperliquid/pull/183"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "openPRs": [],
+      "validatedVersion": "0.1.0",
       "validation": "CI green on 4eec557; independent verifier: bun run check, docs build (13 pages, 1168 links), Playwright 8/8, unmocked mainnet playground; export total -888,353 B, 9 copied files to 0 (apps/docs/design-review/hig-packages/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
-      "remaining": "Swap vendored tarballs for npm (#56); re-vendor a candidate at or after a40f1b6 to use Callout note/tip and drop the local edges (#69 fixed upstream)",
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/sdk-docs.md",
       "candidateRefresh": {
-        "status": "Validated locally; draft PR pending review/merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.sha0e239442",
         "higSourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
         "pr": "https://github.com/bloxwap/hyperliquid/pull/183",
@@ -1001,60 +1124,82 @@
         "scope": "Coordinated tokens/contracts/react refresh; canonical note/tip severities and removal of obsolete local edges. Required OG-font split keeps existing Bold/Black cards; explicit base import and48px host button mapping preserve the prior page defaults.",
         "validation": "Normal/frozen and independent empty-tree frozen Bun1.4 installs; only HIG lock records changed. Root check,docs types,20 docs tests,2087 SDK offline passes/244 skips,8 existing browser tests and16 paired Chrome/WebKit callout cases through200% pass. All14 OG cards and22 font hashes identical. Four exact clean-source archives verified; vendor -3561410 bytes,JS +554 gzip bytes,CSS +2160 gzip bytes.",
         "ci": "All six checks passed on recorded final head; expected docs deploy skip. An initial new-test typing error was corrected; final docs types/build/browser/links pass remotely.",
-        "mergeEffect": "Retire local Callout and OG-font exceptions only after merge; default-branch candidate above remains authoritative."
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
+        "mergedAt": "2026-10-19T15:58:34Z",
+        "mergeCommit": "8056522454517528de0b94550e272d9679f83740"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/hyperliquid/pull/217",
+        "mergeCommit": "ac8488db6a61ba4066dc5573be8a917ce7b95603",
+        "mergedAt": "2026-10-24T05:22:27Z",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact four-package registry migration; four candidate archives removed. Frozen install, root/docs checks, 20 docs tests, 13-page export with 14 social cards and 10 Chromium tests passed; remote gates passed."
       }
     },
     {
       "name": "Chart docs",
       "repository": "chart",
       "owner": "bloxwap/chart maintainers (named assignment pending, #57)",
-      "status": "migrated",
+      "status": "migrated; docs consume published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/chart/pull/52",
         "https://github.com/bloxwap/chart/pull/53",
-        "https://github.com/bloxwap/chart/pull/56"
+        "https://github.com/bloxwap/chart/pull/56",
+        "https://github.com/bloxwap/chart/pull/58",
+        "https://github.com/bloxwap/chart/pull/78"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/chart/pull/58"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha872906a9",
+      "openPRs": [],
+      "validatedVersion": "0.1.0",
       "validation": "chart#56 CI green (build, test) on f80d109, merged as 2c952f6 (post-merge Coverage and Documentation green); independent verifier: npm ci with no .npmrc (34 Radix entries, 0 nested), lint, typecheck, 1869/1869 tests, docs build (30 pages, 1530 links, 25 cards), docs:check, docs:test (Chrome: single tab stop for InstallCommand in Tabs, HIG button on a loaded Bloxwap face); vendored tarballs byte-identical to a fresh hig@872906a9 candidate (docs/hig-adoption/hig-872906a9/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
-      "remaining": "Swap vendored tarballs for npm (#56); smaller OG font source (#99); lockfile regeneration needs the documented workaround until #96",
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/sdk-docs.md",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/chart/pull/58",
         "head": "97ad3fc2305cb3f8fee8e2e06187c7921aec34a6",
         "evidence": "docs/hig-adoption/issue-115/verification.json",
         "validation": "Clean normal no-lock install and npm ci; all non-HIG versions retained; lint/types; 1,869 tests; 30 HTML/1,530 links/25 byte-identical cards; Chrome browser checks; vendor -3,573,511 B.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
-        "ci": "All current PR checks passed on the recorded head."
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
+        "ci": "All current PR checks passed on the recorded head.",
+        "mergedAt": "2026-10-19T15:53:38Z",
+        "mergeCommit": "dd00701195f7481bf438337ba4e9692ddf26d596"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/chart/pull/78",
+        "mergeCommit": "fcf074264ac0513e4ca4459180cbe5e345240194",
+        "version": "0.1.0",
+        "status": "merged",
+        "evidence": "docs/hig-adoption/registry-verification.json",
+        "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       }
     },
     {
       "name": "Font docs",
       "repository": "font",
       "owner": "bloxwap/font maintainers (named assignment pending, #57)",
-      "status": "migrated",
+      "status": "migrated; docs install published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/font/pull/10",
-        "https://github.com/bloxwap/font/pull/11"
+        "https://github.com/bloxwap/font/pull/11",
+        "https://github.com/bloxwap/font/pull/15",
+        "https://github.com/bloxwap/font/pull/39"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/font/pull/15"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha7c67a07c",
+      "openPRs": [],
+      "validatedVersion": "0.1.0",
       "validation": "CI green on 44b8a002 (72 Playwright checks across Chromium/Firefox/WebKit); independent verifier: lint, typecheck, unit 7/7, docs build (27 HTML, 52 @font-face), Playwright 48/48, mutation check (evidence/hig-34/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
-      "remaining": "Font binaries in apps/docs are canonical to this repo (declare under canonical in hig-drift.json); npm (#56)",
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence and independently pinned canonical source drift tooling are preserved.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/sdk-docs.md",
       "candidateOwnership": {
-        "status": "Validated locally and remotely; draft pending review/merge",
+        "status": "merged; present on the default branch",
         "pr": "https://github.com/bloxwap/font/pull/15",
         "head": "6e1f87f614b22b22ea9531a4c04fee62b557b3df",
         "evidence": "docs/hig-ownership.md",
@@ -1062,37 +1207,48 @@
         "scope": "Exact242 Font-owned docs binary files declared canonical. Scoped drift tooling independently pins clean0e239442; existing runtime7c67a07c predates that CLI and is unchanged. Read-only workflow; no runtime dependency or lock changes.",
         "validation": "Actual383-file drift check,vendor guard,actionlint,lint,full types,7 units,27 HTML/24 OG/52 faces docs build and24 Chrome/WebKit checks pass. Negative controls catch token/palette/primitive CSS under fonts and unlisted font assets. All242 fonts/83545680 bytes andthree runtime archives unchanged.",
         "ci": "Changes,drift,docs andGitGuardian passed; three expected unchanged-asset/browser-build skips.",
-        "mergeEffect": "Default-branch canonical declaration remains pending until merge; runtime version above is preserved."
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
+        "mergedAt": "2026-10-19T15:58:27Z",
+        "mergeCommit": "f1af0acefc66c35b04a0ac94e2f22bd16baac6cd"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/font/pull/39",
+        "mergeCommit": "693d9e1ad7e55cfc3dd26d30bb86d3f073964bff",
+        "mergedAt": "2026-10-24T05:26:23Z",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact contracts, React and tokens 0.1.0 registry migration; no runtime vendor archives. Frozen Bun install, lint, types, 7 package tests, 4 font-binary tests, 7 docs tests, canonical drift over 199 files, production export and 54 Chromium/WebKit checks pass. All remote assets, docs, browser, drift and security checks pass. The source CLI remains independently pinned to 0e239442 because the runtime packages do not ship it."
       }
     },
     {
       "name": "SFX docs",
       "repository": "sfx",
       "owner": "bloxwap/sfx maintainers (named assignment pending, #57)",
-      "status": "migrated",
+      "status": "migrated; docs consume published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/sfx/pull/45",
         "https://github.com/bloxwap/sfx/pull/50",
-        "https://github.com/bloxwap/sfx/pull/52"
+        "https://github.com/bloxwap/sfx/pull/52",
+        "https://github.com/bloxwap/sfx/pull/55",
+        "https://github.com/bloxwap/sfx/pull/80"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/sfx/pull/55"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha872906a9",
+      "openPRs": [],
+      "validatedVersion": "0.1.0",
       "validation": "sfx#52 CI green (build, test, browser-tests, npm audit) on a628cec, merged as 924eafe (post-merge Tests, Coverage, Documentation, Browsers and Live docs smoke green); independent verifier: npm ci, lint, typecheck, 183 tests, docs build (18 HTML, 15 cards), docs:check, docs smoke 6/6 in Chromium and WebKit; Radix 48 (22 nested) to 34 (0 nested), export JS -10,594 B (evidence/hig/candidate-872906a9/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
-      "remaining": "Upstream voice cancellation (#70); smaller OG font source (#99); npm (#56)",
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/migration/sdk-docs.md",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/sfx/pull/55",
         "head": "6d9f822ee9f946fd47f7a654b7c9d6aee86fc95a",
         "evidence": "evidence/hig/og-font-refresh/report.json",
         "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
         "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
         "initialValidation": {
           "head": "694d13eaaa73ac41ae20aa42562afc35865bb09e",
@@ -1105,54 +1261,73 @@
           "evidence": "evidence/hig/og-font-refresh/main-sync-2026-10-18/report.json",
           "validation": "191 tests/100%coverage,zero audit vulnerabilities,types/lint/size/bench,5exports/27packfiles,18HTML15cards,9 audio browser passes/one WebKit-specific skip and6 docsSmoke across Chromium/WebKit pass. Four exact e339 archives,lock,renderer/manifest andall15 OG cards unchanged.",
           "mergeability": "Current-main integration pushed normally; latest remote checks linked fromPR."
-        }
+        },
+        "mergedAt": "2026-10-19T16:28:31Z",
+        "mergeCommit": "928f52571cfc5f7f4f6b594d79d0c61f5fb686c6"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/sfx/pull/80",
+        "mergeCommit": "2c4fc6f4678db7abf791d6ed74a4f3fdddfffce8",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       }
     },
     {
       "name": "Haptic docs",
       "repository": "haptic",
       "owner": "bloxwap/haptic maintainers (named assignment pending, #57)",
-      "status": "migrated",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/haptic/pull/25",
         "https://github.com/bloxwap/haptic/pull/26",
-        "https://github.com/bloxwap/haptic/pull/28"
+        "https://github.com/bloxwap/haptic/pull/28",
+        "https://github.com/bloxwap/haptic/pull/49"
       ],
       "openPRs": [],
-      "validatedVersion": "0.1.0-candidate.sha872906a9",
+      "validatedVersion": "0.1.0",
       "validation": "haptic#28 CI green (build with four Playwright projects, verify) on 4b367d7, merged as daa7794 (post-merge Tests and Documentation green); independent verifier: npm ci, lint (tokens package has no fonts), build, typecheck, docs:check, 79 tests, docs build, Playwright 21/21 (chromium, webkit, mobile-chromium); lockfile 608 to 560 entries, 0 nested Radix, vendored HIG bytes 4,446,466 to 34,514 (.github/evidence/hig-refresh-872906a9/)",
       "rollback": "revert the squash merge (base builds verified by the PR verifier)",
-      "remaining": "Physical haptic certification upstream (bloxwap/haptic#9, #55); npm (#56)",
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately. Physical haptic certification remains upstream at bloxwap/haptic#9; HIG #55 retains its separate dated owner attestation.",
       "exceptionExpires": "2027-01-15",
-      "guide": "docs/migration/sdk-docs.md"
+      "guide": "docs/migration/sdk-docs.md",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/haptic/pull/49",
+        "mergeCommit": "23db715c1233e44bfbd3536444b90e0dcd9008c5",
+        "mergedAt": "2026-10-24T05:20:43Z",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact three-package registry migration; runtime archives removed. Clean npm ci, lint, types, 146 units, production export and 27 Chromium/WebKit/mobile Chromium docs checks passed; remote gates passed."
+      }
     },
     {
       "name": "agent-cli docs",
       "repository": "agent-cli",
       "owner": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
-      "status": "migrated",
+      "status": "migrated; consumer installs published HIG 0.1.0 from npm",
       "mergedPRs": [
         "https://github.com/bloxwap/agent-cli/pull/47",
-        "https://github.com/bloxwap/agent-cli/pull/48"
+        "https://github.com/bloxwap/agent-cli/pull/48",
+        "https://github.com/bloxwap/agent-cli/pull/55",
+        "https://github.com/bloxwap/agent-cli/pull/68"
       ],
-      "openPRs": [
-        "https://github.com/bloxwap/agent-cli/pull/55"
-      ],
-      "validatedVersion": "0.1.0-candidate.sha872906a9",
+      "openPRs": [],
+      "validatedVersion": "0.1.0",
       "validation": "agent-cli#48 CI green (CI, install smoke ubuntu/macos, Documentation with drift and docs:smoke 13/13) on cc5d405, merged as cfbc8a6 (post-merge CI, Install smoke, Documentation green); independent verifier: build, lint, typecheck, 71 tests, test:package, docs build (16 pages, 597 links, 13 cards at /agent-cli), docs:check, scoped drift passed (38 files, 0 dated exceptions), browser probe (links, search, copy/install, keyboard, 390px nav, loaded Bloxwap faces via HIG roles); tarballs byte-identical to a fresh hig@872906a9 candidate; before/after: CSS 150,822 to 153,404 B, JS 1,268,205 to 1,270,472 B, fonts unchanged, docs deps 21 to 20, Radix lockfile entries 90 to 62 (evidence/hig/docs-package-refresh/)",
       "rollback": "revert the squash merge of #48 (restores the 19c75619 tarballs, Radix peers and font bridge)",
-      "remaining": "#56, #99",
+      "remaining": "Formal owner acceptance (#57); historical candidate evidence is preserved separately.",
       "exceptionExpires": "2027-01-15",
       "guide": "docs/governance/new-repository.md",
       "candidateRefresh": {
-        "status": "validated locally; draft PR pending merge",
+        "status": "merged; present on the default branch",
         "version": "0.1.0-candidate.shae3390bbd",
         "higSourceCommit": "e3390bbd0ac12b9d4b371175bd250d01ea866abe",
         "pr": "https://github.com/bloxwap/agent-cli/pull/55",
         "head": "acd7443f3c877650cff3f3e8739abe486dc32ac7",
         "evidence": "evidence/hig/og-font-refresh/report.json",
         "validation": "Initial refresh proof is retained under initialValidation; current main integration checks are under integration.",
-        "mergeEffect": "Retire issue-115 OG/workaround exceptions only after this PR merges; current default-branch versions and exceptions above remain authoritative.",
+        "mergeEffect": "Implemented on the default branch; recorded validation retains its original commit and toolchain scope.",
         "ci": "Latest-head remote checks were starting after normal merge/push; live results are linked fromPR.",
         "initialValidation": {
           "head": "a2798c7fd09c4f4efa95dad138ea889937f349d5",
@@ -1165,8 +1340,51 @@
           "evidence": "evidence/hig/og-font-refresh/main-integration/",
           "validation": "Frozen npm ci,build/lint/types,232 CLI tests,packed-package install,docs production/check(2CSS tests),14 browser smoke and41-file pinned drift pass. Exact e339 four archives/lock/fonts unchanged; current13 OG hashes match historical manifest. Screenshot parity remains explicitly scoped to original76384 baseline.",
           "mergeability": "MERGEABLE/CLEAN immediately after normal push; latest remote checks linked fromPR."
-        }
+        },
+        "mergedAt": "2026-10-19T16:28:40Z",
+        "mergeCommit": "853db776f4f54248f87aeade708f54e4d59b61dd"
+      },
+      "validationScope": "Earlier validation text records the original pilot. The candidate refresh/ownership record below identifies the merged follow-up and its exact evidence.",
+      "registryMigration": {
+        "pr": "https://github.com/bloxwap/agent-cli/pull/68",
+        "mergeCommit": "5f1e34e9745d652cd3436562c53d600f86ce396b",
+        "version": "0.1.0",
+        "status": "merged",
+        "validation": "Exact four-package registry migration with no runtime vendor archives; all 10 remote checks, 286 CLI tests and 14 browser tests passed."
       }
     }
-  ]
+  ],
+  "stateEvidence": "evidence/adoption/state-2026-10-23.json",
+  "publication": {
+    "version": "0.1.0",
+    "tag": "v0.1.0",
+    "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
+    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
+    "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
+    "conclusion": "success",
+    "verifiedSteps": [
+      "artifact source/tag/package set and hashes",
+      "publish all eight packages",
+      "registry hash comparisons",
+      "web/SSR registry consumer",
+      "Next registry consumer",
+      "RN 0.81 and RN 0.83 registry consumers"
+    ],
+    "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+  },
+  "consumerRefreshAcceptance": {
+    "issue": "https://github.com/bloxwap/hig/issues/115",
+    "status": "implemented and merged; adoption records reconciled",
+    "prs": [
+      "https://github.com/bloxwap/monorepo/pull/4602",
+      "https://github.com/bloxwap/monorepo/pull/4619",
+      "https://github.com/bloxwap/chart/pull/58",
+      "https://github.com/bloxwap/sfx/pull/55",
+      "https://github.com/bloxwap/agent-cli/pull/55",
+      "https://github.com/bloxwap/taptradetv/pull/216",
+      "https://github.com/bloxwap/tapsiren/pull/401"
+    ],
+    "validation": "Merged consumer refreshes retain their linked build/browser and exact candidate evidence. Native simulator/emulator results are recorded in monorepo#4602 and #4619. Current mobile provider uses localeDirection, display-p3 and inherited type scaling; the obsolete busy-name helper is absent. Chart retains its workspace link without the former peer workaround. OG consumers use the separate hig-og-fonts package. TapTrade navigation preserves schedule cell and focus styles.",
+    "limits": "Registry migration is tracked separately in #56. This closeout does not assert new physical-device observations or owner acceptance."
+  }
 }

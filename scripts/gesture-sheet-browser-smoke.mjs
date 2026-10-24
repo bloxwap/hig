@@ -1,3 +1,4 @@
+import {launchBrowser} from './browser-launcher.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -18,7 +19,7 @@ const inputs=['packages/react/src/gesture-sheet.tsx','packages/react/src/styles.
 const result={checkedAt:new Date().toISOString(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDirty:!!execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).trim(),inputHashes:Object.fromEntries(inputs.map(file=>[file,createHash('sha256').update(readFileSync(join(root,file))).digest('hex')])),backend:'vaul@1.1.2',browserVersions:{},engines:{}};
 async function drag(page,locator,distance){const r=await locator.boundingBox();assert.ok(r);await page.mouse.move(r.x+r.width/2,r.y+Math.min(10,r.height/2));await page.mouse.down();await page.mouse.move(r.x+r.width/2,r.y+distance,{steps:12});await page.mouse.up();}
 for(const [engine,type] of Object.entries({chromium,webkit})){
- const browser=await type.launch({headless:true});const cases=[];result.engines[engine]=cases;result.browserVersions[engine]=browser.version();
+ const browser=await launchBrowser(type,{headless:true});const cases=[];result.engines[engine]=cases;result.browserVersions[engine]=browser.version();
  const overall=setTimeout(()=>browser.close().catch(()=>{}),90000);
  try{
   for(const options of [{name:'focus-scroll-drag',width:390},{name:'handle-only',width:1280,handleOnly:true},{name:'pending-veto',width:390,pending:true},{name:'pending-locked',width:390,pending:true,locked:true},{name:'snap-points',width:390,snaps:true},{name:'reduced-motion',width:390,reduced:true}]){

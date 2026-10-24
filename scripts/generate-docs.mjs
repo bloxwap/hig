@@ -23,12 +23,12 @@ const api={};for(const platform of ['react','native','chart']){api[platform]={};
 const familySource={brand:'docs/foundations/platform.md',provider:'docs/architecture/platform-matrix.md'};
 const catalog=examples.map(e=>{const source=familySource[e.family]??`docs/components/${e.family}.md`;const chapter=readFileSync(source,'utf8');const webCode=Object.fromEntries(e.states.map(s=>[s,exampleCode(e.name,'react','comfortable',s)]));const nativeCode=Object.fromEntries(e.states.map(s=>[s,exampleCode(e.name,'native','comfortable',s)]));const route=`components/${e.slug}`;pages.push({route,title:e.name,source,toc:[],section:'components',component:e.name});return {...e,route,source,code:{react:webCode,native:nativeCode},api:{react:api.react[e.name]??api.chart[e.name]??null,native:api.native[e.name]??null}};});
 const codes=Object.fromEntries(catalog.map(e=>[e.name,e.code]));writeFileSync('apps/docs/src/code.json',JSON.stringify(codes,null,2)+'\n');for(const e of catalog){delete e.code;delete e.web;delete e.native;}
-const data={version,status:'review candidate · device validation pending',pages:pages.map(({markdown,...page})=>page),catalog};mkdirSync('apps/docs/src',{recursive:true});mkdirSync('apps/docs/public/markdown',{recursive:true});writeFileSync('apps/docs/src/content.json',JSON.stringify(data,null,2)+'\n');writeFileSync('planning/api-manifest.json',JSON.stringify({version,api},null,2)+'\n');
+const data={version,status:'pre-1.0 release · acceptance exceptions documented',pages:pages.map(({markdown,...page})=>page),catalog};mkdirSync('apps/docs/src',{recursive:true});mkdirSync('apps/docs/public/markdown',{recursive:true});writeFileSync('apps/docs/src/content.json',JSON.stringify(data,null,2)+'\n');writeFileSync('planning/api-manifest.json',JSON.stringify({version,api},null,2)+'\n');
 // Interactive previews need routing labels and choices. Full chapters and API signatures
 // already render on the server; shipping them again to every preview wastes the docs budget.
 writeFileSync('apps/docs/src/demo-content.json',JSON.stringify({pages:pages.map(({route,title})=>({route,title})),catalog:catalog.map(({name,route,nativeSupport,states})=>({name,route,nativeSupport,states}))},null,2)+'\n');
 for(const p of pages.filter(p=>!p.component)){const target=`apps/docs/public/markdown/${p.source.slice(5)}`;mkdirSync(target.slice(0,target.lastIndexOf('/')),{recursive:true});writeFileSync(target,p.markdown);}
-writeFileSync('apps/docs/public/llms.txt',`# Bloxwap HIG ${version} candidate\n\n${pages.filter(p=>!p.component).map(p=>`## ${p.title}\nSource: ${p.source}\n\n${p.markdown}`).join('\n\n')}`);
+writeFileSync('apps/docs/public/llms.txt',`# Bloxwap HIG ${version}\n\n${pages.filter(p=>!p.component).map(p=>`## ${p.title}\nSource: ${p.source}\n\n${p.markdown}`).join('\n\n')}`);
 writeFileSync('apps/docs/public/catalog.json',JSON.stringify({version,components:catalog.map(({name,route,entry,nativeSupport,states})=>({name,route,entry,nativeSupport,states}))},null,2)+'\n');
 console.log(`Docs: ${pages.length} routes; ${catalog.length} components; ${sourcefiles.length} Markdown chapters`);
 // Generated Fumadocs collection. docs/ remains the only authored guide source.
@@ -41,7 +41,7 @@ for(const page of pages){
  // .md uses CommonMark rather than interpreting guide prose as JSX.
  write(`${contentRoot}/${page.route}.md`,`---\ntitle: ${JSON.stringify(page.title.replace(/ · HIG.*$/,''))}\n---\n\n${markdown}\n`);
 }
-write(`${contentRoot}/index.mdx`,`---\ntitle: Human interface guidelines\n---\n\nVersion ${version} candidate.\n\n[Install HIG](/docs/guides/installation) · [Component catalog](/docs/catalog) · [Website and migration shell](/docs/guides/website)\n`);
+write(`${contentRoot}/index.mdx`,`---\ntitle: Human interface guidelines\n---\n\nVersion ${version}.\n\n[Install HIG](/docs/guides/installation) · [Component catalog](/docs/catalog) · [Website and migration shell](/docs/guides/website)\n`);
 write(`${contentRoot}/catalog.mdx`,`---\ntitle: Component catalog\ndescription: Reusable building blocks for clear interfaces on web and native.\n---\n\n${groups.map(group=>`## ${group.title}\n\n${group.description}\n\n<ComponentGroup family="${group.family}" />`).join('\n\n')}\n`);
 write(`${contentRoot}/meta.json`,JSON.stringify({title:`HIG ${version}`,pages:['index','catalog','guides','components']},null,2));
 write(`${contentRoot}/guides/meta.json`,JSON.stringify({title:'Guidelines',pages:['installation','foundations','components','feedback','architecture','governance','migration','website','ci-runners']},null,2));

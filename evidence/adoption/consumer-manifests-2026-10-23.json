@@ -1,0 +1,145 @@
+{
+  "observedAt": "2026-10-23",
+  "scope": "Default-branch dependency snapshots before the new registry migrations; paths and blob SHAs identify the observed source.",
+  "manifests": [
+    {
+      "repo": "hyperliquid",
+      "path": "apps/docs/package.json",
+      "sha": "b068a8ac9d75ef97a607cd46da0f4de02609df47",
+      "hig": {
+        "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha0e239442.tgz",
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz",
+        "@bloxwap/hig-og-fonts": "file:../../vendor/bloxwap-hig/bloxwap-hig-og-fonts-0.1.0-candidate.sha0e239442.tgz"
+      }
+    },
+    {
+      "repo": "chart",
+      "path": "apps/docs/package.json",
+      "sha": "fd587d49b0c81f447ab6d7b61c9e753348801e13",
+      "hig": {
+        "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-og-fonts": "file:../../vendor/bloxwap-hig/bloxwap-hig-og-fonts-0.1.0-candidate.shae3390bbd.tgz"
+      }
+    },
+    {
+      "repo": "font",
+      "path": "apps/docs/package.json",
+      "sha": "ff065e7717071a3ee9b8ec84274ebe68611ed866",
+      "hig": {
+        "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha7c67a07c.tgz",
+        "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha7c67a07c.tgz",
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha7c67a07c.tgz"
+      }
+    },
+    {
+      "repo": "sfx",
+      "path": "apps/docs/package.json",
+      "sha": "6579473a377a4b4ace1edd464401fd3c6d7ec609",
+      "hig": {
+        "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-og-fonts": "file:../../vendor/bloxwap-hig/bloxwap-hig-og-fonts-0.1.0-candidate.shae3390bbd.tgz"
+      }
+    },
+    {
+      "repo": "haptic",
+      "path": "apps/docs/package.json",
+      "sha": "c62fbcb49daa86399af0d5294f5991607538c295",
+      "hig": {
+        "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha872906a9.tgz",
+        "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha872906a9.tgz",
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha872906a9.tgz"
+      }
+    },
+    {
+      "repo": "agent-cli",
+      "path": "apps/docs/package.json",
+      "sha": "471eedd3901dc7443bde0d577ef2ef761470b1f9",
+      "hig": {
+        "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.shae3390bbd.tgz",
+        "@bloxwap/hig-og-fonts": "file:../../vendor/bloxwap-hig/bloxwap-hig-og-fonts-0.1.0-candidate.shae3390bbd.tgz"
+      }
+    },
+    {
+      "repo": "taptradetv",
+      "path": "apps/web/package.json",
+      "sha": "a20d865eea556ea8b3f6ea4ecf5eecea8ab22fda",
+      "hig": {
+        "@bloxwap/hig-contracts": "file:../../vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha0e239442.tgz",
+        "@bloxwap/hig-react": "file:../../vendor/bloxwap-hig/bloxwap-hig-react-0.1.0-candidate.sha0e239442.tgz",
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz"
+      }
+    },
+    {
+      "repo": "taptradetv",
+      "path": "apps/host/package.json",
+      "sha": "de8bff22a11a31078db0dcad0a90eeea2debc2e3",
+      "hig": {
+        "@bloxwap/hig-tokens": "file:../../vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz"
+      }
+    },
+    {
+      "repo": "tapsiren",
+      "path": "workers/tapsiren/package.json",
+      "sha": "7d5c04002d90faf6dbec8768e2db684ebd6e3f10",
+      "hig": {
+        "@bloxwap/hig-contracts": "0.1.0-candidate.shae3390bbd",
+        "@bloxwap/hig-react": "0.1.0-candidate.shae3390bbd",
+        "@bloxwap/hig-tokens": "0.1.0-candidate.shae3390bbd",
+        "@bloxwap/hig-og-fonts": "0.1.0-candidate.shae3390bbd"
+      }
+    },
+    {
+      "repo": "monorepo",
+      "path": "apps/app/package.json",
+      "sha": "a7db8959bb19de55eda6ac18090a053cc9ef0d56",
+      "hig": {
+        "@bloxwap/hig-react": "file:../../artifacts/hig/bloxwap-hig-react-0.1.0-candidate.sha0e239442.tgz",
+        "@bloxwap/hig-tokens": "file:../../artifacts/hig/bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz"
+      }
+    },
+    {
+      "repo": "monorepo",
+      "path": "apps/pro/package.json",
+      "sha": "91524ecba0c79cfc4012392f72f43d55880ed186",
+      "hig": {
+        "@bloxwap/hig-contracts": "file:../../artifacts/hig/bloxwap-hig-contracts-0.1.0-candidate.sha0e239442.tgz",
+        "@bloxwap/hig-react": "file:../../artifacts/hig/bloxwap-hig-react-0.1.0-candidate.sha0e239442.tgz",
+        "@bloxwap/hig-tokens": "file:../../artifacts/hig/bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz"
+      }
+    },
+    {
+      "repo": "monorepo",
+      "path": "apps/www/package.json",
+      "sha": "505875c0eb0c680d5d5a5a7011d6adb5c8f5c29a",
+      "hig": {
+        "@bloxwap/hig-tokens": "file:../../artifacts/hig/bloxwap-hig-tokens-0.1.0-candidate.sha0e239442.tgz"
+      }
+    },
+    {
+      "repo": "monorepo",
+      "path": "apps/mobile/package.json",
+      "sha": "015c74c76e79bcf5b9930245f86b823235b6b902",
+      "hig": {
+        "@bloxwap/hig-tokens": "file:./vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha839cbe14.tgz",
+        "@bloxwap/hig-contracts": "file:./vendor/bloxwap-hig/bloxwap-hig-contracts-0.1.0-candidate.sha839cbe14.tgz",
+        "@bloxwap/hig-native": "file:./vendor/bloxwap-hig/bloxwap-hig-native-0.1.0-candidate.sha839cbe14.tgz",
+        "@bloxwap/hig-native-fonts": "file:./vendor/bloxwap-hig/bloxwap-hig-native-fonts-0.1.0-candidate.sha839cbe14.tgz",
+        "@bloxwap/hig-feedback": "file:./vendor/bloxwap-hig/bloxwap-hig-feedback-0.1.0-candidate.sha839cbe14.tgz"
+      }
+    },
+    {
+      "repo": "bloxwap.github.io",
+      "path": "package.json",
+      "sha": "b3bdb3604d40f6c5dc804aba6d88244907da480e",
+      "hig": {
+        "@bloxwap/hig-tokens": "file:vendor/bloxwap-hig/bloxwap-hig-tokens-0.1.0-candidate.sha872906a9.tgz"
+      }
+    }
+  ]
+}
