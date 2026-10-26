@@ -1,6 +1,19 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+/* Scan rendered sources, not downloadable Markdown, code strings, or build output. */
+@source './';
+@source '../components';
+@source '../lib';
+@source '../src/*.tsx';
+@source '../content';
+@source '../mdx-components.tsx';
 @import 'fumadocs-ui/css/neutral.css';
-@import 'fumadocs-ui/css/preset.css';
+/* Match fumadocs-ui/css/preset.css, omitting the unused Notebook and Flux layouts. */
+@import 'fumadocs-ui/css/lib/base.css';
+@import 'fumadocs-ui/css/lib/shiki.css';
+@plugin '../node_modules/fumadocs-ui/dist/tailwind/typography.js';
+@import 'fumadocs-ui/css/generated/docs.css';
+@import 'fumadocs-ui/css/generated/home.css';
+@import 'fumadocs-ui/css/generated/shared.css';
 @import '@bloxwap/hig-tokens/css';
 @import '@bloxwap/hig-react/css/base';
 @import '@bloxwap/hig-react/css';
