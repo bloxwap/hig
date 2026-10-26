@@ -1,0 +1,9 @@
+[[IgnoredVulns]]
+id = "GHSA-5p2g-fcmc-qvqq"
+ignoreUntil = 2027-01-25T00:00:00Z
+reason = "image-size fix only in 2.x (major API change); metro 0.83 (Expo SDK 54) requires ^1 and calls the main export with a file path for non-ZIP assets; dev/bundle-time asset sizing of first-party assets only. Revisit on Expo SDK upgrade (metro >=0.84 drops image-size)"
+
+[[IgnoredVulns]]
+id = "GHSA-w3rx-r6r6-pgpr"
+ignoreUntil = 2027-01-25T00:00:00Z
+reason = "image-size fix only in 2.x (major API change); metro 0.83 (Expo SDK 54) requires ^1 and calls the main export with a file path for non-ZIP assets; dev/bundle-time asset sizing of first-party assets only. Revisit on Expo SDK upgrade (metro >=0.84 drops image-size)"
