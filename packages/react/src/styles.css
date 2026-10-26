@@ -71,7 +71,9 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-list { list-style:none;padding:0;margin:0; }
 .hig-list > li + li { border-block-start:1px solid var(--hig-border); }
 .hig-table-scroll { min-width:0;max-width:100%;overflow:auto;border:1px solid var(--hig-border);border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface); }
-:where(.hig-table) { border-collapse:separate;border-spacing:0;width:100%;color:var(--hig-text);line-height:1.5; }
+/* Class specificity so the opt-in base `table` rule cannot collapse HIG tables. */
+.hig-table { border-collapse:separate;border-spacing:0; }
+:where(.hig-table) { width:100%;color:var(--hig-text);line-height:1.5; }
 .hig-table > caption:not(.hig-sr-only) { padding:12px;text-align:start;font-weight:600;border-bottom:1px solid var(--hig-border); }
 :where(.hig-table > * > tr) > :is(th,td) { padding:12px;text-align:start;vertical-align:middle;border-bottom:1px solid var(--hig-border); }
 .hig-table > thead > tr > th { color:var(--hig-muted);font-size:.875rem;font-weight:600;background:var(--hig-surface); }
