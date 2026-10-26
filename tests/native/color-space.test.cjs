@@ -74,7 +74,9 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
   expect(flat(mount(React.createElement(Skeleton)).findAll(n=>n.type===RN.View&&n.props.style)[0]).backgroundColor).toBe(p3.nested);
   const field=mount(React.createElement(Field,{label:'Amount',error:'Too precise'},React.createElement(Input)));
   expect(flat(field.findAllByType(RN.Text).find(t=>t.props.children==='Too precise')).color).toBe(p3.negative);
-  const input=field.findByType(RN.TextInput);expect(input.props.placeholderTextColor).toBe(p3.muted);expect(flat(input)).toMatchObject({color:p3.text,backgroundColor:p3.surface,borderColor:p3.border});
+  const input=field.findByType(RN.TextInput);expect(input.props.placeholderTextColor).toBe(p3.muted);expect(flat(input)).toMatchObject({color:p3.text,backgroundColor:p3.surface,borderColor:p3.negative});
+  const validField=mount(React.createElement(Field,{label:'Amount'},React.createElement(Input)));
+  expect(flat(validField.findByType(RN.TextInput)).borderColor).toBe(p3.border);
   const {Rect,Path}=require('react-native-svg');
   const mark=mount(React.createElement(BrandMark));expect(mark.findByType(Rect).props.fill).toBe(p3.action);expect(mark.findAll(n=>n.props.strokeWidth==='16')[0].props.stroke).toBe(p3.background);
   expect(mount(React.createElement(CheckIcon)).findByType(Path).props.stroke).toBe(p3.text);

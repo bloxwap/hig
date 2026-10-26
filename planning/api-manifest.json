@@ -64,7 +64,7 @@
       },
       "Row": {
         "entry": "data",
-        "signature": "export declare function Row(props: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element;"
+        "signature": "export declare function Row({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element;"
       },
       "Column": {
         "entry": "data",
@@ -398,7 +398,7 @@
       },
       "IconButton": {
         "entry": "button",
-        "signature": "export declare function IconButton({ label, children, ...props }: ButtonProps & {\n    label: string;\n}): React.JSX.Element;"
+        "signature": "export declare function IconButton({ label, children, style, ...props }: ButtonProps & {\n    label: string;\n}): React.JSX.Element;"
       },
       "LinkProps": {
         "entry": "button",
@@ -594,7 +594,7 @@
       },
       "SegmentedControl": {
         "entry": "radio-group",
-        "signature": "export declare const SegmentedControl: typeof RadioGroup;"
+        "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): React.JSX.Element;"
       },
       "MarketRow": {
         "entry": "recipes",

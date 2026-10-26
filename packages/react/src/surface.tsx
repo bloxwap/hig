@@ -5,4 +5,4 @@ export function Stack(props:React.HTMLAttributes<HTMLDivElement>){return <div {.
 export function Inline(props:React.HTMLAttributes<HTMLDivElement>){return <div {...props} className={`hig-inline ${props.className??''}`}/>;}
 export function Surface(props:React.HTMLAttributes<HTMLDivElement>){return <div {...props} className={`hig-surface ${props.className??''}`}/>;}
 export const Card=Surface;
-export function Separator(props:React.HTMLAttributes<HTMLHRElement>){return <hr {...props} className='hig-separator'/>;}
+export function Separator(props:React.HTMLAttributes<HTMLHRElement>){return <hr {...props} className={`hig-separator ${props.className??''}`}/>;}

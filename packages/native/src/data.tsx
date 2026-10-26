@@ -3,7 +3,7 @@ import {FlatList,View,StyleSheet,type StyleProp,type TextStyle} from 'react-nati
 import {formatNumber} from '@bloxwap/hig-contracts';
 import * as en from '@bloxwap/hig-contracts/messages';
 import {useColors,useHIG} from './provider.js';
-import {Text,Surface} from './surface.js';
+import {Text,Surface,Separator} from './surface.js';
 import {Button} from './button.js';
 export type NumberTone='text'|'positive'|'negative'|'muted';
 /** Typography only: semantic tone owns colour and numeric glyphs remain tabular. */
@@ -21,9 +21,9 @@ export function Usd(props:NumberProps){return <NumberReadout {...props} options=
 export function Percent(props:NumberProps){return <NumberReadout {...props} value={props.value==null?props.value:props.value/100} options={{maximumFractionDigits:Math.max(3,props.options?.minimumFractionDigits??0),...props.options,style:'percent'}}/>;}
 export function Metric({label,value}: {label:string;value:React.ReactNode}){return <Surface><Text>{label}</Text>{value}</Surface>;}
 export const Stat=Metric;
-export function Row({children}:React.PropsWithChildren){return <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',gap:12,paddingVertical:12}}>{children}</View>;}
+export function Row({children}:React.PropsWithChildren){return <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,paddingVertical:12}}>{children}</View>;}
 /** Native alternative to dense DOM tables: virtualized labeled rows. */
 export interface ListProps<T> {items:readonly T[];keyFor:(item:T)=>string;render:(item:T)=>React.ReactNode;empty?:string;label?:string;loading?:boolean;error?:string;onRetry?:()=>void;onLoadMore?:()=>void}
-export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){const {messages}=useHIG();return <FlatList data={items} accessibilityLabel={label} accessibilityState={{busy:loading}} keyExtractor={keyFor} renderItem={({item})=><View>{render(item)}</View>}
+export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){const {messages}=useHIG();return <FlatList data={items} accessibilityLabel={label} accessibilityState={{busy:loading}} keyExtractor={keyFor} renderItem={({item})=><View>{render(item)}</View>} ItemSeparatorComponent={Separator}
  ListEmptyComponent={!loading&&!error?<Text>{empty??messages.noItems??en.noItems}</Text>:null}
- ListFooterComponent={<View>{loading&&<Text accessibilityLiveRegion='polite'>{messages.loadingItems??en.loadingItems}</Text>}{error&&<View><Text accessibilityRole='alert'>{error}</Text>{onRetry&&<Button disabled={loading} onPress={onRetry}>{messages.retry??en.retry}</Button>}</View>}{onLoadMore&&<Button disabled={loading} onPress={onLoadMore}>{messages.loadMore??en.loadMore}</Button>}</View>}/>;}
+ ListFooterComponent={<View style={{gap:12,paddingTop:loading||error||onLoadMore?12:0}}>{loading&&<Text accessibilityLiveRegion='polite'>{messages.loadingItems??en.loadingItems}</Text>}{error&&<View style={{gap:12}}><Text accessibilityRole='alert'>{error}</Text>{onRetry&&<Button disabled={loading} onPress={onRetry}>{messages.retry??en.retry}</Button>}</View>}{onLoadMore&&<Button disabled={loading} onPress={onLoadMore}>{messages.loadMore??en.loadMore}</Button>}</View>}/>;}

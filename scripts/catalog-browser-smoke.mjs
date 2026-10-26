@@ -6,6 +6,7 @@ import {dirname} from 'node:path';
 import assert from 'node:assert/strict';
 import {compareVisual} from './visual-diff.mjs';
 import {visualBaselinePath} from './visual-baseline.mjs';
+import {selectHIGOption} from './select-option.mjs';
 const {catalog}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
 const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const results=[];const visualFailures=[];mkdirSync('artifacts/visual',{recursive:true});
@@ -21,7 +22,7 @@ try{
   await page.evaluate(()=>document.fonts.ready);
   await page.locator('.example-frame').waitFor();
   for(const state of entry.states){
-   await page.getByRole('combobox',{name:'Example state',exact:true}).selectOption(state);
+   await selectHIGOption(page,'Example state',state[0].toUpperCase()+state.slice(1));
    const axe=await new AxeBuilder({page}).include('.example-frame').withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
    const serious=axe.violations.filter(v=>v.impact==='critical'||v.impact==='serious').map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}));
    assert.deepEqual(axe.violations,[],`${entry.name}/${state} accessibility`);assert.deepEqual(errors,[],`${entry.name}/${state} runtime`);
@@ -31,7 +32,7 @@ try{
    results.push({name:entry.name,state,regression,render:'passed',accessibility:'no serious/critical axe findings',capture:file,behaviorTests:'Shared family contract tests; this capture alone is not full behavioral certification'});
   }
   if(focusBaselineNames.has(entry.name)){
-   await page.getByRole('combobox',{name:'Example state',exact:true}).selectOption('default');
+   await selectHIGOption(page,'Example state','Default');
    const canvas=page.locator('.example-frame .example-canvas'),control=canvas.getByRole('slider');
    for(const density of ['comfortable','compact']){
     await page.evaluate(d=>{for(const el of document.querySelectorAll('[data-hig-density]'))el.setAttribute('data-hig-density',d);},density);
