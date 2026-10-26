@@ -62,7 +62,7 @@ const cell=['paddingTop','paddingInlineStart','textAlign','borderBottomWidth','b
 const focus=['outlineStyle','outlineWidth','outlineColor','outlineOffset'];
 const probes={
  plain:{'plain-table':['borderCollapse','width',...box],'plain-th':[...cell,...box],'plain-td':[...cell,...box],'plain-range':['accentColor','minHeight','width','height',...box],'plain-button':[...box],'plain-box':[...box,'offsetWidth'],'plain-severity':['borderInlineStartWidth','borderInlineStartStyle']},
- hig:{'hig-button':['minHeight','borderRadius',...box],'hig .hig-table':['borderCollapse','width',...box],'hig .hig-table th':[...cell,...box],'hig .hig-table td':[...cell,...box],'hig .hig-range':['accentColor','minHeight','width',...box],'hig [data-severity]':['borderInlineStartWidth','borderInlineStartStyle','borderInlineStartColor','borderTopWidth','borderInlineEndWidth','borderBottomWidth','boxShadow']},
+ hig:{'hig-button':['minHeight','borderRadius',...box],'hig .hig-table':['borderCollapse','borderSpacing','width',...box],'hig .hig-table th':[...cell,...box],'hig .hig-table td':[...cell,...box],'hig .hig-range':['accentColor','minHeight','width',...box],'hig [data-severity]':['borderInlineStartWidth','borderInlineStartStyle','borderInlineStartColor','borderTopWidth','borderInlineEndWidth','borderBottomWidth','boxShadow']},
 };
 async function read(page,map){return page.evaluate(map=>Object.fromEntries(Object.entries(map).map(([key,props])=>{const el=key.includes(' ')?document.querySelector(`#${key.split(' ')[0]} ${key.split(' ').slice(1).join(' ')}`):document.getElementById(key);if(!el)return [key,null];const s=getComputedStyle(el);return [key,Object.fromEntries(props.map(p=>[p,p==='offsetWidth'?el.offsetWidth:s[p]]))];})),map);}
 async function focusRing(page,id){
@@ -107,7 +107,8 @@ try{
    assert.notDeepEqual(base.plainFocus,control.plainFocus,`${engine}: base changes the plain focus ring`);
    // 3. Components keep their styling without the base.
    assert.equal(hig.hig['hig .hig-table th'].paddingTop,'12px',`${engine}: Table header cells keep 12px padding`);
-   assert.equal(hig.hig['hig .hig-table'].borderCollapse,'collapse',`${engine}: Table keeps collapsed borders`);
+   assert.equal(hig.hig['hig .hig-table'].borderCollapse,'separate',`${engine}: Table keeps separated borders (cells draw their own dividers)`);
+   assert.equal(hig.hig['hig .hig-table'].borderSpacing,'0px',`${engine}: Table keeps zero border spacing`);
    assert.equal(hig.hig['hig .hig-range'].minHeight,'48px',`${engine}: Slider keeps its 48px target`);
    assert.equal(hig.hig['hig-button'].boxSizing,'border-box',`${engine}: HIG elements keep border-box`);
    for(const side of ['borderInlineStartWidth','borderTopWidth','borderInlineEndWidth','borderBottomWidth'])assert.equal(hig.hig['hig [data-severity]'][side],'2px',`${engine}: Alert keeps its full severity frame (${side})`);
