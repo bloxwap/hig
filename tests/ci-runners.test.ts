@@ -11,7 +11,8 @@ it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo o
   expect(text,name).toContain('runs-on: [self-hosted, macOS, ARM64]');
   expect(text,name).not.toMatch(/ubuntu-|--with-deps|\bapt-get\b|\bsudo /);
   expect(text,name).not.toContain('runner.temp');
-  expect(text.match(/runs-on:/g)?.length,name).toBe(text.match(/\[self-hosted, macOS, ARM64\]/g)?.length);
+  // Reusable-workflow callers pass the same runner as a JSON string input: runs-on: '["self-hosted","macOS","ARM64"]'.
+  expect(text.match(/runs-on:/g)?.length,name).toBe(text.match(/runs-on: (?:\[self-hosted, macOS, ARM64\]|'\["self-hosted","macOS","ARM64"\]')/g)?.length);
  }
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toMatch(/path:\s*~\/Library\/Caches\/ms-playwright/);
