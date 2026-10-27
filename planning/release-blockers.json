@@ -15,7 +15,7 @@
     "tracking": "https://github.com/bloxwap/hig/issues/57",
     "reviewBy": "2027-01-15",
     "approvedBy": "joeblau",
-    "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
+    "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md"
   },
   {
     "id": "native-fonts",
@@ -39,8 +39,8 @@
   },
   {
     "id": "owning-migrations",
-    "owner": "each adopting repository maintainers",
-    "reason": "Combined monorepo#4619 and native #4620/#4629 are merged. Consumer refreshes chart#58, sfx#55, agent-cli#55, tapsiren#401, taptradetv#216/#223 and hyperliquid#183 are merged; font#15 declares canonical asset ownership. #115 fixes are complete. HIG 0.1.0 is published, while consumer registry migrations remain in #56. Named-owner visual/motion/bundle decisions, real wallet-session acceptance and rollback retirement remain in #57/#110. The pre-1.0 availability exception from joeblau in PR #141 does not claim those items complete. Review by 2027-01-15.",
+    "owner": "joeblau",
+    "reason": "All ten consumer registry migrations are merged, including monorepo#4737 and taptradetv#253. Named adoption, parity, motion, routing and historical cost decisions are accepted in HIG #57/PR156. Real wallet-session acceptance, rollback-window completion, remaining renderer retirement and new equal-toolchain measurements remain #110. The pre-1.0 availability exception does not claim those execution items complete. Review by 2027-01-15.",
     "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/110",
     "reviewBy": "2027-01-15",

@@ -1,4 +1,4 @@
-# New repository setup and upgrades · HIG 0.1.0
+# New repository setup and upgrades · HIG 0.1.2
 
 Issue #36. These steps adopt HIG in a new or existing Bloxwap repository without copying component folders, palettes, fonts or feedback engines. The five SDK docs sites followed this path: bloxwap/hyperliquid#180, bloxwap/chart#53, bloxwap/font#11, bloxwap/sfx#50 and bloxwap/haptic#26.
 
@@ -16,21 +16,17 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 
 ## 2. Install versioned packages
 
-HIG is not on npm yet (#56). Until it is, consume the packed candidate:
+Install the required packages at the same exact published version. For a web consumer:
 
 ```sh
-git clone https://github.com/bloxwap/hig && cd hig && git checkout <commit>
-npm ci && npm run generate:fonts && npm run build
-npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
+npm install --save-exact @bloxwap/hig-contracts@0.1.2 @bloxwap/hig-tokens@0.1.2 @bloxwap/hig-react@0.1.2
 ```
 
-`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.1`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
+Native consumers install `@bloxwap/hig-native` and `@bloxwap/hig-native-fonts` instead of the DOM renderer; add feedback only where needed and satisfy the supported profile's peers. Keep all HIG dependencies and overrides aligned. Commit the lockfile and record the release, source commit and exact registry integrity values in the owning evidence manifest.
 
-- Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
-- Record their SHA-256 hashes and the source commit in a README or `provenance.json`.
-- Depend on them with `file:` dependencies, adding `overrides` so HIG's internal dependencies resolve to the same files.
+Building candidates requires `npm run generate:fonts` with Python packages `fonttools[woff]==4.61.1` and `brotli==1.2.1`. Registry consumers use the packaged fonts without generating them.
 
-Never copy `packages/*/src`, `dist` folders, `tokens.css`, palettes, fonts or feedback engines. When #56 publishes, swap the `file:` dependencies for registry versions and delete `vendor/bloxwap-hig/`.
+For unpublished changes only, follow the [release dry-run procedure](release.md) and consume its exact packed candidate archives. Never copy `packages/*/src`, `dist` folders, token CSS, palettes, fonts or feedback engines. Replace candidate `file:` dependencies with registry versions and remove obsolete archives when adopting a published release. Retain provenance manifests and historical validation records.
 
 Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once (add `@bloxwap/hig-react/css/base` first only when HIG owns the whole page), use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
 
@@ -51,7 +47,7 @@ Run the check from a pinned HIG checkout. The script uses only Node built-ins an
 
 ```yaml
 - uses: actions/checkout@v4
-  with: {repository: bloxwap/hig, ref: <same commit as the vendored tarballs>, path: .hig}
+  with: {repository: bloxwap/hig, ref: <source commit of the installed release>, path: .hig}
 - run: node .hig/scripts/drift.mjs --root . --config hig-drift.json
 ```
 
@@ -76,8 +72,8 @@ First run against current `main` heads on 2026-10-15, scanning `apps/docs` (auto
 
 ## Upgrading HIG
 
-1. Read the changelog in the dry-run artifact, or the npm release once #56 is done, together with the semver section of the release chapter.
-2. Upgrade tokens, contracts, renderer and feedback together. Never mix candidate commits. Recompute the vendored hashes.
+1. Read the release changelog (or the dry-run changelog for an unpublished candidate), together with the semver section of the release chapter.
+2. Upgrade tokens, contracts, renderer and feedback together. Never mix release versions or candidate commits. Verify the registry integrity values or candidate archive hashes.
 3. Update the drift checkout `ref` to the same commit and run the check. Remove exceptions whose need has gone.
 4. Re-run the validation in step 4 and update the matrix row's `higVersion` and PR links.
-5. Roll back by reverting the upgrade PR, which restores the previous tarballs and lockfile. Product pilots also keep their host feature flag (for example `NEXT_PUBLIC_HIG_PILOT=0`).
+5. Roll back by reverting the upgrade PR, which restores the previous exact versions and lockfile. Product pilots also keep their host feature flag (for example `NEXT_PUBLIC_HIG_PILOT=0`).

@@ -1,6 +1,6 @@
 # Bloxwap Human Interface Guidelines
 
-HIG **0.1.1**: a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. The eight coordinated packages are distributed through npm. Product acceptance and physical-device limitations remain documented in the release gates.
+HIG **0.1.2**: a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. The eight coordinated packages are distributed through npm. Product acceptance and physical-device limitations remain documented in the release gates.
 
 ## Local documentation
 

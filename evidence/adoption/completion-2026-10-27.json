@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-10-27",
+  "scope": "Owner-authorized fixes and approvals following the read-only audit; current facts supersede the dated audit without rewriting its observations.",
+  "ownerApproval": "https://github.com/bloxwap/hig/pull/156",
+  "release": {
+    "version": "0.1.2",
+    "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
+    "url": "https://github.com/bloxwap/hig/releases/tag/v0.1.2",
+    "quality": "https://github.com/bloxwap/hig/actions/runs/40600648507",
+    "publication": "https://github.com/bloxwap/hig/actions/runs/40601323124",
+    "status": "success",
+    "packages": 8,
+    "authentication": "npm _npmUser.trustedPublisher IDs match authenticated configured GitHub OIDC publisher IDs on all eight packages",
+    "verification": "exact hashes, signed registry/provenance bundles, web/SSR, Next hydration/fonts, RN 0.81/0.83/0.88 Metro consumers",
+    "evidence": "evidence/release/registry-0.1.2/"
+  },
+  "consumerRegistryRollout": {
+    "merged": 10,
+    "lastMigration": "https://github.com/bloxwap/taptradetv/pull/253",
+    "deployment": "https://github.com/bloxwap/taptradetv/actions/runs/40600027840",
+    "status": "all registry migrations merged; TapTrade production deployed successfully"
+  },
+  "ownerDecisions": {
+    "issue": 57,
+    "status": "closed",
+    "record": "evidence/adoption/owner-approval-2026-10-27.md",
+    "locales": "en-US approved; es/fr/ko/ko-KR/zh-CN/zh-Hans remain todo under an exception through 2027-01-15"
+  },
+  "remaining": {
+    "issues": [
+      110,
+      1
+    ],
+    "execution": [
+      "real authenticated/wallet-session acceptance for app, Pro and native",
+      "complete the accepted rollback window before remaining renderer migration/removal",
+      "new equal-toolchain source, web bundle and Hermes measurements after retirement"
+    ],
+    "marketingFonts": "23 committed marketing font files already removed by monorepo#4598; no longer a blocker",
+    "physical": "dated owner attestation remains; no new hardware observation claimed"
+  },
+  "monorepoCompatibility": {
+    "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+    "version": "0.1.2",
+    "head": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+    "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78",
+    "mergedAt": "2026-10-27T23:48:52Z",
+    "status": "merged",
+    "checks": {
+      "successful": 112,
+      "skipped": 3,
+      "failed": 0
+    },
+    "signoff": "joeblau; explicit owner authorization recorded in HIG PR156",
+    "validation": "Both frozen installs and registry integrity checks pass; all root quality gates, 3381 mobile tests on each platform, types/lint and production iOS/Android/web exports pass. Chromium/WebKit actual product checks pass with Pro stats preserved at 28px. Final source remote checks all pass after retrying three GUI-session preflight failures on healthy runners.",
+    "evidence": "evidence/adoption/monorepo-0.1.2-validation.json"
+  }
+}

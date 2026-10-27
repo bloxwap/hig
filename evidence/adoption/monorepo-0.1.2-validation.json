@@ -1,0 +1,71 @@
+{
+  "observedAt": "2026-10-27",
+  "sourceCommit": "217b4980f38ca3ddb19525007a447f37949ee080",
+  "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+  "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.2",
+  "toolchain": {
+    "node": "v24.6.0",
+    "bun": "1.4.4",
+    "expo": "58.0.19",
+    "reactNative": "0.88.0",
+    "react": "19.3.0"
+  },
+  "validation": {
+    "frozenInstalls": "root and standalone mobile passed; only HIG lock records changed",
+    "registryIntegrity": "both manifests agree with exact installed package versions and Bun lock SHA-512 digests",
+    "rootQuality": "35 lint, 36 type and 32 test tasks passed; 126 script tests passed, 2 skipped; font migration audit passed",
+    "mobileTypes": "passed without higFocusRef helper or casts",
+    "mobileLint": "zero errors; 239 existing warnings",
+    "mobileTests": {
+      "ios": {
+        "suites": 282,
+        "passed": 3381
+      },
+      "android": {
+        "suites": 282,
+        "passed": 3381
+      }
+    },
+    "exports": "production iOS, Android and web exports passed"
+  },
+  "nativeExportCommand": "bunx expo export --platform all --max-workers 2 --output-dir <scratch>",
+  "nativeBundles": [
+    {
+      "platform": "android",
+      "file": "_expo/static/js/android/entrypoint-f8c2889ceb92aa8a3c4d703c91b3efbd.hbc",
+      "bytes": 22021580,
+      "gzipBytes": 8375826,
+      "sha256": "34e631fbc60ab0cb274629dac3d996bb9bd5fd96c995cbca7568dfbf913bb428"
+    },
+    {
+      "platform": "ios",
+      "file": "_expo/static/js/ios/entrypoint-eb1aedfa7006a7559a026a5b74feef0e.hbc",
+      "bytes": 22020001,
+      "gzipBytes": 8377235,
+      "sha256": "27979fef5d21a086c1a4c79b9d7fa856dbccb33e4b372921cab2273fc373fefe"
+    }
+  ],
+  "measurementScope": "Single current-source export, not a before/after comparison or retirement savings claim. Rebuild the baseline and retirement source on the same toolchain before claiming deltas. These automated checks do not establish a real wallet session or physical hardware observation.",
+  "followup": {
+    "sourceCommit": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+    "scope": "CSS-only reset for borderless Pro stats and portfolio metrics; native code and package locks unchanged from the tested/exported source",
+    "evidence": "https://github.com/bloxwap/monorepo/blob/3d5ae402955cb5c75bafbb95570184b18c9a9ef8/docs/hig/evidence/acceptance-2026-10-27/web-compatibility.json",
+    "validation": "Full Chromium and WebKit production/browser scripts and unchanged marketing WebKit flow pass locally; existing five-stat 28px assertion retained."
+  },
+  "merge": {
+    "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+    "version": "0.1.2",
+    "head": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+    "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78",
+    "mergedAt": "2026-10-27T23:48:52Z",
+    "status": "merged",
+    "checks": {
+      "successful": 112,
+      "skipped": 3,
+      "failed": 0
+    },
+    "signoff": "joeblau; explicit owner authorization recorded in HIG PR156",
+    "validation": "Both frozen installs and registry integrity checks pass; all root quality gates, 3381 mobile tests on each platform, types/lint and production iOS/Android/web exports pass. Chromium/WebKit actual product checks pass with Pro stats preserved at 28px. Final source remote checks all pass after retrying three GUI-session preflight failures on healthy runners.",
+    "evidence": "evidence/adoption/monorepo-0.1.2-validation.json"
+  }
+}

@@ -1,5 +1,16 @@
 # Issue delivery and acceptance coverage · 2026-10-14
 
+## Current disposition · 2026-10-27
+
+All 35 original implementation issues are closed. The owner approved named adoption decisions in [#57](https://github.com/bloxwap/hig/issues/57), recorded by [PR #156](https://github.com/bloxwap/hig/pull/156). All ten consumer registry migrations are merged, including [TapTrade #253](https://github.com/bloxwap/taptradetv/pull/253). HIG 0.1.2 adds RN 0.88 / Expo 58 support and coordinated registry publication; see `planning/adoption.json` for the current release verification.
+
+The roadmap remains open for [#110](https://github.com/bloxwap/hig/issues/110): real wallet-session acceptance, rollback-window completion, renderer retirement and new equal-toolchain measurements. Six non-English glossary entries and physical-device observations retain explicitly scoped exceptions through 2027-01-15.
+
+The sections below are dated historical snapshots. Their original task prohibitions and partial dispositions describe those earlier reviews, not the current release authorization or live issue state.
+
+## Historical review record
+
+
 Historical acceptance audit, with later adoption annotations. The 2026-10-16 live roadmap review and current software follow-ups are tracked in [roadmap-followups.md](roadmap-followups.md); the original access failures and older PR references below are not the current delivery instructions.
 
 This audit covers #1–#18 against their current `gh issue view` bodies, saved in `evidence/issue-1-18/issue-N.json`. Foundations [PR #37](https://github.com/bloxwap/hig/pull/37) and components/feedback/docs [PR #42](https://github.com/bloxwap/hig/pull/42) are already merged. Earlier Contents-403 and monorepo-404 statements are historical; authenticated source reads and PR delivery now work. Current follow-up: [PR #45](https://github.com/bloxwap/hig/pull/45) (`hig/issues-1-18-verification`).

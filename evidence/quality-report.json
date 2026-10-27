@@ -1,6 +1,6 @@
 {
   "version": "0.1.2",
-  "sourceCommit": "2f0a277f2af63f5de9dac7fb0ced62000f2cfea1",
+  "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -102,8 +102,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2004640,
-      "gzip": 573547
+      "raw": 2004644,
+      "gzip": 573554
     },
     "docsCSS": {
       "raw": 116967

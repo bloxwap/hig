@@ -126,9 +126,9 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 
 The `prerequisites` and `publish` jobs are the only GitHub-hosted runner exceptions. [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) requires a supported hosted runner and npm CLI >=11.5.1. Both jobs use `ubuntu-24.04`; publishing uses Node 24.22.1 and explicitly installs the repository's pinned npm@11.6.1 globally on the ephemeral runner. It uses pinned `actions/setup-python` with Python 3.12 and the portable `ci-generate-fonts.sh` venv, plus `npx playwright install --with-deps chromium` for registry consumers.
 
-A published GitHub release with a `v*` tag or a manual dispatch with an existing tag starts the workflow. `prerequisites` requires configured reviewers on `npm-release` and a successful `quality.yml` run for the resolved tag commit, including when dispatch runs from another branch. `publish` needs both the unchanged self-hosted `security` scan and `prerequisites`, waits for the `npm-release` environment approval, checks out `refs/tags/<tag>` without persisted credentials, checks that its SHA still matches the prerequisite result, and re-runs the release gates. It publishes verified tarballs with `--provenance`. npm tries OIDC first and falls back to `NPM_TOKEN`, scoped as `NODE_AUTH_TOKEN` only on the publish step, while Trusted Publishers are being configured. Token authentication on this public repository’s GitHub-hosted runner also produces provenance. Registry checks verify every tarball hash and require source-linked provenance for packages published by this run; already published versions are skipped for resumability.
+A published GitHub release with a `v*` tag or a manual dispatch with an existing tag starts the workflow. `prerequisites` requires configured reviewers on `npm-release` and a successful `quality.yml` run for the resolved tag commit, including when dispatch runs from another branch. `publish` needs both the unchanged self-hosted `security` scan and `prerequisites`, waits for the `npm-release` environment approval, checks out `refs/tags/<tag>` without persisted credentials, checks that its SHA still matches the prerequisite result, and re-runs the release gates. It publishes verified tarballs with `--provenance` using OIDC. The token fallback has been removed; a missing or mismatched Trusted Publisher must fail publication. Registry checks verify every tarball hash and require source-linked provenance for packages published by this run; already published versions are skipped for resumability.
 
-Releases can proceed today using the transitional token fallback. An npm owner must configure a Trusted Publisher on each of the eight `@bloxwap/hig-*` packages: repository `bloxwap/hig`, workflow `publish.yml`, environment `npm-release`. Delete `NPM_TOKEN` and the publish-step fallback after the first verified OIDC publish confirms all eight Trusted Publishers. A repository maintainer must configure required reviewers on that GitHub environment. See the [release policy](governance/release.md) for the package list and approval requirements.
+All eight `@bloxwap/hig-*` Trusted Publishers are configured for repository `bloxwap/hig`, workflow `publish.yml`, environment `npm-release`. The 0.1.2 publication records npm's GitHub Actions trusted-publisher identity for each package, separately from its signed provenance. No workflow step references the organization publishing token. The shared organization secret remains available to other repositories. Required environment reviewers and exact-source quality gates remain mandatory. See the [release policy](governance/release.md) and `evidence/release/registry-0.1.2/` for verification.
 
 
 ## Actions & surfaces · HIG 0.1.0
@@ -807,7 +807,7 @@ Web and native fixtures include real independent sound, haptics, volume and moti
 
 HIG's physical acceptance uses the [2026-10-19 owner attestation](https://github.com/bloxwap/hig/blob/main/evidence/physical/owner-attestation-2026-10-19.md), approved in [PR #131](https://github.com/bloxwap/hig/pull/131), with review due **2027-01-15**. This is a dated owner-approved exception for #55, not a recorded device run. A contradicting physical result voids the relevant exception. Upstream [haptic#9](https://github.com/bloxwap/haptic/issues/9) remains its own physical-certification tracker.
 
-A recorded device acceptance run must include HIG/package versions, device, OS/browser, date, observer and actual observations: default/muted channels; each independent combination; volume/silent-mode; latency; interruptions; background/foreground; repeated/nested activation; cancelled scroll/drag; disabled/busy; slider repeated values; iOS preset limits; accessibility helper tab/VoiceOver order; visible recovery with feedback off. Attach video/measurements where useful. Reuse upstream haptic certification rather than declaring simulator passes as hardware proof. Owner: HIG and owning app/haptic maintainers; named assignments remain tracked in #57.
+A recorded device acceptance run must include HIG/package versions, device, OS/browser, date, observer and actual observations: default/muted channels; each independent combination; volume/silent-mode; latency; interruptions; background/foreground; repeated/nested activation; cancelled scroll/drag; disabled/busy; slider repeated values; iOS preset limits; accessibility helper tab/VoiceOver order; visible recovery with feedback off. Attach video/measurements where useful. Reuse upstream haptic certification rather than declaring simulator passes as hardware proof. Owner: HIG and owning app/haptic maintainers; Joe Blau accepted the named adoption ownership in #57.
 
 
 ## Trading glossary · HIG 0.1.2
@@ -1418,7 +1418,7 @@ Source: docs/foundations/source-reconciliation.md
 
 Issues #2, #6–#9, #11–#18. See `evidence/issue-1-18/monorepo-sha.txt` for the exact monorepo commit and `monorepo-source-fetch.json` for all 129 audited paths. This supersedes the earlier 404 source-access limitation; it does not turn old unperformed product/device checks into passes.
 
-The audit covers tokens, shared web/native primitives, plain-ui and app/Pro-owned controls. `monorepo-audit.json` records byte-identical duplicate groups, source bytes, repository asset totals and explicit source component dispositions. The existing catalog/platform matrix defines the HIG destination families. The authenticated organization inventory now includes monorepo, .github-private, taptradetv and tapsiren; their complete observed trees and explicit applicability decisions are recorded in new-repositories.json and planning/adoption.json. Named owner approval remains an organizational blocker, not a fabricated assignment. Confetti, signal strength, animated number backends and overlay layering internals stay optional host integrations; they are not silently added to base imports. Migration owners remain the owning product teams; HIG cannot claim their source forks have been deleted.
+The audit covers tokens, shared web/native primitives, plain-ui and app/Pro-owned controls. `monorepo-audit.json` records byte-identical duplicate groups, source bytes, repository asset totals and explicit source component dispositions. The existing catalog/platform matrix defines the HIG destination families. The authenticated organization inventory now includes monorepo, .github-private, taptradetv and tapsiren; their complete observed trees and explicit applicability decisions are recorded in new-repositories.json and planning/adoption.json. Joe Blau accepted the recorded source and applicability decisions on 2026-10-27; see evidence/adoption/owner-approval-2026-10-27.md. Confetti, signal strength, animated number backends and overlay layering internals stay optional host integrations; they are not silently added to base imports. Migration owners remain the owning product teams; HIG cannot claim their source forks have been deleted.
 
 ## Tokens and platform units
 
@@ -1446,7 +1446,7 @@ Source: docs/governance/adoption.md
 
 # Organization adoption and governance (#36)
 
-The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-15 against `planning/org-inventory-2026-10-15.json`: the 15 repositories visible to `gh repo list bloxwap`, none archived. The 2026-10-13 inventory is kept for history. Each row records:
+The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-27 using the repository inventory in `planning/org-inventory-2026-10-15.json`: the 15 repositories visible to `gh repo list bloxwap`, none archived. The 2026-10-13 inventory is kept for history. Each row records:
 
 - applicability
 - owner (Joe Blau, `joeblau`, accepts the recorded rows and exceptions in the [2026-10-27 decision record](../../evidence/adoption/owner-approval-2026-10-27.md))
@@ -1459,17 +1459,21 @@ The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-1
 
 `tests/docs.test.ts` fails when a visible repository has no row or when a row is missing these fields. Product surfaces (bloxwap.app, bloxwap.pro, bloxwap.com, the React Native app) and the five SDK docs sites have their own rows under `surfaces`.
 
-## Status · 2026-10-15
+## Status · 2026-10-27
+
+All 15 inventoried repositories have applicability decisions and named owner acceptance. All ten consumer repositories have merged their registry migrations; the exact versions, PRs and validation remain in the matrix.
 
 | Group | Repositories | State |
 | --- | --- | --- |
-| Canonical | hig | Source of truth. npm publication is #56 and physical-device certification is #55 |
-| SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Merged and verified (#34). Chart, SFX and Haptic moved to candidate `872906a9` in [chart#56](https://github.com/bloxwap/chart/pull/56), [sfx#52](https://github.com/bloxwap/sfx/pull/52) and [haptic#28](https://github.com/bloxwap/haptic/pull/28). Those PRs dropped the `legacy-peer-deps` setting, the nested Radix trees, the font bridges and the generated role file (#63, #65, #66). Hyperliquid and Font stay on `7c67a07c` |
-| Product | monorepo | Pilot merged in #4515. #4522, #4523 and #4525 (#33) and #4540 (#35) are approved and green, and wait on the required human `signoff`. #4540 was refreshed onto candidate `c32771dc` and drops the #62, #64 and #67 workarounds |
-| Docs site migrated | agent-cli (#58) | [agent-cli#47](https://github.com/bloxwap/agent-cli/pull/47) and [#48](https://github.com/bloxwap/agent-cli/pull/48) merged on candidate `872906a9`. The scoped drift check passes with no dated exceptions |
-| Product, partly migrated | taptradetv (#59) | Every app is classified: web is product UI, host is a broadcast/capture surface, and auction, contest, deck, capture and stream have no HIG runtime. In [taptradetv#188](https://github.com/bloxwap/taptradetv/pull/188), the `/sponsors` auction moved to HIG with a rollback flag. The rest of web and host have dated exceptions tracked in #100 |
-| Public pages migrated | tapsiren (#60), bloxwap.github.io (#61) | [tapsiren#399](https://github.com/bloxwap/tapsiren/pull/399) is merged and deployed to tapsiren.com; its mark and favicon colour is tracked in #101. [bloxwap.github.io#26](https://github.com/bloxwap/bloxwap.github.io/pull/26) uses only `--hig-*` roles in `styles.css`. Its package copies are committed because Pages has no build step (dated exceptions) |
-| No HIG runtime | icons (asset source), dimension-adapters (no UI), .github (brand content), .github-private (no UI) | Decided; no dependency added |
+| Canonical | hig | Coordinated 0.1.2 release; RN 0.81, 0.83 and 0.88 packed-consumer profiles |
+| SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Published 0.1.0 registry packages; candidate archives and the previously tracked peer/font/role workarounds retired |
+| Product | monorepo | Registry migration #4737 merged. Owner decisions accepted in HIG #57. Real wallet acceptance and rollback retirement remain #110 |
+| Docs site migrated | agent-cli | Registry migration #68 merged; scoped drift checks retained |
+| Product, partly migrated | taptradetv | Registry migration #253 merged and deployed. Sponsors and host retain their explicitly recorded applicability scopes; this does not claim every host primitive migrated |
+| Public pages migrated | tapsiren, bloxwap.github.io | Registry migrations #430 and #36 merged. Pages builds the tested artifact; generated runtime assets are no longer committed |
+| No HIG runtime | icons, dimension-adapters, .github, .github-private | Applicability accepted; no runtime dependency required |
+
+Owner acceptance records product decisions and the six-locale glossary exception through 2027-01-15. Physical-device claims retain the separate dated owner attestation. Neither supplies new wallet, native-speaker or hardware observations. Historical audit snapshots retain their original dates; current status is in `planning/adoption.json`.
 
 ## Governance
 
@@ -1576,10 +1580,10 @@ Intentional density differences, such as compact Pro versus the comfortable touc
 Generation drift (stale tokens, brand or glossary outputs) is checked separately by `scripts/check-drift.mjs` in `npm run lint`.
 
 
-## New repository setup and upgrades · HIG 0.1.0
+## New repository setup and upgrades · HIG 0.1.2
 Source: docs/governance/new-repository.md
 
-# New repository setup and upgrades · HIG 0.1.0
+# New repository setup and upgrades · HIG 0.1.2
 
 Issue #36. These steps adopt HIG in a new or existing Bloxwap repository without copying component folders, palettes, fonts or feedback engines. The five SDK docs sites followed this path: bloxwap/hyperliquid#180, bloxwap/chart#53, bloxwap/font#11, bloxwap/sfx#50 and bloxwap/haptic#26.
 
@@ -1597,21 +1601,17 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 
 ## 2. Install versioned packages
 
-HIG is not on npm yet (#56). Until it is, consume the packed candidate:
+Install the required packages at the same exact published version. For a web consumer:
 
 ```sh
-git clone https://github.com/bloxwap/hig && cd hig && git checkout <commit>
-npm ci && npm run generate:fonts && npm run build
-npm run release:dry-run -- --channel candidate   # local tarballs only; no publish, tag or release
+npm install --save-exact @bloxwap/hig-contracts@0.1.2 @bloxwap/hig-tokens@0.1.2 @bloxwap/hig-react@0.1.2
 ```
 
-`generate:fonts` needs Python with `fonttools[woff]==4.61.1` and `brotli==1.2.1`. If you skip it, the release dry run, `npm run quality` and the packed font smokes stop with a message that names this step (#98). In the consuming repository:
+Native consumers install `@bloxwap/hig-native` and `@bloxwap/hig-native-fonts` instead of the DOM renderer; add feedback only where needed and satisfy the supported profile's peers. Keep all HIG dependencies and overrides aligned. Commit the lockfile and record the release, source commit and exact registry integrity values in the owning evidence manifest.
 
-- Copy only the needed `artifacts/release-candidate/bloxwap-hig-*.tgz` files into `vendor/bloxwap-hig/`.
-- Record their SHA-256 hashes and the source commit in a README or `provenance.json`.
-- Depend on them with `file:` dependencies, adding `overrides` so HIG's internal dependencies resolve to the same files.
+Building candidates requires `npm run generate:fonts` with Python packages `fonttools[woff]==4.61.1` and `brotli==1.2.1`. Registry consumers use the packaged fonts without generating them.
 
-Never copy `packages/*/src`, `dist` folders, `tokens.css`, palettes, fonts or feedback engines. When #56 publishes, swap the `file:` dependencies for registry versions and delete `vendor/bloxwap-hig/`.
+For unpublished changes only, follow the [release dry-run procedure](release.md) and consume its exact packed candidate archives. Never copy `packages/*/src`, `dist` folders, token CSS, palettes, fonts or feedback engines. Replace candidate `file:` dependencies with registry versions and remove obsolete archives when adopting a published release. Retain provenance manifests and historical validation records.
 
 Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once (add `@bloxwap/hig-react/css/base` first only when HIG owns the whole page), use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
 
@@ -1632,7 +1632,7 @@ Run the check from a pinned HIG checkout. The script uses only Node built-ins an
 
 ```yaml
 - uses: actions/checkout@v4
-  with: {repository: bloxwap/hig, ref: <same commit as the vendored tarballs>, path: .hig}
+  with: {repository: bloxwap/hig, ref: <source commit of the installed release>, path: .hig}
 - run: node .hig/scripts/drift.mjs --root . --config hig-drift.json
 ```
 
@@ -1657,11 +1657,11 @@ First run against current `main` heads on 2026-10-15, scanning `apps/docs` (auto
 
 ## Upgrading HIG
 
-1. Read the changelog in the dry-run artifact, or the npm release once #56 is done, together with the semver section of the release chapter.
-2. Upgrade tokens, contracts, renderer and feedback together. Never mix candidate commits. Recompute the vendored hashes.
+1. Read the release changelog (or the dry-run changelog for an unpublished candidate), together with the semver section of the release chapter.
+2. Upgrade tokens, contracts, renderer and feedback together. Never mix release versions or candidate commits. Verify the registry integrity values or candidate archive hashes.
 3. Update the drift checkout `ref` to the same commit and run the check. Remove exceptions whose need has gone.
 4. Re-run the validation in step 4 and update the matrix row's `higVersion` and PR links.
-5. Roll back by reverting the upgrade PR, which restores the previous tarballs and lockfile. Product pilots also keep their host feature flag (for example `NEXT_PUBLIC_HIG_PILOT=0`).
+5. Roll back by reverting the upgrade PR, which restores the previous exact versions and lockfile. Product pilots also keep their host feature flag (for example `NEXT_PUBLIC_HIG_PILOT=0`).
 
 
 ## Quality, budgets and evidence · HIG 0.1.0
@@ -1737,10 +1737,10 @@ customizable primary-colour provider, on 2026-10-23; see
 [the release authorization](../../evidence/release/owner-authorization-2026-10-23.md)
 and [PR #141](https://github.com/bloxwap/hig/pull/141).
 
-The first release used an organization token; releases can continue using the transitional token fallback while the trusted-publisher setup below is completed. Released SFX/Haptic 0.2.0 backends satisfy their setup gates. Physical-device and native-font acceptance use the
-existing dated owner attestation from PR #131. Source-parity and owning-product
-rollout have scoped, named-owner exceptions for this pre-1.0 package release,
-reviewable through 2027-01-15; remaining v1 work stays open in #57 and #110.
+Releases 0.1.0 and 0.1.1 used an organization token. Release 0.1.2 uses npm trusted publishing; subsequent workflow executions have no token fallback. Released SFX/Haptic 0.2.0 backends satisfy their setup gates. Physical-device and native-font acceptance use the
+existing dated owner attestation from PR #131. Source-parity and named adoption decisions are accepted in #57. Owning-product
+rollout and six non-English glossary entries retain scoped exceptions through
+2027-01-15; real wallet acceptance and rollback retirement remain open in #110.
 These exceptions do not turn unobserved product or physical checks into passes.
 The immutable-tag, package-set, tarball-hash and CI checks still apply.
 
@@ -1760,15 +1760,15 @@ The local dry-run command remains unable to publish, create tags, or create rele
 
 The workflow re-runs `npm run check`, `npm run quality`, the stable-simulation release dry run, and `node scripts/verify-release.mjs` in that order. The tag, source commit and coordinated version must match; the complete eight-package set and every tarball hash must match. Every gate in `planning/release-blockers.json` must be `cleared`, `satisfied`, or have a valid `approved-exception` with a named approver, approval link and unexpired review date. Expired or undocumented exceptions and uncommitted source changes fail. It never creates the tag or GitHub release for the maintainer.
 
-An npm owner must configure a **Trusted Publisher for each of the eight packages**: `@bloxwap/hig-contracts`, `@bloxwap/hig-tokens`, `@bloxwap/hig-feedback`, `@bloxwap/hig-react`, `@bloxwap/hig-native`, `@bloxwap/hig-chart`, `@bloxwap/hig-native-fonts`, and `@bloxwap/hig-og-fonts`. Every entry must specify repository **bloxwap/hig**, workflow **publish.yml**, and environment **npm-release**. The GitHub `npm-release` environment is configured with `joeblau` as required reviewer; npm publisher settings still need authenticated owner configuration. Changing this workflow does not configure npm. The token-published [0.1.0](https://github.com/bloxwap/hig/releases/tag/v0.1.0) and [0.1.1](https://github.com/bloxwap/hig/releases/tag/v0.1.1) releases predate this migration; their exact source commits are the recorded legacy exceptions below.
+An npm owner must configure a **Trusted Publisher for each of the eight packages**: `@bloxwap/hig-contracts`, `@bloxwap/hig-tokens`, `@bloxwap/hig-feedback`, `@bloxwap/hig-react`, `@bloxwap/hig-native`, `@bloxwap/hig-chart`, `@bloxwap/hig-native-fonts`, and `@bloxwap/hig-og-fonts`. Every entry must specify repository **bloxwap/hig**, workflow **publish.yml**, and environment **npm-release**. The GitHub `npm-release` environment is configured with `joeblau` as required reviewer; all eight npm settings were configured and read back using authenticated owner access on 2026-10-27. Changing this workflow alone does not configure npm. The token-published [0.1.0](https://github.com/bloxwap/hig/releases/tag/v0.1.0) and [0.1.1](https://github.com/bloxwap/hig/releases/tag/v0.1.1) releases predate this migration; their exact source commits are the recorded legacy exceptions below.
 
-Publication uses `contents: read` and `id-token: write`, OIDC trusted publishing, and `npm publish --provenance`, with a transitional `NPM_TOKEN` fallback scoped as `NODE_AUTH_TOKEN` only on the publish step. npm tries OIDC first and falls back to that token when a Trusted Publisher is not yet configured, so npm-side setup does not block merging or releasing. Token authentication with `--provenance` on this public repository’s GitHub-hosted runner still produces provenance. After the first verified OIDC publish confirms all eight Trusted Publishers, delete the `NPM_TOKEN` secret and remove the publish-step fallback. Provenance alone does not prove which authentication method was used; confirm OIDC publishing for every package with the fallback removed. The ephemeral hosted runner uses Node 24.22.1 and explicitly installs npm@11.6.1 (the repository's `packageManager` pin), satisfying the [npm trusted-publishing CLI minimum of 11.5.1](https://docs.npmjs.com/trusted-publishers/). Python 3.12 comes from pinned `actions/setup-python`; `ci-generate-fonts.sh` installs pinned fonttools and brotli into a temporary venv. Playwright installs Chromium with `--with-deps` on Ubuntu. The shared minis retain their existing setup policy.
+Publication uses `contents: read`, `id-token: write`, OIDC trusted publishing and `npm publish --provenance`. The transitional `NPM_TOKEN` fallback is removed. Release 0.1.2's registry metadata identifies GitHub Actions and each package's configured `trustedPublisher` ID; signed provenance is verified separately. Provenance alone does not identify the authentication method. The shared organization secret is not deleted because other repositories use it; this workflow no longer references it. The ephemeral hosted runner uses Node 24.22.1 and explicitly installs npm@11.6.1 (the repository's `packageManager` pin), satisfying the [npm trusted-publishing CLI minimum of 11.5.1](https://docs.npmjs.com/trusted-publishers/). Python 3.12 comes from pinned `actions/setup-python`; `ci-generate-fonts.sh` installs pinned fonttools and brotli into a temporary venv. Playwright installs Chromium with `--with-deps` on Ubuntu. The shared minis retain their existing setup policy.
 
 Only after those gates does the workflow publish the exact verified tarballs in dependency order. Already published versions are logged and skipped so an interrupted run can resume. Successful publishes are recorded in `artifacts/published-packages.txt`; the workflow passes this file as `HIG_PROVENANCE_PACKAGES_FILE` to `smoke:registry`. Registry smoke always checks every tarball's SHA-256 against the verified artifact, checks the SLSA statement's exact source commit, workflow, tag, package and SHA-512 digest, and runs `npm audit signatures` to verify the registry signatures and provenance bundles. Provenance remains required when an interrupted publication resumes and skips existing packages, and when the smoke runs without a publish manifest. The only legacy exemptions are token-published 0.1.0 at source `bdf8d07014fea5e69ea51a061b82707661a9d701` and 0.1.1 at source `6f4dd060e0985be644d255154aa7a0277cdde27f`; a supplied missing or invalid manifest fails closed. The manifest is uploaded with the verification artifacts.
 
-Registry smoke then runs independent web/SSR, Next hydration/font, and both native Metro/Expo consumers against registry versions.
+Registry smoke then runs independent web/SSR, Next hydration/font, and all three supported native Metro/Expo profiles against registry versions.
 
-Newly published exact versions can briefly return npm metadata `E404` while registry visibility catches up. That lookup retries at most seven times, five seconds apart, with a 15-second limit per npm command. Other npm errors, malformed metadata, unavailable tarballs, hash mismatches and consumer failures still fail normally. An exhausted metadata-visibility retry requires investigation; once the version is visible, rerun the unchanged release tag. A published package defect requires a corrected new version. Automation never unpublishes or overwrites a registry version, and a skipped version with different bytes still fails the registry hash check.
+Newly published exact versions can briefly return npm metadata `E404` while registry visibility catches up. That lookup retries at most thirty-one times, ten seconds apart (five minutes of bounded visibility retries), with a 15-second limit per npm command. Other npm errors, malformed metadata, unavailable tarballs, hash mismatches and consumer failures still fail normally. An exhausted metadata-visibility retry requires investigation; once the version is visible, rerun the unchanged release tag. A published package defect requires a corrected new version. Automation never unpublishes or overwrites a registry version, and a skipped version with different bytes still fails the registry hash check.
 
 
 ## Installation and citation · HIG 0.1.2
@@ -1905,7 +1905,7 @@ Source: docs/migration/native.md
 
 # Native application pilot (#35)
 
-Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.shac32771dc`, with one HIG feedback controller and 15 duplicate fonts removed. It loads the faces from `@bloxwap/hig-native-fonts` (#64) and passes translated `messages` (#62). It also drops the local Switch, Alert and Text workarounds (#67), and passes `direction` to `HIGProvider` on Android (#86). It was verified on the iOS Simulator and Android emulator and merged as `2f636e8fe` on 2026-10-16. Physical-device certification is tracked in #55.
+Owner: Joe Blau (accepted in #57). Status on 2026-10-15: [monorepo#4540](https://github.com/bloxwap/monorepo/pull/4540) migrates the app's settings, entry, logout, sound card and demo number to HIG `0.1.0-candidate.shac32771dc`, with one HIG feedback controller and 15 duplicate fonts removed. It loads the faces from `@bloxwap/hig-native-fonts` (#64) and passes translated `messages` (#62). It also drops the local Switch, Alert and Text workarounds (#67), and passes `direction` to `HIGProvider` on Android (#86). It was verified on the iOS Simulator and Android emulator and merged as `2f636e8fe` on 2026-10-16. Physical-device certification retains the dated owner-attested exception in #55. Subsequent native rollout and registry adoption are merged in monorepo#4620/#4629/#4737. HIG 0.1.2 supports RN 0.88 / Expo 58 so monorepo#4776 can remove its temporary ref cast.
 
 Workarounds the app can drop at its next candidate refresh (a candidate built from `74f4f6a` or later; tracked in #115):
 
@@ -1967,7 +1967,7 @@ Source: docs/migration/products.md
 
 # App, Pro and marketing pilots (#33)
 
-Owner: bloxwap/monorepo maintainers (named assignment in #57). Status on 2026-10-15: the first pilot is merged in [monorepo#4515](https://github.com/bloxwap/monorepo/pull/4515). Three follow-ups are open with green CI and verifier approval: [#4522](https://github.com/bloxwap/monorepo/pull/4522) (Pro compact density fix, navigation and numbers), [#4523](https://github.com/bloxwap/monorepo/pull/4523) (app Sound & Haptics controller) and [#4525](https://github.com/bloxwap/monorepo/pull/4525) (marketing waitlist, features and touch footer). They wait on the repository's required human `signoff` status. `planning/adoption.json` records the versions, rollback flags and gaps for each surface. The kit below is the checklist those PRs followed.
+Owner: Joe Blau, accepted in [HIG #57](https://github.com/bloxwap/hig/issues/57). The initial pilot and follow-ups are merged; the combined rollout is [monorepo#4619](https://github.com/bloxwap/monorepo/pull/4619), and [#4737](https://github.com/bloxwap/monorepo/pull/4737) installs published HIG 0.1.0. Marketing font cleanup is merged in [#4598](https://github.com/bloxwap/monorepo/pull/4598). `planning/adoption.json` records the current versions, rollback flags and remaining real wallet acceptance under HIG #110. The checklist below preserves the adoption procedure.
 
 | Surface | Pilot and HIG mapping | Preserve | Owner work remaining |
 | --- | --- | --- | --- |
@@ -1990,7 +1990,7 @@ Checklist:
 `@bloxwap/hig-react/css` now styles HIG components only, so a product can load it on the routes it migrates and leave the rest of the site alone. Next.js keeps a route's stylesheet after a client navigation. Before #95 the file also set page-wide rules (`* { box-sizing }`, a global `:focus-visible` ring, `table`/`th`/`td` and `input[type=range]` defaults), and these reached routes that never imported HIG. Those rules are now the opt-in entry `@bloxwap/hig-react/css/base` (see [installation](../installation.md#component-css-and-the-opt-in-base)).
 
 - **Whole-page adopters** (bloxwap.app, bloxwap.pro, docs sites): add `import '@bloxwap/hig-react/css/base'` before `@bloxwap/hig-react/css` to keep the current look of plain tables, ranges and focus rings. HIG components need no change.
-- **Partial adopters**: import only `@bloxwap/hig-react/css` in the HIG routes, and delete any host reset that undid the old global rules. taptradetv loads HIG only on `/sponsors` ([taptradetv#188](https://github.com/bloxwap/taptradetv/pull/188), #59). It can drop the `th, td` reset in `apps/web/app/sponsors/sponsors-hig.css` once it moves to a candidate that contains #95. The `/schedule` calendar then keeps its own cell styles after a navigation from `/sponsors`, and non-HIG routes keep the host's focus ring.
+- **Partial adopters**: import only `@bloxwap/hig-react/css` in the HIG routes, and delete any host reset that undid the old global rules. taptradetv loads HIG only on `/sponsors` ([taptradetv#188](https://github.com/bloxwap/taptradetv/pull/188), #59). The registry refresh in [taptradetv#253](https://github.com/bloxwap/taptradetv/pull/253) includes #95 and removes the obsolete `th, td` reset in `apps/web/app/sponsors/sponsors-hig.css`. The `/schedule` calendar then keeps its own cell styles after a navigation from `/sponsors`, and non-HIG routes keep the host's focus ring.
 - Before removing a reset, verify with a client navigation from a HIG route to a non-HIG route in a production build. Compare the computed styles of tables, ranges and focus rings, not only screenshots.
 
 Rollback: keep the previous artifact lockfile and original UI behind a host feature flag. Revert the pilot switch/lockfile; keep raw settings/business data unchanged. Do not remove legacy files until the pilot is certified. The adoption matrix, not this kit, records which surfaces are migrated.
@@ -2001,7 +2001,7 @@ Source: docs/migration/sdk-docs.md
 
 # Five SDK documentation pilots (#34)
 
-Owner: each SDK repository's docs maintainers (named assignment in #57). Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. Status on 2026-10-15: all five sites consume vendored HIG packages. Each was merged after independent verification: [hyperliquid#180](https://github.com/bloxwap/hyperliquid/pull/180), [chart#53](https://github.com/bloxwap/chart/pull/53), [font#11](https://github.com/bloxwap/font/pull/11), [sfx#50](https://github.com/bloxwap/sfx/pull/50) and [haptic#26](https://github.com/bloxwap/haptic/pull/26), all on `0.1.0-candidate.sha7c67a07c`. Chart, SFX and Haptic then moved to `0.1.0-candidate.sha872906a9` in [chart#56](https://github.com/bloxwap/chart/pull/56), [sfx#52](https://github.com/bloxwap/sfx/pull/52) and [haptic#28](https://github.com/bloxwap/haptic/pull/28). That refresh removed the workarounds for #63 (`legacy-peer-deps` and nested Radix trees; the overlay-free recipe entries are used instead), #65 (font bridges) and #66 (chart's generated role file). Hyperliquid and Font stay on `7c67a07c` until their next refresh. Measurements and residual exceptions are in each PR's evidence folder and in `planning/adoption.json`.
+Owner: Joe Blau (accepted in #57), with each SDK repository retaining implementation ownership. Preserve each interactive SDK demo and its host APIs; HIG replaces shared presentation only. As of 2026-10-27, all five docs sites install published HIG 0.1.0: [hyperliquid#217](https://github.com/bloxwap/hyperliquid/pull/217), [chart#78](https://github.com/bloxwap/chart/pull/78), [font#39](https://github.com/bloxwap/font/pull/39), [sfx#80](https://github.com/bloxwap/sfx/pull/80) and [haptic#49](https://github.com/bloxwap/haptic/pull/49). The earlier candidate refreshes removed the legacy peer installs, nested Radix trees, font bridges and generated role workaround. Exact source, validation, historical measurements and residual exceptions remain in the owning PRs and `planning/adoption.json`.
 
 | Repository | Shared presentation | Distinctive feature to preserve | Remaining owner validation |
 | --- | --- | --- | --- |

@@ -1,16 +1,16 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "observedAt": "2026-10-27",
   "inventoryEvidence": "planning/org-inventory-2026-10-15.json",
   "inventoryScope": "All 15 repositories visible to the authenticated token on 2026-10-15 (gh repo list bloxwap); none archived.",
-  "policy": "Owners are recorded as repository maintainer roles until #57 records named owners. Every exception has scope, reason, owner, expiry (at most 180 days) and a tracking issue. Statuses link only merged or open PRs that exist.",
+  "policy": "Joe Blau accepted the named ownership, applicability and recorded product decisions on 2026-10-27 (#57). Every exception retains its scope, reason, owner, expiry and tracking issue. Statuses link only existing merged or open PRs.",
   "repositories": [
     {
       "name": "hig",
       "applicability": "canonical guidelines, tokens, React/React Native renderers, feedback contract and docs",
       "owner": "joeblau",
-      "higVersion": "0.1.1 (coordinated source and GitHub release)",
-      "status": "canonical source; coordinated 0.1.1 source tagged and released on GitHub",
+      "higVersion": "0.1.2",
+      "status": "canonical source; coordinated 0.1.2 published with GitHub OIDC trusted-publisher authentication",
       "mergedPRs": [
         "https://github.com/bloxwap/hig/pull/37",
         "https://github.com/bloxwap/hig/pull/39",
@@ -52,7 +52,8 @@
         "https://github.com/bloxwap/hig/pull/126",
         "https://github.com/bloxwap/hig/pull/147",
         "https://github.com/bloxwap/hig/pull/148",
-        "https://github.com/bloxwap/hig/pull/149"
+        "https://github.com/bloxwap/hig/pull/149",
+        "https://github.com/bloxwap/hig/pull/156"
       ],
       "openPRs": [],
       "validation": "npm run check, packed web/SSR/Next/Metro consumers, Chromium/WebKit browser/axe/visual gates, iOS Simulator and Android emulator gallery (evidence/native-sim/)",
@@ -73,10 +74,10 @@
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/57",
           "approvedBy": "joeblau",
-          "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
+          "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md"
         }
       ],
-      "remaining": "TapTrade registry migration (#56); owner decisions accepted on 2026-10-27 with a scoped non-English glossary exception (#57); wallet acceptance and rollback retirement (#110); npm trusted publisher setup and a real OIDC release remain unverified after merged #147. RN 0.88 support and its new coordinated release are tracked in monorepo#4776 without a v1 scope decision. Issues #70, #101 and #115 are closed. Physical acceptance retains the dated owner attestation in #131.",
+      "remaining": "Real authenticated/wallet acceptance, rollback-window completion, remaining renderer retirement and new equal-toolchain measurements (#110). Owner decisions accepted in #57; six non-English glossary entries and physical-device observations retain dated exceptions through 2027-01-15.",
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/hig",
       "exceptionExpires": "2027-01-15",
@@ -127,14 +128,15 @@
         "mergeCommit": "727a4d073a1df3d829397871aebc24e11b31c140"
       },
       "publication": {
-        "version": "0.1.1",
-        "tag": "v0.1.1",
-        "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
-        "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
-        "githubPublishedAt": "2026-10-24T05:43:18Z",
-        "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
-        "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
-        "provenance": "Token published; no npm OIDC attestation. Merged #147 changes future releases to OIDC/provenance with a transitional NPM_TOKEN fallback; npm trusted publisher setup and a real OIDC release remain unverified."
+        "version": "0.1.2",
+        "tag": "v0.1.2",
+        "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
+        "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.2",
+        "workflow": "https://github.com/bloxwap/hig/actions/runs/40601323124",
+        "scope": "All eight packages published through OIDC. Exact tarball hashes, registry/provenance signatures, web/SSR, Next hydration/fonts and RN 0.81/0.83/0.88 registry consumers passed on unchanged-tag attempt 2.",
+        "provenance": "GitHub OIDC trusted publisher verified in every npm package metadata record; signed provenance present for every package. See evidence/release/registry-0.1.2/.",
+        "conclusion": "success",
+        "evidence": "evidence/release/registry-0.1.2/registry-verification.json"
       },
       "publicationHistory": [
         {
@@ -153,6 +155,16 @@
             "RN 0.81 and RN 0.83 registry consumers"
           ],
           "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+        },
+        {
+          "version": "0.1.1",
+          "tag": "v0.1.1",
+          "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
+          "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
+          "githubPublishedAt": "2026-10-24T05:43:18Z",
+          "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
+          "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
+          "provenance": "Token published; no npm OIDC attestation. Merged #147 changes future releases to OIDC/provenance with a transitional NPM_TOKEN fallback; npm trusted publisher setup and a real OIDC release remain unverified."
         }
       ],
       "supersededPRs": [
@@ -162,17 +174,18 @@
         "superseded": "PR #143 was closed after its WebKit/process-isolation work was incorporated by merged #149.",
         "trustedPublishing": {
           "pr": "https://github.com/bloxwap/hig/pull/147",
-          "status": "merged; npm trusted publisher setup and a real OIDC release remain unverified",
+          "status": "all eight npm publishers configured; real OIDC publication, exact hashes, signatures and all registry consumers verified successfully",
           "mergedAt": "2026-10-27T16:47:37Z",
           "mergeCommit": "2f0a277f2af63f5de9dac7fb0ced62000f2cfea1",
-          "workflow": "OIDC and --provenance with a step-scoped transitional NPM_TOKEN fallback; GitHub npm-release reviewer environment configured"
+          "workflow": "GitHub-hosted publish.yml with required npm-release approval, exact-source quality gates and signed provenance; closeout removes the transitional token fallback",
+          "evidence": "evidence/release/registry-0.1.2/"
         }
       },
-      "ownerRole": "bloxwap/hig maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/hig maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -218,11 +231,11 @@
         "status": "merged",
         "validation": "Exact four-package registry migration; four candidate archives removed. Frozen install, root/docs checks, 20 docs tests, 13-page export with 14 social cards and 10 Chromium tests passed; remote gates passed."
       },
-      "ownerRole": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/hyperliquid maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -268,11 +281,11 @@
         "evidence": "docs/hig-adoption/registry-verification.json",
         "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       },
-      "ownerRole": "bloxwap/chart maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/chart maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -317,11 +330,11 @@
         "status": "merged",
         "validation": "Exact contracts, React and tokens 0.1.0 registry migration; no runtime vendor archives. Frozen Bun install, lint, types, 7 package tests, 4 font-binary tests, 7 docs tests, canonical drift over 199 files, production export and 54 Chromium/WebKit checks pass. All remote assets, docs, browser, drift and security checks pass. The source CLI remains independently pinned to 0e239442 because the runtime packages do not ship it."
       },
-      "ownerRole": "bloxwap/font maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/font maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -348,7 +361,7 @@
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/36",
           "approvedBy": "joeblau",
-          "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
+          "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md"
         }
       ],
       "remaining": "Owner acceptance recorded on 2026-10-27 (#57); historical candidate evidence is preserved separately.",
@@ -388,11 +401,11 @@
         "status": "merged",
         "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       },
-      "ownerRole": "bloxwap/sfx maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/sfx maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -423,11 +436,11 @@
         "status": "merged",
         "validation": "Exact three-package registry migration; runtime archives removed. Clean npm ci, lint, types, 146 units, production export and 27 Chromium/WebKit/mobile Chromium docs checks passed; remote gates passed."
       },
-      "ownerRole": "bloxwap/haptic maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/haptic maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -435,8 +448,8 @@
       "name": "monorepo",
       "applicability": "product web (bloxwap.app, bloxwap.pro), marketing Worker (bloxwap.com) and React Native app",
       "owner": "joeblau",
-      "higVersion": "0.1.0",
-      "status": "combined HIG rollout and exact 0.1.0 registry migration merged in #4619/#4737; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
+      "higVersion": "0.1.2",
+      "status": "merged HIG 0.1.2 registry upgrade; RN 0.88 refs and Pro stats geometry verified; wallet acceptance and rollback retirement remain #110",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4522",
@@ -451,7 +464,8 @@
         "https://github.com/bloxwap/monorepo/pull/4619",
         "https://github.com/bloxwap/monorepo/pull/4620",
         "https://github.com/bloxwap/monorepo/pull/4629",
-        "https://github.com/bloxwap/monorepo/pull/4737"
+        "https://github.com/bloxwap/monorepo/pull/4737",
+        "https://github.com/bloxwap/monorepo/pull/4826"
       ],
       "openPRs": [],
       "validation": "Per-surface rows below. Merged 2026-10-16/17 after bun run quality, CI green and human signoff: #4522 137660fc7, #4523 b1b913dac, #4525 38d7360fe, #4540 2f636e8fe, #4594 dc88d78d9, #4599 3ca24bfce, #4598 031b29814, #4602 edee3476c, #4606 29812c9a4 (replaces #4601, auto-closed during rebase; same branch and commits). Production deploys passed for every merge; mobile-ci on main green. Tarballs for 0.1.0-candidate.shab2f7740c were verified byte-identical to a fresh hig@b2f7740 candidate. Firefox cannot run on the monorepo Mac mini runners (monorepo#4603); marketing sections and app-flows run in Chrome+WebKit. The #124 implementation from monorepo#4607 landed through monorepo#4619 (2af39981e): per-case, run and cleanup bounds, browser-process rotation after 24 contexts, and CI job/step timeouts. Three consecutive local and CI WebKit runs passed all 90 feedback comparisons and 24 captures per engine. Fresh local verification on c976f7747 (2026-10-23) passed three WebKit runs and one Chromium run at the same counts. The original intermittent stall was not reproduced, so process rotation is a resilience mitigation",
@@ -463,7 +477,7 @@
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/110",
           "approvedBy": "joeblau",
-          "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
+          "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md"
         }
       ],
       "remaining": "Owner decisions approved on 2026-10-27 (#57). Real wallet-session execution remains (#110); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
@@ -546,16 +560,35 @@
       },
       "nativeSupportFollowup": {
         "issue": "https://github.com/bloxwap/monorepo/issues/4776",
-        "status": "open",
+        "status": "closed by merged monorepo#4826",
         "scope": "RN 0.88 peer ranges and ComponentRef typings, followed by monorepo adoption and removal of higFocusRef()",
-        "release": "Requires a new coordinated HIG release; 0.1.1 is immutable. This follow-up does not decide v1 scope."
+        "release": "HIG 0.1.2 published and independently verified; 0.1.1 remains immutable.",
+        "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+        "evidence": "evidence/adoption/monorepo-0.1.2-validation.json",
+        "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78"
       },
-      "ownerRole": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/monorepo maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
+      },
+      "registryUpgrade": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+        "version": "0.1.2",
+        "head": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+        "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78",
+        "mergedAt": "2026-10-27T23:48:52Z",
+        "status": "merged",
+        "checks": {
+          "successful": 112,
+          "skipped": 3,
+          "failed": 0
+        },
+        "signoff": "joeblau; explicit owner authorization recorded in HIG PR156",
+        "validation": "Both frozen installs and registry integrity checks pass; all root quality gates, 3381 mobile tests on each platform, types/lint and production iOS/Android/web exports pass. Chromium/WebKit actual product checks pass with Pro stats preserved at 28px. Final source remote checks all pass after retrying three GUI-session preflight failures on healthy runners.",
+        "evidence": "evidence/adoption/monorepo-0.1.2-validation.json"
       }
     },
     {
@@ -610,11 +643,11 @@
         "status": "merged",
         "validation": "Exact four-package registry migration with no runtime vendor archives; all 10 remote checks, 286 CLI tests and 14 browser tests passed."
       },
-      "ownerRole": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/agent-cli maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -622,17 +655,16 @@
       "name": "taptradetv",
       "applicability": "decided 2026-10-15 (#59), per app: apps/web = product UI (public taptrade.tv incl. the /sponsors auction); packages/ui = product UI shared by apps/web; apps/host = broadcast/capture surface (stage / and /view captured into the 1080p RTMP feed) with an internal operator console (/admin); apps/auction = product backend with an internal staff console (no HIG runtime); apps/contest = product backend (no UI); apps/deck = internal tool (Figma deck iframe, brand/content only); apps/capture and apps/stream = broadcast/capture with no UI",
       "owner": "joeblau",
-      "higVersion": "0.1.0-candidate.sha0e239442",
-      "status": "migrated: taptradetv#223 merged the remaining apps/web routes, shared packages/ui media controls and requested apps/host tokens-only migration. All web routes use canonical HIG tokens/controls and Bloxwap fonts; host copied token CSS and non-Bloxwap fonts are removed. Host primitive and artwork scope remains separate.",
+      "higVersion": "0.1.0",
+      "status": "migrated within recorded product scopes; published HIG 0.1.0 registry packages deployed",
       "mergedPRs": [
         "https://github.com/bloxwap/taptradetv/pull/188",
         "https://github.com/bloxwap/taptradetv/pull/216",
         "https://github.com/bloxwap/taptradetv/pull/223",
-        "https://github.com/bloxwap/taptradetv/pull/254"
-      ],
-      "openPRs": [
+        "https://github.com/bloxwap/taptradetv/pull/254",
         "https://github.com/bloxwap/taptradetv/pull/253"
       ],
+      "openPRs": [],
       "validation": "Frozen Bun 1.3.0; Node 24.15.0 final tests/types/lint; 476 root tests, 970 host tests, 24 workflow tests, 20 Turbo lint/type tasks. Web/host Next builds; 42 Chromium/WebKit site-route cases, 16 authenticated sponsor cases, two navigation-isolation checks; fresh 1920x1080 host stage/admin captures preserve geometry/text/avatar markup/keyboard/fullscreen. Exact candidate/source/archive/install guards; scoped drift 409 files. Host lint retains 10 existing warnings. All 10 PR checks passed on head 6f87c8156a3295f578538c0ae83f9513e47b9464, including Quality Gate, web/host workerd HTTP and five automatic previews. Merged as 959595c9e9581513a863b700d850c93afc6359b2.",
       "exceptions": [
         {
@@ -642,7 +674,7 @@
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/56",
           "approvedBy": "joeblau",
-          "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
+          "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md"
         },
         {
           "scope": "apps/host/src/components/ui/{button,dialog,number,select,skeleton,switch}.tsx; cqh broadcast type/spacing geometry; decorative seeded avatar artwork in src/components/trader-avatar.tsx",
@@ -651,10 +683,10 @@
           "expires": "2027-01-15",
           "tracking": "https://github.com/bloxwap/hig/issues/36",
           "approvedBy": "joeblau",
-          "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
+          "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md"
         }
       ],
-      "remaining": "Registry migration (#56); owner governance/bundle review accepted on 2026-10-27 (#57). Full host primitive adoption and avatar artwork remain outside the completed #100 tokens-only migration. Drafts #217/#219/#220 were superseded by merged #223.",
+      "remaining": "Owner governance/bundle decisions accepted in #57. Full host primitive adoption and avatar artwork remain outside the completed #100 tokens-only scope; dated exceptions retain their own scope. Drafts #217/#219/#220 were superseded by merged #223.",
       "migrationGuide": "docs/migration/products.md",
       "url": "https://github.com/bloxwap/taptradetv",
       "exceptionExpires": "2027-01-15",
@@ -738,16 +770,24 @@
       ],
       "registryMigration": {
         "pr": "https://github.com/bloxwap/taptradetv/pull/253",
-        "head": "98a3830f8e7ec91656ef73784ea94e1d604c1310",
+        "head": "910b24f7099cb4e457d555717e8bbc10e7c3fe02",
         "version": "0.1.0",
-        "status": "open; refresh onto current main and current gates required",
-        "validation": "Recorded validation passed clean frozen install, lint, types, 1,543 tests, both builds and Chromium/WebKit checks, but the head still fails the retired legacy dependency-audit Quality Gate. TapTrade #254 merged on 2026-10-26 as 729290acc60ce2e74834cf382c9e8cce6edcde6f with current security fixes and retired the legacy audit. Refresh #253 onto current main and reassess it with current gates; the PR remains open and main retains the recorded candidate until the migration merges."
+        "status": "merged",
+        "validation": "Refreshed onto current security fixes. Exact Node 26.12.1 / Bun 1.4.4 frozen installation, lint/types, 543 root and 2689 workspace tests, 35 workflow tests, web/host builds, drift over 421 files and Chromium/WebKit sponsors/routes/CSS-isolation pass. All 17 non-skipped PR checks and previews pass.",
+        "mergeCommit": "8b8a430b13ab2106ac82d20c50aa727920bd9bb4",
+        "mergedAt": "2026-10-27T23:08:31Z",
+        "evidence": "docs/hig/evidence/registry-0.1.0/refresh-2026-10-27.json",
+        "deployment": {
+          "workflow": "https://github.com/bloxwap/taptradetv/actions/runs/40600027840",
+          "status": "success",
+          "scope": "web, capture, deck, host and stream production deployment"
+        }
       },
-      "ownerRole": "bloxwap/taptradetv maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/taptradetv maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -822,11 +862,11 @@
         "status": "merged",
         "validation": "Exact four-package registry migration with no runtime vendor archives; all eight remote checks passed."
       },
-      "ownerRole": "bloxwap/tapsiren maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/tapsiren maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -874,11 +914,11 @@
           "liveVerification": "https://bloxwap.github.io/assets/provenance.json matches the tested artifact; all five generated asset SHA-256 values match."
         }
       },
-      "ownerRole": "bloxwap/bloxwap.github.io maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/bloxwap.github.io maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -896,11 +936,11 @@
       "migrationGuide": "docs/governance/contributing.md",
       "url": "https://github.com/bloxwap/icons",
       "exceptionExpires": "2027-01-15",
-      "ownerRole": "bloxwap/icons maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/icons maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -918,11 +958,11 @@
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/dimension-adapters",
       "exceptionExpires": "2027-01-15",
-      "ownerRole": "bloxwap/dimension-adapters maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/dimension-adapters maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -940,11 +980,11 @@
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/.github",
       "exceptionExpires": "2027-01-15",
-      "ownerRole": "bloxwap/.github maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/.github maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -962,11 +1002,11 @@
       "migrationGuide": "docs/governance/new-repository.md",
       "url": "https://github.com/bloxwap/.github-private",
       "exceptionExpires": "2027-01-15",
-      "ownerRole": "bloxwap/.github-private maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/.github-private maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     }
@@ -976,17 +1016,18 @@
       "name": "bloxwap.app",
       "repository": "monorepo",
       "owner": "joeblau",
-      "status": "combined HIG rollout and exact 0.1.0 registry migration merged in #4619/#4737; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
+      "status": "combined HIG rollout and registry upgrade through #4826 merged; named owner acceptance recorded in #57; real wallet acceptance and rollback retirement remain #110",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4523",
         "https://github.com/bloxwap/monorepo/pull/4594",
         "https://github.com/bloxwap/monorepo/pull/4606",
         "https://github.com/bloxwap/monorepo/pull/4619",
-        "https://github.com/bloxwap/monorepo/pull/4737"
+        "https://github.com/bloxwap/monorepo/pull/4737",
+        "https://github.com/bloxwap/monorepo/pull/4826"
       ],
       "openPRs": [],
-      "validatedVersion": "0.1.0",
+      "validatedVersion": "0.1.2",
       "validation": "#4523 merged as b1b913dac (3,122 tests, 24-case settings matrix Chrome/Firefox CI). #4594 at d81cbf00: css/base imported in layout.tsx (#95), busy text from mobile.hig.busy (#82), billing buttons 48px->44px (#80); app tests 3457 pass, production builds pilot and NEXT_PUBLIC_HIG_PILOT=0, settings matrix identical to main, landing focus identical; JS +282 B raw, CSS +10,987 B raw. #4601 (verified at 1f2981b7; landed as #4606 29812c9a4, flows in Chrome only, #124): 96 direct sfx/haptics calls in 22 files through appCue(); browser (automated headless Chromium) 90 feedback cases match rollback, amount 12.7 on both builds, Confirm fires once, rollback screenshots pixel-identical to parent in 12/12; sheet Escape/focus return; tests 3539 pass; CI Chrome+Firefox flows step green. Verifier caveats: sheet.mjs asserts nothing and is not in CI; 80ms per-source dedupe",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0",
       "remaining": "Owner decisions approved on 2026-10-27 (#57). Real wallet-session execution remains (#110); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
@@ -1088,29 +1129,46 @@
           "head": "363576b3c44fb5db9815736f6b3bd93a16bafe61"
         }
       },
-      "ownerRole": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/monorepo maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
+      },
+      "registryUpgrade": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+        "version": "0.1.2",
+        "head": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+        "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78",
+        "mergedAt": "2026-10-27T23:48:52Z",
+        "status": "merged",
+        "checks": {
+          "successful": 112,
+          "skipped": 3,
+          "failed": 0
+        },
+        "signoff": "joeblau; explicit owner authorization recorded in HIG PR156",
+        "validation": "Both frozen installs and registry integrity checks pass; all root quality gates, 3381 mobile tests on each platform, types/lint and production iOS/Android/web exports pass. Chromium/WebKit actual product checks pass with Pro stats preserved at 28px. Final source remote checks all pass after retrying three GUI-session preflight failures on healthy runners.",
+        "evidence": "evidence/adoption/monorepo-0.1.2-validation.json"
       }
     },
     {
       "name": "bloxwap.pro",
       "repository": "monorepo",
       "owner": "joeblau",
-      "status": "combined HIG rollout and exact 0.1.0 registry migration merged in #4619/#4737; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
+      "status": "combined HIG rollout and registry upgrade through #4826 merged; named owner acceptance recorded in #57; real wallet acceptance and rollback retirement remain #110",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4522",
         "https://github.com/bloxwap/monorepo/pull/4594",
         "https://github.com/bloxwap/monorepo/pull/4599",
         "https://github.com/bloxwap/monorepo/pull/4619",
-        "https://github.com/bloxwap/monorepo/pull/4737"
+        "https://github.com/bloxwap/monorepo/pull/4737",
+        "https://github.com/bloxwap/monorepo/pull/4826"
       ],
       "openPRs": [],
-      "validatedVersion": "0.1.0",
+      "validatedVersion": "0.1.2",
       "validation": "#4522 merged as 137660fc7. #4594 at d81cbf00 (production next start, automated Chromium 1440x1000): leaderboard rows 38px and order-ticket slider 6px on main, pilot and rollback; compact buttons and amount field 36px (field becomes pill); css/base in @layer hig; pro 216 tests. #4599 at 2e0724da: base, pilot and rollback identical on every geometry measure (stats strip 48px/stat 28px, market-list rows 36px, demo-table rows 36px, leaderboard 38px, column right edges); market-list keyboard unchanged; one new Tab stop per table region; number parity 51 edge values per format (verifier fuzz ~20,000 values, Node 22 and 24); 232 tests; JS +6,280 B raw / CSS +219 B; CI Chrome+Firefox",
       "rollback": "NEXT_PUBLIC_HIG_PILOT=0; revert 8fe4859c",
       "remaining": "Owner decisions approved on 2026-10-27 (#57). Real wallet-session execution remains (#110); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
@@ -1184,29 +1242,46 @@
           "head": "363576b3c44fb5db9815736f6b3bd93a16bafe61"
         }
       },
-      "ownerRole": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/monorepo maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
+      },
+      "registryUpgrade": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+        "version": "0.1.2",
+        "head": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+        "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78",
+        "mergedAt": "2026-10-27T23:48:52Z",
+        "status": "merged",
+        "checks": {
+          "successful": 112,
+          "skipped": 3,
+          "failed": 0
+        },
+        "signoff": "joeblau; explicit owner authorization recorded in HIG PR156",
+        "validation": "Both frozen installs and registry integrity checks pass; all root quality gates, 3381 mobile tests on each platform, types/lint and production iOS/Android/web exports pass. Chromium/WebKit actual product checks pass with Pro stats preserved at 28px. Final source remote checks all pass after retrying three GUI-session preflight failures on healthy runners.",
+        "evidence": "evidence/adoption/monorepo-0.1.2-validation.json"
       }
     },
     {
       "name": "bloxwap.com",
       "repository": "monorepo",
       "owner": "joeblau",
-      "status": "combined HIG rollout and exact 0.1.0 registry migration merged in #4619/#4737; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
+      "status": "combined HIG rollout and registry upgrade through #4826 merged; named owner acceptance recorded in #57; real wallet acceptance and rollback retirement remain #110",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4525",
         "https://github.com/bloxwap/monorepo/pull/4594",
         "https://github.com/bloxwap/monorepo/pull/4598",
         "https://github.com/bloxwap/monorepo/pull/4619",
-        "https://github.com/bloxwap/monorepo/pull/4737"
+        "https://github.com/bloxwap/monorepo/pull/4737",
+        "https://github.com/bloxwap/monorepo/pull/4826"
       ],
       "openPRs": [],
-      "validatedVersion": "0.1.0",
+      "validatedVersion": "0.1.2",
       "validation": "#4525 merged as 38d7360fe. #4594: page HTML byte-identical main vs PR. #4598 at db6e3ab4 (wrangler dev, automated Chromium; Firefox in CI): smallest section text 10px->12px (rollback 10px), setup chips HIG badge 12/18 pill, cards 20px/14px/180ms; 24/24 served font paths match pinned SHA-256; same three font files and faces before/after; 10 Tab stops unchanged; apps/www/public/fonts removed (23 files, 12,970,019 B) and copied at build time; deployed preview served 23/23 fonts; Worker +1,762 B raw",
       "rollback": "HIG_MARKETING_PILOT=0",
       "remaining": "Owner decisions approved on 2026-10-27 (#57). Real wallet-session execution remains (#110); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
@@ -1265,19 +1340,35 @@
           "head": "363576b3c44fb5db9815736f6b3bd93a16bafe61"
         }
       },
-      "ownerRole": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/monorepo maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
+      },
+      "registryUpgrade": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+        "version": "0.1.2",
+        "head": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+        "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78",
+        "mergedAt": "2026-10-27T23:48:52Z",
+        "status": "merged",
+        "checks": {
+          "successful": 112,
+          "skipped": 3,
+          "failed": 0
+        },
+        "signoff": "joeblau; explicit owner authorization recorded in HIG PR156",
+        "validation": "Both frozen installs and registry integrity checks pass; all root quality gates, 3381 mobile tests on each platform, types/lint and production iOS/Android/web exports pass. Chromium/WebKit actual product checks pass with Pro stats preserved at 28px. Final source remote checks all pass after retrying three GUI-session preflight failures on healthy runners.",
+        "evidence": "evidence/adoption/monorepo-0.1.2-validation.json"
       }
     },
     {
       "name": "React Native app",
       "repository": "monorepo",
       "owner": "joeblau",
-      "status": "combined HIG rollout and exact 0.1.0 registry migration merged in #4619/#4737; native controls and host actions merged in #4620/#4629; rollback and owner acceptance remain tracked",
+      "status": "combined HIG rollout and registry upgrade through #4826 merged; named owner acceptance recorded in #57; real wallet acceptance and rollback retirement remain #110",
       "mergedPRs": [
         "https://github.com/bloxwap/monorepo/pull/4515",
         "https://github.com/bloxwap/monorepo/pull/4540",
@@ -1285,10 +1376,11 @@
         "https://github.com/bloxwap/monorepo/pull/4619",
         "https://github.com/bloxwap/monorepo/pull/4620",
         "https://github.com/bloxwap/monorepo/pull/4629",
-        "https://github.com/bloxwap/monorepo/pull/4737"
+        "https://github.com/bloxwap/monorepo/pull/4737",
+        "https://github.com/bloxwap/monorepo/pull/4826"
       ],
       "openPRs": [],
-      "validatedVersion": "0.1.0",
+      "validatedVersion": "0.1.2",
       "validation": "#4540 merged as 2f636e8fe. #4540 (verified at 99b26d55) (CI 16 success, 1 skipped): 254 suites / 3,034 tests, check-types, lint, expo-doctor 20/20, expo export iOS/Android; vendored tarballs byte-identical to a fresh hig@c32771d candidate. iOS Simulator XCUITest flows (AXXXL, RTL, fr/ko, reduce motion; accessibility audit 0 issues). Android emulator flows (font scale 2.0, RTL, fr/ko, muted channels) and a TalkBack 15.0 re-run (busy button reads 'Log out \u00b7 Working, busy'). Drops the busy-suffix (#62), font-loading (#64) and Switch/Alert/Text (#67) workarounds; keeps the busy accessible-name wrapper until #94. Hermes +72.4 KB iOS / +74.1 KB Android raw, over the 64 KB pilot budget (owner decision at signoff) #4602 at 691f4339: vendored tarballs byte-identical to a fresh hig@b2f7740 candidate; 256 suites / 3,058 tests, check-types, lint 0 errors, expo-doctor 20/20; iOS Simulator XCUITest (en/fr/ko, AXXXL, RTL, reduced motion, rollback) and P3 colours from HIGProvider colorSpace; Android emulator flows (fr/ko, font scale 2.0, RTL, reduced motion, muted 0/0) and TalkBack 15 ('Log out, busy. Button. disabled'); Hermes +11.4 KB iOS / +11.4 KB Android raw vs main",
       "rollback": "EXPO_PUBLIC_HIG_PILOT=0",
       "remaining": "Owner decisions approved on 2026-10-27 (#57). Real wallet-session execution remains (#110); retire remaining rollback flags/forks only when their acceptance window closes (#110, review by 2027-01-15). Original adoption APIs and #115 workarounds are merged; physical acceptance is covered by the dated #55 owner attestation.",
@@ -1375,12 +1467,28 @@
           "head": "363576b3c44fb5db9815736f6b3bd93a16bafe61"
         }
       },
-      "ownerRole": "bloxwap/monorepo maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/monorepo maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
+      },
+      "registryUpgrade": {
+        "pr": "https://github.com/bloxwap/monorepo/pull/4826",
+        "version": "0.1.2",
+        "head": "3d5ae402955cb5c75bafbb95570184b18c9a9ef8",
+        "mergeCommit": "e2b6e22b269264fe5fc05ffaf8108aa4b7d7ce78",
+        "mergedAt": "2026-10-27T23:48:52Z",
+        "status": "merged",
+        "checks": {
+          "successful": 112,
+          "skipped": 3,
+          "failed": 0
+        },
+        "signoff": "joeblau; explicit owner authorization recorded in HIG PR156",
+        "validation": "Both frozen installs and registry integrity checks pass; all root quality gates, 3381 mobile tests on each platform, types/lint and production iOS/Android/web exports pass. Chromium/WebKit actual product checks pass with Pro stats preserved at 28px. Final source remote checks all pass after retrying three GUI-session preflight failures on healthy runners.",
+        "evidence": "evidence/adoption/monorepo-0.1.2-validation.json"
       }
     },
     {
@@ -1424,11 +1532,11 @@
         "status": "merged",
         "validation": "Exact four-package registry migration; four candidate archives removed. Frozen install, root/docs checks, 20 docs tests, 13-page export with 14 social cards and 10 Chromium tests passed; remote gates passed."
       },
-      "ownerRole": "bloxwap/hyperliquid maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/hyperliquid maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -1473,11 +1581,11 @@
         "evidence": "docs/hig-adoption/registry-verification.json",
         "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       },
-      "ownerRole": "bloxwap/chart maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/chart maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -1521,11 +1629,11 @@
         "status": "merged",
         "validation": "Exact contracts, React and tokens 0.1.0 registry migration; no runtime vendor archives. Frozen Bun install, lint, types, 7 package tests, 4 font-binary tests, 7 docs tests, canonical drift over 199 files, production export and 54 Chromium/WebKit checks pass. All remote assets, docs, browser, drift and security checks pass. The source CLI remains independently pinned to 0e239442 because the runtime packages do not ship it."
       },
-      "ownerRole": "bloxwap/font maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/font maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -1581,11 +1689,11 @@
         "status": "merged",
         "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
       },
-      "ownerRole": "bloxwap/sfx maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/sfx maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -1615,11 +1723,11 @@
         "status": "merged",
         "validation": "Exact three-package registry migration; runtime archives removed. Clean npm ci, lint, types, 146 units, production export and 27 Chromium/WebKit/mobile Chromium docs checks passed; remote gates passed."
       },
-      "ownerRole": "bloxwap/haptic maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/haptic maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     },
@@ -1674,25 +1782,26 @@
         "status": "merged",
         "validation": "Exact four-package registry migration with no runtime vendor archives; all 10 remote checks, 286 CLI tests and 14 browser tests passed."
       },
-      "ownerRole": "bloxwap/agent-cli maintainers (named assignment pending, #57)",
+      "ownerRole": "bloxwap/agent-cli maintainers (named owner accepted in #57)",
       "ownerApproval": {
         "approvedBy": "joeblau",
         "date": "2026-10-27",
-        "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+        "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
         "scope": "Recorded applicability, parity, density, motion, router and historical cost decisions; new execution evidence remains separately required."
       }
     }
   ],
-  "stateEvidence": "evidence/adoption/state-2026-10-27.json",
+  "stateEvidence": "evidence/adoption/completion-2026-10-27.json",
   "publication": {
-    "version": "0.1.1",
-    "tag": "v0.1.1",
-    "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
-    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
-    "githubPublishedAt": "2026-10-24T05:43:18Z",
-    "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
-    "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
-    "provenance": "Token published; no npm OIDC attestation. Merged #147 changes future releases to OIDC/provenance with a transitional NPM_TOKEN fallback; npm trusted publisher setup and a real OIDC release remain unverified."
+    "version": "0.1.2",
+    "tag": "v0.1.2",
+    "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
+    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.2",
+    "workflow": "https://github.com/bloxwap/hig/actions/runs/40601323124",
+    "scope": "All eight packages published through OIDC. Exact tarball hashes, registry/provenance signatures, web/SSR, Next hydration/fonts and RN 0.81/0.83/0.88 registry consumers passed on unchanged-tag attempt 2.",
+    "provenance": "GitHub OIDC trusted publisher verified in every npm package metadata record; signed provenance present for every package. See evidence/release/registry-0.1.2/.",
+    "conclusion": "success",
+    "evidence": "evidence/release/registry-0.1.2/registry-verification.json"
   },
   "consumerRefreshAcceptance": {
     "issue": "https://github.com/bloxwap/hig/issues/115",
@@ -1727,18 +1836,27 @@
         "RN 0.81 and RN 0.83 registry consumers"
       ],
       "provenance": "Token published; no npm OIDC attestation. PR147 tracks trusted publisher transition."
+    },
+    {
+      "version": "0.1.1",
+      "tag": "v0.1.1",
+      "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
+      "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
+      "githubPublishedAt": "2026-10-24T05:43:18Z",
+      "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
+      "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
+      "provenance": "Token published; no npm OIDC attestation. Merged #147 changes future releases to OIDC/provenance with a transitional NPM_TOKEN fallback; npm trusted publisher setup and a real OIDC release remain unverified."
     }
   ],
   "ownerAcceptance": {
     "date": "2026-10-27",
     "approvedBy": "joeblau",
-    "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md",
+    "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md",
     "localeExceptionExpires": "2027-01-15",
     "executionRemaining": [
-      "TapTrade registry migration",
-      "verified OIDC publication",
       "real authenticated/wallet acceptance",
       "rollback retirement and new measurements"
     ]
-  }
+  },
+  "previousStateEvidence": "evidence/adoption/state-2026-10-27.json"
 }
