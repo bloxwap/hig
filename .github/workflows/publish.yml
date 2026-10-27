@@ -102,6 +102,11 @@ jobs:
       - run: npm run check
       - run: npm run quality
       - run: npm run release:dry-run -- --channel stable-simulation
+      - name: Restore the macOS-rendered docs social image
+        # sharp rasterizes og.png text with host system fonts, so Ubuntu output differs
+        # from the committed macOS render. The file is docs-only (in no npm package), and
+        # its drift is enforced by the Mac-mini quality run required in prerequisites.
+        run: git checkout -- apps/docs/public/og.png
       - name: Verify source version, gates, exact package set and tarball hashes
         run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
       - name: Publish the verified tarballs through npm trusted publishing
