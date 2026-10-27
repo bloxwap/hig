@@ -28,7 +28,7 @@ export interface DialogProps {
 }
 export interface AlertDialogProps extends Omit<DialogProps,'closeLabel'> {/** Decline button text and accessible name; defaults to HIGProvider `messages.cancel`. */cancelLabel?:string}
 function DialogFrame({open,onOpenChange,title,description,trigger,children,closeLabel,titleHidden,descriptionHidden,contentProps,contentRef,closeButton,alert=false}:DialogProps&{alert?:boolean}){
- const {messages,direction,locale}=useHIG();
+ const {messages,direction,locale,density}=useHIG();
  const themeStyle=useThemeStyle();
  // JavaScript callers receive the same ownership guarantees as typed callers. Copy first;
  // a host may share or freeze its props object across several modal instances.
@@ -40,10 +40,10 @@ function DialogFrame({open,onOpenChange,title,description,trigger,children,close
    <Modal.Overlay className='hig-backdrop'/>
    <Modal.Content {...content} {...(!description?{'aria-describedby':undefined}:{})}
     ref={contentRef} role={alert?'alertdialog':'dialog'}
-    className={['hig-dialog',className].filter(Boolean).join(' ')} dir={direction} lang={locale} style={{...themeStyle,...style}}
+    className={['hig-dialog',className].filter(Boolean).join(' ')} dir={direction} lang={locale} data-hig-density={density} style={{...themeStyle,...style}}
     onPointerDownOutside={event=>{onPointerDownOutside?.(event);if(alert)event.preventDefault();}}>
-    <Modal.Title className={titleHidden?'hig-sr-only':undefined}>{title}</Modal.Title>
-    {description&&<Modal.Description className={descriptionHidden?'hig-sr-only':undefined}>{description}</Modal.Description>}
+    <Modal.Title className={titleHidden?'hig-sr-only':'hig-dialog-title'}>{title}</Modal.Title>
+    {description&&<Modal.Description className={descriptionHidden?'hig-sr-only':'hig-dialog-description'}>{description}</Modal.Description>}
     {children}
     {closeButton!==null&&<Modal.Close asChild>{closeButton??<Button intent='secondary' suppressFeedback>{closeLabel??messages.close??en.close}</Button>}</Modal.Close>}
    </Modal.Content>

@@ -17,6 +17,18 @@ defaults:
   run:
     shell: bash
 jobs:
+  security:
+    # Single-job publish: adds the scan serially.
+    uses: bloxwap/.github/.github/workflows/security-scan.yml@2a70724cd0d803abef5f5a7c64c46065f4fda19b # v1.1.0
+    permissions:
+      contents: read
+    with:
+      runs-on: '["self-hosted","macOS","ARM64"]'
+      profile: release
+      secrets-days: "7"
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
+
   prerequisites:
     runs-on: ubuntu-24.04
     permissions:
@@ -50,7 +62,7 @@ jobs:
           echo "release-sha=$release_sha" >> "$GITHUB_OUTPUT"
   publish:
     # Trusted publishing requires an ephemeral GitHub-hosted runner.
-    needs: prerequisites
+    needs: [security, prerequisites]
     environment: npm-release
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -75,7 +87,7 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
       - name: Point temp dirs at $RUNNER_TEMP
         run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4  # zizmor: ignore[cache-poisoning] (v4 has no implicit cache; see note below)
         with:
           node-version: '24.22.1'
           registry-url: https://registry.npmjs.org

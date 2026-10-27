@@ -24,6 +24,6 @@ export const Text=forwardRef<RNText,HIGTextProps>(function Text({style,script,ma
 export const Heading=forwardRef<RNText,HIGTextProps>(function Heading({style,...props},ref){return <Text {...props} ref={ref} accessibilityRole='header' style={[{fontSize:24,lineHeight:30,fontWeight:'600'},style]}/>;});
 export function Stack({style,...props}:ViewProps){const env=useHIG();return <View {...props} style={[{direction:env.direction,gap:tokens.space.md},style]}/>;}
 export function Inline({style,...props}:ViewProps){const env=useHIG();return <View {...props} style={[{direction:env.direction,flexDirection:'row',flexWrap:'wrap',alignItems:'center',gap:tokens.space.md},style]}/>;}
-export function Surface({style,...props}:ViewProps){const env=useHIG();const colors=useColors();return <View {...props} style={[{direction:env.direction,backgroundColor:colors.surface,borderRadius:tokens.radius.xl,padding:tokens.space.xl},style]}/>;}
+export function Surface({style,...props}:ViewProps){const env=useHIG();const colors=useColors();return <View {...props} style={[{direction:env.direction,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:tokens.radius.xl,padding:tokens.space.xl,minWidth:0},style]}/>;}
 export const Card=Surface;
 export function Separator(){const colors=useColors();return <View accessibilityRole='none' style={{height:1,backgroundColor:colors.border}}/>;}

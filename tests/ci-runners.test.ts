@@ -8,10 +8,11 @@ const workflows=readdirSync('.github/workflows').filter(name=>/\.ya?ml$/.test(na
 
 it('every job outside the trusted publishing workflow runs on self-hosted macOS ARM64 without apt, sudo or Playwright --with-deps',()=>{
  for(const [name,text] of workflows){
-  expect(text,name).toContain('runs-on: [self-hosted, macOS, ARM64]');
+  expect(text,name).toMatch(/runs-on: (?:\[self-hosted, macOS, ARM64\]|'\["self-hosted","macOS","ARM64"\]')/);
   expect(text,name).not.toMatch(/ubuntu-|--with-deps|\bapt-get\b|\bsudo /);
   expect(text,name).not.toContain('runner.temp');
-  expect(text.match(/runs-on:/g)?.length,name).toBe(text.match(/\[self-hosted, macOS, ARM64\]/g)?.length);
+  // Reusable-workflow callers pass the same runner as a JSON string input: runs-on: '["self-hosted","macOS","ARM64"]'.
+  expect(text.match(/runs-on:/g)?.length,name).toBe(text.match(/runs-on: (?:\[self-hosted, macOS, ARM64\]|'\["self-hosted","macOS","ARM64"\]')/g)?.length);
  }
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toMatch(/path:\s*~\/Library\/Caches\/ms-playwright/);
@@ -54,10 +55,11 @@ it('keeps Linux visual baselines under tests/visual-baselines/linux and names Da
 it('limits GitHub-hosted runners to the publishing and prerequisites jobs',()=>{
  const text=readFileSync('.github/workflows/publish.yml','utf8');
  const jobs=text.split('jobs:')[1];
- expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['prerequisites','publish']);
+ expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['security','prerequisites','publish']);
  expect(text.match(/runs-on: ubuntu-24\.04/g)).toHaveLength(2);
- expect(text.match(/runs-on:/g)).toHaveLength(2);
- expect(text).not.toContain('self-hosted');
+ expect(text.match(/runs-on:/g)).toHaveLength(3);
+ expect(text).toContain(`runs-on: '["self-hosted","macOS","ARM64"]'`);
+ expect(text).toContain('needs: [security, prerequisites]');
  expect(text).toContain('npx playwright install --with-deps chromium');
  expect(text).toContain('actions/setup-python@');
 });

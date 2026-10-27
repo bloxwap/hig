@@ -14,9 +14,9 @@ const severityRole={info:'info',note:'info',success:'positive',tip:'positive',wa
 /** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (border stroke, soft white glow). */
 export type AlertSeverity=keyof typeof severityRole|'default';
 function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
-export function Badge({children}:React.PropsWithChildren){const colors=useColors();return <Text style={{backgroundColor:colors.nested,borderRadius:9999,padding:8}}>{children}</Text>;}
+export function Badge({children}:React.PropsWithChildren){const colors=useColors();return <Text style={{alignSelf:'flex-start',maxWidth:'100%',backgroundColor:colors.nested,borderRadius:9999,paddingVertical:4,paddingHorizontal:10}}>{children}</Text>;}
 /** Severity sets the glowing stroke from a token role (info/note → info, success/tip → positive, warning, error → negative, default → neutral border); `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
-export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.border:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{borderWidth:2,borderColor:accent,borderRadius:16,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:neutral?`0 0 20px ${withAlpha(colors.text,0.12)}`:`0 0 24px ${withAlpha(accent,0.55)}`}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
+export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.border:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,borderWidth:2,borderColor:accent,borderRadius:16,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:neutral?`0 0 20px ${withAlpha(colors.text,0.12)}`:`0 0 24px ${withAlpha(accent,0.55)}`}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
 export const Callout=Alert;
 export interface Notice {
  id:string;
@@ -57,7 +57,7 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <View testID={testID} style={{maxHeight:maxHeight??height*.6,flexShrink:1}}>
   <ScrollView style={{flexGrow:0,flexShrink:1}} nestedScrollEnabled keyboardShouldPersistTaps='handled' accessibilityLabel={messages.notifications??en.notifications}>
-   <Stack style={{gap:8}}>{unique.map(n=><Surface key={n.id} accessibilityLiveRegion='none' style={{padding:12,borderWidth:2,borderColor:colors[severityRole[n.severity]],borderRadius:999,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:`0 0 24px ${withAlpha(colors[severityRole[n.severity]],0.55)}`}}>
+   <Stack style={{gap:8}}>{unique.map(n=><Surface key={n.id} accessibilityLiveRegion='none' style={{padding:12,gap:8,borderWidth:2,borderColor:colors[severityRole[n.severity]],borderRadius:999,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:`0 0 24px ${withAlpha(colors[severityRole[n.severity]],0.55)}`}}>
     <Text style={{fontWeight:'600'}}>{n.message}</Text>
     {n.description?<Text>{n.description}</Text>:null}
     {n.action}
@@ -68,7 +68,16 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
  </View>;
 }
 export function Spinner({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
-export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){const {locale,messages}=useHIG();return <View accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}><Text>{label}{value===undefined?'…':` ${value}/${max}`}</Text></View>;}
+export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){
+ const {locale,messages,direction}=useHIG();const colors=useColors();
+ const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));
+ return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}>
+  <Text>{label}{value===undefined?'…':` ${value}/${max}`}</Text>
+  <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{height:6,borderRadius:9999,overflow:'hidden',backgroundColor:colors.nested}}>
+   <View style={{width:`${fill}%`,height:'100%',alignSelf:value===undefined?'center':'flex-start',borderRadius:9999,backgroundColor:colors.action}}/>
+  </View>
+ </View>;
+}
 export function Skeleton({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();return <View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10}}/>;}
 export interface EmptyStateProps extends Omit<ViewProps,'children'> {
  title:string;
@@ -81,7 +90,7 @@ export interface EmptyStateProps extends Omit<ViewProps,'children'> {
  /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */
  maxFontSizeMultiplier?:number;
 }
-export function EmptyState({title,description,action,illustration,titleStyle,descriptionStyle,maxFontSizeMultiplier,...props}:EmptyStateProps){return <Surface {...props}>
+export function EmptyState({title,description,action,illustration,titleStyle,descriptionStyle,maxFontSizeMultiplier,...props}:EmptyStateProps){return <Surface {...props} style={[{gap:12},props.style]}>
  {illustration!=null&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{illustration}</View>}
  <Heading style={titleStyle} maxFontSizeMultiplier={maxFontSizeMultiplier}>{title}</Heading>
  {description?<Text style={descriptionStyle} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}

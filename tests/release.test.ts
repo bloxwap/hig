@@ -24,7 +24,7 @@ it('gates OIDC publishing on environment reviewers and quality for the checked-o
  expect(prerequisites).toContain('release_sha="$GITHUB_SHA"');
  expect(prerequisites).toContain('--workflow quality.yml --commit "$release_sha" --status success');
  expect(prerequisites).toContain('test "$runs" -gt 0');
- expect(publish).toContain('needs: prerequisites');
+ expect(publish).toContain('needs: [security, prerequisites]');
  expect(publish).toContain('environment: npm-release');
  expect(publish).toContain('id-token: write');
  expect(publish).toContain('ref: refs/tags/${{ env.RELEASE_TAG }}');
