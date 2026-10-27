@@ -4,7 +4,7 @@ import {join} from 'node:path';
 // @ts-expect-error Executable JavaScript baseline path helper.
 import {visualBaselinePath} from '../scripts/visual-baseline.mjs';
 
-const workflows=readdirSync('.github/workflows').filter(name=>/\.ya?ml$/.test(name)&&name!=='publish.yml').map(name=>[name,readFileSync(join('.github/workflows',name),'utf8')] as const);
+const workflows=readdirSync('.github/workflows').filter(name=>/\.ya?ml$/.test(name)&&name!=='publish.yml'&&name!=='tmp-publish-dryrun.yml').map(name=>[name,readFileSync(join('.github/workflows',name),'utf8')] as const);
 
 it('every job outside the trusted publishing workflow runs on self-hosted macOS ARM64 without apt, sudo or Playwright --with-deps',()=>{
  for(const [name,text] of workflows){
@@ -62,4 +62,15 @@ it('limits GitHub-hosted runners to the publishing and prerequisites jobs',()=>{
  expect(text).toContain('needs: [security, prerequisites]');
  expect(text).toContain('npx playwright install --with-deps chromium');
  expect(text).toContain('actions/setup-python@');
+});
+
+// TEMPORARY: remove with tmp-publish-dryrun.yml before merge.
+it('restricts the temporary Ubuntu proof to an unprivileged PR dry run',()=>{
+ const text=readFileSync('.github/workflows/tmp-publish-dryrun.yml','utf8');
+ expect(text).toContain('  pull_request:');
+ expect(text).not.toMatch(/secrets\.|environment:|id-token:|pull_request_target:|workflow_dispatch:/);
+ expect(text.match(/runs-on:/g)).toHaveLength(1);
+ expect(text).toContain('runs-on: ubuntu-24.04');
+ expect(text).toContain('persist-credentials: false');
+ expect(text.match(/npm publish[^\n]+/g)).toEqual(['npm publish "$archive" --access public --dry-run']);
 });

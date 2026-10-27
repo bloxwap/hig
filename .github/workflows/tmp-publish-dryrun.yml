@@ -1,0 +1,47 @@
+# TEMPORARY: remove this workflow and its runner-policy test exception before merge.
+name: TEMPORARY Ubuntu publish dry-run
+on:
+  pull_request:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  dry-run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4  # zizmor: ignore[cache-poisoning] (v4 has no implicit cache; see note below)
+        with:
+          node-version: '24.22.1'
+          registry-url: https://registry.npmjs.org
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install the trusted publishing npm CLI
+        run: npm install --global npm@11.6.1
+      - run: npm ci
+      - name: Generate native fonts
+        run: bash scripts/ci-generate-fonts.sh
+      - run: npm run check
+      - run: npm run quality
+      - run: npm run release:dry-run -- --channel stable-simulation
+      - name: Verify artifacts with a simulated release tag
+        # verify-release checks the supplied version against HEAD and artifact hashes;
+        # it does not require a tag ref. No tag is created for this PR-only simulation.
+        run: |
+          version=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")
+          node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "v$version" --output artifacts/verified-release.txt
+      # Registry smoke needs the new version already published; omit it in this dry run.
+      - name: Dry-run publication of one verified tarball
+        run: |
+          set -euo pipefail
+          IFS= read -r archive < artifacts/verified-release.txt
+          test -f "$archive"
+          npm publish "$archive" --access public --dry-run
