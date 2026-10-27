@@ -32,7 +32,10 @@ it('gates OIDC publishing on environment reviewers and quality for the checked-o
  expect(publish).toContain('test "$(git rev-parse HEAD)" = "$RELEASE_SHA"');
  expect(publish).toContain("node-version: '24.22.1'");
  expect(publish).toContain('npm install --global npm@11.6.1');
- expect(workflow).not.toMatch(/NPM_TOKEN|NODE_AUTH_TOKEN/);
+ const publishStep=publish.split('      - name: Publish the verified tarballs')[1].split('      - run: npx playwright')[0];
+ expect(publishStep).toContain('NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}');
+ expect(workflow.match(/NODE_AUTH_TOKEN:/g)).toHaveLength(1);
+ expect(publish.split('    steps:')[0]).not.toContain('NODE_AUTH_TOKEN');
  expect(publish).toContain('npm publish "$archive" --access public --provenance');
  expect(publish).toContain('echo "$name@$version" >> artifacts/published-packages.txt');
  expect(publish).toContain('HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt');

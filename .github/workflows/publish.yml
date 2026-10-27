@@ -105,6 +105,10 @@ jobs:
       - name: Verify source version, gates, exact package set and tarball hashes
         run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
       - name: Publish the verified tarballs through npm trusted publishing
+        # npm tries OIDC first; delete this fallback after all eight Trusted Publishers
+        # are verified by the first successful OIDC publish.
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -euo pipefail
           : > artifacts/published-packages.txt
