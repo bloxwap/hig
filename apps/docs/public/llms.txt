@@ -1,4 +1,4 @@
-# Bloxwap HIG 0.1.1
+# Bloxwap HIG 0.1.2
 
 ## ADR 001: platform renderers, shared contracts
 Source: docs/architecture/001-packages.md
@@ -57,12 +57,14 @@ Source: docs/architecture/platform-matrix.md
 | Financial lists/table | semantic table/list | FlatList labeled rows | formatting and contract tests |
 | Chart | `@bloxwap/hig-chart`: lazy @bloxwap/chart canvas (required peer) | numeric/list summary only | typed theme; physical gesture evidence pending |
 | Brand mark | individual SVG renderer/asset | optional react-native-svg | pinned geometry; device comparison pending |
-| React Native versions | — | RN 0.81.5 / Expo 54 / React 19.1.0 and RN 0.83.10 / Expo 55 / React 19.2.0; peer ranges `react-native` `^0.81.5 \|\| ^0.83.10`, SDK-matched Expo, SVG, Slider and Worklets peers | CI packed Metro exports for both (`smoke:packed-native`, `--profile rn-0.83`); iOS Simulator and Android emulator gallery, interaction and GestureSheet runs on both with the same outcomes; differences tracked in #86–#89 (`evidence/native-sim/rn-0.83/`) |
+| React Native versions | — | RN 0.81.5 / Expo 54 / React 19.1.0 and RN 0.83.10 / Expo 55 / React 19.2.0 and RN 0.88.0 / Expo 58 / React 19.3.0; peer ranges `react-native` `^0.81.5 \|\| ^0.83.10 \|\| ^0.88.0`, SDK-matched Expo, SVG, Slider and Worklets peers | CI packed Metro exports and native-ref typechecks for all three (`smoke:packed-native`, `--profile rn-0.83`, `--profile rn-0.88`); iOS Simulator and Android emulator gallery, interaction and GestureSheet runs on both with the same outcomes; differences tracked in #86–#89 (`evidence/native-sim/rn-0.83/`) |
 | Fonts | pinned Sans/Mono asset URLs | hash-pinned static faces, typed manifest, explicit weight registration and host script fallback | Expo-web loading/byte/hash gates; no physical native-font certification |
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
 Optional peer packages: none for chart, whose adapter is the separate `@bloxwap/hig-chart` package with a required `@bloxwap/chart` peer (#96); community Slider for native selection entry; react-native-svg for native brand entry. Vaul is isolated behind the web gesture-sheet entry; Gorhom/Reanimated/Worklets/Gesture Handler are isolated behind the native gesture-sheet entry. Base imports do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web recipes have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+
+RN 0.88 compatibility is verified by independent packed TypeScript and Android/iOS Metro consumers. Existing simulator/emulator interaction reports cover RN 0.81 and 0.83 only; no RN 0.88 physical or simulator interaction result is inferred from a bundle export.
 
 
 ## CI runners · HIG 0.1.0
@@ -808,10 +810,10 @@ HIG's physical acceptance uses the [2026-10-19 owner attestation](https://github
 A recorded device acceptance run must include HIG/package versions, device, OS/browser, date, observer and actual observations: default/muted channels; each independent combination; volume/silent-mode; latency; interruptions; background/foreground; repeated/nested activation; cancelled scroll/drag; disabled/busy; slider repeated values; iOS preset limits; accessibility helper tab/VoiceOver order; visible recovery with feedback off. Attach video/measurements where useful. Reuse upstream haptic certification rather than declaring simulator passes as hardware proof. Owner: HIG and owning app/haptic maintainers; named assignments remain tracked in #57.
 
 
-## Trading glossary · HIG 0.1.1
+## Trading glossary · HIG 0.1.2
 Source: docs/foundations/glossary.md
 
-# Trading glossary · HIG 0.1.1
+# Trading glossary · HIG 0.1.2
 
 Issue #46. Locked before any locale translation. Machine-readable source: `docs/foundations/glossary.json` (also exported as `/hig/glossary.json`). Formatting rules: [localization guide](localization.md).
 
@@ -1447,7 +1449,7 @@ Source: docs/governance/adoption.md
 The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-15 against `planning/org-inventory-2026-10-15.json`: the 15 repositories visible to `gh repo list bloxwap`, none archived. The 2026-10-13 inventory is kept for history. Each row records:
 
 - applicability
-- owner (a maintainer role until #57 records named owners)
+- owner (Joe Blau, `joeblau`, accepts the recorded rows and exceptions in the [2026-10-27 decision record](../../evidence/adoption/owner-approval-2026-10-27.md))
 - HIG version
 - merged and open PRs
 - validation
@@ -1697,10 +1699,10 @@ Physical release review remains pending: iPhone Safari, Android Chrome, native i
 The catalog browser gate captures and runs axe on every shipped state. Button, Field and Input additionally compare eight versioned mobile/reduced-motion screenshots in `tests/visual-baselines/<process.platform>/` (`linux` or `darwin`), and Slider compares two keyboard-focused captures (comfortable and compact density). Geometry changes fail; pixel changes above 2% fail after a 24-channel-value antialias tolerance on every OS. `tests/visual.test.ts` deliberately changes geometry and pixels to prove the gate fails. Baselines record current candidate rendering on that OS, not approved product parity or native-device fidelity. Do not reuse another OS image or raise the thresholds to hide a runner difference. Review an intentional change using CI captures, then run `HIG_UPDATE_VISUALS=1 node scripts/catalog-browser-smoke.mjs` against the production docs preview and commit the reviewed baseline images for that platform.
 
 
-## Release candidates, semver and rollback · HIG 0.1.1
+## Release candidates, semver and rollback · HIG 0.1.2
 Source: docs/governance/release.md
 
-# Release candidates, semver and rollback · HIG 0.1.1
+# Release candidates, semver and rollback · HIG 0.1.2
 
 Issue #32. The local release automation is **dry-run only**. It never invokes npm publication, GitHub release or git tag creation. Unsupported flags fail before artifact creation. The dry run does not request or use npm credentials; registry publication is confined to the maintainer-controlled workflow described below.
 
@@ -1769,15 +1771,15 @@ Registry smoke then runs independent web/SSR, Next hydration/font, and both nati
 Newly published exact versions can briefly return npm metadata `E404` while registry visibility catches up. That lookup retries at most seven times, five seconds apart, with a 15-second limit per npm command. Other npm errors, malformed metadata, unavailable tarballs, hash mismatches and consumer failures still fail normally. An exhausted metadata-visibility retry requires investigation; once the version is visible, rerun the unchanged release tag. A published package defect requires a corrected new version. Automation never unpublishes or overwrites a registry version, and a skipped version with different bytes still fails the registry hash check.
 
 
-## Installation and citation · HIG 0.1.1
+## Installation and citation · HIG 0.1.2
 Source: docs/installation.md
 
-# Installation and citation · HIG 0.1.1
+# Installation and citation · HIG 0.1.2
 
 Install the coordinated HIG packages from npm and keep their versions aligned. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hashes and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig-tokens@0.1.1 @bloxwap/hig-contracts@0.1.1 @bloxwap/hig-react@0.1.1
+npm install @bloxwap/hig-tokens@0.1.2 @bloxwap/hig-contracts@0.1.2 @bloxwap/hig-react@0.1.2
 ```
 
 ## React / Vite

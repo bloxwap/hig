@@ -9,13 +9,13 @@
   },
   {
     "id": "source-audit",
-    "owner": "product monorepo maintainers",
-    "reason": "Source audits and representative migrations are merged, including combined monorepo#4619 and native #4620/#4629. Equal-toolchain web/native measurements are linked from docs/hig/pilots/combined-rollout.md in the owning repository. They are review evidence, not owner approval. The pre-1.0 publication exception authorized by joeblau in PR #141 remains scoped to package availability; v1 parity, named owners, production baselines and rollout acceptance remain in #57. Consumers retain rollback artifacts. Review by 2027-01-15.",
-    "status": "approved-exception",
+    "owner": "joeblau",
+    "reason": "Owner accepted the dated review package and recorded applicability, visual/density/motion/router and historical source/bundle decisions on 2026-10-27. The separate glossary exception expires 2027-01-15. This does not claim new wallet-session or rollback-retirement evidence; those remain #110.",
+    "status": "satisfied",
     "tracking": "https://github.com/bloxwap/hig/issues/57",
     "reviewBy": "2027-01-15",
     "approvedBy": "joeblau",
-    "approval": "https://github.com/bloxwap/hig/pull/141"
+    "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
   },
   {
     "id": "native-fonts",

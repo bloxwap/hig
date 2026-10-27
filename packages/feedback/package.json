@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig-feedback",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "license": "MIT",
   "files": [
@@ -46,14 +46,14 @@
     }
   },
   "dependencies": {
-    "@bloxwap/hig-contracts": "0.1.1"
+    "@bloxwap/hig-contracts": "0.1.2"
   },
   "peerDependencies": {
     "react": "^19.1.0",
     "@bloxwap/sfx": "^0.2.0",
     "@bloxwap/haptic": "^0.2.0 || ^0.3.0",
-    "expo-audio": "~1.1.1 || ~55.0.18",
-    "expo-haptics": "~15.0.7 || ~55.0.18"
+    "expo-audio": "~1.1.1 || ~55.0.18 || ~58.0.10",
+    "expo-haptics": "~15.0.7 || ~55.0.18 || ~58.0.7"
   },
   "peerDependenciesMeta": {
     "react": {

@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useCallback,useImperativeHandle} from 'react';
-import {AccessibilityInfo,BackHandler,findNodeHandle,Platform,Text as RNText,View} from 'react-native';
+import {AccessibilityInfo,BackHandler,findNodeHandle,Platform,Text as RNText,TextInput,View} from 'react-native';
 import BottomSheet,{BottomSheetModal,BottomSheetScrollView,BottomSheetBackdrop,BottomSheetView,type BottomSheetBackdropProps,type BottomSheetModalProps} from '@gorhom/bottom-sheet';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ReduceMotion} from 'react-native-reanimated';
@@ -18,7 +18,7 @@ interface GestureSheetCommonProps {
  /** Default anatomy scrolls the title, description, content and Close action. Custom content owns layout, scrolling and dismissal actions. */
  contentMode?:'default'|'custom';
  /** In custom mode, attach to the caller-rendered accessible title. Without it, a visually hidden title receives open focus. */
- titleRef?:React.RefObject<View|RNText|null>;
+ titleRef?:React.RefObject<React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null>;
  /** A finite positive ceiling for content sizing, in points; defaults to the backend container height. */
  maxDynamicContentSize?:BottomSheetModalProps['maxDynamicContentSize'];
  /** Content-heavy hosts may disable content panning while retaining their own scrollable gestures. */
@@ -29,7 +29,7 @@ interface GestureSheetCommonProps {
  android_keyboardInputMode?:BottomSheetModalProps['android_keyboardInputMode'];
  initialIndex?:number;
  dismissible?:boolean;
- returnFocusRef?:React.RefObject<View|null>;
+ returnFocusRef?:React.RefObject<React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null>;
  /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */
  closeLabel?:string;
  /** Called once after an accepted dismissal settles. Rejected or interrupted closes do not clear host card state. */
@@ -71,7 +71,7 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
  if(!enableDynamicSizing&&fixedSnapPoints.length===0)throw new Error('GestureSheet requires at least one snap point.');
  if(maxDynamicContentSize!==undefined&&(!Number.isFinite(maxDynamicContentSize)||maxDynamicContentSize<=0))throw new Error('GestureSheet maxDynamicContentSize must be finite and greater than zero.');
  const detentCount=enableDynamicSizing?1:fixedSnapPoints.length;
- const sheet=useRef<BottomSheetModal>(null),inline=useRef<BottomSheet>(null),heading=useRef<RNText>(null),requested=useRef(false),focused=useRef(false),frame=useRef<number|null>(null);
+ const sheet=useRef<BottomSheetModal>(null),inline=useRef<BottomSheet>(null),heading=useRef<React.ComponentRef<typeof RNText>>(null),requested=useRef(false),focused=useRef(false),frame=useRef<number|null>(null);
  useImperativeHandle(modalRef,()=>sheet.current!);
  useImperativeHandle(sheetRef,()=>inline.current!);
  const dismissed=useRef(true);
@@ -80,7 +80,7 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
  const detentKey=JSON.stringify(fixedSnapPoints);
  const latest=useRef({open,onOpenChange,returnFocusRef,onDismiss,onHardwareBackPress});latest.current={open,onOpenChange,returnFocusRef,onDismiss,onHardwareBackPress};
  const env=useHIG(),colors=useColors(),insets=useSafeAreaInsets();
- const focus=useCallback((node:View|RNText|null)=>{if(!node)return;try{const handle=findNodeHandle(node);if(handle!==null){AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(node,'viewHoverEnter');}}catch{/* Detached focus targets cannot prevent dismissal. */}},[]);
+ const focus=useCallback((node:React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null)=>{if(!node)return;try{const handle=findNodeHandle(node);if(handle!==null){AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(node,'viewHoverEnter');}}catch{/* Detached focus targets cannot prevent dismissal. */}},[]);
  const requestClose=useCallback(()=>{if(requested.current||!latest.current.open)return;requested.current=true;latest.current.onOpenChange(false);},[]);
  // Gorhom 5 marks a never-presented modal DISMISSING on dismiss() and then skips its portal render, so the sheet
  // never appeared on the iOS Simulator or Android emulator. Only dismiss what this component presented.

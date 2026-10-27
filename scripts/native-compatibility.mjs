@@ -9,8 +9,11 @@ export function verifyNativeReact(directory){
  const require=createRequire(join(resolve(directory),'package.json'));
  const react=require('react/package.json').version;
  const nativeRoot=dirname(require.resolve('react-native/package.json'));
- // Paper and Fabric (the New Architecture renderer Expo 54+ apps run) must both be pinned to the installed React.
- const versions=[...new Set(['ReactNativeRenderer-dev.js','ReactFabric-dev.js'].flatMap(file=>{const found=rendererReactVersions(readFileSync(join(nativeRoot,'Libraries/Renderer/implementations',file),'utf8'));if(!found.length)throw Error(`Cannot identify the pinned RN renderer version in ${file}`);return found;}))];
+ // Fabric and Paper, when the release still ships it, must be pinned to the installed React. RN 0.88 is Fabric-only.
+ const rendererRoot=join(nativeRoot,'Libraries/Renderer/implementations');
+ const files=['ReactNativeRenderer-dev.js','ReactFabric-dev.js'].filter(file=>existsSync(join(rendererRoot,file)));
+ if(!files.length)throw Error('Cannot find an RN renderer build');
+ const versions=[...new Set(files.flatMap(file=>{const found=rendererReactVersions(readFileSync(join(rendererRoot,file),'utf8'));if(!found.length)throw Error(`Cannot identify the pinned RN renderer version in ${file}`);return found;}))];
  if(versions.length!==1)throw Error(`RN renderers disagree on React: ${versions.join(', ')}`);
  const renderer=versions[0];
  assertNativeReactVersion(react,renderer);return {react,renderer,reactNative:require('react-native/package.json').version};

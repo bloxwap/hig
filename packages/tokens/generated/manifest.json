@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "mode": "dark",
   "provenance": "bloxwap/monorepo@d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/tokens/src/colors.ts; HIG semantic intent/density aliases documented in docs/foundations/source-reconciliation.md",
   "colors": {
