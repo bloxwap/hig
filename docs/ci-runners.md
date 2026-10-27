@@ -1,14 +1,14 @@
 # CI runners · HIG 0.1.0
 
-Every GitHub Actions job in this repository runs on self-hosted Apple silicon Mac minis:
+GitHub Actions jobs run on self-hosted Apple silicon Mac minis, except for the `prerequisites` and `publish` jobs in `publish.yml`:
 
 ```yaml
 runs-on: [self-hosted, macOS, ARM64]
 ```
 
-There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
+Only those two trusted-publishing jobs use GitHub-hosted `ubuntu-24.04`. All other jobs remain self-hosted and do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
 
-## Required on every runner
+## Required on every Mac mini
 
 - macOS on Apple silicon, with the Actions runner registered using the labels `self-hosted`, `macOS`, and `ARM64`
 - Git
@@ -17,11 +17,11 @@ There are no GitHub-hosted `ubuntu-24.04` jobs. Workflows do not call `apt`, `su
 - Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
 
-Node 22.22.0 is installed per job by `actions/setup-node`. It does not need to be the login-shell default. `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality and docs jobs cache generated native/OG font faces (~4 MB). The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
+Node 24.22.1 is installed per self-hosted job by `actions/setup-node`. It does not need to be the login-shell default. On the minis, `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality and docs jobs cache generated native/OG font faces (~4 MB). The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
 
 ## Playwright
 
-Jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. Browsers stay on disk at `~/Library/Caches/ms-playwright` across jobs on a mini; do not save that folder with `actions/cache` (it stalls 11+ minutes because the directory is shared). Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
+Mac mini jobs that need browsers run `npx playwright install chromium webkit` with no `--with-deps`. Browsers stay on disk at `~/Library/Caches/ms-playwright` across jobs on a mini; do not save that folder with `actions/cache` (it stalls 11+ minutes because the directory is shared). Chromium and WebKit must launch headless as the runner user. Playwright Firefox is not installed or launched.
 
 ## Visual baselines
 
@@ -52,4 +52,8 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 
 ### Registry publication (`publish.yml`)
 
-The `publish` job runs on the same self-hosted Mac minis after a maintainer publishes a GitHub release with a `v*` tag, or manually dispatches an existing tag. It checks out that tag and re-runs `check`, `quality`, stable-simulation dry run and `verify-release` before publishing verified tarballs using the organization `NPM_TOKEN` secret. All `planning/release-blockers.json` gates must be cleared, satisfied or validly approved-exception. No npm trusted publishing, provenance attestations or environment reviewers are required. After publication it installs Chromium and runs registry hash and consumer smokes. See the [release policy](governance/release.md) for owner approval requirements.
+The `prerequisites` and `publish` jobs are the only GitHub-hosted runner exceptions. [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) requires a supported hosted runner and npm CLI >=11.5.1. Both jobs use `ubuntu-24.04`; publishing uses Node 24.22.1 and explicitly installs the repository's pinned npm@11.6.1 globally on the ephemeral runner. It uses pinned `actions/setup-python` with Python 3.12 and the portable `ci-generate-fonts.sh` venv, plus `npx playwright install --with-deps chromium` for registry consumers.
+
+A published GitHub release with a `v*` tag or a manual dispatch with an existing tag starts the workflow. `prerequisites` requires configured reviewers on `npm-release` and a successful `quality.yml` run for the resolved tag commit, including when dispatch runs from another branch. `publish` needs both the unchanged self-hosted `security` scan and `prerequisites`, waits for the `npm-release` environment approval, checks out `refs/tags/<tag>` without persisted credentials, checks that its SHA still matches the prerequisite result, and re-runs the release gates. It publishes verified tarballs with `--provenance`. npm tries OIDC first and falls back to `NPM_TOKEN`, scoped as `NODE_AUTH_TOKEN` only on the publish step, while Trusted Publishers are being configured. Token authentication on this public repository’s GitHub-hosted runner also produces provenance. Registry checks verify every tarball hash and require source-linked provenance for packages published by this run; already published versions are skipped for resumability.
+
+Releases can proceed today using the transitional token fallback. An npm owner must configure a Trusted Publisher on each of the eight `@bloxwap/hig-*` packages: repository `bloxwap/hig`, workflow `publish.yml`, environment `npm-release`. Delete `NPM_TOKEN` and the publish-step fallback after the first verified OIDC publish confirms all eight Trusted Publishers. A repository maintainer must configure required reviewers on that GitHub environment. See the [release policy](governance/release.md) for the package list and approval requirements.

@@ -4,11 +4,11 @@ import {join} from 'node:path';
 // @ts-expect-error Executable JavaScript baseline path helper.
 import {visualBaselinePath} from '../scripts/visual-baseline.mjs';
 
-const workflows=['quality.yml','docs.yml','publish.yml'].map(name=>[name,readFileSync(join('.github/workflows',name),'utf8')] as const);
+const workflows=readdirSync('.github/workflows').filter(name=>/\.ya?ml$/.test(name)&&name!=='publish.yml').map(name=>[name,readFileSync(join('.github/workflows',name),'utf8')] as const);
 
-it('every GitHub Actions job runs on self-hosted macOS ARM64 without apt, sudo or Playwright --with-deps',()=>{
+it('every job outside the trusted publishing workflow runs on self-hosted macOS ARM64 without apt, sudo or Playwright --with-deps',()=>{
  for(const [name,text] of workflows){
-  expect(text,name).toContain('runs-on: [self-hosted, macOS, ARM64]');
+  expect(text,name).toMatch(/runs-on: (?:\[self-hosted, macOS, ARM64\]|'\["self-hosted","macOS","ARM64"\]')/);
   expect(text,name).not.toMatch(/ubuntu-|--with-deps|\bapt-get\b|\bsudo /);
   expect(text,name).not.toContain('runner.temp');
   // Reusable-workflow callers pass the same runner as a JSON string input: runs-on: '["self-hosted","macOS","ARM64"]'.
@@ -50,4 +50,16 @@ it('keeps Linux visual baselines under tests/visual-baselines/linux and names Da
  ];
  expect(readdirSync('tests/visual-baselines/linux').filter(f=>f.endsWith('.png')).sort()).toEqual(baselines);
  expect(readdirSync('tests/visual-baselines/darwin').filter(f=>f.endsWith('.png')).sort()).toEqual(baselines);
+});
+
+it('limits GitHub-hosted runners to the publishing and prerequisites jobs',()=>{
+ const text=readFileSync('.github/workflows/publish.yml','utf8');
+ const jobs=text.split('jobs:')[1];
+ expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['security','prerequisites','publish']);
+ expect(text.match(/runs-on: ubuntu-24\.04/g)).toHaveLength(2);
+ expect(text.match(/runs-on:/g)).toHaveLength(3);
+ expect(text).toContain(`runs-on: '["self-hosted","macOS","ARM64"]'`);
+ expect(text).toContain('needs: [security, prerequisites]');
+ expect(text).toContain('npx playwright install --with-deps chromium');
+ expect(text).toContain('actions/setup-python@');
 });
