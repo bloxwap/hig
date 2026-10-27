@@ -1,5 +1,5 @@
 // Packed native consumer manifests (#68). fixtures/native/package.json is the RN 0.81.5 / Expo 54 consumer; every other
-// profile in fixtures/native/profiles.json replaces only the versions it lists, so both consumers run the same gallery source.
+// profile in fixtures/native/profiles.json replaces only the versions it lists, so every consumer runs the same gallery source.
 // CLI: node scripts/native-consumer.mjs <profile> <app-dir>   writes <app-dir>/package.json without @bloxwap/hig-* workspace deps.
 import {readFileSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';

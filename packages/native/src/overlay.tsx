@@ -2,16 +2,16 @@ import type {GestureResponderEvent,ModalProps,StyleProp,ViewProps,ViewStyle} fro
 import * as en from '@bloxwap/hig-contracts/messages';
 import {useColors,useHIG} from './provider.js';
 import React,{useEffect,useRef,useId,useCallback} from 'react';
-import {Modal,KeyboardAvoidingView,Platform,ScrollView,AccessibilityInfo,findNodeHandle,Text as RNText,View} from 'react-native';
+import {Modal,KeyboardAvoidingView,Platform,ScrollView,AccessibilityInfo,findNodeHandle,Text as RNText,TextInput,View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Heading,Text,Stack} from './surface.js';
 import {Button} from './button.js';
 export interface DialogProps {
  open:boolean;onOpenChange:(open:boolean)=>void;title:string;description?:string;children:React.ReactNode;
- initialFocusRef?:React.RefObject<View|RNText|null>;returnFocusRef?:React.RefObject<View|RNText|null>;
+ initialFocusRef?:React.RefObject<React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null>;returnFocusRef?:React.RefObject<React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null>;
  /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */closeLabel?:string;
  /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */contentMode?:'default'|'custom';
- /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */titleRef?:React.RefObject<View|RNText|null>;
+ /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */titleRef?:React.RefObject<React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null>;
  /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */stageComponent?:React.ComponentType<ViewProps>;
  stageStyle?:StyleProp<ViewStyle>;stageTestID?:string;
  /** Custom-mode backdrop, including the host's dismissal policy and decoration. */backdrop?:React.ReactNode;
@@ -21,11 +21,11 @@ export interface DialogProps {
 }
 /** Native focus requests remain best effort; host supplies a live trigger ref for restoration. */
 /** Android TalkBack ignores the TYPE_VIEW_FOCUSED event behind setAccessibilityFocus in RN 0.81 Fabric (emulator: focus fell back to the first screen element); a hover-enter event moves its focus. */
-function focusNative(target:View|RNText|null){if(Platform.OS==='web'||!target)return;const handle=findNodeHandle(target);if(handle===null)return;AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(target,'viewHoverEnter');}
+function focusNative(target:React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null){if(Platform.OS==='web'||!target)return;const handle=findNodeHandle(target);if(handle==null)return;AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(target,'viewHoverEnter');}
 /** React Native's iOS Modal defaults to portrait only; opening an overlay must not rotate a landscape host. */
 const overlayOrientations:NonNullable<React.ComponentProps<typeof Modal>['supportedOrientations']>=['portrait','portrait-upside-down','landscape','landscape-left','landscape-right'];
 export function Dialog({open,onOpenChange,title,description,children,initialFocusRef,returnFocusRef,closeLabel,contentMode='default',titleRef,stageComponent:Stage=View,stageStyle,stageTestID,backdrop,contentStyle,testID,animationType='none'}:DialogProps){
- const {messages,reducedMotion,direction}=useHIG();const colors=useColors();const heading=useRef<RNText>(null);const previous=useRef(open);
+ const {messages,reducedMotion,direction}=useHIG();const colors=useColors();const heading=useRef<React.ComponentRef<typeof RNText>>(null);const previous=useRef(open);
  const latest=useRef({open,returnFocusRef});latest.current={open,returnFocusRef};
  const returnPending=useRef(false),frame=useRef<number|undefined>(undefined);
  const resolvedAnimation=reducedMotion?'none':animationType;
@@ -55,6 +55,6 @@ export function Dialog({open,onOpenChange,title,description,children,initialFocu
 }
 export const Sheet=Dialog;
 export const AlertDialog=Dialog;
-export function Menu({label,items,closeLabel}: {label:string;items:readonly {label:string;disabled?:boolean;onSelect:(event:GestureResponderEvent)=>void}[];/** Close button text and accessible name; defaults to HIGProvider `messages.close`. */closeLabel?:string}){const [open,setOpen]=React.useState(false);const {feedback,messages}=useHIG();const id=useId();const sequence=useRef(0);const trigger=useRef<View>(null);return <><Button ref={trigger} intent='secondary' suppressFeedback onPress={()=>setOpen(true)}>{label}</Button><Dialog open={open} onOpenChange={setOpen} title={label} description={messages.menuDescription??en.menuDescription} closeLabel={closeLabel} returnFocusRef={trigger}>{items.map((item,i)=><Button key={i} disabled={item.disabled} suppressFeedback intent='secondary' onPress={event=>{if(item.disabled)return;item.onSelect(event);if(event.isDefaultPrevented())return;setOpen(false);try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent:'selection',origin:'native'});}catch{/* Optional feedback cannot alter the action. */}}}>{item.label}</Button>)}</Dialog></>;}
+export function Menu({label,items,closeLabel}: {label:string;items:readonly {label:string;disabled?:boolean;onSelect:(event:GestureResponderEvent)=>void}[];/** Close button text and accessible name; defaults to HIGProvider `messages.close`. */closeLabel?:string}){const [open,setOpen]=React.useState(false);const {feedback,messages}=useHIG();const id=useId();const sequence=useRef(0);const trigger=useRef<React.ComponentRef<typeof View>>(null);return <><Button ref={trigger} intent='secondary' suppressFeedback onPress={()=>setOpen(true)}>{label}</Button><Dialog open={open} onOpenChange={setOpen} title={label} description={messages.menuDescription??en.menuDescription} closeLabel={closeLabel} returnFocusRef={trigger}>{items.map((item,i)=><Button key={i} disabled={item.disabled} suppressFeedback intent='secondary' onPress={event=>{if(item.disabled)return;item.onSelect(event);if(event.isDefaultPrevented())return;setOpen(false);try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent:'selection',origin:'native'});}catch{/* Optional feedback cannot alter the action. */}}}>{item.label}</Button>)}</Dialog></>;}
 /** Touch alternative to popover/hover tooltip: persistent help text. */
 export function HelpText({children}:React.PropsWithChildren){return <Text>{children}</Text>;}

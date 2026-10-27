@@ -8,7 +8,7 @@ import {join,resolve} from 'node:path';
 import {requireGeneratedFonts} from './font-preflight.mjs';
 import {scratchDir} from './scratch.mjs';
 requireGeneratedFonts('smoke:packed-native');
-// --profile rn-0.81 (default: RN 0.81.5 / Expo 54) or rn-0.83 (RN 0.83.10 / Expo 55); see fixtures/native/profiles.json.
+// Supported profiles, including RN 0.88 / Expo 58, are in fixtures/native/profiles.json.
 const args=process.argv.slice(2);const profile=args[0]==='--profile'&&args[1]?args[1]:args.length?(()=>{throw Error('Usage: packed-native-smoke.mjs [--profile <name>]');})():'rn-0.81';
 const manifest=nativeConsumerManifest(profile);
 console.log(`Packed native consumer profile ${profile}: ${nativeProfiles[profile].stack}`);
@@ -21,6 +21,10 @@ const runtime=verifyNativeReact(dir);console.log('Native runtime versions',runti
 // npm only warns on most peer conflicts in an Expo tree, so every declared HIG peer range must explicitly accept what was installed.
 console.log('Declared peers satisfied',verifyDeclaredPeers(dir));
 assert.equal(runtime.reactNative,manifest.dependencies['react-native'],`Consumer runs the ${profile} React Native version`);
+writeFileSync(join(dir,'consumer-refs-typecheck.tsx'),readFileSync('tests/native/consumer-refs-typecheck.tsx'));
+execFileSync('npm',['install','--no-save','--no-audit','--no-fund','typescript@6.0.3','@types/react@19.3.0'],{cwd:dir,stdio:'pipe'});
+execFileSync(process.execPath,[join(dir,'node_modules/typescript/bin/tsc'),'--ignoreConfig','--noEmit','--strict','--jsx','react-jsx','--target','es2022','--module','esnext','--moduleResolution','bundler','--esModuleInterop','--skipLibCheck','--types','react','consumer-refs-typecheck.tsx'],{cwd:dir,stdio:'inherit'});
+console.log(`Packed native refs and focus targets (${profile}) typecheck without consumer casts`);
 execFileSync('npm',['run','bundle','--','--max-workers','2'],{cwd:dir,stdio:'inherit'});
 // #64: native faces come from @bloxwap/hig-native-fonts with the generator's hashes; the web tokens package carries none.
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');

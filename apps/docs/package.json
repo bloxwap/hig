@@ -1,6 +1,6 @@
 {
   "name": "hig-docs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,10 +15,10 @@
     "@bloxwap/chart": "0.3.0",
     "@bloxwap/font": "0.1.2",
     "@bloxwap/haptic": "0.1.0",
-    "@bloxwap/hig-chart": "0.1.1",
-    "@bloxwap/hig-feedback": "0.1.1",
-    "@bloxwap/hig-react": "0.1.1",
-    "@bloxwap/hig-tokens": "0.1.1",
+    "@bloxwap/hig-chart": "0.1.2",
+    "@bloxwap/hig-feedback": "0.1.2",
+    "@bloxwap/hig-react": "0.1.2",
+    "@bloxwap/hig-tokens": "0.1.2",
     "@bloxwap/sfx": "0.1.0",
     "@radix-ui/react-dialog": "1.1.15",
     "@radix-ui/react-dropdown-menu": "2.1.16",

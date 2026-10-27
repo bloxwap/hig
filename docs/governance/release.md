@@ -1,4 +1,4 @@
-# Release candidates, semver and rollback · HIG 0.1.1
+# Release candidates, semver and rollback · HIG 0.1.2
 
 Issue #32. The local release automation is **dry-run only**. It never invokes npm publication, GitHub release or git tag creation. Unsupported flags fail before artifact creation. The dry run does not request or use npm credentials; registry publication is confined to the maintainer-controlled workflow described below.
 

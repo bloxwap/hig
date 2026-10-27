@@ -1,0 +1,348 @@
+{
+  "observedAt": "2026-10-27",
+  "scope": "Read-only GitHub acceptance audit for HIG #1/#56/#57/#110 and directly linked release, security and native-support records; no owner approvals inferred from checks or merges",
+  "confirmedMergedPRs": [
+    {
+      "url": "https://github.com/bloxwap/monorepo/pull/4598",
+      "mergedAt": "2026-10-18T06:19:58Z",
+      "mergeCommit": "031b29814dd176b3a29f09b690c8660038a38ac9"
+    },
+    {
+      "url": "https://github.com/bloxwap/chart/pull/78",
+      "mergedAt": "2026-10-24T05:15:53Z",
+      "mergeCommit": "fcf074264ac0513e4ca4459180cbe5e345240194"
+    },
+    {
+      "url": "https://github.com/bloxwap/sfx/pull/80",
+      "mergedAt": "2026-10-24T05:15:57Z",
+      "mergeCommit": "2c4fc6f4678db7abf791d6ed74a4f3fdddfffce8"
+    },
+    {
+      "url": "https://github.com/bloxwap/agent-cli/pull/68",
+      "mergedAt": "2026-10-24T05:17:47Z",
+      "mergeCommit": "5f1e34e9745d652cd3436562c53d600f86ce396b"
+    },
+    {
+      "url": "https://github.com/bloxwap/haptic/pull/49",
+      "mergedAt": "2026-10-24T05:20:43Z",
+      "mergeCommit": "23db715c1233e44bfbd3536444b90e0dcd9008c5"
+    },
+    {
+      "url": "https://github.com/bloxwap/hyperliquid/pull/217",
+      "mergedAt": "2026-10-24T05:22:27Z",
+      "mergeCommit": "ac8488db6a61ba4066dc5573be8a917ce7b95603"
+    },
+    {
+      "url": "https://github.com/bloxwap/bloxwap.github.io/pull/36",
+      "mergedAt": "2026-10-24T05:23:14Z",
+      "mergeCommit": "522e0995ebd0d50d3a724f46d7a655894fc787a8"
+    },
+    {
+      "url": "https://github.com/bloxwap/font/pull/39",
+      "mergedAt": "2026-10-24T05:26:23Z",
+      "mergeCommit": "693d9e1ad7e55cfc3dd26d30bb86d3f073964bff"
+    },
+    {
+      "url": "https://github.com/bloxwap/tapsiren/pull/430",
+      "mergedAt": "2026-10-24T05:18:35Z",
+      "mergeCommit": "815991e250f532f73f1447daae4b780cb2773c5c"
+    },
+    {
+      "url": "https://github.com/bloxwap/monorepo/pull/4737",
+      "mergedAt": "2026-10-26T03:49:53Z",
+      "mergeCommit": "8db4a59208116e0c87c2b7f61c4aafdb7bef6ce5"
+    },
+    {
+      "url": "https://github.com/bloxwap/monorepo/pull/4775",
+      "mergedAt": "2026-10-26T04:16:02Z",
+      "mergeCommit": "677b1ddaf652b8d53633309230ad0a68a6f964d2"
+    },
+    {
+      "url": "https://github.com/bloxwap/taptradetv/pull/254",
+      "mergedAt": "2026-10-26T18:21:26Z",
+      "mergeCommit": "729290acc60ce2e74834cf382c9e8cce6edcde6f"
+    },
+    {
+      "url": "https://github.com/bloxwap/hig/pull/147",
+      "mergedAt": "2026-10-27T16:47:37Z",
+      "mergeCommit": "2f0a277f2af63f5de9dac7fb0ced62000f2cfea1"
+    }
+  ],
+  "supersededPRs": [],
+  "stillOpenPRs": [
+    {
+      "url": "https://github.com/bloxwap/taptradetv/pull/253",
+      "draft": false
+    }
+  ],
+  "publication": {
+    "version": "0.1.1",
+    "tag": "v0.1.1",
+    "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
+    "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
+    "githubPublishedAt": "2026-10-24T05:43:18Z",
+    "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
+    "scope": "Coordinated source and GitHub release. The linked workflow records npm publication, exact tarball verification and registry-consumer results.",
+    "provenance": "Token published; no npm OIDC attestation. Merged #147 changes the future workflow to OIDC/provenance with a transitional NPM_TOKEN fallback; npm trusted publisher setup and a real OIDC release remain unverified."
+  },
+  "issueRecommendations": {
+    "1": {
+      "disposition": "Keep the roadmap open for the remaining acceptance; do not infer issue completion from CI or merges",
+      "remaining": [
+        "#56 TapTrade registry migration and trusted-publisher verification",
+        "#57 owner decisions",
+        "#110 wallet acceptance and rollback retirement"
+      ],
+      "resolved": [
+        "Original 35 tasks merged",
+        "Monorepo exact 0.1.0 registry migration merged in #4737",
+        "Nine consumer registry migrations merged",
+        "Consumer refresh #115 complete"
+      ]
+    },
+    "56": {
+      "disposition": "Keep open for the sole open consumer migration and trusted-publishing verification",
+      "completed": "Nine consumer registry migrations use exact 0.1.0. Monorepo #4737 merged on 2026-10-26 as 8db4a59208116e0c87c2b7f61c4aafdb7bef6ce5 with the required joeblau signoff successful. HIG #147 merged on 2026-10-27 as 2f0a277f2af63f5de9dac7fb0ced62000f2cfea1.",
+      "remaining": [
+        "TapTrade #253 must be refreshed onto current main and evaluated by the current gates; it remains open",
+        "npm trusted publisher setup and a real OIDC release remain unverified"
+      ]
+    },
+    "57": {
+      "disposition": "Keep open unless actual named-owner and native-speaker decisions arrive",
+      "comments": 0,
+      "remaining": [
+        "Named maintainer for every adoption row and dated exception",
+        "Production visual parity and density/layout acceptance",
+        "Production list/number baselines and performance",
+        "Host navigation/back/deep-link acceptance",
+        "Equal-toolchain source/bundle delta acceptance",
+        "Inventory applicability decisions",
+        "Native-speaker approval of non-en-US glossary"
+      ],
+      "scopeException": "PR #141 allows pre-1.0 package availability through 2027-01-15; it does not complete this v1 acceptance."
+    },
+    "110": {
+      "disposition": "Keep open for owning-product acceptance and rollback retirement",
+      "completed": "Combined web/native rollout is merged, and committed marketing fonts were removed by monorepo #4598.",
+      "remaining": [
+        "Named-owner product decisions in #57",
+        "Real authenticated/wallet-session acceptance",
+        "Retained app/Pro/native legacy renderers and rollback paths after the accepted rollback window",
+        "Equal-toolchain source, bundle and Hermes retirement measurements"
+      ]
+    }
+  },
+  "versionSources": {
+    "required": [
+      "package.json version",
+      "packages/*/package.json versions and internal HIG dependencies/peers",
+      "apps/docs/package.json version and HIG dependencies",
+      "fixtures/*/package.json HIG dependencies",
+      "package-lock.json root/workspace records",
+      "packages/tokens/source.json version",
+      "scripts/generate-docs.mjs hardcoded version and generated docs metadata",
+      "scripts/generate-glossary.mjs HIG title",
+      "scripts/generate-brand.mjs HIG version/title",
+      "apps/docs/lib/site.tsx",
+      "apps/docs/app/docs/layout.tsx",
+      "apps/docs/src/demo.tsx",
+      "docs authored HIG headings and installation examples",
+      "scripts/example-code.mjs installation samples"
+    ],
+    "preserve": [
+      "Historical candidate versions/evidence hashes",
+      "@bloxwap/font source 0.1.2 and native/OG font manifests",
+      "Feedback cue exporter source versions",
+      "Historical migration provenance",
+      "Immutable 0.1.1 release and token-published 0.1.0/0.1.1 records"
+    ]
+  },
+  "notes": [
+    "Monorepo #4737 head 363576b3c44fb5db9815736f6b3bd93a16bafe61 has 53 successful, 8 failed and 1 skipped check runs; its separate signoff commit status is successful. The earlier 61-pass/1-skip result belongs only to d572d695455464da46d4964d3a2f08104cef50a4.",
+    "No #57 owner approvals are recorded; automated checks and merges do not supply them.",
+    "Published 0.1.1 is immutable. RN 0.88 support requires a new coordinated release, not a replacement 0.1.1."
+  ],
+  "registryMigrations": {
+    "chart": {
+      "pr": "https://github.com/bloxwap/chart/pull/78",
+      "mergeCommit": "fcf074264ac0513e4ca4459180cbe5e345240194",
+      "mergedAt": "2026-10-24T05:15:53Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "evidence": "docs/hig-adoption/registry-verification.json",
+      "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
+    },
+    "sfx": {
+      "pr": "https://github.com/bloxwap/sfx/pull/80",
+      "mergeCommit": "2c4fc6f4678db7abf791d6ed74a4f3fdddfffce8",
+      "mergedAt": "2026-10-24T05:15:57Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact four-package registry migration; runtime candidate tarballs removed; owning checks passed."
+    },
+    "agent-cli": {
+      "pr": "https://github.com/bloxwap/agent-cli/pull/68",
+      "mergeCommit": "5f1e34e9745d652cd3436562c53d600f86ce396b",
+      "mergedAt": "2026-10-24T05:17:47Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact four-package registry migration with no runtime vendor archives; all 10 remote checks, 286 CLI tests and 14 browser tests passed."
+    },
+    "tapsiren": {
+      "pr": "https://github.com/bloxwap/tapsiren/pull/430",
+      "mergeCommit": "815991e250f532f73f1447daae4b780cb2773c5c",
+      "mergedAt": "2026-10-24T05:18:35Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact four-package registry migration with no runtime vendor archives; all eight remote checks passed."
+    },
+    "hyperliquid": {
+      "pr": "https://github.com/bloxwap/hyperliquid/pull/217",
+      "mergeCommit": "ac8488db6a61ba4066dc5573be8a917ce7b95603",
+      "mergedAt": "2026-10-24T05:22:27Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact four-package registry migration; four candidate archives removed. Frozen install, root/docs checks, 20 docs tests, 13-page export with 14 social cards and 10 Chromium tests passed; remote gates passed."
+    },
+    "haptic": {
+      "pr": "https://github.com/bloxwap/haptic/pull/49",
+      "mergeCommit": "23db715c1233e44bfbd3536444b90e0dcd9008c5",
+      "mergedAt": "2026-10-24T05:20:43Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact three-package registry migration; runtime archives removed. Clean npm ci, lint, types, 146 units, production export and 27 Chromium/WebKit/mobile Chromium docs checks passed; remote gates passed."
+    },
+    "bloxwap.github.io": {
+      "pr": "https://github.com/bloxwap/bloxwap.github.io/pull/36",
+      "mergeCommit": "522e0995ebd0d50d3a724f46d7a655894fc787a8",
+      "mergedAt": "2026-10-24T05:23:14Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "evidence": "docs/hig-registry-verification.json",
+      "validation": "Exact registry hig-tokens; candidate archive and committed generated assets removed. CI generates and uploads the same tested Pages artifact.",
+      "deployment": {
+        "workflow": "https://github.com/bloxwap/bloxwap.github.io/actions/runs/40066052311",
+        "status": "success",
+        "configuration": "Pages build_type changed from legacy to workflow and verified after merge.",
+        "liveVerification": "https://bloxwap.github.io/assets/provenance.json matches the tested artifact; all five generated asset SHA-256 values match."
+      }
+    },
+    "font": {
+      "pr": "https://github.com/bloxwap/font/pull/39",
+      "mergeCommit": "693d9e1ad7e55cfc3dd26d30bb86d3f073964bff",
+      "mergedAt": "2026-10-24T05:26:23Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact contracts, React and tokens 0.1.0 registry migration; no runtime vendor archives. The source CLI remains independently pinned to 0e239442 because the runtime packages do not ship it."
+    },
+    "monorepo": {
+      "pr": "https://github.com/bloxwap/monorepo/pull/4737",
+      "head": "363576b3c44fb5db9815736f6b3bd93a16bafe61",
+      "mergeCommit": "8db4a59208116e0c87c2b7f61c4aafdb7bef6ce5",
+      "mergedAt": "2026-10-26T03:49:53Z",
+      "version": "0.1.0",
+      "status": "merged",
+      "validation": "Exact HIG 0.1.0 across web and mobile; required joeblau signoff succeeded. The 61-pass/1-skip result is scoped to d572d695455464da46d4964d3a2f08104cef50a4. Final head 363576b3c44fb5db9815736f6b3bd93a16bafe61 has 53 successful, 8 failed and 1 skipped check runs; no final-head all-green claim is made.",
+      "automatedChecks": {
+        "passed": 61,
+        "skipped": 1,
+        "head": "d572d695455464da46d4964d3a2f08104cef50a4"
+      },
+      "finalHeadAutomatedChecks": {
+        "passed": 53,
+        "failed": 8,
+        "skipped": 1,
+        "head": "363576b3c44fb5db9815736f6b3bd93a16bafe61"
+      },
+      "signoff": {
+        "state": "success",
+        "description": "Joe Blau signed off",
+        "head": "363576b3c44fb5db9815736f6b3bd93a16bafe61"
+      }
+    }
+  },
+  "productBrandApproval": {
+    "issue": 101,
+    "approval": "https://github.com/bloxwap/tapsiren/pull/422",
+    "color": "#00f0ff",
+    "mergeCommit": "191ffcaa3cf7673f794a2f2153175a77a303ab7e"
+  },
+  "pendingRegistryMigrations": {
+    "taptradetv": {
+      "pr": "https://github.com/bloxwap/taptradetv/pull/253",
+      "head": "98a3830f8e7ec91656ef73784ea94e1d604c1310",
+      "version": "0.1.0",
+      "status": "open; refresh onto current main and current gates required",
+      "validation": "The recorded head predates merged #254 and still fails the retired legacy dependency-audit Quality Gate. TapTrade #254 merged on 2026-10-26 as 729290acc60ce2e74834cf382c9e8cce6edcde6f with current security fixes and retired the legacy audit. Refresh #253 onto current main and reassess its migration with current gates; do not treat it as merged."
+    }
+  },
+  "nativeSupportFollowup": {
+    "issue": "https://github.com/bloxwap/monorepo/issues/4776",
+    "status": "open",
+    "scope": "RN 0.88 peer ranges and ComponentRef typings, followed by monorepo adoption and removal of higFocusRef()",
+    "release": "Requires a new coordinated HIG release; 0.1.1 is immutable. This follow-up does not decide v1 scope."
+  },
+  "publicationHistory": [
+    {
+      "version": "0.1.0",
+      "tag": "v0.1.0",
+      "sourceCommit": "bdf8d07014fea5e69ea51a061b82707661a9d701",
+      "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.0",
+      "workflow": "https://github.com/bloxwap/hig/actions/runs/39970447895",
+      "conclusion": "success",
+      "verifiedSteps": [
+        "artifact source/tag/package set and hashes",
+        "publish all eight packages",
+        "registry hash comparisons",
+        "web/SSR registry consumer",
+        "Next registry consumer",
+        "RN 0.81 and RN 0.83 registry consumers"
+      ],
+      "provenance": "Token published; no npm OIDC attestation."
+    },
+    {
+      "version": "0.1.1",
+      "tag": "v0.1.1",
+      "sourceCommit": "6f4dd060e0985be644d255154aa7a0277cdde27f",
+      "release": "https://github.com/bloxwap/hig/releases/tag/v0.1.1",
+      "workflow": "https://github.com/bloxwap/hig/actions/runs/40067359944",
+      "conclusion": "success",
+      "verifiedSteps": [
+        "artifact source/tag/package set and hashes",
+        "publish all eight packages",
+        "registry hash comparisons",
+        "web/SSR registry consumer",
+        "Next registry consumer",
+        "RN 0.81 and RN 0.83 registry consumers"
+      ],
+      "provenance": "Token published; no npm OIDC attestation."
+    }
+  ],
+  "closedIssues": [
+    {
+      "number": 70,
+      "closedAt": "2026-10-24T05:26:50Z",
+      "implementation": "https://github.com/bloxwap/hig/pull/148"
+    },
+    {
+      "number": 101,
+      "closedAt": "2026-10-24T05:42:35Z",
+      "approval": "https://github.com/bloxwap/tapsiren/pull/422"
+    },
+    {
+      "number": 115,
+      "closedAt": "2026-10-24T05:42:35Z",
+      "reconciliation": "https://github.com/bloxwap/hig/pull/149"
+    }
+  ],
+  "trustedPublishing": {
+    "pr": "https://github.com/bloxwap/hig/pull/147",
+    "status": "merged",
+    "mergedAt": "2026-10-27T16:47:37Z",
+    "mergeCommit": "2f0a277f2af63f5de9dac7fb0ced62000f2cfea1",
+    "githubEnvironment": "npm-release reviewer environment configured with joeblau as required reviewer",
+    "workflow": "OIDC and --provenance with a step-scoped transitional NPM_TOKEN fallback",
+    "remaining": "npm trusted publisher setup and a real OIDC release remain unverified; the latest publish run remains token-published 0.1.1"
+  }
+}

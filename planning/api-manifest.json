@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "api": {
     "react": {
       "AnimatedNumberReadout": {
@@ -394,7 +394,7 @@
       },
       "Button": {
         "entry": "button",
-        "signature": "export declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<View>>;"
+        "signature": "export declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<React.ComponentRef<typeof View>>>;"
       },
       "IconButton": {
         "entry": "button",
@@ -406,7 +406,7 @@
       },
       "Link": {
         "entry": "button",
-        "signature": "export declare const Link: React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<View>>;"
+        "signature": "export declare const Link: React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<React.ComponentRef<typeof View>>>;"
       },
       "Checkbox": {
         "entry": "checkbox",
@@ -462,23 +462,23 @@
       },
       "Label": {
         "entry": "field",
-        "signature": "export declare const Label: React.ForwardRefExoticComponent<import(\"./surface.js\").HIGTextProps & React.RefAttributes<import(\"react-native\").Text>>;"
+        "signature": "export declare const Label: typeof Text;"
       },
       "Input": {
         "entry": "field",
-        "signature": "export declare const Input: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        "signature": "export declare const Input: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
       "TextArea": {
         "entry": "field",
-        "signature": "export declare const TextArea: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        "signature": "export declare const TextArea: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
       "AmountInput": {
         "entry": "field",
-        "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
       "SearchInput": {
         "entry": "field",
-        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInput>>;"
+        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
@@ -518,7 +518,7 @@
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<View | RNText | null>;\n    returnFocusRef?: React.RefObject<View | RNText | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */ closeLabel?: string;\n    /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */ contentMode?: 'default' | 'custom';\n    /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */ titleRef?: React.RefObject<View | RNText | null>;\n    /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */ stageComponent?: React.ComponentType<ViewProps>;\n    stageStyle?: StyleProp<ViewStyle>;\n    stageTestID?: string;\n    /** Custom-mode backdrop, including the host's dismissal policy and decoration. */ backdrop?: React.ReactNode;\n    /** Custom-mode surface layout; no implicit padding or scroll view is added. */ contentStyle?: StyleProp<ViewStyle>;\n    /** Identifies the actual modal content surface in either mode. */ testID?: string;\n    /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */ animationType?: ModalProps['animationType'];\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    returnFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */ closeLabel?: string;\n    /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */ contentMode?: 'default' | 'custom';\n    /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */ titleRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */ stageComponent?: React.ComponentType<ViewProps>;\n    stageStyle?: StyleProp<ViewStyle>;\n    stageTestID?: string;\n    /** Custom-mode backdrop, including the host's dismissal policy and decoration. */ backdrop?: React.ReactNode;\n    /** Custom-mode surface layout; no implicit padding or scroll view is added. */ contentStyle?: StyleProp<ViewStyle>;\n    /** Identifies the actual modal content surface in either mode. */ testID?: string;\n    /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */ animationType?: ModalProps['animationType'];\n}"
       },
       "Dialog": {
         "entry": "overlay",
@@ -734,11 +734,11 @@
       },
       "Text": {
         "entry": "surface",
-        "signature": "export declare const Text: React.ForwardRefExoticComponent<HIGTextProps & React.RefAttributes<RNText>>;"
+        "signature": "export declare const Text: React.ForwardRefExoticComponent<HIGTextProps & React.RefAttributes<React.ComponentRef<typeof RNText>>>;"
       },
       "Heading": {
         "entry": "surface",
-        "signature": "export declare const Heading: React.ForwardRefExoticComponent<HIGTextProps & React.RefAttributes<RNText>>;"
+        "signature": "export declare const Heading: React.ForwardRefExoticComponent<HIGTextProps & React.RefAttributes<React.ComponentRef<typeof RNText>>>;"
       },
       "Stack": {
         "entry": "surface",

@@ -1,9 +1,9 @@
-# Installation and citation · HIG 0.1.1
+# Installation and citation · HIG 0.1.2
 
 Install the coordinated HIG packages from npm and keep their versions aligned. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hashes and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig-tokens@0.1.1 @bloxwap/hig-contracts@0.1.1 @bloxwap/hig-react@0.1.1
+npm install @bloxwap/hig-tokens@0.1.2 @bloxwap/hig-contracts@0.1.2 @bloxwap/hig-react@0.1.2
 ```
 
 ## React / Vite
