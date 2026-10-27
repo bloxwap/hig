@@ -49,4 +49,4 @@ jobs:
           set -euo pipefail
           IFS= read -r archive < artifacts/verified-release.txt
           test -f "$archive"
-          npm publish "$archive" --access public --dry-run
+          npm publish "$archive" --access public --dry-run --force
