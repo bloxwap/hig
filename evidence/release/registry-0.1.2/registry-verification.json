@@ -1,0 +1,74 @@
+{
+  "kind": "registry consumer validation",
+  "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
+  "version": "0.1.2",
+  "results": [
+    {
+      "package": "@bloxwap/hig-chart",
+      "version": "0.1.2",
+      "sha256": "4f1a334c03e62727a834c9948eb8bd7d32b4e3bdaa77a3edf82c80a31421ac67",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-chart@0.1.2"
+    },
+    {
+      "package": "@bloxwap/hig-contracts",
+      "version": "0.1.2",
+      "sha256": "ad8b907d947d53d6140281a1a1178d1ccdfdf7c79c63f6d5f04ce1da84676ecd",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-contracts@0.1.2"
+    },
+    {
+      "package": "@bloxwap/hig-feedback",
+      "version": "0.1.2",
+      "sha256": "1fb97d4312df1108f35b9ff141e51aa0dc254cb767f366eaf0aaab0108a38bf9",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-feedback@0.1.2"
+    },
+    {
+      "package": "@bloxwap/hig-native",
+      "version": "0.1.2",
+      "sha256": "51c9b8f6c10e93c80a896bb8484ca940aa4c2929557de3dad3496853e2fd0f1b",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-native@0.1.2"
+    },
+    {
+      "package": "@bloxwap/hig-native-fonts",
+      "version": "0.1.2",
+      "sha256": "cef945eb48c92f88679e0ff60d378109a67257b3f7c5f4db80ff37fa82b9c341",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-native-fonts@0.1.2"
+    },
+    {
+      "package": "@bloxwap/hig-og-fonts",
+      "version": "0.1.2",
+      "sha256": "e51ca14cf360727ee71b91f4cb8d0f69141ff79a1202fdd2bc4ca9ab0a9d2113",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-og-fonts@0.1.2"
+    },
+    {
+      "package": "@bloxwap/hig-react",
+      "version": "0.1.2",
+      "sha256": "9d9259741e68db24092f81675cdf3c6b56c80db8f70d9feeba73ae9852dc167c",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-react@0.1.2"
+    },
+    {
+      "package": "@bloxwap/hig-tokens",
+      "version": "0.1.2",
+      "sha256": "19235bf69fc62c015b362983e9dc72cd3aa49da47399a9686a7acbf822cbe695",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-tokens@0.1.2"
+    }
+  ],
+  "published": [],
+  "provenanceRequired": [
+    "@bloxwap/hig-chart@0.1.2",
+    "@bloxwap/hig-contracts@0.1.2",
+    "@bloxwap/hig-feedback@0.1.2",
+    "@bloxwap/hig-native@0.1.2",
+    "@bloxwap/hig-native-fonts@0.1.2",
+    "@bloxwap/hig-og-fonts@0.1.2",
+    "@bloxwap/hig-react@0.1.2",
+    "@bloxwap/hig-tokens@0.1.2"
+  ],
+  "checks": [
+    "registry tarball SHA-256 equality",
+    "npm registry signatures and provenance signature validation",
+    "web/SSR",
+    "Next production hydration/font binding",
+    "RN 0.81, RN 0.83 and RN 0.88 Metro/Expo exports"
+  ],
+  "physicalDevices": "not observed by these checks"
+}

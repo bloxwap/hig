@@ -1,0 +1,147 @@
+{
+  "version": "0.1.2",
+  "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
+  "workflow": "https://github.com/bloxwap/hig/actions/runs/40601323124",
+  "observedAt": "2026-10-27",
+  "packages": {
+    "@bloxwap/hig-contracts": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "c5d94555-639e-432e-8f0f-b4092e8ccd83"
+        }
+      },
+      "integrity": "sha512-RxUIxLfxoOajTpVfkN4pJFbgqNcWduIJB+RjO+SPXaSYFtT8d8m6KhLKCw1IBX8FpbLMIPubYFoULgT/+Yqm7g==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-contracts@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    },
+    "@bloxwap/hig-tokens": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "3e7521fd-ff2e-440d-b360-aac70ba8de56"
+        }
+      },
+      "integrity": "sha512-8xknSL9GZYNEnXybV4h0mSOBkCeTK2RVSoY02pTkRjAwnMMPxF1mwHVLxPC2q6LW3EZ/DxZ+vTS8tRVegfy2mA==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-tokens@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    },
+    "@bloxwap/hig-react": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "a7a1fcf8-96bc-4964-9b89-4a9dcaf1eb5b"
+        }
+      },
+      "integrity": "sha512-kSyvRa6K4Co0mcX6l6BMYtC/oUhD6fRQEWQhCf09TuwYVZKbQ0tRvM9+zQFdEfBtxj3t6bBJEpBqYM11Li/iGQ==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-react@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    },
+    "@bloxwap/hig-native": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "34f2431f-b2ef-4c3a-8a6c-83ce7ca8741c"
+        }
+      },
+      "integrity": "sha512-zglubMexKilKrUdC5nWGT97ptEcx0MS+VPDJk2eo5skXxArURVpiPyEFK+AlMjF1+eU/g+gaZfrUl+lYZjJqFg==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-native@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    },
+    "@bloxwap/hig-feedback": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "36ca698c-ee26-4529-a452-a35f65b12f25"
+        }
+      },
+      "integrity": "sha512-fJM9hVl7wamYufvF8oJffNXUl5TkLaTvnToT1Ox6QPbzuwft1qWr/jms7XPgFBO+PlGEzxB1fxBdKEvJNkLN2g==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-feedback@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    },
+    "@bloxwap/hig-chart": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "aa884773-3d99-44e6-b893-1f9765d2d905"
+        }
+      },
+      "integrity": "sha512-qIdsdYkeojHaBMh2xEJZULiTcOySieTwb8Qn2a8TwJyv4f43jQ7yFyOiT4gwc+89pHTBHUarMWHHn5MhoDA6Lg==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-chart@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    },
+    "@bloxwap/hig-native-fonts": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "e484f282-812f-42a0-a295-828c83631091"
+        }
+      },
+      "integrity": "sha512-6B8uLjkxUrgUKTsARPZ6Bp8P7cYOfdjHwFVcP3FItCKdrhjWcp4aEkqd2Hop0VZAS8ON0yfnRHabVdznIcgUDg==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-native-fonts@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    },
+    "@bloxwap/hig-og-fonts": {
+      "publisher": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+          "id": "github",
+          "oidcConfigId": "5dcc787f-34e9-4c9f-80aa-a9f1fe7a03e1"
+        }
+      },
+      "integrity": "sha512-6YdrG33ez3/mZ1NrYthbqDrZNl1DIifibY/d3ZgfHkibKgGtwvf+eqB5zvctS2ZP//kyBTHslOAA6F3oPm0Tbg==",
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@bloxwap%2fhig-og-fonts@0.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      }
+    }
+  },
+  "configurationIdsMatch": true,
+  "releaseAssets": "All eight npm tarballs downloaded and SHA-256 compared byte-for-byte with the preverified GitHub release assets.",
+  "initialVerification": "Attempt 1 published all eight packages successfully, then exhausted the 30-second E404 visibility retry budget for chart. Attempt 2 reruns the immutable tag; registry packages are never overwritten."
+}

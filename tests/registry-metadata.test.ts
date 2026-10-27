@@ -12,15 +12,15 @@ it('retries an exact newly published version after E404 and returns its eventual
  await expect(readRegistryDist('@bloxwap/hig-chart','0.1.1',{exec,wait,onRetry})).resolves.toEqual(dist);
  expect(exec).toHaveBeenCalledTimes(3);
  for(const call of exec.mock.calls)expect(call).toEqual(['npm',['view','@bloxwap/hig-chart@0.1.1','dist','--json'],{encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:15000}]);
- expect(wait.mock.calls).toEqual([[5000],[5000]]);
+ expect(wait.mock.calls).toEqual([[10000],[10000]]);
  expect(onRetry).toHaveBeenCalledTimes(2);
 });
 
 it('exhausts the bounded E404 retry budget and preserves the final npm failure',async()=>{
  const missing=npmError('E404'),exec=vi.fn(()=>{throw missing;}),wait=vi.fn();
  await expect(readRegistryDist('@bloxwap/hig-chart','0.1.1',{exec,wait,onRetry:vi.fn()})).rejects.toBe(missing);
- expect(exec).toHaveBeenCalledTimes(7);
- expect(wait.mock.calls).toEqual(Array.from({length:6},()=>[5000]));
+ expect(exec).toHaveBeenCalledTimes(31);
+ expect(wait.mock.calls).toEqual(Array.from({length:30},()=>[10000]));
 });
 
 it.each(['E401','E403','E500','ETIMEDOUT'])('fails immediately for %s without a metadata retry',async code=>{

@@ -110,10 +110,8 @@ jobs:
       - name: Verify source version, gates, exact package set and tarball hashes
         run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
       - name: Publish the verified tarballs through npm trusted publishing
-        # npm tries OIDC first; delete this fallback after all eight Trusted Publishers
-        # are verified by the first successful OIDC publish.
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # All eight packages trust this repository, workflow and protected environment.
+        # No long-lived token fallback: missing OIDC configuration must fail closed.
         run: |
           set -euo pipefail
           : > artifacts/published-packages.txt
@@ -134,7 +132,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
-          name: hig-registry-verification-${{ github.sha }}
+          name: hig-registry-verification-${{ github.sha }}-${{ github.run_attempt }}
           path: |
             artifacts/release-stable-simulation/report.json
             artifacts/verified-release.txt

@@ -1,0 +1,553 @@
+{
+  "dryRun": true,
+  "published": false,
+  "tagsCreated": false,
+  "releasesCreated": false,
+  "channel": "stable-simulation",
+  "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
+  "sourceTreeDirty": true,
+  "sourceVersion": "0.1.2",
+  "artifactVersion": "0.1.2",
+  "docsGuidelineVersion": "0.1.2",
+  "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
+  "artifacts": [
+    {
+      "package": "@bloxwap/hig-chart",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-chart-0.1.2.tgz",
+      "bytes": 2090,
+      "unpackedBytes": 4457,
+      "sha256": "4f1a334c03e62727a834c9948eb8bd7d32b4e3bdaa77a3edf82c80a31421ac67",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "package.json"
+      ],
+      "dependencies": {
+        "@bloxwap/hig-tokens": "0.1.2",
+        "@bloxwap/hig-contracts": "0.1.2"
+      },
+      "peers": [
+        "react",
+        "@bloxwap/chart",
+        "@bloxwap/hig-react"
+      ],
+      "optionalPeers": []
+    },
+    {
+      "package": "@bloxwap/hig-contracts",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-contracts-0.1.2.tgz",
+      "bytes": 7184,
+      "unpackedBytes": 22210,
+      "sha256": "ad8b907d947d53d6140281a1a1178d1ccdfdf7c79c63f6d5f04ce1da84676ecd",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/announcements.d.ts",
+        "dist/announcements.js",
+        "dist/feedback.d.ts",
+        "dist/feedback.js",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/messages.d.ts",
+        "dist/messages.js",
+        "package.json"
+      ],
+      "peers": [],
+      "optionalPeers": []
+    },
+    {
+      "package": "@bloxwap/hig-feedback",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-feedback-0.1.2.tgz",
+      "bytes": 66520,
+      "unpackedBytes": 133462,
+      "sha256": "1fb97d4312df1108f35b9ff141e51aa0dc254cb767f366eaf0aaab0108a38bf9",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "assets/error.wav",
+        "assets/manifest.json",
+        "assets/success.wav",
+        "assets/tick.wav",
+        "assets/toggle.wav",
+        "dist/browser-haptic.d.ts",
+        "dist/browser-haptic.js",
+        "dist/contract.d.ts",
+        "dist/contract.js",
+        "dist/native.d.ts",
+        "dist/native.js",
+        "dist/preferences.d.ts",
+        "dist/preferences.js",
+        "dist/react.d.ts",
+        "dist/react.js",
+        "dist/web-haptic.d.ts",
+        "dist/web-haptic.js",
+        "dist/web-sound.d.ts",
+        "dist/web-sound.js",
+        "dist/web.d.ts",
+        "dist/web.js",
+        "package.json"
+      ],
+      "dependencies": {
+        "@bloxwap/hig-contracts": "0.1.2"
+      },
+      "peers": [
+        "react",
+        "@bloxwap/sfx",
+        "@bloxwap/haptic",
+        "expo-audio",
+        "expo-haptics"
+      ],
+      "optionalPeers": [
+        "react",
+        "@bloxwap/sfx",
+        "@bloxwap/haptic",
+        "expo-audio",
+        "expo-haptics"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-native",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-native-0.1.2.tgz",
+      "bytes": 31827,
+      "unpackedBytes": 118328,
+      "sha256": "51c9b8f6c10e93c80a896bb8484ca940aa4c2929557de3dad3496853e2fd0f1b",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "android/build.gradle",
+        "android/src/main/java/com/bloxwap/hig/HIGAdjustableView.java",
+        "android/src/main/java/com/bloxwap/hig/HIGAdjustableViewManager.java",
+        "android/src/main/java/com/bloxwap/hig/HIGPackage.java",
+        "dist/animated-number.d.ts",
+        "dist/animated-number.js",
+        "dist/brand.d.ts",
+        "dist/brand.js",
+        "dist/button.d.ts",
+        "dist/button.js",
+        "dist/checkbox.d.ts",
+        "dist/checkbox.js",
+        "dist/data.d.ts",
+        "dist/data.js",
+        "dist/field.d.ts",
+        "dist/field.js",
+        "dist/gesture-sheet.d.ts",
+        "dist/gesture-sheet.js",
+        "dist/navigation.d.ts",
+        "dist/navigation.js",
+        "dist/overlay.d.ts",
+        "dist/overlay.js",
+        "dist/provider.d.ts",
+        "dist/provider.js",
+        "dist/radio-group.d.ts",
+        "dist/radio-group.js",
+        "dist/recipes.d.ts",
+        "dist/recipes.js",
+        "dist/roles.d.ts",
+        "dist/roles.js",
+        "dist/select.d.ts",
+        "dist/select.js",
+        "dist/selection-types.d.ts",
+        "dist/selection-types.js",
+        "dist/selection.d.ts",
+        "dist/selection.js",
+        "dist/slider.d.ts",
+        "dist/slider.js",
+        "dist/status.d.ts",
+        "dist/status.js",
+        "dist/surface.d.ts",
+        "dist/surface.js",
+        "dist/switch-row.d.ts",
+        "dist/switch-row.js",
+        "dist/switch.d.ts",
+        "dist/switch.js",
+        "dist/text-content.d.ts",
+        "dist/text-content.js",
+        "package.json"
+      ],
+      "dependencies": {
+        "@bloxwap/hig-tokens": "0.1.2",
+        "@bloxwap/hig-contracts": "0.1.2"
+      },
+      "peers": [
+        "react",
+        "react-native",
+        "react-native-svg",
+        "@react-native-community/slider",
+        "react-native-safe-area-context",
+        "@gorhom/bottom-sheet",
+        "react-native-reanimated",
+        "react-native-worklets",
+        "react-native-gesture-handler"
+      ],
+      "optionalPeers": [
+        "react-native-svg",
+        "@react-native-community/slider",
+        "react-native-safe-area-context",
+        "@gorhom/bottom-sheet",
+        "react-native-reanimated",
+        "react-native-worklets",
+        "react-native-gesture-handler"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-native-fonts",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-native-fonts-0.1.2.tgz",
+      "bytes": 4420462,
+      "unpackedBytes": 12068979,
+      "sha256": "cef945eb48c92f88679e0ff60d378109a67257b3f7c5f4db80ff37fa82b9c341",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "fonts/BloxwapMono-Bold.ttf",
+        "fonts/BloxwapMono-ExtraBold.ttf",
+        "fonts/BloxwapMono-Medium.ttf",
+        "fonts/BloxwapMono-SemiBold.ttf",
+        "fonts/BloxwapMono.ttf",
+        "fonts/BloxwapSans-Black.ttf",
+        "fonts/BloxwapSans-Bold.ttf",
+        "fonts/BloxwapSans-ExtraBold.ttf",
+        "fonts/BloxwapSans-Medium.ttf",
+        "fonts/BloxwapSans-SemiBold.ttf",
+        "fonts/BloxwapSans.ttf",
+        "fonts/BloxwapSansKR-SemiBold.ttf",
+        "fonts/BloxwapSansKR.ttf",
+        "fonts/BloxwapSansSC-SemiBold.ttf",
+        "fonts/BloxwapSansSC.ttf",
+        "fonts/manifest.json",
+        "fonts/OFL.txt",
+        "package.json"
+      ],
+      "peers": [],
+      "optionalPeers": []
+    },
+    {
+      "package": "@bloxwap/hig-og-fonts",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-og-fonts-0.1.2.tgz",
+      "bytes": 844011,
+      "unpackedBytes": 2194991,
+      "sha256": "e51ca14cf360727ee71b91f4cb8d0f69141ff79a1202fdd2bc4ca9ab0a9d2113",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/node.d.ts",
+        "dist/node.js",
+        "fonts/BloxwapMono-Medium.ttf",
+        "fonts/BloxwapSans-Black.ttf",
+        "fonts/BloxwapSans-Bold.ttf",
+        "fonts/BloxwapSans-Medium.ttf",
+        "fonts/BloxwapSans.ttf",
+        "fonts/manifest.json",
+        "fonts/OFL.txt",
+        "package.json"
+      ],
+      "peers": [],
+      "optionalPeers": []
+    },
+    {
+      "package": "@bloxwap/hig-react",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-react-0.1.2.tgz",
+      "bytes": 31064,
+      "unpackedBytes": 130607,
+      "sha256": "9d9259741e68db24092f81675cdf3c6b56c80db8f70d9feeba73ae9852dc167c",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/animated-number.d.ts",
+        "dist/animated-number.js",
+        "dist/base.css",
+        "dist/brand.d.ts",
+        "dist/brand.js",
+        "dist/button.d.ts",
+        "dist/button.js",
+        "dist/data.d.ts",
+        "dist/data.js",
+        "dist/dialog.d.ts",
+        "dist/dialog.js",
+        "dist/field.d.ts",
+        "dist/field.js",
+        "dist/gesture-sheet.d.ts",
+        "dist/gesture-sheet.js",
+        "dist/navigation.d.ts",
+        "dist/navigation.js",
+        "dist/overlay.d.ts",
+        "dist/overlay.js",
+        "dist/provider.d.ts",
+        "dist/provider.js",
+        "dist/recipes.d.ts",
+        "dist/recipes.js",
+        "dist/recipes/activity-list.d.ts",
+        "dist/recipes/activity-list.js",
+        "dist/recipes/balance-card.d.ts",
+        "dist/recipes/balance-card.js",
+        "dist/recipes/code-window.d.ts",
+        "dist/recipes/code-window.js",
+        "dist/recipes/install-command.d.ts",
+        "dist/recipes/install-command.js",
+        "dist/recipes/market-row.d.ts",
+        "dist/recipes/market-row.js",
+        "dist/recipes/marketing-hero.d.ts",
+        "dist/recipes/marketing-hero.js",
+        "dist/recipes/trade-entry.d.ts",
+        "dist/recipes/trade-entry.js",
+        "dist/select.d.ts",
+        "dist/select.js",
+        "dist/selection.d.ts",
+        "dist/selection.js",
+        "dist/slider.d.ts",
+        "dist/slider.js",
+        "dist/status.d.ts",
+        "dist/status.js",
+        "dist/styles.css",
+        "dist/surface.d.ts",
+        "dist/surface.js",
+        "package.json"
+      ],
+      "dependencies": {
+        "@bloxwap/hig-tokens": "0.1.2",
+        "@bloxwap/hig-contracts": "0.1.2"
+      },
+      "peers": [
+        "react",
+        "react-dom",
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-dropdown-menu",
+        "@radix-ui/react-popover",
+        "@radix-ui/react-tooltip",
+        "vaul"
+      ],
+      "optionalPeers": [
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-dropdown-menu",
+        "@radix-ui/react-popover",
+        "@radix-ui/react-tooltip",
+        "vaul"
+      ]
+    },
+    {
+      "package": "@bloxwap/hig-tokens",
+      "version": "0.1.2",
+      "file": "bloxwap-hig-tokens-0.1.2.tgz",
+      "bytes": 9727,
+      "unpackedBytes": 47962,
+      "sha256": "19235bf69fc62c015b362983e9dc72cd3aa49da47399a9686a7acbf822cbe695",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "assets/bloxwap-icon.svg",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/manifest.json",
+        "dist/theme.d.ts",
+        "dist/theme.js",
+        "dist/tokens.css",
+        "package.json"
+      ],
+      "peers": [],
+      "optionalPeers": []
+    }
+  ],
+  "packedSizes": {
+    "webTokens": {
+      "file": "bloxwap-hig-tokens-0.1.2.tgz",
+      "bytes": 9727,
+      "unpackedBytes": 47962,
+      "fontFiles": 0
+    },
+    "nativeFonts": {
+      "file": "bloxwap-hig-native-fonts-0.1.2.tgz",
+      "bytes": 4420462,
+      "unpackedBytes": 12068979,
+      "fontFiles": 15
+    },
+    "ogFonts": {
+      "file": "bloxwap-hig-og-fonts-0.1.2.tgz",
+      "bytes": 844011,
+      "unpackedBytes": 2194991,
+      "fontFiles": 5,
+      "limit": 1000000
+    }
+  },
+  "chartAdapter": {
+    "package": "@bloxwap/hig-chart",
+    "file": "bloxwap-hig-chart-0.1.2.tgz",
+    "bytes": 2090,
+    "peer": "@bloxwap/chart",
+    "peerOptional": false,
+    "otherArtifactsNamingChart": []
+  },
+  "quality": {
+    "button": {
+      "raw": 1384,
+      "gzip": 775,
+      "inputs": [
+        "packages/contracts/dist/messages.js",
+        "packages/contracts/dist/index.js",
+        "packages/tokens/dist/theme.js",
+        "packages/tokens/dist/index.js",
+        "packages/react/dist/provider.js",
+        "packages/react/dist/button.js",
+        "button.js"
+      ]
+    },
+    "field": {
+      "raw": 808,
+      "gzip": 343,
+      "inputs": [
+        "packages/contracts/dist/messages.js",
+        "packages/contracts/dist/index.js",
+        "packages/tokens/dist/theme.js",
+        "packages/tokens/dist/index.js",
+        "packages/react/dist/provider.js",
+        "packages/react/dist/field.js",
+        "field.js"
+      ]
+    },
+    "nativeSwitch": {
+      "raw": 4216,
+      "gzip": 2073,
+      "inputs": [
+        "packages/tokens/dist/theme.js",
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/roles.js",
+        "packages/native/dist/switch-row.js",
+        "packages/native/dist/switch.js",
+        "nativeSwitch.js"
+      ]
+    },
+    "nativeSwitchRow": {
+      "raw": 2006,
+      "gzip": 1074,
+      "inputs": [
+        "packages/tokens/dist/theme.js",
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/roles.js",
+        "packages/native/dist/switch-row.js",
+        "packages/native/dist/switch.js",
+        "nativeSwitchRow.js"
+      ]
+    },
+    "nativeLink": {
+      "raw": 3100,
+      "gzip": 1584,
+      "inputs": [
+        "packages/tokens/dist/theme.js",
+        "packages/tokens/dist/index.js",
+        "packages/contracts/dist/messages.js",
+        "packages/contracts/dist/index.js",
+        "packages/native/dist/provider.js",
+        "packages/native/dist/text-content.js",
+        "packages/native/dist/surface.js",
+        "packages/native/dist/button.js",
+        "nativeLink.js"
+      ]
+    },
+    "feedbackContract": {
+      "raw": 2951,
+      "gzip": 996,
+      "inputs": [
+        "packages/feedback/dist/contract.js",
+        "feedbackContract.js"
+      ]
+    },
+    "docsJS": {
+      "raw": 2004642,
+      "gzip": 573548
+    },
+    "docsCSS": {
+      "raw": 116967
+    },
+    "fonts": {
+      "raw": 592796
+    },
+    "nativeFonts": {
+      "raw": 1278880,
+      "scope": "Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded"
+    },
+    "nativeCues": {
+      "raw": 103618
+    }
+  },
+  "publishable": false,
+  "blockers": [
+    {
+      "id": "task-policy",
+      "owner": "HIG maintainers",
+      "reason": "The owner authorized coordinated publication in PR #141 (evidence/release/owner-authorization-2026-10-23.md). All eight packages were published as 0.1.0 from bdf8d07014fea5e69ea51a061b82707661a9d701; release workflow 39970447895 passed artifact verification and independent registry consumers. Future versions retain immutable-tag, package-set, tarball-hash and CI gates. The local artifact command remains dry-run only.",
+      "status": "satisfied",
+      "tracking": "https://github.com/bloxwap/hig/issues/56",
+      "reviewBy": "2027-01-15"
+    },
+    {
+      "id": "source-audit",
+      "owner": "joeblau",
+      "reason": "Owner accepted the dated review package and recorded applicability, visual/density/motion/router and historical source/bundle decisions on 2026-10-27. The separate glossary exception expires 2027-01-15. This does not claim new wallet-session or rollback-retirement evidence; those remain #110.",
+      "status": "satisfied",
+      "tracking": "https://github.com/bloxwap/hig/issues/57",
+      "reviewBy": "2027-01-15",
+      "approvedBy": "joeblau",
+      "approval": "https://github.com/bloxwap/hig/blob/hig/v1-completion/evidence/adoption/owner-approval-2026-10-27.md"
+    },
+    {
+      "id": "native-fonts",
+      "owner": "Font/native maintainers",
+      "reason": "HIG generates 15 pinned static native TTFs from Font 0.1.2 with hash checks, shipped in @bloxwap/hig-native-fonts and no longer in the web tokens package (#64, PR #75); registration and Dynamic Type/large-text layouts were observed on the iOS Simulator and Android emulator (#53). Physical rasterization remains (#55). Physical rasterization is covered by the dated owner-approved exception for every #55 checklist item, including #7, in evidence/physical/owner-attestation-2026-10-19.md and merged PR #131. This is an owner attestation, not an automated physical observation; any contradictory result voids the relevant exception.",
+      "status": "approved-exception",
+      "tracking": "https://github.com/bloxwap/hig/issues/55",
+      "reviewBy": "2027-01-15",
+      "approvedBy": "joeblau",
+      "approval": "https://github.com/bloxwap/hig/pull/131"
+    },
+    {
+      "id": "physical-devices",
+      "owner": "HIG/native/haptic maintainers",
+      "reason": "Resolved by dated, owner-approved exception on 2026-10-19 (evidence/physical/owner-attestation-2026-10-19.md, PR #131): the owner attests every #55 checklist item works on physical hardware. This is an owner attestation, not a recorded device observation; automated, browser, iOS Simulator and Android emulator evidence remains separately labeled. Any future contradicting physical run voids the exception for that item and requires a linked failure issue. Upstream physical tactile tracking stays open at bloxwap/haptic#9.",
+      "status": "approved-exception",
+      "tracking": "https://github.com/bloxwap/hig/issues/55",
+      "reviewBy": "2027-01-15",
+      "approvedBy": "joeblau",
+      "approval": "https://github.com/bloxwap/hig/pull/131"
+    },
+    {
+      "id": "owning-migrations",
+      "owner": "each adopting repository maintainers",
+      "reason": "Combined monorepo#4619 and native #4620/#4629 are merged. Consumer refreshes chart#58, sfx#55, agent-cli#55, tapsiren#401, taptradetv#216/#223 and hyperliquid#183 are merged; font#15 declares canonical asset ownership. #115 fixes are complete. HIG 0.1.0 is published, while consumer registry migrations remain in #56. Named-owner visual/motion/bundle decisions, real wallet-session acceptance and rollback retirement remain in #57/#110. The pre-1.0 availability exception from joeblau in PR #141 does not claim those items complete. Review by 2027-01-15.",
+      "status": "approved-exception",
+      "tracking": "https://github.com/bloxwap/hig/issues/110",
+      "reviewBy": "2027-01-15",
+      "approvedBy": "joeblau",
+      "approval": "https://github.com/bloxwap/hig/pull/141"
+    },
+    {
+      "id": "upstream-feedback-gaps",
+      "owner": "SFX/Haptic maintainers",
+      "reason": "SFX and Haptic 0.2.0 are now published, pinned in the lockfile, and required by the feedback package peers. HIG uses the released per-root AbortSignal cancellation and canonical optional imperative Haptic backend; actual upstream-runtime tests verify cancellation isolation and capability checks. iOS trusted-event restrictions remain explicit, and physical audible/tactile claims retain the separate #55 owner-attested exception. No new hardware observation is claimed.",
+      "status": "satisfied",
+      "tracking": "https://github.com/bloxwap/hig/issues/70",
+      "reviewBy": "2027-01-15"
+    }
+  ],
+  "rollback": "No deployment/publication occurred. Owners retain previous lockfile/artifacts and pilot flags; use docs/governance/release.md for rollout rollback."
+}

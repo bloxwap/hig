@@ -1,0 +1,8 @@
+@bloxwap/hig-contracts@0.1.2
+@bloxwap/hig-tokens@0.1.2
+@bloxwap/hig-native-fonts@0.1.2
+@bloxwap/hig-og-fonts@0.1.2
+@bloxwap/hig-feedback@0.1.2
+@bloxwap/hig-react@0.1.2
+@bloxwap/hig-chart@0.1.2
+@bloxwap/hig-native@0.1.2

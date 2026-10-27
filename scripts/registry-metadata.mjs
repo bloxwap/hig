@@ -8,7 +8,7 @@ function isNotYetVisible(error){
 }
 
 /** Newly published exact versions can briefly return E404 while registry metadata propagates. */
-export async function readRegistryDist(name,version,{exec=execFileSync,wait=delay,onRetry=console.warn,maxAttempts=7,retryDelayMs=5000}={}){
+export async function readRegistryDist(name,version,{exec=execFileSync,wait=delay,onRetry=console.warn,maxAttempts=31,retryDelayMs=10000}={}){
  assert.match(version,/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/,'Registry verification requires an exact package version');
  assert(Number.isInteger(maxAttempts)&&maxAttempts>0,'maxAttempts must be a positive integer');
  assert(Number.isFinite(retryDelayMs)&&retryDelayMs>=0,'retryDelayMs must be nonnegative');
