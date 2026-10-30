@@ -21,7 +21,7 @@ All 15 inventoried repositories have applicability decisions and named owner acc
 | --- | --- | --- |
 | Canonical | hig | Coordinated 0.1.2 release; RN 0.81, 0.83 and 0.88 packed-consumer profiles |
 | SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Published 0.1.0 registry packages; candidate archives and the previously tracked peer/font/role workarounds retired |
-| Product | monorepo | Registry migration #4737 merged. Owner decisions accepted in HIG #57. Real wallet acceptance and rollback retirement remain #110 |
+| Product | monorepo | Registry migration #4737 and the HIG 0.1.2 / RN 0.88 upgrade #4826 merged. Owner decisions accepted in HIG #57. Real wallet acceptance and rollback retirement remain #110 |
 | Docs site migrated | agent-cli | Registry migration #68 merged; scoped drift checks retained |
 | Product, partly migrated | taptradetv | Registry migration #253 merged and deployed. Sponsors and host retain their explicitly recorded applicability scopes; this does not claim every host primitive migrated |
 | Public pages migrated | tapsiren, bloxwap.github.io | Registry migrations #430 and #36 merged. Pages builds the tested artifact; generated runtime assets are no longer committed |

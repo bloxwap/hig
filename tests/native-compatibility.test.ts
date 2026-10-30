@@ -33,7 +33,7 @@ it('builds the RN 0.83 / Expo 55 and RN 0.88 / Expo 58 packed consumers from the
  expect(Object.keys(latest.dependencies).sort()).toEqual(Object.keys(base.dependencies).sort());
  expect(base.dependencies).toMatchObject({'react-native':'0.81.5',react:'19.1.0',expo:'~54.0.13'});
  expect(next.dependencies).toMatchObject({'react-native':'0.83.10',react:'19.2.0','react-dom':'19.2.0',expo:'~55.0.31'});
- expect(latest.dependencies).toMatchObject({'react-native':'0.88.0',react:'19.3.0','react-dom':'19.3.0',expo:'~58.0.19','react-native-gesture-handler':'~3.3.0','react-native-reanimated':'4.7.1','react-native-safe-area-context':'~5.10.1','react-native-svg':'15.16.0','react-native-worklets':'0.13.0','@react-native-community/slider':'5.2.1','expo-audio':'~58.0.10','expo-haptics':'~58.0.7'});
+ expect(latest.dependencies).toMatchObject({'react-native':'0.88.1',react:'19.3.0','react-dom':'19.3.0',expo:'~58.0.21','react-native-gesture-handler':'~3.3.0','react-native-reanimated':'4.7.1','react-native-safe-area-context':'~5.10.1','react-native-svg':'15.16.0','react-native-worklets':'0.13.0','@react-native-community/slider':'5.2.1','expo-audio':'~58.0.10','expo-haptics':'~58.0.7'});
  expect(()=>nativeConsumerManifest('rn-0.82')).toThrow('Unknown native consumer profile');
 });
 it('declares native peer ranges that accept exactly the tested RN minors and their Expo SDK modules (#68)',()=>{
