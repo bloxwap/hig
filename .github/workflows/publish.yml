@@ -30,7 +30,9 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
 
   prerequisites:
-    runs-on: ubuntu-24.04
+    # Only gh/git checks: no OIDC token, so it runs on the minis. publish alone needs a hosted runner.
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 10
     permissions:
       contents: read
       actions: read
