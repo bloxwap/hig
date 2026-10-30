@@ -1,12 +1,12 @@
 # CI runners · HIG 0.1.0
 
-GitHub Actions jobs run on self-hosted Apple silicon Mac minis, except for the `prerequisites` and `publish` jobs in `publish.yml`:
+GitHub Actions jobs run on self-hosted Apple silicon Mac minis, except for the `publish` job in `publish.yml`:
 
 ```yaml
 runs-on: [self-hosted, macOS, ARM64]
 ```
 
-Only those two trusted-publishing jobs use GitHub-hosted `ubuntu-24.04`. All other jobs remain self-hosted and do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
+Only that trusted-publishing job uses GitHub-hosted `ubuntu-24.04`. All other jobs remain self-hosted and do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
 
 ## Required on every Mac mini
 
@@ -52,7 +52,7 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 
 ### Registry publication (`publish.yml`)
 
-The `prerequisites` and `publish` jobs are the only GitHub-hosted runner exceptions. [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) requires a supported hosted runner and npm CLI >=11.5.1. Both jobs use `ubuntu-24.04`; publishing uses Node 24.22.1 and explicitly installs the repository's pinned npm@11.6.1 globally on the ephemeral runner. It uses pinned `actions/setup-python` with Python 3.12 and the portable `ci-generate-fonts.sh` venv, plus `npx playwright install --with-deps chromium` for registry consumers.
+The `publish` job is the only GitHub-hosted runner exception. [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) requires a supported hosted runner and npm CLI >=11.5.1. It uses `ubuntu-24.04`, Node 24.22.1, and explicitly installs the repository's pinned npm@11.6.1 globally on the ephemeral runner. It uses pinned `actions/setup-python` with Python 3.12 and the portable `ci-generate-fonts.sh` venv, plus `npx playwright install --with-deps chromium` for registry consumers. `prerequisites` only runs `gh` and `git` checks and requests no OIDC token, so it runs on the minis.
 
 A published GitHub release with a `v*` tag or a manual dispatch with an existing tag starts the workflow. `prerequisites` requires configured reviewers on `npm-release` and a successful `quality.yml` run for the resolved tag commit, with manual dispatch using that same release tag as its workflow ref. `publish` needs both the unchanged self-hosted `security` scan and `prerequisites`, waits for the `npm-release` environment approval, checks out `refs/tags/<tag>` without persisted credentials, checks that its SHA still matches the prerequisite result, and re-runs the release gates. It publishes verified tarballs with `--provenance` using OIDC. The token fallback has been removed; a missing or mismatched Trusted Publisher must fail publication. Registry checks verify every tarball hash and require source-linked provenance for packages published by this run; already published versions are skipped for resumability.
 

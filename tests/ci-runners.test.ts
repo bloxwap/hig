@@ -52,11 +52,12 @@ it('keeps Linux visual baselines under tests/visual-baselines/linux and names Da
  expect(readdirSync('tests/visual-baselines/darwin').filter(f=>f.endsWith('.png')).sort()).toEqual(baselines);
 });
 
-it('limits GitHub-hosted runners to the publishing and prerequisites jobs',()=>{
+it('limits GitHub-hosted runners to the trusted publishing job',()=>{
  const text=readFileSync('.github/workflows/publish.yml','utf8');
  const jobs=text.split('jobs:')[1];
  expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['security','prerequisites','publish']);
- expect(text.match(/runs-on: ubuntu-24\.04/g)).toHaveLength(2);
+ expect(text.match(/runs-on: ubuntu-24\.04/g)).toHaveLength(1);
+ expect(text.split('  prerequisites:')[1].split('  publish:')[0]).toContain('runs-on: [self-hosted, macOS, ARM64]');
  expect(text.match(/runs-on:/g)).toHaveLength(3);
  expect(text).toContain(`runs-on: '["self-hosted","macOS","ARM64"]'`);
  expect(text).toContain('needs: [security, prerequisites]');
