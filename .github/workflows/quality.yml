@@ -147,7 +147,7 @@ jobs:
         run: npm run smoke:packed-native
       - name: Packed native consumer, RN 0.83.10 / Expo 55 (Android and iOS Metro export, #68)
         run: npm run smoke:packed-native -- --profile rn-0.83
-      - name: Packed native consumer, RN 0.88.0 / Expo 58 (Android and iOS Metro export)
+      - name: Packed native consumer, RN 0.88.1 / Expo 58 (Android and iOS Metro export)
         run: npm run smoke:packed-native -- --profile rn-0.88
 
   browser:

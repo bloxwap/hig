@@ -1,6 +1,6 @@
 # App, Pro and marketing pilots (#33)
 
-Owner: Joe Blau, accepted in [HIG #57](https://github.com/bloxwap/hig/issues/57). The initial pilot and follow-ups are merged; the combined rollout is [monorepo#4619](https://github.com/bloxwap/monorepo/pull/4619), and [#4737](https://github.com/bloxwap/monorepo/pull/4737) installs published HIG 0.1.0. Marketing font cleanup is merged in [#4598](https://github.com/bloxwap/monorepo/pull/4598). `planning/adoption.json` records the current versions, rollback flags and remaining real wallet acceptance under HIG #110. The checklist below preserves the adoption procedure.
+Owner: Joe Blau, accepted in [HIG #57](https://github.com/bloxwap/hig/issues/57). The initial pilot and follow-ups are merged; the combined rollout is [monorepo#4619](https://github.com/bloxwap/monorepo/pull/4619), and [#4826](https://github.com/bloxwap/monorepo/pull/4826) upgrades the registry consumers to HIG 0.1.2 with the compact Pro stats geometry preserved. Marketing font cleanup is merged in [#4598](https://github.com/bloxwap/monorepo/pull/4598). `planning/adoption.json` records the current versions, rollback flags and remaining real wallet acceptance under HIG #110. The checklist below preserves the adoption procedure.
 
 | Surface | Pilot and HIG mapping | Preserve | Owner work remaining |
 | --- | --- | --- | --- |
