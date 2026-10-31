@@ -108,7 +108,7 @@ jobs:
             artifacts/release-candidate/
             apps/docs/dist/
             apps/docs/out/
-          retention-days: 14
+          retention-days: 7
 
   native:
     needs: paths-filter
@@ -200,7 +200,7 @@ jobs:
           path: |
             evidence/
             artifacts/visual/
-          retention-days: 14
+          retention-days: 7
 
   # Same job name as the previous single required check. Always reports so
   # docs-only PRs are not stuck on "Waiting for status to be reported."
