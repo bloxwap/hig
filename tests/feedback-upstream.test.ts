@@ -2,10 +2,10 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import * as sfx from '@bloxwap/sfx';
 import * as haptic from '@bloxwap/haptic';
 import {FakeAudioContext,FakeOfflineAudioContext,tick} from './test-utils/fake-audio';
-import {createWebSoundAdapter} from '../packages/feedback/src/web-sound';
-import {createBrowserHapticAdapter} from '../packages/feedback/src/browser-haptic';
-import {FeedbackController} from '../packages/feedback/src/contract';
-import type {FeedbackAdapter,FeedbackEvent} from '../packages/contracts/src/feedback';
+import {createWebSoundAdapter} from '../packages/hig/feedback/src/web-sound';
+import {createBrowserHapticAdapter} from '../packages/hig/feedback/src/browser-haptic';
+import {FeedbackController} from '../packages/hig/feedback/src/contract';
+import type {FeedbackAdapter,FeedbackEvent} from '../packages/hig/contracts/src/feedback';
 
 const prefs={version:1 as const,sound:true,haptics:true,volume:.4,motion:false};
 const event=(intent:FeedbackEvent['intent']='activate',id:string=intent):FeedbackEvent=>({id,source:'upstream-check',intent,origin:'keyboard'});

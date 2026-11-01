@@ -57,21 +57,35 @@ final class InlineSheetVerificationUITests: XCTestCase {
     let evidence: [String: Any] = ["preparedMounts": 1, "acceptedSettled": 1, "rejectedSettled": 0, "query": query.value ?? "", "selection": find("inline-selection").label, "lastActionHittableAfterReopen": end.isHittable, "swipesToLastAction": swipes]
     try JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys]).write(to: output.appendingPathComponent("inline.json"))
   }
-  func testDynamicMeasurement() throws {
+  private func dynamicMeasurement(motion: String) throws {
+    app.open(URL(string: "bloxwaphig://inline?motion=\(motion)")!)
+    let confirm = XCUIApplication(bundleIdentifier: "com.apple.springboard").buttons["Open"]
+    if confirm.waitForExistence(timeout: 1) { confirm.tap() }
+    settle()
+    XCTAssertTrue(find("inline-ready").label.contains("motion \(motion)"))
     app.buttons["Open measured card"].tap(); settle()
-    let title = app.staticTexts["Measured card"].firstMatch
+    let title = find("dynamic-title"), window = app.windows.firstMatch.frame
     XCTAssertTrue(title.waitForExistence(timeout: 10))
     let shortY = title.frame.minY
-    try capture("dynamic-short")
+    XCTAssertGreaterThan(shortY, window.minY)
+    XCTAssertLessThan(shortY, window.maxY)
+    try capture("dynamic-\(motion)-short")
     app.buttons["Change content height"].tap(); settle()
     let tallY = title.frame.minY
-    XCTAssertLessThan(tallY, shortY - 60)
-    XCTAssertGreaterThanOrEqual(tallY, app.windows.firstMatch.frame.height - 600)
-    try capture("dynamic-tall")
+    XCTAssertLessThan(tallY, shortY - 60, "dynamic content grows after the content change")
+    XCTAssertGreaterThanOrEqual(tallY, window.height - 563, "560pt content ceiling is not crossed")
+    XCTAssertLessThanOrEqual(tallY, window.height - 480, "tall content reaches the bounded detent")
+    XCTAssertTrue(app.buttons["Close measured card"].isHittable)
+    try capture("dynamic-\(motion)-tall")
     app.buttons["Change content height"].tap(); settle()
-    XCTAssertEqual(title.frame.minY, shortY, accuracy: 3)
+    let restoredY = title.frame.minY
+    XCTAssertEqual(restoredY, shortY, accuracy: 3, "dynamic content shrinks back to its measured short size")
+    try capture("dynamic-\(motion)-restored")
     app.buttons["Close measured card"].tap(); settle()
     XCTAssertTrue(find("inline-open").isHittable)
-    try JSONSerialization.data(withJSONObject: ["shortTitleY": shortY, "tallTitleY": tallY, "ceiling": 560], options: [.prettyPrinted, .sortedKeys]).write(to: output.appendingPathComponent("dynamic.json"))
+    let evidence: [String: Any] = ["motion": motion, "shortTitleY": shortY, "tallTitleY": tallY, "restoredTitleY": restoredY, "ceiling": 560, "windowHeight": window.height, "limits": "Simulator geometry only; animation smoothness and physical-device behavior need visual/manual observation."]
+    try JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys]).write(to: output.appendingPathComponent(motion == "normal" ? "dynamic.json" : "dynamic-reduced.json"))
   }
+  func testDynamicMeasurement() throws { try dynamicMeasurement(motion: "normal") }
+  func testDynamicMeasurementReducedMotion() throws { try dynamicMeasurement(motion: "reduced") }
 }

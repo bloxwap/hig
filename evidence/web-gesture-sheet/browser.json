@@ -1,17 +1,17 @@
 {
-  "checkedAt": "2026-10-18T19:26:46.529Z",
-  "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+  "checkedAt": "2026-10-27T18:04:43.462Z",
+  "sourceCommit": "c5b9a9465712a7f7f07ef83a704ccb905bbc3314",
   "sourceDirty": true,
   "inputHashes": {
-    "packages/react/src/gesture-sheet.tsx": "cc85a9ccb410f43df795de65e3952859ede7b104951c1a53245c2ba80bb7d97e",
-    "packages/react/src/styles.css": "69b96ec3f75da7bfbd37af4581850b9a0616b2031821ea571a6892ab3ae1fa3d",
-    "packages/react/package.json": "3488bac81475e9ad3499cf6f495ee8443280071129d77665d898dc1b81c9c1a5",
-    "scripts/gesture-sheet-browser-smoke.mjs": "5bd4c7c56602b8dd5d43ccb76bd9da075f69b8aee361afdefa4ddd9e0bc7e5d3"
+    "packages/react/src/gesture-sheet.tsx": "3ca2e4ff68df762f54e9d70cc0e30b1544623adf1bbdccea18623f211134b82e",
+    "packages/react/src/styles.css": "7f51fb5143876c6837dccdd1934f0f932ac05633323ca8483b7de2952055859a",
+    "packages/react/package.json": "af82af4f9f6bab0b25c3feb5e1fb0528a8d4278626517a43f1fd86e0bb8bc58c",
+    "scripts/gesture-sheet-browser-smoke.mjs": "652c3b1a23133c394fd8d85dfcb520ee764342db0348076d060a6919a24cabe5"
   },
   "backend": "vaul@1.1.2",
   "browserVersions": {
-    "chromium": "141.0.7390.37",
-    "webkit": "26.0"
+    "chromium": "156.0.8078.4",
+    "webkit": "27.2"
   },
   "engines": {
     "chromium": [
@@ -332,6 +332,161 @@
           ]
         ],
         "errors": []
+      },
+      {
+        "name": "dynamic",
+        "passed": true,
+        "initial": {
+          "x": 0,
+          "y": 595,
+          "width": 390,
+          "height": 237
+        },
+        "metrics": {
+          "id": "radix-_r_0_",
+          "ref": true,
+          "host": "markets",
+          "bottom": "12px",
+          "maxHeight": "801.8px",
+          "handleWidth": 100,
+          "animation": "slideFromBottom",
+          "transition": "0.5s"
+        },
+        "events": [
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "request",
+            false
+          ],
+          [
+            "settled",
+            false
+          ],
+          [
+            "return"
+          ],
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "return"
+          ]
+        ],
+        "errors": []
+      },
+      {
+        "name": "dynamic-cap",
+        "passed": true,
+        "initial": {
+          "x": 0,
+          "y": 595,
+          "width": 390,
+          "height": 237
+        },
+        "metrics": {
+          "id": "radix-_r_0_",
+          "ref": true,
+          "host": "markets",
+          "bottom": "12px",
+          "maxHeight": "300px",
+          "handleWidth": 100,
+          "animation": "slideFromBottom",
+          "transition": "0.5s"
+        },
+        "events": [
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "request",
+            false
+          ],
+          [
+            "settled",
+            false
+          ],
+          [
+            "return"
+          ],
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "return"
+          ]
+        ],
+        "errors": []
+      },
+      {
+        "name": "dynamic-top-reduced",
+        "passed": true,
+        "initial": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 237
+        },
+        "metrics": {
+          "id": "radix-_r_0_",
+          "ref": true,
+          "host": "markets",
+          "bottom": "607px",
+          "maxHeight": "801.8px",
+          "handleWidth": 100,
+          "animation": "none",
+          "transition": "0s"
+        },
+        "events": [
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "request",
+            false
+          ],
+          [
+            "return"
+          ],
+          [
+            "settled",
+            false
+          ],
+          [
+            "request",
+            true
+          ],
+          [
+            "return"
+          ]
+        ],
+        "errors": []
       }
     ],
     "webkit": [
@@ -349,7 +504,7 @@
           "ref": true,
           "host": "markets",
           "bottom": "12px",
-          "maxHeight": "813.999939px",
+          "maxHeight": "814px",
           "handleWidth": 100,
           "animation": "slideFromBottom",
           "transition": "0.5s"
@@ -402,7 +557,7 @@
           "ref": true,
           "host": "markets",
           "bottom": "12px",
-          "maxHeight": "813.999939px",
+          "maxHeight": "814px",
           "handleWidth": 100,
           "animation": "slideFromBottom",
           "transition": "0.5s"
@@ -455,7 +610,7 @@
           "ref": true,
           "host": "markets",
           "bottom": "12px",
-          "maxHeight": "813.999939px",
+          "maxHeight": "814px",
           "handleWidth": 100,
           "animation": "slideFromBottom",
           "transition": "0.5s"
@@ -516,7 +671,7 @@
           "ref": true,
           "host": "markets",
           "bottom": "12px",
-          "maxHeight": "813.999939px",
+          "maxHeight": "814px",
           "handleWidth": 100,
           "animation": "slideFromBottom",
           "transition": "0.5s"
@@ -552,16 +707,16 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 506.4156188964844,
+          "y": 506.3999938964844,
           "width": 390,
-          "height": 843.9844055175781
+          "height": 844.0000305175781
         },
         "metrics": {
           "id": "radix-_r_0_",
           "ref": true,
           "host": "markets",
           "bottom": "0px",
-          "maxHeight": "843.999939px",
+          "maxHeight": "844px",
           "handleWidth": 100,
           "animation": "none",
           "transition": "0.5s"
@@ -618,7 +773,162 @@
           "ref": true,
           "host": "markets",
           "bottom": "12px",
-          "maxHeight": "813.999939px",
+          "maxHeight": "814px",
+          "handleWidth": 100,
+          "animation": "none",
+          "transition": "0s"
+        },
+        "events": [
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "request",
+            false
+          ],
+          [
+            "return"
+          ],
+          [
+            "settled",
+            false
+          ],
+          [
+            "request",
+            true
+          ],
+          [
+            "return"
+          ]
+        ],
+        "errors": []
+      },
+      {
+        "name": "dynamic",
+        "passed": true,
+        "initial": {
+          "x": 0,
+          "y": 595,
+          "width": 390,
+          "height": 237
+        },
+        "metrics": {
+          "id": "radix-_r_0_",
+          "ref": true,
+          "host": "markets",
+          "bottom": "12px",
+          "maxHeight": "801.799988px",
+          "handleWidth": 100,
+          "animation": "slideFromBottom",
+          "transition": "0.5s"
+        },
+        "events": [
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "request",
+            false
+          ],
+          [
+            "settled",
+            false
+          ],
+          [
+            "return"
+          ],
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "return"
+          ]
+        ],
+        "errors": []
+      },
+      {
+        "name": "dynamic-cap",
+        "passed": true,
+        "initial": {
+          "x": 0,
+          "y": 595,
+          "width": 390,
+          "height": 237
+        },
+        "metrics": {
+          "id": "radix-_r_0_",
+          "ref": true,
+          "host": "markets",
+          "bottom": "12px",
+          "maxHeight": "300px",
+          "handleWidth": 100,
+          "animation": "slideFromBottom",
+          "transition": "0.5s"
+        },
+        "events": [
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "request",
+            false
+          ],
+          [
+            "settled",
+            false
+          ],
+          [
+            "return"
+          ],
+          [
+            "request",
+            true
+          ],
+          [
+            "settled",
+            true
+          ],
+          [
+            "return"
+          ]
+        ],
+        "errors": []
+      },
+      {
+        "name": "dynamic-top-reduced",
+        "passed": true,
+        "initial": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 237
+        },
+        "metrics": {
+          "id": "radix-_r_0_",
+          "ref": true,
+          "host": "markets",
+          "bottom": "607px",
+          "maxHeight": "801.799988px",
           "handleWidth": 100,
           "animation": "none",
           "transition": "0s"

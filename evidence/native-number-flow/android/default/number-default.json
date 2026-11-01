@@ -1,0 +1,46 @@
+{
+  "mode": "full",
+  "cases": [
+    {
+      "locale": "en-US",
+      "direction": "ltr",
+      "initial": "999.99",
+      "group": "1,234,567.89",
+      "burst": "7,654,321.09",
+      "fallback": "—",
+      "rtlStaticFallback": "",
+      "environment": "Number locale en-US · direction ltr · scale 1.00 · motion normal"
+    },
+    {
+      "locale": "ar-EG",
+      "direction": "rtl",
+      "initial": "٩٩٩٫٩٩",
+      "group": "١٬٢٣٤٬٥٦٧٫٨٩",
+      "burst": "٧٬٦٥٤٬٣٢١٫٠٩",
+      "fallback": "—",
+      "rtlStaticFallback": "",
+      "environment": "Number locale ar-EG · direction rtl · scale 1.00 · motion normal"
+    },
+    {
+      "locale": "fa-IR",
+      "direction": "rtl",
+      "initial": "۹۹۹٫۹۹",
+      "group": "۱٬۲۳۴٬۵۶۷٫۸۹",
+      "burst": "۷٬۶۵۴٬۳۲۱٫۰۹",
+      "fallback": "—",
+      "rtlStaticFallback": "",
+      "environment": "Number locale fa-IR · direction rtl · scale 1.00 · motion normal"
+    },
+    {
+      "locale": "en-u-nu-arab",
+      "direction": "ltr",
+      "initial": "٩٩٩٫٩٩",
+      "group": "١٬٢٣٤٬٥٦٧٫٨٩",
+      "burst": "٧٬٦٥٤٬٣٢١٫٠٩",
+      "fallback": "—",
+      "rtlStaticFallback": "Number flow: ١٬٢٣٤٬٥٦٧٫٨٩",
+      "environment": "Number locale en-u-nu-arab · direction rtl · scale 1.00 · motion normal"
+    }
+  ],
+  "limits": "Final accessibility labels only; captures require visual/manual review for glyph shaping, bidi order and animation quality. No TalkBack speech or physical-device claim."
+}

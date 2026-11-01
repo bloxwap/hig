@@ -4,7 +4,7 @@
   "issue": 47,
   "glossary": "docs/foundations/glossary.json",
   "helper": {
-    "package": "@bloxwap/hig-contracts",
+    "package": "@bloxwap/hig/contracts",
     "function": "formatNumber",
     "functions": ["formatNumber", "formatLeverage", "formatTicker", "formatZonedTime"],
     "note": "Display only. Null/non-finite values render as —. Keep raw decimal strings in transaction logic."
@@ -16,7 +16,7 @@
   },
   "messages": {
     "issue": 62,
-    "package": "@bloxwap/hig-contracts/messages",
+    "package": "@bloxwap/hig/contracts/messages",
     "type": "HIGMessages",
     "defaults": "defaultMessages",
     "provider": "HIGProvider messages",

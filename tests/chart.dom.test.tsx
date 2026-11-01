@@ -1,10 +1,10 @@
 import React from 'react';
 import {afterEach,it,expect,vi} from 'vitest';
 import {render,screen,cleanup} from '@testing-library/react';
-// The adapter reads messages through the published @bloxwap/hig-react/provider entry, so the test uses the same one.
-import {HIGProvider} from '@bloxwap/hig-react/provider';
-import {tokens} from '@bloxwap/hig-tokens';
-import {PriceChart,chartTheme} from '../packages/chart/src/index';
+// The adapter reads messages through the published @bloxwap/hig/react/provider entry, so the test uses the same one.
+import {HIGProvider} from '@bloxwap/hig/react/provider';
+import {tokens} from '@bloxwap/hig/tokens';
+import {PriceChart,chartTheme} from '../packages/hig/chart/src/index';
 
 // The canvas engine itself is @bloxwap/chart's responsibility; a stand-in records what the adapter passes it.
 vi.mock('@bloxwap/chart/react',()=>({Chart:(props:{preset:unknown;height?:number})=><div data-testid='engine' data-preset={JSON.stringify(props.preset)} data-height={props.height}/>}));

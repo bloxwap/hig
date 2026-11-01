@@ -6,7 +6,7 @@ Follow-ups #86–#89 and #92–#94 distinguish implementation checks from physic
 
 RN 0.83's `I18nManager.isRTL` can report false for an Arabic app locale. The regression is [upstream #54938](https://github.com/react/react-native/issues/54938), introduced by [#53417](https://github.com/react/react-native/pull/53417) and fixed by [#57635](https://github.com/react/react-native/pull/57635), with older-Android handling in [#58723](https://github.com/react/react-native/pull/58723).
 
-HIG defaults direction to `I18nManager.isRTL`. Hosts that support RTL pass `direction={localeDirection(getLocales()[0])}`, using `localeDirection` from `@bloxwap/hig-native/provider` and their localization adapter (for example Expo Localization). This handles an Arabic per-app locale even when RN's OS diagnostic still reports false. Hosts that disallow RTL leave direction unset. Formatting locale remains independent, with `en-US` as the default. The Android `os-arabic` harness asserts the explicit host direction. Historical local fallback measurements predate the merged public API.
+HIG defaults direction to `I18nManager.isRTL`. Hosts that support RTL pass `direction={localeDirection(getLocales()[0])}`, using `localeDirection` from `@bloxwap/hig/native/provider` and their localization adapter (for example Expo Localization). This handles an Arabic per-app locale even when RN's OS diagnostic still reports false. Hosts that disallow RTL leave direction unset. Formatting locale remains independent, with `en-US` as the default. The Android `os-arabic` harness asserts the explicit host direction. Historical local fallback measurements predate the merged public API.
 
 ## Slider action labels
 

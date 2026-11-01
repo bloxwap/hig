@@ -9,8 +9,8 @@ jest.mock('@gorhom/bottom-sheet',()=>{
  return {methods,BottomSheetModal,BottomSheetScrollView:ScrollView,BottomSheetBackdrop:View};
 });
 const backend=require('@gorhom/bottom-sheet');
-const {GestureSheet}=require('../../packages/native/src/gesture-sheet');
-const {HIGProvider}=require('../../packages/native/src/provider');
+const {GestureSheet}=require('../../packages/hig/native/src/gesture-sheet');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.restoreAllMocks();jest.clearAllMocks();});
 function mount(props){act(()=>{root=create(React.createElement(HIGProvider,{reducedMotion:true},React.createElement(GestureSheet,{title:'Review',description:'Verify amount',snapPoints:['50%','90%'],...props},null)));});return root.root.findAll(n=>n.props.testID==='backend')[0];}
@@ -25,13 +25,13 @@ it('never dismisses a sheet it has not presented (Gorhom DISMISSING state blocke
  act(()=>root.update(React.createElement(HIGProvider,{reducedMotion:true},React.createElement(GestureSheet,{title:'Review',description:'Verify amount',snapPoints:['50%','90%'],open:false,onOpenChange:close},null))));
  expect(backend.methods.dismiss).toHaveBeenCalledTimes(1);
 });
-it('sheet content stays individually reachable by screen readers (iOS Simulator: Gorhom grouped it as one "Bottom Sheet" element)',()=>{const node=mount({open:true,onOpenChange:jest.fn()});expect(node.props.accessible).toBe(false);expect(node.props.accessibilityLabel).toBe('Review');});
+it('sheet content stays individually reachable by screen readers (iOS Simulator: Gorhom grouped it as one "Bottom Sheet" element)',()=>{const node=mount({open:true,onOpenChange:jest.fn()});expect(node.props.accessible).toBe(false);expect(node.props.accessibilityLabel).toBe('Review');const content=root.root.findByType(require('react-native').ScrollView);expect(content.props).toMatchObject({accessible:false,accessibilityViewIsModal:true});expect(typeof content.props.onAccessibilityEscape).toBe('function');});
 it('sheet Close follows HIGProvider messages, closeLabel and RTL',()=>{const {Text:RNText}=require('react-native');const label=()=>root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function').map(b=>b.findAllByType(RNText).map(t=>[].concat(t.props.children).join('')).join(''));const close=jest.fn();
  act(()=>{root=create(React.createElement(HIGProvider,{reducedMotion:true,direction:'rtl',locale:'ar-EG',messages:{close:'إغلاق'}},React.createElement(GestureSheet,{title:'مراجعة',description:'تحقق',snapPoints:['50%'],open:true,onOpenChange:close},null)));});
  expect(label()).toEqual(['إغلاق']);act(()=>root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(close).toHaveBeenCalledWith(false);
  act(()=>{root.update(React.createElement(HIGProvider,{reducedMotion:true,direction:'rtl',locale:'ar-EG',messages:{close:'إغلاق'}},React.createElement(GestureSheet,{title:'مراجعة',description:'تحقق',snapPoints:['50%'],open:true,onOpenChange:close,closeLabel:'تم'},null)));});
  expect(label()).toEqual(['تم']);});
-it('sheet background and handle paint from the provider colour table (#93)',()=>{const RN=require('react-native');const {nativeSrgb,nativeColors}=require('../../packages/tokens/dist/index.js');const descriptor=Object.getOwnPropertyDescriptor(RN.Platform,'OS');Object.defineProperty(RN.Platform,'OS',{value:'ios',configurable:true});
+it('sheet background and handle paint from the provider colour table (#93)',()=>{const RN=require('react-native');const {nativeSrgb,nativeColors}=require('../../packages/hig/tokens/dist/index.js');const descriptor=Object.getOwnPropertyDescriptor(RN.Platform,'OS');Object.defineProperty(RN.Platform,'OS',{value:'ios',configurable:true});
  try{const paint=props=>{act(()=>{root=create(React.createElement(HIGProvider,{reducedMotion:true,...props},React.createElement(GestureSheet,{title:'Review',description:'Verify amount',snapPoints:['50%'],open:true,onOpenChange:jest.fn()},null)));});const node=root.root.findAll(n=>n.props.testID==='backend')[0];const value=[node.props.backgroundStyle.backgroundColor,node.props.handleIndicatorStyle.backgroundColor];act(()=>root.unmount());root=null;return value;};
   expect(paint({})).toEqual([nativeSrgb.surface,nativeSrgb.muted]);
   expect(paint({colorSpace:'display-p3'})).toEqual([nativeColors.iosDisplayP3.surface,nativeColors.iosDisplayP3.muted]);

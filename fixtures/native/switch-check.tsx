@@ -1,10 +1,10 @@
 import React,{useState} from 'react';
 import {View} from 'react-native';
-import {Text} from '@bloxwap/hig-native/surface';
-import {nativeSrgb as colors} from '@bloxwap/hig-tokens';
-import {HIGProvider} from '@bloxwap/hig-native/provider';
-import {Button} from '@bloxwap/hig-native/button';
-import {Switch,SwitchRow} from '@bloxwap/hig-native/switch';
+import {Text} from '@bloxwap/hig/native/surface';
+import {nativeSrgb as colors} from '@bloxwap/hig/tokens';
+import {HIGProvider} from '@bloxwap/hig/native/provider';
+import {Button} from '@bloxwap/hig/native/button';
+import {Switch,SwitchRow} from '@bloxwap/hig/native/switch';
 /** Isolated host-row fixture: no payments, permissions or physical feedback. */
 export default function SwitchContentCheck(){
  const [checked,setChecked]=useState(false),[pending,setPending]=useState(false),[changes,setChanges]=useState(0);

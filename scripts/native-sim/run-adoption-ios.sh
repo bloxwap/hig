@@ -9,16 +9,16 @@ HARNESS="$HIG/.validation-tmp/native-adoption/harness"; BUILD="$HIG/.validation-
 LOGS="$RESULTS/logs"
 mkdir -p "$LOGS" "$RESULTS" "$HARNESS"
 for package_name in contracts native native-fonts tokens; do
-  rsync -a --delete "$HIG/packages/$package_name/dist/" "$APP/node_modules/@bloxwap/hig-$package_name/dist/"
+  rsync -a --delete "$HIG/packages/hig/$package_name/dist/" "$APP/node_modules/@bloxwap/hig/$package_name/dist/"
 done
-rsync -a "$HIG/packages/native-fonts/fonts/" "$APP/node_modules/@bloxwap/hig-native-fonts/fonts/"
+rsync -a "$HIG/packages/hig/native-fonts/fonts/" "$APP/node_modules/@bloxwap/hig/native-fonts/fonts/"
 cp "$HIG/fixtures/native/adoption-check.tsx" "$APP/adoption-check.tsx"
 cp "$HIG/fixtures/native/index-adoption.js" "$APP/index-adoption.js"
 cp "$APP/index.js" "$HARNESS/index.original.js"
 cp "$APP/metro.config.cjs" "$HARNESS/metro.original.cjs"
 cp "$APP/index-adoption.js" "$APP/index.js"
 printf "\nmodule.exports.cacheStores=[new(module.exports.cacheStores[0].constructor)({root:require('node:path').resolve(__dirname,'../adoption-metro-cache')})];\n" >> "$APP/metro.config.cjs"
-restore() { cp "$HARNESS/index.original.js" "$APP/index.js"; cp "$HARNESS/metro.original.cjs" "$APP/metro.config.cjs"; xcrun simctl ui "$UDID" content_size large >/dev/null; }
+restore() { cp "$HARNESS/index.original.js" "$APP/index.js"; cp "$HARNESS/metro.original.cjs" "$APP/metro.config.cjs"; xcrun simctl ui "$UDID" content_size large >/dev/null; xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool false; }
 trap restore EXIT
 # Prepared apps can retain a Node path from a previous workspace install.
 printf 'export NODE_BINARY=%q\n' "$(command -v node)" > "$APP/ios/.xcode.env.local"
@@ -29,21 +29,29 @@ xcodebuild -workspace "$APP/ios/BloxwapHIGGallery.xcworkspace" -scheme BloxwapHI
 xcrun simctl install "$UDID" "$APP/../dd-ios/Build/Products/Release-iphonesimulator/BloxwapHIGGallery.app"
 XCTESTRUN="$(find "$BUILD/Build/Products" -maxdepth 1 -name '*.xctestrun' -print -quit)"
 run() {
-  local check="$1"; local prefix="$2"
+  local check="$1"; local prefix="$2"; shift 2
   local result_bundle="$RESULTS/$check-$prefix-$(date +%s).xcresult"
   # Xcode can reuse a previously installed UI-test bundle between category changes.
   xcrun simctl uninstall "$UDID" com.bloxwap.hig.uitests.xctrunner >/dev/null 2>&1 || true
   xcrun simctl uninstall "$UDID" com.bloxwap.hig.uitesthost >/dev/null 2>&1 || true
   xcrun simctl install "$UDID" "$BUILD/Build/Products/Debug-iphonesimulator/HIGNativeSimUITests-Runner.app"
   xcrun simctl install "$UDID" "$BUILD/Build/Products/Debug-iphonesimulator/HIGUITestHost.app"
-  TEST_RUNNER_HIG_OUT="$OUT/$prefix" TEST_RUNNER_HIG_ADOPTION_PREFIX="$prefix" xcodebuild test-without-building -collect-test-diagnostics never -xctestrun "$XCTESTRUN" -destination "id=$UDID" -only-testing:"HIGNativeSimUITests/AdoptionVerificationUITests/$check" -resultBundlePath "$result_bundle" > "$LOGS/$check-$prefix.log" 2>&1
+  env "$@" TEST_RUNNER_HIG_OUT="$OUT/$prefix" TEST_RUNNER_HIG_ADOPTION_PREFIX="$prefix" xcodebuild test-without-building -collect-test-diagnostics never -xctestrun "$XCTESTRUN" -destination "id=$UDID" -only-testing:"HIGNativeSimUITests/AdoptionVerificationUITests/$check" -resultBundlePath "$result_bundle" > "$LOGS/$check-$prefix.log" 2>&1
   xcrun xcresulttool get test-results summary --path "$result_bundle" --format json > "$OUT/$prefix/$check-xcresult.json"
   printf '%s %s passed\n' "$check" "$prefix" | tee -a "$OUT/summary.txt"
 }
 xcrun simctl ui "$UDID" content_size large
+xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool false
 run testTypographyAndBusySpacing default
+run testNumberFlow default TEST_RUNNER_HIG_ADOPTION_NUMBER_MODE=full
 run testToastRecoveryAndDismissal default
 run testCustomSheetCardStack default
 xcrun simctl ui "$UDID" content_size accessibility-extra-extra-extra-large
 run testToastRecoveryAndDismissal ax5
+run testNumberFlow ax5 TEST_RUNNER_HIG_ADOPTION_NUMBER_MODE=smoke TEST_RUNNER_HIG_ADOPTION_MIN_FONT_SCALE=2
+xcrun simctl ui "$UDID" content_size large
+xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
+xcrun simctl spawn "$UDID" notifyutil -p com.apple.accessibility.reduce.motion.status || true
+run testNumberFlow reduce-motion TEST_RUNNER_HIG_ADOPTION_NUMBER_MODE=smoke TEST_RUNNER_HIG_ADOPTION_EXPECT_MOTION=reduced
+xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool false
 node "$HIG/scripts/native-sim/adoption-evidence.mjs" "$APP" "$UDID" "$OUT"

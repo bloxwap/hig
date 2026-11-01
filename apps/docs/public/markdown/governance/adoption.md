@@ -19,7 +19,7 @@ All 15 inventoried repositories have applicability decisions and named owner acc
 
 | Group | Repositories | State |
 | --- | --- | --- |
-| Canonical | hig | Coordinated 0.1.2 release; RN 0.81, 0.83 and 0.88 packed-consumer profiles |
+| Canonical | hig | Coordinated 0.1.2 release, then the single `@bloxwap/hig` 0.2.0 package; RN 0.81, 0.83 and 0.88 packed-consumer profiles |
 | SDK docs migrated | hyperliquid, chart, font, sfx, haptic | Published 0.1.0 registry packages; candidate archives and the previously tracked peer/font/role workarounds retired |
 | Product | monorepo | Registry migration #4737 and the HIG 0.1.2 / RN 0.88 upgrade #4826 merged. Owner decisions accepted in HIG #57. Real wallet acceptance and rollback retirement remain #110 |
 | Docs site migrated | agent-cli | Registry migration #68 merged; scoped drift checks retained |
@@ -42,4 +42,5 @@ Owner acceptance records product decisions and the six-locale glossary exception
 - Catalog entries need docs, code, platform and test coverage.
 - Source and bundle deltas must be measured in the owning repository.
 - A matrix row is "migrated" only when its owning PR is merged and its validation is linked. Open PRs are recorded as in progress, never as migrated.
+- #57 still has no owner approvals; named-owner and native-speaker decisions are never inferred from checks or merges.
 - Physical hardware results are never inferred from simulator, emulator or browser evidence.

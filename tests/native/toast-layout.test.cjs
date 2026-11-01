@@ -1,10 +1,10 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Text:RNText,ScrollView,View,StyleSheet,Platform,AccessibilityInfo,Dimensions}=require('react-native');
-const {Toast}=require('../../packages/native/src/status');
-const {Button}=require('../../packages/native/src/button');
-const {Heading}=require('../../packages/native/src/surface');
-const {HIGProvider}=require('../../packages/native/src/provider');
+const {Toast}=require('../../packages/hig/native/src/status');
+const {Button}=require('../../packages/hig/native/src/button');
+const {Heading}=require('../../packages/hig/native/src/surface');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const h=React.createElement;
 let root;
 function mount(node){act(()=>{root=create(node);});return root.root;}

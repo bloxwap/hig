@@ -1,0 +1,73 @@
+Optional(Attributes: Application, 0x1073ffd40, pid: 69201, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, 0x1073ffd40, pid: 69201, label: 'Bloxwap HIG Gallery'
+    Window (Main), 0x1073fd7c0, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x1073fcdc0, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x1073fc640, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x1073ffe80, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x1073ffc00, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x1073fc000, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x1073fe6c0, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x1073fea80, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x1073fed00, {{0.0, 0.0}, {402.0, 874.0}}
+                    Button, 0x1073fee40, {{16.0, 78.0}, {73.7, 48.3}}, label: 'Type'
+                    Button, 0x1073febc0, {{97.7, 78.0}, {105.3, 48.3}}, label: 'Numbers'
+                    Button, 0x1073ff200, {{211.0, 78.0}, {94.0, 48.3}}, label: 'Notices'
+                    Button, 0x1073ff700, {{16.0, 134.3}, {81.0, 48.3}}, label: 'Sheet'
+                    StaticText, 0x1073ffac0, {{16.0, 194.7}, {370.0, 20.3}}, identifier: 'adoption-ready', label: 'Adoption number · scale 1.00 · locale en-US'
+                      StaticText, 0x107236940, {{16.0, 194.7}, {370.0, 20.3}}, label: 'Adoption number · scale 1.00 · locale en-US'
+                    StaticText, 0x107236f80, {{16.0, 227.0}, {370.0, 20.3}}, identifier: 'adoption-result', label: 'Ready'
+                      StaticText, 0x107236d00, {{16.0, 227.0}, {370.0, 20.3}}, label: 'Ready'
+                    Other, 0x107237200, {{16.0, 259.3}, {370.0, 564.7}}, identifier: 'adoption-number-scroll'
+                      ScrollView, 0x107236800, {{16.0, 259.3}, {370.0, 564.7}}
+                        Other, 0x1072366c0, {{16.0, 259.3}, {370.0, 657.7}}
+                          Other, 0x107236440, {{16.0, 259.3}, {370.0, 657.7}}
+                            Button, 0x107236580, {{16.0, 259.3}, {141.3, 48.3}}, identifier: 'adoption-locale-en-US', label: 'Locale en-US'
+                            Button, 0x107237340, {{165.3, 259.3}, {136.7, 48.3}}, identifier: 'adoption-locale-ar-EG', label: 'Locale ar-EG'
+                            Button, 0x1072375c0, {{16.0, 315.7}, {130.3, 48.3}}, identifier: 'adoption-locale-fa-IR', label: 'Locale fa-IR'
+                            Button, 0x107237480, {{154.3, 315.7}, {196.3, 48.3}}, identifier: 'adoption-locale-en-u-nu-arab', label: 'Locale en-u-nu-arab'
+                            Button, 0x107234b40, {{16.0, 372.0}, {103.0, 48.3}}, identifier: 'adoption-number-direction', label: 'Use RTL'
+                            StaticText, 0x107234a00, {{16.0, 432.3}, {370.0, 48.3}}, identifier: 'adoption-number-environment', label: 'Number locale ar-EG · direction ltr · scale 1.00 · motion reduced'
+                              StaticText, 0x107236a80, {{16.0, 432.3}, {370.0, 48.3}}, label: 'Number locale ar-EG · direction ltr · scale 1.00 · motion reduced'
+                            Other, 0x107236bc0, {{16.0, 492.7}, {370.0, 30.3}}
+                              StaticText, 0x10a9a0000, {{16.0, 492.7}, {370.0, 30.3}}, identifier: 'adoption-number', label: 'Number flow: ٧٬٦٥٤٬٣٢١٫٠٩'
+                                StaticText, 0x10a9a0140, {{16.0, 492.7}, {370.0, 30.3}}, label: 'Number flow: ٧٬٦٥٤٬٣٢١٫٠٩'
+                            Button, 0x10a9a0280, {{16.0, 535.0}, {142.3, 48.3}}, identifier: 'adoption-number-reset', label: 'Reset 999.99'
+                            Button, 0x10a9a03c0, {{166.3, 535.0}, {152.7, 48.3}}, identifier: 'adoption-number-carry', label: 'Carry 1,000.00'
+                            Button, 0x10a9a0500, {{16.0, 591.3}, {190.0, 48.3}}, identifier: 'adoption-number-group', label: 'Group 1,234,567.89'
+                            Button, 0x10a9a0640, {{214.0, 591.3}, {139.3, 48.3}}, identifier: 'adoption-number-sign', label: 'Sign -250.50'
+                              StaticText, 0x10a9a0780, {{234.0, 603.3}, {99.3, 24.3}}, label: 'Sign -250.50'
+                                StaticText, 0x10a9a08c0, {{234.0, 603.3}, {99.3, 24.3}}, label: 'Sign -250.50'
+                            Button, 0x10a9a0a00, {{16.0, 647.7}, {148.3, 48.3}}, identifier: 'adoption-number-fraction', label: 'Fraction 12.30'
+                              StaticText, 0x10a9a0b40, {{36.0, 659.7}, {108.3, 24.3}}, label: 'Fraction 12.30'
+                                StaticText, 0x10a9a0c80, {{36.0, 659.7}, {108.3, 24.3}}, label: 'Fraction 12.30'
+                            Button, 0x10a9a0dc0, {{172.3, 647.7}, {165.7, 48.3}}, identifier: 'adoption-number-burst', label: 'Start value burst'
+                              StaticText, 0x10a9a0f00, {{192.3, 659.7}, {125.7, 24.3}}, label: 'Start value burst'
+                                StaticText, 0x10a9a1040, {{192.3, 659.7}, {125.7, 24.3}}, label: 'Start value burst'
+                            Button, 0x10a9a1180, {{16.0, 704.0}, {133.3, 48.3}}, identifier: 'adoption-number-null', label: 'Null fallback'
+                              StaticText, 0x10a9a12c0, {{36.0, 716.0}, {93.3, 24.3}}, label: 'Null fallback'
+                                StaticText, 0x10a9a1400, {{36.0, 716.0}, {93.3, 24.3}}, label: 'Null fallback'
+                            Button, 0x10a9a1540, {{157.3, 704.0}, {136.3, 48.3}}, identifier: 'adoption-number-nan', label: 'NaN fallback'
+                              StaticText, 0x10a9a1680, {{177.3, 716.0}, {96.3, 24.3}}, label: 'NaN fallback'
+                                StaticText, 0x10a9a17c0, {{177.3, 716.0}, {96.3, 24.3}}, label: 'NaN fallback'
+                            Button, 0x10a9a1900, {{16.0, 760.3}, {156.0, 48.3}}, identifier: 'adoption-number-infinity', label: 'Infinity fallback'
+                              StaticText, 0x10a9a1a40, {{36.0, 772.3}, {116.0, 24.3}}, label: 'Infinity fallback'
+                                StaticText, 0x10a9a1b80, {{36.0, 772.3}, {116.0, 24.3}}, label: 'Infinity fallback'
+                            StaticText, 0x10a9a1cc0, {{16.0, 820.7}, {370.0, 72.3}}, identifier: 'adoption-number-limits', label: 'Final labels are machine-checkable; inspect captures for glyph shaping, bidi visual order and animation quality.'
+                              StaticText, 0x10a9a1e00, {{16.0, 820.7}, {370.0, 72.3}}, label: 'Final labels are machine-checkable; inspect captures for glyph shaping, bidi visual order and animation quality.'
+                        Other, 0x10a9a1f40, {{353.0, 259.3}, {30.0, 552.7}}, label: 'Vertical scroll bar, 2 pages', value: 0%
+                          Other, 0x10a9a2080, {{380.0, 262.3}, {3.0, 381.0}}
+                        Other, 0x10a9a21c0, {{28.0, 791.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x10a9a2300, {{65.0, 818.0}, {272.0, 3.0}}
+                        Other, 0x10a9a2440, {{353.0, 259.3}, {30.0, 552.7}}, label: 'Vertical scroll bar, 2 pages', value: 0%
+                          Other, 0x10a9a2580, {{380.0, 262.3}, {3.0, 381.0}}
+                        Other, 0x10a9a26c0, {{28.0, 791.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x10a9a2800, {{65.0, 818.0}, {272.0, 3.0}}
+Path to element:
+ →Application, 0x1073ffd40, pid: 69201, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, 0x10a9a2940, pid: 69201, label: 'Bloxwap HIG Gallery'
+  }
+)

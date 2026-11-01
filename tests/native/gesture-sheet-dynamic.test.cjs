@@ -11,8 +11,8 @@ jest.mock('@gorhom/bottom-sheet',()=>{
  return {methods,BottomSheetModal,BottomSheetView,BottomSheetScrollView:ScrollView,BottomSheetBackdrop:View};
 });
 const backend=require('@gorhom/bottom-sheet');
-const {GestureSheet}=require('../../packages/native/src/gesture-sheet');
-const {HIGProvider}=require('../../packages/native/src/provider');
+const {GestureSheet}=require('../../packages/hig/native/src/gesture-sheet');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
 let root,frames,nextFrame;
 beforeEach(()=>{
  frames=new Map();nextFrame=1;
@@ -27,14 +27,14 @@ function Counter({rows=1}){
  const [count,setCount]=React.useState(0);
  return React.createElement(View,null,React.createElement(Text,{testID:'counter',onPress:()=>setCount(value=>value+1)},`count:${count}`),React.createElement(ScrollView,{testID:'caller-scroll'},Array.from({length:rows},(_,index)=>React.createElement(Text,{key:index},`Row ${index}`))));
 }
-function element(props={},rows=1){return React.createElement(HIGProvider,{reducedMotion:true},React.createElement(GestureSheet,{...defaults,...props},React.createElement(Counter,{rows})));}
-function mount(props={},rows=1){act(()=>{root=create(element(props,rows));});return modal();}
-function update(props={},rows=1){act(()=>root.update(element(props,rows)));return modal();}
+function element(props={},rows=1,reducedMotion=true){return React.createElement(HIGProvider,{reducedMotion},React.createElement(GestureSheet,{...defaults,...props},React.createElement(Counter,{rows})));}
+function mount(props={},rows=1,reducedMotion=true){act(()=>{root=create(element(props,rows,reducedMotion));});return modal();}
+function update(props={},rows=1,reducedMotion=true){act(()=>root.update(element(props,rows,reducedMotion)));return modal();}
 function modal(){return root.root.findAll(n=>n.props.testID==='backend')[0];}
 function flushFrames(){const pending=[...frames.values()];frames.clear();act(()=>pending.forEach(callback=>callback(0)));}
 
-it('uses backend intrinsic measurement, one generated detent and caller-owned scrolling',()=>{
- const node=mount({initialIndex:4});
+it('uses backend intrinsic measurement, one detent through position updates and caller-owned scrolling',()=>{
+ const detents=jest.fn(),change=jest.fn(),node=mount({onChange:detents,onOpenChange:change});
  expect(node.props.enableDynamicSizing).toBe(true);
  expect(node.props.snapPoints).toBeUndefined();
  expect(node.props.index).toBe(0);
@@ -44,6 +44,51 @@ it('uses backend intrinsic measurement, one generated detent and caller-owned sc
  expect(root.root.findAllByType(ScrollView)).toHaveLength(1);
  expect(root.root.findAll(n=>n.props.accessibilityRole==='button')).toHaveLength(0);
  expect(node.props.overrideReduceMotion).toBe('always');
+ act(()=>{node.props.onChange(0,120,'position');node.props.onChange(0,240,'position');});
+ expect(detents.mock.calls.map(call=>call.slice(0,2))).toEqual([[0,120],[0,240]]);
+ expect(node.props.index).toBe(0);
+ expect(backend.methods.snapToIndex).not.toHaveBeenCalled();
+ expect(change).not.toHaveBeenCalled();
+ expect(AccessibilityInfo.setAccessibilityFocus).toHaveBeenCalledTimes(1);
+});
+
+it('scopes modal accessibility to ungrouped dynamic content and permits rejected escape retry',()=>{
+ const change=jest.fn(),closed=jest.fn(),node=mount({onOpenChange:change,onDismiss:closed});
+ const measured=root.root.findByType(backend.BottomSheetView);
+ expect(measured.props).toMatchObject({accessible:false,accessibilityViewIsModal:true});
+ expect(node.props.accessible).toBe(false);
+ act(()=>{measured.props.onAccessibilityEscape();measured.props.onAccessibilityEscape();});
+ expect(change).toHaveBeenCalledTimes(1);
+ flushFrames();act(()=>measured.props.onAccessibilityEscape());
+ expect(change).toHaveBeenCalledTimes(2);
+ expect(closed).not.toHaveBeenCalled();
+ expect(backend.methods.present).toHaveBeenCalledTimes(1);
+ expect(backend.methods.dismiss).not.toHaveBeenCalled();
+});
+
+it('retries a rejected explicit Close but dedupes its accepted in-flight dismissal',()=>{
+ const change=jest.fn(),closed=jest.fn(),returnFocusRef={current:{_nativeTag:77}};
+ const props={contentMode:'default',onOpenChange:change,onDismiss:closed,returnFocusRef};
+ let node=mount(props);
+ const press=()=>root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},isDefaultPrevented:()=>false});
+ act(()=>{press();press();});expect(change).toHaveBeenCalledTimes(1);
+ flushFrames();act(()=>press());expect(change).toHaveBeenCalledTimes(2);
+ node=update({...props,open:false});
+ act(()=>{press();node.props.onDismiss();node.props.onDismiss();});flushFrames();
+ expect(change).toHaveBeenCalledTimes(2);
+ expect(closed).toHaveBeenCalledTimes(1);
+ expect(AccessibilityInfo.setAccessibilityFocus).toHaveBeenLastCalledWith(77);
+});
+
+it('preserves dynamic ceilings, zero safe-area overrides and system reduced motion',()=>{
+ let node=mount({contentMode:'default',topInset:24,bottomInset:32,maxDynamicContentSize:360},1,false);
+ expect(node.props).toMatchObject({topInset:24,bottomInset:32,maxDynamicContentSize:360,overrideReduceMotion:'system'});
+ let scroller=root.root.findAllByType(ScrollView).find(item=>item.props.keyboardShouldPersistTaps==='handled');
+ expect(StyleSheet.flatten(scroller.props.contentContainerStyle).paddingBottom).toBe(32+require('@bloxwap/hig/tokens').nativeMetrics.space.xl);
+ node=update({contentMode:'default',topInset:0,bottomInset:0,maxDynamicContentSize:720},1,false);
+ expect(node.props).toMatchObject({topInset:0,bottomInset:0,maxDynamicContentSize:720,overrideReduceMotion:'system'});
+ scroller=root.root.findAllByType(ScrollView).find(item=>item.props.keyboardShouldPersistTaps==='handled');
+ expect(StyleSheet.flatten(scroller.props.contentContainerStyle).paddingBottom).toBe(require('@bloxwap/hig/tokens').nativeMetrics.space.xl);
 });
 
 it('content and ceiling changes retain card state, the presentation and open focus',()=>{

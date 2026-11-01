@@ -1,10 +1,18 @@
 {
-  "version": "0.1.2",
+  "version": "0.2.0",
   "api": {
     "react": {
+      "AnimatedNumberTrend": {
+        "entry": "animated-number",
+        "signature": "export type AnimatedNumberTrend = -1 | 0 | 1 | ((oldValue: number, newValue: number) => -1 | 0 | 1);"
+      },
+      "AnimatedNumberProps": {
+        "entry": "animated-number",
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    duration?: number;\n    trend?: AnimatedNumberTrend;\n}"
+      },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ duration, ...props }: NumberProps & {\n    duration?: number;\n}): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ duration, trend, ...props }: AnimatedNumberProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",
@@ -32,11 +40,11 @@
       },
       "NumberProps": {
         "entry": "data",
-        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n}"
+        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "NumberReadout": {
         "entry": "data",
-        "signature": "export declare function NumberReadout({ value, options, stale, label }: NumberProps): React.JSX.Element;"
+        "signature": "export declare function NumberReadout({ value, options, stale, label, prefix, suffix }: NumberProps): React.JSX.Element;"
       },
       "Usd": {
         "entry": "data",
@@ -110,6 +118,10 @@
         "entry": "gesture-sheet",
         "signature": "export type GestureSheetBackendProps = HostBackendProps<BackendProps>;"
       },
+      "GestureSheetDynamicBackendProps": {
+        "entry": "gesture-sheet",
+        "signature": "export type GestureSheetDynamicBackendProps = Omit<GestureSheetBackendProps, SnapPointBackendProp> & {\n    [Key in SnapPointBackendProp]?: never;\n};"
+      },
       "GestureSheetContentProps": {
         "entry": "gesture-sheet",
         "signature": "export type GestureSheetContentProps = DialogContentProps & {\n    [key: `data-${string}`]: string | number | boolean | undefined;\n};"
@@ -124,11 +136,11 @@
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
-        "signature": "export interface GestureSheetProps extends Omit<DialogProps, 'contentProps'> {\n    contentProps?: GestureSheetContentProps;\n    /** Backend defaults are retained, including autoFocus=false and repositionInputs=true. */\n    backendProps?: GestureSheetBackendProps;\n    /** Default anatomy pads and scrolls the card; custom anatomy leaves layout and scrolling to the host. */\n    contentMode?: 'default' | 'custom';\n    /** The real backend drag handle is included by default. */\n    handle?: boolean;\n    handleProps?: GestureSheetHandleProps;\n    handleRef?: React.Ref<HTMLDivElement>;\n    overlayProps?: GestureSheetOverlayProps;\n}"
+        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Backend defaults are retained, including autoFocus=false and repositionInputs=true. */\n{\n    enableDynamicSizing?: false;\n    backendProps?: GestureSheetBackendProps;\n    maxDynamicContentSize?: never;\n}\n/** Vertical content sizing is intrinsic and cannot be combined with Vaul detents. */\n | {\n    enableDynamicSizing: true;\n    backendProps?: GestureSheetDynamicBackendProps; /** A finite positive content-height ceiling in CSS pixels; the viewport ceiling still applies. */\n    maxDynamicContentSize?: number;\n});"
       },
       "GestureSheet": {
         "entry": "gesture-sheet",
-        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps }: GestureSheetProps): React.JSX.Element;"
+        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps, enableDynamicSizing, maxDynamicContentSize }: GestureSheetProps): React.JSX.Element;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -369,12 +381,40 @@
       "MarketRowProps": {
         "entry": "recipes/market-row",
         "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity, such as symbol/name with its existing compact layout. */\n    identity?: React.ReactNode;\n});"
+      },
+      "AnimatedNumberToken": {
+        "entry": "animated-number-model",
+        "signature": "export interface AnimatedNumberToken {\n    key: string;\n    text: string;\n    digit: boolean;\n    value?: number;\n    place?: number;\n    section?: 'number' | 'exponent';\n}"
+      },
+      "AnimatedNumberModel": {
+        "entry": "animated-number-model",
+        "signature": "export interface AnimatedNumberModel {\n    reading: string;\n    tokens: readonly AnimatedNumberToken[];\n    animatable: boolean;\n}"
+      },
+      "AnimatedNumberTransitionToken": {
+        "entry": "animated-number-model",
+        "signature": "export interface AnimatedNumberTransitionToken extends AnimatedNumberToken {\n    oldText?: string;\n    oldValue?: number;\n    changed: boolean;\n}"
+      },
+      "createAnimatedNumberModel": {
+        "entry": "animated-number-model",
+        "signature": "export declare function createAnimatedNumberModel(value: number | null | undefined, locale: string, options?: Intl.NumberFormatOptions): AnimatedNumberModel;"
+      },
+      "createAnimatedNumberTransitions": {
+        "entry": "animated-number-model",
+        "signature": "export declare function createAnimatedNumberTransitions(previous: AnimatedNumberModel | null, next: AnimatedNumberModel): readonly AnimatedNumberTransitionToken[];"
       }
     },
     "native": {
+      "AnimatedNumberTrend": {
+        "entry": "animated-number",
+        "signature": "export type AnimatedNumberTrend = NumberTrend;"
+      },
+      "AnimatedNumberProps": {
+        "entry": "animated-number",
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    duration?: number;\n    trend?: AnimatedNumberTrend;\n}"
+      },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ duration, ...props }: NumberProps & {\n    duration?: number;\n}): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ value, options, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration }: AnimatedNumberProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",
@@ -422,11 +462,11 @@
       },
       "NumberProps": {
         "entry": "data",
-        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions; /** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */\n    formattedValue?: string;\n    stale?: boolean;\n    label?: string; /** Explicit semantic meaning; sign alone never chooses the tone. */\n    tone?: NumberTone; /** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */\n    style?: StyleProp<NumberReadoutStyle>;\n    testID?: string; /** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */\n    maxFontSizeMultiplier?: number;\n}"
+        "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions; /** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */\n    formattedValue?: string;\n    stale?: boolean;\n    label?: string; /** Explicit semantic meaning; sign alone never chooses the tone. */\n    tone?: NumberTone; /** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */\n    style?: StyleProp<NumberReadoutStyle>;\n    testID?: string; /** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */\n    maxFontSizeMultiplier?: number; /** Display-only affixes, omitted for unknown values. */\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "NumberReadout": {
         "entry": "data",
-        "signature": "export declare function NumberReadout({ value, options, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier }: NumberProps): React.JSX.Element;"
+        "signature": "export declare function NumberReadout({ value, options, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier, prefix, suffix }: NumberProps): React.JSX.Element;"
       },
       "Usd": {
         "entry": "data",
@@ -482,7 +522,7 @@
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Modal is the default. Inline retains the screen-level backend and its child state while closed. */\n{\n    presentation?: 'modal';\n    modalRef?: React.Ref<BottomSheetModal>;\n    sheetRef?: never;\n} | {\n    presentation: 'inline';\n    sheetRef?: React.Ref<BottomSheet>;\n    modalRef?: never;\n}) & (\n/** Fixed sizing keeps sorted increasing detents. Changes retain the current index or clamp a removed detent. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly (number | `${number}%`)[];\n}\n/** Content sizing uses one backend-measured detent, without competing fixed snap points. */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n});"
+        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Modal is the default. Inline retains the screen-level backend and its child state while closed. */\n{\n    presentation?: 'modal';\n    modalRef?: React.Ref<BottomSheetModal>;\n    sheetRef?: never;\n} | {\n    presentation: 'inline';\n    sheetRef?: React.Ref<BottomSheet>;\n    modalRef?: never;\n}) & (\n/** Fixed sizing keeps sorted increasing detents. Changes retain the current index or clamp a removed detent. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    maxDynamicContentSize?: never;\n}\n/** Content sizing uses one backend-measured detent and an optional finite positive point ceiling (default: container height), without fixed snap points or an initial detent index. */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n    initialIndex?: never;\n    maxDynamicContentSize?: BottomSheetModalProps['maxDynamicContentSize'];\n});"
       },
       "GestureSheet": {
         "entry": "gesture-sheet",
@@ -764,6 +804,38 @@
         "entry": "switch",
         "signature": "export interface SwitchProps extends CheckedProps {\n    tone?: AccentRole;\n}"
       },
+      "NumberTrend": {
+        "entry": "animated-number-model",
+        "signature": "export type NumberTrend = -1 | 0 | 1 | ((previousValue: number, value: number) => -1 | 0 | 1);"
+      },
+      "NumberReading": {
+        "entry": "animated-number-model",
+        "signature": "export interface NumberReading {\n    known: boolean;\n    core: string;\n    text: string;\n}"
+      },
+      "NumberReelToken": {
+        "entry": "animated-number-model",
+        "signature": "export interface NumberReelToken {\n    key: string;\n    kind: 'digit' | 'static';\n    type: string;\n    value: string;\n    partIndex: number;\n    digit?: number;\n    place?: number;\n}"
+      },
+      "NumberReelModel": {
+        "entry": "animated-number-model",
+        "signature": "export interface NumberReelModel {\n    canonical: string;\n    digits: readonly string[];\n    tokens: readonly NumberReelToken[];\n}"
+      },
+      "formatNumberReadout": {
+        "entry": "animated-number-model",
+        "signature": "export declare function formatNumberReadout(value: number | null | undefined, locale: string, options?: Intl.NumberFormatOptions, formattedValue?: string, prefix?: string, suffix?: string): NumberReading;"
+      },
+      "numberTrendDirection": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberTrendDirection(trend: NumberTrend | undefined, previousValue: number | null | undefined, value: number | null | undefined): -1 | 0 | 1;"
+      },
+      "safeNumberLayout": {
+        "entry": "animated-number-model",
+        "signature": "export declare function safeNumberLayout(text: string, direction: string): boolean;"
+      },
+      "createNumberReelModel": {
+        "entry": "animated-number-model",
+        "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string): NumberReelModel | null;"
+      },
       "accentRoles": {
         "entry": "roles",
         "signature": "export declare const accentRoles: readonly ['action', 'positive', 'negative', 'warning', 'info', 'buy', 'sell'];"
@@ -783,11 +855,11 @@
     },
     "chart": {
       "chartTheme": {
-        "entry": "@bloxwap/hig-chart",
+        "entry": "@bloxwap/hig/chart",
         "signature": "export declare const chartTheme: DeepPartial<ChartConfig>;"
       },
       "PriceChart": {
-        "entry": "@bloxwap/hig-chart",
+        "entry": "@bloxwap/hig/chart",
         "signature": "export declare function PriceChart({ summary, ...props }: ChartProps & {\n    summary: string;\n}): React.JSX.Element;"
       }
     }

@@ -2,16 +2,16 @@ import React,{useState,createRef,useLayoutEffect} from 'react';
 import {afterEach,describe,it,expect,vi} from 'vitest';
 import {render,screen,cleanup,fireEvent} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {Button} from '../packages/react/src/button';
-import {HIGProvider} from '../packages/react/src/provider';
-import {Field,AmountInput,TextArea} from '../packages/react/src/field';
-import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/react/src/selection';
-import {Tabs,Accordion} from '../packages/react/src/navigation';
-import {Dialog} from '../packages/react/src/overlay';
-import {Toast,Callout} from '../packages/react/src/status';
-import {InstallCommand,CodeWindow} from '../packages/react/src/recipes';
+import {Button} from '../packages/hig/react/src/button';
+import {HIGProvider} from '../packages/hig/react/src/provider';
+import {Field,AmountInput,TextArea} from '../packages/hig/react/src/field';
+import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/hig/react/src/selection';
+import {Tabs,Accordion} from '../packages/hig/react/src/navigation';
+import {Dialog} from '../packages/hig/react/src/overlay';
+import {Toast,Callout} from '../packages/hig/react/src/status';
+import {InstallCommand,CodeWindow} from '../packages/hig/react/src/recipes';
 import {readFileSync} from 'node:fs';
-import {Percent,Table} from '../packages/react/src/data';
+import {Percent,Table} from '../packages/hig/react/src/data';
 afterEach(cleanup);
 describe('DOM behavior contracts',()=>{
  it('blocks busy/disabled activation and preserves forwarded focus',async()=>{const onClick=vi.fn();const feedback=vi.fn();const ref=createRef<HTMLButtonElement>();const {rerender}=render(<HIGProvider onAccepted={feedback}><Button ref={ref} busy onClick={onClick}>Review order</Button></HIGProvider>);await userEvent.click(screen.getByRole('button'));expect(onClick).not.toHaveBeenCalled();expect(feedback).not.toHaveBeenCalled();rerender(<HIGProvider onAccepted={feedback}><Button ref={ref} onClick={onClick}>Review order</Button></HIGProvider>);ref.current?.focus();expect(document.activeElement).toBe(ref.current);await userEvent.keyboard('{Enter}');expect(onClick).toHaveBeenCalledTimes(1);expect(feedback).toHaveBeenCalledTimes(1);});
@@ -58,7 +58,7 @@ describe('DOM behavior contracts',()=>{
   for(const hidden of document.querySelectorAll('[role="tabpanel"][hidden]'))expect(hidden.getAttribute('tabindex')).toBe('0');
  });
  it('keeps a non-focusable panel a tab stop synchronously after switching tabs (#97)',()=>{
-  render(<Tabs label='Docs' items={[{value:'code',label:'Code',content:<InstallCommand command='npm install @bloxwap/hig-react' onCopy={()=>{}}/>},{value:'text',label:'Notes',content:'Plain notes'}]}/>);
+  render(<Tabs label='Docs' items={[{value:'code',label:'Code',content:<InstallCommand command='npm install @bloxwap/hig' onCopy={()=>{}}/>},{value:'text',label:'Notes',content:'Plain notes'}]}/>);
   expect(screen.getByRole('tabpanel').hasAttribute('tabindex')).toBe(false);
   fireEvent.click(screen.getByRole('tab',{name:'Notes'}));
   const notes=screen.getByRole('tabpanel');expect(notes.textContent).toBe('Plain notes');expect(notes.getAttribute('tabindex')).toBe('0');
@@ -68,7 +68,7 @@ describe('DOM behavior contracts',()=>{
   render(<><Callout title={<>Use <code>createChart</code></>} severity='note' announce={false}><p>Body</p></Callout><Callout title='Tip' severity='tip' announce={false}>Shortcut</Callout></>);
   const note=screen.getByText('createChart').closest('section')!;expect(note.getAttribute('data-severity')).toBe('note');expect(note.querySelector('strong')?.textContent).toBe('Use createChart');expect(note.querySelector('strong code')).toBeTruthy();
   expect(screen.getByText('Tip').closest('section')!.getAttribute('data-severity')).toBe('tip');
-  const css=readFileSync('packages/react/src/styles.css','utf8');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');
   for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']])expect(css).toMatch(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{[^}]*border:2px solid var\\(--hig-${role}\\);box-shadow:0 0 24px color-mix\\(in srgb,var\\(--hig-${role}\\) 55%,transparent\\)`));
   // Neutral default: border-token stroke with the soft white glow, and toast cards are pills on a translucent 16px panel base.
   expect(css).toMatch(/\[data-severity='default'\][^{]*\{[^}]*border:2px solid var\(--hig-border\);box-shadow:0 0 20px rgba\(255,255,255,0\.12\)/);
@@ -78,11 +78,11 @@ describe('DOM behavior contracts',()=>{
   expect(document.querySelector('aside.hig-toast section.hig-surface[data-severity=success]')).toBeTruthy();
  });
  it('scopes component CSS to HIG classes and keeps every focusable part inside the scoped focus ring (#95)',()=>{
-  const css=readFileSync('packages/react/src/styles.css','utf8').replace(/\/\*[\s\S]*?\*\//g,'');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').replace(/\/\*[\s\S]*?\*\//g,'');
   for(const bare of [/(?:^|\})\s*\*\s*\{/m,/(?:^|\})\s*:focus-visible\s*\{/m,/(?:^|[},])\s*(?:table|th|td)\s*[{,]/m,/(?:^|\})\s*input\[type=.range.\]/m,/(?:^|[},])\s*\[data-severity/m])expect(css).not.toMatch(bare);
-  const base=readFileSync('packages/react/src/base.css','utf8');
+  const base=readFileSync('packages/hig/react/src/base.css','utf8');
   for(const rule of ['* { box-sizing: border-box; }',':focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }','table { border-collapse:collapse;width:100%; }',"input[type='range']"])expect(base).toContain(rule);
-  expect(JSON.parse(readFileSync('packages/react/package.json','utf8')).exports['./css/base']).toBe('./dist/base.css');
+  expect(JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports['./react/css/base']).toBe('./react/dist/base.css');
   const ring=/(:where\([^{]*\)):focus-visible\s*\{[^}]*outline:2px solid var\(--hig-focus\)/.exec(css)?.[1];expect(ring).toBeTruthy();
   render(<><Table caption='Prices' rows={[{id:'a'}]} keyFor={r=>r.id} columns={[{key:'id',label:'Market',onSort:()=>{},sort:'ascending',render:r=>r.id}]}/><Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/><Accordion title='More'>Body</Accordion><CodeWindow language='bash'>npm ci</CodeWindow><InstallCommand command='npm i' onCopy={()=>{}}/><Slider label='Amount'/><Switch label='Alerts'/><RadioGroup label='Side' options={[{value:'buy',label:'Buy'}]}/><SegmentedControl label='Mode' options={[{value:'a',label:'A'}]}/></>);
   expect(document.querySelector('table')?.classList.contains('hig-table')).toBe(true);

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.0",
-  "browser": "141.0.7390.37",
+  "version": "0.1.1",
+  "browser": "156.0.8078.4",
   "platform": "darwin arm64 chromium headless; no physical-device claim",
   "viewport": [
     390,

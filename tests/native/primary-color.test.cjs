@@ -1,11 +1,11 @@
 const React=require('react');
 const {act,create}=require('react-test-renderer');
 const RN=require('react-native');
-const {HIGProvider,useColors}=require('../../packages/native/src/provider');
-const {Button,Link}=require('../../packages/native/src/button');
-const {Switch}=require('../../packages/native/src/switch');
-const {BrandMark}=require('../../packages/native/src/brand');
-const {nativeSrgb,nativeDisplayP3}=require('../../packages/tokens/dist/index.js');
+const {HIGProvider,useColors}=require('../../packages/hig/native/src/provider');
+const {Button,Link}=require('../../packages/hig/native/src/button');
+const {Switch}=require('../../packages/hig/native/src/switch');
+const {BrandMark}=require('../../packages/hig/native/src/brand');
+const {nativeSrgb,nativeDisplayP3}=require('../../packages/hig/tokens/dist/index.js');
 
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});

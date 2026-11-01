@@ -7,13 +7,13 @@ import {chromium,webkit} from '@playwright/test';
 import {launchBrowser} from './browser-launcher.mjs';
 
 const require=createRequire(import.meta.url);
-const css=readFileSync('packages/tokens/generated/tokens.css','utf8')+readFileSync('packages/react/src/styles.css','utf8');
+const css=readFileSync('packages/hig/tokens/generated/tokens.css','utf8')+readFileSync('packages/hig/react/src/styles.css','utf8');
 const options=[{value:'all',label:'All'},{value:'open',label:'Open'},{value:'trend',label:'Trend'},{value:'disabled',label:'Unavailable',disabled:true}];
 const output='.validation-tmp/segmented-control';mkdirSync(output,{recursive:true});
 for(const renderer of ['react','native'].filter(renderer=>!process.env.HIG_SEGMENT_RENDERER||process.env.HIG_SEGMENT_RENDERER===renderer)){
  const source=`import React,{useState} from 'react';import {createRoot} from 'react-dom/client';
- import {HIGProvider} from './packages/${renderer}/src/provider';
- import {SegmentedControl} from './packages/${renderer}/src/${renderer==='react'?'selection':'radio-group'}';
+ import {HIGProvider} from './packages/hig/${renderer}/src/provider';
+ import {SegmentedControl} from './packages/hig/${renderer}/src/${renderer==='react'?'selection':'radio-group'}';
  function Example(){const [value,setValue]=useState('all'),[reduced,setReduced]=useState(undefined);
  return <HIGProvider direction={window.direction} reducedMotion={reduced}><SegmentedControl label='Markets' options={${JSON.stringify(options)}} value={value} onValueChange={setValue}/><button onClick={()=>setReduced(true)}>Reduce motion</button></HIGProvider>;}
  createRoot(document.getElementById('root')).render(<Example/>);`;

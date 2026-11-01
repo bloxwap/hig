@@ -1,9 +1,9 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Text:RNText,StyleSheet}=require('react-native');
-const {HIGProvider}=require('../../packages/native/src/provider');
-const {RadioGroup}=require('../../packages/native/src/radio-group');
-const {Text}=require('../../packages/native/src/surface');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {RadioGroup}=require('../../packages/hig/native/src/radio-group');
+const {Text}=require('../../packages/hig/native/src/surface');
 const h=React.createElement;
 const fontFamiliesByScript={latin:{400:'SansRegular',600:'SansSemiBold'},ko:{400:'KRRegular',600:'KRSemiBold'},zh:{400:'SCRegular',600:'SCSemiBold'}};
 const options=[{value:'ko',label:'한국어',description:'Korean',lang:'ko-KR'},{value:'zh',label:'简体中文',description:'Chinese',lang:'zh-Hans'},{value:'en',label:'English'}];

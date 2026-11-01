@@ -11,12 +11,12 @@ try{
   const style=getComputedStyle(document.getElementById(id));return [id,Object.fromEntries(['box-sizing','outline-style','outline-width','outline-color','outline-offset','border-collapse','width','min-height','padding','text-align','border-bottom','border-inline-start','accent-color'].map(key=>[key,style.getPropertyValue(key)]))];
  })));
  const before=await sample();
- await page.addStyleTag({content:readFileSync('packages/react/dist/styles.css','utf8')});
+ await page.addStyleTag({content:readFileSync('packages/hig/react/dist/styles.css','utf8')});
  assert.deepEqual(await sample(),before,'Importing HIG component CSS must not restyle host elements');
- await page.addStyleTag({content:readFileSync('packages/tokens/generated/tokens.css','utf8')});
+ await page.addStyleTag({content:readFileSync('packages/hig/tokens/generated/tokens.css','utf8')});
  assert.equal(await page.locator('.hig-table > tbody > tr > td').evaluate(element=>getComputedStyle(element).padding),'12px');
  assert.equal(await page.locator('.hig-button').evaluate(element=>getComputedStyle(element).boxSizing),'border-box');
- await page.addStyleTag({content:readFileSync('packages/react/dist/base.css','utf8')});
+ await page.addStyleTag({content:readFileSync('packages/hig/react/dist/base.css','utf8')});
  assert.equal(await page.locator('#plain-button').evaluate(element=>getComputedStyle(element).outlineWidth),'2px','Global focus defaults require css/base opt-in');
  writeFileSync('evidence/css-isolation.json',JSON.stringify({kind:'automated browser',issue:95,browser:browser.version(),checks:['plain table, cells, range, focus outline, box sizing, and severity unchanged by component CSS','HIG table and button keep component styles','global defaults require explicit css/base import']},null,2)+'\n');
  console.log('CSS isolation: host elements unchanged; HIG components and opt-in base verified');

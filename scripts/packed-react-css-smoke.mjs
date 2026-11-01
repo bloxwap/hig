@@ -1,13 +1,13 @@
 import {launchBrowser} from './browser-launcher.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
-// #95: @bloxwap/hig-react/css must not restyle elements outside HIG components. A host that loads it on
+// #95: @bloxwap/hig/react/css must not restyle elements outside HIG components. A host that loads it on
 // some routes only (taptradetv's /sponsors) keeps the stylesheet after a client navigation, so any
 // page-wide rule leaks into the rest of the site. This smoke installs the packed tokens, contracts and
 // React tarballs into an empty consumer, renders real HIG components to static markup, and serves three
 // script-free pages that differ only in their stylesheets:
 //   control: tokens CSS only
-//   hig:     tokens + @bloxwap/hig-react/css
-//   base:    tokens + @bloxwap/hig-react/css/base + @bloxwap/hig-react/css (the opt-in page-wide defaults)
+//   hig:     tokens + @bloxwap/hig/react/css
+//   base:    tokens + @bloxwap/hig/react/css/base + @bloxwap/hig/react/css (the opt-in page-wide defaults)
 // Plain table/th/td, input[type=range], a plain button's focus ring, box-sizing and a stray
 // [data-severity] must compute the same on `hig` as on `control`. The `base` page must differ, which
 // proves the probe can see a leak. HIG components must look the same on `hig` and `base`, so nothing a
@@ -24,17 +24,16 @@ const engines=(process.env.HIG_PACKED_REACT_CSS_BROWSERS??'chromium,webkit').spl
 const port=Number(process.env.HIG_PACKED_REACT_CSS_PORT??0);
 
 mkdirSync('artifacts',{recursive:true});
-const pack=name=>resolve('artifacts',JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}))[0].filename);
-const tarballs=['tokens','contracts','react'].map(pack);
+const tarballs=[resolve('artifacts',JSON.parse(execFileSync('npm',['pack','./packages/hig','--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}))[0].filename)];
 const dir=scratchDir('hig-react-css-scope-');
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',name:'hig-react-css-scope-consumer'},null,2));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs,'react@19.2.0','react-dom@19.2.0'],{cwd:dir,stdio:'pipe'});
-const exported=(pkg,key)=>{const manifest=JSON.parse(readFileSync(join(dir,'node_modules',pkg,'package.json'),'utf8'));const target=manifest.exports[key];assert.equal(typeof target,'string',`${pkg} exports ${key}`);const path=`node_modules/${pkg}/${target.replace(/^\.\//,'')}`;assert.ok(existsSync(join(dir,path)),`${path} is packed`);return path;};
-const css={tokens:exported('@bloxwap/hig-tokens','./css'),hig:exported('@bloxwap/hig-react','./css'),base:exported('@bloxwap/hig-react','./css/base')};
+const exported=key=>{const manifest=JSON.parse(readFileSync(join(dir,'node_modules/@bloxwap/hig/package.json'),'utf8'));const target=manifest.exports[key];assert.equal(typeof target,'string',`@bloxwap/hig exports ${key}`);const path=`node_modules/@bloxwap/hig/${target.replace(/^\.\//,'')}`;assert.ok(existsSync(join(dir,path)),`${path} is packed`);return path;};
+const css={tokens:exported('./tokens/css'),hig:exported('./react/css'),base:exported('./react/css/base')};
 
 // Real component markup from the packed package, so the classes checked here are the ones components emit.
 writeFileSync(join(dir,'render.mjs'),`import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';
-import {Table} from '@bloxwap/hig-react/data';import {Slider} from '@bloxwap/hig-react/selection';import {Button} from '@bloxwap/hig-react/button';import {Alert} from '@bloxwap/hig-react/status';
+import {Table} from '@bloxwap/hig/react/data';import {Slider} from '@bloxwap/hig/react/selection';import {Button} from '@bloxwap/hig/react/button';import {Alert} from '@bloxwap/hig/react/status';
 const h=React.createElement;
 process.stdout.write(renderToStaticMarkup(h('div',{id:'hig'},
  h(Button,{id:'hig-button'},'HIG button'),
@@ -93,9 +92,9 @@ try{
     await context.close();
    }
    const {control,hig,base}=seen;
-   // 1. Importing @bloxwap/hig-react/css alone leaves non-HIG elements exactly as the host styled them.
-   assert.deepEqual(hig.plain,control.plain,`${engine}: @bloxwap/hig-react/css changes plain table/th/td, range, box-sizing or [data-severity]`);
-   assert.deepEqual(hig.plainFocus,control.plainFocus,`${engine}: @bloxwap/hig-react/css changes a plain button's focus ring`);
+   // 1. Importing @bloxwap/hig/react/css alone leaves non-HIG elements exactly as the host styled them.
+   assert.deepEqual(hig.plain,control.plain,`${engine}: @bloxwap/hig/react/css changes plain table/th/td, range, box-sizing or [data-severity]`);
+   assert.deepEqual(hig.plainFocus,control.plainFocus,`${engine}: @bloxwap/hig/react/css changes a plain button's focus ring`);
    // 2. The probe sees a leak: the opt-in base restyles the same plain elements.
    assert.equal(base.plain['plain-box'].boxSizing,'border-box',`${engine}: base sets box-sizing on plain elements`);
    assert.notEqual(control.plain['plain-box'].boxSizing,'border-box',`${engine}: control page keeps the UA box-sizing`);
@@ -124,5 +123,5 @@ try{
 }finally{server.close();}
 
 mkdirSync('evidence',{recursive:true});
-writeFileSync('evidence/packed-react-css-scope.json',JSON.stringify({version:workspaceVersion,issue:'bloxwap/hig#95',kind:'automated browser (headless Playwright); no physical-device claim',platform:`${process.platform} ${process.arch}`,consumer:'script-free HTML; packed tokens, contracts and React tarballs; component markup from renderToStaticMarkup of the packed package',pages:Object.fromEntries(Object.entries(pages).map(([k,v])=>[k,v.map(p=>p.replace(/^node_modules\//,''))])),checks:['@bloxwap/hig-react/css leaves plain table/th/td, input[type=range], box-sizing and [data-severity] equal to the tokens-only page','@bloxwap/hig-react/css leaves a plain button focus ring equal to the tokens-only page','@bloxwap/hig-react/css/base restyles the same plain elements (the probe detects leaks)','Table, Slider, Button focus ring and Alert severity compute the same with and without the base'],results},null,2)+'\n');
-console.log(`Packed React CSS scope: plain elements unchanged by @bloxwap/hig-react/css, base opt-in effective, components unchanged without base in ${engines.join(', ')}`);
+writeFileSync('evidence/packed-react-css-scope.json',JSON.stringify({version:workspaceVersion,issue:'bloxwap/hig#95',kind:'automated browser (headless Playwright); no physical-device claim',platform:`${process.platform} ${process.arch}`,consumer:'script-free HTML; packed @bloxwap/hig tarball; component markup from renderToStaticMarkup of the packed package',pages:Object.fromEntries(Object.entries(pages).map(([k,v])=>[k,v.map(p=>p.replace(/^node_modules\//,''))])),checks:['@bloxwap/hig/react/css leaves plain table/th/td, input[type=range], box-sizing and [data-severity] equal to the tokens-only page','@bloxwap/hig/react/css leaves a plain button focus ring equal to the tokens-only page','@bloxwap/hig/react/css/base restyles the same plain elements (the probe detects leaks)','Table, Slider, Button focus ring and Alert severity compute the same with and without the base'],results},null,2)+'\n');
+console.log(`Packed React CSS scope: plain elements unchanged by @bloxwap/hig/react/css, base opt-in effective, components unchanged without base in ${engines.join(', ')}`);

@@ -66,7 +66,7 @@
     },
     {
       "route": "guides/foundations/glossary",
-      "title": "Trading glossary · HIG 0.1.2"
+      "title": "Trading glossary · HIG 0.2.0"
     },
     {
       "route": "guides/foundations/localization",
@@ -110,7 +110,7 @@
     },
     {
       "route": "guides/installation",
-      "title": "Installation and citation · HIG 0.1.2"
+      "title": "Installation and citation · HIG 0.1.1"
     },
     {
       "route": "guides/migration/native",
@@ -227,6 +227,10 @@
     {
       "route": "components/sheet",
       "title": "Sheet"
+    },
+    {
+      "route": "components/gesture-sheet",
+      "title": "GestureSheet"
     },
     {
       "route": "components/menu",
@@ -598,6 +602,14 @@
     {
       "name": "Sheet",
       "route": "components/sheet",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "GestureSheet",
+      "route": "components/gesture-sheet",
       "nativeSupport": "renderer",
       "states": [
         "default"

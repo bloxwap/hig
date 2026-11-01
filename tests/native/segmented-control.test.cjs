@@ -1,8 +1,8 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Animated,StyleSheet,Text:RNText}=require('react-native');
-const {SegmentedControl}=require('../../packages/native/src/radio-group');
-const {HIGProvider}=require('../../packages/native/src/provider');
+const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const h=React.createElement;
 const options=[{value:'all',label:'All'},{value:'open',label:'Open'},{value:'trend',label:'Trend',description:'Recent direction',lang:'en-US'}];
 let root,timing,animations;

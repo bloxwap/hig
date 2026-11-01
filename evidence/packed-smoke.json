@@ -1,14 +1,7 @@
 {
-  "version": "0.1.2",
+  "version": "0.2.0",
   "packages": [
-    "@bloxwap/hig-chart",
-    "@bloxwap/hig-contracts",
-    "@bloxwap/hig-feedback",
-    "@bloxwap/hig-native",
-    "@bloxwap/hig-native-fonts",
-    "@bloxwap/hig-og-fonts",
-    "@bloxwap/hig-react",
-    "@bloxwap/hig-tokens"
+    "@bloxwap/hig"
   ],
   "install": "clean temporary consumer from local tarballs",
   "ssr": "passed",

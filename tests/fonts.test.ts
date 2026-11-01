@@ -3,9 +3,9 @@ import {spawnSync} from 'node:child_process';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {nativeFont} from '../packages/contracts/src/index';
-import {fontManifest as nativeManifest} from '../packages/native-fonts/src/index';
-import {fontManifest as ogManifest,ogFonts} from '../packages/og-fonts/src/index';
+import {nativeFont} from '../packages/hig/contracts/src/index';
+import {fontManifest as nativeManifest} from '../packages/hig/native-fonts/src/index';
+import {fontManifest as ogManifest,ogFonts} from '../packages/hig/og-fonts/src/index';
 // @ts-expect-error Executable JavaScript gate tested through its public functions.
 import {fontGeneratorRequirements,generatedFontDirectories,generatedFontStatus,generatedFontsMessage} from '../scripts/font-preflight.mjs';
 
@@ -18,7 +18,7 @@ function checkoutWithoutFonts(){
 function expectActionable(output:string){
  expect(output).toContain('npm run generate:fonts');
  expect(output).toContain('python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.1"');
- expect(output).toContain('packages/native-fonts/fonts/BloxwapSans.ttf');
+ expect(output).toContain('packages/hig/native-fonts/fonts/BloxwapSans.ttf');
  expect(output).not.toContain('ENOENT');
 }
 
@@ -36,10 +36,10 @@ describe('generated font preflight (#98)',()=>{
   }
  });
  it('reports faces whose bytes no longer match the manifest',()=>{
-  const root=checkoutWithoutFonts();writeFileSync(join(root,'packages/og-fonts/fonts/BloxwapSans.ttf'),'stale');
+  const root=checkoutWithoutFonts();writeFileSync(join(root,'packages/hig/og-fonts/fonts/BloxwapSans.ttf'),'stale');
   const status=generatedFontStatus(root);
-  expect(status.stale).toEqual(['packages/og-fonts/fonts/BloxwapSans.ttf']);
-  expect(generatedFontsMessage(status,'Test')).toContain('1 generated font file(s) do not match their manifest SHA-256: packages/og-fonts/fonts/BloxwapSans.ttf');
+  expect(status.stale).toEqual(['packages/hig/og-fonts/fonts/BloxwapSans.ttf']);
+  expect(generatedFontsMessage(status,'Test')).toContain('1 generated font file(s) do not match their manifest SHA-256: packages/hig/og-fonts/fonts/BloxwapSans.ttf');
  });
  it('names the same Python pins as the generator, CI and the setup guide',()=>{
   expect(fontGeneratorRequirements).toEqual(['fonttools[woff]==4.61.1','brotli==1.2.1']);
@@ -58,9 +58,9 @@ describe('generated font preflight (#98)',()=>{
 
 describe('OG/Satori fonts package (#99)',()=>{
  it('ships the typed manifest and copies native faces byte for byte, so every SHA-256 matches the native manifest',()=>{
-  expect(ogManifest).toEqual(JSON.parse(readFileSync('packages/og-fonts/fonts/manifest.json','utf8')));
+  expect(ogManifest).toEqual(JSON.parse(readFileSync('packages/hig/og-fonts/fonts/manifest.json','utf8')));
   expect(ogManifest.sources).toEqual(nativeManifest.sources);
-  expect(ogManifest.derivedFrom).toBe('@bloxwap/hig-native-fonts');
+  expect(ogManifest.derivedFrom).toBe('@bloxwap/hig/native-fonts');
   for(const [asset,hash] of Object.entries(ogManifest.outputs))expect(hash,asset).toBe((nativeManifest.outputs as Record<string,string>)[asset]);
   for(const face of ogManifest.faces)expect(nativeManifest.faces).toContainEqual(face);
   expect(ogManifest.faces.map(f=>f.asset)).toEqual(Object.keys(ogManifest.outputs));
@@ -77,12 +77,12 @@ describe('OG/Satori fonts package (#99)',()=>{
  });
  it('names every face with its own literal asset URL so Turbopack and webpack bundle all five',async()=>{
   // A template URL (`../fonts/${asset}`) made Turbopack, the Next 16 default, read one file for every face (#99).
-  const source=readFileSync('packages/og-fonts/src/node.ts','utf8');
+  const source=readFileSync('packages/hig/og-fonts/src/node.ts','utf8');
   const literals=[...source.matchAll(/new URL\('\.\.\/fonts\/([^']+)', import\.meta\.url\)/g)].map(m=>m[1]);
   expect(literals).toEqual(Object.keys(ogManifest.outputs));
   expect(source.match(/new URL\(/g)).toHaveLength(literals.length);
   expect(source).not.toMatch(/new URL\(`/);
-  const {loadOgFonts,readOgFont}=await import('../packages/og-fonts/src/node');
+  const {loadOgFonts,readOgFont}=await import('../packages/hig/og-fonts/src/node');
   const {createHash}=await import('node:crypto');
   const fonts=await loadOgFonts();
   expect(fonts.map(f=>createHash('sha256').update(f.data).digest('hex'))).toEqual(ogFonts.map(f=>f.sha256));
@@ -90,8 +90,8 @@ describe('OG/Satori fonts package (#99)',()=>{
  });
  it('keeps the raw faces well under the 1 MB packed budget (gzip measured by the release dry run)',()=>{
   expect(ogManifest.faces.reduce((sum,f)=>sum+f.bytes,0)).toBeLessThan(2_300_000);
-  const pkg=JSON.parse(readFileSync('packages/og-fonts/package.json','utf8'));
-  expect(pkg.name).toBe('@bloxwap/hig-og-fonts');expect(pkg.version).toBe(JSON.parse(readFileSync('package.json','utf8')).version);
-  expect(Object.keys(pkg.exports)).toEqual(['.','./node','./manifest','./fonts/*']);
+  const pkg=JSON.parse(readFileSync('packages/hig/package.json','utf8'));
+  expect(pkg.name).toBe('@bloxwap/hig');expect(pkg.version).toBe(JSON.parse(readFileSync('package.json','utf8')).version);
+  expect(Object.keys(pkg.exports).filter(k=>k.startsWith('./og-fonts'))).toEqual(['./og-fonts','./og-fonts/node','./og-fonts/manifest','./og-fonts/fonts/*']);
  });
 });
