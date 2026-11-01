@@ -1,14 +1,14 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Text:RNText,TextInput,View}=require('react-native');
-const {HIGProvider,useMessages}=require('../../packages/native/src/provider');
-const {Button}=require('../../packages/native/src/button');
-const {Dialog,Menu}=require('../../packages/native/src/overlay');
-const {Toast,Progress,StatusIndicator}=require('../../packages/native/src/status');
-const {Pagination,Search,BackButton}=require('../../packages/native/src/navigation');
-const {Field,Input}=require('../../packages/native/src/field');
-const {NumberReadout}=require('../../packages/native/src/data');
-const {Select}=require('../../packages/native/src/selection');
+const {HIGProvider,useMessages}=require('../../packages/hig/native/src/provider');
+const {Button}=require('../../packages/hig/native/src/button');
+const {Dialog,Menu}=require('../../packages/hig/native/src/overlay');
+const {Toast,Progress,StatusIndicator}=require('../../packages/hig/native/src/status');
+const {Pagination,Search,BackButton}=require('../../packages/hig/native/src/navigation');
+const {Field,Input}=require('../../packages/hig/native/src/field');
+const {NumberReadout}=require('../../packages/hig/native/src/data');
+const {Select}=require('../../packages/hig/native/src/selection');
 const h=React.createElement;
 // Test fixtures only: HIG approves no translation locale, hosts own these catalogs.
 const fr={close:'Fermer',dismiss:'Ignorer',busy:'En cours',dismissNotice:(message,dismiss)=>`${dismiss} : ${message}`};

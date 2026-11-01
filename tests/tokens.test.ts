@@ -1,8 +1,8 @@
 import {describe,it,expect} from 'vitest';
-import {tokens,nativeColors,withAlpha} from '../packages/tokens/src/index';
-import {formatNumber,nativeFont} from '../packages/contracts/src/index';
+import {tokens,nativeColors,withAlpha} from '../packages/hig/tokens/src/index';
+import {formatNumber,nativeFont} from '../packages/hig/contracts/src/index';
 import contrast from '../evidence/contrast.json';
-import {fontManifest} from '../packages/native-fonts/src/index';
+import {fontManifest} from '../packages/hig/native-fonts/src/index';
 import {readFileSync,existsSync} from 'node:fs';
 describe('platform contracts',()=>{
  it('keeps direction aliases',()=>{expect(tokens.colors.buy.srgb).toBe(tokens.colors.positive.srgb);expect(tokens.colors.sell.srgb).toBe(tokens.colors.negative.srgb);});
@@ -13,7 +13,7 @@ describe('platform contracts',()=>{
  it('requires registered native faces',()=>{expect(()=>nativeFont({version:'0.1.2',faces:[]},'Bloxwap Sans',400)).toThrow();});
 });
 describe('token CSS roles (#65, #66)',()=>{
- const css=readFileSync('packages/tokens/generated/tokens.css','utf8');
+ const css=readFileSync('packages/hig/tokens/generated/tokens.css','utf8');
  const root=css.slice(0,css.indexOf('}'));
  it('defines radius, type, motion and density roles from source.json',()=>{
   for(const [k,v] of Object.entries(tokens.radius))expect(root).toContain(`--hig-radius-${k}: ${v>=9999?`${v}px`:`${v/16}rem`};`);
@@ -31,7 +31,7 @@ describe('token CSS roles (#65, #66)',()=>{
  it('exposes font roles that prefer the @bloxwap/font Next variables, then literal families',()=>{
   expect(root).toContain("--hig-font-sans: var(--font-bloxwap-sans, 'Bloxwap Sans'), system-ui, sans-serif;");
   expect(root).toContain("--hig-font-mono: var(--font-bloxwap-mono, 'Bloxwap Mono'), ui-monospace, monospace;");
-  const controls=readFileSync('packages/react/src/styles.css','utf8');
+  const controls=readFileSync('packages/hig/react/src/styles.css','utf8');
   expect(controls).toContain("font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif)");
   expect(controls).toContain("font-family:var(--hig-font-mono,'Bloxwap Mono',monospace)");
   expect(controls).not.toMatch(/font(?:-family)?:[^;{}]*?(?<!var\(--hig-font-(?:sans|mono),)'Bloxwap (?:Sans|Mono)'/);
@@ -39,12 +39,13 @@ describe('token CSS roles (#65, #66)',()=>{
 });
 describe('native fonts package (#64)',()=>{
  it('keeps font binaries out of the web tokens package',()=>{
-  const pkg=JSON.parse(readFileSync('packages/tokens/package.json','utf8'));
-  expect(Object.keys(pkg.exports).some(k=>k.startsWith('./fonts'))).toBe(false);
-  expect(existsSync('packages/tokens/assets/fonts')).toBe(false);
+  const pkg=JSON.parse(readFileSync('packages/hig/package.json','utf8'));
+  expect(Object.keys(pkg.exports).some(k=>k.startsWith('./tokens/fonts'))).toBe(false);
+  expect(pkg.files.filter((f:string)=>f.startsWith('tokens/'))).toEqual(['tokens/dist','tokens/assets','tokens/README.md']);
+  expect(existsSync('packages/hig/tokens/assets/fonts')).toBe(false);
  });
  it('ships the typed manifest that resolves registered faces',()=>{
-  expect(fontManifest).toEqual(JSON.parse(readFileSync('packages/native-fonts/fonts/manifest.json','utf8')));
+  expect(fontManifest).toEqual(JSON.parse(readFileSync('packages/hig/native-fonts/fonts/manifest.json','utf8')));
   expect(nativeFont(fontManifest,'BloxwapSans',600)).toBe('BloxwapSansSemiBold');
   expect(Object.keys(fontManifest.outputs)).toHaveLength(15);
  });

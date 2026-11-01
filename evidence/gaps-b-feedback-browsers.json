@@ -2,7 +2,7 @@
   "results": [
     {
       "engine": "chromium",
-      "version": "141.0.7390.37",
+      "version": "156.0.8078.4",
       "checks": [
         "pointer and Enter: one activation request per enabled channel",
         "outcome distinct from activation",
@@ -15,7 +15,7 @@
     },
     {
       "engine": "webkit",
-      "version": "26.0",
+      "version": "27.2",
       "checks": [
         "pointer and Enter: one activation request per enabled channel",
         "outcome distinct from activation",

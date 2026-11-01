@@ -1,20 +1,21 @@
 import {execFileSync} from 'node:child_process';
-import {writeFileSync,readFileSync,mkdirSync,readdirSync} from 'node:fs';
-import {join,resolve} from 'node:path';
+import {writeFileSync,readFileSync,mkdirSync} from 'node:fs';
+import {join} from 'node:path';
 import {scratchDir} from './scratch.mjs';
 import {examples,exampleCode} from './example-code.mjs';
 import {playgroundCode} from './playground-code.mjs';
 import {verifyNativeReact} from './native-compatibility.mjs';
+import {packedTarball} from './workspace-version.mjs';
 let count=0;
 for(const platform of ['react','native']){
  const directory=scratchDir(`hig-packed-${platform}-examples-`);
  const dependencies={...JSON.parse(readFileSync(`fixtures/${platform==='react'?'web':'native'}/package.json`)).dependencies};
- for(const key of Object.keys(dependencies))if(key.startsWith('@bloxwap/hig-'))delete dependencies[key];
- // PriceChart comes from @bloxwap/hig-chart, whose @bloxwap/chart peer is required (#96).
- if(platform==='react')dependencies['@bloxwap/chart']='0.3.0';
+ delete dependencies['@bloxwap/hig'];
+ // PriceChart comes from @bloxwap/hig/chart, whose @bloxwap/chart peer is required (#96).
+ if(platform==='react')dependencies['@bloxwap/chart']='0.4.0';
  const devDependencies={typescript:'5.9.3','@types/react':'19.1.16','@types/node':'22.18.10',...(platform==='react'?{'@types/react-dom':'19.1.9'}:{})};
  writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module',dependencies,devDependencies}));
- const tarballs=readdirSync('artifacts').filter(n=>n.endsWith('.tgz')&&!(platform==='react'?['hig-native']:['hig-react','hig-chart']).some(p=>n.includes(p))).map(n=>resolve('artifacts',n));
+ const tarballs=[packedTarball()];
  execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:directory,stdio:'pipe'});
  if(platform==='native')verifyNativeReact(directory);
  mkdirSync(join(directory,'examples'));

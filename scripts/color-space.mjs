@@ -1,4 +1,4 @@
-// Adapted from bloxwap/monorepo d47cef4c40363184bdfda8d8c263ead108ef9ff6, packages/tokens/src/oklch.ts (same-owner adaptation; source repository has no root LICENSE).
+// Adapted from bloxwap/monorepo d47cef4c40363184bdfda8d8c263ead108ef9ff6, packages/hig/tokens/src/oklch.ts (same-owner adaptation; source repository has no root LICENSE).
 function parseOklch(input) {
   const m = /^oklch\(\s*([^)]+)\)$/i.exec(input.trim());
   if (!m) throw new Error(`not an oklch() string: ${input}`);

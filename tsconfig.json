@@ -14,7 +14,7 @@
     ]
   },
   "include": [
-    "packages/*/src",
+    "packages/hig/*/src",
     "fixtures/*/*.tsx",
     "fixtures/*/src",
     "apps/*/src",

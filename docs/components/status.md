@@ -4,7 +4,7 @@ Visible progress, notifications, and recoverable states that keep people informe
 
 Includes `Badge`, `Alert`, `Callout`, `Toast`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, and `StatusIndicator`.
 
-Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig-react/status` or `@bloxwap/hig-native/status` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 

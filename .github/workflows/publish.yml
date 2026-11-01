@@ -112,7 +112,7 @@ jobs:
       - name: Verify source version, gates, exact package set and tarball hashes
         run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
       - name: Publish the verified tarballs through npm trusted publishing
-        # All eight packages trust this repository, workflow and protected environment.
+        # @bloxwap/hig trusts this repository, workflow and protected environment.
         # No long-lived token fallback: missing OIDC configuration must fail closed.
         run: |
           set -euo pipefail

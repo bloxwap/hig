@@ -16,7 +16,7 @@ export function transformImports(source,platform='web'){
   const names=bindings.elements.map(e=>e.propertyName?.text??e.name.text);
   if(!names.every(name=>rule.exports.includes(name))){warnings.push(`Unapproved exports in ${old}: ${names.join(', ')}; no rewrite`);continue;}
   const entry=platform==='native'&&rule.entry==='surface'?'surface':rule.entry;
-  const target=`@bloxwap/hig-${platform==='native'?'native':'react'}/${entry}`;
+  const target=`@bloxwap/hig/${platform==='native'?'native':'react'}/${entry}`;
   const start=statement.moduleSpecifier.getStart(file),end=statement.moduleSpecifier.end,quote=source[start];edits.push({start,end,value:quote+target+quote});
   warnings.push(`Review ${names.join(', ')} props, refs, density, accessibility and feedback before accepting ${old} → ${target}`);
  }

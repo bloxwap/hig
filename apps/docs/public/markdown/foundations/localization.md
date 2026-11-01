@@ -6,10 +6,10 @@ Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents c
 
 ## Shared helpers
 
-Use the display helpers from `@bloxwap/hig-contracts` and the data readouts. Do not hand-roll separators, currency symbols, compact suffixes, the leverage `×` or zone labels. Every helper returns `—` for `null`, `undefined` and non-finite input.
+Use the display helpers from `@bloxwap/hig/contracts` and the data readouts. Do not hand-roll separators, currency symbols, compact suffixes, the leverage `×` or zone labels. Every helper returns `—` for `null`, `undefined` and non-finite input.
 
 ```ts
-import {formatNumber, formatLeverage, formatTicker, formatZonedTime} from '@bloxwap/hig-contracts';
+import {formatNumber, formatLeverage, formatTicker, formatZonedTime} from '@bloxwap/hig/contracts';
 formatNumber(value, locale, options);             // Intl.NumberFormat
 formatLeverage(10, locale);                        // '10×' (decimal style forced)
 formatTicker(12.34, 'USDC', locale, {signDisplay: 'exceptZero'}); // '+12.34 USDC' (no-break space)
@@ -37,6 +37,8 @@ Grouping and decimal marks come from the locale: `1,234.5` in `en-US`, `1.234,5`
 
 **Do** keep `0` for zero and — for unknown/non-finite; mark stale. **Don’t** use a rounded display value as transaction input, strip unfamiliar separators, or replace Eastern Arabic digits with Latin ones unless a dual readout is explicit.
 
+Readout `prefix` and `suffix` are host-localized display strings, not parsers or substitutes for Intl currency, sign, percent, or compact formatting. Animated readouts generate digit glyphs from the active numbering system and always settle on the same canonical Intl reading as the static component.
+
 ## Currency, signed PnL and compact notation
 
 USD uses ISO `currency:'USD'`. Intl places the symbol (`$1,234.50` vs `1.234,50 $`). USDC is a ticker, not a reliable ISO 4217 code: use `formatTicker(amount, 'USDC', locale)`, which formats the number without `style:'currency'` and appends `USDC` after a no-break space. Never show USDC as `$` or `USD`.
@@ -61,7 +63,7 @@ Leverage is a multiplier with the untranslated `×` suffix (`10×`, via `formatL
 
 ## RTL and text expansion
 
-Logical inline spacing, wrapping labels, no fixed-height clipping of translated text, Dynamic Type stays on. Plan for ~30–40% expansion (German/Finnish) and 200% text. Directional arrows mirror in RTL; brand, check marks and financial direction (`+`/`−`, buy/sell) do not. Preserve bidi isolates that Intl inserts around signed currency in Arabic. Mixed-script punctuation needs the required font scripts; a Latin-only fixture does not certify them.
+Logical inline spacing, wrapping labels, no fixed-height clipping of translated text, Dynamic Type stays on. Plan for ~30–40% expansion (German/Finnish) and 200% text. Directional arrows mirror in RTL; brand, check marks and financial direction (`+`/`−`, buy/sell) do not. Preserve bidi isolates that Intl inserts around signed currency in Arabic. Native per-place motion uses the intact static reading whenever separate reels cannot preserve that bidi layout; it never reverses formatted parts. Mixed-script punctuation needs the required font scripts; a Latin-only fixture does not certify them.
 
 Long translations, Arabic/Hebrew RTL and large text remain part of the [platform checklist](platform.md#accessibility-and-localization-10). Physical-device observations are still pending.
 
@@ -73,13 +75,13 @@ Hosts that lay out right to left pass the locale's direction:
 
 ```tsx
 import {getLocales} from 'expo-localization';
-import {HIGProvider, localeDirection} from '@bloxwap/hig-native/provider';
+import {HIGProvider, localeDirection} from '@bloxwap/hig/native/provider';
 
 const direction = localeDirection(getLocales()[0]); // 'rtl' for ar-EG; undefined keeps the I18nManager default
 <HIGProvider locale={getLocales()[0]?.languageTag} direction={direction}>{children}</HIGProvider>;
 ```
 
-`localeDirection` (also exported from `@bloxwap/hig-contracts`) returns expo-localization's `textDirection` when present. Otherwise it reads the tag's script, then its language: `ar_EG`, `he-IL` and `az-Arab-IR` give `rtl`; `en-US`, `ar-Latn` and `en-u-nu-arab` give `ltr`. It accepts BCP 47 tags, Android/Java identifiers and objects with `textDirection`/`languageTag`, and returns `undefined` for no language (`''`, `und`). Without expo-localization, React Native's `I18nManager.getConstants().localeIdentifier` is the app's configuration locale on Android (from the RN 0.83 source; the gallery verifies the expo-localization path).
+`localeDirection` (also exported from `@bloxwap/hig/contracts`) returns expo-localization's `textDirection` when present. Otherwise it reads the tag's script, then its language: `ar_EG`, `he-IL` and `az-Arab-IR` give `rtl`; `en-US`, `ar-Latn` and `en-u-nu-arab` give `ltr`. It accepts BCP 47 tags, Android/Java identifiers and objects with `textDirection`/`languageTag`, and returns `undefined` for no language (`''`, `und`). Without expo-localization, React Native's `I18nManager.getConstants().localeIdentifier` is the app's configuration locale on Android (from the RN 0.83 source; the gallery verifies the expo-localization path).
 
 - **Don't** pass a locale-derived direction in an app that disallows RTL (`I18nManager.allowRTL(false)`, or `android:supportsRtl="false"`). Leave `direction` unset so HIG follows the OS layout. HIG never derives direction on its own for this reason.
 - **Don't** expect `I18nManager.isRTL` to change on RN 0.83 Android. Native views HIG does not draw keep the host's direction.
@@ -88,13 +90,13 @@ Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/
 
 ## Built-in component strings
 
-Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/react/src` or `packages/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig-contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
+Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/hig/react/src` or `packages/hig/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig/contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
 
 HIG ships the English (`en-US`) defaults only (`defaultMessages`). It does not ship or guess translations. The host's message catalog owns French, Korean and other copy, under the same rule as the [glossary](glossary.md): an unapproved locale is never filled by guessing.
 
 ```tsx
-import {HIGProvider} from '@bloxwap/hig-react/provider'; // or '@bloxwap/hig-native/provider'
-import type {HIGMessages} from '@bloxwap/hig-contracts/messages';
+import {HIGProvider} from '@bloxwap/hig/react/provider'; // or '@bloxwap/hig/native/provider'
+import type {HIGMessages} from '@bloxwap/hig/contracts/messages';
 
 const fr: Partial<HIGMessages> = {
   close: t('hig.close'),             // from the host catalog, e.g. 'Fermer'
@@ -108,7 +110,7 @@ const fr: Partial<HIGMessages> = {
 <Button busy busyLabel=''>…</Button>           // no visible suffix; busy state stays exposed
 ```
 
-Resolution order, per key: the component prop, then the nearest `HIGProvider messages`, then any enclosing `HIGProvider messages`, then English. A nested provider for density or direction keeps the host's translations. `undefined` keys and values of the wrong type (a string where a function is expected, or the reverse) are ignored, so a partial catalog never blanks a label. `useMessages()` returns the complete resolved catalog; `useHIG().messages` holds only the host overrides. Each English default is also a named export of `@bloxwap/hig-contracts/messages`, and a component falls back per key (`messages.close ?? en.close`), so importing one component bundles only the copy it renders.
+Resolution order, per key: the component prop, then the nearest `HIGProvider messages`, then any enclosing `HIGProvider messages`, then English. A nested provider for density or direction keeps the host's translations. `undefined` keys and values of the wrong type (a string where a function is expected, or the reverse) are ignored, so a partial catalog never blanks a label. `useMessages()` returns the complete resolved catalog; `useHIG().messages` holds only the host overrides. Each English default is also a named export of `@bloxwap/hig/contracts/messages`, and a component falls back per key (`messages.close ?? en.close`), so importing one component bundles only the copy it renders.
 
 Rules:
 
@@ -131,7 +133,7 @@ Rules:
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
 | `loadingItems` | Loading items | List loading row | — |
-| `loadingChart` | Loading chart… | PriceChart fallback (web, `@bloxwap/hig-chart`) | — |
+| `loadingChart` | Loading chart… | PriceChart fallback (web, `@bloxwap/hig/chart`) | — |
 | `noItems` | No items | List empty text | `empty` |
 | `noRows` | No rows | Table empty text (web) | — |
 | `retry` | Retry | List retry button | — |

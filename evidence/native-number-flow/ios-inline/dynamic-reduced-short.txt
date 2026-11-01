@@ -1,0 +1,64 @@
+Optional(Attributes: Application, 0x106a148c0, pid: 70549, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, 0x106a148c0, pid: 70549, label: 'Bloxwap HIG Gallery'
+    Window (Main), 0x106a16080, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x106a14a00, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x106a161c0, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x106a15f40, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x106a16e40, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x106a16f80, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x106a15e00, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x106a16300, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x106a16580, {{0.0, 0.0}, {402.0, 874.0}}
+                    Other, 0x106a15cc0, {{0.0, 62.0}, {402.0, 812.0}}
+                      Other, 0x106a16800, {{0.0, 936.0}, {402.0, 671.0}}
+                        Other, 0x106a14dc0, {{0.0, 936.0}, {402.0, 24.0}}
+                          Other, 0x106a14f00, {{0.0, 936.0}, {402.0, 24.0}}, label: 'Bottom sheet handle'
+                        Other, 0x106a15900, {{0.0, 936.0}, {402.0, 671.0}}, label: 'Bottom Sheet'
+                        Other, 0x106a157c0, {{0.0, 960.0}, {402.0, 647.0}}, label: 'Persistent markets'
+                    StaticText, 0x106a15680, {{16.0, 78.0}, {370.0, 48.3}}, identifier: 'inline-ready', label: 'Inline closed · mounts 1 · settled 0 · fallback 0 · motion reduced'
+                      StaticText, 0x106a15400, {{16.0, 78.0}, {370.0, 48.3}}, label: 'Inline closed · mounts 1 · settled 0 · fallback 0 · motion reduced'
+                    StaticText, 0x106a15540, {{16.0, 138.3}, {370.0, 24.3}}, identifier: 'inline-result', label: 'Ready'
+                      StaticText, 0x106a152c0, {{16.0, 138.3}, {370.0, 24.3}}, label: 'Ready'
+                    Button, 0x106a15180, {{16.0, 174.7}, {187.0, 48.3}}, label: 'Use public baseline'
+                    Button, 0x106a14c80, {{16.0, 235.0}, {198.0, 48.3}}, identifier: 'inline-open', label: 'Open retained picker'
+                    Button, 0x106a15a40, {{16.0, 295.3}, {198.0, 48.3}}, identifier: 'dynamic-open', label: 'Open measured card'
+                  Button, 0x106a14b40, {{0.0, 0.0}, {402.0, 874.0}}, label: 'Bottom sheet backdrop'
+                  Other, 0x106a15040, {{0.0, 62.0}, {402.0, 812.0}}
+                    Other, 0x106418f00, {{0.0, 595.0}, {402.0, 370.7}}
+                      Other, 0x106419540, {{0.0, 595.0}, {402.0, 24.0}}
+                        Other, 0x106419900, {{0.0, 595.0}, {402.0, 24.0}}, label: 'Bottom sheet handle'
+                      Other, 0x106419180, {{0.0, 595.0}, {402.0, 370.7}}, label: 'Bottom Sheet'
+                      Other, 0x106419400, {{0.0, 619.0}, {402.0, 346.7}}, label: 'Measured card'
+                        Other, 0x106418640, {{0.0, 619.0}, {402.0, 255.0}}
+                          StaticText, 0x106419680, {{0.0, 619.0}, {1.0, 1.0}}, label: 'Measured card'
+                            StaticText, 0x106419040, {{0.0, 619.0}, {1.0, 1.0}}, label: 'Measured card'
+                          Other, 0x106418b40, {{0.0, 619.0}, {402.0, 255.0}}, identifier: 'dynamic-content'
+                          StaticText, 0x106418dc0, {{16.0, 635.0}, {370.0, 30.3}}, identifier: 'dynamic-title', label: 'Measured card'
+                            StaticText, 0x106418780, {{16.0, 635.0}, {370.0, 30.3}}, label: 'Measured card'
+                          Button, 0x10363a440, {{16.0, 677.3}, {212.7, 48.3}}, identifier: 'dynamic-toggle', label: 'Change content height'
+                          Button, 0x10363b340, {{16.0, 737.7}, {200.0, 48.3}}, identifier: 'dynamic-close', label: 'Close measured card'
+                          Other, 0x10f0bc000, {{16.0, 798.0}, {370.0, 60.0}}, identifier: 'dynamic-list'
+                            ScrollView, 0x10f0bc140, {{16.0, 798.0}, {370.0, 60.0}}
+                              Other, 0x10f0bc280, {{16.0, 798.0}, {370.0, 60.7}}
+                                Other, 0x10f0bc3c0, {{16.0, 798.0}, {370.0, 60.7}}
+                                  StaticText, 0x10f0bc500, {{16.0, 798.0}, {370.0, 24.3}}, label: 'Measured row 1'
+                                    StaticText, 0x10f0bc640, {{16.0, 798.0}, {370.0, 24.3}}, label: 'Measured row 1'
+                                  StaticText, 0x10f0bc780, {{16.0, 834.3}, {370.0, 24.3}}, label: 'Measured row 2'
+                                    StaticText, 0x10f0bc8c0, {{16.0, 834.3}, {370.0, 24.3}}, label: 'Measured row 2'
+                              Other, 0x10f0bca00, {{353.0, 798.0}, {30.0, 30.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                                Other, 0x10f0bcb40, {{380.0, 801.0}, {3.0, 53.3}}
+                              Other, 0x10f0bcc80, {{46.0, 825.0}, {310.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                                Other, 0x10f0bcdc0, {{19.0, 852.0}, {361.0, 3.0}}
+                              Other, 0x10f0bcf00, {{353.0, 798.0}, {30.0, 30.0}}, label: 'Vertical scroll bar, 1 page', value: 0%
+                                Other, 0x10f0bd040, {{380.0, 801.0}, {3.0, 53.3}}
+                              Other, 0x10f0bd180, {{46.0, 825.0}, {310.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                                Other, 0x10f0bd2c0, {{19.0, 852.0}, {361.0, 3.0}}
+Path to element:
+ →Application, 0x106a148c0, pid: 70549, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, 0x10f0bd400, pid: 70549, label: 'Bloxwap HIG Gallery'
+  }
+)

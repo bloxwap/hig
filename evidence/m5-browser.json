@@ -1,6 +1,6 @@
 {
-  "version": "0.1.0",
-  "browser": "141.0.7390.37",
+  "version": "0.1.1",
+  "browser": "156.0.8078.4",
   "checks": [
     "all generated production routes/base-safe assets",
     "200% text without viewport overflow",

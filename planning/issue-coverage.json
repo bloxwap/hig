@@ -4,7 +4,7 @@
     "branch": "hig/issues-1-18-verification",
     "pr": "https://github.com/bloxwap/hig/pull/45",
     "status": "partial",
-    "reason": "Roadmap requires #19–#36, actual owning-product/SDK/native adoption, authorized publication/releases, approved owners and physical device certification; those are outside this task or prohibited.",
+    "reason": "Original implementation and nine consumer registry migrations are delivered; #56 retains TapTrade and trusted-publishing verification, #57 retains named-owner decisions, and #110 retains wallet acceptance and rollback retirement.",
     "localNotes": "Roadmap reconciled against actual merged deliveries and live issue bodies.",
     "implementationPRs": [
       "https://github.com/bloxwap/hig/pull/37"
@@ -35,6 +35,17 @@
         "https://github.com/bloxwap/hig/issues/56",
         "https://github.com/bloxwap/hig/issues/57"
       ]
+    },
+    "currentReview": {
+      "date": "2026-10-27",
+      "finalState": "open",
+      "evidence": "evidence/adoption/state-2026-10-27.json",
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/56",
+        "https://github.com/bloxwap/hig/issues/57",
+        "https://github.com/bloxwap/hig/issues/110"
+      ],
+      "note": "Nine exact 0.1.0 consumer registry migrations are merged; TapTrade #253 remains the only open migration. HIG #147 merged, but npm trusted publisher setup and a real OIDC release remain unverified. #57 has no owner approvals. #110 retains wallet acceptance and rollback retirement. Monorepo #4776 tracks RN 0.88 support and a new coordinated release without deciding v1 scope."
     }
   },
   {
@@ -1957,7 +1968,7 @@
     "issue": 110,
     "branch": "hig/109-110-progress",
     "status": "partial",
-    "reason": "Acceptance needs every monorepo exception in planning/adoption.json retired or renewed before 2027-01-15 and the monorepo drift check passing without the retired paths; remaining-surface PRs are open and verifier approved, forks and rollback flags are intentionally kept until the rollback window ends",
+    "reason": "Combined web/native surfaces and exact 0.1.0 registry dependencies are merged; owning-product decisions and real wallet-session acceptance remain, and retained app/Pro/native legacy renderers and rollback paths must stay until their accepted retirement window closes.",
     "implementationPRs": [
       "https://github.com/bloxwap/monorepo/pull/4598",
       "https://github.com/bloxwap/monorepo/pull/4599",
@@ -1966,10 +1977,9 @@
     ],
     "evidence": "monorepo docs/hig/evidence/{app-flows,pro-markets,marketing-sections-2,native-app/hig110}/",
     "remainingBlockers": [
-      "Human signoff and merge: #4594 first, then rebase/retarget #4598, #4599, #4601 onto main; #4602 independent",
-      "After merges and the rollback window: delete forks with no flag-on consumers and the NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT / HIG_MARKETING_PILOT branches, then remove the adoption.json exceptions",
-      "Screens still on forks with the flag on (app components/ui, Pro ui/*, ui-native Sheet/NumberFlow) and upstream #117-#121",
-      "Native Hermes budget decision (#57); physical devices (#55)"
+      "Named-owner product decisions (#57) and real authenticated/wallet-session acceptance",
+      "After the accepted rollback window: retire remaining app/Pro/native legacy renderers and NEXT_PUBLIC_HIG_PILOT / EXPO_PUBLIC_HIG_PILOT / HIG_MARKETING_PILOT paths, then update the adoption exceptions and drift evidence",
+      "Measure source, bundle and Hermes changes on equal toolchains when retiring those paths"
     ],
     "progress": {
       "date": "2026-10-16",
@@ -2013,6 +2023,22 @@
         "https://github.com/bloxwap/hig/issues/57",
         "https://github.com/bloxwap/hig/issues/55"
       ]
+    },
+    "currentReview": {
+      "date": "2026-10-27",
+      "finalState": "open",
+      "evidence": "evidence/adoption/state-2026-10-27.json",
+      "evidencePRs": [
+        "https://github.com/bloxwap/monorepo/pull/4598",
+        "https://github.com/bloxwap/monorepo/pull/4619",
+        "https://github.com/bloxwap/monorepo/pull/4620",
+        "https://github.com/bloxwap/monorepo/pull/4629",
+        "https://github.com/bloxwap/monorepo/pull/4737"
+      ],
+      "followUps": [
+        "https://github.com/bloxwap/hig/issues/57"
+      ],
+      "note": "Committed marketing fonts were removed by #4598, and exact 0.1.0 registry dependencies merged in #4737. Real wallet-session acceptance and retained app/Pro/native legacy-renderer/rollback retirement remain open; no acceptance or exception renewal is inferred."
     }
   }
 ]

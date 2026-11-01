@@ -1,5 +1,5 @@
 {
-  "version": "0.1.2",
+  "version": "0.2.0",
   "components": [
     {
       "name": "Button",
@@ -238,6 +238,15 @@
       "name": "Sheet",
       "route": "components/sheet",
       "entry": "overlay",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "GestureSheet",
+      "route": "components/gesture-sheet",
+      "entry": "gesture-sheet",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -608,7 +617,7 @@
     {
       "name": "PriceChart",
       "route": "components/price-chart",
-      "entry": "@bloxwap/hig-chart",
+      "entry": "@bloxwap/hig/chart",
       "nativeSupport": "alternative",
       "states": [
         "default",

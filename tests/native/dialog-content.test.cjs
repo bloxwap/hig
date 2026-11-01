@@ -1,8 +1,8 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const RN=require('react-native');
-const {Dialog}=require('../../packages/native/src/overlay');
-const {HIGProvider}=require('../../packages/native/src/provider');
+const {Dialog}=require('../../packages/hig/native/src/overlay');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
 let root,frames,next,os;
 beforeEach(()=>{
  jest.clearAllMocks();

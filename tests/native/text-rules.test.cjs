@@ -5,13 +5,13 @@ const rntl=require('@testing-library/react-native');
 // RNTL reassigns its live `screen` binding on each render, so read it through the module object.
 const {render,act,cleanup}=rntl;
 const RN=require('react-native');
-const {HIGProvider}=require('../../packages/native/src/provider');
-const {Button,IconButton,busyAccessibilityLabel}=require('../../packages/native/src/button');
-const {Alert}=require('../../packages/native/src/status');
-const {Slider}=require('../../packages/native/src/slider');
-const {Text,detectScript}=require('../../packages/native/src/surface');
-const {plainText,blockText}=require('../../packages/native/src/text-content');
-const en=require('../../packages/contracts/dist/messages.js');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {Button,IconButton,busyAccessibilityLabel}=require('../../packages/hig/native/src/button');
+const {Alert}=require('../../packages/hig/native/src/status');
+const {Slider}=require('../../packages/hig/native/src/slider');
+const {Text,detectScript}=require('../../packages/hig/native/src/surface');
+const {plainText,blockText}=require('../../packages/hig/native/src/text-content');
+const en=require('../../packages/hig/contracts/dist/messages.js');
 const h=React.createElement;
 afterEach(cleanup);
 function withOS(os,run){const descriptor=Object.getOwnPropertyDescriptor(RN.Platform,'OS');Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});try{return run();}finally{Object.defineProperty(RN.Platform,'OS',descriptor);}}
@@ -56,7 +56,7 @@ describe('#92 native Button label and busy suffix render through HIG Text',()=>{
  });
  it('keeps label colour, centring and writing direction on both runs',()=>{
   render(h(HIGProvider,{direction:'rtl',messages:{busy:'جارٍ التنفيذ'}},h(Button,{busy:true,intent:'secondary'},'تأكيد')));
-  const {nativeSrgb:colors}=require('../../packages/tokens/dist/index.js');
+  const {nativeSrgb:colors}=require('../../packages/hig/tokens/dist/index.js');
   for(const text of ['تأكيد','· جارٍ التنفيذ']){const s=style(run(text));expect(s.color).toBe(colors.text);expect(s.textAlign).toBe('center');expect(s.writingDirection).toBe('rtl');}
  });
 });

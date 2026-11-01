@@ -1,5 +1,5 @@
 import {workspaceVersion} from './workspace-version.mjs';
-// #99: a clean OG-card consumer installs the packed @bloxwap/hig-og-fonts tarball next to next/og, verifies every TTF
+// #99: a clean OG-card consumer installs the packed @bloxwap/hig tarball and uses its og-fonts entry next to next/og, verifies every TTF
 // against the manifest (and the native manifest it was copied from), and renders 1200x630 PNG cards with the faces.
 // It then builds a Next route-handler app (app/og/route.tsx, runtime 'nodejs', the docs/installation.md code) with
 // Turbopack (the Next 16 default) and with --webpack, serves it with next start and as moved standalone output, and
@@ -7,20 +7,24 @@ import {workspaceVersion} from './workspace-version.mjs';
 import {execFileSync,spawn} from 'node:child_process';
 import {mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,renameSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {gzipSync} from 'node:zlib';
 import {createServer} from 'node:net';
 import {join,resolve} from 'node:path';
 import {scratchDir} from './scratch.mjs';
 import assert from 'node:assert/strict';
 import {requireGeneratedFonts} from './font-preflight.mjs';
 requireGeneratedFonts('smoke:packed-og');
-if(!existsSync('packages/og-fonts/dist/index.js')||!existsSync('packages/og-fonts/dist/node.js'))throw Error('smoke:packed-og needs packages/og-fonts/dist; run `npm run build` (or `npm run generate && node scripts/build.mjs`) first.');
+if(!existsSync('packages/hig/og-fonts/dist/index.js')||!existsSync('packages/hig/og-fonts/dist/node.js'))throw Error('smoke:packed-og needs packages/hig/og-fonts/dist; run `npm run build` (or `npm run generate && node scripts/build.mjs`) first.');
 const limit=1_000_000;
 mkdirSync('artifacts',{recursive:true});
-const [pack]=JSON.parse(execFileSync('npm',['pack','./packages/og-fonts','--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
+const [pack]=JSON.parse(execFileSync('npm',['pack','./packages/hig','--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
 const tarball=resolve('artifacts',pack.filename),tarballBytes=readFileSync(tarball);
-assert.ok(tarballBytes.length<limit,`@bloxwap/hig-og-fonts packed ${tarballBytes.length} B, over the ${limit} B budget`);
-const ttfs=pack.files.map(f=>f.path).filter(p=>p.endsWith('.ttf')).sort();
-const nativeManifest=JSON.parse(readFileSync('packages/native-fonts/fonts/manifest.json','utf8'));
+// The OG budget covers the og-fonts entry inside the single package: its files compressed as npm pack does.
+const ogFiles=pack.files.map(f=>f.path).filter(p=>p.startsWith('og-fonts/'));
+const ogGzipBytes=ogFiles.reduce((sum,p)=>sum+gzipSync(readFileSync(join('packages/hig',p)),{level:9}).length,0);
+assert.ok(ogGzipBytes<limit,`@bloxwap/hig/og-fonts compresses to ${ogGzipBytes} B, over the ${limit} B budget`);
+const ttfs=ogFiles.filter(p=>p.endsWith('.ttf')).map(p=>p.slice('og-fonts/'.length)).sort();
+const nativeManifest=JSON.parse(readFileSync('packages/hig/native-fonts/fonts/manifest.json','utf8'));
 const next=JSON.parse(readFileSync('fixtures/next/package.json','utf8')).dependencies;
 const dir=scratchDir('hig-og-consumer-');
 const root=JSON.parse(readFileSync('package.json','utf8')).devDependencies;
@@ -34,15 +38,15 @@ import {createRequire} from 'node:module';
 import React from 'react';
 // next has no exports map, so plain Node ESM names the file; Next/Turbopack hosts write 'next/og'.
 import {ImageResponse} from 'next/og.js';
-import {fontManifest,ogFonts} from '@bloxwap/hig-og-fonts';
-import {loadOgFonts,readOgFont} from '@bloxwap/hig-og-fonts/node';
+import {fontManifest,ogFonts} from '@bloxwap/hig/og-fonts';
+import {loadOgFonts,readOgFont} from '@bloxwap/hig/og-fonts/node';
 const require=createRequire(import.meta.url),sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 // The copy-at-build-time path (edge/Workers hosts): resolve the manifest export and hash every exported file.
-const manifest=JSON.parse(readFileSync(require.resolve('@bloxwap/hig-og-fonts/manifest'),'utf8')),nativeManifest=JSON.parse(readFileSync('native-manifest.json','utf8'));
+const manifest=JSON.parse(readFileSync(require.resolve('@bloxwap/hig/og-fonts/manifest'),'utf8')),nativeManifest=JSON.parse(readFileSync('native-manifest.json','utf8'));
 assert.deepEqual(fontManifest,manifest,'Typed manifest equals fonts/manifest.json');
 const hashes={};
 for(const [asset,hash] of Object.entries(manifest.outputs)){
- const bytes=readFileSync(require.resolve('@bloxwap/hig-og-fonts/fonts/'+asset));
+ const bytes=readFileSync(require.resolve('@bloxwap/hig/og-fonts/fonts/'+asset));
  assert.equal(sha(bytes),hash,asset+' matches the OG manifest');assert.equal(hash,nativeManifest.outputs[asset],asset+' matches the native manifest entry');
  assert.equal(bytes.subarray(0,4).toString('hex'),'00010000',asset+' is a TrueType (not WOFF2) font');hashes[asset]=hash;
 }
@@ -60,7 +64,7 @@ assert.notEqual(sha(renders[700]),sha(fallback),'Bloxwap faces replace the next/
 writeFileSync('og-card.png',renders[700]);
 for(const [weight,bytes] of Object.entries(renders))writeFileSync('og-'+weight+'.png',bytes);
 // A tampered face is rejected before it reaches the renderer.
-const bold=require.resolve('@bloxwap/hig-og-fonts/fonts/BloxwapSans-Bold.ttf'),original=readFileSync(bold);
+const bold=require.resolve('@bloxwap/hig/og-fonts/fonts/BloxwapSans-Bold.ttf'),original=readFileSync(bold);
 writeFileSync(bold,Buffer.concat([original,Buffer.from([0])]));
 await assert.rejects(readOgFont('BloxwapSans-Bold.ttf'),/does not match the manifest/);
 writeFileSync(bold,original);
@@ -77,10 +81,10 @@ const app={
  'tsconfig.json':JSON.stringify({compilerOptions:{target:'ES2022',lib:['dom','dom.iterable','esnext'],skipLibCheck:true,strict:true,noEmit:true,esModuleInterop:true,module:'esnext',moduleResolution:'bundler',resolveJsonModule:true,isolatedModules:true,jsx:'react-jsx',plugins:[{name:'next'}]},include:['next-env.d.ts','**/*.ts','**/*.tsx','.next/types/**/*.ts'],exclude:['node_modules']},null,2),
  'app/layout.tsx':`export default function RootLayout({children}: {children: React.ReactNode}) { return <html lang="en"><body>{children}</body></html>; }\n`,
  'app/page.tsx':`export default function Page() { return <p>OG consumer</p>; }\n`,
- // docs/installation.md and packages/og-fonts/README.md: top-level loadOgFonts(), runtime 'nodejs'.
+ // docs/installation.md and packages/hig/og-fonts/README.md: top-level loadOgFonts(), runtime 'nodejs'.
  'app/og/route.tsx':`import {ImageResponse} from 'next/og';
 import type {NextRequest} from 'next/server';
-import {loadOgFonts} from '@bloxwap/hig-og-fonts/node';
+import {loadOgFonts} from '@bloxwap/hig/og-fonts/node';
 
 export const runtime = 'nodejs';
 const fonts = await loadOgFonts();
@@ -92,8 +96,8 @@ export function GET(request: NextRequest) {
 `,
  // docs/migration/sdk-docs.md: chart, sfx and agent-cli pass a subset.
  'app/og-fonts/route.ts':`import {createHash} from 'node:crypto';
-import {ogFonts} from '@bloxwap/hig-og-fonts';
-import {loadOgFonts} from '@bloxwap/hig-og-fonts/node';
+import {ogFonts} from '@bloxwap/hig/og-fonts';
+import {loadOgFonts} from '@bloxwap/hig/og-fonts/node';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -108,7 +112,7 @@ for(const [file,source] of Object.entries(app)){mkdirSync(join(dir,file,'..'),{r
 const freePort=()=>new Promise((ok,fail)=>{const server=createServer().once('error',fail).listen(0,'127.0.0.1',()=>{const {port}=server.address();server.close(()=>ok(port));});});
 const nextBin=join(dir,'node_modules/next/dist/bin/next'),sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expectedFaces=manifest=>manifest.faces.map(f=>({name:f.family.replace('Bloxwap','Bloxwap '),weight:f.weight,sha256:manifest.outputs[f.asset]}));
-const ogManifest=JSON.parse(readFileSync('packages/og-fonts/fonts/manifest.json','utf8'));
+const ogManifest=JSON.parse(readFileSync('packages/hig/og-fonts/fonts/manifest.json','utf8'));
 // next start for both bundlers, then output: 'standalone' copied to another directory with the consumer's node_modules
 // hidden. Turbopack's standalone output carries the faces itself. webpack bakes the node_modules path in, so a webpack
 // standalone build that moves needs serverExternalPackages (docs/installation.md).
@@ -116,7 +120,7 @@ const cases=[
  {name:'turbopack',flags:[],config:{},serve:'next start'},
  {name:'webpack',flags:['--webpack'],config:{},serve:'next start'},
  {name:'turbopack-standalone',flags:[],config:{output:'standalone'},serve:'standalone, moved'},
- {name:'webpack-standalone-external',flags:['--webpack'],config:{output:'standalone',serverExternalPackages:['@bloxwap/hig-og-fonts']},serve:'standalone, moved'},
+ {name:'webpack-standalone-external',flags:['--webpack'],config:{output:'standalone',serverExternalPackages:['@bloxwap/hig']},serve:'standalone, moved'},
 ];
 const routeHandler={};
 for(const {name,flags,config,serve} of cases){
@@ -157,6 +161,6 @@ for(const {name,flags,config,serve} of cases){
   if(moved)rmSync(moved,{recursive:true,force:true});
  }
 }
-const evidence={version:workspaceVersion,evidence:'automated (local tarball, clean temporary consumer)',package:'@bloxwap/hig-og-fonts',tarball:{file:pack.filename,bytes:tarballBytes.length,unpackedBytes:pack.unpackedSize,sha256:createHash('sha256').update(tarballBytes).digest('hex'),limit},fonts:ttfs,hashesMatchNativeManifest:true,consumer:{next:next.next,react:next.react,renderer:'next/og ImageResponse (Satori + resvg), Node runtime'},checks:['Manifest export and fonts/* exports resolve; every TTF SHA-256 equals fonts/manifest.json and the @bloxwap/hig-native-fonts entry','loadOgFonts() returns Satori-shaped fonts; four Bloxwap Sans weights render four different 1200x630 PNGs, all different from the next/og default font','readOgFont() rejects a tampered face','A Next app/og/route.tsx handler (runtime nodejs, top-level loadOgFonts() as in docs/installation.md) built with Turbopack (default next build) and with next build --webpack and served by next start, plus Turbopack output: standalone and webpack output: standalone with serverExternalPackages, each copied to another directory with the consumer node_modules hidden: GET /og-fonts returns every face with its own manifest SHA-256 (all five, and the weight >= 700 subset); GET /og returns 200 image/png 1200x630 for each Sans weight, byte-identical to the plain Node render and different from the default font'],pngBytes:result.pngBytes,nextRouteHandler:routeHandler};
+const evidence={version:workspaceVersion,evidence:'automated (local tarball, clean temporary consumer)',package:'@bloxwap/hig',entry:'@bloxwap/hig/og-fonts',ogFontsGzipBytes:ogGzipBytes,tarball:{file:pack.filename,bytes:tarballBytes.length,unpackedBytes:pack.unpackedSize,sha256:createHash('sha256').update(tarballBytes).digest('hex'),limit},fonts:ttfs,hashesMatchNativeManifest:true,consumer:{next:next.next,react:next.react,renderer:'next/og ImageResponse (Satori + resvg), Node runtime'},checks:['Manifest export and fonts/* exports resolve; every TTF SHA-256 equals fonts/manifest.json and the @bloxwap/hig/native-fonts entry','loadOgFonts() returns Satori-shaped fonts; four Bloxwap Sans weights render four different 1200x630 PNGs, all different from the next/og default font','readOgFont() rejects a tampered face','A Next app/og/route.tsx handler (runtime nodejs, top-level loadOgFonts() as in docs/installation.md) built with Turbopack (default next build) and with next build --webpack and served by next start, plus Turbopack output: standalone and webpack output: standalone with serverExternalPackages, each copied to another directory with the consumer node_modules hidden: GET /og-fonts returns every face with its own manifest SHA-256 (all five, and the weight >= 700 subset); GET /og returns 200 image/png 1200x630 for each Sans weight, byte-identical to the plain Node render and different from the default font'],pngBytes:result.pngBytes,nextRouteHandler:routeHandler};
 writeFileSync('evidence/packed-og-smoke.json',JSON.stringify(evidence,null,2)+'\n');
-console.log(`Packed OG fonts: ${pack.filename} ${tarballBytes.length} B (< ${limit} B), ${ttfs.length} TTFs verified against the manifest and rendered through next/og ${next.next}; Next route handler served the cards in ${Object.keys(routeHandler).join(', ')}`);
+console.log(`Packed OG fonts: og-fonts entry ${ogGzipBytes} B compressed (< ${limit} B) in ${pack.filename}, ${ttfs.length} TTFs verified against the manifest and rendered through next/og ${next.next}; Next route handler served the cards in ${Object.keys(routeHandler).join(', ')}`);

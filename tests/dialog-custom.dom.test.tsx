@@ -2,8 +2,8 @@ import React,{createRef,useState} from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {Dialog} from '../packages/react/src/overlay';
-import {HIGProvider} from '../packages/react/src/provider';
+import {Dialog} from '../packages/hig/react/src/overlay';
+import {HIGProvider} from '../packages/hig/react/src/provider';
 afterEach(cleanup);
 
 describe('host dialog composition',()=>{

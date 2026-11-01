@@ -2,7 +2,7 @@ import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
-const directory='packages/feedback/assets';mkdirSync(directory,{recursive:true});
+const directory='packages/hig/feedback/assets';mkdirSync(directory,{recursive:true});
 const flags=['--out',directory,'--sounds','tick,toggle,success,error','--sample-rate','48000','--bit-depth','16','--channels','1','--trim'];
 execFileSync(process.execPath,[resolve('node_modules/@bloxwap/sfx/dist/cli/sfx-wav.js'),...flags],{stdio:'inherit'});
 const cues=['tick','toggle','success','error'].map(name=>{

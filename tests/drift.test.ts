@@ -29,7 +29,7 @@ it('flags copied HIG folders and retired forks, with repository-specific obsolet
 
 it('canonical HIG paths are exempt from copy rules but not from obsolete imports',()=>{
   const css=":root{--hig-action:#0f0}\n@import '../vendor/hig/x.css';";
-  expect(rulesOf(driftViolations(css,'packages/tokens/generated/tokens.css',[],{now,canonical:['packages/tokens/']}))).toEqual(['obsolete-import']);
+  expect(rulesOf(driftViolations(css,'packages/hig/tokens/generated/tokens.css',[],{now,canonical:['packages/hig/tokens/']}))).toEqual(['obsolete-import']);
 });
 
 it('exceptions need owner, reason, a known rule and a bounded expiry; prefix exceptions cover a folder',()=>{
@@ -46,7 +46,7 @@ it('scans a consumer root: font binaries, expired and unused exceptions, and the
   const root=mkdtempSync(join(tmpdir(),'hig-drift-consumer-'));
   mkdirSync(join(root,'apps/docs/fonts'),{recursive:true});mkdirSync(join(root,'apps/docs/app'),{recursive:true});
   writeFileSync(join(root,'apps/docs/fonts/BloxwapSans-Bold.ttf'),'binary');
-  writeFileSync(join(root,'apps/docs/app/page.tsx'),"export const ok='uses @bloxwap/hig-react';");
+  writeFileSync(join(root,'apps/docs/app/page.tsx'),"export const ok='uses @bloxwap/hig/react';");
   const config={paths:['apps/docs'],exceptions:[{path:'apps/docs/old.css',rule:'copied-palette',owner:'docs',reason:'gone',expires:'2026-01-01'}]};
   const report=scan(root,config,now);
   expect(report.violations).toEqual([{path:'apps/docs/fonts/BloxwapSans-Bold.ttf',rule:'copied-font-binary'}]);

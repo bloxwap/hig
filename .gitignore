@@ -13,8 +13,8 @@ apps/docs/content/docs/
 apps/docs/out/
 *.tsbuildinfo
 .local/
-packages/native-fonts/fonts/*.ttf
-packages/og-fonts/fonts/*.ttf
+packages/hig/native-fonts/fonts/*.ttf
+packages/hig/og-fonts/fonts/*.ttf
 
 .validation-tmp/
 *.log

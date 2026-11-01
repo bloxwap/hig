@@ -12,16 +12,16 @@ it('uses the checked-out coordinated version for packed artifacts from any worki
   writeFileSync(join(directory,'package.json'),JSON.stringify({version:'0.9.7'}));
   const script=join(directory,'scripts/workspace-version.mjs');
   copyFileSync('scripts/workspace-version.mjs',script);
-  const probe=`import {workspaceVersion,packedTarball} from ${JSON.stringify(pathToFileURL(script).href)};console.log(JSON.stringify({version:workspaceVersion,file:packedTarball('tokens',${JSON.stringify(join(directory,'artifacts'))})}));`;
+  const probe=`import {workspaceVersion,packedTarball} from ${JSON.stringify(pathToFileURL(script).href)};console.log(JSON.stringify({version:workspaceVersion,file:packedTarball(${JSON.stringify(join(directory,'artifacts'))})}));`;
   const result=JSON.parse(execFileSync(process.execPath,['--input-type=module','-e',probe],{cwd:tmpdir(),encoding:'utf8'}));
-  expect(result).toEqual({version:'0.9.7',file:join(directory,'artifacts/bloxwap-hig-tokens-0.9.7.tgz')});
+  expect(result).toEqual({version:'0.9.7',file:join(directory,'artifacts/bloxwap-hig-0.9.7.tgz')});
  }finally{rmSync(directory,{recursive:true,force:true});}
 });
 
-it('passes versioned archive paths through the boundary smoke array mapping',()=>{
+it('passes the versioned @bloxwap/hig archive path to the boundary smoke install',()=>{
  const script=pathToFileURL(join(process.cwd(),'scripts/packed-boundaries-smoke.mjs')).href;
  const probe=`import childProcess from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';import {rmSync} from 'node:fs';import {build} from 'esbuild';void build;childProcess.execFileSync=(command,args,options)=>{console.log(JSON.stringify(args));rmSync(options.cwd,{recursive:true,force:true});process.exit(0);};syncBuiltinESMExports();await import(${JSON.stringify(script)});`;
  const args=JSON.parse(execFileSync(process.execPath,['--input-type=module','-e',probe],{encoding:'utf8'}));
  const version=JSON.parse(readFileSync('package.json','utf8')).version;
- expect(args.slice(4)).toEqual(['tokens','contracts','feedback'].map(name=>join(process.cwd(),'artifacts',`bloxwap-hig-${name}-${version}.tgz`)));
+ expect(args.slice(4)).toEqual([join(process.cwd(),'artifacts',`bloxwap-hig-${version}.tgz`)]);
 });

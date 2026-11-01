@@ -1,0 +1,197 @@
+{
+  "version": "0.1.2",
+  "mode": "dark",
+  "provenance": "bloxwap/monorepo@d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/hig/tokens/src/colors.ts; HIG semantic intent/density aliases documented in docs/foundations/source-reconciliation.md",
+  "colors": {
+    "background": {
+      "srgb": "#0a0a0a",
+      "p3": [
+        0.04,
+        0.04,
+        0.04
+      ],
+      "oklch": "oklch(0.145 0 0)"
+    },
+    "surface": {
+      "srgb": "#171717",
+      "oklch": "oklch(0.205 0 0)"
+    },
+    "nested": {
+      "srgb": "#262626",
+      "oklch": "oklch(0.269 0 0)"
+    },
+    "text": {
+      "srgb": "#fafafa",
+      "oklch": "oklch(0.985 0 0)"
+    },
+    "muted": {
+      "srgb": "#a1a1a1",
+      "oklch": "oklch(0.708 0 0)"
+    },
+    "faint": {
+      "srgb": "#858585"
+    },
+    "border": {
+      "srgb": "#3a3a3a"
+    },
+    "action": {
+      "srgb": "#00ff3f",
+      "p3": [
+        0,
+        1,
+        0.24
+      ]
+    },
+    "onAction": {
+      "srgb": "#0a0a0a",
+      "p3": [
+        0.04,
+        0.04,
+        0.04
+      ]
+    },
+    "focus": {
+      "srgb": "#00ff3f",
+      "p3": [
+        0,
+        1,
+        0.24
+      ]
+    },
+    "buy": {
+      "srgb": "#00ff3f",
+      "p3": [
+        0,
+        1,
+        0.24
+      ]
+    },
+    "sell": {
+      "srgb": "#ff479c",
+      "p3": [
+        1,
+        0.24,
+        0.62
+      ]
+    },
+    "positive": {
+      "srgb": "#00ff3f",
+      "p3": [
+        0,
+        1,
+        0.24
+      ]
+    },
+    "negative": {
+      "srgb": "#ff479c",
+      "p3": [
+        1,
+        0.24,
+        0.62
+      ]
+    },
+    "warning": {
+      "srgb": "#fffb38",
+      "p3": [
+        1,
+        0.98,
+        0.18
+      ]
+    },
+    "info": {
+      "srgb": "#35b5ff",
+      "p3": [
+        0.18,
+        0.72,
+        1
+      ]
+    }
+  },
+  "space": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 20,
+    "xxl": 24,
+    "xxxl": 32,
+    "section": 48
+  },
+  "radius": {
+    "sm": 6,
+    "md": 8,
+    "lg": 10,
+    "xl": 14,
+    "pill": 9999
+  },
+  "density": {
+    "comfortable": {
+      "control": 48,
+      "target": 48,
+      "gap": 12
+    },
+    "compact": {
+      "control": 36,
+      "target": 36,
+      "gap": 8
+    }
+  },
+  "motion": {
+    "fast": 180,
+    "base": 260,
+    "slow": 320
+  },
+  "easing": {
+    "standard": [
+      0.22,
+      1,
+      0.36,
+      1
+    ]
+  },
+  "type": {
+    "caption": {
+      "size": 12,
+      "lineHeight": 18,
+      "weight": 500
+    },
+    "label": {
+      "size": 14,
+      "lineHeight": 20,
+      "weight": 600
+    },
+    "body": {
+      "size": 16,
+      "lineHeight": 24,
+      "weight": 400
+    },
+    "title": {
+      "size": 24,
+      "lineHeight": 30,
+      "weight": 600
+    },
+    "display": {
+      "size": 48,
+      "lineHeight": 52,
+      "weight": 600
+    }
+  },
+  "font": {
+    "sans": {
+      "family": "Bloxwap Sans",
+      "loaderVariable": "--font-bloxwap-sans",
+      "fallback": [
+        "system-ui",
+        "sans-serif"
+      ]
+    },
+    "mono": {
+      "family": "Bloxwap Mono",
+      "loaderVariable": "--font-bloxwap-mono",
+      "fallback": [
+        "ui-monospace",
+        "monospace"
+      ]
+    }
+  }
+}

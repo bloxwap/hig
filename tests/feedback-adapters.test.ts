@@ -1,10 +1,10 @@
 import {describe,it,expect,vi} from 'vitest';
-import {createWebSoundAdapter} from '../packages/feedback/src/web-sound';
-import {createBrowserHapticAdapter} from '../packages/feedback/src/browser-haptic';
-import {createNativeSoundAdapter,createNativeHapticAdapter,type NativePlayer} from '../packages/feedback/src/native';
-import {FeedbackController} from '../packages/feedback/src/contract';
-import {migratePreferences,jsonStorage,loadPreferences} from '../packages/feedback/src/preferences';
-import type {FeedbackEvent} from '../packages/contracts/src/feedback';
+import {createWebSoundAdapter} from '../packages/hig/feedback/src/web-sound';
+import {createBrowserHapticAdapter} from '../packages/hig/feedback/src/browser-haptic';
+import {createNativeSoundAdapter,createNativeHapticAdapter,type NativePlayer} from '../packages/hig/feedback/src/native';
+import {FeedbackController} from '../packages/hig/feedback/src/contract';
+import {migratePreferences,jsonStorage,loadPreferences} from '../packages/hig/feedback/src/preferences';
+import type {FeedbackEvent} from '../packages/hig/contracts/src/feedback';
 type SfxEngine=Pick<typeof import('@bloxwap/sfx'),'unlock'|'play'|'preload'|'dispose'>;
 const prefs={version:1 as const,sound:true,haptics:true,volume:.4,motion:false};
 const event:FeedbackEvent={id:'1',source:'test',intent:'activate',origin:'keyboard'};

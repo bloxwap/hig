@@ -1,6 +1,6 @@
 {
-  "version": "0.1.0",
-  "browser": "26.0",
+  "version": "0.1.1",
+  "browser": "27.2",
   "platform": "darwin arm64 webkit headless; no physical-device claim",
   "viewport": [
     390,

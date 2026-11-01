@@ -2,9 +2,9 @@ import React,{useState} from 'react';
 import {afterEach,it,expect,vi} from 'vitest';
 import {render,screen,within,cleanup} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {HIGProvider} from '../packages/react/src/provider';
-import {Table,NumberReadout,type TableRowProps} from '../packages/react/src/data';
-import {MarketRow} from '../packages/react/src/recipes/market-row';
+import {HIGProvider} from '../packages/hig/react/src/provider';
+import {Table,NumberReadout,type TableRowProps} from '../packages/hig/react/src/data';
+import {MarketRow} from '../packages/hig/react/src/recipes/market-row';
 afterEach(cleanup);
 
 it('keeps sortable table semantics, logical numeric alignment and host row highlights in a named scroll region (#110)',async()=>{

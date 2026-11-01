@@ -1,6 +1,6 @@
 {
   "react": {
-    "PriceChart": "@bloxwap/hig-chart",
+    "PriceChart": "@bloxwap/hig/chart",
     "MarketRow": "recipes",
     "BalanceCard": "recipes",
     "TradeEntry": "recipes",
@@ -47,6 +47,7 @@
     "Search": "navigation",
     "Dialog": "overlay",
     "Sheet": "overlay",
+    "GestureSheet": "gesture-sheet",
     "AlertDialog": "overlay",
     "Menu": "overlay",
     "Popover": "overlay",
@@ -113,6 +114,7 @@
     "BackButton": "navigation",
     "Dialog": "overlay",
     "Sheet": "overlay",
+    "GestureSheet": "gesture-sheet",
     "AlertDialog": "overlay",
     "Menu": "overlay",
     "HelpText": "overlay",

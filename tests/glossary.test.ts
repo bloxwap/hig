@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import {readFileSync,existsSync} from 'node:fs';
-import {formatNumber,formatLeverage,formatTicker,formatZonedTime} from '../packages/contracts/src/index';
+import {formatNumber,formatLeverage,formatTicker,formatZonedTime} from '../packages/hig/contracts/src/index';
 const glossary=JSON.parse(readFileSync('docs/foundations/glossary.json','utf8'));
 const localization=JSON.parse(readFileSync('docs/foundations/localization.json','utf8'));
 const markdown=readFileSync('docs/foundations/glossary.md','utf8');

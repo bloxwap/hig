@@ -4,9 +4,9 @@ import {build} from 'esbuild';
 import {chromium,webkit} from '@playwright/test';
 import {launchBrowser} from './browser-launcher.mjs';
 
-const css=readFileSync('packages/tokens/generated/tokens.css','utf8')+readFileSync('packages/react/src/styles.css','utf8');
+const css=readFileSync('packages/hig/tokens/generated/tokens.css','utf8')+readFileSync('packages/hig/react/src/styles.css','utf8');
 const source=`import React,{useState} from 'react';import {createRoot} from 'react-dom/client';
-import {HIGProvider} from './packages/react/src/provider';import {Select} from './packages/react/src/select';import {Dialog} from './packages/react/src/dialog';
+import {HIGProvider} from './packages/hig/react/src/provider';import {Select} from './packages/hig/react/src/select';import {Dialog} from './packages/hig/react/src/dialog';
 const options=[{value:'buy',label:'Buy'},{value:'disabled',label:'Unavailable',disabled:true},{value:'sell',label:'Sell'}];
 function Example(){const [value,setValue]=useState('buy'),[open,setOpen]=useState(false);return <HIGProvider direction={window.direction}>
 <div className='clip'><Select label='Side' options={options} value={value} onValueChange={setValue}/></div>

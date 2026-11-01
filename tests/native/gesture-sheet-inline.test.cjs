@@ -11,8 +11,8 @@ jest.mock('@gorhom/bottom-sheet',()=>{
  return {__esModule:true,default:component(inlineMethods,'inline-backend'),BottomSheetModal:component(modalMethods,'modal-backend'),BottomSheetView:View,BottomSheetScrollView:ScrollView,BottomSheetBackdrop:View,inlineMethods,modalMethods};
 });
 const backend=require('@gorhom/bottom-sheet');
-const {GestureSheet}=require('../../packages/native/src/gesture-sheet');
-const {HIGProvider}=require('../../packages/native/src/provider');
+const {GestureSheet}=require('../../packages/hig/native/src/gesture-sheet');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
 let root,frames,nextFrame;
 beforeEach(()=>{
  frames=new Map();nextFrame=1;
@@ -37,7 +37,8 @@ it('prepares mounted closed content without accessibility, touch, Back or an ini
  expect(root.root.findAllByType(ScrollView)).toHaveLength(1);
  expect(root.root.findAll(item=>typeof item.type==='string'&&item.props.pointerEvents==='none')).toHaveLength(1);
  const hidden=root.root.findAll(item=>typeof item.type==='string'&&item.props.pointerEvents==='none')[0];
- expect(hidden.props).toMatchObject({accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants',collapsable:false,style:{flex:1,flexShrink:1,minHeight:0}});
+ expect(hidden.props).toMatchObject({accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants',collapsable:false,style:{flex:1,flexShrink:1,minHeight:0}});
+ expect(hidden.props.accessibilityViewIsModal).toBeUndefined();expect(hidden.props.onAccessibilityEscape).toBeUndefined();
  expect(back).not.toHaveBeenCalled();
  expect(ref.current).toBe(backend.inlineMethods);
  expect(ref.current.present).toBeUndefined();

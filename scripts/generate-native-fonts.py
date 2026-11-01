@@ -1,9 +1,9 @@
-# Adapted from bloxwap/monorepo packages/tokens/scripts/generate-fonts.py; see source-reconciliation.md.
+# Adapted from bloxwap/monorepo packages/hig/tokens/scripts/generate-fonts.py; see source-reconciliation.md.
 #!/usr/bin/env python3
-"""Derive native/Satori TTFs only from the published @bloxwap/font 0.1.2 package.
+"""Derive native/Satori TTFs only from the published @bloxwap/font 0.1.4 package.
 
-Writes every static face to packages/native-fonts/fonts and copies the OG_FACES subset,
-byte for byte, to packages/og-fonts/fonts for Satori/next-og hosts (#99).
+Writes every static face to packages/hig/native-fonts/fonts and copies the OG_FACES subset,
+byte for byte, to packages/hig/og-fonts/fonts for Satori/next-og hosts (#99).
 
 Requires fonttools[woff]==4.61.1 and brotli==1.2.1. By default uses the installed
 npm dependency; --package-dir accepts an extracted npm package for offline rebuilds.
@@ -22,8 +22,8 @@ from fontTools.varLib.instancer import instantiateVariableFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_VERSION = '0.1.2'
-# Unique-ID (name ID 3) prefix of the committed faces. 0.1.2 republished the 0.1.1
+PACKAGE_VERSION = '0.1.4'
+# Unique-ID (name ID 3) prefix of the committed faces. 0.1.2 and 0.1.4 republished the 0.1.1
 # variable sources byte-for-byte (SOURCE_SHA256 below), so the derived faces keep
 # their 0.1.1 identity and stay byte-identical. Bump it only with new source bytes.
 FACE_ID_VERSION = '0.1.1'
@@ -31,7 +31,7 @@ FACE_ID_VERSION = '0.1.1'
 SOURCE_SHA256 = {'fonts/BloxwapSans/BloxwapSans-Variable.woff2': '96f6be58023b1d22152c797336282a4330a47ab4a3c0ab87451be887903746b7', 'fonts/BloxwapMono/BloxwapMono-Variable.woff2': 'fa66e41575807c3d260d8f5b493be349cac127836b0174976c7d4876237d2632', 'fonts/BloxwapSansKR/BloxwapSansKR-Variable.woff2': 'ac41500ba7546e204d07499266cadb848e24c0e9935c2616124aedcfba5a9737', 'fonts/BloxwapSansSC/BloxwapSansSC-Variable.woff2': 'c0244998e334bbd997dc9acfaf3f10bce169facfec1cf2bbcfc4db38c7122893'}
 
 # Faces the OG-card renderers load (chart, sfx, agent-cli: Sans 700/900; tapsiren: Sans 400/500/700, Mono 500).
-# Copied unchanged, so their SHA-256 equal the native manifest entries. Keep @bloxwap/hig-og-fonts under 1 MB packed.
+# Copied unchanged, so their SHA-256 equal the native manifest entries. Keep @bloxwap/hig/og-fonts under 1 MB packed.
 OG_FACES = ['BloxwapSans.ttf', 'BloxwapSans-Medium.ttf', 'BloxwapSans-Bold.ttf', 'BloxwapSans-Black.ttf', 'BloxwapMono-Medium.ttf']
 
 STYLES = {400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold', 900: 'Black'}
@@ -65,7 +65,7 @@ args = parser.parse_args()
 package_dir = args.package_dir
 if package_dir is None:
     # Match workspace/hoisted installs by looking up ancestor node_modules.
-    for base in (ROOT / 'packages/native-fonts', ROOT / 'packages', ROOT):
+    for base in (ROOT / 'packages/hig/native-fonts', ROOT / 'packages', ROOT):
         candidate = base / 'node_modules/@bloxwap/font'
         if (candidate / 'package.json').is_file():
             package_dir = candidate
@@ -80,7 +80,7 @@ for relative, expected in SOURCE_SHA256.items():
     actual = hashlib.sha256((pkg / relative).read_bytes()).hexdigest()
     if actual != expected:
         raise SystemExit(f'Published {PACKAGE_VERSION} source SHA256 mismatch: {relative}: {actual}')
-native = ROOT / 'packages/native-fonts/fonts'
+native = ROOT / 'packages/hig/native-fonts/fonts'
 native.mkdir(parents=True, exist_ok=True)
 manifest = {'package': '@bloxwap/font', 'version': PACKAGE_VERSION, 'sources': SOURCE_SHA256, 'faces': [], 'outputs': {}}
 for family, weights, script in [('BloxwapSans', [400,500,600,700,800,900], 'latin'), ('BloxwapMono', [400,500,600,700,800], 'latin'), ('BloxwapSansKR', [400,600], 'korean'), ('BloxwapSansSC', [400,600], 'simplified-chinese')]:
@@ -94,12 +94,12 @@ for family, weights, script in [('BloxwapSans', [400,500,600,700,800,900], 'lati
         manifest['faces'].append({'family': family, 'weight': weight, 'asset': filename, 'script': script, 'registration': family + STYLES[weight], 'postscript': family + '-' + STYLES[weight], 'bytes': (native / filename).stat().st_size})
 shutil.copyfile(pkg / 'LICENSE', native / 'OFL.txt')
 (native / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-og = ROOT / 'packages/og-fonts/fonts'
+og = ROOT / 'packages/hig/og-fonts/fonts'
 og.mkdir(parents=True, exist_ok=True)
 for stale in og.glob('*.ttf'):
     if stale.name not in OG_FACES:
         stale.unlink()
-og_manifest = {'package': manifest['package'], 'version': manifest['version'], 'derivedFrom': '@bloxwap/hig-native-fonts', 'sources': manifest['sources'], 'faces': [face for face in manifest['faces'] if face['asset'] in OG_FACES], 'outputs': {asset: manifest['outputs'][asset] for asset in OG_FACES}}
+og_manifest = {'package': manifest['package'], 'version': manifest['version'], 'derivedFrom': '@bloxwap/hig/native-fonts', 'sources': manifest['sources'], 'faces': [face for face in manifest['faces'] if face['asset'] in OG_FACES], 'outputs': {asset: manifest['outputs'][asset] for asset in OG_FACES}}
 for asset in OG_FACES:
     shutil.copyfile(native / asset, og / asset)
 shutil.copyfile(pkg / 'LICENSE', og / 'OFL.txt')

@@ -1,4 +1,4 @@
-import type {NativeAudioBackend,NativeHapticBackend,NativePlayer} from '@bloxwap/hig-feedback/native';
+import type {NativeAudioBackend,NativeHapticBackend,NativePlayer} from '@bloxwap/hig/feedback/native';
 /**
  * Simulator/emulator verification harness for the native gallery.
  * Deep links (bloxwaphig://gallery?component=Slider&state=default&dir=rtl&diag=1&rows=2000&messages=ko&colorSpace=display-p3)
@@ -14,6 +14,9 @@ export const fixtureCatalogs={
  en:{locale:'en-US',label:'Log out',messages:{}},
  fr:{locale:'fr-FR',label:'Déconnexion',messages:{busy:'En cours',increase:'Augmenter',decrease:'Diminuer'}},
  ko:{locale:'ko-KR',label:'로그아웃',messages:{busy:'처리 중',increase:'증가',decrease:'감소'}},
+ ar:{locale:'ar-EG',label:'تسجيل الخروج',messages:{busy:'جارٍ التنفيذ',increase:'زيادة',decrease:'إنقاص'}},
+ fa:{locale:'fa-IR',label:'خروج',messages:{busy:'در حال انجام',increase:'افزایش',decrease:'کاهش'}},
+ arab:{locale:'en-u-nu-arab',label:'Log out',messages:{}},
 } as const;
 export type FixtureCatalog=keyof typeof fixtureCatalogs;
 /** `colorSpace` sets HIGProvider `colorSpace` (#93); it matches the app only when the iOS build paints in that space (prepare-app.sh HIG_IOS_COLOR_SPACE). */

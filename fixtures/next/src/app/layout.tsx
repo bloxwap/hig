@@ -1,8 +1,8 @@
 import React from 'react';
-import '@bloxwap/hig-tokens/css';
+import '@bloxwap/hig/tokens/css';
 // Page-wide element defaults (box-sizing, focus ring, table, range) are opt-in since #95; import them before the component CSS.
-import '@bloxwap/hig-react/css/base';
-import '@bloxwap/hig-react/css';
+import '@bloxwap/hig/react/css/base';
+import '@bloxwap/hig/react/css';
 import {BloxwapSans} from '@bloxwap/font/sans';
 import {BloxwapMono} from '@bloxwap/font/mono';
 export const metadata={icons:{icon:'/favicon.svg'},title:'HIG Next consumer',description:'Packed-style client/SSR component boundaries'};

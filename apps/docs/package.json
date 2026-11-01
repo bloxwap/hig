@@ -1,6 +1,6 @@
 {
   "name": "hig-docs",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,14 +12,11 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
-    "@bloxwap/chart": "0.3.0",
-    "@bloxwap/font": "0.1.2",
-    "@bloxwap/haptic": "0.1.0",
-    "@bloxwap/hig-chart": "0.1.2",
-    "@bloxwap/hig-feedback": "0.1.2",
-    "@bloxwap/hig-react": "0.1.2",
-    "@bloxwap/hig-tokens": "0.1.2",
-    "@bloxwap/sfx": "0.1.0",
+    "@bloxwap/chart": "0.4.0",
+    "@bloxwap/font": "0.1.4",
+    "@bloxwap/haptic": "0.3.0",
+    "@bloxwap/hig": "0.2.0",
+    "@bloxwap/sfx": "0.2.1",
     "@radix-ui/react-dialog": "1.1.15",
     "@radix-ui/react-dropdown-menu": "2.1.16",
     "@radix-ui/react-popover": "1.1.15",
@@ -30,7 +27,8 @@
     "lucide-react": "1.61.0",
     "next": "16.4.2",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "vaul": "1.1.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.2.0",

@@ -8,9 +8,9 @@ Add or update the repository's row in `planning/adoption.json` (a PR to bloxwap/
 
 | Applicability | Install | Never add |
 | --- | --- | --- |
-| Product runtime UI (web) | `@bloxwap/hig-tokens`, `-contracts`, `-react`; `@bloxwap/font`; `-chart` with `@bloxwap/chart` only for `PriceChart` (#96) | Copied component folders or token CSS |
-| Product runtime UI (React Native) | `@bloxwap/hig-tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
-| Docs or marketing site | `@bloxwap/hig-tokens`, `-react` (CSS and the controls in use); `@bloxwap/font`; `-og-fonts` as a build-time dev dependency for OG cards only | A local `.btn` layer, a palette copy, `vendor/hig`, `-native-fonts` for OG cards |
+| Product runtime UI (web) | `@bloxwap/hig/tokens`, `-contracts`, `-react`; `@bloxwap/font`; `-chart` with `@bloxwap/chart` only for `PriceChart` (#96) | Copied component folders or token CSS |
+| Product runtime UI (React Native) | `@bloxwap/hig/tokens`, `-contracts`, `-native`, `-native-fonts`; optional `-feedback` plus Expo peers | DOM renderer imports, font binaries outside the manifest |
+| Docs or marketing site | `@bloxwap/hig/tokens`, `-react` (CSS and the controls in use); `@bloxwap/font`; `-og-fonts` as a build-time dev dependency for OG cards only | A local `.btn` layer, a palette copy, `vendor/hig`, `-native-fonts` for OG cards |
 | Brand or content only | Nothing at runtime; follow the principles, content and brand chapters | React, RN or audio dependencies |
 | No UI | Nothing; README and content conventions only | Any HIG runtime dependency |
 
@@ -28,7 +28,7 @@ Building candidates requires `npm run generate:fonts` with Python packages `font
 
 For unpublished changes only, follow the [release dry-run procedure](release.md) and consume its exact packed candidate archives. Never copy `packages/*/src`, `dist` folders, token CSS, palettes, fonts or feedback engines. Replace candidate `file:` dependencies with registry versions and remove obsolete archives when adopting a published release. Retain provenance manifests and historical validation records.
 
-Then follow the installation chapter for your platform: import `@bloxwap/hig-tokens/css` and `@bloxwap/hig-react/css` once (add `@bloxwap/hig-react/css/base` first only when HIG owns the whole page), use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
+Then follow the installation chapter for your platform: import `@bloxwap/hig/tokens/css` and `@bloxwap/hig/react/css` once (add `@bloxwap/hig/react/css/base` first only when HIG owns the whole page), use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
 
 ## 3. Add the scoped drift check to CI
 

@@ -20,7 +20,7 @@
   {
     "id": "native-fonts",
     "owner": "Font/native maintainers",
-    "reason": "HIG generates 15 pinned static native TTFs from Font 0.1.2 with hash checks, shipped in @bloxwap/hig-native-fonts and no longer in the web tokens package (#64, PR #75); registration and Dynamic Type/large-text layouts were observed on the iOS Simulator and Android emulator (#53). Physical rasterization remains (#55). Physical rasterization is covered by the dated owner-approved exception for every #55 checklist item, including #7, in evidence/physical/owner-attestation-2026-10-19.md and merged PR #131. This is an owner attestation, not an automated physical observation; any contradictory result voids the relevant exception.",
+    "reason": "HIG generates 15 pinned static native TTFs from Font 0.1.2 with hash checks, shipped in @bloxwap/hig/native-fonts and no longer in the web tokens package (#64, PR #75); registration and Dynamic Type/large-text layouts were observed on the iOS Simulator and Android emulator (#53). Physical rasterization remains (#55). Physical rasterization is covered by the dated owner-approved exception for every #55 checklist item, including #7, in evidence/physical/owner-attestation-2026-10-19.md and merged PR #131. This is an owner attestation, not an automated physical observation; any contradictory result voids the relevant exception.",
     "status": "approved-exception",
     "tracking": "https://github.com/bloxwap/hig/issues/55",
     "reviewBy": "2027-01-15",

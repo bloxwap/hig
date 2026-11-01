@@ -1,13 +1,13 @@
 {
-  "checkedAt": "2026-10-18T19:26:44.256Z",
-  "sourceCommit": "0e2394428a3971e677e0a97ef5259ac4ca1ec064",
+  "checkedAt": "2026-10-27T18:22:38.653Z",
+  "sourceCommit": "c5b9a9465712a7f7f07ef83a704ccb905bbc3314",
   "sourceDirty": true,
   "engines": {
     "chromium": {
       "passed": true,
       "layout": {
         "scrollTop": 100,
-        "headerTop": 83.4375,
+        "headerTop": 84.4375,
         "regionTop": 83.4375,
         "rtlPriceInset": 12,
         "cellTextAlign": "end",
@@ -40,13 +40,97 @@
         "option",
         "After"
       ],
+      "animatedNumber": {
+        "initial": {
+          "formatted": "999,99",
+          "label": "Animated price: $999,99 USD"
+        },
+        "initialAnimations": {
+          "count": 0,
+          "targets": 0,
+          "states": []
+        },
+        "carry": {
+          "formatted": "1.000,01",
+          "label": "Animated price: $1.000,01 USD"
+        },
+        "carryAnimations": {
+          "count": 11,
+          "targets": 11,
+          "states": [
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running"
+          ]
+        },
+        "latest": {
+          "formatted": "88,88",
+          "label": "Animated price: $88,88 USD"
+        },
+        "latestVisual": {
+          "text": "$88,88 USD",
+          "places": []
+        },
+        "staleStates": [
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle"
+        ],
+        "settledAnimations": {
+          "count": 0,
+          "targets": 0,
+          "states": []
+        },
+        "reduced": {
+          "formatted": "1.234,56",
+          "label": "Animated price: $1.234,56 USD"
+        },
+        "reducedAnimations": {
+          "count": 0,
+          "targets": 0,
+          "states": []
+        },
+        "reducedVisual": {
+          "text": "$1.234,56 USD",
+          "places": []
+        }
+      },
+      "arabic": {
+        "arabicAnimations": 10,
+        "arabicLabel": "Arabic price: ١٬٠٠٠٫٠١",
+        "arabicVisual": "١٬٠٠٠٫٠١"
+      },
       "errors": []
     },
     "webkit": {
       "passed": true,
       "layout": {
         "scrollTop": 100,
-        "headerTop": 83.4375,
+        "headerTop": 84.4375,
         "regionTop": 83.4375,
         "rtlPriceInset": 12,
         "cellTextAlign": "end",
@@ -79,6 +163,90 @@
         "option",
         "After"
       ],
+      "animatedNumber": {
+        "initial": {
+          "formatted": "999,99",
+          "label": "Animated price: $999,99 USD"
+        },
+        "initialAnimations": {
+          "count": 0,
+          "targets": 0,
+          "states": []
+        },
+        "carry": {
+          "formatted": "1.000,01",
+          "label": "Animated price: $1.000,01 USD"
+        },
+        "carryAnimations": {
+          "count": 11,
+          "targets": 11,
+          "states": [
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running",
+            "running"
+          ]
+        },
+        "latest": {
+          "formatted": "88,88",
+          "label": "Animated price: $88,88 USD"
+        },
+        "latestVisual": {
+          "text": "$88,88 USD",
+          "places": []
+        },
+        "staleStates": [
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle",
+          "idle"
+        ],
+        "settledAnimations": {
+          "count": 0,
+          "targets": 0,
+          "states": []
+        },
+        "reduced": {
+          "formatted": "1.234,56",
+          "label": "Animated price: $1.234,56 USD"
+        },
+        "reducedAnimations": {
+          "count": 0,
+          "targets": 0,
+          "states": []
+        },
+        "reducedVisual": {
+          "text": "$1.234,56 USD",
+          "places": []
+        }
+      },
+      "arabic": {
+        "arabicAnimations": 10,
+        "arabicLabel": "Arabic price: ١٬٠٠٠٫٠١",
+        "arabicVisual": "١٬٠٠٠٫٠١"
+      },
       "errors": []
     }
   }

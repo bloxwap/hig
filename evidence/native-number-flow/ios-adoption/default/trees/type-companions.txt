@@ -1,0 +1,64 @@
+Optional(Attributes: Application, 0x10a0026c0, pid: 65020, label: 'Bloxwap HIG Gallery'
+Element subtree:
+ →Application, 0x10a0026c0, pid: 65020, label: 'Bloxwap HIG Gallery'
+    Window (Main), 0x10a002a80, {{0.0, 0.0}, {402.0, 874.0}}
+      Other, 0x10a002d00, {{0.0, 0.0}, {402.0, 874.0}}
+        Other, 0x10a002e40, {{0.0, 0.0}, {402.0, 874.0}}
+          Other, 0x10a002bc0, {{0.0, 0.0}, {402.0, 874.0}}
+            Other, 0x10a003200, {{0.0, 0.0}, {402.0, 874.0}}
+              Other, 0x10a003700, {{0.0, 0.0}, {402.0, 874.0}}
+                Other, 0x10a003840, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10a0035c0, {{0.0, 0.0}, {402.0, 874.0}}
+                  Other, 0x10a003ac0, {{0.0, 0.0}, {402.0, 874.0}}
+                    Button, 0x10a003d40, {{16.0, 78.0}, {73.7, 48.3}}, label: 'Type'
+                    Button, 0x10a003e80, {{97.7, 78.0}, {105.3, 48.3}}, label: 'Numbers'
+                    Button, 0x10a003c00, {{211.0, 78.0}, {94.0, 48.3}}, label: 'Notices'
+                    Button, 0x10a0003c0, {{16.0, 134.3}, {81.0, 48.3}}, label: 'Sheet'
+                    StaticText, 0x10a000000, {{16.0, 194.7}, {370.0, 20.3}}, identifier: 'adoption-ready', label: 'Adoption type · scale 1.00 · locale en-US'
+                      StaticText, 0x10a003340, {{16.0, 194.7}, {370.0, 20.3}}, label: 'Adoption type · scale 1.00 · locale en-US'
+                    StaticText, 0x10a0030c0, {{16.0, 227.0}, {370.0, 20.3}}, identifier: 'adoption-result', label: 'Ready'
+                      StaticText, 0x10a003480, {{16.0, 227.0}, {370.0, 20.3}}, label: 'Ready'
+                    Other, 0x10a002f80, {{16.0, 259.3}, {370.0, 564.7}}, identifier: 'adoption-type-scroll'
+                      ScrollView, 0x10a002800, {{16.0, 259.3}, {370.0, 564.7}}
+                        Other, 0x10a002940, {{16.0, 259.3}, {370.0, 759.7}}
+                          Other, 0x10a002080, {{16.0, 259.3}, {370.0, 759.7}}
+                            StaticText, 0x10a002300, {{16.0, 259.3}, {370.0, 72.3}}, identifier: 'adoption-font-registration', label: 'Registered faces: BloxwapSansRegular, BloxwapSansSemiBold, BloxwapMonoRegular, BloxwapSansKRRegular, BloxwapSansKRSemiBold, BloxwapSansSCRegular, BloxwapSansSCSemiBold'
+                              StaticText, 0x10a002580, {{16.0, 259.3}, {370.0, 72.3}}, label: 'Registered faces: BloxwapSansRegular, BloxwapSansSemiBold, BloxwapMonoRegular, BloxwapSansKRRegular, BloxwapSansKRSemiBold, BloxwapSansSCRegular, BloxwapSansSCSemiBold'
+                            StaticText, 0x10a0021c0, {{16.0, 347.7}, {370.0, 24.3}}, label: 'Display language'
+                              StaticText, 0x10a002440, {{16.0, 347.7}, {370.0, 24.3}}, label: 'Display language'
+                            Other, 0x10a001cc0, {{16.0, 372.0}, {370.0, 68.7}}, label: '한국어', value: radio button, chec...
+                            Other, 0x10a001540, {{16.0, 440.7}, {370.0, 68.7}}, label: '中文', value: radio button, unch...
+                            Other, 0x10a001900, {{16.0, 509.3}, {370.0, 68.7}}, label: 'English', value: radio button, unch...
+                            StaticText, 0x10a0017c0, {{16.0, 594.0}, {370.0, 24.3}}, identifier: 'adoption-ko-regular', label: '한국어 한국어'
+                              StaticText, 0x10a001f40, {{16.0, 594.0}, {370.0, 24.3}}, label: '한국어 한국어'
+                            StaticText, 0x10a001b80, {{16.0, 634.3}, {370.0, 30.3}}, identifier: 'adoption-ko-semibold', label: '한국어'
+                              StaticText, 0x10a001e00, {{16.0, 634.3}, {370.0, 30.3}}, label: '한국어'
+                            StaticText, 0x10a001a40, {{16.0, 680.7}, {370.0, 24.3}}, identifier: 'adoption-zh-regular', label: '中文 中文'
+                              StaticText, 0x10a000b40, {{16.0, 680.7}, {370.0, 24.3}}, label: '中文 中文'
+                            StaticText, 0x10a001180, {{16.0, 721.0}, {370.0, 30.3}}, identifier: 'adoption-zh-semibold', label: '中文'
+                              StaticText, 0x10a001400, {{16.0, 721.0}, {370.0, 30.3}}, label: '中文'
+                            StaticText, 0x10a001040, {{16.0, 767.3}, {370.0, 30.3}}, identifier: 'adoption-positive', label: 'Positive balance: 1,250.25'
+                              StaticText, 0x10a000f00, {{16.0, 767.3}, {370.0, 30.3}}, label: 'Positive balance: 1,250.25'
+                            StaticText, 0x10a000dc0, {{16.0, 813.7}, {370.0, 30.3}}, identifier: 'adoption-negative', label: 'Negative change: -250.50'
+                              StaticText, 0x10a001680, {{16.0, 813.7}, {370.0, 30.3}}, label: 'Negative change: -250.50'
+                            Other, 0x10a000780, {{16.0, 860.0}, {370.0, 30.3}}
+                              StaticText, 0x10a000640, {{16.0, 860.0}, {370.0, 30.3}}, identifier: 'adoption-animated', label: 'Animated balance: 1,250.25'
+                                StaticText, 0x106e3e580, {{16.0, 860.0}, {370.0, 30.3}}, label: 'Animated balance: 1,250.25'
+                            Button, 0x106e3f480, {{16.0, 906.3}, {150.7, 48.3}}, label: 'Update number'
+                            Button, 0x106e3f5c0, {{16.0, 970.7}, {168.3, 48.3}}, identifier: 'adoption-busy', label: 'Log out · Working', value: busy, Disabled
+                        Other, 0x106e3f340, {{353.0, 259.3}, {30.0, 552.7}}, label: 'Vertical scroll bar, 2 pages', value: 0%
+                          Other, 0x106e3cb40, {{380.0, 262.3}, {3.0, 381.0}}
+                        Other, 0x106e3ca00, {{28.0, 791.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x106e3ea80, {{65.0, 818.0}, {272.0, 3.0}}
+                        Other, 0x106e3ebc0, {{353.0, 259.3}, {30.0, 552.7}}, label: 'Vertical scroll bar, 2 pages', value: 0%
+                          Other, 0x106e3e940, {{380.0, 262.3}, {3.0, 381.0}}
+                        Other, 0x106e3f0c0, {{28.0, 791.0}, {346.0, 30.0}}, label: 'Horizontal scroll bar, 1 page', value: 0%
+                          Other, 0x106e3f200, {{65.0, 818.0}, {272.0, 3.0}}
+Path to element:
+ →Application, 0x10a0026c0, pid: 65020, label: 'Bloxwap HIG Gallery'
+Query chain:
+ →Find: Application 'com.bloxwap.hig.gallery'
+  Output: {
+    Application, 0x106e3ef80, pid: 65020, label: 'Bloxwap HIG Gallery'
+  }
+)

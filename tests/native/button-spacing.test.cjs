@@ -1,7 +1,7 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Text:RNText,Platform}=require('react-native');
-const {Button,busyAccessibilityLabel}=require('../../packages/native/src/button');
+const {Button,busyAccessibilityLabel}=require('../../packages/hig/native/src/button');
 const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});

@@ -1,10 +1,10 @@
 const React=require('react');
 const {act,create}=require('react-test-renderer');
 const {View,Text:RNText,StyleSheet}=require('react-native');
-const {nativeSrgb,nativeMetrics}=require('@bloxwap/hig-tokens');
-const {HIGProvider}=require('../../packages/native/src/provider');
-const {EmptyState}=require('../../packages/native/src/status');
-const {Button}=require('../../packages/native/src/button');
+const {nativeSrgb,nativeMetrics}=require('@bloxwap/hig/tokens');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {EmptyState}=require('../../packages/hig/native/src/status');
+const {Button}=require('../../packages/hig/native/src/button');
 const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});

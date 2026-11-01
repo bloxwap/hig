@@ -1,6 +1,6 @@
 # Semantic feedback · HIG 0.1.0
 
-Issues #21, #25. Types in `@bloxwap/hig-contracts/feedback` and `@bloxwap/hig-feedback` import without DOM, RN, React, audio, Expo or hardware APIs. Base renderers accept an optional `FeedbackSink`; no provider or feedback backend is required to perform an action.
+Issues #21, #25. Types in `@bloxwap/hig/contracts/feedback` and `@bloxwap/hig/feedback` import without DOM, RN, React, audio, Expo or hardware APIs. Base renderers accept an optional `FeedbackSink`; no provider or feedback backend is required to perform an action.
 
 | Intent | Timing | Sound | Haptic | Cooldown |
 | --- | --- | --- | --- | --- |

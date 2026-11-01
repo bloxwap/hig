@@ -2,7 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 // @ts-expect-error Executable built-in string gate (plain ESM, no types).
 import {findBuiltInStrings,scanPackages} from '../scripts/check-built-in-strings.mjs';
-import {defaultMessages,messageKeys,resolveMessages,type HIGMessages} from '../packages/contracts/src/messages';
+import {defaultMessages,messageKeys,resolveMessages,type HIGMessages} from '../packages/hig/contracts/src/messages';
 type Hit={file?:string;line:number;text:string;reason:string};
 const scan=(source:string):Hit[]=>findBuiltInStrings(source,'probe.tsx');
 const guide=readFileSync('docs/foundations/localization.md','utf8');
@@ -27,7 +27,7 @@ describe('hard-coded built-in strings (#62)',()=>{
   ['non-English literal','export const A=()=><button>Fermer</button>;'],
  ])('flags %s',(_,source)=>{expect(scan(source).length).toBeGreaterThan(0);});
  it('ignores code-only literals',()=>{
-  const source=["'use client';","import React from 'react';","import {x} from '@bloxwap/hig-contracts';",
+  const source=["'use client';","import React from 'react';","import {x} from '@bloxwap/hig/contracts';",
    "export function B({intent='primary',type='button'}:{intent?:string;type?:string}){",
    " if(typeof intent==='string'&&intent==='ghost')return null;",
    " return <button type={type} className='hig-button' role='status' data-intent={intent} style={{fontVariant:['tabular-nums']}} aria-hidden='true'>{x?'●':'○'} {intent==='primary'?1:2}</button>;}",

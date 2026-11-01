@@ -4,7 +4,7 @@ Labeled inputs for text, search, and amounts, with visible help and validation.
 
 Includes `Field`, `Label`, `Input`, `TextArea`, `AmountInput`, and `SearchInput`.
 
-Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig-react/field` or `@bloxwap/hig-native/field` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/field` or `@bloxwap/hig/native/field` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 

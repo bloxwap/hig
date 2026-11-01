@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {resolvePrimaryColor} from '../packages/tokens/src/theme';
+import {resolvePrimaryColor} from '../packages/hig/tokens/src/theme';
 
 describe('primary colour resolution',()=>{
  it('normalizes short hex and selects readable text for light and dark brands',()=>{

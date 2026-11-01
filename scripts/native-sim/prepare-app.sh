@@ -19,9 +19,9 @@ HIG_NATIVE_TARBALLS=()
 while IFS= read -r archive; do HIG_NATIVE_TARBALLS+=("$archive"); done < <(node --input-type=module -e '
 import {readFileSync} from "node:fs"; import {resolve} from "node:path";
 const directory=process.argv[1], report=JSON.parse(readFileSync(resolve(directory,"report.json"),"utf8"));
-for(const name of ["contracts","feedback","native","native-fonts","tokens"]){const artifact=report.artifacts.find(a=>a.package===`@bloxwap/hig-${name}`);if(!artifact)throw Error(`Missing native release artifact: ${name}`);console.log(resolve(directory,artifact.file));}
+const artifact=report.artifacts.find(a=>a.package==="@bloxwap/hig");if(!artifact)throw Error("Missing @bloxwap/hig release artifact");console.log(resolve(directory,artifact.file));
 ' "$HIG_RELEASE_DIR")
-[ "${#HIG_NATIVE_TARBALLS[@]}" -eq 5 ] || { echo 'Expected five native artifacts in the release report' >&2; exit 1; }
+[ "${#HIG_NATIVE_TARBALLS[@]}" -eq 1 ] || { echo 'Expected the @bloxwap/hig artifact in the release report' >&2; exit 1; }
 (cd "$APP" && npm install --no-audit --no-fund "${HIG_NATIVE_TARBALLS[@]}")
 node --input-type=module -e "import {verifyNativeReact,verifyExpoNativeModules,verifyDeclaredPeers} from '$HIG/scripts/native-compatibility.mjs';console.log(verifyNativeReact('$APP'),verifyExpoNativeModules('$APP'),verifyDeclaredPeers('$APP'))"
 (cd "$APP" && CI=1 npx expo prebuild --no-install) # idempotent; applies app.json changes

@@ -4,7 +4,7 @@ Buttons, typography, and layout primitives for clear actions and related content
 
 Includes `Button`, `IconButton`, `Link`, `Text`, `Heading`, `Stack`, `Inline`, `Surface`, `Card`, and `Separator`.
 
-Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig-react/button` or `@bloxwap/hig-native/button` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig/react/button` or `@bloxwap/hig/native/button` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
