@@ -31,15 +31,15 @@ export function verifyExpoNativeModules(directory){
   if(native)installed[name]=JSON.parse(readFileSync(manifest,'utf8')).version;}
  return assertExpoNativeModules(installed,bundled,(version,range)=>semver.satisfies(version,range,{includePrerelease:true}));
 }
-/** Every peer range a @bloxwap/hig-* native package declares must accept the version its consumer actually installed (#68). */
+/** Every peer range @bloxwap/hig declares for native hosts must accept the version its consumer actually installed (#68). */
 export function assertDeclaredPeers(packages,installed,satisfies){const mismatches=[];for(const [name,peers] of Object.entries(packages))for(const [peer,range] of Object.entries(peers)){const version=installed[peer];if(version&&!satisfies(version,range))mismatches.push(`${name} declares ${peer} ${range}; consumer installed ${version}`);}if(mismatches.length)throw Error(`Declared peer range mismatch: ${mismatches.join('; ')}`);return installed;}
 export function verifyDeclaredPeers(directory){
  const require=createRequire(join(resolve(directory),'package.json'));
  const semver=createRequire(import.meta.url)('semver');
- // Read manifests from node_modules directly: export maps (hig-native's included) need not expose package.json.
+ // Read manifests from node_modules directly: export maps need not expose package.json.
  const manifest=name=>{for(const base of require.resolve.paths(name)??[]){const file=join(base,name,'package.json');if(existsSync(file))return JSON.parse(readFileSync(file,'utf8'));}return undefined;};
  const packages={},installed={};
- for(const name of ['@bloxwap/hig-native','@bloxwap/hig-feedback']){const own=manifest(name);if(!own)continue;packages[name]=own.peerDependencies??{};for(const peer of Object.keys(packages[name])){const version=manifest(peer)?.version;if(version)installed[peer]=version;}}
- if(!packages['@bloxwap/hig-native'])throw Error('Consumer does not install @bloxwap/hig-native');
+ for(const name of ['@bloxwap/hig']){const own=manifest(name);if(!own)continue;packages[name]=own.peerDependencies??{};for(const peer of Object.keys(packages[name])){const version=manifest(peer)?.version;if(version)installed[peer]=version;}}
+ if(!packages['@bloxwap/hig'])throw Error('Consumer does not install @bloxwap/hig');
  return assertDeclaredPeers(packages,installed,(version,range)=>semver.satisfies(version,range));
 }

@@ -1,0 +1,286 @@
+{
+  "generatedAt": "2026-10-27T18:36:22.079Z",
+  "scope": "Current workspace JS and generated static fonts copied into a prepared iOS Simulator app; separate from packed-install validation.",
+  "simulator": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+  "versions": {
+    "expo": "58.0.20",
+    "react": "19.3.0",
+    "react-native": "0.88.0",
+    "@gorhom/bottom-sheet": "5.2.14",
+    "react-native-reanimated": "4.7.1",
+    "react-native-worklets": "0.13.0"
+  },
+  "checks": [
+    {
+      "test": "testTypographyAndBusySpacing",
+      "prefix": "default",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "24B114",
+          "osVersion": "27.2",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "animatedFrame": "{{16, 665.00003051757812}, {370, 30.33331298828125}}",
+        "animatedUpdatedLabel": "Animated balance: 1,251.25",
+        "busyFrame": "{{16, 775.66665649414062}, {168.33332824707031, 48.33331298828125}}",
+        "busyLabel": "Log out · Working",
+        "environment": "Adoption type · scale 1.00 · locale en-US",
+        "negativeFrame": "{{16, 813.66665649414062}, {370, 30.33331298828125}}",
+        "positiveFrame": "{{16, 767.33334350585938}, {370, 30.3333740234375}}",
+        "registration": "Registered faces: BloxwapSansRegular, BloxwapSansSemiBold, BloxwapMonoRegular, BloxwapSansKRRegular, BloxwapSansKRSemiBold, BloxwapSansSCRegular, BloxwapSansSCSemiBold"
+      }
+    },
+    {
+      "test": "testNumberFlow",
+      "prefix": "default",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "24B114",
+          "osVersion": "27.2",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "cases": [
+          {
+            "burst": "7,654,321.09",
+            "direction": "ltr",
+            "environment": "Number locale en-US · direction ltr · scale 1.00 · motion normal",
+            "fallback": "—",
+            "group": "1,234,567.89",
+            "initial": "999.99",
+            "locale": "en-US",
+            "rtlStaticFallback": ""
+          },
+          {
+            "burst": "٧٬٦٥٤٬٣٢١٫٠٩",
+            "direction": "rtl",
+            "environment": "Number locale ar-EG · direction rtl · scale 1.00 · motion normal",
+            "fallback": "—",
+            "group": "١٬٢٣٤٬٥٦٧٫٨٩",
+            "initial": "٩٩٩٫٩٩",
+            "locale": "ar-EG",
+            "rtlStaticFallback": ""
+          },
+          {
+            "burst": "۷٬۶۵۴٬۳۲۱٫۰۹",
+            "direction": "rtl",
+            "environment": "Number locale fa-IR · direction rtl · scale 1.00 · motion normal",
+            "fallback": "—",
+            "group": "۱٬۲۳۴٬۵۶۷٫۸۹",
+            "initial": "۹۹۹٫۹۹",
+            "locale": "fa-IR",
+            "rtlStaticFallback": ""
+          },
+          {
+            "burst": "٧٬٦٥٤٬٣٢١٫٠٩",
+            "direction": "ltr",
+            "environment": "Number locale ar-EG · direction rtl · scale 1.00 · motion normal",
+            "fallback": "—",
+            "group": "١٬٢٣٤٬٥٦٧٫٨٩",
+            "initial": "٩٩٩٫٩٩",
+            "locale": "ar-EG",
+            "rtlStaticFallback": "Number flow: ١٬٢٣٤٬٥٦٧٫٨٩"
+          }
+        ],
+        "limits": "Final accessibility labels only; ar-EG LTR supplies localized reels without relying on iOS Hermes numbering-system extensions. Captures require visual/manual glyph, bidi and animation review. No VoiceOver speech or physical-device claim.",
+        "mode": "full"
+      }
+    },
+    {
+      "test": "testToastRecoveryAndDismissal",
+      "prefix": "default",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "24B114",
+          "osVersion": "27.2",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "dismissedRequest": 8,
+        "environment": "Adoption toast · scale 1.00 · locale en-US",
+        "recoveredRequest": 8,
+        "remainingRequest7": true,
+        "scrollSwipesToLastRecovery": 2,
+        "viewportFrame": "{{16, 259.33334350585938}, {370, 524.3333740234375}}"
+      }
+    },
+    {
+      "test": "testCustomSheetCardStack",
+      "prefix": "default",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "24B114",
+          "osVersion": "27.2",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "accountTitleY": 513.8999938964844,
+        "activityTitleY": 319.3999938964844,
+        "builtInCloseCount": 0,
+        "callerCloseCount": 1,
+        "nestedScrollSwipes": 2,
+        "triggerHittableAfterClose": true
+      }
+    },
+    {
+      "test": "testToastRecoveryAndDismissal",
+      "prefix": "ax5",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "24B114",
+          "osVersion": "27.2",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "dismissedRequest": 8,
+        "environment": "Adoption toast · scale 3.57 · locale en-US",
+        "recoveredRequest": 8,
+        "remainingRequest7": true,
+        "scrollSwipesToLastRecovery": 9,
+        "viewportFrame": "{{16, 285.33334350585938}, {370, 524.3333740234375}}"
+      }
+    },
+    {
+      "test": "testNumberFlow",
+      "prefix": "ax5",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "24B114",
+          "osVersion": "27.2",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "cases": [
+          {
+            "burst": "٧٬٦٥٤٬٣٢١٫٠٩",
+            "direction": "ltr",
+            "environment": "Number locale ar-EG · direction ltr · scale 3.57 · motion normal",
+            "fallback": "—",
+            "group": "١٬٢٣٤٬٥٦٧٫٨٩",
+            "initial": "٩٩٩٫٩٩",
+            "locale": "ar-EG",
+            "rtlStaticFallback": ""
+          }
+        ],
+        "limits": "Final accessibility labels only; ar-EG LTR supplies localized reels without relying on iOS Hermes numbering-system extensions. Captures require visual/manual glyph, bidi and animation review. No VoiceOver speech or physical-device claim.",
+        "mode": "smoke"
+      }
+    },
+    {
+      "test": "testNumberFlow",
+      "prefix": "reduce-motion",
+      "passedTests": 1,
+      "failedTests": 0,
+      "devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "E3E1B342-E473-4DD7-A356-D6BFAB4CB57F",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "24B114",
+          "osVersion": "27.2",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "observations": {
+        "cases": [
+          {
+            "burst": "٧٬٦٥٤٬٣٢١٫٠٩",
+            "direction": "ltr",
+            "environment": "Number locale ar-EG · direction ltr · scale 1.00 · motion reduced",
+            "fallback": "—",
+            "group": "١٬٢٣٤٬٥٦٧٫٨٩",
+            "initial": "٩٩٩٫٩٩",
+            "locale": "ar-EG",
+            "rtlStaticFallback": ""
+          }
+        ],
+        "limits": "Final accessibility labels only; ar-EG LTR supplies localized reels without relying on iOS Hermes numbering-system extensions. Captures require visual/manual glyph, bidi and animation review. No VoiceOver speech or physical-device claim.",
+        "mode": "smoke"
+      }
+    }
+  ],
+  "sources": {
+    "packages/native/src/provider.tsx": "e572bad63e3beda4455b8481948c04f9f826235578d493de0534cf78ebc0837f",
+    "packages/native/src/surface.tsx": "f7ffe74dddfff7fbc5626d0a72d2a56193ab35a35be59acba117af522a6e5626",
+    "packages/native/src/radio-group.tsx": "3516dc17aedc242eebc170f0668a63dd7f4b7bec68000acc02bffce27cf30b09",
+    "packages/native/src/data.tsx": "5c2cb2ae8138a1e48318b3d30d7068ffd5c5d36a86e434c491565e25a0ef27f2",
+    "packages/native/src/animated-number.tsx": "14b0d6528ac688c26b22647eeaf7a4ba8ddd2cab0f71974d8c2fff0fe525beef",
+    "packages/native/src/animated-number-model.ts": "00e04f2804f881af621d9c6505bbe98c87d8c2e530c101ade3e96499b6ebb6cf",
+    "packages/native/src/status.tsx": "e0d64fd6dbbb02b6821ff8d4bd029b9873393bd89071204c0208d265cb71b311",
+    "packages/native/src/button.tsx": "3c9b9612764cf1b026041c97b0f0efd5acdfe4ad23648f51fa2d06a744f6df55",
+    "packages/native/src/gesture-sheet.tsx": "f4974ee55ff699ad4b108f3fbac9f7d0119b16fe846ede0a831834b834c2bdee",
+    "fixtures/native/adoption-check.tsx": "1ff0b9541a8449f3e0afc18e49ea9e07ce4da54285a70509ea7c6870562bed38",
+    "fixtures/native/index-adoption.js": "5fef4ed0e6eb94bf14542416ec9d89640bc61d9199062183be8b4cdc387e5139",
+    "scripts/native-sim/ios/UITests/AdoptionVerificationUITests.swift": "ac8253b82b53e2beeb4ed2ea8a9b16613ecd107ecd2babe9bdeff962d070a7ad"
+  },
+  "runtime": {
+    "packages/native/dist/provider.js": "4f5828203f5f414b6e900f8b279ce5e0a43cfc62958edc271a246bc34df8acdb",
+    "packages/native/dist/surface.js": "d2350108360dd05e11ebcec7ade7b87d39ce54a80bad78a5713de7d80e867429",
+    "packages/native/dist/radio-group.js": "90460b53cbb0e20878846a868f521a108e2e51a037e77e8311181266be40332d",
+    "packages/native/dist/data.js": "c8be01388d768a699bdadaab6a1a2b49835db6a97b69ec62c5b7569fee2865b5",
+    "packages/native/dist/animated-number.js": "5b620880a9dffba4300c00a9d8d89b3a7bca021f9842262f6e946fa2fadf99e1",
+    "packages/native/dist/animated-number-model.js": "0331ca149e2a6ba13637534a9ab64df40bbd850eb84eddc5b9d04c17568ba133",
+    "packages/native/dist/status.js": "9e4808bc711e8904c0e8d1e7751536bd74618e08d0368a36fb2fd60247fafa10",
+    "packages/native/dist/button.js": "181ce60d2be2a061d0c9db09874b7a2f91163982fb7a86f70c86c5820d79a0b0",
+    "packages/native/dist/gesture-sheet.js": "37607d6ca0737fc30a74a7db9645cb03887140a85f1bc183599aaf58f024d693"
+  },
+  "fonts": {
+    "packages/native-fonts/fonts/BloxwapSans.ttf": "778520981b42b408c19e43fc6d62e513ff0c47bd9870d62159e2e74cda2f79f5",
+    "packages/native-fonts/fonts/BloxwapSans-SemiBold.ttf": "7257cb505ec841dae8f5ff3160c629d08003bfd31b9d94334dd4a31798444c8c",
+    "packages/native-fonts/fonts/BloxwapMono.ttf": "6469eea2fc3fbad052301a6e0febf0182aef280b888acbbf1390c623ff168b65",
+    "packages/native-fonts/fonts/BloxwapSansKR.ttf": "d8eae9352bd2d4ae09eeecdb3ffd9cf9c914982f24db3ff816bb16d8ea329c1e",
+    "packages/native-fonts/fonts/BloxwapSansKR-SemiBold.ttf": "0897de89055aa2d30722a5bee8a97443a373c5105b726846508477ae49a03e8c",
+    "packages/native-fonts/fonts/BloxwapSansSC.ttf": "1a6802ac902328f3cd5040d7400a2e9e46f15871fa6ea2c9d8138dfffb8333cb",
+    "packages/native-fonts/fonts/BloxwapSansSC-SemiBold.ttf": "9af551f298cc13fdffe4f58e7373099f1a84d3caca86a67399acf2cc35970d4b"
+  },
+  "limits": [
+    "Simulator touch, layout and final accessibility-label observations; VoiceOver and physical devices were not exercised.",
+    "AX5 covers notification recovery/dismissal and the LTR Arabic-digit NumberFlow smoke flow; reduced motion covers the same localized-reel smoke flow.",
+    "NumberFlow captures still require visual/manual review for glyph shaping, bidi order and animation quality; final labels do not certify those behaviors.",
+    "Android runtime adoption behavior was not observed by this iOS run; use run-adoption-android.sh for its separate report."
+  ]
+}

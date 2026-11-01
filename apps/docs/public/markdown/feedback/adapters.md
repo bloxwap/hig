@@ -4,7 +4,7 @@ Issues #22–#24. Base imports do not load adapters. Individual `web-sound`, `br
 
 ## Web sound
 
-Install `@bloxwap/hig-feedback@0.1.0 @bloxwap/sfx@^0.2.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
+Install `@bloxwap/hig/feedback@0.1.0 @bloxwap/sfx@^0.2.0`. `createWebSoundAdapter()` loads SFX only for enabled requests after an accepted interaction. It calls the documented unlock/play APIs, passes per-call volume and uses the same presets as native. New requests replace pending startup, so delayed loading does not create a backlog. It avoids upstream global enabled/volume stores because HIG preferences are root-scoped. `@bloxwap/sfx/react` owns global preference helpers; using those alongside HIG would create competing preference owners.
 
 HIG passes one adapter-local `AbortSignal` to each play. Muting, backgrounding, explicit cancellation and disposal abort that root's plays; the next accepted request gets a fresh signal. This stops buffered and live voices while other roots and host-owned voices continue. Generations still discard superseded startup/unlock requests. HIG reference-counts default adapters and disposes the shared engine after the last user. A host that also owns that engine should inject/own its lifecycle.
 

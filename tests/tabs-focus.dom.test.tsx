@@ -1,7 +1,7 @@
 import React,{useLayoutEffect,useState} from 'react';
 import {render,screen,fireEvent,cleanup} from '@testing-library/react';
 import {afterEach,it,expect} from 'vitest';
-import {Tabs} from '../packages/react/src/navigation';
+import {Tabs} from '../packages/hig/react/src/navigation';
 
 afterEach(cleanup);
 it('sets a newly visible panel tab stop before a parent layout effect can observe it (#97)',()=>{

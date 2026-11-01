@@ -1,12 +1,14 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "evidence": "automated (local tarball, clean temporary consumer)",
-  "package": "@bloxwap/hig-og-fonts",
+  "package": "@bloxwap/hig",
+  "entry": "@bloxwap/hig/og-fonts",
+  "ogFontsGzipBytes": 840599,
   "tarball": {
-    "file": "bloxwap-hig-og-fonts-0.1.0.tgz",
-    "bytes": 844017,
-    "unpackedBytes": 2195001,
-    "sha256": "7026a1f942c9703010c6989a63af8aa32cd89237ff087dd8912b95b805ad51c7",
+    "file": "bloxwap-hig-0.2.0.tgz",
+    "bytes": 5410159,
+    "unpackedBytes": 14749180,
+    "sha256": "a59561f8b744b9d48a32e403b171292a6d9e29d6e554ec54fd9820763c78704c",
     "limit": 1000000
   },
   "fonts": [
@@ -18,21 +20,21 @@
   ],
   "hashesMatchNativeManifest": true,
   "consumer": {
-    "next": "16.4.0",
-    "react": "19.2.0",
+    "next": "16.4.2",
+    "react": "19.3.1",
     "renderer": "next/og ImageResponse (Satori + resvg), Node runtime"
   },
   "checks": [
-    "Manifest export and fonts/* exports resolve; every TTF SHA-256 equals fonts/manifest.json and the @bloxwap/hig-native-fonts entry",
+    "Manifest export and fonts/* exports resolve; every TTF SHA-256 equals fonts/manifest.json and the @bloxwap/hig/native-fonts entry",
     "loadOgFonts() returns Satori-shaped fonts; four Bloxwap Sans weights render four different 1200x630 PNGs, all different from the next/og default font",
     "readOgFont() rejects a tampered face",
     "A Next app/og/route.tsx handler (runtime nodejs, top-level loadOgFonts() as in docs/installation.md) built with Turbopack (default next build) and with next build --webpack and served by next start, plus Turbopack output: standalone and webpack output: standalone with serverExternalPackages, each copied to another directory with the consumer node_modules hidden: GET /og-fonts returns every face with its own manifest SHA-256 (all five, and the weight >= 700 subset); GET /og returns 200 image/png 1200x630 for each Sans weight, byte-identical to the plain Node render and different from the default font"
   ],
   "pngBytes": {
-    "400": 33676,
-    "500": 33688,
-    "700": 33394,
-    "900": 33086
+    "400": 33675,
+    "500": 33676,
+    "700": 33390,
+    "900": 33082
   },
   "nextRouteHandler": {
     "turbopack": {
@@ -43,12 +45,12 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33676,
-        "500": 33688,
-        "700": 33394,
-        "900": 33086
+        "400": 33675,
+        "500": 33676,
+        "700": 33390,
+        "900": 33082
       },
-      "fallbackPngBytes": 34520
+      "fallbackPngBytes": 34831
     },
     "webpack": {
       "build": "next build --webpack",
@@ -58,12 +60,12 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33676,
-        "500": 33688,
-        "700": 33394,
-        "900": 33086
+        "400": 33675,
+        "500": 33676,
+        "700": 33390,
+        "900": 33082
       },
-      "fallbackPngBytes": 34520
+      "fallbackPngBytes": 34831
     },
     "turbopack-standalone": {
       "build": "next build",
@@ -75,19 +77,19 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33676,
-        "500": 33688,
-        "700": 33394,
-        "900": 33086
+        "400": 33675,
+        "500": 33676,
+        "700": 33390,
+        "900": 33082
       },
-      "fallbackPngBytes": 34520
+      "fallbackPngBytes": 34831
     },
     "webpack-standalone-external": {
       "build": "next build --webpack",
       "nextConfig": {
         "output": "standalone",
         "serverExternalPackages": [
-          "@bloxwap/hig-og-fonts"
+          "@bloxwap/hig"
         ]
       },
       "serve": "standalone, moved",
@@ -95,12 +97,12 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33676,
-        "500": 33688,
-        "700": 33394,
-        "900": 33086
+        "400": 33675,
+        "500": 33676,
+        "700": 33390,
+        "900": 33082
       },
-      "fallbackPngBytes": 34520
+      "fallbackPngBytes": 34831
     }
   }
 }

@@ -275,6 +275,76 @@ public class NativeVerificationTest {
     write(prefix + "-gallery.json", new JSONObject().put("results", results).put("auditIssues", issues).toString(1));
   }
 
+  private int labelCount(AccessibilityNodeInfo n, String expected) {
+    if (n == null) return 0;
+    int count = label(n).equals(expected) ? 1 : 0;
+    for (int i = 0; i < n.getChildCount(); i++) count += labelCount(n.getChild(i), expected);
+    return count;
+  }
+
+  private int labelCount(String expected) {
+    int count = 0;
+    for (AccessibilityNodeInfo root : roots()) count += labelCount(root, expected);
+    return count;
+  }
+
+  private int waitForLabelCount(String expected, int minimum) {
+    long end = SystemClock.uptimeMillis() + 6000;
+    int count = 0;
+    while (SystemClock.uptimeMillis() < end) {
+      count = labelCount(expected);
+      if (count >= minimum) return count;
+      SystemClock.sleep(100);
+    }
+    return count;
+  }
+
+  /** Exact gallery final labels under host locales/RTL; visual shaping and bidi order still need manual review. */
+  @Test
+  public void animatedNumberReadout() throws Exception {
+    String prefix = arg("prefix", "normal"), expectedMotion = arg("expectReduceMotion", "");
+    float minimumScale = Float.parseFloat(arg("minFontScale", "0"));
+    assertTrue("OS font scale meets the requested runtime condition", ctx.getResources().getConfiguration().fontScale >= minimumScale);
+    String[][] cases = {{"en", "en-US", "ltr", "25", "30"}, {"ar", "ar-EG", "rtl", "٢٥", "٣٠"}, {"fa", "fa-IR", "rtl", "۲۵", "۳۰"}, {"arab", "en-u-nu-arab", "ltr", "٢٥", "٣٠"}};
+    JSONArray results = new JSONArray();
+    for (String[] c : cases) {
+      open("component=Button&state=default");
+      open("component=AnimatedNumberReadout&state=default&messages=" + c[0] + "&dir=" + c[2] + "&diag=1");
+      String initial = "Sample price: " + c[3], updated = "Sample price: " + c[4];
+      int initialCount = waitForLabelCount(initial, 2);
+      assertTrue("Readout and slider expose canonical initial label " + initial, initialCount >= 2);
+      AccessibilityNodeInfo direction = byLabelPrefix("OS RTL:");
+      assertNotNull("RTL diagnostics must be present", direction);
+      assertTrue("Provider direction follows the gallery route", label(direction).contains("HIG direction: " + c[2]));
+      if (!expectedMotion.isEmpty()) {
+        AccessibilityNodeInfo motion = byLabelPrefix("OS reduce motion:");
+        assertNotNull("Reduce-motion diagnostics must be present", motion);
+        assertTrue("OS reduce motion matches the requested runtime condition", label(motion).contains(expectedMotion.equals("1") ? "true" : "false"));
+      }
+      AccessibilityNodeInfo slider = waitFor(n -> "Sample price".contentEquals(label(n)) && n.getRangeInfo() != null, 12000);
+      assertNotNull("AnimatedNumberReadout slider must be exposed", slider);
+      AccessibilityNodeInfo scroller = waitFor(AccessibilityNodeInfo::isScrollable, 1000);
+      for (int i = 0; i < 12 && !slider.isVisibleToUser() && scroller != null; i++) {
+        scroller.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+        settle(250);
+        slider = waitFor(n -> "Sample price".contentEquals(label(n)) && n.getRangeInfo() != null, 2000);
+        assertNotNull("AnimatedNumberReadout slider remains attached while revealed", slider);
+      }
+      boolean performed = slider.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+      assertTrue("Accessibility increment reaches the native slider", performed);
+      settle(500);
+      int updatedCount = waitForLabelCount(updated, 2);
+      assertTrue("Readout and slider expose canonical incremented label " + updated, updatedCount >= 2);
+      open("component=AnimatedNumberReadout&state=empty&messages=" + c[0] + "&dir=" + c[2] + "&diag=1");
+      int fallbackCount = waitForLabelCount("Sample price: —", 1);
+      assertTrue("Null AnimatedNumberReadout keeps its static safe fallback", fallbackCount >= 1);
+      capture("android-animated-number-" + prefix + "-" + c[0]);
+      write("trees/android-animated-number-" + prefix + "-" + c[0] + ".json", tree().toString(1));
+      results.put(new JSONObject().put("locale", c[1]).put("direction", c[2]).put("initial", initial).put("updated", updated).put("fallback", "Sample price: —").put("initialMatchingElements", initialCount).put("updatedMatchingElements", updatedCount).put("incrementPerformed", performed));
+    }
+    write("android-animated-number-" + prefix + ".json", new JSONObject().put("fontScale", ctx.getResources().getConfiguration().fontScale).put("cases", results).put("limits", "Emulator final accessibility labels only; captures require visual/manual glyph, bidi and motion review. No TalkBack speech or physical-device claim.").toString(1));
+  }
+
   /** Injects a short held drag (no fling) that scrolls the gallery by about 30% of the screen. */
   private void dragUp(int w, int h) {
     long start = SystemClock.uptimeMillis();

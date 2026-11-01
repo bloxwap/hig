@@ -3,12 +3,12 @@ import {renderToString} from 'react-dom/server';
 import {afterEach,expect,it,vi} from 'vitest';
 import {cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {HIGProvider,useColors,useThemeStyle} from '../packages/react/src/provider';
-import {Button} from '../packages/react/src/button';
-import {Dialog} from '../packages/react/src/dialog';
-import {Popover} from '../packages/react/src/overlay';
-import {GestureSheet} from '../packages/react/src/gesture-sheet';
-import {nativeSrgb} from '../packages/tokens/src';
+import {HIGProvider,useColors,useThemeStyle} from '../packages/hig/react/src/provider';
+import {Button} from '../packages/hig/react/src/button';
+import {Dialog} from '../packages/hig/react/src/dialog';
+import {Popover} from '../packages/hig/react/src/overlay';
+import {GestureSheet} from '../packages/hig/react/src/gesture-sheet';
+import {nativeSrgb} from '../packages/hig/tokens/src';
 
 afterEach(cleanup);
 function Probe({id}:{id:string}){const colors=useColors();return <output data-testid={id} data-colors={JSON.stringify(colors)} style={useThemeStyle()}/>;}

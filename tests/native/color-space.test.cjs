@@ -3,16 +3,16 @@ const React=require('react');
 const {readFileSync,readdirSync}=require('node:fs');
 const {create,act}=require('react-test-renderer');
 const RN=require('react-native');
-const {nativeSrgb,nativeColors,nativeDisplayP3}=require('../../packages/tokens/dist/index.js');
-const {HIGProvider,colorTable,useColors}=require('../../packages/native/src/provider');
-const {Text,Surface,Separator}=require('../../packages/native/src/surface');
-const {Button,Link}=require('../../packages/native/src/button');
-const {Switch}=require('../../packages/native/src/switch');
-const {Alert,Badge,Spinner,Skeleton}=require('../../packages/native/src/status');
-const {Slider}=require('../../packages/native/src/slider');
-const {Field,Input}=require('../../packages/native/src/field');
-const {Dialog}=require('../../packages/native/src/overlay');
-const {BrandMark,CheckIcon}=require('../../packages/native/src/brand');
+const {nativeSrgb,nativeColors,nativeDisplayP3}=require('../../packages/hig/tokens/dist/index.js');
+const {HIGProvider,colorTable,useColors}=require('../../packages/hig/native/src/provider');
+const {Text,Surface,Separator}=require('../../packages/hig/native/src/surface');
+const {Button,Link}=require('../../packages/hig/native/src/button');
+const {Switch}=require('../../packages/hig/native/src/switch');
+const {Alert,Badge,Spinner,Skeleton}=require('../../packages/hig/native/src/status');
+const {Slider}=require('../../packages/hig/native/src/slider');
+const {Field,Input}=require('../../packages/hig/native/src/field');
+const {Dialog}=require('../../packages/hig/native/src/overlay');
+const {BrandMark,CheckIcon}=require('../../packages/hig/native/src/brand');
 const p3=nativeColors.iosDisplayP3;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});
@@ -99,23 +99,23 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
  it('without colorSpace components keep the sRGB table on iOS',()=>withOS('ios',()=>{
   const accent=flat(mount(React.createElement(Alert,{title:'Result',severity:'warning',announce:false}),{}).findAll(n=>n.type===RN.View&&n.props.style)[0]).borderColor;
   expect(accent).toBe(nativeSrgb.warning);
-  expect(mount(React.createElement(BrandMark),{}).findByType(require('react-native-svg').Rect).props.fill).toBe(readFileSync('packages/tokens/assets/bloxwap-icon.svg','utf8').match(/<rect[^>]*fill="([^"]+)"/)[1]);
+  expect(mount(React.createElement(BrandMark),{}).findByType(require('react-native-svg').Rect).props.fill).toBe(readFileSync('packages/hig/tokens/assets/bloxwap-icon.svg','utf8').match(/<rect[^>]*fill="([^"]+)"/)[1]);
  }));
 });
 
 describe('components never bypass the provider table',()=>{
- const dir='packages/native/src';
+ const dir='packages/hig/native/src';
  // provider.tsx owns table selection; every other module paints through useColors().
  const owner='provider.tsx';
  // Pure black has the same channels in sRGB and Display P3, so the modal scrim needs no table entry.
  const invariant=new Set(['#000b']);
- const violations=source=>{const found=[];for(const m of source.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]@bloxwap\/hig-tokens['"]/g))for(const name of m[1].split(',').map(s=>s.trim().split(/\s+as\s+/)[0]))if(/^native(Srgb|Colors|DisplayP3)$/.test(name))found.push(`imports ${name}`);if(/@bloxwap\/hig-tokens\/[^'"]*colors?|require\(['"]@bloxwap\/hig-tokens['"]\)/.test(source))found.push('reads tokens outside a named import');for(const m of source.matchAll(/['"](#[0-9a-fA-F]{3,8})['"]/g))if(!invariant.has(m[1].toLowerCase()))found.push(`hex literal ${m[1]}`);return found;};
+ const violations=source=>{const found=[];for(const m of source.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]@bloxwap\/hig\/tokens['"]/g))for(const name of m[1].split(',').map(s=>s.trim().split(/\s+as\s+/)[0]))if(/^native(Srgb|Colors|DisplayP3)$/.test(name))found.push(`imports ${name}`);if(/@bloxwap\/hig\/tokens\/[^'"]*colors?|require\(['"]@bloxwap\/hig\/tokens['"]\)/.test(source))found.push('reads tokens outside a named import');for(const m of source.matchAll(/['"](#[0-9a-fA-F]{3,8})['"]/g))if(!invariant.has(m[1].toLowerCase()))found.push(`hex literal ${m[1]}`);return found;};
  it('the guard catches a direct table import and a raw hex colour',()=>{
-  expect(violations("import {nativeSrgb as colors,nativeMetrics as tokens} from '@bloxwap/hig-tokens';")).toEqual(['imports nativeSrgb']);
-  expect(violations("import {nativeColors} from '@bloxwap/hig-tokens';")).toEqual(['imports nativeColors']);
-  expect(violations("import {nativeDisplayP3 as p3} from '@bloxwap/hig-tokens';")).toEqual(['imports nativeDisplayP3']);
+  expect(violations("import {nativeSrgb as colors,nativeMetrics as tokens} from '@bloxwap/hig/tokens';")).toEqual(['imports nativeSrgb']);
+  expect(violations("import {nativeColors} from '@bloxwap/hig/tokens';")).toEqual(['imports nativeColors']);
+  expect(violations("import {nativeDisplayP3 as p3} from '@bloxwap/hig/tokens';")).toEqual(['imports nativeDisplayP3']);
   expect(violations("<Rect fill='#00ff3f'/>")).toEqual(['hex literal #00ff3f']);
-  expect(violations("import {nativeMetrics as tokens} from '@bloxwap/hig-tokens';const c=useColors();")).toEqual([]);
+  expect(violations("import {nativeMetrics as tokens} from '@bloxwap/hig/tokens';const c=useColors();")).toEqual([]);
  });
  it('no native component imports nativeSrgb/nativeColors or paints a raw hex colour',()=>{
   const files=readdirSync(dir).filter(f=>/\.tsx?$/.test(f)&&f!==owner);

@@ -59,8 +59,8 @@
     {
       "issue": 16,
       "family": "overlays",
-      "web": "planned",
-      "native": "Modal; no hover tooltip",
+      "web": "Radix overlays; optional Vaul fixed or content-sized GestureSheet",
+      "native": "Modal; optional fixed or content-sized GestureSheet; no hover tooltip",
       "owner": "HIG maintainers",
       "states": [
         "rest",
@@ -113,8 +113,8 @@
     {
       "issue": 19,
       "family": "financial-data",
-      "web": "planned",
-      "native": "readouts and lists; no DOM table",
+      "web": "readouts, lists/table; optional per-place digit motion",
+      "native": "readouts and lists; optional Reanimated/Worklets digit motion with static fallbacks; no DOM table",
       "owner": "HIG maintainers",
       "states": [
         "rest",

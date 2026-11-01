@@ -1,7 +1,7 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const RN=require('react-native');
-const {SwitchRow}=require('../../packages/native/src/switch');
+const {SwitchRow}=require('../../packages/hig/native/src/switch');
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});
 function render(props){return React.createElement(SwitchRow,props,React.createElement(RN.View,null,React.createElement(RN.Text,null,'Notifications'),React.createElement(RN.Text,null,'Order updates'),React.createElement(RN.View,{testID:'host-track'})));}

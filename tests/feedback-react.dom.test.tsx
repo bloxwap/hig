@@ -2,11 +2,11 @@ import React,{useState,StrictMode} from 'react';
 import {afterEach,it,expect,vi} from 'vitest';
 import {render,screen,cleanup,waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {FeedbackProvider,useFeedback} from '../packages/feedback/src/react';
-import {FeedbackController,type FeedbackAdapter,type FeedbackPreferences} from '../packages/feedback/src/contract';
-import {HIGProvider} from '../packages/react/src/provider';
-import {Button} from '../packages/react/src/button';
-import {Switch} from '../packages/react/src/selection';
+import {FeedbackProvider,useFeedback} from '../packages/hig/feedback/src/react';
+import {FeedbackController,type FeedbackAdapter,type FeedbackPreferences} from '../packages/hig/feedback/src/contract';
+import {HIGProvider} from '../packages/hig/react/src/provider';
+import {Button} from '../packages/hig/react/src/button';
+import {Switch} from '../packages/hig/react/src/selection';
 afterEach(cleanup);
 function adapter():FeedbackAdapter{return {capability:{available:true,mechanism:'web-audio',observed:false},play:vi.fn(),dispose:vi.fn()};}
 it('survives strict lifecycle replay and sends one accepted activation',async()=>{const adapters:FeedbackAdapter[]=[];function Content(){const {sink,update}=useFeedback();return <HIGProvider feedback={sink}><Button onClick={()=>update({sound:true})}>Enable sound</Button></HIGProvider>;}const factory=(prefs:FeedbackPreferences)=>{const a=adapter();adapters.push(a);return new FeedbackController({preferences:prefs,sound:a});};const {unmount}=render(<StrictMode><FeedbackProvider createController={factory}><Content/></FeedbackProvider></StrictMode>);expect(adapters).toHaveLength(2);await userEvent.click(screen.getByText('Enable sound'));expect(adapters[0].play).not.toHaveBeenCalled();expect(adapters[1].play).toHaveBeenCalledOnce();unmount();expect(adapters.every(a=>(a.dispose as ReturnType<typeof vi.fn>).mock.calls.length===1)).toBe(true);});
@@ -14,7 +14,7 @@ it('emits selection only on an accepted state commit',async()=>{const emit=vi.fn
 it('keeps nested providers and persisted channels separate',async()=>{const a=adapter(),b=adapter();const write=vi.fn();const storage={read:()=>({sound:true,haptics:false,volume:.2,motion:false}),write};function Content({label}: {label:string}){const {sink,preferences,update}=useFeedback();return <HIGProvider feedback={sink}><p>{label}: {preferences.volume}</p><Button onClick={()=>update({volume:.5})}>{label}</Button></HIGProvider>;}const outer=(p:FeedbackPreferences)=>new FeedbackController({sound:a,preferences:p});const inner=(p:FeedbackPreferences)=>new FeedbackController({sound:b,preferences:p});render(<FeedbackProvider createController={outer} storage={storage}><Content label='Outer'/><FeedbackProvider createController={inner}><Content label='Inner'/></FeedbackProvider></FeedbackProvider>);await waitFor(()=>expect(screen.getByText('Outer: 0.2')).toBeTruthy());await userEvent.click(screen.getByRole('button',{name:'Outer'}));expect(a.play).toHaveBeenCalledOnce();expect(b.play).not.toHaveBeenCalled();expect(screen.getByText('Inner: 0.3')).toBeTruthy();expect(write).toHaveBeenCalledWith({version:1,sound:true,haptics:false,volume:.5,motion:false});});
 it('initializes copied playground preferences before an accepted action',async()=>{const sound=adapter(),haptics=adapter();function Content(){const {sink,preferences}=useFeedback();return <HIGProvider feedback={sink}><p>{preferences.volume}/{String(preferences.motion)}</p><Button>Review</Button></HIGProvider>;}render(<FeedbackProvider initialPreferences={{sound:true,haptics:false,volume:.42,motion:false}} createController={preferences=>new FeedbackController({preferences,sound,haptics})}><Content/></FeedbackProvider>);expect(screen.getByText('0.42/false')).toBeTruthy();await userEvent.click(screen.getByRole('button',{name:'Review'}));expect(sound.play).toHaveBeenCalledOnce();expect(haptics.play).not.toHaveBeenCalled();});
 it('keeps menu disclosure quiet and reports one accepted selection after the host action',async()=>{
- const {Menu}=await import('../packages/react/src/overlay');const order:string[]=[];const emit=vi.fn(()=>order.push('feedback'));
+ const {Menu}=await import('../packages/hig/react/src/overlay');const order:string[]=[];const emit=vi.fn(()=>order.push('feedback'));
  render(<HIGProvider feedback={{emit}}><Menu label='Actions' items={[{label:'Select',onSelect:()=>order.push('action')},{label:'Cancel',onSelect:event=>event.preventDefault()}]}/></HIGProvider>);
  await userEvent.click(screen.getByRole('button',{name:'Actions'}));expect(emit).not.toHaveBeenCalled();
  await userEvent.click(screen.getByRole('menuitem',{name:'Select'}));expect(order).toEqual(['action','feedback']);expect(emit.mock.calls).toHaveLength(1);

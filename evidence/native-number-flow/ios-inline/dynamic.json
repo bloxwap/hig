@@ -1,0 +1,9 @@
+{
+  "ceiling" : 560,
+  "limits" : "Simulator geometry only; animation smoothness and physical-device behavior need visual\/manual observation.",
+  "motion" : "normal",
+  "restoredTitleY" : 635,
+  "shortTitleY" : 635,
+  "tallTitleY" : 355,
+  "windowHeight" : 874
+}

@@ -65,8 +65,8 @@ jobs:
         id: font-cache
         with:
           path: |
-            packages/native-fonts/fonts
-            packages/og-fonts/fonts
+            packages/hig/native-fonts/fonts
+            packages/hig/og-fonts/fonts
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
@@ -135,8 +135,8 @@ jobs:
         id: font-cache
         with:
           path: |
-            packages/native-fonts/fonts
-            packages/og-fonts/fonts
+            packages/hig/native-fonts/fonts
+            packages/hig/og-fonts/fonts
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'
@@ -175,8 +175,8 @@ jobs:
         id: font-cache
         with:
           path: |
-            packages/native-fonts/fonts
-            packages/og-fonts/fonts
+            packages/hig/native-fonts/fonts
+            packages/hig/og-fonts/fonts
           key: ${{ runner.os }}-native-fonts-${{ hashFiles('scripts/generate-native-fonts.py', 'package-lock.json') }}
       - name: Generate native fonts
         if: steps.font-cache.outputs.cache-hit != 'true'

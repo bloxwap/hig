@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {join} from 'node:path';
 // Keep in sync with scripts/generate-native-fonts.py, scripts/ci-generate-fonts.sh and docs/governance/new-repository.md (tests/fonts.test.ts).
 export const fontGeneratorRequirements=['fonttools[woff]==4.61.1','brotli==1.2.1'];
-export const generatedFontDirectories=['packages/native-fonts/fonts','packages/og-fonts/fonts'];
+export const generatedFontDirectories=['packages/hig/native-fonts/fonts','packages/hig/og-fonts/fonts'];
 export function generatedFontStatus(root='.'){
  const missing=[],stale=[];
  for(const directory of generatedFontDirectories){

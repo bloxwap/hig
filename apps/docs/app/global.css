@@ -14,9 +14,9 @@
 @import 'fumadocs-ui/css/generated/docs.css';
 @import 'fumadocs-ui/css/generated/home.css';
 @import 'fumadocs-ui/css/generated/shared.css';
-@import '@bloxwap/hig-tokens/css';
-@import '@bloxwap/hig-react/css/base';
-@import '@bloxwap/hig-react/css';
+@import '@bloxwap/hig/tokens/css';
+@import '@bloxwap/hig/react/css/base';
+@import '@bloxwap/hig/react/css';
 @import '../src/fonts.css';
 @import '../src/site.css';
 @import '../styles/shell.css';

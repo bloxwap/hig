@@ -1,14 +1,14 @@
 {
-  "version": "0.1.0",
-  "browser": "141.0.7390.37",
+  "version": "0.1.1",
+  "browser": "156.0.8078.4",
   "viewport": [
     390,
     844
   ],
   "reducedMotion": true,
-  "executedStates": 104,
-  "components": 64,
-  "availableComponents": 64,
+  "executedStates": 105,
+  "components": 65,
+  "availableComponents": 65,
   "scope": "full shipped state matrix",
   "physicalNative": "pending; typed/runnable native examples are separate from browser captures",
   "results": [
@@ -444,6 +444,15 @@
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/sheet-default.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "GestureSheet",
+      "state": "default",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/gesture-sheet-default.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
     {

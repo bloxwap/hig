@@ -1,9 +1,9 @@
 import React,{useState} from 'react';
 import {View} from 'react-native';
-import {HIGProvider} from '@bloxwap/hig-native/provider';
-import {Text} from '@bloxwap/hig-native/surface';
-import {Button,Link} from '@bloxwap/hig-native/button';
-import {nativeSrgb as colors} from '@bloxwap/hig-tokens';
+import {HIGProvider} from '@bloxwap/hig/native/provider';
+import {Text} from '@bloxwap/hig/native/surface';
+import {Button,Link} from '@bloxwap/hig/native/button';
+import {nativeSrgb as colors} from '@bloxwap/hig/tokens';
 /** Host layout/navigation fixture; every action is local and inert. */
 export default function NativeActionCheck(){
  const [busy,setBusy]=useState(false),[actions,setActions]=useState(0),[navigation,setNavigation]=useState(0);

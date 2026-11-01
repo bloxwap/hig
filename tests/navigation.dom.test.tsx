@@ -2,8 +2,8 @@ import React from 'react';
 import {cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {afterEach,expect,it,vi} from 'vitest';
-import {Breadcrumb,Tabs} from '../packages/react/src/navigation';
-import {HIGProvider} from '../packages/react/src/provider';
+import {Breadcrumb,Tabs} from '../packages/hig/react/src/navigation';
+import {HIGProvider} from '../packages/hig/react/src/provider';
 
 afterEach(cleanup);
 

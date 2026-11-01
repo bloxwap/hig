@@ -1,8 +1,8 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const RN=require('react-native');
-const {Button,Link}=require('../../packages/native/src/button');
-const {HIGProvider}=require('../../packages/native/src/provider');
+const {Button,Link}=require('../../packages/hig/native/src/button');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.restoreAllMocks();});
 function mount(component,props,children,feedback){act(()=>{const next=React.createElement(HIGProvider,{feedback},React.createElement(component,props,children));if(root)root.update(next);else root=create(next);});return root.root.findAll(node=>node.props.accessibilityRole&&typeof node.props.onPress==='function')[0];}

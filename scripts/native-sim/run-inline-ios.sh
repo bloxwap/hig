@@ -7,7 +7,7 @@ APP="$(cd "$1" && pwd -P)"; UDID="$2"; OUT="$(mkdir -p "$3" && cd "$3" && pwd -P
 RAW="$HIG/.validation-tmp/native-inline"; HARNESS="$RAW/harness"; BUILD="$RAW/dd-harness"
 mkdir -p "$RAW/logs" "$HARNESS"
 for package_name in contracts native tokens; do
-  rsync -a --delete "$HIG/packages/$package_name/dist/" "$APP/node_modules/@bloxwap/hig-$package_name/dist/"
+  rsync -a --delete "$HIG/packages/hig/$package_name/dist/" "$APP/node_modules/@bloxwap/hig/$package_name/dist/"
 done
 cp "$APP/index.js" "$RAW/index.original.js"
 cp "$HIG/fixtures/native/inline-sheet-check.tsx" "$APP/inline-sheet-check.tsx"

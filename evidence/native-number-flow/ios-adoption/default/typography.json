@@ -1,0 +1,10 @@
+{
+  "animatedFrame" : "{{16, 665.00003051757812}, {370, 30.33331298828125}}",
+  "animatedUpdatedLabel" : "Animated balance: 1,251.25",
+  "busyFrame" : "{{16, 775.66665649414062}, {168.33332824707031, 48.33331298828125}}",
+  "busyLabel" : "Log out · Working",
+  "environment" : "Adoption type · scale 1.00 · locale en-US",
+  "negativeFrame" : "{{16, 813.66665649414062}, {370, 30.33331298828125}}",
+  "positiveFrame" : "{{16, 767.33334350585938}, {370, 30.3333740234375}}",
+  "registration" : "Registered faces: BloxwapSansRegular, BloxwapSansSemiBold, BloxwapMonoRegular, BloxwapSansKRRegular, BloxwapSansKRSemiBold, BloxwapSansSCRegular, BloxwapSansSCSemiBold"
+}

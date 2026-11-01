@@ -1,33 +1,27 @@
 import {workspaceVersion} from './workspace-version.mjs';
 import {assertGeneratedFonts} from './font-preflight.mjs';
 import {execFileSync} from 'node:child_process';
-import {readFileSync,writeFileSync,mkdirSync,cpSync,readdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,cpSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {scratchDir} from './scratch.mjs';
 assertGeneratedFonts();
 const dir=scratchDir('hig-consumer-');
 mkdirSync('artifacts',{recursive:true});
-const manifests=readdirSync('packages').map(p=>JSON.parse(readFileSync(`packages/${p}/package.json`,'utf8')));
-const tarballs=[];
-for(const manifest of manifests){
- if(process.env.HIG_REGISTRY_VERSION){if(!['@bloxwap/hig-native','@bloxwap/hig-native-fonts'].includes(manifest.name))tarballs.push(`${manifest.name}@${process.env.HIG_REGISTRY_VERSION}`);continue;}
- const name=manifest.name.replace('@bloxwap/hig-','');
- const pack=JSON.parse(execFileSync('npm',['pack',`./packages/${name}`,'--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
- if(name!=='native'&&name!=='native-fonts')tarballs.push(resolve('artifacts',pack[0].filename));
-}
-writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',devDependencies:{vite:'6.4.1'},dependencies:{...JSON.parse(readFileSync('fixtures/web/package.json','utf8')).dependencies,'@bloxwap/haptic':'^0.2.0','@bloxwap/sfx':'^0.2.0','@bloxwap/font':'0.1.2','@bloxwap/chart':'0.3.0',react:'19.1.0','react-dom':'19.1.0'}},null,2));
-const consumerManifest=JSON.parse(readFileSync(join(dir,'package.json'),'utf8'));for(const key of Object.keys(consumerManifest.dependencies))if(key.startsWith('@bloxwap/hig-'))delete consumerManifest.dependencies[key];writeFileSync(join(dir,'package.json'),JSON.stringify(consumerManifest));
+const manifest=JSON.parse(readFileSync('packages/hig/package.json','utf8'));
+const tarballs=[process.env.HIG_REGISTRY_VERSION?`${manifest.name}@${process.env.HIG_REGISTRY_VERSION}`:resolve('artifacts',JSON.parse(execFileSync('npm',['pack','./packages/hig','--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}))[0].filename)];
+writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',devDependencies:{vite:'6.4.1'},dependencies:{...JSON.parse(readFileSync('fixtures/web/package.json','utf8')).dependencies,'@bloxwap/haptic':'^0.2.0','@bloxwap/sfx':'^0.2.0','@bloxwap/font':'0.1.2','@bloxwap/chart':'0.3.0',react:'19.1.0','react-dom':'19.1.0',vaul:'1.1.2'}},null,2));
+const consumerManifest=JSON.parse(readFileSync(join(dir,'package.json'),'utf8'));delete consumerManifest.dependencies['@bloxwap/hig'];writeFileSync(join(dir,'package.json'),JSON.stringify(consumerManifest));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
 writeFileSync(join(dir,'smoke.mjs'),`import assert from 'node:assert/strict';
 import React from 'react'; import {renderToString} from 'react-dom/server';
-import {tokens,resolvePrimaryColor} from '@bloxwap/hig-tokens'; import {formatNumber,formatLeverage,formatTicker} from '@bloxwap/hig-contracts';
+import {tokens,resolvePrimaryColor} from '@bloxwap/hig/tokens'; import {formatNumber,formatLeverage,formatTicker} from '@bloxwap/hig/contracts';
 assert.equal(tokens.colors.action.srgb,'#00ff3f'); assert.equal(formatNumber(null),'—'); assert.equal(formatLeverage(10),'10×'); assert.equal(formatTicker(1,'USDC'),'1\u00a0USDC');
 assert.deepEqual(resolvePrimaryColor('#f00'),{action:'#ff0000',focus:'#ff0000',onAction:'#000000'}); assert.equal(resolvePrimaryColor('#f00','display-p3').action,'#ea3323');
-${manifests.some(m=>m.name==='@bloxwap/hig-react')?"const {Button}=await import('@bloxwap/hig-react/button'); const {HIGProvider}=await import('@bloxwap/hig-react/provider'); assert.match(renderToString(React.createElement(Button,null,'Review order')),/Review order/); assert.match(renderToString(React.createElement(HIGProvider,{primaryColor:'#f00'},React.createElement(Button,null,'Watch live'))),/--hig-action:#ff0000;--hig-focus:#ff0000;--hig-onAction:#000000/);":"assert.match(renderToString(React.createElement('button',null,'Review order')),/Review order/);"}
-${manifests.some(m=>m.name==='@bloxwap/hig-chart')?"const {PriceChart,chartTheme}=await import('@bloxwap/hig-chart'); assert.equal(chartTheme.series.upColor,tokens.colors.buy.srgb); assert.match(renderToString(React.createElement(PriceChart,{summary:'BTC up 1%',data:[]})),/<figcaption>BTC up 1%<\\/figcaption>/);":''}
-console.log('Packed consumer: independent token/contracts imports and SSR render passed');`);
+const {Button}=await import('@bloxwap/hig/react/button'); const {HIGProvider}=await import('@bloxwap/hig/react/provider'); assert.match(renderToString(React.createElement(Button,null,'Review order')),/Review order/); assert.match(renderToString(React.createElement(HIGProvider,{primaryColor:'#f00'},React.createElement(Button,null,'Watch live'))),/--hig-action:#ff0000;--hig-focus:#ff0000;--hig-onAction:#000000/);\nconst {AnimatedNumberReadout}=await import('@bloxwap/hig/react/animated-number'); const options={minimumFractionDigits:2,maximumFractionDigits:2}; const props={value:1234.5,options,stale:true,label:'Balance',duration:240,prefix:'$',suffix:' USD',trend:1}; const renderAnimated=()=>renderToString(React.createElement(HIGProvider,{locale:'de-DE'},React.createElement(AnimatedNumberReadout,props))); const animated=renderAnimated(),formatted=new Intl.NumberFormat('de-DE',options).format(props.value); assert.equal(animated,renderAnimated()); assert.ok(animated.includes(formatted)); assert.equal((animated.match(/aria-label="Balance:/g)??[]).length,1); assert.doesNotMatch(animated,/aria-live=/); const text=animated.replace(/<!--[\\s\\S]*?-->/g,'').replace(/<[^>]*>/g,''); for(const expected of ['$',formatted,' USD','(stale)'])assert.ok(text.includes(expected));\nconst {GestureSheet}=await import('@bloxwap/hig/react/gesture-sheet'); const renderGesture=()=>renderToString(React.createElement(GestureSheet,{open:true,onOpenChange:()=>{},title:'Review details',enableDynamicSizing:true,maxDynamicContentSize:480,trigger:React.createElement('button',null,'Open details')},React.createElement('p',null,'Details'))); const gesture=renderGesture(); assert.equal(gesture,renderGesture()); assert.match(gesture,/Open details/); assert.match(gesture,/aria-expanded="true"/);
+const {PriceChart,chartTheme}=await import('@bloxwap/hig/chart'); assert.equal(chartTheme.series.upColor,tokens.colors.buy.srgb); assert.match(renderToString(React.createElement(PriceChart,{summary:'BTC up 1%',data:[]})),/<figcaption>BTC up 1%<\\/figcaption>/);
+console.log('Packed consumer: independent token/contracts imports and animated-number/gesture-sheet SSR renders passed');`);
 execFileSync(process.execPath,[join(dir,'smoke.mjs')],{cwd:dir,stdio:'inherit'});
 cpSync('fixtures/web',join(dir,'web'),{recursive:true,filter:s=>!s.includes('/node_modules')&&!s.includes('/dist')});
 execFileSync(join(dir,'node_modules/.bin/vite'),['build','web'],{cwd:dir,stdio:'inherit'});
-writeFileSync('evidence/packed-smoke.json',JSON.stringify({version:workspaceVersion,packages:manifests.map(m=>m.name),install:'clean temporary consumer from local tarballs',ssr:'passed',webBuild:'passed',native:'Metro smoke uses real RN peer workspace separately'},null,2)+'\n');
+writeFileSync('evidence/packed-smoke.json',JSON.stringify({version:workspaceVersion,packages:[manifest.name],install:'clean temporary consumer from local tarballs',ssr:'passed',webBuild:'passed',native:'Metro smoke uses real RN peer workspace separately'},null,2)+'\n');
 console.log(`Packed artifacts: ${tarballs.length}; no publication performed`);

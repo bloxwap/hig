@@ -1,6 +1,6 @@
 {
-  "version": "0.1.2",
-  "sourceCommit": "75f59e09d2dc57809f29be5174419016dd878808",
+  "version": "0.2.0",
+  "sourceCommit": "ab713dd05163fd020726ac01be563f6b2172d2a1",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,26 +8,19 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "chart": 2,
-    "contracts": 8,
-    "feedback": 17,
-    "native": 38,
-    "native-fonts": 4,
-    "og-fonts": 6,
-    "react": 42,
-    "tokens": 5
+    "hig": 123
   },
   "sizes": {
     "button": {
       "raw": 1384,
       "gzip": 775,
       "inputs": [
-        "packages/contracts/dist/messages.js",
-        "packages/contracts/dist/index.js",
-        "packages/tokens/dist/theme.js",
-        "packages/tokens/dist/index.js",
-        "packages/react/dist/provider.js",
-        "packages/react/dist/button.js",
+        "packages/hig/contracts/dist/messages.js",
+        "packages/hig/contracts/dist/index.js",
+        "packages/hig/tokens/dist/theme.js",
+        "packages/hig/tokens/dist/index.js",
+        "packages/hig/react/dist/provider.js",
+        "packages/hig/react/dist/button.js",
         "button.js"
       ]
     },
@@ -35,12 +28,12 @@
       "raw": 808,
       "gzip": 343,
       "inputs": [
-        "packages/contracts/dist/messages.js",
-        "packages/contracts/dist/index.js",
-        "packages/tokens/dist/theme.js",
-        "packages/tokens/dist/index.js",
-        "packages/react/dist/provider.js",
-        "packages/react/dist/field.js",
+        "packages/hig/contracts/dist/messages.js",
+        "packages/hig/contracts/dist/index.js",
+        "packages/hig/tokens/dist/theme.js",
+        "packages/hig/tokens/dist/index.js",
+        "packages/hig/react/dist/provider.js",
+        "packages/hig/react/dist/field.js",
         "field.js"
       ]
     },
@@ -48,16 +41,16 @@
       "raw": 4216,
       "gzip": 2073,
       "inputs": [
-        "packages/tokens/dist/theme.js",
-        "packages/tokens/dist/index.js",
-        "packages/contracts/dist/index.js",
-        "packages/contracts/dist/messages.js",
-        "packages/native/dist/provider.js",
-        "packages/native/dist/text-content.js",
-        "packages/native/dist/surface.js",
-        "packages/native/dist/roles.js",
-        "packages/native/dist/switch-row.js",
-        "packages/native/dist/switch.js",
+        "packages/hig/tokens/dist/theme.js",
+        "packages/hig/tokens/dist/index.js",
+        "packages/hig/contracts/dist/index.js",
+        "packages/hig/contracts/dist/messages.js",
+        "packages/hig/native/dist/provider.js",
+        "packages/hig/native/dist/text-content.js",
+        "packages/hig/native/dist/surface.js",
+        "packages/hig/native/dist/roles.js",
+        "packages/hig/native/dist/switch-row.js",
+        "packages/hig/native/dist/switch.js",
         "nativeSwitch.js"
       ]
     },
@@ -65,16 +58,16 @@
       "raw": 2006,
       "gzip": 1074,
       "inputs": [
-        "packages/tokens/dist/theme.js",
-        "packages/tokens/dist/index.js",
-        "packages/contracts/dist/index.js",
-        "packages/contracts/dist/messages.js",
-        "packages/native/dist/provider.js",
-        "packages/native/dist/text-content.js",
-        "packages/native/dist/surface.js",
-        "packages/native/dist/roles.js",
-        "packages/native/dist/switch-row.js",
-        "packages/native/dist/switch.js",
+        "packages/hig/tokens/dist/theme.js",
+        "packages/hig/tokens/dist/index.js",
+        "packages/hig/contracts/dist/index.js",
+        "packages/hig/contracts/dist/messages.js",
+        "packages/hig/native/dist/provider.js",
+        "packages/hig/native/dist/text-content.js",
+        "packages/hig/native/dist/surface.js",
+        "packages/hig/native/dist/roles.js",
+        "packages/hig/native/dist/switch-row.js",
+        "packages/hig/native/dist/switch.js",
         "nativeSwitchRow.js"
       ]
     },
@@ -82,14 +75,14 @@
       "raw": 3100,
       "gzip": 1584,
       "inputs": [
-        "packages/tokens/dist/theme.js",
-        "packages/tokens/dist/index.js",
-        "packages/contracts/dist/messages.js",
-        "packages/contracts/dist/index.js",
-        "packages/native/dist/provider.js",
-        "packages/native/dist/text-content.js",
-        "packages/native/dist/surface.js",
-        "packages/native/dist/button.js",
+        "packages/hig/tokens/dist/theme.js",
+        "packages/hig/tokens/dist/index.js",
+        "packages/hig/contracts/dist/messages.js",
+        "packages/hig/contracts/dist/index.js",
+        "packages/hig/native/dist/provider.js",
+        "packages/hig/native/dist/text-content.js",
+        "packages/hig/native/dist/surface.js",
+        "packages/hig/native/dist/button.js",
         "nativeLink.js"
       ]
     },
@@ -97,16 +90,16 @@
       "raw": 2951,
       "gzip": 996,
       "inputs": [
-        "packages/feedback/dist/contract.js",
+        "packages/hig/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
     "docsJS": {
-      "raw": 2004644,
-      "gzip": 573554
+      "raw": 2059627,
+      "gzip": 588953
     },
     "docsCSS": {
-      "raw": 116967
+      "raw": 117535
     },
     "fonts": {
       "raw": 592796

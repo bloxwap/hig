@@ -1,5 +1,5 @@
 // Fails when HIG React / React Native source hard-codes user-visible or accessible copy (bloxwap/hig#62).
-// Built-in strings live in @bloxwap/hig-contracts `defaultMessages` and reach components through
+// Built-in strings live in @bloxwap/hig/contracts `defaultMessages` and reach components through
 // HIGProvider `messages` or a per-component label prop. Run directly or through `npm run lint`.
 import ts from 'typescript';
 import {readFileSync,readdirSync} from 'node:fs';
@@ -52,8 +52,8 @@ export function findBuiltInStrings(source,fileName='source.tsx'){
  return found;
 }
 const root=fileURLToPath(new URL('..',import.meta.url));
-export const scannedDirectories=['packages/react/src','packages/chart/src','packages/native/src'];
-/** Scans HIG React (including the @bloxwap/hig-chart adapter) and React Native sources. */
+export const scannedDirectories=['packages/hig/react/src','packages/hig/chart/src','packages/hig/native/src'];
+/** Scans HIG React (including the @bloxwap/hig/chart adapter) and React Native sources. */
 export function scanPackages(base=root){
  const results=[];
  for(const dir of scannedDirectories){
@@ -68,7 +68,7 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const hits=scanPackages();
  if(hits.length){
   for(const h of hits)console.error(`${h.file}:${h.line} ${h.reason}: ${JSON.stringify(h.text)}`);
-  console.error(`\n${hits.length} hard-coded built-in string(s). Add a key to HIGMessages (packages/contracts/src/messages.ts), read it with useMessages(), and document it in docs/foundations/localization.md.`);
+  console.error(`\n${hits.length} hard-coded built-in string(s). Add a key to HIGMessages (packages/hig/contracts/src/messages.ts), read it with useMessages(), and document it in docs/foundations/localization.md.`);
   process.exit(1);
  }
  console.log('Built-in string check passed: React and React Native copy comes from HIGProvider messages or props');

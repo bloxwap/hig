@@ -2,9 +2,9 @@ import React,{useState} from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {Select} from '../packages/react/src/select';
-import {HIGProvider} from '../packages/react/src/provider';
-import {Dialog} from '../packages/react/src/dialog';
+import {Select} from '../packages/hig/react/src/select';
+import {HIGProvider} from '../packages/hig/react/src/provider';
+import {Dialog} from '../packages/hig/react/src/dialog';
 
 afterEach(cleanup);
 const options=[{value:'buy',label:'Buy'},{value:'blocked',label:'Unavailable',disabled:true},{value:'sell',label:'Sell'}];

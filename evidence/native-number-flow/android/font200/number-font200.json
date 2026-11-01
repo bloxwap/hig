@@ -1,0 +1,16 @@
+{
+  "mode": "smoke",
+  "cases": [
+    {
+      "locale": "en-u-nu-arab",
+      "direction": "ltr",
+      "initial": "٩٩٩٫٩٩",
+      "group": "١٬٢٣٤٬٥٦٧٫٨٩",
+      "burst": "٧٬٦٥٤٬٣٢١٫٠٩",
+      "fallback": "—",
+      "rtlStaticFallback": "",
+      "environment": "Number locale en-u-nu-arab · direction ltr · scale 2.00 · motion normal"
+    }
+  ],
+  "limits": "Final accessibility labels only; captures require visual/manual review for glyph shaping, bidi order and animation quality. No TalkBack speech or physical-device claim."
+}

@@ -1,9 +1,9 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Text:RNText,StyleSheet}=require('react-native');
-const {nativeSrgb}=require('@bloxwap/hig-tokens');
-const {HIGProvider}=require('../../packages/native/src/provider');
-const {NumberReadout,Usd,Percent}=require('../../packages/native/src/data');
+const {nativeSrgb}=require('@bloxwap/hig/tokens');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {NumberReadout,Usd,Percent}=require('../../packages/hig/native/src/data');
 const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});
@@ -23,8 +23,8 @@ it('preserves opaque static text while applying stale, label, semantic tone and 
  expect(text.props.accessibilityLiveRegion).toBeUndefined();
 });
 
-it.each([null,undefined,NaN,Infinity,-Infinity])('does not let formatted text disguise an unknown %s value',value=>{
- const text=mount(h(NumberReadout,{value,formattedValue:'0.00',label:'Balance',stale:true}));
+it.each([null,undefined,NaN,Infinity,-Infinity])('does not let formatted text or affixes disguise an unknown %s value',value=>{
+ const text=mount(h(NumberReadout,{value,formattedValue:'0.00',label:'Balance',stale:true,prefix:'$',suffix:' USD'}));
  expect(reading(text)).toBe('— (stale)');
  expect(text.props.accessibilityLabel).toBe('Balance: — (stale)');
 });
@@ -36,4 +36,11 @@ it.each([undefined,''])('keeps canonical locale formatting when formattedValue i
 
 it.each([[NumberReadout,0,'0.00'],[Usd,1234,'$1.23k'],[Percent,5,'+5.0%']])('forwards host text through %p without parsing or reformatting',(Component,value,formattedValue)=>{
  expect(reading(mount(h(Component,{value,formattedValue})))).toBe(formattedValue);
+});
+
+it('adds display affixes exactly once to canonical and opaque finite readings',()=>{
+ const element=formattedValue=>h(HIGProvider,{locale:'de-DE'},h(NumberReadout,{value:1234.5,formattedValue,prefix:'≈ ',suffix:' EUR',label:'Total'}));
+ mount(element());expect(reading(root.root.findByType(RNText))).toBe('≈ 1.234,5 EUR');
+ act(()=>root.update(element('01:30')));expect(reading(root.root.findByType(RNText))).toBe('≈ 01:30 EUR');
+ expect(root.root.findByType(RNText).props.accessibilityLabel).toBe('Total: ≈ 01:30 EUR');
 });

@@ -18,15 +18,15 @@ const MAX_EXCEPTION_DAYS=180;
 
 /** Content rules. `canonical` rules do not apply inside paths HIG itself owns. */
 export const rules=[
-  {id:'obsolete-import',description:'imports a retired fork or a copied HIG folder instead of a versioned @bloxwap/hig-* package',
+  {id:'obsolete-import',description:'imports a retired fork or a copied HIG folder instead of a versioned @bloxwap/hig release',
     test:(source,path,{obsoleteImports=[]}={})=>/from\s*['"]@workspace\/(?:tokens|ui(?:-native)?)['"/]/.test(source)
       ||/(?:from\s*|import\s*|@import\s+(?:url\()?)['"][^'"]*(?:vendor\/hig\/|styles\/hig\/)/.test(source)
       ||obsoleteImports.some(pattern=>new RegExp(`(?:from\\s*|import\\s*|@import\\s+(?:url\\()?)['"]${pattern}`).test(source))},
-  {id:'copied-palette',description:'hard-codes a Bloxwap brand colour that belongs to @bloxwap/hig-tokens',
+  {id:'copied-palette',description:'hard-codes a Bloxwap brand colour that belongs to @bloxwap/hig/tokens',
     test:source=>/#(?:00ff3f|ff479c|fffb38|171717|262626)\b/i.test(source)},
-  {id:'copied-token-definition',canonical:true,description:'assigns a literal value to a --hig-* token; import @bloxwap/hig-tokens/css (remapping one role to another with var() is allowed)',
+  {id:'copied-token-definition',canonical:true,description:'assigns a literal value to a --hig-* token; import @bloxwap/hig/tokens/css (remapping one role to another with var() is allowed)',
     test:(source,path)=>/\.(?:css|scss)$/.test(path)&&/(?:^|[;{\s])--hig-[a-z0-9-]+\s*:\s*(?!var\()[^;}\s]/im.test(source)},
-  {id:'copied-primitive-css',canonical:true,description:'re-implements a HIG primitive (paint/geometry on a bare .hig-* selector); import @bloxwap/hig-react/css and override layout only',
+  {id:'copied-primitive-css',canonical:true,description:'re-implements a HIG primitive (paint/geometry on a bare .hig-* selector); import @bloxwap/hig/react/css and override layout only',
     test:(source,path)=>{if(!/\.(?:css|scss)$/.test(path))return false;const css=source.replace(/\/\*[\s\S]*?\*\//g,'');for(const m of css.matchAll(/(?:^|\})\s*(\.hig-[a-z][\w-]*)\s*\{([^}]*)\}/gm)){if(/(?:^|;)\s*(?:background(?:-color)?|border(?:-radius)?|min-height)\s*:/.test(m[2]))return true;}return false;}},
 ];
 /** File rules, applied to file names rather than contents. */

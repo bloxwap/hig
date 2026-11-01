@@ -10,9 +10,9 @@ jest.mock('@gorhom/bottom-sheet',()=>{
  return {methods,BottomSheetModal,BottomSheetScrollView:ScrollView,BottomSheetBackdrop:View};
 });
 const backend=require('@gorhom/bottom-sheet');
-const {GestureSheet}=require('../../packages/native/src/gesture-sheet');
-const {HIGProvider}=require('../../packages/native/src/provider');
-const {Heading}=require('../../packages/native/src/surface');
+const {GestureSheet}=require('../../packages/hig/native/src/gesture-sheet');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {Heading}=require('../../packages/hig/native/src/surface');
 let root,frames,nextFrame;
 beforeEach(()=>{
  frames=new Map();nextFrame=1;
@@ -123,6 +123,18 @@ it('custom mode retains reduced motion, backdrop policy, Android Back and focus 
  expect(remove).toHaveBeenCalledTimes(2);
 });
 
+it('retries rejected Android Back while deduping an accepted in-flight close',()=>{
+ let back;jest.spyOn(BackHandler,'addEventListener').mockImplementation((_,callback)=>{back=callback;return {remove:jest.fn()};});
+ const change=jest.fn(),closed=jest.fn(),returnFocusRef={current:{_nativeTag:77}},props={onOpenChange:change,onDismiss:closed,returnFocusRef};
+ let node=mount(props);
+ act(()=>{expect(back()).toBe(true);expect(back()).toBe(true);});expect(change).toHaveBeenCalledTimes(1);
+ flushFrames();act(()=>{back();back();});expect(change).toHaveBeenCalledTimes(2);
+ node=update({...props,open:false});
+ act(()=>{back();node.props.onDismiss();node.props.onDismiss();});flushFrames();
+ expect(change).toHaveBeenCalledTimes(2);expect(closed).toHaveBeenCalledTimes(1);
+ expect(AccessibilityInfo.setAccessibilityFocus).toHaveBeenLastCalledWith(77);
+});
+
 it('rejected custom-mode dismissals re-present once the host state settles',()=>{
  const change=jest.fn(),node=mount({onOpenChange:change});
  act(()=>{node.props.onChange(-1);node.props.onDismiss();node.props.onDismiss();});
@@ -139,8 +151,8 @@ it('preserves host card geometry, measured handles, backgrounds and imperative m
  expect(node.props.topInset).toBe(0);expect(node.props.bottomInset).toBe(0);
  expect(node.props.animateOnMount).toBe(false);expect(node.props.animationConfigs).toBe(animationConfigs);expect(node.props.backdropComponent).toBe(Backdrop);expect(node.props.overrideReduceMotion).toBe('always');
  expect(node.props.handleComponent).toBe(Handle);expect(node.props.backgroundComponent).toBe(Background);
- expect(StyleSheet.flatten(node.props.backgroundStyle)).toMatchObject({borderTopLeftRadius:55,borderRadius:require('@bloxwap/hig-tokens').nativeMetrics.radius.xl});
- expect(StyleSheet.flatten(node.props.backgroundStyle).backgroundColor).toBe(require('@bloxwap/hig-tokens').nativeSrgb.surface);
+ expect(StyleSheet.flatten(node.props.backgroundStyle)).toMatchObject({borderTopLeftRadius:55,borderRadius:require('@bloxwap/hig/tokens').nativeMetrics.radius.xl});
+ expect(StyleSheet.flatten(node.props.backgroundStyle).backgroundColor).toBe(require('@bloxwap/hig/tokens').nativeSrgb.surface);
  expect(StyleSheet.flatten(node.props.handleStyle)).toEqual({paddingTop:12,paddingBottom:8});
  expect(StyleSheet.flatten(node.props.handleIndicatorStyle)).toMatchObject({height:6,width:100});
  expect(modalRef.current).toBe(backend.methods);

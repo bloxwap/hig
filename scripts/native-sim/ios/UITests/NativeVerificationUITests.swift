@@ -130,6 +130,53 @@ final class NativeVerificationUITests: XCTestCase {
     try write("ios-\(name).json", r)
   }
 
+  private func finalLabelCount(_ expected: String, minimum: Int = 1, timeout: TimeInterval = 6) -> Int {
+    let query = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", expected))
+    let deadline = Date().addingTimeInterval(timeout)
+    while query.count < minimum && Date() < deadline { Thread.sleep(forTimeInterval: 0.1) }
+    return query.count
+  }
+
+  /// Gallery-level locale/RTL/fallback coverage. Exact labels do not certify visual bidi or glyph shaping.
+  func testAnimatedNumberReadout() throws {
+    let prefix = env["HIG_PREFIX"] ?? "normal"
+    typealias Case = (catalog: String, locale: String, direction: String, initial: String, updated: String)
+    let cases: [Case] = [
+      ("en", "en-US", "ltr", "25", "30"),
+      ("ar", "ar-EG", "rtl", "٢٥", "٣٠"),
+      ("fa", "fa-IR", "rtl", "۲۵", "۳۰"),
+      ("arab", "en-u-nu-arab", "ltr", "٢٥", "٣٠")
+    ]
+    var results: [[String: Any]] = []
+    for item in cases {
+      open("component=Button&state=default")
+      open("component=AnimatedNumberReadout&state=default&messages=\(item.catalog)&dir=\(item.direction)&diag=1")
+      let initial = "Sample price: \(item.initial)", updated = "Sample price: \(item.updated)"
+      let initialCount = finalLabelCount(initial, minimum: 2)
+      XCTAssertGreaterThanOrEqual(initialCount, 2, "readout and slider both expose the canonical initial label: \(initial)")
+      let diagnostics = label("OS RTL:") ?? ""
+      XCTAssertTrue(diagnostics.contains("HIG direction: \(item.direction)"), diagnostics)
+      if let motion = env["HIG_EXPECT_REDUCE_MOTION"] { XCTAssertTrue((label("OS reduce motion:") ?? "").contains(motion == "1" ? "true" : "false")) }
+      if let value = env["HIG_MIN_FONT_SCALE"], let minimum = Double(value) {
+        let text = label("Font scale:") ?? "", scale = Double(text.components(separatedBy: "Font scale: ").last?.components(separatedBy: " ").first ?? "") ?? 0
+        XCTAssertGreaterThanOrEqual(scale, minimum, text)
+      }
+      let slider = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Sample price'")).firstMatch
+      XCTAssertTrue(slider.waitForExistence(timeout: 10))
+      reveal(slider)
+      let action = AXAdjust.perform(slider, increment: true)
+      XCTAssertTrue(action.hasPrefix("performed"), action)
+      let updatedCount = finalLabelCount(updated, minimum: 2)
+      XCTAssertGreaterThanOrEqual(updatedCount, 2, "readout and slider both expose the canonical incremented label: \(updated)")
+      open("component=AnimatedNumberReadout&state=empty&messages=\(item.catalog)&dir=\(item.direction)&diag=1")
+      XCTAssertGreaterThanOrEqual(finalLabelCount("Sample price: —"), 1, "null value keeps the static safe fallback")
+      try capture("ios-animated-number-\(prefix)-\(item.catalog)")
+      try tree("ios-animated-number-\(prefix)-\(item.catalog)")
+      results.append(["locale": item.locale, "direction": item.direction, "initial": initial, "updated": updated, "fallback": "Sample price: —", "initialMatchingElements": initialCount, "updatedMatchingElements": updatedCount, "increment": action])
+    }
+    try write("ios-animated-number-\(prefix).json", ["cases": results, "limits": "Simulator final accessibility labels only; captures require visual/manual glyph, bidi and motion review. No VoiceOver speech or physical-device claim."])
+  }
+
   func testSliderAccessibilityActions() throws {
     open("component=Slider&state=default")
     var r: [String: Any] = [:]
@@ -293,34 +340,41 @@ final class NativeVerificationUITests: XCTestCase {
 
   /// Optional GestureSheet fixture (index-gesture.js entry): detent drag, canceled dismissal and dismissal.
   func testGestureSheet() throws {
-    var r: [String: Any] = [:]
+    var r: [String: Any] = ["limits": "Simulator touch and geometry only; gesture feel and physical-device behavior need visual/manual observation."]
     let open = app.buttons["Open detent sheet"]
     r["fixtureLoaded"] = open.waitForExistence(timeout: 10)
+    XCTAssertTrue(r["fixtureLoaded"] as? Bool == true, "gesture fixture loads")
     guard open.exists else { try write("ios-gesture-sheet.json", r); return }
     open.tap()
     Thread.sleep(forTimeInterval: 1.5)
     try capture("ios-gesture-sheet-after-tap")
     let title = app.staticTexts.matching(NSPredicate(format: "label == 'Review details'")).firstMatch
     r["openedAtFirstDetent"] = title.waitForExistence(timeout: 5)
+    XCTAssertTrue(r["openedAtFirstDetent"] as? Bool == true, "sheet opens at its first detent")
     guard title.exists else { try tree("ios-gesture-sheet-not-open"); try write("ios-gesture-sheet.json", r); return }
     Thread.sleep(forTimeInterval: 1)
     let y0 = title.frame.minY
+    r["titleYAtFirstDetent"] = y0
     try capture("ios-gesture-sheet-50")
     title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12)))
     Thread.sleep(forTimeInterval: 1)
     r["titleYAfterDragUp"] = title.frame.minY
     r["expandedToSecondDetent"] = title.frame.minY < y0 - 50
+    XCTAssertTrue(r["expandedToSecondDetent"] as? Bool == true, "upward drag reaches the second detent")
     try capture("ios-gesture-sheet-90")
     let start = title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
     start.press(forDuration: 0.1, thenDragTo: start.withOffset(CGVector(dx: 0, dy: 60)))
     Thread.sleep(forTimeInterval: 1)
     r["stillOpenAfterShortDrag"] = title.exists && title.isHittable
+    XCTAssertTrue(r["stillOpenAfterShortDrag"] as? Bool == true, "short downward drag cancels dismissal")
     try capture("ios-gesture-sheet-short-drag")
     let s2 = title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
     s2.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.98)))
     Thread.sleep(forTimeInterval: 1.5)
     r["dismissedByDrag"] = !(title.exists && title.isHittable)
     r["triggerHittableAfterDismiss"] = open.isHittable
+    XCTAssertTrue(r["dismissedByDrag"] as? Bool == true, "full downward drag dismisses the sheet")
+    XCTAssertTrue(r["triggerHittableAfterDismiss"] as? Bool == true, "trigger is reachable after drag dismissal")
     try capture("ios-gesture-sheet-dismissed")
     try tree("ios-gesture-sheet")
     try write("ios-gesture-sheet.json", r)

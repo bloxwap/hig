@@ -3,23 +3,25 @@ import {getLocales} from 'expo-localization';
 import React,{useState,useEffect} from 'react';
 import {ScrollView,View,KeyboardAvoidingView,AppState,Linking,I18nManager,PixelRatio,Platform,AccessibilityInfo,useWindowDimensions} from 'react-native';
 import {SafeAreaView,SafeAreaProvider} from 'react-native-safe-area-context';
-import {nativeColors as colors} from '@bloxwap/hig-tokens';
-import {FeedbackProvider,useFeedback} from '@bloxwap/hig-feedback/react';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {nativeColors as colors} from '@bloxwap/hig/tokens';
+import {FeedbackProvider,useFeedback} from '@bloxwap/hig/feedback/react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {jsonStorage} from '@bloxwap/hig-feedback/preferences';
+import {jsonStorage} from '@bloxwap/hig/feedback/preferences';
 import {createController} from './feedback';
-import {HIGProvider,useHIG,useColors,localeDirection} from '@bloxwap/hig-native/provider';
-import {TradeEntry,BalanceCard,MarketRow,InstallCommand,CodeWindow} from '@bloxwap/hig-native/recipes';
-import {Switch} from '@bloxwap/hig-native/switch';
-import {Slider} from '@bloxwap/hig-native/slider';
-import {Select} from '@bloxwap/hig-native/select';
-import {Heading,Text,Stack} from '@bloxwap/hig-native/surface';
-import {Alert} from '@bloxwap/hig-native/status';
-import {List,Row,NumberReadout} from '@bloxwap/hig-native/data';
+import {HIGProvider,useHIG,useColors,localeDirection} from '@bloxwap/hig/native/provider';
+import {TradeEntry,BalanceCard,MarketRow,InstallCommand,CodeWindow} from '@bloxwap/hig/native/recipes';
+import {Switch} from '@bloxwap/hig/native/switch';
+import {Slider} from '@bloxwap/hig/native/slider';
+import {Select} from '@bloxwap/hig/native/select';
+import {Heading,Text,Stack} from '@bloxwap/hig/native/surface';
+import {Alert} from '@bloxwap/hig/native/status';
+import {List,Row,NumberReadout} from '@bloxwap/hig/native/data';
 import {Example} from './gallery';
 import gallery from './gallery-manifest.json';
-import {BrandMark} from '@bloxwap/hig-native/brand';
-import {Button} from '@bloxwap/hig-native/button';
+import {BrandMark} from '@bloxwap/hig/native/brand';
+import {Button} from '@bloxwap/hig/native/button';
 import {parseGalleryRoute,feedbackLog,soundCounts,fixtureCatalogs,type FixtureCatalog,type GalleryRoute} from './native-verification';
 /** Verification-only readout of what the OS reports; shown with ?diag=1. */
 function Diagnostics(){
@@ -52,4 +54,4 @@ function Gallery(){
 const storage=jsonStorage(AsyncStorage);
 // Metro asset dependencies must be statically analyzable.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-export default function App(){const [loaded,error]=useFonts({BloxwapSansRegular:require('@bloxwap/hig-native-fonts/fonts/BloxwapSans.ttf'),BloxwapSansSemiBold:require('@bloxwap/hig-native-fonts/fonts/BloxwapSans-SemiBold.ttf'),BloxwapMonoRegular:require('@bloxwap/hig-native-fonts/fonts/BloxwapMono.ttf')});if(error)return <Text accessibilityRole='alert'>Font loading failed: {error.message}</Text>;if(!loaded)return <Text>Loading Bloxwap fonts…</Text>;return <SafeAreaProvider><FeedbackProvider createController={createController} storage={storage}><Gallery/></FeedbackProvider></SafeAreaProvider>;}
+export default function App(){const [loaded,error]=useFonts({BloxwapSansRegular:require('@bloxwap/hig/native-fonts/fonts/BloxwapSans.ttf'),BloxwapSansSemiBold:require('@bloxwap/hig/native-fonts/fonts/BloxwapSans-SemiBold.ttf'),BloxwapMonoRegular:require('@bloxwap/hig/native-fonts/fonts/BloxwapMono.ttf')});if(error)return <Text accessibilityRole='alert'>Font loading failed: {error.message}</Text>;if(!loaded)return <Text>Loading Bloxwap fonts…</Text>;return <GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><BottomSheetModalProvider><FeedbackProvider createController={createController} storage={storage}><Gallery/></FeedbackProvider></BottomSheetModalProvider></SafeAreaProvider></GestureHandlerRootView>;}

@@ -1,10 +1,10 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
-const {Text:RNText,StyleSheet,Animated}=require('react-native');
-const {nativeColors,nativeSrgb}=require('@bloxwap/hig-tokens');
-const {HIGProvider}=require('../../packages/native/src/provider');
-const {NumberReadout,Usd,Percent}=require('../../packages/native/src/data');
-const {AnimatedNumberReadout}=require('../../packages/native/src/animated-number');
+const {Text:RNText,StyleSheet}=require('react-native');
+const {nativeColors,nativeSrgb}=require('@bloxwap/hig/tokens');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {NumberReadout,Usd,Percent}=require('../../packages/hig/native/src/data');
+const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.restoreAllMocks();});
@@ -64,30 +64,16 @@ it.each([[Usd,12.5,'$12.50'],[Percent,5,'5%']])('forwards typography, tone, and 
  expect(StyleSheet.flatten(text().props.style)).toMatchObject({fontFamily:'HostMono',fontSize:20,color:nativeSrgb.muted,fontVariant:['tabular-nums']});
 });
 
-it('styles and identifies the final animated number while preserving motion limits and reduced motion (#117)',()=>{
- const start=jest.fn(),stop=jest.fn();
- const timing=jest.spyOn(Animated,'timing').mockReturnValue({start,stop,reset:jest.fn()});
- const clock=jest.spyOn(Date,'now').mockReturnValue(1000);
+it('styles and identifies the final animated number through value and reduced-motion changes (#117)',()=>{
  const example=(value,tone='positive',reducedMotion=false)=>h(HIGProvider,{reducedMotion},h(AnimatedNumberReadout,{value,tone,label:'Price',testID:'price',duration:900,style:{fontFamily:'HostMonoSemiBold',fontSize:20,lineHeight:28},maxFontSizeMultiplier:2}));
- mount(example(1));
- expect(timing).not.toHaveBeenCalled();
- act(()=>root.update(example(2)));
- expect(timing).toHaveBeenCalledTimes(1);
- expect(timing.mock.calls[0][1]).toMatchObject({duration:600,useNativeDriver:true});
- expect(start).toHaveBeenCalledTimes(1);
- expect(text().props.testID).toBe('price');
- expect(text().props.accessibilityLabel).toBe('Price: 2');
- expect(text().props.maxFontSizeMultiplier).toBe(2);
- expect(StyleSheet.flatten(text().props.style)).toMatchObject({fontFamily:'HostMonoSemiBold',fontSize:20,lineHeight:28,color:nativeSrgb.positive});
+ const animatedText=()=>root.root.findAllByType(RNText).find(node=>node.props.testID==='price');
+ mount(example(1));act(()=>root.update(example(2)));
+ expect(animatedText().props.accessibilityLabel).toBe('Price: 2');
+ expect(animatedText().props.maxFontSizeMultiplier).toBe(2);
+ expect(StyleSheet.flatten(animatedText().props.style)).toMatchObject({fontFamily:'HostMonoSemiBold',fontSize:20,lineHeight:28,color:nativeSrgb.positive});
  expect(root.root.findAll(node=>typeof node.type==='string'&&node.props.testID==='price').every(node=>node.type==='Text')).toBe(true);
- clock.mockReturnValue(1010);
- act(()=>root.update(example(3,'negative')));
- expect(stop).toHaveBeenCalledTimes(1);
- expect(timing).toHaveBeenCalledTimes(1);
- clock.mockReturnValue(2000);
- act(()=>root.update(example(4,'negative',true)));
- expect(timing).toHaveBeenCalledTimes(1);
- expect(text().props.accessibilityLabel).toBe('Price: 4');
- expect(StyleSheet.flatten(text().props.style).color).toBe(nativeSrgb.negative);
- expect(text().props.accessibilityLiveRegion).toBeUndefined();
+ act(()=>root.update(example(3,'negative')));act(()=>root.update(example(4,'negative',true)));
+ expect(animatedText().props.accessibilityLabel).toBe('Price: 4');
+ expect(StyleSheet.flatten(animatedText().props.style).color).toBe(nativeSrgb.negative);
+ expect(animatedText().props.accessibilityLiveRegion).toBeUndefined();
 });

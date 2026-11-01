@@ -6,8 +6,8 @@ Issue #36. This chapter sets out how HIG stays the one maintained design system 
 
 | Area | Canonical owner | Others may |
 | --- | --- | --- |
-| Semantic tokens (colour roles, space, radius, type, motion, density), native colour spaces, contrast pairs | `bloxwap/hig` → `@bloxwap/hig-tokens` | Map roles to host variables with `var()`. They may not redefine literal values. |
-| Component contracts, DOM and React Native renderers, recipes, the semantic feedback contract | `bloxwap/hig` → `@bloxwap/hig-contracts`, `-react`, `-native`, `-feedback` | Compose components and override layout in context. They may not fork a primitive's paint or geometry. |
+| Semantic tokens (colour roles, space, radius, type, motion, density), native colour spaces, contrast pairs | `bloxwap/hig` → `@bloxwap/hig/tokens` | Map roles to host variables with `var()`. They may not redefine literal values. |
+| Component contracts, DOM and React Native renderers, recipes, the semantic feedback contract | `bloxwap/hig` → `@bloxwap/hig/contracts`, `-react`, `-native`, `-feedback` | Compose components and override layout in context. They may not fork a primitive's paint or geometry. |
 | Font sources, families and web loaders | `bloxwap/font` → `@bloxwap/font` | HIG generates pinned native faces from Font releases. Consumers install fonts and never commit binaries. |
 | Sound recipes and the Web Audio engine | `bloxwap/sfx` | HIG owns the cue mapping and preferences, and exports approved WAV cues for native. |
 | Haptic presets and the web engine | `bloxwap/haptic` | HIG owns the RN adapter and the capability matrix. |
@@ -76,7 +76,7 @@ Intentional density differences, such as compact Pro versus the comfortable touc
 | Rule | Fails when |
 | --- | --- |
 | `obsolete-import` | Code imports a retired fork (`@workspace/tokens`, `@workspace/ui`, `@workspace/ui-native`, plus repository-specific `obsoleteImports`) or a copied `vendor/hig/` or `styles/hig/` folder |
-| `copied-palette` | Code hard-codes the Bloxwap brand hexes owned by `@bloxwap/hig-tokens` |
+| `copied-palette` | Code hard-codes the Bloxwap brand hexes owned by `@bloxwap/hig/tokens` |
 | `copied-token-definition` | A stylesheet assigns a literal value to a `--hig-*` token. Remapping one role to another with `var()` is allowed |
 | `copied-primitive-css` | A bare `.hig-*` selector sets the primitive's paint or geometry (background, border, radius or min-height). Contextual layout overrides are allowed |
 | `copied-font-binary` | A `.ttf`, `.otf` or `.woff*` file is committed outside a canonical font owner |

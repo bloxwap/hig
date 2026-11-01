@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {localeDirection} from '../packages/contracts/src/index';
+import {localeDirection} from '../packages/hig/contracts/src/index';
 // #86: hosts derive HIGProvider direction from their own locale on React Native 0.83 Android.
 it('derives direction from BCP 47 tags and Android/Java locale identifiers',()=>{
  for(const tag of ['ar','ar-EG','ar_EG','he-IL','iw_IL','fa-IR','ur-PK','ckb-IQ','ps-AF','yi','ug-CN','dv-MV','sd-PK','az-Arab-IR','az_IR_#Arab','pa-Arab-PK','uz-Arab','ff-Adlm-GN','AR-eg'])expect(localeDirection(tag),tag).toBe('rtl');

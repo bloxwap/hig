@@ -1,6 +1,6 @@
 import {describe,it,expect,vi} from 'vitest';
-import {FeedbackController} from '../packages/feedback/src/contract';
-import type {FeedbackAdapter,FeedbackEvent} from '../packages/contracts/src/feedback';
+import {FeedbackController} from '../packages/hig/feedback/src/contract';
+import type {FeedbackAdapter,FeedbackEvent} from '../packages/hig/contracts/src/feedback';
 const event=(intent:FeedbackEvent['intent']='activate',id='1'):FeedbackEvent=>({id,source:'button',intent,origin:'keyboard'});
 function adapter():FeedbackAdapter{return {capability:{available:true,mechanism:'native-haptics',observed:false},play:vi.fn(),cancel:vi.fn(),dispose:vi.fn()};}
 describe('semantic feedback contract before adapters',()=>{

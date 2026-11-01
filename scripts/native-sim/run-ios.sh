@@ -21,6 +21,7 @@ xcrun simctl ui "$UDID" content_size large
 xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool false
 run testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS="$COMPONENTS" TEST_RUNNER_HIG_PREFIX=ios
 run testSnapshot TEST_RUNNER_HIG_NAME=baseline
+run testAnimatedNumberReadout TEST_RUNNER_HIG_PREFIX=normal
 run testSliderAccessibilityActions
 run testOverlays
 run testListScrolling
@@ -33,6 +34,7 @@ run testSnapshot TEST_RUNNER_HIG_NAME=os-arabic "TEST_RUNNER_HIG_LAUNCH_ARGS=-Ap
 xcrun simctl ui "$UDID" content_size accessibility-extra-extra-extra-large
 run testSnapshot TEST_RUNNER_HIG_NAME=dynamic-type-ax5
 run testGalleryCaptures TEST_RUNNER_HIG_COMPONENTS="$SUBSET" TEST_RUNNER_HIG_PREFIX=ios-ax5
+run testAnimatedNumberReadout TEST_RUNNER_HIG_PREFIX=font-ax5 TEST_RUNNER_HIG_MIN_FONT_SCALE=2
 # #67: scroll the Text/Switch/Alert examples into view at AX5 and measure the capped readout against prose.
 MEASURE='BLOXWAP|한국어|Price: 67,234.56|Review the amount'
 run testExampleCapture TEST_RUNNER_HIG_NAME=ax5-example-text "TEST_RUNNER_HIG_QUERY=component=Text&state=default" "TEST_RUNNER_HIG_SCROLL_TO=Review the amount" "TEST_RUNNER_HIG_MEASURE=$MEASURE"
@@ -43,5 +45,6 @@ xcrun simctl ui "$UDID" content_size large
 xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
 xcrun simctl spawn "$UDID" notifyutil -p com.apple.accessibility.reduce.motion.status || true
 run testSnapshot TEST_RUNNER_HIG_NAME=reduce-motion "TEST_RUNNER_HIG_QUERY=component=AnimatedNumberReadout&state=default&diag=1" TEST_RUNNER_HIG_AUDIT=0
+run testAnimatedNumberReadout TEST_RUNNER_HIG_PREFIX=reduce-motion TEST_RUNNER_HIG_EXPECT_REDUCE_MOTION=1
 xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool false
 xcrun simctl terminate "$UDID" com.bloxwap.hig.gallery || true

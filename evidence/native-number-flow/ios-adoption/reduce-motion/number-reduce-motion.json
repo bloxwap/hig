@@ -1,0 +1,16 @@
+{
+  "cases" : [
+    {
+      "burst" : "٧٬٦٥٤٬٣٢١٫٠٩",
+      "direction" : "ltr",
+      "environment" : "Number locale ar-EG · direction ltr · scale 1.00 · motion reduced",
+      "fallback" : "—",
+      "group" : "١٬٢٣٤٬٥٦٧٫٨٩",
+      "initial" : "٩٩٩٫٩٩",
+      "locale" : "ar-EG",
+      "rtlStaticFallback" : ""
+    }
+  ],
+  "limits" : "Final accessibility labels only; ar-EG LTR supplies localized reels without relying on iOS Hermes numbering-system extensions. Captures require visual\/manual glyph, bidi and animation review. No VoiceOver speech or physical-device claim.",
+  "mode" : "smoke"
+}

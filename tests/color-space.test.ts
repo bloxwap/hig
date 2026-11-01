@@ -1,7 +1,7 @@
 import {expect,it} from 'vitest';
 // @ts-expect-error Build-time JS conversion has no public runtime declaration.
 import {oklchToSrgb,oklchToDisplayP3,srgbHexToDisplayP3} from '../scripts/color-space.mjs';
-import {sourceColors,nativeColors,tokens} from '../packages/tokens/src';
+import {sourceColors,nativeColors,tokens} from '../packages/hig/tokens/src';
 it('preserves authored semantic values, native alpha and explicit color spaces',()=>{
  expect(sourceColors.web.background).toBe('oklch(0.145 0 0)');
  expect(sourceColors.android.border).toBe('rgba(255, 255, 255, 0.1)');

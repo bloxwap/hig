@@ -3,7 +3,7 @@ import {afterEach,expect,it,vi} from 'vitest';
 import {cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {renderToString} from 'react-dom/server';
-import {SegmentedControl} from '../packages/react/src/selection';
+import {SegmentedControl} from '../packages/hig/react/src/selection';
 const options=[{value:'all',label:'All'},{value:'open',label:'Open'},{value:'trend',label:'Trend'}];
 afterEach(cleanup);
 

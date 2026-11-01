@@ -4,7 +4,7 @@ Tabs, disclosure, search, and navigation that keep the current location clear.
 
 Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, and `Search`. `Breadcrumb` is web-only; native alternatives include `BackButton` and `BottomNavigation`.
 
-Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig-react/navigation` or `@bloxwap/hig-native/navigation` according to applicability below. Import `@bloxwap/hig-react/css` once on web; tokens CSS is a separate explicit import.
+Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react/navigation` or `@bloxwap/hig/native/navigation` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 

@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-export const releasePackages=['contracts','tokens','native-fonts','og-fonts','feedback','react','chart','native'].map(name=>`@bloxwap/hig-${name}`);
+export const releasePackages=['@bloxwap/hig'];
 export const releaseGateIds=['task-policy','source-audit','native-fonts','physical-devices','owning-migrations','upstream-feedback-gaps'];
 function currentException(blocker,today){
  const date=blocker.reviewBy;
@@ -24,7 +24,7 @@ export function verifyReleaseArtifacts(report,{directory,sourceCommit,sourceVers
  assert.deepEqual(report.blockers.map(blocker=>blocker.id).sort(),[...releaseGateIds].sort(),'All six release gates must be recorded exactly once');
  const pending=report.blockers.filter(blocker=>!['cleared','satisfied'].includes(blocker.status)&&!currentException(blocker,today));
  assert.equal(pending.length,0,`Release gates remain: ${pending.map(blocker=>blocker.id).join(', ')}`);
- assert.deepEqual(report.artifacts.map(artifact=>artifact.package).sort(),[...releasePackages].sort(),'Release must contain the complete approved package set');
+ assert.deepEqual(report.artifacts.map(artifact=>artifact.package).sort(),[...releasePackages].sort(),'Release must contain exactly the @bloxwap/hig package');
  return releasePackages.map(name=>{
   const artifact=report.artifacts.find(artifact=>artifact.package===name);
   assert.equal(artifact.version,sourceVersion,`${name}: coordinated version`);

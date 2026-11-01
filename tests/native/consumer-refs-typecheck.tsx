@@ -1,10 +1,10 @@
 import React, {useRef} from 'react';
 import {View, Text as NativeText, TextInput} from 'react-native';
-import {Button, Link} from '@bloxwap/hig-native/button';
-import {Text, Heading} from '@bloxwap/hig-native/surface';
-import {Input, TextArea} from '@bloxwap/hig-native/field';
-import {Dialog} from '@bloxwap/hig-native/overlay';
-import {GestureSheet} from '@bloxwap/hig-native/gesture-sheet';
+import {Button, Link} from '@bloxwap/hig/native/button';
+import {Text, Heading} from '@bloxwap/hig/native/surface';
+import {Input, TextArea} from '@bloxwap/hig/native/field';
+import {Dialog} from '@bloxwap/hig/native/overlay';
+import {GestureSheet} from '@bloxwap/hig/native/gesture-sheet';
 
 // Compiled against independently installed tarballs and each supported RN minor.
 // This catches declaration emit that accidentally freezes RN 0.81's class refs.

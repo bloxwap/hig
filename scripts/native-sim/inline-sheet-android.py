@@ -111,18 +111,35 @@ assert 'closed · mounts 1 · settled 2' in state(), state()
 adb('shell', 'input', 'keyevent', 'KEYCODE_BACK')
 assert 'fallback 2' in state(), 'Closed inline Back did not defer'
 notes['inline'] = {'preparedMounts': 1, 'acceptedSettled': 2, 'rejectedSettled': 0, 'query': 'BTC', 'selectionRetained': True, 'lastActionVisibleAfterReopen': True, 'swipesToLastAction': swipes, 'closedBackDelegated': True, 'openBackClosed': True}
-tap(find(label='Open measured card'))
-short_y = bounds(find(label='Measured card'))[1]
-capture('dynamic-short')
-tap(find(label='Change content height'))
-tall_y = bounds(find(label='Measured card'))[1]
-assert tall_y < short_y - 100, (short_y, tall_y)
-capture('dynamic-tall')
-tap(find(label='Change content height'))
-restored_y = bounds(find(label='Measured card'))[1]
-assert abs(restored_y-short_y) < 8, (short_y, restored_y)
-tap(find(label='Close measured card'))
-assert find(test_id='inline-open')
-notes['dynamic'] = {'shortTitleY': short_y, 'tallTitleY': tall_y, 'restoredTitleY': restored_y}
+def dynamic(motion):
+    adb('shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', f'bloxwaphig://inline?motion={motion}', 'com.bloxwap.hig.gallery')
+    time.sleep(0.8)
+    assert f'motion {motion}' in state(), state()
+    tap(find(test_id='dynamic-open'))
+    title = find(test_id='dynamic-title', timeout=10)
+    assert title, 'Dynamic title did not render'
+    short_y = bounds(title)[1]
+    capture(f'dynamic-{motion}-short')
+    tap(find(test_id='dynamic-toggle'))
+    tall_y = bounds(find(test_id='dynamic-title'))[1]
+    assert tall_y < short_y - 100, (short_y, tall_y)
+    size = re.findall(r'(\d+)x(\d+)', adb('shell', 'wm', 'size').decode())[-1]
+    density_values = re.findall(r'\d+', adb('shell', 'wm', 'density').decode())
+    height, density = int(size[1]), int(density_values[-1])
+    assert 0 < short_y < height, (short_y, height)
+    assert tall_y >= height-560*density-3*density, ('dynamic ceiling crossed', tall_y, height, density)
+    assert tall_y <= height-480*density, ('bounded tall detent not reached', tall_y, height, density)
+    assert find(test_id='dynamic-close'), 'Dynamic close action is unavailable at the ceiling'
+    capture(f'dynamic-{motion}-tall')
+    tap(find(test_id='dynamic-toggle'))
+    restored_y = bounds(find(test_id='dynamic-title'))[1]
+    assert abs(restored_y-short_y) < max(8, 2*density), (short_y, restored_y)
+    capture(f'dynamic-{motion}-restored')
+    tap(find(test_id='dynamic-close'))
+    assert find(test_id='inline-open')
+    notes['dynamic' if motion == 'normal' else 'dynamicReduced'] = {'motion': motion, 'shortTitleY': short_y, 'tallTitleY': tall_y, 'restoredTitleY': restored_y, 'ceilingDp': 560, 'viewportHeightPx': height, 'density': density, 'limits': 'Emulator geometry only; animation smoothness and physical-device behavior need visual/manual observation.'}
+
+dynamic('normal')
+dynamic('reduced')
 (OUT / 'report.json').write_text(json.dumps(notes, ensure_ascii=False, indent=2)+'\n')
 print(json.dumps(notes, ensure_ascii=False), flush=True)

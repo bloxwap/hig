@@ -10,8 +10,8 @@ Set `primaryColor` on `HIGProvider` to apply another brand's accent. For example
 Tap Trade TV can use a red primary colour:
 
 ```tsx
-import {HIGProvider} from '@bloxwap/hig-react/provider';
-// Native: import {HIGProvider} from '@bloxwap/hig-native/provider';
+import {HIGProvider} from '@bloxwap/hig/react/provider';
+// Native: import {HIGProvider} from '@bloxwap/hig/native/provider';
 
 <HIGProvider primaryColor='#ff0000'>
   <App />
@@ -48,7 +48,7 @@ appear, particularly link text and focus rings; automatic label selection only
 guarantees contrast on the primary fill. Choose an accent with enough contrast
 for the dark surfaces your product uses.
 
-Tokens-only hosts can call `resolvePrimaryColor` from `@bloxwap/hig-tokens` and
+Tokens-only hosts can call `resolvePrimaryColor` from `@bloxwap/hig/tokens` and
 apply the resulting `action`, `focus`, and `onAction` roles to a scoped element.
 Keep these three roles together so primary labels remain readable.
 
@@ -72,7 +72,7 @@ Neutral roles (background, surface, nested, text, muted, faint, border, onAction
 
 ## Typography (#7)
 
-Pin @bloxwap/font 0.1.2. Vite: import `@bloxwap/font/css`; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web CSS exposes the roles as `--hig-type-<role>-size`, `-line-height`, `-weight` and a `--hig-type-<role>` font shorthand, and the families as `--hig-font-sans`/`--hig-font-mono`. Those resolve the `@bloxwap/font` Next loader variables first and fall back to the literal `'Bloxwap Sans'`/`'Bloxwap Mono'` families, so HIG controls render the loaded face in both Next and plain `@font-face` hosts. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Run the pinned native font generator and register its static TTF faces from `@bloxwap/hig-native-fonts`; its typed manifest records weight/family/source hashes. Web hosts never install that package. Published WOFF2/Next loaders are not directly native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
+Pin @bloxwap/font 0.1.4. Vite: import `@bloxwap/font/css`, which loads unicode-range subsets (latin, cyrillic, greek, other) so a page fetches only the scripts it renders; Next: upstream Sans/Mono loaders own loading and script fallback. Sans for prose/controls; Mono for code and tabular readouts; Pixel for a short nonessential accent. Body 16/24, label 14/20, caption 12/18, title 24/30, display 48/52 are candidate role mappings based on SDK scale. Web CSS exposes the roles as `--hig-type-<role>-size`, `-line-height`, `-weight` and a `--hig-type-<role>` font shorthand, and the families as `--hig-font-sans`/`--hig-font-mono`. Those resolve the `@bloxwap/font` Next loader variables first and fall back to the literal `'Bloxwap Sans'`/`'Bloxwap Mono'` families, so HIG controls render the loaded face in both Next and plain `@font-face` hosts. Web rem uses 16px root; RN sizes are explicit dp and allow font scaling. Do not disable Dynamic Type or fixed-height clip translated labels. Run the pinned native font generator and register its static TTF faces from `@bloxwap/hig/native-fonts`; its typed manifest records weight/family/source hashes. Web hosts never install that package. Published WOFF2/Next loaders are not directly native assets. **Do** wait for registration before applying a custom native family; **don't** invent a family string and claim the font rendered. Arabic/Hebrew/CJK companions are owned upstream; load required scripts, test mixed-script punctuation and RTL. Large-text and device font evidence is pending.
 
 ## Geometry and layout (#8)
 
@@ -90,7 +90,7 @@ Component review checklist: keyboard completion; labeled controls/errors; busy/d
 
 ## Brand and icons (#11)
 
-Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import `@bloxwap/hig-tokens/mark.svg` on web; both web and RN geometry renderers are available from their brand entries. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives have source provenance and drift checks. Physical device visual comparison remains unperformed.
+Approved mark is copied verbatim from the pinned Font docs SVG, including embedded provenance. Import `@bloxwap/hig/tokens/mark.svg` on web; both web and RN geometry renderers are available from their brand entries. Keep aspect ratio and clear space of one quarter mark width. Decorative marks/icons are hidden from accessibility; icon-only actions require an explicit accessible name and 48-unit target. Use currentColor for utility icons, never tint the approved brand mark arbitrarily. Directional arrows mirror in RTL; brand, check and financial direction do not. Icons repository contains a large catalog; do not import it wholesale. Only reviewed single glyphs belong in runtime exports. Favicon/OG derivatives have source provenance and drift checks. Physical device visual comparison remains unperformed.
 
 Font-loading note: `@bloxwap/font/css` references all supported families/scripts, which may increase deployed asset bytes even with on-demand browser loading. The Latin web fixture instead uses two explicit @font-face rules with package asset URLs (Sans and Mono). Add only the scripts/italics used by each consumer. Do not assume a Latin-only fixture certifies mixed-script rendering.
 
