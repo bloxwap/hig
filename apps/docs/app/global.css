@@ -10,7 +10,7 @@
 /* Match fumadocs-ui/css/preset.css, omitting the unused Notebook and Flux layouts. */
 @import 'fumadocs-ui/css/lib/base.css';
 @import 'fumadocs-ui/css/lib/shiki.css';
-@plugin '../node_modules/fumadocs-ui/dist/tailwind/typography.js';
+@plugin '@fumadocs/tailwind/typography'; /* what fumadocs-ui/dist/tailwind/typography.js re-exports; resolves under npm and Bun layouts */
 @import 'fumadocs-ui/css/generated/docs.css';
 @import 'fumadocs-ui/css/generated/home.css';
 @import 'fumadocs-ui/css/generated/shared.css';
