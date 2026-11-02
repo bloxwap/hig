@@ -17,7 +17,7 @@ it('every job outside the trusted publishing workflow runs on self-hosted macOS 
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('~/Library/Caches/ms-playwright');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toMatch(/path:\s*~\/Library\/Caches\/ms-playwright/);
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
- expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('npx playwright install chromium webkit');
+ expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('bunx playwright install chromium webkit');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('firefox');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('actions/setup-python');
  expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
