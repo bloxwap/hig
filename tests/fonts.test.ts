@@ -50,7 +50,8 @@ describe('generated font preflight (#98)',()=>{
   expect(generator).toContain('"$venv/bin/pip" install --disable-pip-version-check "fonttools[woff]==4.61.1" "brotli==1.2.1"');
   expect(generator).toContain('npm run generate:fonts');
   expect(generator).toContain('RUNNER_TEMP');
-  expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-generate-fonts\.sh/g)?.length).toBe(3);
+  expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-native-fonts\.sh/g)?.length).toBe(3);
+  expect(readFileSync('scripts/ci-native-fonts.sh','utf8')).toContain('bash scripts/ci-generate-fonts.sh');
   expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
   expect(readFileSync('docs/governance/new-repository.md','utf8')).toContain('`fonttools[woff]==4.61.1` and `brotli==1.2.1`');
  });
