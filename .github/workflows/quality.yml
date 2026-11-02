@@ -142,13 +142,42 @@ jobs:
         if: steps.font-cache.outputs.cache-hit != 'true'
         run: bash scripts/ci-generate-fonts.sh
       - run: npm run generate && node scripts/build.mjs
-      - run: npm run smoke:packed
-      - name: Packed native consumer, RN 0.81.5 / Expo 54 (Android and iOS Metro export)
-        run: npm run smoke:packed-native
-      - name: Packed native consumer, RN 0.83.10 / Expo 55 (Android and iOS Metro export, #68)
-        run: npm run smoke:packed-native -- --profile rn-0.83
-      - name: Packed native consumer, RN 0.88.1 / Expo 58 (Android and iOS Metro export)
-        run: npm run smoke:packed-native -- --profile rn-0.88
+      - name: Packed consumers in parallel (web, RN 0.81 / Expo 54, RN 0.83 / Expo 55, RN 0.88 / Expo 58)
+        run: |
+          set -euo pipefail
+          work=$(mktemp -d "$RUNNER_TEMP/hig-packed-checks.XXXXXX")
+          # Pack once before starting any readers. The web smoke must not repack it.
+          mkdir -p artifacts
+          packed=$(npm pack ./packages/hig --json --ignore-scripts --pack-destination artifacts | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s)[0].filename))')
+          export HIG_PACKED_TARBALL="$PWD/artifacts/$packed"
+          checks=(web rn-0.81 rn-0.83 rn-0.88)
+          pids=()
+          for check in "${checks[@]}"; do
+            mkdir -p "$work/$check"
+            (
+              # Isolate consumer dirs AND Metro's temp caches across profiles.
+              export RUNNER_TEMP="$work/$check" TMPDIR="$work/$check"
+              # Vite build and Expo export are offline builds; no server ports.
+              if [ "$check" = web ]; then
+                exec npm run smoke:packed
+              else
+                exec npm run smoke:packed-native -- --profile "$check"
+              fi
+            ) > "$work/$check.log" 2>&1 &
+            pids+=("$!")
+          done
+          failed=0
+          for i in "${!pids[@]}"; do
+            status=0
+            wait "${pids[$i]}" || status=$?
+            echo "::group::${checks[$i]} (exit $status)"
+            cat "$work/${checks[$i]}.log"
+            echo "::endgroup::"
+            if [ "$status" -ne 0 ]; then
+              failed=1
+            fi
+          done
+          exit "$failed"
 
   browser:
     needs: paths-filter
