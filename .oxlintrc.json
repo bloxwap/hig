@@ -1,0 +1,89 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "env": {
+    "node": true,
+    "browser": true,
+    "jest": true
+  },
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/.expo/**",
+    "**/.next/**",
+    "**/.source/**",
+    "**/out/**",
+    ".local/**",
+    "artifacts/**",
+    "evidence/**",
+    ".validation-tmp/**"
+  ],
+  "rules": {
+    "eslint/no-case-declarations": "error",
+    "eslint/no-empty": "error",
+    "eslint/no-fallthrough": "error",
+    "eslint/no-prototype-builtins": "error",
+    "eslint/no-redeclare": "error",
+    "eslint/no-regex-spaces": "error",
+    "eslint/no-undef": "error",
+    "typescript/ban-ts-comment": "error",
+    "eslint/no-array-constructor": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-require-imports": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "eslint/no-shadow": "off",
+    "eslint/no-underscore-dangle": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.mts",
+        "**/*.cts"
+      ],
+      "rules": {
+        "eslint/constructor-super": "off",
+        "eslint/getter-return": "off",
+        "eslint/no-class-assign": "off",
+        "eslint/no-const-assign": "off",
+        "eslint/no-dupe-class-members": "off",
+        "eslint/no-dupe-keys": "off",
+        "eslint/no-func-assign": "off",
+        "eslint/no-import-assign": "off",
+        "eslint/no-new-native-nonconstructor": "off",
+        "eslint/no-obj-calls": "off",
+        "eslint/no-redeclare": "off",
+        "eslint/no-setter-return": "off",
+        "eslint/no-this-before-super": "off",
+        "eslint/no-undef": "off",
+        "eslint/no-unreachable": "off",
+        "eslint/no-unsafe-negation": "off",
+        "eslint/no-var": "error",
+        "eslint/no-with": "off",
+        "eslint/prefer-const": "error",
+        "eslint/prefer-rest-params": "error",
+        "eslint/prefer-spread": "error"
+      }
+    },
+    {
+      "files": [
+        "**/*.mjs",
+        "**/*.js",
+        "**/*.cjs"
+      ],
+      "rules": {
+        "eslint/no-unused-vars": "off",
+        "typescript/no-require-imports": "off"
+      }
+    }
+  ]
+}
