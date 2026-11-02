@@ -43,6 +43,6 @@ npm run typecheck:tsc   # root and docs type check with tsc 7.0.2
 npm run docs:check:tsc  # docs prepare + type check with tsc 7.0.2
 ```
 
-The root `typescript` package stays on 6.0.3 for typescript-eslint and the scripts that use its JS API; TypeScript 7 is installed as the `typescript-7` alias for the fallbacks, and the docs app keeps `typescript` because `next typegen` requires it.
+The root `typescript` package stays on 6.0.3 for the scripts that use its JS API; TypeScript 7 is installed as the `typescript-7` alias for the fallbacks, and the docs app keeps `typescript` because `next typegen` requires it.
 
 HIG aliases come from `packages/hig/tokens/source.json`; authored source palette and provenance are pinned in `packages/hig/tokens/upstream-palette.json`. Never edit generated files. Run `npm run generate` and commit the source and outputs together. Publication uses the maintainer-approved workflow and the dated release gates in `planning/release-blockers.json`. Current implementation and remaining owner/device/upstream tasks are tracked in [roadmap follow-ups](planning/roadmap-followups.md). Native font generation is documented in [source reconciliation](docs/foundations/source-reconciliation.md).
