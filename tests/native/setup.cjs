@@ -19,7 +19,7 @@ jest.mock('react-native-reanimated',()=>{
    return ref.current;
   },
   useAnimatedStyle:updater=>updater(),
-  Easing:{cubic:value=>value,out:easing=>easing},
+  Easing:{cubic:value=>value,out:easing=>easing,bezier:(...points)=>({bezier:points})},
   ReduceMotion:{Never:'never',System:'system',Always:'always'},
  };
 });

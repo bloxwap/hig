@@ -21,5 +21,10 @@ fields use at least 16px on touch so iOS doesn't zoom into them, and edge sheets
 <meta name="theme-color" content="#0a0a0a" />
 ```
 
+Hosts don't need their own sticky-hover overrides for HIG components, and should remove any they have. An
+override keyed to HIG class names stops matching silently when a release renames a class or changes a rule's
+specificity. HIG keeps every `:hover` rule behind `(hover: hover) and (pointer: fine)`, and `tests/touch-css.test.ts`
+fails the build if one escapes.
+
 `viewport-fit=cover` is what makes the safe-area insets non-zero. Don't add `maximum-scale` or `user-scalable=no`.
 Add `overscroll-behavior: none` to `html, body` only if the app owns its own scrolling and you don't want pull-to-refresh.

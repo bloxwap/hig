@@ -2,6 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {PixelRatio,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type TextStyle} from 'react-native';
 import Reanimated,{cancelAnimation,Easing,ReduceMotion,useAnimatedStyle,useSharedValue,withTiming} from 'react-native-reanimated';
 import * as en from '@bloxwap/hig/contracts/messages';
+import {tokens} from '@bloxwap/hig/tokens';
 import {type NumberProps} from './data.js';
 import {createNumberReelModel,formatNumberReadout,numberTrendDirection,safeNumberLayout,type NumberTrend} from './animated-number-model.js';
 import {useColors,useHIG} from './provider.js';
@@ -10,12 +11,15 @@ import {detectScript,Text,type TextScript} from './surface.js';
 export type AnimatedNumberTrend=NumberTrend;
 export interface AnimatedNumberProps extends NumberProps {duration?:number;trend?:AnimatedNumberTrend}
 const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
+// Android Fabric reads colour 0 as "unset", so 'transparent' (0x00000000) drew the hidden reading in the default
+// black under the reels. Clear white is non-zero there and still invisible.
+const hiddenReading={color:'#ffffff00'};
 const clampedDuration=(duration:number)=>Number.isFinite(duration)&&duration>0?Math.min(duration,600):0;
 
 interface DigitReelProps {digits:readonly string[];digit:number;trend:-1|0|1;duration:number;reducedMotion:boolean;width:number;height:number;style:StyleProp<TextStyle>;script:TextScript;maxFontSizeMultiplier?:number}
 function DigitReel({digits,digit,trend,duration,reducedMotion,width,height,style,script,maxFontSizeMultiplier}:DigitReelProps){
  const position=useSharedValue(digit),previousDigit=useRef(digit);
- const animatedStyle=useAnimatedStyle(()=>({transform:[{translateY:-(position.value+10)*height}]}),[height]);
+ const animatedStyle=useAnimatedStyle(()=>({transform:[{translateY:-position.value*height}]}),[height]);
  useEffect(()=>{
   const motionDuration=clampedDuration(duration);
   if(previousDigit.current===digit){
@@ -25,15 +29,15 @@ function DigitReel({digits,digit,trend,duration,reducedMotion,width,height,style
   previousDigit.current=digit;cancelAnimation(position);
   if(reducedMotion||!motionDuration){position.value=digit;return;}
   const current=position.value;if(!Number.isFinite(current)){position.value=digit;return;}
-  const normalized=current>=0&&current<10?current:((current%10)+10)%10;if(normalized!==current)position.value=normalized;
-  let destination=digit;
+  const cycle=trend<0?10:0,normalized=current>=cycle&&current<cycle+10?current:((current%10)+10)%10+cycle;if(normalized!==current)position.value=normalized;
+  let destination=trend<0?digit+10:digit;
   if(trend>0)while(destination<=normalized)destination+=10;
   else if(trend<0)while(destination>=normalized)destination-=10;
   if(destination===normalized){position.value=digit;return;}
-  position.value=withTiming(destination,{duration:motionDuration,easing:Easing.out(Easing.cubic),reduceMotion:ReduceMotion.Never});
+  position.value=withTiming(destination,{duration:motionDuration,easing:Easing.bezier(...tokens.easing.standard),reduceMotion:ReduceMotion.Never});
  },[digit,trend,duration,reducedMotion,position]);
  useEffect(()=>()=>cancelAnimation(position),[position]);
- const rows=Array.from({length:30},(_,index)=>digits[index%10]);
+ const rows=Array.from({length:20},(_,index)=>digits[index%10]);
  return <View collapsable={false} style={{width,height,overflow:'hidden'}}><Reanimated.View style={animatedStyle}>{rows.map((glyph,index)=><Text accessible={false} key={`${index}:${glyph}`} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[style,{width,height,textAlign:'center'}]}>{glyph}</Text>)}</Reanimated.View></View>;
 }
 
@@ -51,7 +55,7 @@ export function AnimatedNumberReadout({value,options,formattedValue,stale,label,
  const previousValue=useRef(value),directionTrend=numberTrendDirection(trend,previousValue.current,value);
  useEffect(()=>{previousValue.current=value;},[value]);
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
- const color=colors[tone==='positive'||tone==='negative'||tone==='muted'?tone:'text'];
+ const color=colors[tone==='positive'||tone==='negative'||tone==='muted'||tone==='up'||tone==='down'?tone:'text'];
  const textStyle:StyleProp<TextStyle>=[typography,{color,fontVariant:['tabular-nums']}];
  const script=detectScript(`${reading.text}${staleSuffix}`,locale);
  const model=createNumberReelModel(value,locale,options,formattedValue,direction);
@@ -66,7 +70,7 @@ export function AnimatedNumberReadout({value,options,formattedValue,stale,label,
  const justifyContent=typography.textAlign==='right'?'flex-end':typography.textAlign==='center'?'center':'flex-start';
  const visualProps={accessible:false,script,maxFontSizeMultiplier};
  return <View collapsable={false} style={{position:'relative'}}>
-  <Text accessibilityLabel={label?`${label}: ${reading.text}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[textStyle,activeModel?{color:'transparent'}:undefined]}>{reading.text}{staleSuffix}</Text>
+  <Text accessibilityLabel={label?`${label}: ${reading.text}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[textStyle,activeModel?hiddenReading:undefined]}>{reading.text}{staleSuffix}</Text>
   {safeModel&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={{position:'absolute',opacity:0,flexDirection:'row'}}>{safeModel.digits.map((glyph,index)=><Text {...visualProps} key={`${measurementKey}:${index}`} onLayout={event=>recordGlyph(measurements,measurementKey,index,event,setMetrics)} style={textStyle}>{glyph}</Text>)}</View>}
   {activeModel&&activeMetrics&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={[StyleSheet.absoluteFill,{overflow:'hidden',flexDirection:'row',direction:'ltr',alignItems:'center',justifyContent}]}>
    {prefix&&<Text {...visualProps} style={textStyle}>{prefix}</Text>}

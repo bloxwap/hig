@@ -3,6 +3,7 @@ import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {type NumberProps} from './data.js';
 import {createAnimatedNumberModel,createAnimatedNumberTransitions} from './animated-number-model.js';
 import {useHIG} from './provider.js';
+import {tokens as higTokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 export type AnimatedNumberTrend=-1|0|1|((oldValue:number,newValue:number)=>-1|0|1);
 export interface AnimatedNumberProps extends NumberProps {duration?:number;trend?:AnimatedNumberTrend}
@@ -19,7 +20,7 @@ export function AnimatedNumberReadout({duration=180,trend,...props}:AnimatedNumb
   if(!frame.changed)return;
   if(reducedMotion||!Number.isFinite(duration)||duration<=0||!frame.model.animatable){setSettled(frame);return;}
   const places=element.current?.querySelectorAll<HTMLElement>('[data-hig-animated-number-change]');if(!places){setSettled(frame);return;}const created:Animation[]=[],changes=frame.tokens.filter(token=>token.changed);
-  for(const [index,place] of Array.from(places).entries()){const token=changes[index],movement=frame.movement||(token?.value!==undefined&&token.oldValue!==undefined?token.value>token.oldValue?1:token.value<token.oldValue?-1:0:0),old=place.querySelector<HTMLElement>('.hig-animated-number-old'),next=place.querySelector<HTMLElement>('.hig-animated-number-new'),timing:KeyframeAnimationOptions={duration:Math.min(duration,600),easing:'ease-out',fill:'forwards'};
+  for(const [index,place] of Array.from(places).entries()){const token=changes[index],movement=frame.movement||(token?.value!==undefined&&token.oldValue!==undefined?token.value>token.oldValue?1:token.value<token.oldValue?-1:0:0),old=place.querySelector<HTMLElement>('.hig-animated-number-old'),next=place.querySelector<HTMLElement>('.hig-animated-number-new'),timing:KeyframeAnimationOptions={duration:Math.min(duration,600),easing:`cubic-bezier(${higTokens.easing.standard.join(',')})`,fill:'forwards'};
    const oldFrames:Keyframe[]=movement===0?[{opacity:1},{opacity:0}]:[{opacity:1,transform:'translateY(0%)'},{opacity:0,transform:`translateY(${-movement*100}%)`}];
    const newFrames:Keyframe[]=movement===0?[{opacity:0},{opacity:1}]:[{opacity:0,transform:`translateY(${movement*100}%)`},{opacity:1,transform:'translateY(0%)'}];
    const oldAnimation=old?.animate?.(oldFrames,timing),newAnimation=next?.animate?.(newFrames,timing);if(oldAnimation)created.push(oldAnimation);if(newAnimation)created.push(newAnimation);

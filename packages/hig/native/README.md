@@ -9,3 +9,8 @@ Omit it to keep Bloxwap green. Nested providers inherit the accent, and `useColo
 returns the resolved roles. With `colorSpace='display-p3'` on iOS, HIG converts
 the sRGB input to P3 channels. Status, buy/sell colours, and the Bloxwap mark retain
 their defaults. See [the colour guide](../../../docs/foundations/platform.md#primary-brand-colour).
+
+Market direction has its own roles. `useColors().up` and `.down` default to `buy` and
+`sell`. `<HIGProvider marketColors={{up,down}}>` overrides either one for hosts whose
+convention differs, and readouts paint them with `tone="up"` / `tone="down"`. See
+[market direction colours](../../../docs/foundations/platform.md#market-direction-colours).

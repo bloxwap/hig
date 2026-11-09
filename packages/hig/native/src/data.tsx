@@ -5,7 +5,8 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useHIG} from './provider.js';
 import {Text,Surface,Separator} from './surface.js';
 import {Button} from './button.js';
-export type NumberTone='text'|'positive'|'negative'|'muted';
+/** `up`/`down` are market direction (rising/long/gain, falling/short/loss) and follow `HIGProvider marketColors`; `positive`/`negative` stay success/error. */
+export type NumberTone='text'|'positive'|'negative'|'muted'|'up'|'down';
 /** Typography only: semantic tone owns colour and numeric glyphs remain tabular. */
 export type NumberReadoutStyle=Pick<TextStyle,'fontFamily'|'fontSize'|'fontWeight'|'lineHeight'|'letterSpacing'|'textAlign'>;
 const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
@@ -14,7 +15,7 @@ export function NumberReadout({value,options,formattedValue,stale,label,tone='te
  const {locale,messages}=useHIG();const colors=useColors();const reading=formatNumberReadout(value,locale,options,formattedValue,prefix,suffix).text;const staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  // Keep the same boundary for untyped hosts and registered/array styles: no raw colour, glyph or layout overrides.
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key)));
- const color=colors[tone==='positive'||tone==='negative'||tone==='muted'?tone:'text'];
+ const color=colors[tone==='positive'||tone==='negative'||tone==='muted'||tone==='up'||tone==='down'?tone:'text'];
  return <Text accessibilityLabel={label?`${label}: ${reading}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[typography,{color,fontVariant:['tabular-nums']}]}>{reading}{staleSuffix}</Text>;
 }
 export function Usd(props:NumberProps){return <NumberReadout {...props} options={{style:'currency',currency:'USD',...props.options}}/>;}
