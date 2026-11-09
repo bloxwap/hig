@@ -69,7 +69,7 @@ it('uses actual scaled glyph metrics for clipped LTR reels and hides only the vi
  jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(2);
  mount(example({value:1234.5,prefix:'$',suffix:' USD',style:{fontSize:20,lineHeight:28},maxFontSizeMultiplier:2}));
  expect(StyleSheet.flatten(finalText().props.style).opacity).toBeUndefined();measure();
- expect(StyleSheet.flatten(finalText().props.style).opacity).toBeUndefined();expect(StyleSheet.flatten(finalText().props.style).color).toBe('transparent');expect(finalText().props.accessibilityLabel).toBe('Price: $1,234.5 USD');
+ expect(StyleSheet.flatten(finalText().props.style).opacity).toBeUndefined();expect(StyleSheet.flatten(finalText().props.style).color).toBe('#ffffff00');expect(finalText().props.accessibilityLabel).toBe('Price: $1,234.5 USD');
  const clips=root.root.findAllByType(RNView).filter(node=>{const style=StyleSheet.flatten(node.props.style);return style?.overflow==='hidden'&&style.width===24&&style.height===56;});
  expect(clips).toHaveLength(5);
  const visual=root.root.findAllByType(RNView).find(node=>node.props.accessibilityElementsHidden===true&&StyleSheet.flatten(node.props.style)?.direction==='ltr');
@@ -88,13 +88,23 @@ it('retargets from the current reel position, snaps for reduced motion, and canc
  const motion=jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);void motion;
  mount(example({value:9,trend:1,duration:900},{reducedMotion:false}));measure();const state=global.__numberReanimated;
  update(example({value:10,trend:1,duration:900},{reducedMotion:false}));
- expect(state.animations).toHaveLength(1);expect(state.animations[0].toValue).toBe(10);expect(state.animations[0].config).toMatchObject({duration:600,reduceMotion:'never'});
+ expect(state.animations).toHaveLength(1);expect(state.animations[0].toValue).toBe(10);expect(state.animations[0].config).toMatchObject({duration:600,reduceMotion:'never',easing:{bezier:[0.22,1,0.36,1]}});
  const position=state.animations[0].value;expect(position.value).toBe(9);position.value=9.4;
  update(example({value:11,trend:1,duration:900},{reducedMotion:false}));
  expect(state.animations).toHaveLength(2);expect(state.animations[1].toValue).toBe(11);expect(state.animations[1].value).toBe(position);expect(position.value).toBe(9.4);
  update(example({value:12,trend:1,duration:900},{reducedMotion:true}));
  expect(state.animations).toHaveLength(2);expect(position.value).toBe(2);expect(state.cancel).toHaveBeenCalled();
  const cancellations=state.cancel.mock.calls.length;act(()=>root.unmount());root=null;expect(state.cancel.mock.calls.length).toBeGreaterThan(cancellations);
+});
+
+it('wraps a downward reel inside two glyph cycles',()=>{
+ jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
+ mount(example({value:10,trend:-1},{reducedMotion:false}));measure();const state=global.__numberReanimated;
+ const reelRows=()=>root.root.findAllByType(RNText).filter(node=>{const style=StyleSheet.flatten(node.props.style);return style?.textAlign==='center'&&style?.height===56;});
+ expect(reelRows()).toHaveLength(40);
+ update(example({value:9,trend:-1},{reducedMotion:false}));
+ const down=state.animations.find(animation=>animation.toValue===9);
+ expect(down).toBeTruthy();expect(down.value.value).toBe(10);
 });
 
 it('uses each digit’s own signed direction for a neutral trend',()=>{

@@ -13,6 +13,7 @@
 .hig-button[data-full] { width:100%; }
 .hig-button:disabled { opacity:.5;cursor:default; }
 .hig-button:active:not(:disabled) { transform:scale(.98); }
+.hig-button { transition:transform 160ms var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),filter 150ms ease; }
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment input):focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }
 .hig-stack,.hig-field,.hig-toast { display:flex;flex-direction:column;gap:var(--hig-gap);min-width:0; }
 .hig-inline { display:flex;flex-wrap:wrap;align-items:center;gap:var(--hig-gap); }

@@ -89,7 +89,7 @@ Only that trusted-publishing job uses GitHub-hosted `ubuntu-24.04`. All other jo
 - Homebrew `gnu-tar` on **every** mini so `gtar` is on the runner service `PATH` or at `$(brew --prefix)/opt/gnu-tar/bin`. `actions/upload-pages-artifact` invokes `gtar` on macOS (`--hard-dereference` is a GNU option). Install with `brew install gnu-tar`. One machine having it is not enough.
 - Disk for npm caches, Playwright browsers at `~/Library/Caches/ms-playwright`, packed-consumer trees under `$RUNNER_TEMP`, and generated font faces
 
-Node 24.22.1 is installed per self-hosted job by `actions/setup-node`. It does not need to be the login-shell default. On the minis, `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality and docs jobs cache generated native/OG font faces (~4 MB). The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
+Node 24.22.1 is installed per self-hosted job by `actions/setup-node`. It does not need to be the login-shell default. On the minis, `setup-node` must not set `cache: npm` (and must not rely on v5+ automatic npm caching): the minis already keep `~/.npm` on disk, and GitHub's cache store has saved 1.1–1.3 GB archives at about 1 MB/s, producing 27-minute `Post setup-node` tails. Quality jobs reuse generated native/OG font faces (~4 MB) from an on-disk cache on each mini (`scripts/ci-native-fonts.sh`, under `~/Library/Caches/bloxwap-hig/native-fonts`), not from `actions/cache`. The publication job uses no Actions caches and generates fonts every time with `bash scripts/ci-generate-fonts.sh`.
 
 ## Playwright
 
@@ -289,7 +289,7 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data`
 
 Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
 
-Native readouts, including `Usd`, `Percent`, and `AnimatedNumberReadout`, accept `tone="text" | "positive" | "negative" | "muted"`, `testID`, and a constrained typography `style`. The style accepts `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, and `textAlign`, including registered styles and arrays. The tone resolves through the provider palette; it is explicit rather than inferred from the sign. Colour and tabular numeric glyphs stay controlled by the readout. Font scale follows HIG Text and the provider; `maxFontSizeMultiplier` can override its cap.
+Native readouts, including `Usd`, `Percent`, and `AnimatedNumberReadout`, accept `tone="text" | "positive" | "negative" | "muted" | "up" | "down"`, `testID`, and a constrained typography `style`. The style accepts `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, and `textAlign`, including registered styles and arrays. The tone resolves through the provider palette; it is explicit rather than inferred from the sign. Colour and tabular numeric glyphs stay controlled by the readout. Font scale follows HIG Text and the provider; `maxFontSizeMultiplier` can override its cap.
 
 For a branded 20 px equity pill, use `<NumberReadout value={equity} label="Equity" testID="equity" style={{fontFamily:'BloxwapMonoSemiBold',fontSize:20,lineHeight:28}} />` with a registered host font. For signed PnL, add `tone={pnl < 0 ? 'negative' : 'positive'}` and `options={{signDisplay:'always'}}`. The same props on `AnimatedNumberReadout` style and identify its single final accessible reading; per-place motion is decorative.
 
@@ -1336,6 +1336,19 @@ for the dark surfaces your product uses.
 Tokens-only hosts can call `resolvePrimaryColor` from `@bloxwap/hig/tokens` and
 apply the resulting `action`, `focus`, and `onAction` roles to a scoped element.
 Keep these three roles together so primary labels remain readable.
+
+### Market direction colours
+
+Native colour tables carry two market-direction roles: `up` (rising, long, gain) and
+`down` (falling, short, loss). They default to `buy` and `sell`. A host whose market
+convention differs, such as KRX or A-share red-for-up, sets
+`<HIGProvider marketColors={{up:'#ff3b30',down:'#0a84ff'}}>` from
+`@bloxwap/hig/native/provider`. Either role can be omitted to keep its default, and
+an empty or non-string value is ignored. Nested providers inherit the override, as with
+`primaryColor`. The values are used as given, in the provider's colour space (Display P3
+channels on an iOS P3 host). `buy`, `sell`, `positive` and `negative` never change:
+`positive`/`negative` mean success and error, not market direction. Readouts paint
+direction with `tone="up"` or `tone="down"`.
 
 ### Native colour space
 

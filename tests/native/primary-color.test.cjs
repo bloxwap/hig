@@ -15,17 +15,18 @@ const h=React.createElement;
 test('primary accent inherits and overrides independently of colour space and status roles',()=>withOS('ios',()=>{
  const seen={};const Probe=({id})=>{seen[id]=useColors();return null;};
  act(()=>{root=create(h(React.Fragment,null,h(Probe,{id:'default'}),h(HIGProvider,{primaryColor:'#f00'},h(Probe,{id:'red'}),h(HIGProvider,{density:'compact'},h(Probe,{id:'nested'})),h(HIGProvider,{colorSpace:'display-p3'},h(Probe,{id:'p3'})),h(HIGProvider,{primaryColor:'#123456'},h(Probe,{id:'override'})))));});
- expect(seen.default).toBe(nativeSrgb);
- expect(seen.red).toEqual({...nativeSrgb,action:'#ff0000',focus:'#ff0000',onAction:'#000000'});
+ const market=table=>({...table,up:table.buy,down:table.sell});
+ expect(seen.default).toEqual(market(nativeSrgb));
+ expect(seen.red).toEqual(market({...nativeSrgb,action:'#ff0000',focus:'#ff0000',onAction:'#000000'}));
  expect(seen.nested).toEqual(seen.red);
- expect(seen.p3).toEqual({...nativeDisplayP3,action:'#ea3323',focus:'#ea3323',onAction:'#000000'});
+ expect(seen.p3).toEqual(market({...nativeDisplayP3,action:'#ea3323',focus:'#ea3323',onAction:'#000000'}));
  expect(seen.override.action).toBe('#123456');expect(seen.override.onAction).toBe('#ffffff');
 }));
 
 test.each(['android','web'])('%s paints custom colours in sRGB even with display-p3 selected',os=>withOS(os,()=>{
  let colors;const Probe=()=>{colors=useColors();return null;};
  act(()=>{root=create(h(HIGProvider,{primaryColor:'#f00',colorSpace:'display-p3'},h(Probe)));});
- expect(colors).toEqual({...nativeSrgb,action:'#ff0000',focus:'#ff0000',onAction:'#000000'});
+ expect(colors).toEqual({...nativeSrgb,action:'#ff0000',focus:'#ff0000',onAction:'#000000',up:nativeSrgb.buy,down:nativeSrgb.sell});
 }));
 
 test('buttons, links and switches paint the accent while the approved Bloxwap mark stays green',()=>{
@@ -46,7 +47,21 @@ test('changing and removing primaryColor updates mounted controls',()=>{
  act(()=>root.update(h(HIGProvider,{primaryColor:'#123456'},h(Probe))));
  expect(colors.action).toBe('#123456');expect(colors.onAction).toBe('#ffffff');
  act(()=>root.update(h(HIGProvider,null,h(Probe))));
- expect(colors).toBe(nativeSrgb);
+ expect(colors).toEqual({...nativeSrgb,up:nativeSrgb.buy,down:nativeSrgb.sell});
+});
+
+test('market colours default to buy/sell, inherit, override per role and paint up/down readouts',()=>{
+ const seen={};const Probe=({id})=>{seen[id]=useColors();return null;};
+ act(()=>{root=create(h(React.Fragment,null,h(HIGProvider,null,h(Probe,{id:'default'})),h(HIGProvider,{marketColors:{up:'#ff0000',down:'#0000ff'}},h(Probe,{id:'krx'}),h(HIGProvider,{density:'compact'},h(Probe,{id:'nested'})),h(HIGProvider,{marketColors:{up:'#00ff00'}},h(Probe,{id:'partial'}))),h(HIGProvider,{marketColors:{up:'',down:7}},h(Probe,{id:'invalid'}))));});
+ expect([seen.default.up,seen.default.down]).toEqual([nativeSrgb.buy,nativeSrgb.sell]);
+ expect([seen.krx.up,seen.krx.down]).toEqual(['#ff0000','#0000ff']);expect(seen.krx.buy).toBe(nativeSrgb.buy);
+ expect(seen.nested).toEqual(seen.krx);
+ expect([seen.partial.up,seen.partial.down]).toEqual(['#00ff00',nativeSrgb.sell]);
+ expect([seen.invalid.up,seen.invalid.down]).toEqual([nativeSrgb.buy,nativeSrgb.sell]);
+ const {NumberReadout}=require('../../packages/hig/native/src/data');
+ act(()=>root.update(h(HIGProvider,{marketColors:{up:'#ff0000',down:'#0000ff'}},h(NumberReadout,{value:1,tone:'up',testID:'up'}),h(NumberReadout,{value:-1,tone:'down',testID:'down'}))));
+ const color=id=>RN.StyleSheet.flatten(root.root.findAllByType(RN.Text).find(n=>n.props.testID===id).props.style).color;
+ expect(color('up')).toBe('#ff0000');expect(color('down')).toBe('#0000ff');
 });
 
 test('a dark primary colour uses white action labels while destructive labels retain contrast',()=>{

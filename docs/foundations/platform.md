@@ -52,6 +52,19 @@ Tokens-only hosts can call `resolvePrimaryColor` from `@bloxwap/hig/tokens` and
 apply the resulting `action`, `focus`, and `onAction` roles to a scoped element.
 Keep these three roles together so primary labels remain readable.
 
+### Market direction colours
+
+Native colour tables carry two market-direction roles: `up` (rising, long, gain) and
+`down` (falling, short, loss). They default to `buy` and `sell`. A host whose market
+convention differs, such as KRX or A-share red-for-up, sets
+`<HIGProvider marketColors={{up:'#ff3b30',down:'#0a84ff'}}>` from
+`@bloxwap/hig/native/provider`. Either role can be omitted to keep its default, and
+an empty or non-string value is ignored. Nested providers inherit the override, as with
+`primaryColor`. The values are used as given, in the provider's colour space (Display P3
+channels on an iOS P3 host). `buy`, `sell`, `positive` and `negative` never change:
+`positive`/`negative` mean success and error, not market direction. Readouts paint
+direction with `tone="up"` or `tone="down"`.
+
 ### Native colour space
 
 React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff479c` is read as P3 channels and paints a more saturated pink than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog and GestureSheet) then paints from that table through `useColors()`, with the primary brand override applied if present. The Bloxwap mark uses `useBrandColors()` to retain its approved colours in the same colour space. Hosts choose a table and can configure the primary accent through `primaryColor`. Nested providers inherit both settings, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.

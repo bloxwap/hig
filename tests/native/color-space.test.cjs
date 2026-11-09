@@ -37,7 +37,9 @@ describe('provider colour table selection',()=>{
   withOS('ios',()=>{
    act(()=>{root=create(React.createElement(React.Fragment,null,React.createElement(Probe,{id:'none'}),React.createElement(HIGProvider,null,React.createElement(Probe,{id:'default'})),React.createElement(HIGProvider,{colorSpace:'display-p3'},React.createElement(Probe,{id:'p3'}),React.createElement(HIGProvider,{direction:'rtl'},React.createElement(Probe,{id:'nested'})),React.createElement(HIGProvider,{colorSpace:'srgb'},React.createElement(Probe,{id:'override'})))));});
   });
-  expect(seen).toEqual({none:nativeSrgb,default:nativeSrgb,p3,nested:p3,override:nativeSrgb});
+  const market=table=>({...table,up:table.buy,down:table.sell});
+  expect(seen).toEqual({none:market(nativeSrgb),default:market(nativeSrgb),p3:market(p3),nested:market(p3),override:market(nativeSrgb)});
+  expect(seen.default).toBe(seen.none);expect(seen.nested).toBe(seen.p3);
  });
  it('the iosDisplayP3 values the issue names differ from the sRGB numbers (#93 table)',()=>{
   expect({action:p3.action,positive:p3.positive,warning:p3.warning,negative:p3.negative,info:p3.info}).toEqual({action:'#00ff3d',positive:'#00ff3d',warning:'#fffa2e',negative:'#ff3d9e',info:'#2eb8ff'});
@@ -107,8 +109,9 @@ describe('components never bypass the provider table',()=>{
  const dir='packages/hig/native/src';
  // provider.tsx owns table selection; every other module paints through useColors().
  const owner='provider.tsx';
- // Pure black has the same channels in sRGB and Display P3, so the modal scrim needs no table entry.
- const invariant=new Set(['#000b']);
+ // Pure black has the same channels in sRGB and Display P3, so the modal scrim needs no table entry. A zero-alpha
+ // colour is invisible in every space; animated-number uses clear white because Android Fabric reads 0x00000000 as unset.
+ const invariant=new Set(['#000b','#ffffff00']);
  const violations=source=>{const found=[];for(const m of source.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]@bloxwap\/hig\/tokens['"]/g))for(const name of m[1].split(',').map(s=>s.trim().split(/\s+as\s+/)[0]))if(/^native(Srgb|Colors|DisplayP3)$/.test(name))found.push(`imports ${name}`);if(/@bloxwap\/hig\/tokens\/[^'"]*colors?|require\(['"]@bloxwap\/hig\/tokens['"]\)/.test(source))found.push('reads tokens outside a named import');for(const m of source.matchAll(/['"](#[0-9a-fA-F]{3,8})['"]/g))if(!invariant.has(m[1].toLowerCase()))found.push(`hex literal ${m[1]}`);return found;};
  it('the guard catches a direct table import and a raw hex colour',()=>{
   expect(violations("import {nativeSrgb as colors,nativeMetrics as tokens} from '@bloxwap/hig/tokens';")).toEqual(['imports nativeSrgb']);

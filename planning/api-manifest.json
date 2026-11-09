@@ -454,7 +454,7 @@
       },
       "NumberTone": {
         "entry": "data",
-        "signature": "export type NumberTone = 'text' | 'positive' | 'negative' | 'muted';"
+        "signature": "export type NumberTone = 'text' | 'positive' | 'negative' | 'muted' | 'up' | 'down';"
       },
       "NumberReadoutStyle": {
         "entry": "data",
@@ -584,21 +584,33 @@
         "entry": "provider",
         "signature": "export type HIGColorSpace = 'srgb' | 'display-p3';"
       },
+      "HIGTableColorRole": {
+        "entry": "provider",
+        "signature": "export type HIGTableColorRole = keyof typeof nativeSrgb;"
+      },
+      "HIGMarketColorRole": {
+        "entry": "provider",
+        "signature": "export type HIGMarketColorRole = 'up' | 'down';"
+      },
       "HIGColorRole": {
         "entry": "provider",
-        "signature": "export type HIGColorRole = keyof typeof nativeSrgb;"
+        "signature": "export type HIGColorRole = HIGTableColorRole | HIGMarketColorRole;"
       },
       "HIGColors": {
         "entry": "provider",
         "signature": "export type HIGColors = Readonly<Record<HIGColorRole, string>>;"
       },
+      "HIGMarketColors": {
+        "entry": "provider",
+        "signature": "export interface HIGMarketColors {\n    up?: string;\n    down?: string;\n}"
+      },
       "colorTable": {
         "entry": "provider",
-        "signature": "export declare function colorTable(colorSpace?: HIGColorSpace, os?: string): HIGColors;"
+        "signature": "export declare function colorTable(colorSpace?: HIGColorSpace, os?: string): Readonly<Record<HIGTableColorRole, string>>;"
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    primaryColor?: string;\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered static companion faces by script and weight. Text selects the detected script and nearest registered weight. */\n    fontFamiliesByScript?: Readonly<Partial<Record<'latin' | 'ko' | 'zh', Readonly<Record<string, string>>>>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    primaryColor?: string; /** Market-direction colours for `up`/`down`; inherited by nested providers, like `primaryColor`. */\n    marketColors?: HIGMarketColors;\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered static companion faces by script and weight. Text selects the detected script and nearest registered weight. */\n    fontFamiliesByScript?: Readonly<Partial<Record<'latin' | 'ko' | 'zh', Readonly<Record<string, string>>>>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
       },
       "HIGProviderProps": {
         "entry": "provider",
@@ -606,7 +618,7 @@
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, fontFamiliesByScript, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, primaryColor, messages }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, fontFamiliesByScript, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, primaryColor, marketColors, messages }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
@@ -618,7 +630,7 @@
       },
       "useBrandColors": {
         "entry": "provider",
-        "signature": "export declare function useBrandColors(): HIGColors;"
+        "signature": "export declare function useBrandColors(): Readonly<Record<HIGTableColorRole, string>>;"
       },
       "useMessages": {
         "entry": "provider",

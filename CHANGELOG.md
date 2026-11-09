@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Every JS export now has a `default` condition beside `import`. Jest/jest-expo, `require()` and Metro's CommonJS resolution can import HIG entries instead of failing with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+- `@bloxwap/hig/react/css` is touch-safe. Every `:hover` rule now sits behind `(hover: hover) and (pointer: fine)`, so taps no longer leave buttons dimmed or ghost buttons filled. Hosts can delete their sticky-hover overrides, and `tests/touch-css.test.ts` keeps the gate in place. HIG controls also get no tap highlight, `touch-action: manipulation`, no long-press selection, `:active` press feedback, 16px text fields on touch, overscroll containment, and safe-area padding on edge sheets and dialogs.
+- Native market-direction colours: `useColors()` adds `up` and `down` (defaulting to `buy`/`sell`), `HIGProvider marketColors` overrides them and is inherited, and `NumberReadout`, `Usd`, `Percent` and `AnimatedNumberReadout` accept `tone="up" | "down"`. New types: `HIGMarketColors`, `HIGMarketColorRole` and `HIGTableColorRole`. `colorTable()` and `useBrandColors()` now return the table roles only. This replaces the mobile app's local patch of 0.2.0.
+- Native `AnimatedNumberReadout` hides its underlying reading with clear white (`#ffffff00`) instead of `transparent`. Android Fabric reads `0x00000000` as unset and drew that reading in black under the reels.
+- Motion: web button presses ease over 160ms on the standard curve instead of snapping. `AnimatedNumberReadout` uses the standard HIG curve (`tokens.easing.standard`) on web and native. Native digit reels mount 20 rows instead of 30, a third less to render per animated place.
+- Native test consumers track Expo SDK 58.0.23, which expects `react-native-safe-area-context ~5.11.1`, and the peer range now accepts it.
 - Accept `@bloxwap/chart` 0.4.0: the required peer is now `^0.3.0 || ^0.4.0`, and HIG develops, smoke-tests and documents against 0.4.0. Chart 0.4.0 only adds indicator APIs, so `PriceChart` and `chartTheme` are unchanged.
 - Pin `@bloxwap/font` 0.1.4. Its web CSS now loads unicode-range subsets, so pages download only the scripts they render. The variable sources behind `@bloxwap/hig/native-fonts` and `@bloxwap/hig/og-fonts` are byte-identical to 0.1.2, so the generated TTFs and their SHA-256 hashes are unchanged; only the manifests' source version changes.
 - The docs site now installs `@bloxwap/haptic` 0.3.0 and `@bloxwap/sfx` 0.2.1, inside HIG's supported peer ranges, instead of the older 0.1.0 builds.
