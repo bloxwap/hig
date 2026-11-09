@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",

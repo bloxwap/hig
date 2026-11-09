@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - Every JS export now has a `default` condition beside `import`. Jest/jest-expo, `require()` and Metro's CommonJS resolution can import HIG entries instead of failing with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
 - `@bloxwap/hig/react/css` is touch-safe. Every `:hover` rule now sits behind `(hover: hover) and (pointer: fine)`, so taps no longer leave buttons dimmed or ghost buttons filled. Hosts can delete their sticky-hover overrides, and `tests/touch-css.test.ts` keeps the gate in place. HIG controls also get no tap highlight, `touch-action: manipulation`, no long-press selection, `:active` press feedback, 16px text fields on touch, overscroll containment, and safe-area padding on edge sheets and dialogs.

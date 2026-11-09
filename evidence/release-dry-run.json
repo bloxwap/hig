@@ -4,20 +4,20 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "stable-simulation",
-  "sourceCommit": "c5b9a9465712a7f7f07ef83a704ccb905bbc3314",
+  "sourceCommit": "f66a92282358b4236b03f7dbae5dda282b1621e9",
   "sourceTreeDirty": true,
-  "sourceVersion": "0.2.0",
-  "artifactVersion": "0.2.0",
-  "docsGuidelineVersion": "0.2.0",
+  "sourceVersion": "0.3.0",
+  "artifactVersion": "0.3.0",
+  "docsGuidelineVersion": "0.3.0",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig",
-      "version": "0.2.0",
-      "file": "bloxwap-hig-0.2.0.tgz",
-      "bytes": 5410159,
-      "unpackedBytes": 14749180,
-      "sha256": "a59561f8b744b9d48a32e403b171292a6d9e29d6e554ec54fd9820763c78704c",
+      "version": "0.3.0",
+      "file": "bloxwap-hig-0.3.0.tgz",
+      "bytes": 5416083,
+      "unpackedBytes": 14758607,
+      "sha256": "429040057d6eacf57fef607bc2675cd118fab228a71a3207df5cf9adf656a90c",
       "files": [
         "LICENSE",
         "README.md",
@@ -201,10 +201,10 @@
       ],
       "fileSizes": {
         "LICENSE": 558,
-        "README.md": 2414,
+        "README.md": 2424,
         "chart/dist/index.d.ts": 423,
         "chart/dist/index.js": 1677,
-        "chart/README.md": 1163,
+        "chart/README.md": 1204,
         "contracts/dist/announcements.d.ts": 508,
         "contracts/dist/announcements.js": 650,
         "contracts/dist/feedback.d.ts": 1443,
@@ -263,15 +263,15 @@
         "native/dist/animated-number-model.d.ts": 1179,
         "native/dist/animated-number-model.js": 5712,
         "native/dist/animated-number.d.ts": 514,
-        "native/dist/animated-number.js": 8182,
+        "native/dist/animated-number.js": 8572,
         "native/dist/brand.d.ts": 372,
         "native/dist/brand.js": 1165,
         "native/dist/button.d.ts": 1887,
         "native/dist/button.js": 5038,
         "native/dist/checkbox.d.ts": 215,
         "native/dist/checkbox.js": 1636,
-        "native/dist/data.d.ts": 2221,
-        "native/dist/data.js": 3392,
+        "native/dist/data.d.ts": 2397,
+        "native/dist/data.js": 3428,
         "native/dist/field.d.ts": 985,
         "native/dist/field.js": 2647,
         "native/dist/gesture-sheet.d.ts": 4843,
@@ -280,8 +280,8 @@
         "native/dist/navigation.js": 3789,
         "native/dist/overlay.d.ts": 2781,
         "native/dist/overlay.js": 6269,
-        "native/dist/provider.d.ts": 4389,
-        "native/dist/provider.js": 4834,
+        "native/dist/provider.d.ts": 5232,
+        "native/dist/provider.js": 5981,
         "native/dist/radio-group.d.ts": 432,
         "native/dist/radio-group.js": 6251,
         "native/dist/recipes.d.ts": 1327,
@@ -306,7 +306,7 @@
         "native/dist/switch.js": 2392,
         "native/dist/text-content.d.ts": 625,
         "native/dist/text-content.js": 932,
-        "native/README.md": 734,
+        "native/README.md": 1081,
         "og-fonts/dist/index.d.ts": 4986,
         "og-fonts/dist/index.js": 3765,
         "og-fonts/dist/node.d.ts": 576,
@@ -319,11 +319,11 @@
         "og-fonts/fonts/manifest.json": 2300,
         "og-fonts/fonts/OFL.txt": 4391,
         "og-fonts/README.md": 2853,
-        "package.json": 10827,
+        "package.json": 13467,
         "react/dist/animated-number-model.d.ts": 772,
         "react/dist/animated-number-model.js": 5099,
         "react/dist/animated-number.d.ts": 409,
-        "react/dist/animated-number.js": 5318,
+        "react/dist/animated-number.js": 5421,
         "react/dist/base.css": 689,
         "react/dist/brand.d.ts": 286,
         "react/dist/brand.js": 962,
@@ -367,10 +367,10 @@
         "react/dist/slider.js": 842,
         "react/dist/status.d.ts": 2659,
         "react/dist/status.js": 5254,
-        "react/dist/styles.css": 24365,
+        "react/dist/styles.css": 26752,
         "react/dist/surface.d.ts": 19630,
         "react/dist/surface.js": 853,
-        "react/README.md": 579,
+        "react/README.md": 1886,
         "tokens/assets/bloxwap-icon.svg": 8236,
         "tokens/dist/index.d.ts": 14601,
         "tokens/dist/index.js": 13012,
@@ -427,9 +427,9 @@
   ],
   "packedSizes": {
     "package": {
-      "file": "bloxwap-hig-0.2.0.tgz",
-      "bytes": 5410159,
-      "unpackedBytes": 14749180
+      "file": "bloxwap-hig-0.3.0.tgz",
+      "bytes": 5416083,
+      "unpackedBytes": 14758607
     },
     "webTokens": {
       "entry": "@bloxwap/hig/tokens",
@@ -449,7 +449,7 @@
       "entry": "@bloxwap/hig/og-fonts",
       "files": 12,
       "unpackedBytes": 2193866,
-      "gzipBytes": 840599,
+      "gzipBytes": 840600,
       "fontFiles": 5,
       "limit": 1000000
     }
@@ -457,7 +457,7 @@
   "chartAdapter": {
     "package": "@bloxwap/hig",
     "entry": "@bloxwap/hig/chart",
-    "file": "bloxwap-hig-0.2.0.tgz",
+    "file": "bloxwap-hig-0.3.0.tgz",
     "peer": "@bloxwap/chart",
     "peerOptional": false
   },
@@ -489,8 +489,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4216,
-      "gzip": 2073,
+      "raw": 4571,
+      "gzip": 2154,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -506,8 +506,8 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 2006,
-      "gzip": 1074,
+      "raw": 2360,
+      "gzip": 1158,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -523,8 +523,8 @@
       ]
     },
     "nativeLink": {
-      "raw": 3100,
-      "gzip": 1584,
+      "raw": 3455,
+      "gzip": 1669,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -546,11 +546,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2051249,
-      "gzip": 586913
+      "raw": 2071114,
+      "gzip": 592808
     },
     "docsCSS": {
-      "raw": 124111
+      "raw": 119696
     },
     "fonts": {
       "raw": 592796
@@ -575,13 +575,13 @@
     },
     {
       "id": "source-audit",
-      "owner": "product monorepo maintainers",
-      "reason": "Source audits and representative migrations are merged, including combined monorepo#4619 and native #4620/#4629. Equal-toolchain web/native measurements are linked from docs/hig/pilots/combined-rollout.md in the owning repository. They are review evidence, not owner approval. The pre-1.0 publication exception authorized by joeblau in PR #141 remains scoped to package availability; v1 parity, named owners, production baselines and rollout acceptance remain in #57. Consumers retain rollback artifacts. Review by 2027-01-15.",
-      "status": "approved-exception",
+      "owner": "joeblau",
+      "reason": "Owner accepted the dated review package and recorded applicability, visual/density/motion/router and historical source/bundle decisions on 2026-10-27. The separate glossary exception expires 2027-01-15. This does not claim new wallet-session or rollback-retirement evidence; those remain #110.",
+      "status": "satisfied",
       "tracking": "https://github.com/bloxwap/hig/issues/57",
       "reviewBy": "2027-01-15",
       "approvedBy": "joeblau",
-      "approval": "https://github.com/bloxwap/hig/pull/141"
+      "approval": "https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md"
     },
     {
       "id": "native-fonts",
@@ -605,8 +605,8 @@
     },
     {
       "id": "owning-migrations",
-      "owner": "each adopting repository maintainers",
-      "reason": "Combined monorepo#4619 and native #4620/#4629 are merged. Consumer refreshes chart#58, sfx#55, agent-cli#55, tapsiren#401, taptradetv#216/#223 and hyperliquid#183 are merged; font#15 declares canonical asset ownership. #115 fixes are complete. HIG 0.1.0 is published, while consumer registry migrations remain in #56. Named-owner visual/motion/bundle decisions, real wallet-session acceptance and rollback retirement remain in #57/#110. The pre-1.0 availability exception from joeblau in PR #141 does not claim those items complete. Review by 2027-01-15.",
+      "owner": "joeblau",
+      "reason": "All ten consumer registry migrations are merged, including monorepo#4737 and taptradetv#253. Named adoption, parity, motion, routing and historical cost decisions are accepted in HIG #57/PR156. Real wallet-session acceptance, rollback-window completion, remaining renderer retirement and new equal-toolchain measurements remain #110. The pre-1.0 availability exception does not claim those execution items complete. Review by 2027-01-15.",
       "status": "approved-exception",
       "tracking": "https://github.com/bloxwap/hig/issues/110",
       "reviewBy": "2027-01-15",

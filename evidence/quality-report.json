@@ -1,6 +1,6 @@
 {
-  "version": "0.2.0",
-  "sourceCommit": "ab713dd05163fd020726ac01be563f6b2172d2a1",
+  "version": "0.3.0",
+  "sourceCommit": "f66a92282358b4236b03f7dbae5dda282b1621e9",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,7 +8,7 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "hig": 123
+    "hig": 178
   },
   "sizes": {
     "button": {
@@ -38,8 +38,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4216,
-      "gzip": 2073,
+      "raw": 4571,
+      "gzip": 2154,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -55,8 +55,8 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 2006,
-      "gzip": 1074,
+      "raw": 2360,
+      "gzip": 1158,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -72,8 +72,8 @@
       ]
     },
     "nativeLink": {
-      "raw": 3100,
-      "gzip": 1584,
+      "raw": 3455,
+      "gzip": 1669,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -95,11 +95,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2059627,
-      "gzip": 588953
+      "raw": 2071114,
+      "gzip": 592808
     },
     "docsCSS": {
-      "raw": 117535
+      "raw": 119696
     },
     "fonts": {
       "raw": 592796

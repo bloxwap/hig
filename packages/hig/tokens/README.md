@@ -1,6 +1,6 @@
 # @bloxwap/hig/tokens
 
-Version 0.2.0, an entry of `@bloxwap/hig`. See the HIG architecture and platform limitations before adoption.
+Version 0.3.0, an entry of `@bloxwap/hig`. See the HIG architecture and platform limitations before adoption.
 
 `resolvePrimaryColor('#ff0000')` resolves a custom brand's `action`, `focus`, and
 `onAction` roles. Input is opaque sRGB hex (`#RGB` or `#RRGGBB`); the foreground

@@ -1,6 +1,6 @@
 # @bloxwap/hig/react
 
-Version 0.2.0, an entry of `@bloxwap/hig`. Import individual entries; see docs/components for platform and accessibility contracts.
+Version 0.3.0, an entry of `@bloxwap/hig`. Import individual entries; see docs/components for platform and accessibility contracts.
 
 Set a brand accent with `<HIGProvider primaryColor='#ff0000'>` from
 `@bloxwap/hig/react/provider`. It accepts opaque sRGB hex (`#RGB` or `#RRGGBB`),
