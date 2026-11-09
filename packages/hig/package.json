@@ -7,36 +7,43 @@
   "exports": {
     "./tokens": {
       "types": "./tokens/dist/index.d.ts",
-      "import": "./tokens/dist/index.js"
+      "import": "./tokens/dist/index.js",
+      "default": "./tokens/dist/index.js"
     },
     "./tokens/css": "./tokens/dist/tokens.css",
     "./tokens/manifest": "./tokens/dist/manifest.json",
     "./tokens/mark.svg": "./tokens/assets/bloxwap-icon.svg",
     "./contracts": {
       "types": "./contracts/dist/index.d.ts",
-      "import": "./contracts/dist/index.js"
+      "import": "./contracts/dist/index.js",
+      "default": "./contracts/dist/index.js"
     },
     "./contracts/feedback": {
       "types": "./contracts/dist/feedback.d.ts",
-      "import": "./contracts/dist/feedback.js"
+      "import": "./contracts/dist/feedback.js",
+      "default": "./contracts/dist/feedback.js"
     },
     "./contracts/announcements": {
       "types": "./contracts/dist/announcements.d.ts",
-      "import": "./contracts/dist/announcements.js"
+      "import": "./contracts/dist/announcements.js",
+      "default": "./contracts/dist/announcements.js"
     },
     "./contracts/messages": {
       "types": "./contracts/dist/messages.d.ts",
-      "import": "./contracts/dist/messages.js"
+      "import": "./contracts/dist/messages.js",
+      "default": "./contracts/dist/messages.js"
     },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
-      "import": "./native-fonts/dist/index.js"
+      "import": "./native-fonts/dist/index.js",
+      "default": "./native-fonts/dist/index.js"
     },
     "./native-fonts/manifest": "./native-fonts/fonts/manifest.json",
     "./native-fonts/fonts/*": "./native-fonts/fonts/*",
     "./og-fonts": {
       "types": "./og-fonts/dist/index.d.ts",
-      "import": "./og-fonts/dist/index.js"
+      "import": "./og-fonts/dist/index.js",
+      "default": "./og-fonts/dist/index.js"
     },
     "./og-fonts/node": {
       "types": "./og-fonts/dist/node.d.ts",
@@ -46,198 +53,246 @@
     "./og-fonts/fonts/*": "./og-fonts/fonts/*",
     "./feedback": {
       "types": "./feedback/dist/contract.d.ts",
-      "import": "./feedback/dist/contract.js"
+      "import": "./feedback/dist/contract.js",
+      "default": "./feedback/dist/contract.js"
     },
     "./feedback/web": {
       "types": "./feedback/dist/web.d.ts",
-      "import": "./feedback/dist/web.js"
+      "import": "./feedback/dist/web.js",
+      "default": "./feedback/dist/web.js"
     },
     "./feedback/native": {
       "types": "./feedback/dist/native.d.ts",
-      "import": "./feedback/dist/native.js"
+      "import": "./feedback/dist/native.js",
+      "default": "./feedback/dist/native.js"
     },
     "./feedback/react": {
       "types": "./feedback/dist/react.d.ts",
-      "import": "./feedback/dist/react.js"
+      "import": "./feedback/dist/react.js",
+      "default": "./feedback/dist/react.js"
     },
     "./feedback/preferences": {
       "types": "./feedback/dist/preferences.d.ts",
-      "import": "./feedback/dist/preferences.js"
+      "import": "./feedback/dist/preferences.js",
+      "default": "./feedback/dist/preferences.js"
     },
     "./feedback/assets/*": "./feedback/assets/*",
     "./feedback/web-sound": {
       "types": "./feedback/dist/web-sound.d.ts",
-      "import": "./feedback/dist/web-sound.js"
+      "import": "./feedback/dist/web-sound.js",
+      "default": "./feedback/dist/web-sound.js"
     },
     "./feedback/browser-haptic": {
       "types": "./feedback/dist/browser-haptic.d.ts",
-      "import": "./feedback/dist/browser-haptic.js"
+      "import": "./feedback/dist/browser-haptic.js",
+      "default": "./feedback/dist/browser-haptic.js"
     },
     "./feedback/web-haptic": {
       "types": "./feedback/dist/web-haptic.d.ts",
-      "import": "./feedback/dist/web-haptic.js"
+      "import": "./feedback/dist/web-haptic.js",
+      "default": "./feedback/dist/web-haptic.js"
     },
     "./react/provider": {
       "types": "./react/dist/provider.d.ts",
-      "import": "./react/dist/provider.js"
+      "import": "./react/dist/provider.js",
+      "default": "./react/dist/provider.js"
     },
     "./react/button": {
       "types": "./react/dist/button.d.ts",
-      "import": "./react/dist/button.js"
+      "import": "./react/dist/button.js",
+      "default": "./react/dist/button.js"
     },
     "./react/surface": {
       "types": "./react/dist/surface.d.ts",
-      "import": "./react/dist/surface.js"
+      "import": "./react/dist/surface.js",
+      "default": "./react/dist/surface.js"
     },
     "./react/field": {
       "types": "./react/dist/field.d.ts",
-      "import": "./react/dist/field.js"
+      "import": "./react/dist/field.js",
+      "default": "./react/dist/field.js"
     },
     "./react/selection": {
       "types": "./react/dist/selection.d.ts",
-      "import": "./react/dist/selection.js"
+      "import": "./react/dist/selection.js",
+      "default": "./react/dist/selection.js"
     },
     "./react/overlay": {
       "types": "./react/dist/overlay.d.ts",
-      "import": "./react/dist/overlay.js"
+      "import": "./react/dist/overlay.js",
+      "default": "./react/dist/overlay.js"
     },
     "./react/navigation": {
       "types": "./react/dist/navigation.d.ts",
-      "import": "./react/dist/navigation.js"
+      "import": "./react/dist/navigation.js",
+      "default": "./react/dist/navigation.js"
     },
     "./react/status": {
       "types": "./react/dist/status.d.ts",
-      "import": "./react/dist/status.js"
+      "import": "./react/dist/status.js",
+      "default": "./react/dist/status.js"
     },
     "./react/data": {
       "types": "./react/dist/data.d.ts",
-      "import": "./react/dist/data.js"
+      "import": "./react/dist/data.js",
+      "default": "./react/dist/data.js"
     },
     "./react/brand": {
       "types": "./react/dist/brand.d.ts",
-      "import": "./react/dist/brand.js"
+      "import": "./react/dist/brand.js",
+      "default": "./react/dist/brand.js"
     },
     "./react/recipes": {
       "types": "./react/dist/recipes.d.ts",
-      "import": "./react/dist/recipes.js"
+      "import": "./react/dist/recipes.js",
+      "default": "./react/dist/recipes.js"
     },
     "./react/recipes/market-row": {
       "types": "./react/dist/recipes/market-row.d.ts",
-      "import": "./react/dist/recipes/market-row.js"
+      "import": "./react/dist/recipes/market-row.js",
+      "default": "./react/dist/recipes/market-row.js"
     },
     "./react/recipes/balance-card": {
       "types": "./react/dist/recipes/balance-card.d.ts",
-      "import": "./react/dist/recipes/balance-card.js"
+      "import": "./react/dist/recipes/balance-card.js",
+      "default": "./react/dist/recipes/balance-card.js"
     },
     "./react/recipes/trade-entry": {
       "types": "./react/dist/recipes/trade-entry.d.ts",
-      "import": "./react/dist/recipes/trade-entry.js"
+      "import": "./react/dist/recipes/trade-entry.js",
+      "default": "./react/dist/recipes/trade-entry.js"
     },
     "./react/recipes/install-command": {
       "types": "./react/dist/recipes/install-command.d.ts",
-      "import": "./react/dist/recipes/install-command.js"
+      "import": "./react/dist/recipes/install-command.js",
+      "default": "./react/dist/recipes/install-command.js"
     },
     "./react/recipes/code-window": {
       "types": "./react/dist/recipes/code-window.d.ts",
-      "import": "./react/dist/recipes/code-window.js"
+      "import": "./react/dist/recipes/code-window.js",
+      "default": "./react/dist/recipes/code-window.js"
     },
     "./react/recipes/marketing-hero": {
       "types": "./react/dist/recipes/marketing-hero.d.ts",
-      "import": "./react/dist/recipes/marketing-hero.js"
+      "import": "./react/dist/recipes/marketing-hero.js",
+      "default": "./react/dist/recipes/marketing-hero.js"
     },
     "./react/recipes/activity-list": {
       "types": "./react/dist/recipes/activity-list.d.ts",
-      "import": "./react/dist/recipes/activity-list.js"
+      "import": "./react/dist/recipes/activity-list.js",
+      "default": "./react/dist/recipes/activity-list.js"
     },
     "./react/css": "./react/dist/styles.css",
     "./react/css/base": "./react/dist/base.css",
     "./react/animated-number": {
       "types": "./react/dist/animated-number.d.ts",
-      "import": "./react/dist/animated-number.js"
+      "import": "./react/dist/animated-number.js",
+      "default": "./react/dist/animated-number.js"
     },
     "./react/gesture-sheet": {
       "types": "./react/dist/gesture-sheet.d.ts",
-      "import": "./react/dist/gesture-sheet.js"
+      "import": "./react/dist/gesture-sheet.js",
+      "default": "./react/dist/gesture-sheet.js"
     },
     "./chart": {
       "types": "./chart/dist/index.d.ts",
-      "import": "./chart/dist/index.js"
+      "import": "./chart/dist/index.js",
+      "default": "./chart/dist/index.js"
     },
     "./native/provider": {
       "types": "./native/dist/provider.d.ts",
-      "import": "./native/dist/provider.js"
+      "import": "./native/dist/provider.js",
+      "default": "./native/dist/provider.js"
     },
     "./native/button": {
       "types": "./native/dist/button.d.ts",
-      "import": "./native/dist/button.js"
+      "import": "./native/dist/button.js",
+      "default": "./native/dist/button.js"
     },
     "./native/surface": {
       "types": "./native/dist/surface.d.ts",
-      "import": "./native/dist/surface.js"
+      "import": "./native/dist/surface.js",
+      "default": "./native/dist/surface.js"
     },
     "./native/field": {
       "types": "./native/dist/field.d.ts",
-      "import": "./native/dist/field.js"
+      "import": "./native/dist/field.js",
+      "default": "./native/dist/field.js"
     },
     "./native/selection": {
       "types": "./native/dist/selection.d.ts",
-      "import": "./native/dist/selection.js"
+      "import": "./native/dist/selection.js",
+      "default": "./native/dist/selection.js"
     },
     "./native/overlay": {
       "types": "./native/dist/overlay.d.ts",
-      "import": "./native/dist/overlay.js"
+      "import": "./native/dist/overlay.js",
+      "default": "./native/dist/overlay.js"
     },
     "./native/navigation": {
       "types": "./native/dist/navigation.d.ts",
-      "import": "./native/dist/navigation.js"
+      "import": "./native/dist/navigation.js",
+      "default": "./native/dist/navigation.js"
     },
     "./native/status": {
       "types": "./native/dist/status.d.ts",
-      "import": "./native/dist/status.js"
+      "import": "./native/dist/status.js",
+      "default": "./native/dist/status.js"
     },
     "./native/data": {
       "types": "./native/dist/data.d.ts",
-      "import": "./native/dist/data.js"
+      "import": "./native/dist/data.js",
+      "default": "./native/dist/data.js"
     },
     "./native/brand": {
       "types": "./native/dist/brand.d.ts",
-      "import": "./native/dist/brand.js"
+      "import": "./native/dist/brand.js",
+      "default": "./native/dist/brand.js"
     },
     "./native/recipes": {
       "types": "./native/dist/recipes.d.ts",
-      "import": "./native/dist/recipes.js"
+      "import": "./native/dist/recipes.js",
+      "default": "./native/dist/recipes.js"
     },
     "./native/switch": {
       "types": "./native/dist/switch.d.ts",
-      "import": "./native/dist/switch.js"
+      "import": "./native/dist/switch.js",
+      "default": "./native/dist/switch.js"
     },
     "./native/checkbox": {
       "types": "./native/dist/checkbox.d.ts",
-      "import": "./native/dist/checkbox.js"
+      "import": "./native/dist/checkbox.js",
+      "default": "./native/dist/checkbox.js"
     },
     "./native/radio-group": {
       "types": "./native/dist/radio-group.d.ts",
-      "import": "./native/dist/radio-group.js"
+      "import": "./native/dist/radio-group.js",
+      "default": "./native/dist/radio-group.js"
     },
     "./native/select": {
       "types": "./native/dist/select.d.ts",
-      "import": "./native/dist/select.js"
+      "import": "./native/dist/select.js",
+      "default": "./native/dist/select.js"
     },
     "./native/slider": {
       "types": "./native/dist/slider.d.ts",
-      "import": "./native/dist/slider.js"
+      "import": "./native/dist/slider.js",
+      "default": "./native/dist/slider.js"
     },
     "./native/segmented-control": {
       "types": "./native/dist/radio-group.d.ts",
-      "import": "./native/dist/radio-group.js"
+      "import": "./native/dist/radio-group.js",
+      "default": "./native/dist/radio-group.js"
     },
     "./native/gesture-sheet": {
       "types": "./native/dist/gesture-sheet.d.ts",
-      "import": "./native/dist/gesture-sheet.js"
+      "import": "./native/dist/gesture-sheet.js",
+      "default": "./native/dist/gesture-sheet.js"
     },
     "./native/animated-number": {
       "types": "./native/dist/animated-number.d.ts",
-      "import": "./native/dist/animated-number.js"
+      "import": "./native/dist/animated-number.js",
+      "default": "./native/dist/animated-number.js"
     },
     "./package.json": "./package.json"
   },

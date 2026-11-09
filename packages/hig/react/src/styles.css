@@ -5,15 +5,13 @@
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
 .hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);cursor:pointer;overflow-wrap:anywhere; }
 .hig-button[data-density='compact'] { padding-block:4px; }
-.hig-button[data-intent='secondary'],.hig-button[role='tab'][aria-selected='false'],.hig-navigation > .hig-link:hover { background:var(--hig-nested);color:var(--hig-text); }
+.hig-button[data-intent='secondary'],.hig-button[role='tab'][aria-selected='false'] { background:var(--hig-nested);color:var(--hig-text); }
 .hig-button[data-intent='ghost'] { background:transparent;color:var(--hig-muted); }
-.hig-button[data-intent='ghost']:hover:not(:disabled) { background:var(--hig-nested);color:var(--hig-text);filter:none; }
 .hig-button > svg,.hig-icon-button > span { display:inline-flex;align-items:center;justify-content:center;flex:none; }
 .hig-icon-button { min-width:var(--hig-button);padding-inline:8px; }
 .hig-button[data-intent='destructive'] { background:var(--hig-negative);color:var(--hig-background); }
 .hig-button[data-full] { width:100%; }
 .hig-button:disabled { opacity:.5;cursor:default; }
-.hig-button:hover:not(:disabled) { filter:brightness(.9); }
 .hig-button:active:not(:disabled) { transform:scale(.98); }
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment input):focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }
 .hig-stack,.hig-field,.hig-toast { display:flex;flex-direction:column;gap:var(--hig-gap);min-width:0; }
@@ -44,7 +42,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-separator { border:0;border-top:1px solid var(--hig-border);width:100%; }
 .hig-backdrop { position:fixed;inset:0;background:#000b;z-index:40; }
 /* Centred with physical left: the content carries the provider dir, and inset-inline-start would flip to right:50% in RTL while the translate stays negative. */
-.hig-dialog { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:min(560px,calc(100vw - 32px));width:100%;max-height:calc(100dvh - 32px);overflow:auto;padding:24px;box-shadow:0 16px 48px #0003;z-index:41;display:flex;flex-direction:column;gap:12px;overflow-wrap:anywhere; }
+.hig-dialog { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:min(560px,calc(100vw - 32px));width:100%;max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:24px;box-shadow:0 16px 48px #0003;z-index:41;display:flex;flex-direction:column;gap:12px;overflow-wrap:anywhere; }
 .hig-dialog-title { margin:0;font-size:1.25rem;font-weight:600;line-height:1.3; }
 .hig-dialog-description { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-gesture-sheet { position:fixed;z-index:41;display:flex;flex-direction:column;max-height:95dvh;background:var(--hig-surface);color:var(--hig-text);outline:none; }
@@ -52,12 +50,19 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-gesture-sheet[data-vaul-drawer-direction='top'] { inset:0 0 auto;border-radius:0 0 14px 14px; }
 .hig-gesture-sheet[data-vaul-drawer-direction='left'] { inset:0 auto 0 0;width:min(420px,95vw);max-height:none;border-radius:0 14px 14px 0; }
 .hig-gesture-sheet[data-vaul-drawer-direction='right'] { inset:0 0 0 auto;width:min(420px,95vw);max-height:none;border-radius:14px 0 0 14px; }
-.hig-gesture-sheet[data-hig-content-mode='default'] { overflow:auto;gap:12px;padding:24px; }
+.hig-gesture-sheet[data-hig-content-mode='default'] { overflow:auto;overscroll-behavior:contain;gap:12px;padding:24px; }
 .hig-gesture-sheet[data-hig-content-mode='custom'] { padding:0; }
 .hig-gesture-sheet[data-hig-dynamic='true'] { overflow:hidden;gap:0;padding:0; }
 .hig-gesture-dynamic { display:flex;flex-direction:column;flex:none;min-height:0;max-height:inherit; }
-.hig-gesture-dynamic[data-hig-content-mode='default'] { overflow:auto;gap:12px;padding:24px; }
+.hig-gesture-dynamic[data-hig-content-mode='default'] { overflow:auto;overscroll-behavior:contain;gap:12px;padding:24px; }
 .hig-gesture-dynamic[data-hig-content-mode='custom'] { padding:0; }
+/* Edge sheets pad default content past the notch and home indicator; dynamic sheets pad the inner wrapper instead.
+   Vaul directions are physical, so side insets are too. env() is 0px unless the host sets viewport-fit=cover. */
+.hig-gesture-sheet[data-vaul-drawer-direction='bottom'][data-hig-content-mode='default']:not([data-hig-dynamic]),.hig-gesture-sheet[data-vaul-drawer-direction='bottom'] > .hig-gesture-dynamic[data-hig-content-mode='default'] { padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
+.hig-gesture-sheet[data-vaul-drawer-direction='top'][data-hig-content-mode='default']:not([data-hig-dynamic]),.hig-gesture-sheet[data-vaul-drawer-direction='top'] > .hig-gesture-dynamic[data-hig-content-mode='default'] { padding-top:calc(24px + env(safe-area-inset-top,0px)); }
+.hig-gesture-sheet:is([data-vaul-drawer-direction='left'],[data-vaul-drawer-direction='right'])[data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
+.hig-gesture-sheet[data-vaul-drawer-direction='left'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-left:calc(24px + env(safe-area-inset-left,0px)); }
+.hig-gesture-sheet[data-vaul-drawer-direction='right'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-right:calc(24px + env(safe-area-inset-right,0px)); }
 .hig-gesture-handle[data-vaul-handle] { flex:none;align-self:center;background:var(--hig-muted);margin-block:4px 12px; }
 .hig-gesture-sheet[data-hig-motion='reduced'],.hig-gesture-backdrop[data-hig-motion='reduced'] { animation:none!important;transition:none!important; }
 .hig-popover { max-width:min(360px,calc(100vw - 32px));max-height:var(--radix-popover-content-available-height,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;background:var(--hig-nested);color:var(--hig-text);padding:12px;border:1px solid var(--hig-border);border-radius:var(--hig-radius-xl,14px);box-shadow:0 8px 24px #0003;line-height:1.5;overflow-wrap:anywhere;z-index:50; }
@@ -77,7 +82,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-list-message { margin:0;color:var(--hig-muted);line-height:1.5; }
 .hig-list { list-style:none;padding:0;margin:0; }
 .hig-list > li + li { border-block-start:1px solid var(--hig-border); }
-.hig-table-scroll { min-width:0;max-width:100%;overflow:auto;border:1px solid var(--hig-border);border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface); }
+.hig-table-scroll { min-width:0;max-width:100%;overflow:auto;overscroll-behavior-x:contain;border:1px solid var(--hig-border);border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface); }
 /* Class specificity so the opt-in base `table` rule cannot collapse HIG tables. */
 .hig-table { border-collapse:separate;border-spacing:0; }
 :where(.hig-table) { width:100%;color:var(--hig-text);line-height:1.5; }
@@ -87,7 +92,6 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-table > tbody > tr:last-child > td { border-bottom:0; }
 .hig-table > tbody > tr:focus-within > td,.hig-select-option[data-active='true'] { background:var(--hig-nested); }
 .hig-table-sort { appearance:none;display:inline-flex;align-items:center;justify-content:inherit;gap:6px;max-width:100%;min-height:var(--hig-button);margin:-6px;padding:6px;border:0;border-radius:var(--hig-radius-md,6px);background:transparent;color:inherit;font:inherit;text-align:inherit;cursor:pointer; }
-.hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
 .hig-table-sort-icon { flex:none; }
 .hig-table [aria-sort='ascending'] .hig-table-sort-up,.hig-table [aria-sort='descending'] .hig-table-sort-down,.hig-segment input:checked + span { color:var(--hig-text); }
 .hig-table [aria-sort='ascending'] .hig-table-sort-down,.hig-table [aria-sort='descending'] .hig-table-sort-up { opacity:.3; }
@@ -120,12 +124,11 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 @media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled) {transform:none;} }
 [data-hig-motion='reduced'] .hig-button:active:not(:disabled) {transform:none;}
 .hig-tabs { display:grid;gap:var(--hig-gap);min-width:0; }
-.hig-tab-list { flex-wrap:nowrap;overflow-x:auto;padding:4px;margin:-4px; }
+.hig-tab-list { flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding:4px;margin:-4px; }
 .hig-tab { flex:none;white-space:nowrap; }
 .hig-breadcrumb { list-style:none;padding:0;margin:0;gap:8px;color:var(--hig-muted); }
 .hig-breadcrumb > li { display:inline-flex;align-items:center;gap:8px;min-width:0; }
 .hig-breadcrumb .hig-link { color:var(--hig-muted);text-decoration:none; }
-.hig-breadcrumb .hig-link:hover { color:var(--hig-text);text-decoration:underline; }
 .hig-breadcrumb [aria-current='page'] { color:var(--hig-text); }
 .hig-breadcrumb-separator { color:var(--hig-faint);user-select:none; }
 .hig-navigation { gap:4px; }
@@ -213,4 +216,23 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
   .hig-choice input,.hig-select select,.hig-range { appearance:auto; -webkit-appearance:auto; }
   .hig-choice input::before,.hig-select::after { display:none; }
   .hig-segment input:checked + span { outline:2px solid Highlight; outline-offset:-2px; }
+}
+
+/* Touch: HIG controls fire click without the double-tap-zoom wait, draw their own press state instead of the
+   browser's tap flash, and a long press never selects a control label or opens the link callout. Content stays selectable. */
+:where(.hig-button,.hig-choice,.hig-segment,.hig-switch,.hig-range,.hig-menu-item,.hig-select-trigger,.hig-select-option,.hig-table-sort,.hig-navigation > .hig-link) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
+/* Press feedback on pointer-down for controls that had only hover or keyboard states. */
+.hig-menu-item:active:not([data-disabled]) { background:var(--hig-surface); }
+.hig-select-option:active:not([aria-disabled='true']),.hig-table-sort:active { background:var(--hig-nested); }
+.hig-navigation > .hig-link:active { background:var(--hig-nested); }
+.hig-segment:active:not(:has(input:disabled)) span { color:var(--hig-text); }
+/* iOS zooms into any text field under 16px and never zooms back out. Inputs inherit the host size, so floor it on touch. */
+@media (pointer:coarse) { :is(input,textarea,select).hig-input { font-size:max(16px,1em); } }
+/* Touch has no hover: browsers latch :hover on the first tap. Hover styles apply only to a precise hovering pointer. */
+@media (hover:hover) and (pointer:fine) {
+  .hig-button:hover:not(:disabled) { filter:brightness(.9); }
+  .hig-button[data-intent='ghost']:hover:not(:disabled) { background:var(--hig-nested);color:var(--hig-text);filter:none; }
+  .hig-navigation > .hig-link:hover { background:var(--hig-nested);color:var(--hig-text); }
+  .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
+  .hig-breadcrumb .hig-link:hover { color:var(--hig-text);text-decoration:underline; }
 }
