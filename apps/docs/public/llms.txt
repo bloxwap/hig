@@ -1,4 +1,4 @@
-# Bloxwap HIG 0.2.0
+# Bloxwap HIG 0.3.0
 
 ## ADR 001: platform renderers, shared contracts
 Source: docs/architecture/001-packages.md
@@ -822,10 +822,10 @@ HIG's physical acceptance uses the [2026-10-19 owner attestation](https://github
 A recorded device acceptance run must include HIG/package versions, device, OS/browser, date, observer and actual observations: default/muted channels; each independent combination; volume/silent-mode; latency; interruptions; background/foreground; repeated/nested activation; cancelled scroll/drag; disabled/busy; slider repeated values; iOS preset limits; accessibility helper tab/VoiceOver order; visible recovery with feedback off. Attach video/measurements where useful. Reuse upstream haptic certification rather than declaring simulator passes as hardware proof. Owner: HIG and owning app/haptic maintainers; Joe Blau accepted the named adoption ownership in #57.
 
 
-## Trading glossary · HIG 0.2.0
+## Trading glossary · HIG 0.3.0
 Source: docs/foundations/glossary.md
 
-# Trading glossary · HIG 0.2.0
+# Trading glossary · HIG 0.3.0
 
 Issue #46. Locked before any locale translation. Machine-readable source: `docs/foundations/glossary.json` (also exported as `/hig/glossary.json`). Formatting rules: [localization guide](localization.md).
 
@@ -1807,7 +1807,7 @@ Source: docs/installation.md
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig@0.2.0
+npm install @bloxwap/hig@0.3.0
 ```
 
 | Entry | Use |
