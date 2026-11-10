@@ -1847,6 +1847,8 @@ Run `npm ci && npm run build && npm run smoke:packed`. The smoke script installs
 
 ### Component CSS and the opt-in base
 
+All three stylesheet exports (`tokens/css`, `react/css`, and `react/css/base`) ship TypeScript declarations. No local `declare module` shim is needed, including with `noUncheckedSideEffectImports` enabled. CI checks bare imports from the packed package with TypeScript 6.0.3 and 7.0.2 in Bundler and NodeNext resolution modes.
+
 `@bloxwap/hig/react/css` styles HIG components only. Every rule is scoped to a HIG class, for example `.hig-button`, `.hig-table` cells, `.hig-range` or `.hig-surface[data-severity]`. The box-sizing and focus ring rules use `:where()` on HIG classes, so they keep the specificity of a bare element rule and host CSS can still override them. Loading the file has no effect on plain `table`, `th`, `td`, `input[type=range]`, `[data-severity]` or the focus outline of a non-HIG element. Hosts that load HIG on some routes only can rely on this: Next.js keeps a route's stylesheet after a client navigation, and the scoped file then has no side effects on the other routes (#95).
 
 The page-wide element defaults are a separate, opt-in entry, `@bloxwap/hig/react/css/base`:
@@ -1951,6 +1953,8 @@ Install the tokens package alone and import CSS variables or typed tokens. No Re
 Tailwind may reference these values through host configuration; HIG does not require content scans or a shadcn registry. Native uses dp and explicit hex/channel maps; do not feed CSS functions or rename rem to dp. The audited monorepo web/native rem roots are both 16; HIG supports StyleSheet rather than claiming a verified NativeWind consumer. See the source-reconciliation chapter for native font generation and registration.
 
 ## Optional chart, sound and haptics
+
+`npm run smoke:packed-compat` checks the packed package with the minimum versions computed from its web peer ranges: chart 0.3.0, haptic 0.2.0, and sfx 0.2.0. CI runs this alongside the current-version tests. It checks consumer types and adapter source against those installed peers, renders chart and haptic entries on the server, and invokes the sound adapter without browser globals.
 
 Chart is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96): install `@bloxwap/chart` `^0.3.0` and supply a textual summary. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`, and no other entry imports it. It is never optional, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](components/chart.md). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
 
