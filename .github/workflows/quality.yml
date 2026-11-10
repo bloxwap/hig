@@ -69,6 +69,8 @@ jobs:
       - run: bun install --frozen-lockfile
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh
+      - name: Check compiler platform selection and comparison
+        run: npx vitest run tests/compiler.test.ts
       - name: Exercise TypeScript 7 fallback scripts
         run: npm run docs:check:tsc && npm run typecheck:tsc
       - name: Compare tsrs and TypeScript 7 emit
