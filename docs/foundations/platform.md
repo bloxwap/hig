@@ -1,4 +1,4 @@
-# Foundation and platform rules · HIG 0.1.0
+# Foundation and platform rules
 
 ## Color (#6)
 
@@ -42,7 +42,7 @@ Native converts the sRGB input when an iOS provider selects `display-p3`; Androi
 and react-native-web keep sRGB input channels. A nested provider can change colour
 space while inheriting the brand accent.
 
-The [default palette contrast report](../../evidence/contrast.json) covers the
+The [default palette contrast report](https://github.com/bloxwap/hig/blob/main/evidence/contrast.json) covers the
 default theme. Custom accents also need review against the surfaces where they
 appear, particularly link text and focus rings; automatic label selection only
 guarantees contrast on the primary fill. Choose an accent with enough contrast

@@ -80,4 +80,4 @@ A host that does import the entry changes one specifier and adds the package:
 +import {PriceChart} from '@bloxwap/hig/chart';
 ```
 
-The candidate was never published, and a GitHub code search on 2026-10-16 found no consumer outside this repository, so no deprecated shim is kept (see [charts](../components/chart.md#moved-from-bloxwap-hig-react-chart-96)). `npm run smoke:packed-chart-workspace` reproduces chart's layout: an npm workspace whose `packages/chart` provides `@bloxwap/chart`, and an app that depends on the packed hig-react and hig-chart. It deletes the lockfile, reinstalls with strict peers and fails if the workspace link is lost.
+The candidate was never published, and a GitHub code search on 2026-10-16 found no consumer outside this repository, so no deprecated shim is kept (see [charts](../components/chart.md#moved-from-bloxwaphigreactchart-96)). `npm run smoke:packed-chart-workspace` reproduces chart's layout: an npm workspace whose `packages/chart` provides `@bloxwap/chart`, and an app that depends on the packed hig-react and hig-chart. It deletes the lockfile, reinstalls with strict peers and fails if the workspace link is lost.

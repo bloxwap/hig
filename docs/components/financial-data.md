@@ -1,4 +1,4 @@
-# Financial data · HIG 0.1.0
+# Financial data
 
 Readable numbers, metrics, lists, and tables for host-provided financial data.
 

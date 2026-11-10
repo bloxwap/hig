@@ -1,3 +1,4 @@
+import {markdownFiles,guideRoute,headings,rewriteLinks} from './docs-content.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
 import {readFileSync,writeFileSync,mkdirSync,readdirSync,rmSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
@@ -11,15 +12,20 @@ writeFileSync('apps/docs/public/localization.json',readFileSync('docs/foundation
 const version=workspaceVersion;const pages=[];
 const groups=JSON.parse(readFileSync('apps/docs/src/component-groups.json','utf8'));
 for(const entry of examples)if(!groups.some(group=>group.family===entry.family))throw new Error(`Missing docs component group: ${entry.family}`);
-function files(path){return readdirSync(path,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(`${path}/${e.name}`):e.name.endsWith('.md')?[`${path}/${e.name}`]:[]);}
-const slug=s=>s.toLowerCase().replace(/<[^>]*>/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-function html(markdown){return marked.parse(markdown,{async:false}).replace(/<h([1-6])>(.*?)<\/h\1>/g,(_,n,text)=>`<h${n} id="${slug(text)}">${text}</h${n}>`);}
-const sourcefiles=files('docs').sort();
-for(const file of sourcefiles){const markdown=readFileSync(file,'utf8');const title=markdown.match(/^# (.+)/)?.[1]??file;const route='guides/'+file.slice(5,-3);pages.push({route,title,source:file,markdown,html:html(markdown),toc:[...markdown.matchAll(/^## (.+)$/gm)].map(m=>({label:m[1],id:slug(m[1])})),section:file.split('/')[1]});}
+const sourcefiles=markdownFiles();
+const anchors={};
+for(const file of sourcefiles){
+ const source=readFileSync(file,'utf8');const markdown=rewriteLinks(source,file,`${process.env.HIG_DOCS_ORIGIN??'https://bloxwap.github.io'}${process.env.NEXT_PUBLIC_BASE_PATH??'/hig'}`);const title=source.match(/^# (.+)/)?.[1]??file;
+ const route=guideRoute(file).slice(6,-1);const allHeadings=headings(source);anchors[guideRoute(file)]=allHeadings.map(h=>h.id);
+ let headingIndex=0;
+ const html=marked.parse(markdown.replace(/^# .+\n/,''),{async:false}).replace(/<h([1-6])>(.*?)<\/h\1>/gs,(_,n,text)=>`<h${n} id="${allHeadings[headingIndex++].id}">${text}</h${n}>`);
+ pages.push({route,title,source:file,markdown,html,toc:allHeadings.filter(h=>h.depth===2).map(({label,id})=>({label,id})),section:file.split('/')[1]});
+}
+writeFileSync('planning/anchors.json',JSON.stringify(anchors,null,2)+'\n');
 // A declaration belongs to its own file when that file is a public entry, otherwise to the public entry that re-exports it.
 function declarations(path){const parsed=ts.createSourceFile(path,readFileSync(path,'utf8'),ts.ScriptTarget.Latest,true);const found=[];for(const statement of parsed.statements){if(ts.isExportDeclaration(statement)&&statement.moduleSpecifier&&statement.exportClause&&ts.isNamedExports(statement.exportClause)){/* Package re-exports (e.g. HIGMessages from @bloxwap/hig/contracts/messages) are documented by that package. */if(!statement.moduleSpecifier.text.startsWith('.'))continue;const target=declarations(posix.join(posix.dirname(path),statement.moduleSpecifier.text.replace(/\.js$/,'.d.ts')));for(const element of statement.exportClause.elements){const source=(element.propertyName??element.name).getText(parsed);found.push(...target.filter(d=>d.name===source).map(d=>({...d,name:element.name.getText(parsed)})));}continue;}if(!statement.modifiers?.some(m=>m.kind===ts.SyntaxKind.ExportKeyword))continue;const names=ts.isVariableStatement(statement)?statement.declarationList.declarations.map(d=>d.name.getText(parsed)):statement.name?[statement.name.getText(parsed)]:[];for(const name of names)found.push({name,signature:statement.getText(parsed),origin:path});}return found;}
 // #96: the chart adapter is its own package; its exports are listed under api.chart with the package name as the entry.
-const api={};for(const platform of ['react','native','chart']){api[platform]={};const prefix=`./${platform}/dist/`,exported=Object.values(JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports).map(t=>t?.types).filter(t=>t?.startsWith(prefix)).map(t=>t.slice(prefix.length));const top=readdirSync(`packages/hig/${platform}/dist`).filter(f=>f.endsWith('.d.ts')).sort(),files=[...new Set([...top.filter(f=>exported.includes(f)),...exported,...top])];for(const file of files)for(const {name,signature,origin} of declarations(`packages/hig/${platform}/dist/${file}`)){const own=origin.slice(`packages/hig/${platform}/dist/`.length);api[platform][name]??={entry:platform==='chart'?'@bloxwap/hig/chart':(exported.includes(own)?own:file).slice(0,-5),signature};}}
+const api={};for(const platform of ['react','native','chart']){api[platform]={};const prefix=`./${platform}/dist/`,exported=Object.values(JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports).map(t=>t?.types).filter(t=>t?.startsWith(prefix)).map(t=>t.slice(prefix.length));const top=readdirSync(`packages/hig/${platform}/dist`).filter(f=>f.endsWith('.d.ts')),files=[...new Set([...top.filter(f=>exported.includes(f)),...exported,...top])];for(const file of files)for(const {name,signature,origin} of declarations(`packages/hig/${platform}/dist/${file}`)){const own=origin.slice(`packages/hig/${platform}/dist/`.length);api[platform][name]??={entry:platform==='chart'?'@bloxwap/hig/chart':(exported.includes(own)?own:file).slice(0,-5),signature};}}
 const familySource={brand:'docs/foundations/platform.md',provider:'docs/architecture/platform-matrix.md'};
 const catalog=examples.map(e=>{const source=familySource[e.family]??`docs/components/${e.family}.md`;const chapter=readFileSync(source,'utf8');const webCode=Object.fromEntries(e.states.map(s=>[s,exampleCode(e.name,'react','comfortable',s)]));const nativeCode=Object.fromEntries(e.states.map(s=>[s,exampleCode(e.name,'native','comfortable',s)]));const route=`components/${e.slug}`;pages.push({route,title:e.name,source,toc:[],section:'components',component:e.name});return {...e,route,source,code:{react:webCode,native:nativeCode},api:{react:api.react[e.name]??api.chart[e.name]??null,native:api.native[e.name]??null}};});
 const codes=Object.fromEntries(catalog.map(e=>[e.name,e.code]));writeFileSync('apps/docs/src/code.json',JSON.stringify(codes,null,2)+'\n');for(const e of catalog){delete e.code;delete e.web;delete e.native;}
@@ -37,7 +43,7 @@ rmSync(contentRoot,{recursive:true,force:true});
 const write=(path,text)=>{mkdirSync(path.slice(0,path.lastIndexOf('/')),{recursive:true});writeFileSync(path,text);};
 for(const page of pages){
  const entry=catalog.find(e=>e.route===page.route);
- const markdown=entry?`## API reference\n\n\`\`\`ts\n${entry.api.react?.signature??'See source declarations.'}\n\`\`\`\n\n### React Native API\n\n\`\`\`ts\n${entry.api.native?.signature??'See documented native alternative.'}\n\`\`\`\n\n## Usage & accessibility\n\n${entry.a11y}.\n\nFeedback: ${entry.feedback}.\n\n[Read the usage guide](/docs/guides/${entry.source.slice(5,-3)})` : page.markdown.replace(/^# .+\n/,'');
+ const markdown=entry?`## API reference\n\n\`\`\`ts\n${entry.api.react?.signature??'See source declarations.'}\n\`\`\`\n\n### React Native API\n\n\`\`\`ts\n${entry.api.native?.signature??'See documented native alternative.'}\n\`\`\`\n\n## Usage & accessibility\n\n${entry.a11y}.\n\nFeedback: ${entry.feedback}.\n\n[Read the usage guide](/docs/guides/${entry.source.slice(5,-3)})` : rewriteLinks(readFileSync(page.source,'utf8'),page.source).replace(/^# .+\n/,'');
  // .md uses CommonMark rather than interpreting guide prose as JSX.
  write(`${contentRoot}/${page.route}.md`,`---\ntitle: ${JSON.stringify(page.title.replace(/ · HIG.*$/,''))}\n---\n\n${markdown}\n`);
 }

@@ -11,3 +11,6 @@ for(const {route} of [...pages,{route:'catalog'}]){const target=`${base}/docs/${
 const origin=process.env.HIG_DOCS_ORIGIN??'https://bloxwap.github.io';
 writeFileSync('apps/docs/out/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['','docs/',...pages.map(p=>`docs/${p.route}/`),'docs/catalog/'].map(route=>`<url><loc>${origin}${base}/${route}</loc></url>`).join('')}</urlset>`);
 rmSync('apps/docs/dist',{recursive:true,force:true});cpSync('apps/docs/out','apps/docs/dist',{recursive:true});
+
+execFileSync(process.execPath,['scripts/check-docs-links.mjs'],{stdio:'inherit'});
+execFileSync(process.execPath,['scripts/check-docs-citations.mjs'],{stdio:'inherit'});

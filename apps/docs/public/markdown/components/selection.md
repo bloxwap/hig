@@ -1,4 +1,4 @@
-# Selection controls · HIG 0.1.0
+# Selection controls
 
 Controls for choosing options, changing preferences, and adjusting values.
 

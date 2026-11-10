@@ -1,4 +1,4 @@
-# Overlays · HIG 0.1.0
+# Overlays
 
 Dialogs, sheets, menus, and contextual help with explicit dismissal and focus behavior.
 

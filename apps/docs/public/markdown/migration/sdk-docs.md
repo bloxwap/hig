@@ -10,7 +10,7 @@ Owner: Joe Blau (accepted in #57), with each SDK repository retaining implementa
 | sfx | Controls/presets/settings/docs states | Sound board and recipe editor/export | Trusted audio unlock, mute/volume, edited recipes, native WAV command docs and cleanup |
 | haptic | Common controls and explicit capability labels | Physical-target/platform demo and certification references | Physical iOS/Android/VoiceOver evidence remains upstream haptic#9; no API-call-as-tactile-proof claims |
 
-Docs sites that render Markdown tables or plain form controls relied on the page-wide rules that `@bloxwap/hig/react/css` set before #95. On a candidate that contains #95, add `@import '@bloxwap/hig/react/css/base';` before `@import '@bloxwap/hig/react/css';` to keep the same look, as the HIG docs site does. See [installation](../installation.md#component-css-and-the-opt-in-base).
+Docs sites that render Markdown tables or plain form controls relied on the page-wide rules that `@bloxwap/hig/react/css` set before #95. On a candidate that contains #95, add `@import '@bloxwap/hig/react/css/base';` before `@import '@bloxwap/hig/react/css';` to keep the same look, as the HIG docs site does. See [installation](https://bloxwap.github.io/hig/docs/guides/installation/#component-css-and-the-opt-in-base).
 
 Per-repo checklist:
 - [ ] Pin source commit, HIG version and staged tarballs; capture before pages and duplicate CSS/primitive/font/audio/dependency/bundle baseline.
@@ -62,7 +62,7 @@ In each repository:
 3. Import the fonts from `@bloxwap/hig/og-fonts/node` (`loadOgFonts`, `readOgFont`). These check every SHA-256 against the package manifest. They work with the default Turbopack `next build` and with `next build --webpack`. If the docs app uses webpack with `output: 'standalone'` and the build moves, add `serverExternalPackages: ['@bloxwap/hig']`. Vendor a candidate that includes the per-face asset URL fix. Under Turbopack, an earlier `0.1.0` tarball returns 500 with `SHA-256 … does not match the manifest`. An edge host checks `fontManifest.outputs` itself, as tapsiren does. Font names (`'Bloxwap Sans'`, `'Bloxwap Mono'`) and weights stay the same.
 4. Rebuild the OG cards and compare them with the previous images. The faces are byte-identical copies, so the cards should not change. Record the vendored-byte delta in the repository's adoption evidence and update its row in `planning/adoption.json`.
 
-See [Open Graph card fonts](../installation.md#open-graph-card-fonts) for the full API and the edge-runtime path.
+See [Open Graph card fonts](https://bloxwap.github.io/hig/docs/guides/installation/#open-graph-card-fonts) for the full API and the edge-runtime path.
 
 ## Chart adapter: `@bloxwap/hig/chart` (#96)
 
@@ -80,4 +80,4 @@ A host that does import the entry changes one specifier and adds the package:
 +import {PriceChart} from '@bloxwap/hig/chart';
 ```
 
-The candidate was never published, and a GitHub code search on 2026-10-16 found no consumer outside this repository, so no deprecated shim is kept (see [charts](../components/chart.md#moved-from-bloxwap-hig-react-chart-96)). `npm run smoke:packed-chart-workspace` reproduces chart's layout: an npm workspace whose `packages/chart` provides `@bloxwap/chart`, and an app that depends on the packed hig-react and hig-chart. It deletes the lockfile, reinstalls with strict peers and fails if the workspace link is lost.
+The candidate was never published, and a GitHub code search on 2026-10-16 found no consumer outside this repository, so no deprecated shim is kept (see [charts](https://bloxwap.github.io/hig/docs/guides/components/chart/#moved-from-bloxwaphigreactchart-96)). `npm run smoke:packed-chart-workspace` reproduces chart's layout: an npm workspace whose `packages/chart` provides `@bloxwap/chart`, and an app that depends on the packed hig-react and hig-chart. It deletes the lockfile, reinstalls with strict peers and fails if the workspace link is lost.

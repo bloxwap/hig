@@ -1,4 +1,4 @@
-# Actions & surfaces · HIG 0.1.0
+# Actions & surfaces
 
 Buttons, typography, and layout primitives for clear actions and related content.
 

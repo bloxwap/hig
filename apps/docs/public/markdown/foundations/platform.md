@@ -1,8 +1,8 @@
-# Foundation and platform rules · HIG 0.1.0
+# Foundation and platform rules
 
 ## Color (#6)
 
-Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](source-reconciliation.md). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
+Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](https://bloxwap.github.io/hig/docs/guides/foundations/source-reconciliation/). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
 
 ### Primary brand colour
 
@@ -42,7 +42,7 @@ Native converts the sRGB input when an iOS provider selects `display-p3`; Androi
 and react-native-web keep sRGB input channels. A nested provider can change colour
 space while inheriting the brand accent.
 
-The [default palette contrast report](../../evidence/contrast.json) covers the
+The [default palette contrast report](https://github.com/bloxwap/hig/blob/main/evidence/contrast.json) covers the
 default theme. Custom accents also need review against the surfaces where they
 appear, particularly link text and focus rings; automatic label selection only
 guarantees contrast on the primary fill. Choose an accent with enough contrast
@@ -97,7 +97,7 @@ Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. CSS 
 
 ## Accessibility and localization (#10)
 
-Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. The [contrast report nonText section](../../evidence/contrast.json) checks focus, faint, negative and action against background, surface and nested at 3:1. Decorative border is excluded; it must not be the sole meaningful state indicator. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic. Vocabulary is locked in the [trading glossary](glossary.md) (`docs/foundations/glossary.json`) before any locale translation. Number, currency, date, leverage, percent and RTL formatting is in the [localization guide](localization.md).
+Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic. Vocabulary is locked in the [trading glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/) (`docs/foundations/glossary.json`) before any locale translation. Number, currency, date, leverage, percent and RTL formatting is in the [localization guide](https://bloxwap.github.io/hig/docs/guides/foundations/localization/).
 
 Component review checklist: keyboard completion; labeled controls/errors; busy/disabled; focus restoration; narrow viewport; 200% text; long translations; Arabic/Hebrew RTL; mixed scripts; reduced motion; sound off; haptics off; unknown/stale/error values; VoiceOver/TalkBack on physical devices. Automated results and physical observations must be separate. Exception requires owner, affected surface, reason, alternative and expiry. No observed device evidence means pending, never pass.
 

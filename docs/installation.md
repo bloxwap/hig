@@ -1,4 +1,4 @@
-# Installation and citation · HIG 0.1.1
+# Installation and citation
 
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
@@ -152,6 +152,12 @@ Chart is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96):
 
 ## Stable citations and upgrades
 
-Cite “Bloxwap HIG 0.1.1, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. The GitHub release links the immutable source tag and the registry validation workflow.
+Cite “Bloxwap HIG <installed package version>, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. The GitHub release links the immutable source tag and the registry validation workflow.
 
 The native fixture pins React **19.1.0**, matching the RN 0.81.5 renderer exactly; the RN 0.83 profile pins **19.2.0**, matching the RN 0.83.10 renderer. Web/Next/Fumadocs fixtures use React 19.2.0. Metro explicitly resolves every native `react`/`react/*` import to the native fixture's version so shared-workspace code cannot load web React. Quality and packed-native checks compare the installed version to the version RN's Paper and Fabric renderers are built for (RN 0.83 no longer throws on a mismatch, so the check reads the renderer build itself); a successful Metro bundle alone does not prove runtime compatibility. The packed check also fails when a declared `@bloxwap/hig/native` or `@bloxwap/hig/feedback` peer range rejects a version the consumer installed.
+
+Chapter titles have no independent version stamps. The generated site and LLM export use the workspace `package.json` version. Cite the version you consumed and an immutable commit permalink; the live site can contain unreleased changes.
+
+`planning/anchors.json` records every rendered guide heading ID using Fumadocs’ GitHub slugger. CI compares it with the latest released `v*` tag containing that manifest (stable tags only). Until a release contains it, CI bootstraps from the committed manifest at `HEAD`, comparing it with freshly parsed chapters; regeneration alone cannot hide a heading rename. The initial manifest establishes the baseline for pre-manifest releases.
+
+A removed anchor requires an entry in `planning/renamed-anchors.json` under `renamedAnchors`, keyed by the old `/docs/guides/chapter/#anchor`, with `to` naming an existing replacement and `note` explaining the migration. This committed map is the deprecation record; prefer retaining the old heading or an explicit heading ID when possible. CI validates replacement targets and notes, checks generated-manifest drift, and checks links and TOC IDs against the built HTML.
