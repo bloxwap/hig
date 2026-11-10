@@ -18,7 +18,7 @@
     "build:tsc": "npm run generate && node scripts/build.mjs --tsc && node scripts/build-docs.mjs --tsc",
     "typecheck": "tsrs --noEmit && npm run check -w hig-docs",
     "typecheck:tsc": "node node_modules/typescript-7/bin/tsc --noEmit && npm run check:tsc -w hig-docs",
-    "lint": "oxlint . && node scripts/check-drift.mjs && node scripts/check-built-in-strings.mjs",
+    "lint": "oxlint . && node scripts/check-lockfiles.mjs && node scripts/check-drift.mjs && node scripts/check-built-in-strings.mjs",
     "test": "npm run test:web && npm run test:native",
     "check": "npm run build && npm run lint && npm run typecheck && npm test",
     "dev": "vite fixtures/web --host 0.0.0.0",
