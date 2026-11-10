@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,cpSync,rmSync,symlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {join,resolve} from 'node:path';
@@ -34,3 +34,54 @@ it('the chart boundary gate rejects an optional or missing @bloxwap/chart peer a
  const leaked=fixture(required);mkdirSync(join(leaked,'react/dist'),{recursive:true});writeFileSync(join(leaked,'react/dist/chart.js'),"export const load=()=>import('@bloxwap/chart/react');");
  expect(()=>checkChartBoundary(leaked)).toThrow('react dist/chart.js imports @bloxwap/chart');
 });
+
+// Exercise the exact post-build CI gate in isolated repositories. Tiny public
+// declarations keep this independent of a prior package build.
+it.each(['chapter', 'examples'])('post-build drift gate rejects stale %s outputs (#172)', (source) => {
+ const directory=mkdtempSync(join(tmpdir(),'hig-generated-drift-'));
+ const run=(command:string,args:string[])=>spawnSync(command,args,{cwd:directory,encoding:'utf8'});
+ const node=(script:string)=>run(process.execPath,[`scripts/${script}.mjs`]);
+ try {
+  for(const path of ['scripts','docs','planning','package.json','.gitignore','apps/docs/src/component-groups.json']) {
+   const target=join(directory,path);mkdirSync(resolve(target,'..'),{recursive:true});cpSync(path,target,{recursive:true});
+  }
+  symlinkSync(resolve('node_modules'),join(directory,'node_modules'),'dir');
+  mkdirSync(join(directory,'packages/hig'),{recursive:true});
+  writeFileSync(join(directory,'packages/hig/package.json'),JSON.stringify({exports:{}}));
+  for(const platform of ['react','native','chart']) {
+   const dist=join(directory,`packages/hig/${platform}/dist`);mkdirSync(dist,{recursive:true});
+   writeFileSync(join(dist,'index.d.ts'),'export declare const Text: unknown;');
+  }
+  const generate=()=>{
+   for(const script of ['generate-examples','generate-docs']) {
+    const result=node(script);expect(result.stderr).toBe('');expect(result.status).toBe(0);
+   }
+  };
+  generate();
+  expect(run('git',['init']).status).toBe(0);
+  expect(run('git',['add','.']).status).toBe(0);
+  expect(run('git',['-c','user.name=Drift test','-c','user.email=drift@example.invalid','-c','commit.gpgsign=false','commit','-m','Generated baseline']).status).toBe(0);
+  expect(node('check-generated-drift').status).toBe(0);
+  if(source==='chapter') {
+   const chapter=join(directory,'docs/installation.md');
+   writeFileSync(chapter,readFileSync(chapter,'utf8')+'\nA deliberately changed chapter.\n');
+  } else {
+   const path=join(directory,'planning/examples.json');const manifest=JSON.parse(readFileSync(path,'utf8'));
+   manifest.examples[0].web='<C.Text>Deliberately changed example</C.Text>';
+   writeFileSync(path,JSON.stringify(manifest,null,2)+'\n');
+  }
+  generate(); // npm run check also overwrites the stale committed artifacts.
+  const stale=node('check-generated-drift');
+  expect(stale.status).toBe(1);expect(stale.stderr).toContain('Stale generated artifacts');
+  expect(stale.stderr).toContain(source==='chapter'?'apps/docs/public/markdown/installation.md':'apps/docs/src/examples.tsx');
+  expect(run('git',['add','.']).status).toBe(0);
+  // Staging regenerated files alone must not hide a difference from the commit.
+  expect(node('check-generated-drift').status).toBe(1);
+  expect(run('git',['reset','--hard','HEAD']).status).toBe(0);
+  generate();expect(node('check-generated-drift').status).toBe(0);
+  const extra=join(directory,'apps/docs/public/markdown/new-chapter.md');
+  writeFileSync(extra,'New generated export');expect(node('check-generated-drift').status).toBe(1);
+  rmSync(extra);rmSync(join(directory,'apps/docs/public/catalog.json'));
+  expect(node('check-generated-drift').status).toBe(1);
+ } finally {rmSync(directory,{recursive:true,force:true});}
+},30000);
