@@ -16,7 +16,7 @@ it('jobs other than publishing and Linux visuals use self-hosted macOS ARM64',()
    expect(linux).toContain('playwright install --with-deps chromium');
    expect(linux).toContain('node scripts/run-browser-gates.mjs');
    expect(linux).not.toMatch(/self-hosted|webkit|HIG_UPDATE_VISUALS/);
-   expect(workflow).toContain('needs: [paths-filter, quality, native, browser, linux-visual]');
+   expect(workflow).toContain('needs: [paths-filter, compiler, quality, native, browser, linux-visual]');
    expect(workflow).toContain('"linux-visual:$LINUX_VISUAL"');
   }
   const text=linux?workflow.replace(linux,''):workflow;
@@ -32,7 +32,7 @@ it('jobs other than publishing and Linux visuals use self-hosted macOS ARM64',()
  expect(readFileSync('.github/workflows/quality.yml','utf8')).toContain('bunx playwright install chromium webkit');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('firefox');
  expect(readFileSync('.github/workflows/quality.yml','utf8')).not.toContain('actions/setup-python');
- expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(3);
+ expect(readFileSync('.github/workflows/quality.yml','utf8').match(/ci-setup-python\.sh/g)?.length).toBe(4);
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('command -v gtar');
  expect(readFileSync('.github/workflows/docs.yml','utf8')).toContain('TMPDIR=$RUNNER_TEMP');
  expect(readFileSync('docs/ci-runners.md','utf8')).toContain('playwright install chromium webkit');
