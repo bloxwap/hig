@@ -63,7 +63,9 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: '1.4.2'
-      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
+      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci (#181).
+      - name: package-lock.json matches package.json and bun.lock
+        run: node scripts/check-lockfiles.mjs --npm
       - run: bun install --frozen-lockfile
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh
