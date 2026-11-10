@@ -157,7 +157,7 @@ Use one primary review action. Do: busy protects host requests and displays the 
 
 ## States, interaction and accessibility
 
-DOM semantic button/anchor, forwarded focus, target min-height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
+DOM semantic button/anchor, forwarded focus, target minimum width and height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -172,6 +172,8 @@ See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consume
 Native `Button contentMode="custom"` renders host Text/View children directly, preserving layouts with separate identity and trailing nodes. The root retains minimum target, disabled/busy, propagation, ref and accepted-feedback behavior. Hosts own visible busy content in this mode; `busyLabel` still controls the accessible busy suffix. Keep child content noninteractive and give icon-only actions an accessible label.
 
 Native `Link` accepts a forwarded View ref, root Pressable props and `contentMode="custom"` for host label/icon nodes. Required `href` retains its destination. Without `onPress`, it opens through Linking and reports failures to `onError`; a supplied `onPress` replaces that navigation so host WebBrowser/route handlers run exactly once. Disabled links reject activation. The root always has link semantics.
+
+The catalog browser gate measures controls at both densities, including their clickable wrapping labels for checkbox, radio and switch inputs. Only inline prose links matching `p .hig-link` are exempt from the target minimum (WCAG 2.5.8 inline-text exception); standalone and breadcrumb links retain the full target. Hidden controls are not targets.
 
 
 ## Charts
@@ -1382,7 +1384,7 @@ Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. CSS 
 
 ## Accessibility and localization (#10)
 
-Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic. Vocabulary is locked in the [trading glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/) (`docs/foundations/glossary.json`) before any locale translation. Number, currency, date, leverage, percent and RTL formatting is in the [localization guide](https://bloxwap.github.io/hig/docs/guides/foundations/localization/).
+Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. The [contrast report nonText section](https://github.com/bloxwap/hig/blob/main/evidence/contrast.json) checks focus, faint, negative and action against background, surface and nested at 3:1. Decorative border is excluded; it must not be the sole meaningful state indicator. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic. Vocabulary is locked in the [trading glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/) (`docs/foundations/glossary.json`) before any locale translation. Number, currency, date, leverage, percent and RTL formatting is in the [localization guide](https://bloxwap.github.io/hig/docs/guides/foundations/localization/).
 
 Component review checklist: keyboard completion; labeled controls/errors; busy/disabled; focus restoration; narrow viewport; 200% text; long translations; Arabic/Hebrew RTL; mixed scripts; reduced motion; sound off; haptics off; unknown/stale/error values; VoiceOver/TalkBack on physical devices. Automated results and physical observations must be separate. Exception requires owner, affected surface, reason, alternative and expiry. No observed device evidence means pending, never pass.
 
