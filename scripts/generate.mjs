@@ -3,6 +3,24 @@ import {oklchToSrgb,oklchToDisplayP3,srgbHexToDisplayP3,p3ChannelsToHex} from '.
 const upstream=JSON.parse(readFileSync('packages/hig/tokens/upstream-palette.json','utf8'));
 const sourceColors={web:upstream.semanticOklch,android:Object.fromEntries(Object.entries(upstream.semanticOklch).map(([k,v])=>[k,oklchToSrgb(v)])),iosDisplayP3:Object.fromEntries(Object.entries(upstream.semanticOklch).map(([k,v])=>[k,oklchToDisplayP3(v)]))};
 const tokens=JSON.parse(readFileSync('packages/hig/tokens/source.json','utf8'));
+// Validate source invariants before mutating tokens or writing any generated files.
+function record(value,path){
+ if(!value||typeof value!=='object'||Array.isArray(value)||!Object.keys(value).length)throw new Error(`${path} must be a non-empty object`);
+ return value;
+}
+for(const [name,color] of Object.entries(record(tokens.colors,'colors'))){
+ if(!color||!['srgb','oklch'].some(key=>typeof color[key]==='string'&&color[key].trim().length))throw new Error(`colors.${name} requires srgb or oklch`);
+}
+record(tokens.density,'density');
+const comfortableKeys=Object.keys(record(tokens.density.comfortable,'density.comfortable')).sort();
+record(tokens.density.compact,'density.compact');
+for(const [mode,metrics] of Object.entries(tokens.density)){
+ const keys=Object.keys(record(metrics,`density.${mode}`)).sort();
+ if(JSON.stringify(keys)!==JSON.stringify(comfortableKeys))throw new Error(`density.${mode} must have the same keys as density.comfortable (${comfortableKeys.join(', ')})`);
+}
+for(const group of ['motion','space'])for(const [name,value] of Object.entries(record(tokens[group],group))){
+ if(typeof value!=='number'||!Number.isFinite(value)||value<=0)throw new Error(`${group}.${name} must be a positive finite number`);
+}
 mkdirSync('packages/hig/tokens/generated',{recursive:true});mkdirSync('evidence',{recursive:true});mkdirSync('packages/hig/tokens/src',{recursive:true});
 for(const color of Object.values(tokens.colors)){if(color.oklch)color.srgb=oklchToSrgb(color.oklch);}
 const srgb=Object.fromEntries(Object.entries(tokens.colors).map(([k,v])=>[k,v.srgb]));
