@@ -4,6 +4,7 @@
 
 - Verify Linux Chromium visual baselines on GitHub-hosted Ubuntu and enforce complete baseline inventories on both platforms (#185).
 - CI checks committed docs and example artifacts after generation, including Markdown-only guide changes, so stale exports cannot pass after the build refreshes them (#172).
+- Validate token source colours, density key sets and positive motion/spacing values before generation; enforce React density sizes against source tokens without changing rendering (#187).
 
 ## 0.3.0
 
