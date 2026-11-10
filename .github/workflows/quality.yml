@@ -42,6 +42,40 @@ jobs:
               - '!.github/ISSUE_TEMPLATE/**'
               - '!.github/pull_request_template.md'
 
+  compiler:
+    # Every same-repository PR, including docs-only and Renovate dependency PRs.
+    # Security: never run fork PR code on the self-hosted runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.22.1'
+          # Minis keep ~/.npm on disk. Do not add cache: npm (1.1–1.3 GB at ~1 MB/s).
+          # setup-node v5+ auto-caches npm when packageManager is set; keep this pin
+          # or set package-manager-cache: false if the action is upgraded.
+      - name: Install CPython 3.12
+        run: bash scripts/ci-setup-python.sh
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.4.2'
+      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
+      - run: bun install --frozen-lockfile
+      - name: Native fonts (on-disk reuse)
+        run: bash scripts/ci-native-fonts.sh
+      - name: Check compiler platform selection and comparison
+        run: npx vitest run tests/compiler.test.ts
+      - name: Exercise TypeScript 7 fallback scripts
+        run: npm run docs:check:tsc && npm run typecheck:tsc
+      - name: Compare tsrs and TypeScript 7 emit
+        run: npm run compiler:parity
+
   quality:
     needs: paths-filter
     # Security: never run fork PR code on the self-hosted runner.
@@ -265,7 +299,7 @@ jobs:
   # Same job name as the previous single required check. Always reports so
   # docs-only PRs are not stuck on "Waiting for status to be reported."
   candidate:
-    needs: [paths-filter, quality, native, browser, linux-visual]
+    needs: [paths-filter, compiler, quality, native, browser, linux-visual]
     # Security: never run fork PR code on the self-hosted runner.
     if: (always() && !cancelled()) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
@@ -273,6 +307,7 @@ jobs:
     steps:
       - name: Confirm candidate quality
         env:
+          COMPILER: ${{ needs.compiler.result }}
           CHANGES: ${{ needs.paths-filter.result }}
           CODE: ${{ needs.paths-filter.outputs.code }}
           QUALITY: ${{ needs.quality.result }}
@@ -283,6 +318,10 @@ jobs:
           set -euo pipefail
           if [ "$CHANGES" != success ]; then
             echo "paths-filter job: $CHANGES"
+            exit 1
+          fi
+          if [ "$COMPILER" != success ]; then
+            echo "compiler job: $COMPILER"
             exit 1
           fi
           if [ "$CODE" != true ]; then

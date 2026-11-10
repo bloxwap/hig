@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3905",
-    "build": "fumadocs-mdx && next typegen && tsrs --noEmit && next build --webpack",
-    "build:tsc": "fumadocs-mdx && next typegen && tsc --noEmit && next build --webpack",
-    "check": "fumadocs-mdx && next typegen && tsrs --noEmit",
-    "check:tsc": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "build": "fumadocs-mdx && next typegen && node ../../scripts/tsc.mjs --noEmit && next build --webpack",
+    "build:tsc": "fumadocs-mdx && next typegen && node ../../scripts/tsc.mjs --tsc --noEmit && next build --webpack",
+    "check": "fumadocs-mdx && next typegen && node ../../scripts/tsc.mjs --noEmit",
+    "check:tsc": "fumadocs-mdx && next typegen && node ../../scripts/tsc.mjs --tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {

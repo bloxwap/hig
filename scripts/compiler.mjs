@@ -2,6 +2,7 @@
 // tsrs (Rust port of the TypeScript 7 compiler) ships native binaries for macOS arm64 and Linux x64/arm64 only.
 // On other platforms (Windows, Intel Macs), or when `--tsc` is passed, fall back to TypeScript 7's tsc
 // (`typescript-7`, an alias of typescript@7.0.2), whose output is byte-identical to tsrs.
+// scripts/compiler-parity.mjs enforces byte parity in PR CI.
 // The root `typescript` package stays on 6.0.3 for typescript-eslint and the scripts that use its JS API.
 import {fileURLToPath} from 'node:url';
 export const tsrsSupported=(process.platform==='darwin'&&process.arch==='arm64')||(process.platform==='linux'&&['x64','arm64'].includes(process.arch));
