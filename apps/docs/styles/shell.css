@@ -138,7 +138,7 @@ button[data-search-full] kbd {
 .example-platforms > div > [role='tablist'] { padding: 0 1.5rem .875rem; }
 .example-platforms > div > [role='tablist'] > .hig-button,
 .example-frame > div > [role='tablist'] > .hig-button {
-  min-height: 2.25rem;
+  min-height: var(--hig-button);
   padding: .375rem .875rem;
   border-radius: .5rem;
   background: transparent;
