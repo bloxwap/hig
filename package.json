@@ -18,7 +18,7 @@
     "build:tsc": "npm run generate && node scripts/build.mjs --tsc && node scripts/build-docs.mjs --tsc",
     "typecheck": "tsrs --noEmit && npm run check -w hig-docs",
     "typecheck:tsc": "node node_modules/typescript-7/bin/tsc --noEmit && npm run check:tsc -w hig-docs",
-    "lint": "oxlint . && node scripts/check-lockfiles.mjs && node scripts/check-drift.mjs && node scripts/check-built-in-strings.mjs",
+    "lint": "oxlint . && node scripts/check-lockfiles.mjs && node scripts/check-drift.mjs && node scripts/check-built-in-strings.mjs && node scripts/check-css-exports.mjs",
     "test": "npm run test:web && npm run test:native",
     "check": "npm run build && npm run lint && npm run typecheck && npm test",
     "dev": "vite fixtures/web --host 0.0.0.0",
@@ -54,7 +54,8 @@
     "generate:glossary": "node scripts/generate-glossary.mjs",
     "smoke:packed-og-fonts": "npm run smoke:packed-og",
     "release:verify": "node scripts/verify-release.mjs",
-    "smoke:registry": "node scripts/registry-smoke.mjs"
+    "smoke:registry": "node scripts/registry-smoke.mjs",
+    "smoke:packed-compat": "node scripts/packed-compat-smoke.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
@@ -90,6 +91,7 @@
     "react-native-reanimated": "4.1.1",
     "react-native-worklets": "0.5.1",
     "react-test-renderer": "19.3.1",
+    "semver": "7.8.5",
     "sharp": "^0.35.5",
     "tsrs": "0.18.0-ts7.1.0-dev.20260929",
     "turbo": "2.11.10",

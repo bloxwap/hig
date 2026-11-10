@@ -75,6 +75,8 @@ jobs:
       - run: bun run quality
       - run: bun run smoke:ssr
       - run: bun run smoke:packed
+      - name: Packed CSS types (TS 6/7) and minimum web peers (#175, #184)
+        run: bun run smoke:packed-compat
       - run: bun run smoke:packed-og
         env:
           NEXT_TELEMETRY_DISABLED: '1'
