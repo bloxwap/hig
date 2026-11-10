@@ -5,7 +5,7 @@ export function undersizedTargets({density,scope='.example-frame'}){
   if(el.matches('p .hig-link')||el.closest('[hidden],[inert]'))return [];
   const target=el.matches('input')?el.closest('label.hig-choice,label.hig-segment')??el:el;
   const rect=target.getBoundingClientRect();
-  if(!rect.width||!rect.height||getComputedStyle(target).visibility==='hidden')return [];
+  if(!target.getClientRects().length||getComputedStyle(target).visibility==='hidden')return [];
   return rect.width+0.01>=minimum&&rect.height+0.01>=minimum?[]:[{element:el.outerHTML.slice(0,240),width:rect.width,height:rect.height,density,minimum}];
  });
 }
