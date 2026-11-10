@@ -1,4 +1,4 @@
-# Financial data · HIG 0.1.0
+# Financial data
 
 Readable numbers, metrics, lists, and tables for host-provided financial data.
 
@@ -42,7 +42,7 @@ The `state` slot is content for one cell spanning all columns; it can contain an
 
 ## When to use and examples
 
-Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted number into order quantity or announce every live tick. Locale display, USD vs USDC, signed PnL and compact notation follow the [localization guide](../foundations/localization.md). Vocabulary follows the [glossary](../foundations/glossary.md).
+Do: show — for unknown and 0 for zero; mark stale. Don’t: turn a formatted number into order quantity or announce every live tick. Locale display, USD vs USDC, signed PnL and compact notation follow the [localization guide](https://bloxwap.github.io/hig/docs/guides/foundations/localization/). Vocabulary follows the [glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/).
 
 ## States, interaction and accessibility
 

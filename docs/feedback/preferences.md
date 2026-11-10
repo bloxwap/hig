@@ -1,4 +1,4 @@
-# Preferences, preview and device review · HIG 0.1.0
+# Preferences, preview and device review
 
 `FeedbackProvider` accepts a stable `createController(preferences)` factory and optional storage adapter. `useFeedback` exposes preferences, update, sink and controller. `FeedbackPreferencesControl` is a render-prop control so DOM and RN use their own shipped Switch/Slider instead of importing another platform. Use a stable factory; mount/replay creates fresh adapters and unmount disposes them. React StrictMode lifecycle is tested.
 

@@ -1,4 +1,4 @@
-# Release candidates, semver and rollback · HIG 0.1.2
+# Release candidates, semver and rollback
 
 Issue #32. The local release automation is **dry-run only**. It never invokes npm publication, GitHub release or git tag creation. Unsupported flags fail before artifact creation. The dry run does not request or use npm credentials; registry publication is confined to the maintainer-controlled workflow described below.
 
@@ -30,7 +30,7 @@ CI checks out PR source, installs locked peers, executes web/native/SSR/Metro/ex
 Publication gates are tracked in `planning/release-blockers.json`. The owner
 explicitly authorized the first coordinated npm publication, including the
 customizable primary-colour provider, on 2026-10-23; see
-[the release authorization](../../evidence/release/owner-authorization-2026-10-23.md)
+[the release authorization](https://github.com/bloxwap/hig/blob/main/evidence/release/owner-authorization-2026-10-23.md)
 and [PR #141](https://github.com/bloxwap/hig/pull/141).
 
 Releases 0.1.0 and 0.1.1 used an organization token. Release 0.1.2 uses npm trusted publishing; subsequent workflow executions have no token fallback. Released SFX/Haptic 0.2.0 backends satisfy their setup gates. Physical-device and native-font acceptance use the

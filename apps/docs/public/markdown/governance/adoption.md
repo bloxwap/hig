@@ -3,7 +3,7 @@
 The active-repository matrix is `planning/adoption.json`, refreshed on 2026-10-27 using the repository inventory in `planning/org-inventory-2026-10-15.json`: the 15 repositories visible to `gh repo list bloxwap`, none archived. The 2026-10-13 inventory is kept for history. Each row records:
 
 - applicability
-- owner (Joe Blau, `joeblau`, accepts the recorded rows and exceptions in the [2026-10-27 decision record](../../evidence/adoption/owner-approval-2026-10-27.md))
+- owner (Joe Blau, `joeblau`, accepts the recorded rows and exceptions in the [2026-10-27 decision record](https://github.com/bloxwap/hig/blob/main/evidence/adoption/owner-approval-2026-10-27.md))
 - HIG version
 - merged and open PRs
 - validation

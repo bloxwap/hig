@@ -1,4 +1,4 @@
-# Pinned source reconciliation · HIG 0.1.0
+# Pinned source reconciliation
 
 Issues #2, #6–#9, #11–#18. See `evidence/issue-1-18/monorepo-sha.txt` for the exact monorepo commit and `monorepo-source-fetch.json` for all 129 audited paths. This supersedes the earlier 404 source-access limitation; it does not turn old unperformed product/device checks into passes.
 

@@ -1,6 +1,6 @@
-# Numbers, currency, dates and built-in strings · HIG 0.1.0
+# Numbers, currency, dates and built-in strings
 
-Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents consume [`docs/foundations/glossary.json`](glossary.json). Machine-readable format profiles: [`docs/foundations/localization.json`](localization.json). Host owns locale selection, parsing and time zone; HIG formats display only.
+Issue #47. Vocabulary is locked in the [trading glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/); agents consume [`docs/foundations/glossary.json`](https://bloxwap.github.io/hig/glossary.json). Machine-readable format profiles: [`docs/foundations/localization.json`](https://bloxwap.github.io/hig/localization.json). Host owns locale selection, parsing and time zone; HIG formats display only.
 
 `HIGProvider` locale is a BCP 47 tag (`en-US` default). Direction (`ltr`/`rtl`) is independent. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
 
@@ -65,7 +65,7 @@ Leverage is a multiplier with the untranslated `×` suffix (`10×`, via `formatL
 
 Logical inline spacing, wrapping labels, no fixed-height clipping of translated text, Dynamic Type stays on. Plan for ~30–40% expansion (German/Finnish) and 200% text. Directional arrows mirror in RTL; brand, check marks and financial direction (`+`/`−`, buy/sell) do not. Preserve bidi isolates that Intl inserts around signed currency in Arabic. Native per-place motion uses the intact static reading whenever separate reels cannot preserve that bidi layout; it never reverses formatted parts. Mixed-script punctuation needs the required font scripts; a Latin-only fixture does not certify them.
 
-Long translations, Arabic/Hebrew RTL and large text remain part of the [platform checklist](platform.md#accessibility-and-localization-10). Physical-device observations are still pending.
+Long translations, Arabic/Hebrew RTL and large text remain part of the [platform checklist](https://bloxwap.github.io/hig/docs/guides/foundations/platform/#accessibility-and-localization-10). Physical-device observations are still pending.
 
 ### Native direction from the host locale
 
@@ -92,7 +92,7 @@ Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/
 
 Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/hig/react/src` or `packages/hig/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig/contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
 
-HIG ships the English (`en-US`) defaults only (`defaultMessages`). It does not ship or guess translations. The host's message catalog owns French, Korean and other copy, under the same rule as the [glossary](glossary.md): an unapproved locale is never filled by guessing.
+HIG ships the English (`en-US`) defaults only (`defaultMessages`). It does not ship or guess translations. The host's message catalog owns French, Korean and other copy, under the same rule as the [glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/): an unapproved locale is never filled by guessing.
 
 ```tsx
 import {HIGProvider} from '@bloxwap/hig/react/provider'; // or '@bloxwap/hig/native/provider'

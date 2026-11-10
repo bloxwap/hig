@@ -1,4 +1,4 @@
-# Optional adapters and installation · HIG 0.1.0
+# Optional adapters and installation
 
 Issues #22–#24. Base imports do not load adapters. Individual `web-sound`, `browser-haptic`, `web-haptic`, `native` and `react` entries preserve dependency boundaries. The composite `web` entry needs the Haptic package; sound-only consumers should import `web-sound`.
 

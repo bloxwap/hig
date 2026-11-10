@@ -6,6 +6,7 @@
 - CI checks committed docs and example artifacts after generation, including Markdown-only guide changes, so stale exports cannot pass after the build refreshes them (#172).
 - Validate token source colours, density key sets and positive motion/spacing values before generation; enforce React density sizes against source tokens without changing rendering (#187).
 - Automatically use TypeScript 7 on platforms without tsrs binaries for all compiler entry points, and check fallback scripts and byte-identical compiler output in PR CI.
+- Resolve guideline links on the built docs site and validate links and heading IDs after every docs build. Remove stale chapter version stamps and track published citation anchors with an explicit rename/deprecation policy.
 
 ## 0.3.0
 

@@ -1,4 +1,4 @@
-# Native runtime differences · HIG 0.1.0
+# Native runtime differences
 
 Follow-ups #86–#89 and #92–#94 distinguish implementation checks from physical-device certification in #55. The supported packed consumers remain React Native 0.81.5 / Expo 54 and React Native 0.83.10 / Expo 55. Historical simulator/emulator captures remain in `evidence/native-sim/`; their results are not overwritten by software tests.
 

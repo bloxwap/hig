@@ -1,4 +1,4 @@
-# Quality, budgets and evidence · HIG 0.1.0
+# Quality, budgets and evidence
 
 Issues #31–#32. `npm run check` executes DOM and native suites with test counts. Native module mocks demonstrate roles/state/callback/lifecycle contracts; real packed Expo/Metro consumers demonstrate platform resolution. Neither is physical output or assistive-technology certification.
 

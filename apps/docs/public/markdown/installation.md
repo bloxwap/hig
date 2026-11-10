@@ -1,4 +1,4 @@
-# Installation and citation · HIG 0.1.1
+# Installation and citation
 
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
@@ -66,7 +66,7 @@ These are the rules that `@bloxwap/hig/react/css` applied to the whole page befo
 
 The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/recipes` or `@bloxwap/hig/react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
 
-The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
+The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](https://bloxwap.github.io/hig/docs/guides/components/overlays/#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
 
 ## Brand accent
 
@@ -74,7 +74,7 @@ Pass `primaryColor` to the web or native `HIGProvider` to theme primary actions
 for another brand, for example `<HIGProvider primaryColor='#ff0000'>` for a red
 Tap Trade TV theme. Use the brand's opaque sRGB hex (`#RGB` or `#RRGGBB`).
 HIG selects readable primary button text and inherits the accent through nested
-providers. Omit it to keep Bloxwap green. See [primary brand colour](foundations/platform.md#primary-brand-colour)
+providers. Omit it to keep Bloxwap green. See [primary brand colour](https://bloxwap.github.io/hig/docs/guides/foundations/platform/#primary-brand-colour)
 for portal styling, native colour spaces, and contrast guidance.
 
 ## SSR and Next client boundaries
@@ -115,7 +115,7 @@ Install Expo native peers with `npx expo install` (for example, on SDK 54, `expo
 
 Simulator/emulator verification: `scripts/native-sim/` builds the packed candidate gallery as real Release apps and drives them with XCUITest (iOS Simulator) and UiAutomation instrumentation, uiautomator and TalkBack (Android emulator). `prepare-app.sh <app-dir> <udid> rn-0.83` builds the RN 0.83 / Expo 55 gallery, and `compare-runs.mjs` compares it with an RN 0.81.5 run of the same candidate. Results and residual physical-hardware limits are in `evidence/native-sim/` (RN 0.83: `evidence/native-sim/rn-0.83/`).
 
-WOFF2 is not a native font asset. `@bloxwap/hig/native-fonts` ships 15 static Bloxwap Sans/Mono (plus Korean and Simplified Chinese Sans) TTFs generated reproducibly from pinned Font 0.1.2 sources, with a typed `fontManifest` export and `@bloxwap/hig/native-fonts/manifest`. Install it alongside the tokens, contracts and native packages, then `require('@bloxwap/hig/native-fonts/fonts/BloxwapSans.ttf')` and register the faces with expo-font before setting the native provider fontFamily, as the gallery does. `@bloxwap/hig/tokens` no longer contains font binaries (#64); see [native font migration](migration/native.md#native-fonts-moved-out-of-hig-tokens). Rasterization on physical displays remains part of #55. New repositories follow `docs/governance/new-repository.md`.
+WOFF2 is not a native font asset. `@bloxwap/hig/native-fonts` ships 15 static Bloxwap Sans/Mono (plus Korean and Simplified Chinese Sans) TTFs generated reproducibly from pinned Font 0.1.2 sources, with a typed `fontManifest` export and `@bloxwap/hig/native-fonts/manifest`. Install it alongside the tokens, contracts and native packages, then `require('@bloxwap/hig/native-fonts/fonts/BloxwapSans.ttf')` and register the faces with expo-font before setting the native provider fontFamily, as the gallery does. `@bloxwap/hig/tokens` no longer contains font binaries (#64); see [native font migration](https://bloxwap.github.io/hig/docs/guides/migration/native/#native-fonts-moved-out-of-hig-tokens). Rasterization on physical displays remains part of #55. New repositories follow `docs/governance/new-repository.md`.
 
 ## Tokens only / plain CSS / Tailwind
 
@@ -148,10 +148,16 @@ Tailwind may reference these values through host configuration; HIG does not req
 
 `npm run smoke:packed-compat` checks the packed package with the minimum versions computed from its web peer ranges: chart 0.3.0, haptic 0.2.0, and sfx 0.2.0. CI runs this alongside the current-version tests. It checks consumer types and adapter source against those installed peers, renders chart and haptic entries on the server, and invokes the sound adapter without browser globals.
 
-Chart is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96): install `@bloxwap/chart` `^0.3.0` and supply a textual summary. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`, and no other entry imports it. It is never optional, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](components/chart.md). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
+Chart is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96): install `@bloxwap/chart` `^0.3.0` and supply a textual summary. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`, and no other entry imports it. It is never optional, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](https://bloxwap.github.io/hig/docs/guides/components/chart/). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
 
 ## Stable citations and upgrades
 
-Cite “Bloxwap HIG 0.1.1, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. The GitHub release links the immutable source tag and the registry validation workflow.
+Cite “Bloxwap HIG <installed package version>, chapter/anchor” plus an immutable GitHub commit permalink. Branch and docs preview links are mutable. Upgrade tokens, contracts, renderer, docs/examples and semantic cue mapping together; compare API behavior and adopt behind a rollback flag. Token appearance and accessibility behavior changes require semver review. The GitHub release links the immutable source tag and the registry validation workflow.
 
 The native fixture pins React **19.1.0**, matching the RN 0.81.5 renderer exactly; the RN 0.83 profile pins **19.2.0**, matching the RN 0.83.10 renderer. Web/Next/Fumadocs fixtures use React 19.2.0. Metro explicitly resolves every native `react`/`react/*` import to the native fixture's version so shared-workspace code cannot load web React. Quality and packed-native checks compare the installed version to the version RN's Paper and Fabric renderers are built for (RN 0.83 no longer throws on a mismatch, so the check reads the renderer build itself); a successful Metro bundle alone does not prove runtime compatibility. The packed check also fails when a declared `@bloxwap/hig/native` or `@bloxwap/hig/feedback` peer range rejects a version the consumer installed.
+
+Chapter titles have no independent version stamps. The generated site and LLM export use the workspace `package.json` version. Cite the version you consumed and an immutable commit permalink; the live site can contain unreleased changes.
+
+`planning/anchors.json` records every rendered guide heading ID using Fumadocs’ GitHub slugger. CI compares it with the latest released `v*` tag containing that manifest (stable tags only). Until a release contains it, CI bootstraps from the committed manifest at `HEAD`, comparing it with freshly parsed chapters; regeneration alone cannot hide a heading rename. The initial manifest establishes the baseline for pre-manifest releases.
+
+A removed anchor requires an entry in `planning/renamed-anchors.json` under `renamedAnchors`, keyed by the old `/docs/guides/chapter/#anchor`, with `to` naming an existing replacement and `note` explaining the migration. This committed map is the deprecation record; prefer retaining the old heading or an explicit heading ID when possible. CI validates replacement targets and notes, checks generated-manifest drift, and checks links and TOC IDs against the built HTML.

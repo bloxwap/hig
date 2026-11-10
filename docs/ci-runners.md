@@ -1,4 +1,4 @@
-# CI runners · HIG 0.1.0
+# CI runners
 
 GitHub Actions jobs run on self-hosted Apple silicon Mac minis, except for the `publish` job in `publish.yml` and `linux-visual` in `quality.yml`:
 
