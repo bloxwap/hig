@@ -1,12 +1,12 @@
 # CI runners · HIG 0.1.0
 
-GitHub Actions jobs run on self-hosted Apple silicon Mac minis, except for the `publish` job in `publish.yml`:
+GitHub Actions jobs run on self-hosted Apple silicon Mac minis, except for the `publish` job in `publish.yml` and `linux-visual` in `quality.yml`:
 
 ```yaml
 runs-on: [self-hosted, macOS, ARM64]
 ```
 
-Only that trusted-publishing job uses GitHub-hosted `ubuntu-24.04`. All other jobs remain self-hosted and do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
+The trusted-publishing job uses GitHub-hosted `ubuntu-24.04`; Linux visual verification uses GitHub-hosted `ubuntu-latest` with Chromium and `--with-deps`. All other jobs remain self-hosted and do not call `apt`, `sudo`, or Playwright `--with-deps`. Scratch directories use `$RUNNER_TEMP`. Jobs that run npm/Python/Playwright export `TMPDIR=$RUNNER_TEMP` through `GITHUB_ENV` (the `runner` context is not available in workflow or job `env`).
 
 ## Required on every Mac mini
 

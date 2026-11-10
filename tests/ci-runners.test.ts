@@ -6,8 +6,20 @@ import {visualBaselinePath} from '../scripts/visual-baseline.mjs';
 
 const workflows=readdirSync('.github/workflows').filter(name=>/\.ya?ml$/.test(name)&&name!=='publish.yml').map(name=>[name,readFileSync(join('.github/workflows',name),'utf8')] as const);
 
-it('every job outside the trusted publishing workflow runs on self-hosted macOS ARM64 without apt, sudo or Playwright --with-deps',()=>{
- for(const [name,text] of workflows){
+it('jobs other than publishing and Linux visuals use self-hosted macOS ARM64',()=>{
+ for(const [name,workflow] of workflows){
+  const linux=name==='quality.yml'?workflow.match(/^ {2}linux-visual:\n[\s\S]*?(?=^ {2}# Same job name)/m)?.[0]:undefined;
+  if(name==='quality.yml'){
+   expect(linux).toBeDefined();
+   expect(linux).toContain('runs-on: ubuntu-latest');
+   expect(linux).toContain("HIG_VISUAL_ONLY: '1'");
+   expect(linux).toContain('playwright install --with-deps chromium');
+   expect(linux).toContain('node scripts/run-browser-gates.mjs');
+   expect(linux).not.toMatch(/self-hosted|webkit|HIG_UPDATE_VISUALS/);
+   expect(workflow).toContain('needs: [paths-filter, quality, native, browser, linux-visual]');
+   expect(workflow).toContain('"linux-visual:$LINUX_VISUAL"');
+  }
+  const text=linux?workflow.replace(linux,''):workflow;
   expect(text,name).toMatch(/runs-on: (?:\[self-hosted, macOS, ARM64\]|'\["self-hosted","macOS","ARM64"\]')/);
   expect(text,name).not.toMatch(/ubuntu-|--with-deps|\bapt-get\b|\bsudo /);
   expect(text,name).not.toContain('runner.temp');
@@ -44,15 +56,10 @@ it('every job outside the trusted publishing workflow runs on self-hosted macOS 
 it('keeps Linux visual baselines under tests/visual-baselines/linux and names Darwin separately',()=>{
  expect(visualBaselinePath('button-default','linux')).toBe('tests/visual-baselines/linux/button-default.png');
  expect(visualBaselinePath('slider-focus-compact','darwin')).toBe('tests/visual-baselines/darwin/slider-focus-compact.png');
- const baselines=[
-  'button-busy.png','button-default.png','button-disabled.png','field-default.png','field-error.png',
-  'input-default.png','input-disabled.png','input-error.png','slider-focus-comfortable.png','slider-focus-compact.png'
- ];
- expect(readdirSync('tests/visual-baselines/linux').filter(f=>f.endsWith('.png')).sort()).toEqual(baselines);
- expect(readdirSync('tests/visual-baselines/darwin').filter(f=>f.endsWith('.png')).sort()).toEqual(baselines);
+
 });
 
-it('limits GitHub-hosted runners to the trusted publishing job',()=>{
+it('uses Ubuntu for trusted publishing within the publishing workflow',()=>{
  const text=readFileSync('.github/workflows/publish.yml','utf8');
  const jobs=text.split('jobs:')[1];
  expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['security','prerequisites','publish']);

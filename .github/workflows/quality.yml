@@ -220,10 +220,44 @@ jobs:
             artifacts/visual/
           retention-days: 7
 
+  linux-visual:
+    needs: paths-filter
+    if: needs.paths-filter.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HIG_VISUAL_ONLY: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.22.1'
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.4.2'
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Compare Linux Chromium baselines
+        run: node scripts/run-browser-gates.mjs
+      # Keep fresh captures even on success for intentional baseline regeneration.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: hig-linux-visual-${{ github.sha }}
+          path: |
+            artifacts/visual/
+            evidence/visual-actuals/
+            evidence/gaps-b-visual-baselines.json
+          retention-days: 7
+
   # Same job name as the previous single required check. Always reports so
   # docs-only PRs are not stuck on "Waiting for status to be reported."
   candidate:
-    needs: [paths-filter, quality, native, browser]
+    needs: [paths-filter, quality, native, browser, linux-visual]
     # Security: never run fork PR code on the self-hosted runner.
     if: (always() && !cancelled()) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
@@ -236,6 +270,7 @@ jobs:
           QUALITY: ${{ needs.quality.result }}
           NATIVE: ${{ needs.native.result }}
           BROWSER: ${{ needs.browser.result }}
+          LINUX_VISUAL: ${{ needs.linux-visual.result }}
         run: |
           set -euo pipefail
           if [ "$CHANGES" != success ]; then
@@ -247,7 +282,7 @@ jobs:
             exit 0
           fi
           failed=0
-          for pair in "quality:$QUALITY" "native:$NATIVE" "browser:$BROWSER"; do
+          for pair in "quality:$QUALITY" "native:$NATIVE" "browser:$BROWSER" "linux-visual:$LINUX_VISUAL"; do
             job="${pair%%:*}"
             result="${pair#*:}"
             echo "$job: $result"
