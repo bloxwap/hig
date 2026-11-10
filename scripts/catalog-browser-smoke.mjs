@@ -1,4 +1,5 @@
 import {undersizedTargets} from './target-size.mjs';
+import {basePath} from '../apps/docs/site-config.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
 import {chromium} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
@@ -16,7 +17,7 @@ try{
  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const entries=process.env.HIG_VISUAL_ONLY==='1'?catalog.filter(e=>baselineNames.has(e.name)||focusBaselineNames.has(e.name)):catalog;
  for(const entry of entries){
-  await page.goto((process.env.HIG_DOCS_PREVIEW_URL??'http://localhost:4174/hig/')+'docs/'+entry.route+'/',{waitUntil:'networkidle'});
+  await page.goto((process.env.HIG_DOCS_PREVIEW_URL??`http://localhost:4174${basePath}/`)+'docs/'+entry.route+'/',{waitUntil:'networkidle'});
   await page.evaluate(()=>document.fonts.ready);
   await page.locator('.example-frame').waitFor();
   for(const state of entry.states){

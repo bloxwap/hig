@@ -1,3 +1,4 @@
+import {basePath} from '../apps/docs/site-config.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
 import {chromium} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
@@ -9,10 +10,10 @@ const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:
 try{
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
 const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
-const origin=process.env.HIG_DOCS_PREVIEW_URL??'http://localhost:4174/hig/';
+const origin=process.env.HIG_DOCS_PREVIEW_URL??`http://localhost:4174${basePath}/`;
 const settleLayout=async()=>{await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));await page.waitForFunction(()=>document.getAnimations().every(animation=>animation.playState!=='running'||animation.effect?.getTiming().iterations===Infinity));};
 const {pages}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
-for(const entry of pages){const response=await context.request.get(origin+'docs/'+entry.route+'/');assert.equal(response.ok(),true,entry.route);assert.match(await response.text(),/\/hig\/_next\//);}
+for(const entry of pages){const response=await context.request.get(origin+'docs/'+entry.route+'/');assert.equal(response.ok(),true,entry.route);assert.ok((await response.text()).includes(`${basePath}/_next/`));}
 await page.goto(origin,{waitUntil:'networkidle'});
 await page.evaluate(()=>document.fonts.ready);
 assert.equal(await page.evaluate(()=>{const control=document.querySelector('.hig-button');const configured=getComputedStyle(document.documentElement).getPropertyValue('--font-bloxwap-sans').trim().split(',')[0].replaceAll('"','').trim();return !!control&&!!configured&&getComputedStyle(control).fontFamily.replaceAll('"','').includes(configured);}),true,'HIG controls must use the shipped Next Bloxwap face, not the host fallback font');
@@ -97,7 +98,7 @@ await page.goto(origin+'docs/guides/installation/',{waitUntil:'networkidle'});
 await page.screenshot({path:`evidence/${stage}-guide-desktop.png`,fullPage:true});
 await page.goto(origin,{waitUntil:'networkidle'});await page.setViewportSize({width:390,height:844});
 await page.screenshot({path:`evidence/${stage}-playground-mobile.png`,fullPage:true});
-writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:workspaceVersion,browser:await browser.version(),checks:['all generated production routes/base-safe assets','200% text without viewport overflow','source links target existing main branch','controls use the shipped Bloxwap font face','production /hig/ base','direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
+writeFileSync(`evidence/${stage}-browser.json`,JSON.stringify({version:workspaceVersion,browser:await browser.version(),checks:['all generated production routes/base-safe assets','200% text without viewport overflow','source links target existing main branch','controls use the shipped Bloxwap font face',`production ${basePath}/ base`,'direct component deep link','mobile navigation/search','Pro density/live selection','matching Get Code including enabled adapters/volume/motion','native gallery labeling','busy/default states','keyboard-capable previews','no overflow or page errors','axe serious/critical check'],violations,physicalNative:'not observed; runnable Expo gallery only'},null,2)+'\n');
 console.log('Docs browser: playground, deep links, mobile/search, code, states, accessibility and screenshots passed');
 
 }finally{await browser.close();}
