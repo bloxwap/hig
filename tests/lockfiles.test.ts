@@ -39,7 +39,7 @@ it('the quality job checks package-lock.json with npm before installing with Bun
   const full=readFileSync('.github/workflows/quality.yml','utf8');
   const start=full.indexOf('\n  quality:\n');
   expect(start).toBeGreaterThan(-1);
-  const next=full.slice(start+1).search(/\n  [a-z][a-z-]*:\n/);
+  const next=full.slice(start+1).search(/\n {2}[a-z][a-z-]*:\n/);
   const workflow=next===-1?full.slice(start):full.slice(start,start+1+next);
   expect(workflow.indexOf('node scripts/check-lockfiles.mjs --npm')).toBeGreaterThan(-1);
   expect(workflow.indexOf('node scripts/check-lockfiles.mjs --npm')).toBeLessThan(workflow.indexOf('bun install --frozen-lockfile'));
