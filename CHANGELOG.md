@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Verify Linux Chromium visual baselines on GitHub-hosted Ubuntu and enforce complete baseline inventories on both platforms (#185).
+
 ## 0.3.0
 
 - Every JS export now has a `default` condition beside `import`. Jest/jest-expo, `require()` and Metro's CommonJS resolution can import HIG entries instead of failing with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
