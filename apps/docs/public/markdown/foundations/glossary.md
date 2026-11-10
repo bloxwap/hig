@@ -1,6 +1,6 @@
-# Trading glossary · HIG 0.3.0
+# Trading glossary
 
-Issue #46. Locked before any locale translation. Machine-readable source: `docs/foundations/glossary.json` (also exported under the configured docs base path as `/glossary.json`). Formatting rules: [localization guide](localization.md).
+Issue #46. Locked before any locale translation. Machine-readable source: `docs/foundations/glossary.json` (also exported under the configured docs base path as `/glossary.json`). Formatting rules: [localization guide](https://bloxwap.github.io/hig/docs/guides/foundations/localization/).
 
 Translation agents **must** consume the JSON. The rendered page is a view of that source. Do not invent terms, back-port product UI copy, or fill pending locales.
 

@@ -2,8 +2,9 @@ import {readFileSync,readdirSync,existsSync,statSync} from 'node:fs';
 import {resolve,relative,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {JSDOM} from 'jsdom';
+import {basePath as siteBase,origin as siteOrigin} from '../apps/docs/site-config.mjs';
 
-export function checkDocsLinks({dist='apps/docs/dist',base=process.env.NEXT_PUBLIC_BASE_PATH??'/hig',origin=process.env.HIG_DOCS_ORIGIN??'https://bloxwap.github.io',pages=[...JSON.parse(readFileSync('apps/docs/src/content.json','utf8')).pages,...Object.entries(JSON.parse(readFileSync('planning/anchors.json','utf8'))).map(([route,ids])=>({route:route.slice(6,-1),toc:ids.map(id=>({id}))}))]}={}){
+export function checkDocsLinks({dist='apps/docs/dist',base=siteBase,origin=siteOrigin,pages=[...JSON.parse(readFileSync('apps/docs/src/content.json','utf8')).pages,...Object.entries(JSON.parse(readFileSync('planning/anchors.json','utf8'))).map(([route,ids])=>({route:route.slice(6,-1),toc:ids.map(id=>({id}))}))]}={}){
  const root=resolve(dist),cache=new Map(),errors=[];
  const files=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(`${dir}/${e.name}`):e.name.endsWith('.html')?[`${dir}/${e.name}`]:[]);
  const read=path=>{if(!cache.has(path)){const dom=new JSDOM(readFileSync(path,'utf8'));cache.set(path,{ids:new Set([...dom.window.document.querySelectorAll('[id]')].map(n=>n.id)),hrefs:[...dom.window.document.querySelectorAll('a[href]')].map(n=>n.getAttribute('href'))});dom.window.close();}return cache.get(path);};
