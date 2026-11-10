@@ -3,7 +3,7 @@
 /* Every rule is scoped to HIG classes so a host that loads this file on some routes only gets no side effects elsewhere (#95).
    Element defaults for the whole page (box-sizing, focus ring, table, range) are opt-in: @bloxwap/hig/react/css/base. */
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
-.hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);cursor:pointer;overflow-wrap:anywhere; }
+.hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);min-width:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);cursor:pointer;overflow-wrap:anywhere; }
 .hig-button[data-density='compact'] { padding-block:4px; }
 .hig-button[data-intent='secondary'],.hig-button[role='tab'][aria-selected='false'] { background:var(--hig-nested);color:var(--hig-text); }
 .hig-button[data-intent='ghost'] { background:transparent;color:var(--hig-muted); }
@@ -13,7 +13,7 @@
 .hig-button[data-full] { width:100%; }
 .hig-button:disabled { opacity:.5;cursor:default; }
 .hig-button:active:not(:disabled) { transform:scale(.98); }
-.hig-button { transition:transform 160ms var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),filter 150ms ease; }
+.hig-button { transition:transform var(--hig-motion-duration-fast) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),filter var(--hig-motion-duration-fast) ease; }
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment input):focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }
 .hig-stack,.hig-field,.hig-toast { display:flex;flex-direction:column;gap:var(--hig-gap);min-width:0; }
 .hig-inline { display:flex;flex-wrap:wrap;align-items:center;gap:var(--hig-gap); }
@@ -39,7 +39,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-choice > span,.hig-market-row[data-mode='presentation'] .hig-market-name { min-width:0;overflow-wrap:anywhere; }
 .hig-choice input { accent-color:var(--hig-action);width:20px;height:20px; }
 .hig-group { border:0;padding:0;margin:0;min-width:0; }
-.hig-link { color:var(--hig-action);text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere; }
+.hig-link { display:inline-flex;align-items:center;min-height:var(--hig-button);min-width:var(--hig-button);color:var(--hig-action);text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere; }
 .hig-separator { border:0;border-top:1px solid var(--hig-border);width:100%; }
 .hig-backdrop { position:fixed;inset:0;background:#000b;z-index:40; }
 /* Centred with physical left: the content carries the provider dir, and inset-inline-start would flip to right:50% in RTL while the translate stays negative. */
@@ -165,7 +165,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-choice input[type='radio'] { border-radius:50%; }
 .hig-choice input[type='radio']::before { width:8px; height:8px; border:0; border-radius:50%; background:var(--hig-onAction); transform:none; }
 .hig-switch input { position:relative; width:40px; height:24px; padding:3px; border:0; border-radius:9999px; background:var(--hig-muted); display:block; }
-.hig-switch input::before { position:absolute; inset-block-start:3px; inset-inline-start:3px; visibility:visible; width:18px; height:18px; border:0; border-radius:50%; background:var(--hig-text); transform:none; transition:inset-inline-start .15s ease, background .15s ease; }
+.hig-switch input::before { position:absolute; inset-block-start:3px; inset-inline-start:3px; visibility:visible; width:18px; height:18px; border:0; border-radius:50%; background:var(--hig-text); transform:none; transition:inset-inline-start var(--hig-motion-duration-fast) ease, background var(--hig-motion-duration-fast) ease; }
 .hig-switch input:checked::before { inset-inline-start:19px; background:var(--hig-onAction); }
 
 .hig-group legend { margin-bottom:.5rem; }
@@ -207,12 +207,12 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 @keyframes hig-progress { to { background-position:-200% 0; } }
 @media(prefers-reduced-motion:reduce) {
   .hig-spinner-indicator,.hig-progress progress:not([value]) { animation:none; }
-  .hig-progress progress::-webkit-progress-bar { animation:none; }
-  .hig-switch input::before,.hig-segment-indicator { transition:none; }
+  .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
+  .hig-button,.hig-switch input::before,.hig-segment-indicator { transition:none; }
 }
-[data-hig-motion='reduced'] :is(.hig-spinner-indicator,.hig-progress progress) { animation:none; }
-[data-hig-motion='reduced'] .hig-progress progress::-webkit-progress-bar { animation:none; }
-[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-segment-indicator { transition:none; }
+[data-hig-motion='reduced'] .hig-spinner-indicator,[data-hig-motion='reduced'] .hig-progress progress:not([value]) { animation:none; }
+[data-hig-motion='reduced'] .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
+[data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-segment-indicator { transition:none; }
 @media(forced-colors:active) {
   .hig-choice input,.hig-select select,.hig-range { appearance:auto; -webkit-appearance:auto; }
   .hig-choice input::before,.hig-select::after { display:none; }
@@ -237,3 +237,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
   .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
   .hig-breadcrumb .hig-link:hover { color:var(--hig-text);text-decoration:underline; }
 }
+
+/* Inline prose links retain line layout (WCAG inline-text exception). */
+p .hig-link { display:inline;min-height:0;min-width:0; }
+.hig-input,.hig-range,.hig-menu-item,.hig-select-option,.hig-table-sort,.hig-choice,.hig-segment { min-width:var(--hig-button); }

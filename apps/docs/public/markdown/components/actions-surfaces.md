@@ -21,7 +21,7 @@ Use one primary review action. Do: busy protects host requests and displays the 
 
 ## States, interaction and accessibility
 
-DOM semantic button/anchor, forwarded focus, target min-height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
+DOM semantic button/anchor, forwarded focus, target minimum width and height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -36,3 +36,5 @@ See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consume
 Native `Button contentMode="custom"` renders host Text/View children directly, preserving layouts with separate identity and trailing nodes. The root retains minimum target, disabled/busy, propagation, ref and accepted-feedback behavior. Hosts own visible busy content in this mode; `busyLabel` still controls the accessible busy suffix. Keep child content noninteractive and give icon-only actions an accessible label.
 
 Native `Link` accepts a forwarded View ref, root Pressable props and `contentMode="custom"` for host label/icon nodes. Required `href` retains its destination. Without `onPress`, it opens through Linking and reports failures to `onError`; a supplied `onPress` replaces that navigation so host WebBrowser/route handlers run exactly once. Disabled links reject activation. The root always has link semantics.
+
+The catalog browser gate measures controls at both densities, including their clickable wrapping labels for checkbox, radio and switch inputs. Only inline prose links matching `p .hig-link` are exempt from the target minimum (WCAG 2.5.8 inline-text exception); standalone and breadcrumb links retain the full target. Hidden controls are not targets.
