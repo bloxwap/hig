@@ -1,0 +1,210 @@
+{
+  "/docs/guides/architecture/001-packages/": [],
+  "/docs/guides/architecture/attribution/": [
+    "generated-favicon-and-social-preview"
+  ],
+  "/docs/guides/architecture/platform-matrix/": [],
+  "/docs/guides/ci-runners/": [
+    "required-on-every-mac-mini",
+    "playwright",
+    "visual-baselines",
+    "not-required-for-these-workflows",
+    "jobs",
+    "hig-candidate-quality-and-dry-run-artifacts-qualityyml",
+    "documentation-docsyml",
+    "registry-publication-publishyml"
+  ],
+  "/docs/guides/components/actions-surfaces/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/components/chart/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "moved-from-bloxwaphigreactchart-96",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/components/fields/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/components/financial-data/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation",
+    "optional-number-motion"
+  ],
+  "/docs/guides/components/navigation/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/components/overlays/": [
+    "api-and-anatomy",
+    "optional-web-gesture-backend",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/components/recipes/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/components/selection/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/components/status/": [
+    "api-and-anatomy",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
+  "/docs/guides/feedback/adapters/": [
+    "web-sound",
+    "browser-and-physical-tap-haptics",
+    "native-audio",
+    "native-haptics",
+    "simulated-lifecycle-regression-evidence"
+  ],
+  "/docs/guides/feedback/contract/": [],
+  "/docs/guides/feedback/preferences/": [],
+  "/docs/guides/foundations/glossary/": [
+    "locales",
+    "change-process",
+    "terms",
+    "perpetual-perp",
+    "leverage",
+    "margin",
+    "position",
+    "liquidation-price-liq-price",
+    "funding",
+    "profit-and-loss-pnl",
+    "long",
+    "short",
+    "stop",
+    "take-profit",
+    "notional",
+    "builder-fee",
+    "usdc"
+  ],
+  "/docs/guides/foundations/localization/": [
+    "shared-helpers",
+    "numbers",
+    "currency-signed-pnl-and-compact-notation",
+    "dates-times-and-funding",
+    "leverage-and-percentages",
+    "rtl-and-text-expansion",
+    "native-direction-from-the-host-locale",
+    "built-in-component-strings",
+    "validation"
+  ],
+  "/docs/guides/foundations/native-runtime-differences/": [
+    "android-locale-direction",
+    "slider-action-labels",
+    "ios-dynamic-type-audit",
+    "audio-completion-diagnostics",
+    "native-text-and-color-follow-ups"
+  ],
+  "/docs/guides/foundations/platform/": [
+    "color-6",
+    "primary-brand-colour",
+    "market-direction-colours",
+    "native-colour-space",
+    "typography-7",
+    "geometry-and-layout-8",
+    "motion-and-gestures-9",
+    "accessibility-and-localization-10",
+    "brand-and-icons-11",
+    "native-text-in-multiple-scripts"
+  ],
+  "/docs/guides/foundations/principles/": [
+    "clear-action-hierarchy",
+    "touch-before-density",
+    "state-tells-the-truth",
+    "content-and-precision",
+    "composition-and-progressive-disclosure",
+    "concrete-source-and-pattern-references"
+  ],
+  "/docs/guides/foundations/source-reconciliation/": [
+    "tokens-and-platform-units",
+    "native-font-generation-and-registration",
+    "observation-boundaries"
+  ],
+  "/docs/guides/governance/adoption/": [
+    "status--2026-10-27",
+    "governance",
+    "completion-review"
+  ],
+  "/docs/guides/governance/contributing/": [
+    "canonical-ownership",
+    "contribution-and-review-criteria",
+    "component-admission",
+    "component-removal",
+    "platform-support-policy",
+    "justified-product-exceptions",
+    "scoped-anti-drift-checks"
+  ],
+  "/docs/guides/governance/new-repository/": [
+    "1-pick-applicability",
+    "2-install-versioned-packages",
+    "3-add-the-scoped-drift-check-to-ci",
+    "4-validate-and-record",
+    "upgrading-hig"
+  ],
+  "/docs/guides/governance/quality/": [
+    "versioned-visual-regressions"
+  ],
+  "/docs/guides/governance/release/": [
+    "maintainer-controlled-registry-publication-56"
+  ],
+  "/docs/guides/installation/": [
+    "moving-from-the-01-packages",
+    "react--vite",
+    "component-css-and-the-opt-in-base",
+    "radix-overlay-peers-and-fumadocs",
+    "brand-accent",
+    "ssr-and-next-client-boundaries",
+    "open-graph-card-fonts",
+    "expo--react-native",
+    "tokens-only--plain-css--tailwind",
+    "optional-chart-sound-and-haptics",
+    "stable-citations-and-upgrades"
+  ],
+  "/docs/guides/migration/native/": [
+    "native-fonts-moved-out-of-hig-tokens",
+    "native-colour-space-93"
+  ],
+  "/docs/guides/migration/products/": [
+    "partial-adoption-scoped-component-css-and-the-opt-in-base-95"
+  ],
+  "/docs/guides/migration/sdk-docs/": [
+    "compact-source-comparison",
+    "og-card-fonts-switch-to-bloxwaphigog-fonts-99",
+    "chart-adapter-bloxwaphigchart-96"
+  ],
+  "/docs/guides/website/": [
+    "reusing-the-shell-for-issue-34",
+    "validation"
+  ]
+}
