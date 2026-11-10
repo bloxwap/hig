@@ -42,7 +42,7 @@ it.each(['chapter', 'examples'])('post-build drift gate rejects stale %s outputs
  const run=(command:string,args:string[])=>spawnSync(command,args,{cwd:directory,encoding:'utf8'});
  const node=(script:string)=>run(process.execPath,[`scripts/${script}.mjs`]);
  try {
-  for(const path of ['scripts','docs','planning','package.json','.gitignore','apps/docs/src/component-groups.json']) {
+  for(const path of ['scripts','docs','planning','package.json','.gitignore','apps/docs/src/component-groups.json','apps/docs/site-config.mjs']) {
    const target=join(directory,path);mkdirSync(resolve(target,'..'),{recursive:true});cpSync(path,target,{recursive:true});
   }
   symlinkSync(resolve('node_modules'),join(directory,'node_modules'),'dir');
