@@ -73,8 +73,6 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 15
     env:
-      NEXT_PUBLIC_BASE_PATH: /hig
-      HIG_DOCS_ORIGIN: https://bloxwap.github.io
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -94,7 +92,13 @@ jobs:
           bun-version: '1.4.2'
       # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
       - run: bun install --frozen-lockfile
+      - name: Exercise a custom deployment on pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "NEXT_PUBLIC_BASE_PATH=/preview-docs" >> "$GITHUB_ENV"
+          echo "HIG_DOCS_ORIGIN=https://docs.example" >> "$GITHUB_ENV"
       - run: bun run docs:build
+      - run: bun run test:web -- tests/docs.test.ts tests/docs-site-config.test.ts
       - run: bun run --filter hig-docs check
       - name: Require GNU tar (gtar) for Pages artifacts
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

@@ -6,6 +6,7 @@ import {marked} from 'marked';
 import ts from 'typescript';
 import {posix} from 'node:path';
 import {exampleCode,examples} from './example-code.mjs';
+import {basePath,origin} from '../apps/docs/site-config.mjs';
 execFileSync(process.execPath,['scripts/generate-glossary.mjs'],{stdio:'inherit'});
 mkdirSync('apps/docs/public',{recursive:true});
 writeFileSync('apps/docs/public/localization.json',readFileSync('docs/foundations/localization.json'));
@@ -15,7 +16,7 @@ for(const entry of examples)if(!groups.some(group=>group.family===entry.family))
 const sourcefiles=markdownFiles();
 const anchors={};
 for(const file of sourcefiles){
- const source=readFileSync(file,'utf8');const markdown=rewriteLinks(source,file,`${process.env.HIG_DOCS_ORIGIN??'https://bloxwap.github.io'}${process.env.NEXT_PUBLIC_BASE_PATH??'/hig'}`);const title=source.match(/^# (.+)/)?.[1]??file;
+ const source=readFileSync(file,'utf8');const markdown=rewriteLinks(source,file,`${origin}${basePath}`);const title=source.match(/^# (.+)/)?.[1]??file;
  const route=guideRoute(file).slice(6,-1);const allHeadings=headings(source);anchors[guideRoute(file)]=allHeadings.map(h=>h.id);
  let headingIndex=0;
  const html=marked.parse(markdown.replace(/^# .+\n/,''),{async:false}).replace(/<h([1-6])>(.*?)<\/h\1>/gs,(_,n,text)=>`<h${n} id="${allHeadings[headingIndex++].id}">${text}</h${n}>`);
