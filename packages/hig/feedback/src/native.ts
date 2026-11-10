@@ -2,7 +2,7 @@ import type {FeedbackAdapter,FeedbackEvent,FeedbackPreferences} from '@bloxwap/h
 import {presets} from './contract.js';
 export interface NativePlayer {play:()=>void;pause:()=>void;seekTo:(seconds:number)=>Promise<void>;remove:()=>void;volume:number}
 export interface NativeAudioBackend {create:(asset:unknown)=>NativePlayer;configure?:()=>Promise<void>}
-export type CueAssets=Readonly<Partial<Record<'tick'|'toggle'|'success'|'error',unknown>>>;
+export type CueAssets=Readonly<Partial<Record<NonNullable<(typeof presets)[keyof typeof presets]['sound']>,unknown>>>;
 /** Host provides packaged Metro asset ids and lifecycle hooks; no browser audio at module load.
  * After preload() settles, play() dispatches synchronously: no bridge round trip (configure, seek) precedes player.play(). */
 export function createNativeSoundAdapter(backend:NativeAudioBackend,assets:CueAssets):FeedbackAdapter & {preload:()=>Promise<void>} {
