@@ -28,7 +28,7 @@ const tarballs=[resolve('artifacts',JSON.parse(execFileSync('npm',['pack','./pac
 const dir=scratchDir('hig-react-css-scope-');
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',name:'hig-react-css-scope-consumer'},null,2));
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs,'react@19.2.0','react-dom@19.2.0'],{cwd:dir,stdio:'pipe'});
-const exported=key=>{const manifest=JSON.parse(readFileSync(join(dir,'node_modules/@bloxwap/hig/package.json'),'utf8'));const target=manifest.exports[key];assert.equal(typeof target,'string',`@bloxwap/hig exports ${key}`);const path=`node_modules/@bloxwap/hig/${target.replace(/^\.\//,'')}`;assert.ok(existsSync(join(dir,path)),`${path} is packed`);return path;};
+const exported=key=>{const manifest=JSON.parse(readFileSync(join(dir,'node_modules/@bloxwap/hig/package.json'),'utf8'));const target=manifest.exports[key].default;assert.equal(typeof target,'string',`@bloxwap/hig exports ${key}`);const path=`node_modules/@bloxwap/hig/${target.replace(/^\.\//,'')}`;assert.ok(existsSync(join(dir,path)),`${path} is packed`);return path;};
 const css={tokens:exported('./tokens/css'),hig:exported('./react/css'),base:exported('./react/css/base')};
 
 // Real component markup from the packed package, so the classes checked here are the ones components emit.

@@ -82,7 +82,7 @@ describe('DOM behavior contracts',()=>{
   for(const bare of [/(?:^|\})\s*\*\s*\{/m,/(?:^|\})\s*:focus-visible\s*\{/m,/(?:^|[},])\s*(?:table|th|td)\s*[{,]/m,/(?:^|\})\s*input\[type=.range.\]/m,/(?:^|[},])\s*\[data-severity/m])expect(css).not.toMatch(bare);
   const base=readFileSync('packages/hig/react/src/base.css','utf8');
   for(const rule of ['* { box-sizing: border-box; }',':focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }','table { border-collapse:collapse;width:100%; }',"input[type='range']"])expect(base).toContain(rule);
-  expect(JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports['./react/css/base']).toBe('./react/dist/base.css');
+  expect(JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports['./react/css/base'].default).toBe('./react/dist/base.css');
   const ring=/(:where\([^{]*\)):focus-visible\s*\{[^}]*outline:2px solid var\(--hig-focus\)/.exec(css)?.[1];expect(ring).toBeTruthy();
   render(<><Table caption='Prices' rows={[{id:'a'}]} keyFor={r=>r.id} columns={[{key:'id',label:'Market',onSort:()=>{},sort:'ascending',render:r=>r.id}]}/><Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/><Accordion title='More'>Body</Accordion><CodeWindow language='bash'>npm ci</CodeWindow><InstallCommand command='npm i' onCopy={()=>{}}/><Slider label='Amount'/><Switch label='Alerts'/><RadioGroup label='Side' options={[{value:'buy',label:'Buy'}]}/><SegmentedControl label='Mode' options={[{value:'a',label:'A'}]}/></>);
   expect(document.querySelector('table')?.classList.contains('hig-table')).toBe(true);

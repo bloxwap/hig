@@ -23,7 +23,7 @@ writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,name:'hig-pl
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',resolve('artifacts',pack.filename)],{cwd:dir,stdio:'pipe'});
 assert.ok(readdirSync(join(dir,'node_modules/@bloxwap')).includes('hig'),'the plain CSS consumer installs the @bloxwap/hig tarball');
 const installed=JSON.parse(readFileSync(join(dir,'node_modules/@bloxwap/hig/package.json'),'utf8'));
-const cssExport=installed.exports['./tokens/css'];assert.equal(typeof cssExport,'string','@bloxwap/hig exposes ./tokens/css');
+const cssExport=installed.exports['./tokens/css'].default;assert.equal(typeof cssExport,'string','@bloxwap/hig exposes ./tokens/css');
 const cssPath=`node_modules/@bloxwap/hig/${cssExport.replace(/^\.\//,'')}`;assert.ok(existsSync(join(dir,cssPath)),`${cssPath} is packed`);
 
 // Consumer stylesheet: only role variables, no literal HIG values.
