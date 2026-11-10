@@ -8,7 +8,7 @@ const workflows=readdirSync('.github/workflows').filter(name=>/\.ya?ml$/.test(na
 
 it('jobs other than publishing and Linux visuals use self-hosted macOS ARM64',()=>{
  for(const [name,workflow] of workflows){
-  const linux=name==='quality.yml'?workflow.match(/^  linux-visual:\n[\s\S]*?(?=^  # Same job name)/m)?.[0]:undefined;
+  const linux=name==='quality.yml'?workflow.match(/^ {2}linux-visual:\n[\s\S]*?(?=^ {2}# Same job name)/m)?.[0]:undefined;
   if(name==='quality.yml'){
    expect(linux).toBeDefined();
    expect(linux).toContain('runs-on: ubuntu-latest');
