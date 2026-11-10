@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Verify Linux Chromium visual baselines on GitHub-hosted Ubuntu and enforce complete baseline inventories on both platforms (#185).
+- CI checks committed docs and example artifacts after generation, including Markdown-only guide changes, so stale exports cannot pass after the build refreshes them (#172).
 
 ## 0.3.0
 

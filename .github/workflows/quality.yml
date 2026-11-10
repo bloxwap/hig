@@ -26,7 +26,7 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
     outputs:
-      code: ${{ github.event_name != 'pull_request' && 'true' || steps.filter.outputs.code }}
+      code: ${{ github.event_name != 'pull_request' && 'true' || steps.filter.outputs.code == 'true' || steps.filter.outputs.docs == 'true' }}
     steps:
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         if: github.event_name == 'pull_request'
@@ -34,6 +34,8 @@ jobs:
         with:
           predicate-quantifier: some-with-excludes
           filters: |
+            docs:
+              - 'docs/**'
             code:
               - '**'
               - '!**/*.md'
@@ -71,6 +73,8 @@ jobs:
         run: bash scripts/ci-native-fonts.sh
       # Bun rewrites nested npm run calls, but check uses npm workspace (-w) flags.
       - run: npm run check
+      - name: Committed docs and examples match generators (#172)
+        run: node scripts/check-generated-drift.mjs
       - run: bun run examples:check
       - run: bun run quality
       - run: bun run smoke:ssr
