@@ -3,7 +3,7 @@
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig@0.3.0
+npm install @bloxwap/hig@0.4.0
 ```
 
 | Entry | Use |

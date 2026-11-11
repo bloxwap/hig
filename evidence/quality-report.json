@@ -1,6 +1,6 @@
 {
-  "version": "0.3.0",
-  "sourceCommit": "f66a92282358b4236b03f7dbae5dda282b1621e9",
+  "version": "0.4.0",
+  "sourceCommit": "dbcd95234644e23f6574299ccb4456543a0f3aeb",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,7 +8,7 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "hig": 178
+    "hig": 181
   },
   "sizes": {
     "button": {
@@ -87,19 +87,20 @@
       ]
     },
     "feedbackContract": {
-      "raw": 2951,
+      "raw": 2955,
       "gzip": 996,
       "inputs": [
+        "packages/hig/feedback/dist/presets.js",
         "packages/hig/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
     "docsJS": {
-      "raw": 2071114,
-      "gzip": 592808
+      "raw": 2091187,
+      "gzip": 597033
     },
     "docsCSS": {
-      "raw": 119696
+      "raw": 120235
     },
     "fonts": {
       "raw": 592796
@@ -109,7 +110,7 @@
       "scope": "Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded"
     },
     "nativeCues": {
-      "raw": 103618
+      "raw": 103720
     }
   },
   "baseline": "HIG candidate measurements; representative authenticated source React/Metro baselines in evidence/issue-1-18; deployed production deltas not claimed",
