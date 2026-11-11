@@ -80,7 +80,7 @@ case "HIGProvider":return <C.Surface><C.Text>Density, locale and motion are scop
 case "MarketRow":return <C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>;
 case "BalanceCard":return <C.BalanceCard label='Sample balance' balance={empty?null:1250.45} stale={!!error}/>;
 case "TradeEntry":return <C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>;
-case "InstallCommand":return <C.InstallCommand command='npm install @bloxwap/hig@0.3.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>;
+case "InstallCommand":return <C.InstallCommand command='npm install @bloxwap/hig@0.4.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>;
 case "CodeWindow":return <C.CodeWindow language='TypeScript'>{'const rawAmount = decimalString;'}</C.CodeWindow>;
 case "MarketingHero":return <C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>;
 case "ActivityList":return <C.ActivityList items={empty?[]:[{id:'1',label:'Demo review',status:'Awaiting host confirmation'}]}/>;

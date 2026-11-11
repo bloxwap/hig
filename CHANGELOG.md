@@ -1,12 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - Verify Linux Chromium visual baselines on GitHub-hosted Ubuntu and enforce complete baseline inventories on both platforms (#185).
 - CI checks committed docs and example artifacts after generation, including Markdown-only guide changes, so stale exports cannot pass after the build refreshes them (#172).
 - Validate token source colours, density key sets and positive motion/spacing values before generation; enforce React density sizes against source tokens without changing rendering (#187).
-- Automatically use TypeScript 7 on platforms without tsrs binaries for all compiler entry points, and check fallback scripts and byte-identical compiler output in PR CI.
-- Resolve guideline links on the built docs site and validate links and heading IDs after every docs build. Remove stale chapter version stamps and track published citation anchors with an explicit rename/deprecation policy.
+- Automatically use TypeScript 7 on platforms without tsrs binaries for all compiler entry points, and check fallback scripts and byte-identical compiler output in PR CI (#173, #174).
+- Resolve guideline links on the built docs site and validate links and heading IDs after every docs build. Remove stale chapter version stamps and track published citation anchors with an explicit rename/deprecation policy (#179, #180).
+- CI fails when `package-lock.json` drifts from the workspace manifests or `bun.lock`, and `npm run lint` compares both lockfiles offline (#181). The package build derives HIG entry order from the import graph, fails on cycles or missing entries, and builds every entry (#182).
+- Every CSS subpath export now has a `types` condition pointing to a shipped `css.d.ts`, so CSS imports type-check without a local ambient shim on TypeScript 6 and 7 under Bundler and NodeNext resolution (#175). PR CI installs the oldest versions accepted by the peer ranges (`@bloxwap/chart` 0.3.0, `@bloxwap/haptic` 0.2.0, `@bloxwap/sfx` 0.2.0) and checks types and runtime against them (#184).
+- Web button and switch transitions use the 180ms motion token, and every shipped CSS transition and animation stops under OS and provider reduced motion (#176). Focus, faint, negative and action indicators are checked at 3:1 against every background in the generated contrast report (#177). The catalog browser gate measures every visible control at both densities against the 44px comfortable / 36px compact minimum target; checkbox, radio and switch labels supply the target, and the docs Preview/Code tabs now meet the minimum (#178).
+- Native WAV cue keys derive from the shared web presets, and tests re-render the installed `@bloxwap/sfx` recipes to check names, versions, hashes, duration, peak and RMS. Committed cues are re-exported with sfx 0.2.1 (#183).
+- The docs site reads its base path and origin from one validated module; malformed paths and non-canonical origins fail the build, and PR CI builds the docs under a custom base path and origin (#186).
+- Lock the test-only `react-server-dom-webpack` dependency of `jest-expo` to 19.0.9 for GHSA-xqc2-xf4c-x3h3. It is not part of the published package.
 
 ## 0.3.0
 

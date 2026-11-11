@@ -4,20 +4,20 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "stable-simulation",
-  "sourceCommit": "f66a92282358b4236b03f7dbae5dda282b1621e9",
+  "sourceCommit": "dbcd95234644e23f6574299ccb4456543a0f3aeb",
   "sourceTreeDirty": true,
-  "sourceVersion": "0.3.0",
-  "artifactVersion": "0.3.0",
-  "docsGuidelineVersion": "0.3.0",
+  "sourceVersion": "0.4.0",
+  "artifactVersion": "0.4.0",
+  "docsGuidelineVersion": "0.4.0",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig",
-      "version": "0.3.0",
-      "file": "bloxwap-hig-0.3.0.tgz",
-      "bytes": 5416083,
-      "unpackedBytes": 14758607,
-      "sha256": "429040057d6eacf57fef607bc2675cd118fab228a71a3207df5cf9adf656a90c",
+      "version": "0.4.0",
+      "file": "bloxwap-hig-0.4.0.tgz",
+      "bytes": 5417788,
+      "unpackedBytes": 14760949,
+      "sha256": "0dda186dc7a1bdb6fd968ac286a68ce730c5ceebc2b54fb82cfcd2b21dae6b73",
       "files": [
         "LICENSE",
         "README.md",
@@ -33,6 +33,7 @@
         "contracts/dist/messages.d.ts",
         "contracts/dist/messages.js",
         "contracts/README.md",
+        "css.d.ts",
         "feedback/assets/error.wav",
         "feedback/assets/manifest.json",
         "feedback/assets/success.wav",
@@ -46,6 +47,8 @@
         "feedback/dist/native.js",
         "feedback/dist/preferences.d.ts",
         "feedback/dist/preferences.js",
+        "feedback/dist/presets.d.ts",
+        "feedback/dist/presets.js",
         "feedback/dist/react.d.ts",
         "feedback/dist/react.js",
         "feedback/dist/web-haptic.d.ts",
@@ -214,19 +217,22 @@
         "contracts/dist/messages.d.ts": 7791,
         "contracts/dist/messages.js": 3895,
         "contracts/README.md": 136,
+        "css.d.ts": 99,
         "feedback/assets/error.wav": 30188,
-        "feedback/assets/manifest.json": 2029,
+        "feedback/assets/manifest.json": 2262,
         "feedback/assets/success.wav": 54468,
-        "feedback/assets/tick.wav": 8014,
-        "feedback/assets/toggle.wav": 10948,
+        "feedback/assets/tick.wav": 8018,
+        "feedback/assets/toggle.wav": 11046,
         "feedback/dist/browser-haptic.d.ts": 1065,
         "feedback/dist/browser-haptic.js": 2078,
-        "feedback/dist/contract.d.ts": 2846,
-        "feedback/dist/contract.js": 4198,
-        "feedback/dist/native.d.ts": 1536,
+        "feedback/dist/contract.d.ts": 1441,
+        "feedback/dist/contract.js": 3600,
+        "feedback/dist/native.d.ts": 1598,
         "feedback/dist/native.js": 4200,
         "feedback/dist/preferences.d.ts": 640,
         "feedback/dist/preferences.js": 1484,
+        "feedback/dist/presets.d.ts": 1445,
+        "feedback/dist/presets.js": 678,
         "feedback/dist/react.d.ts": 952,
         "feedback/dist/react.js": 2087,
         "feedback/dist/web-haptic.d.ts": 378,
@@ -319,7 +325,7 @@
         "og-fonts/fonts/manifest.json": 2300,
         "og-fonts/fonts/OFL.txt": 4391,
         "og-fonts/README.md": 2853,
-        "package.json": 13467,
+        "package.json": 13645,
         "react/dist/animated-number-model.d.ts": 772,
         "react/dist/animated-number-model.js": 5099,
         "react/dist/animated-number.d.ts": 409,
@@ -367,7 +373,7 @@
         "react/dist/slider.js": 842,
         "react/dist/status.d.ts": 2659,
         "react/dist/status.js": 5254,
-        "react/dist/styles.css": 26752,
+        "react/dist/styles.css": 27358,
         "react/dist/surface.d.ts": 19630,
         "react/dist/surface.js": 853,
         "react/README.md": 1886,
@@ -378,7 +384,7 @@
         "tokens/dist/theme.d.ts": 544,
         "tokens/dist/theme.js": 1675,
         "tokens/dist/tokens.css": 5145,
-        "tokens/README.md": 512
+        "tokens/README.md": 1454
       },
       "peers": [
         "react",
@@ -427,15 +433,15 @@
   ],
   "packedSizes": {
     "package": {
-      "file": "bloxwap-hig-0.3.0.tgz",
-      "bytes": 5416083,
-      "unpackedBytes": 14758607
+      "file": "bloxwap-hig-0.4.0.tgz",
+      "bytes": 5417788,
+      "unpackedBytes": 14760949
     },
     "webTokens": {
       "entry": "@bloxwap/hig/tokens",
       "files": 8,
-      "unpackedBytes": 46880,
-      "gzipBytes": 9992,
+      "unpackedBytes": 47822,
+      "gzipBytes": 10450,
       "fontFiles": 0
     },
     "nativeFonts": {
@@ -457,7 +463,7 @@
   "chartAdapter": {
     "package": "@bloxwap/hig",
     "entry": "@bloxwap/hig/chart",
-    "file": "bloxwap-hig-0.3.0.tgz",
+    "file": "bloxwap-hig-0.4.0.tgz",
     "peer": "@bloxwap/chart",
     "peerOptional": false
   },
@@ -538,19 +544,20 @@
       ]
     },
     "feedbackContract": {
-      "raw": 2951,
+      "raw": 2955,
       "gzip": 996,
       "inputs": [
+        "packages/hig/feedback/dist/presets.js",
         "packages/hig/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
     "docsJS": {
-      "raw": 2071114,
-      "gzip": 592808
+      "raw": 2091187,
+      "gzip": 597033
     },
     "docsCSS": {
-      "raw": 119696
+      "raw": 120235
     },
     "fonts": {
       "raw": 592796
@@ -560,7 +567,7 @@
       "scope": "Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded"
     },
     "nativeCues": {
-      "raw": 103618
+      "raw": 103720
     }
   },
   "publishable": false,
