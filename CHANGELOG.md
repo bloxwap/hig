@@ -12,6 +12,7 @@
 - Web button and switch transitions use the 180ms motion token, and every shipped CSS transition and animation stops under OS and provider reduced motion (#176). Focus, faint, negative and action indicators are checked at 3:1 against every background in the generated contrast report (#177). The catalog browser gate measures every visible control at both densities against the 44px comfortable / 36px compact minimum target; checkbox, radio and switch labels supply the target, and the docs Preview/Code tabs now meet the minimum (#178).
 - Native WAV cue keys derive from the shared web presets, and tests re-render the installed `@bloxwap/sfx` recipes to check names, versions, hashes, duration, peak and RMS. Committed cues are re-exported with sfx 0.2.1 (#183).
 - The docs site reads its base path and origin from one validated module; malformed paths and non-canonical origins fail the build, and PR CI builds the docs under a custom base path and origin (#186).
+- Lock the test-only `react-server-dom-webpack` dependency of `jest-expo` to 19.0.9 for GHSA-xqc2-xf4c-x3h3. It is not part of the published package.
 
 ## 0.3.0
 
