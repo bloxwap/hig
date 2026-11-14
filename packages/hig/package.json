@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",
@@ -338,8 +338,8 @@
   ],
   "peerDependencies": {
     "react": "^19.1.0",
-    "@bloxwap/sfx": "^0.2.0",
-    "@bloxwap/haptic": "^0.2.0 || ^0.3.0",
+    "@bloxwap/sfx": "^0.2.0 || ^0.3.0",
+    "@bloxwap/haptic": "^0.2.0 || ^0.3.0 || ^0.4.0",
     "expo-audio": "~1.1.1 || ~55.0.18 || ~58.0.10",
     "expo-haptics": "~15.0.7 || ~55.0.18 || ~58.0.7",
     "react-dom": "^19.1.0",
@@ -348,7 +348,7 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
     "vaul": "^1.1.2",
-    "@bloxwap/chart": "^0.3.0 || ^0.4.0",
+    "@bloxwap/chart": "^0.3.0 || ^0.4.0 || ^0.5.0",
     "react-native": "^0.81.5 || ^0.83.10 || ^0.88.0",
     "react-native-svg": "15.12.1 || 15.15.3 || 15.16.0",
     "@react-native-community/slider": "5.0.1 || 5.1.2 || 5.2.1",

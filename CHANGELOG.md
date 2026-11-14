@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+- Accept the latest feedback and chart packages: the optional peers are now `@bloxwap/sfx` `^0.2.0 || ^0.3.0` and `@bloxwap/haptic` `^0.2.0 || ^0.3.0 || ^0.4.0`, and the required peer is `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0`. HIG develops, smoke-tests and documents against chart 0.5.0, haptic 0.4.0 and sfx 0.3.0; PR CI still checks the oldest accepted versions.
+- Fix the npm release job: `scripts/docs-content.mjs` imports `fumadocs-core` from the workspace root, but `npm ci` only installed it under `apps/docs`, so the 0.4.0 publish failed with `ERR_MODULE_NOT_FOUND` before reaching npm. `fumadocs-core` 16.17.1 is now a root dev dependency. 0.4.1 is the first registry release of the 0.4 line.
+- Pin `glob` 14.0.6 and `minimatch` 11.0.8 in the workspace tooling (dev only, not part of the published package).
+
 ## 0.4.0
 
 - Verify Linux Chromium visual baselines on GitHub-hosted Ubuntu and enforce complete baseline inventories on both platforms (#185).
