@@ -25,7 +25,8 @@ describe('reduced motion for every shipped CSS declaration',()=>{
    const withoutTokens=decl.value.replace(/var\(--hig-motion-duration-[\w-]+(?:,[^)]+)?\)/g,'');
    // Infinite loading indicators intentionally have slower, legible loop periods.
    if(!/animation/.test(decl.prop)||!decl.value.includes('infinite'))expect(withoutTokens).not.toMatch(/(?:\d*\.)?\d+m?s\b/);
-   else expect(rule.selector).toMatch(/^\.hig-(spinner-indicator|progress progress:not\(\[value\]\))$/);
+   // Looping indicators: the spinners, indeterminate progress, the skeleton pulse and the live status ring. Each still needs both stops above.
+   else expect(rule.selector).toMatch(/^\.hig-(spinner-indicator|button-spinner|skeleton|progress progress:not\(\[value\]\)|status-indicator:is\(\[data-state='online'\],\[data-state='stale'\]\)::before)$/);
   });
  });
 });

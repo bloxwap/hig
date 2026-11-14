@@ -65,7 +65,9 @@ describe('fill and space instead of strokes',()=>{
   expect(rule(".hig-market-row[data-mode='action']")).toContain('padding-inline-end:20px');
   expect(rule(".hig-market-row[data-mode='action'] .hig-button[data-intent='ghost']")).toContain('color:var(--hig-text)');
  });
- it('sizes a comfortable segmented control to the 44px button height',()=>{expect(rule('.hig-segment span')).toContain('min-height:calc(var(--hig-button) - 8px)');expect(rule('.hig-segments')).toContain('padding:4px');});
+ it('sizes a comfortable segmented control to the 44px button height',()=>{expect(rule('.hig-segment span')).toContain('min-height:calc(var(--hig-button) - 8px)');
+  // The 4px inset is the label's own padding, so each segment's target is the full control height.
+  expect(rule('.hig-segments')).toContain('padding:0 4px');expect(rule('.hig-segment')).toContain('padding-block:4px');});
 });
 describe('reviewed component changes',()=>{
  it('shows a leading spinner on a busy button and keeps the busy text in the name only',()=>{
@@ -184,10 +186,11 @@ describe('Filter',()=>{
   expect(rule(':is(.hig-dialog,.hig-gesture-sheet,.hig-gesture-dynamic) > .hig-button + .hig-button')).toContain('calc(var(--hig-action-gap) - 12px)');
   expect(rule('.hig-swap-actions')).toContain('margin-block-start:var(--hig-action-offset)');
  });
- it('presents floating lists with a fade and keeps the switch sliding under reduced motion',()=>{
+ it('presents floating lists with a fade, eases the switch track with its thumb, and stops both under reduced motion',()=>{
   expect(rule('.hig-select-list,.hig-popover')).toContain('animation:hig-present');
-  expect(rule('.hig-switch input')).toContain('transition:background-color .15s ease');
-  expect(css).not.toMatch(/\.hig-switch input::before[^{]*\{ transition:none/);
+  // Durations come from the motion tokens, and every one has a stop in both preference paths (tests/motion-css.test.ts).
+  expect(rule('.hig-switch input')).toContain('transition:background-color var(--hig-motion-duration-fast) ease');
+  expect(css).toMatch(/prefers-reduced-motion:reduce\)\s*\{[^@]*\.hig-button,\.hig-switch input,\.hig-switch input::before \{ transition:none; \}/);
   expect(rule("[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'].hig-popover")).toContain('animation:none');
  });
 });

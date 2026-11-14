@@ -174,9 +174,11 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 [data-sonner-toast] .hig-toast-item { margin-inline:auto; }
 .hig-toast-item .hig-button { min-height:32px;padding-block:2px; }
 /* 32px disc with a 44px hit area. */
-.hig-toast-close { appearance:none;position:relative;flex:none;display:inline-grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
-.hig-toast-close::after { content:'';position:absolute;inset:-6px; }
-.hig-toast-close:active { background:var(--hig-border);color:var(--hig-text); }
+/* The target is the full button height (44 touch, 36 compact); the 32px disc is drawn inside it and negative margins keep the capsule's size. */
+.hig-toast-close { appearance:none;position:relative;isolation:isolate;flex:none;display:inline-grid;place-items:center;width:var(--hig-button,44px);height:var(--hig-button,44px);margin:calc((32px - var(--hig-button,44px))/2);padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
+.hig-toast-close::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2);border-radius:50%; }
+.hig-toast-close:active { color:var(--hig-text); }
+.hig-toast-close:active::before { background:var(--hig-border); }
 @media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled) {transform:none;} }
 [data-hig-motion='reduced'] .hig-button:active:not(:disabled) {transform:none;}
 .hig-tabs { display:grid;gap:var(--hig-gap);min-width:0; }
@@ -247,12 +249,14 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 
 .hig-group legend { margin-bottom:.5rem; padding:0; }
 .hig-segmented-control { min-width:0; width:100%; }
-.hig-segments { position:relative; isolation:isolate; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:4px; padding:4px; border-radius:9999px; background:var(--hig-fill); }
+.hig-segments { position:relative; isolation:isolate; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:4px; padding:0 4px; border-radius:9999px; background:var(--hig-fill); }
 /* Logical positioning follows RTL and avoids WebKit rounding percentage transforms at fractional segment widths. */
 .hig-segment-indicator { position:absolute; z-index:-1; pointer-events:none; inset-block:4px; inset-inline-start:calc(4px + var(--hig-segment-index) * (100% - 4px) / var(--hig-segment-count)); width:calc((100% - (var(--hig-segment-count) + 1) * 4px) / var(--hig-segment-count)); border-radius:9999px; background:var(--hig-fill-raised); box-shadow:0 1px 3px #0003; transition:inset-inline-start var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
 .hig-segment-indicator[data-disabled] { opacity:.5; }
-.hig-segment { position:relative; min-width:0; cursor:pointer; }
-.hig-segment input { position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:inherit; }
+/* The label, not the pill inside it, is the target: it spans the full control height (44 touch, 36 compact). */
+.hig-segment { position:relative; min-width:0; padding-block:4px; cursor:pointer; }
+/* The radio covers the pill area only, so it lines up with the indicator; the label around it is the full-height target. */
+.hig-segment input { position:absolute; inset:4px 0; width:100%; height:calc(100% - 8px); margin:0; opacity:0; cursor:inherit; }
 .hig-segment span { display:flex; justify-content:center; align-items:center; min-height:calc(var(--hig-button) - 8px); padding:2px .75rem; border-radius:9999px; color:var(--hig-muted); font-weight:500; line-height:1.5; text-align:center; overflow-wrap:anywhere; }
 .hig-segment input:focus-visible { outline:0; }
 
@@ -271,10 +275,10 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-filter-mark > img { grid-area:1/1;width:100%;height:100%;object-fit:cover;transition:var(--hig-motion-duration-fast,180ms) ease;transition-property:opacity,transform; }
 .hig-filter-mark > svg { grid-area:1/1;width:16px;height:16px;fill:none;stroke:var(--hig-text);stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
 /* pathLength=1 on the path, so the dash offset is the undrawn fraction. A fully undrawn round-capped stroke still paints its cap as a dot, so the check is also hidden until chosen. */
-.hig-filter-mark path { stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),opacity 60ms; }
+.hig-filter-mark path { stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),opacity var(--hig-motion-duration-fast,180ms); }
 .hig-filter-chip:has(input:checked) .hig-filter-mark { background:currentColor; }
 .hig-filter-chip:has(input:checked) .hig-filter-mark > img { opacity:0;transform:scale(.6); }
-.hig-filter-chip:has(input:checked) .hig-filter-mark path { stroke-dashoffset:0;opacity:1;transition-delay:60ms; }
+.hig-filter-chip:has(input:checked) .hig-filter-mark path { stroke-dashoffset:0;opacity:1; }
 .hig-filter-chip:active:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
 .hig-range { accent-color:var(--hig-action); min-height:48px; width:100%; appearance:none; -webkit-appearance:none; display:block; margin:0; padding:0; border:0; background:transparent; cursor:pointer; }
 .hig-range::-webkit-slider-runnable-track { height:6px; border-radius:9999px; background:linear-gradient(to right,var(--hig-action) var(--hig-range-fill),var(--hig-fill-raised) var(--hig-range-fill)); }
@@ -309,7 +313,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 @keyframes hig-progress { to { background-position:-200% 0; } }
 @media(prefers-reduced-motion:reduce) {
   .hig-spinner-indicator,.hig-progress progress:not([value]),.hig-skeleton,.hig-status-indicator::before { animation:none; }
-  .hig-button-spinner { animation-duration:2.4s; }
+  .hig-button-spinner { animation:none; }
   .hig-progress progress::-webkit-progress-bar,.hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
   .hig-button,.hig-switch input,.hig-switch input::before { transition:none; }
   .hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path { transition:none; }
@@ -318,7 +322,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 }
 [data-hig-motion='reduced'] :is(.hig-spinner-indicator,.hig-progress progress,.hig-skeleton) { animation:none; }
 [data-hig-motion='reduced'] .hig-status-indicator::before { animation:none; }
-[data-hig-motion='reduced'] .hig-button-spinner { animation-duration:2.4s; }
+[data-hig-motion='reduced'] .hig-button-spinner { animation:none; }
 [data-hig-motion='reduced'] :is(.hig-accordion-chevron,.hig-accordion-summary) { transition:none; }
 [data-hig-motion='reduced'] .hig-accordion::details-content { transition:none; }
 [data-hig-motion='reduced'] .hig-progress progress::-webkit-progress-bar,[data-hig-motion='reduced'] .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
@@ -350,7 +354,8 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
   .hig-tab[aria-selected='false']:hover:not(:disabled) { color:var(--hig-text);filter:none; }
   .hig-navigation > .hig-link:hover { background:var(--hig-nested);color:var(--hig-text); }
   .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
-  .hig-toast-close:hover { color:var(--hig-text);background:var(--hig-border); }
+  .hig-toast-close:hover { color:var(--hig-text); }
+  .hig-toast-close:hover::before { background:var(--hig-border); }
   .hig-filter-chip:hover:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
   .hig-accordion-summary:hover .hig-accordion-chevron { color:var(--hig-text); }
   .hig-breadcrumb .hig-link:hover { color:var(--hig-text);text-decoration:underline; }
@@ -388,9 +393,9 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-identity > strong { font-size:1rem;font-weight:600;color:var(--hig-text); }
 .hig-swap-meta { display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;max-width:60%;font-size:.875rem;color:var(--hig-muted);text-align:end; }
 .hig-swap-pills { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--hig-action-gap); }
-.hig-swap-pill { appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 12px;border:0;border-radius:9999px;background:var(--hig-fill);color:var(--hig-muted);font:inherit;font-size:.875rem;font-weight:500;cursor:pointer;pointer-events:auto;position:relative; }
-/* 32px capsule with a 44px hit area. */
-.hig-swap-pill::after { content:'';position:absolute;inset:-6px 0; }
+.hig-swap-pill { appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:var(--hig-button,44px);margin-block:calc((32px - var(--hig-button,44px))/2);padding:4px 12px;border:0;border-radius:9999px;background:transparent;color:var(--hig-muted);font:inherit;font-size:.875rem;font-weight:500;cursor:pointer;pointer-events:auto;position:relative;isolation:isolate; }
+/* A 32px capsule drawn inside a full-height target (44 touch, 36 compact); negative margins keep the row as tall as the capsule. */
+.hig-swap-pill::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2) 0;border-radius:9999px;background:var(--hig-fill); }
 .hig-swap-equals { opacity:.5; }
 .hig-swap-icon { flex:none; }
 .hig-swap-amount-content { position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 16px 20px;pointer-events:none; }
@@ -422,10 +427,12 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-card[data-compact] .hig-swap-selected { align-items:center; }
 .hig-swap-card[data-compact] .hig-swap-stack > * { width:40px;height:40px; }
 .hig-swap-flip { position:relative;z-index:1;display:flex;justify-content:center;height:8px; }
-.hig-swap-flip > * { appearance:none;position:absolute;top:50%;translate:0 -50%;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--hig-nested);color:var(--hig-muted);box-shadow:0 0 0 3px var(--hig-background);cursor:pointer;transition:transform var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-swap-flip > * { appearance:none;position:absolute;top:50%;translate:0 -50%;display:grid;place-items:center;width:var(--hig-button,44px);height:var(--hig-button,44px);isolation:isolate;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer;transition:transform var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+/* The 32px disc and its page-coloured ring are drawn inside the full-size target. */
+.hig-swap-flip > *::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2);border-radius:50%;background:var(--hig-nested);box-shadow:0 0 0 3px var(--hig-background); }
 .hig-swap-flip > span { cursor:auto; }
-.hig-swap-flip > button::after { content:'';position:absolute;inset:-6px; }
-.hig-swap-flip > :disabled { color:var(--hig-faint);background:var(--hig-surface);cursor:not-allowed; }
+.hig-swap-flip > :disabled { color:var(--hig-faint);cursor:not-allowed; }
+.hig-swap-flip > :disabled::before { background:var(--hig-surface); }
 .hig-swap-flip > :active:not(:disabled,span) { transform:rotate(180deg); }
 .hig-swap-actions { display:flex;align-items:center;gap:var(--hig-action-gap);margin-block-start:var(--hig-action-offset); }
 /* The row uses the standard button height (44 touch, 36 compact). */
@@ -493,12 +500,15 @@ button.hig-swap-receive:active { opacity:.8; }
 .hig-swap-fees-total > dt { color:var(--hig-text); }
 :where(.hig-swap-hit,.hig-swap-pill,.hig-swap-flip > button,.hig-swap-key,.hig-swap-row,.hig-swap-setting,.hig-swap-back,button.hig-swap-receive) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
 .hig-swap-hit:focus-visible { outline-offset:-2px; }
-.hig-swap-pill:active,.hig-swap-setting:active { background:var(--hig-fill-raised);color:var(--hig-text); }
+.hig-swap-pill:active { color:var(--hig-text); }
+.hig-swap-pill:active::before,.hig-swap-setting:active { background:var(--hig-fill-raised); }
+.hig-swap-setting:active { color:var(--hig-text); }
 .hig-swap-row:active { background:var(--hig-fill); }
 .hig-swap-card:has(.hig-swap-hit:active) { background:color-mix(in srgb,var(--hig-surface) 92%,var(--hig-text)); }
 @media (hover:hover) and (pointer:fine) {
   .hig-swap-card:has(.hig-swap-hit:hover) { background:color-mix(in srgb,var(--hig-surface) 97%,var(--hig-text)); }
-  .hig-swap-pill:hover,.hig-swap-setting:hover { background:var(--hig-fill-raised);color:var(--hig-text); }
+  .hig-swap-pill:hover,.hig-swap-setting:hover { color:var(--hig-text); }
+  .hig-swap-pill:hover::before,.hig-swap-setting:hover { background:var(--hig-fill-raised); }
   .hig-swap-flip > button:hover:not(:disabled) { color:var(--hig-text); }
   .hig-swap-key:hover,.hig-swap-back:hover { background:var(--hig-surface); }
   .hig-swap-back:hover { color:var(--hig-text); }
@@ -510,3 +520,23 @@ button.hig-swap-receive:active { opacity:.8; }
 /* Inline prose links retain line layout (WCAG inline-text exception). */
 p .hig-link { display:inline;min-height:0;min-width:0; }
 .hig-input,.hig-range,.hig-menu-item,.hig-select-option,.hig-table-sort,.hig-choice,.hig-segment { min-width:var(--hig-button); }
+
+/* Reduced-motion stops for the selectors above, one per animated or transitioned selector in each preference path
+   (tests/motion-css.test.ts). Elements portalled out of the provider carry data-hig-motion themselves and are stopped where they are styled. */
+@media(prefers-reduced-motion:reduce) {
+  .hig-accordion > .hig-accordion-summary { transition:none; }
+  .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before { animation:none; }
+}
+[data-hig-motion='reduced'] .hig-accordion > .hig-accordion-summary { transition:none; }
+[data-hig-motion='reduced'] .hig-accordion-chevron { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-chip { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-mark { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-mark > img { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-mark path { transition:none; }
+[data-hig-motion='reduced'] .hig-swap-card { transition:none; }
+[data-hig-motion='reduced'] .hig-swap-flip > * { transition:none; }
+[data-hig-motion='reduced'] .hig-skeleton { animation:none; }
+[data-hig-motion='reduced'] .hig-popover { animation:none; }
+[data-hig-motion='reduced'] .hig-progress progress:not([value]) { animation:none; }
+[data-hig-motion='reduced'] .hig-spinner-indicator { animation:none; }
+[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before { animation:none; }
