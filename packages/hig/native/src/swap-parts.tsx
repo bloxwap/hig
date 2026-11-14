@@ -43,14 +43,20 @@ export function SwapKeypad({onKey,label,deleteLabel}: {onKey:(key:string)=>void;
  // Always left to right: a keypad keeps its telephone layout in RTL locales.
  return <View accessibilityLabel={label} testID='swap-keypad' style={{direction:'ltr',flexDirection:'row',flexWrap:'wrap',paddingTop:8}}>{keys.map(key=><Pressable key={key} accessibilityRole='keyboardkey' accessibilityLabel={key==='back'?deleteLabel:key} testID={`swap-key-${key}`} onPress={()=>onKey(key)} style={({pressed})=>({width:'33.333%',height:56,borderRadius:16,backgroundColor:pressed?colors.nested:'transparent',...centre})}>{key==='back'?<DeleteIcon color={colors.text}/>:<Text accessible={false} style={{fontSize:24,lineHeight:30,fontWeight:'600'}}>{key}</Text>}</Pressable>)}</View>;
 }
+/** A view's heading: the title, with Back before it when the view can be left. Shared by the pushed views and a titled main view. */
+export function SwapHeader({title,onBack}: {title:string;onBack?:()=>void}){
+ const colors=useColors();const t=useMessages();const {direction}=useHIG();
+ return <View testID='swap-header' style={{flexDirection:'row',alignItems:'center',gap:4,minHeight:44,paddingStart:onBack?0:4}}>
+  {onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='swap-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}
+  <Heading style={{fontWeight:'700',flexShrink:1}}>{title}</Heading>
+ </View>;
+}
+/** A small chevron: down marks a side that can be changed, trailing marks a card that opens something. Mirrors in RTL. */
+export function SmallChevron({color,trailing}: {color:string;trailing?:boolean}){const {direction}=useHIG();return <View {...hidden} style={{width:16,height:16,...centre,transform:trailing?[{rotate:direction==='rtl'?'90deg':'-90deg'}]:undefined}}><View style={{width:7,height:7,borderRightWidth:stroke,borderBottomWidth:stroke,borderColor:color,transform:[{translateY:-1.5},{rotate:'45deg'}]}}/></View>;}
 /** A pushed view inside the panel: Back and the view title, then the body. There is no close control; Back pops. */
 export function SwapSubview({title,onBack,testID,children}:React.PropsWithChildren<{title:string;onBack:()=>void;testID?:string}>){
- const colors=useColors();const t=useMessages();const {direction}=useHIG();
  return <View testID={testID} style={{gap:16}}>
-  <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
-   <IconButton intent='ghost' label={t.back} suppressFeedback testID='swap-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>
-   <Heading style={{fontWeight:'700',flexShrink:1}}>{title}</Heading>
-  </View>
+  <SwapHeader title={title} onBack={onBack}/>
   {children}
  </View>;
 }

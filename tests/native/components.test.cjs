@@ -200,7 +200,7 @@ it('native switch draws the HIG capsule on web as one named switch, not react-na
   expect(tree.findAllByType(RN.Switch)).toHaveLength(0);
   const track=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===40&&flat(n).height===24)[0],thumb=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===18&&flat(n).height===18)[0];
   expect(track().props['aria-hidden']).toBe(true);
-  expect(flat(track())).toMatchObject({borderRadius:12,padding:3,backgroundColor:nativeSrgb.border,transitionDuration:'150ms'});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.text,transform:[{translateX:0}],transitionProperty:'transform, background-color'});
+  expect(flat(track())).toMatchObject({borderRadius:12,padding:3,backgroundColor:nativeSrgb.nested,transitionDuration:'150ms'});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.text,transform:[{translateX:0}],transitionProperty:'transform, background-color'});
   // Space toggles once and ignores key repeat; Enter is RN Web's own press.
   const prevent=jest.fn();act(()=>controls()[0].props.onKeyDown({key:' ',preventDefault:prevent}));act(()=>controls()[0].props.onKeyDown({key:' ',repeat:true,preventDefault:prevent}));
   expect(changed).toHaveBeenCalledTimes(1);expect(changed).toHaveBeenCalledWith(true);expect(prevent).toHaveBeenCalledTimes(2);
@@ -217,7 +217,7 @@ it('native switch keeps the platform switch in one pressable row on iOS and Andr
 it('native switch and alert accept token colour roles only (#67)',()=>{
  const {Switch}=require('../../packages/hig/native/src/switch');const {Alert}=require('../../packages/hig/native/src/status');const RN=require('react-native');const {nativeSrgb:colors,withAlpha}=require('../../packages/hig/tokens/dist/index.js');
  const track=props=>{const tree=mount(React.createElement(Switch,{label:'Sound',...props}));const value=tree.findByType(RN.Switch).props.trackColor;act(()=>root.unmount());root=null;return value;};
- expect(track({})).toEqual({true:colors.action,false:colors.border});
+ expect(track({})).toEqual({true:colors.action,false:colors.nested});
  expect(track({tone:'positive'}).true).toBe(colors.positive);
  // Untyped JS cannot smuggle a raw palette colour through the role prop.
  expect(track({tone:'#123456'}).true).toBe(colors.action);
@@ -226,22 +226,22 @@ it('native switch and alert accept token colour roles only (#67)',()=>{
  expect(thumb()).toBeUndefined();
  const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});
  try{expect(thumb()).toBe(colors.text);}finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
- const accent=props=>{const tree=mount(React.createElement(Alert,{title:'Result',announce:false,...props}));const style=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.View&&n.props.style)[0].props.style);act(()=>root.unmount());root=null;return style;};
- expect(accent({}).borderColor).toBe(colors.info);
- expect(accent({severity:'success'}).borderColor).toBe(colors.positive);
- expect(accent({severity:'warning'}).borderColor).toBe(colors.warning);
- expect(accent({severity:'error'}).borderColor).toBe(colors.negative);
- expect(accent({severity:'note'}).borderColor).toBe(colors.info);
- expect(accent({severity:'tip'}).borderColor).toBe(colors.positive);
- expect(accent({severity:'error',tone:'action'}).borderColor).toBe(colors.action);
- expect(accent({severity:'error',tone:'rgb(1,2,3)'}).borderColor).toBe(colors.negative);
- // Bloxwap glowing stroke: 2px tone border on every side, tone glow at 55%, 16dp radius, translucent surface.
- const base=accent({});expect(base.borderWidth).toBe(2);expect(base.borderStartWidth).toBeUndefined();expect(base.borderRadius).toBe(16);
- expect(base.backgroundColor).toBe(withAlpha(colors.surface,0.95));expect(base.boxShadow).toBe(`0 0 24px ${withAlpha(colors.info,0.55)}`);
- expect(accent({severity:'error'}).boxShadow).toBe(`0 0 24px ${withAlpha(colors.negative,0.55)}`);
- // Neutral default: border-token stroke with the soft white glow.
- const neutral=accent({severity:'default'});expect(neutral.borderColor).toBe(colors.border);expect(neutral.boxShadow).toBe(`0 0 20px ${withAlpha(colors.text,0.12)}`);
- expect(accent({severity:'default',tone:'warning'}).borderColor).toBe(colors.warning);
+ // The title carries the tone; the panel is tinted with it.
+ const accent=props=>{const tree=mount(React.createElement(Alert,{title:'Result',announce:false,...props}));const style=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.View&&n.props.style)[0].props.style);const tone=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.Text&&n.props.accessibilityRole==='header')[0].props.style).color;act(()=>root.unmount());root=null;return {...style,tone};};
+ const tint=(tone,amount)=>'#'+[1,3,5].map(k=>Math.round(parseInt(colors.surface.slice(k,k+2),16)*(1-amount)+parseInt(tone.slice(k,k+2),16)*amount).toString(16).padStart(2,'0')).join('');
+ expect(accent({}).tone).toBe(colors.info);
+ expect(accent({severity:'success'}).tone).toBe(colors.positive);
+ expect(accent({severity:'warning'}).tone).toBe(colors.warning);
+ expect(accent({severity:'error'}).tone).toBe(colors.negative);
+ expect(accent({severity:'note'}).tone).toBe(colors.info);
+ expect(accent({severity:'tip'}).tone).toBe(colors.positive);
+ expect(accent({severity:'error',tone:'action'}).tone).toBe(colors.action);
+ expect(accent({severity:'error',tone:'rgb(1,2,3)'}).tone).toBe(colors.negative);
+ // No stroke and no glow: a 10% tone tint of the surface, 6% of text for the neutral default.
+ const base=accent({});expect(base.borderWidth).toBeUndefined();expect(base.borderColor).toBeUndefined();expect(base.boxShadow).toBeUndefined();
+ expect(base.backgroundColor).toBe(tint(colors.info,0.1));expect(accent({severity:'error'}).backgroundColor).toBe(tint(colors.negative,0.1));
+ const neutral=accent({severity:'default'});expect(neutral.tone).toBe(colors.text);expect(neutral.backgroundColor).toBe(tint(colors.text,0.06));
+ expect(accent({severity:'default',tone:'warning'}).tone).toBe(colors.warning);
 });
 it('native Text caps font scale from the prop or the provider and readouts pass it through (#67)',()=>{
  const {HIGProvider}=require('../../packages/hig/native/src/provider');const {Text,Heading}=require('../../packages/hig/native/src/surface');const {Text:RNText}=require('react-native');

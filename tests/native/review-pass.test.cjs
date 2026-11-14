@@ -24,7 +24,7 @@ const jsonStyle=node=>StyleSheet.flatten(node.props.style);
 it('Surface and Separator: a filled card with no stroke, and a 2dp rounded rule',()=>{
  const surface=flat(mount(h(Surface,null,h(RNText,null,'Card'))).findByType(View));
  expect(surface).toMatchObject({backgroundColor:colors.surface});expect(surface.borderWidth).toBeUndefined();expect(surface.borderColor).toBeUndefined();
- expect(flat(mount(h(Separator)).findByType(View))).toMatchObject({height:2,borderRadius:9999,backgroundColor:colors.border});
+ expect(flat(mount(h(Separator)).findByType(View))).toMatchObject({height:2,borderRadius:9999,backgroundColor:colors.nested});
 });
 it('SearchInput insets a decorative magnifying glass on the leading edge and pads the text past it, following direction',()=>{
  const ref=React.createRef();const tree=mount(h(HIGProvider,{direction:'rtl'},h(SearchInput,{ref,value:'btc',onChangeText:jest.fn()})));
@@ -114,4 +114,26 @@ it('EmptyState centres a default icon, title, optional description and action wi
  const avatar=tree=>tree.findAll(n=>n.props.accessibilityRole==='image')[0];
  const page=avatar(mount(h(Avatar,{name:'Demo account'})));expect(flat(page)).toMatchObject({width:40,height:40,borderRadius:20,backgroundColor:colors.surface});expect(page.props.accessibilityLabel).toBe('Demo account');
  expect(flat(avatar(mount(h(Surface,null,h(Avatar,{name:'Demo account'}))))).backgroundColor).toBe(colors.nested);
+});
+it('thin tracks and rules sit one step above the wells of their container',()=>{
+ const {Switch}=require('../../packages/hig/native/src/switch');const {Progress}=require('../../packages/hig/native/src/status');
+ const track=tree=>tree.findByType(RN.Switch).props.trackColor.false,rule=tree=>flat(tree.findAll(n=>n.type===View&&flat(n)?.height===2)[0]).backgroundColor,bar=tree=>flat(tree.findAll(n=>n.type===View&&flat(n)?.height===6)[0]).backgroundColor;
+ expect(track(mount(h(Switch,{label:'Sound'})))).toBe(colors.nested);expect(track(mount(h(Surface,null,h(Switch,{label:'Sound'}))))).toBe(colors.border);
+ expect(rule(mount(h(Surface,null,h(Separator))))).toBe(colors.border);
+ expect(bar(mount(h(Progress,{label:'Sync',value:40})))).toBe(colors.nested);expect(bar(mount(h(Surface,null,h(Progress,{label:'Sync',value:40}))))).toBe(colors.border);
+ expect(flat(mount(h(Skeleton)).findAll(n=>flat(n)?.minHeight===48)[0]).backgroundColor).toBe(colors.nested);
+});
+it('an unavailable button is a neutral well with muted text; busy keeps its intent colour',()=>{
+ const button=tree=>tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.style==='function')[0],label=tree=>StyleSheet.flatten(tree.findAllByType(RNText).at(-1).props.style).color;
+ for(const intent of ['primary','secondary','destructive']){const tree=mount(h(Button,{intent,disabled:true},'Go'));expect(flat(button(tree))).toMatchObject({backgroundColor:colors.surface,opacity:1});expect(label(tree)).toBe(colors.muted);}
+ const inCard=mount(h(Surface,null,h(Button,{disabled:true},'Go')));expect(flat(button(inCard)).backgroundColor).toBe(colors.nested);
+ const ghost=mount(h(Button,{intent:'ghost',disabled:true},'Go'));expect(flat(button(ghost)).backgroundColor).toBe('transparent');expect(label(ghost)).toBe(colors.faint);
+ const busy=mount(h(Button,{busy:true},'Go'));expect(flat(button(busy))).toMatchObject({backgroundColor:colors.action,opacity:0.7});expect(label(busy)).toBe(colors.onAction);
+});
+it('the selected tab is a raised neutral capsule and the others are bare muted labels',()=>{
+ const tabs=tree=>tree.findAll(n=>n.props.accessibilityRole==='tab'&&typeof n.props.style==='function'),label=tab=>StyleSheet.flatten(tab.findAllByType(RNText).at(-1).props.style).color;
+ const items=[{value:'a',label:'A',content:null},{value:'b',label:'B',content:null}];
+ const [on,off]=tabs(mount(h(Tabs,{label:'Modes',items})));
+ expect(flat(on).backgroundColor).toBe(colors.nested);expect(label(on)).toBe(colors.text);expect(flat(off).backgroundColor).toBe('transparent');expect(label(off)).toBe(colors.muted);
+ expect(flat(tabs(mount(h(Surface,null,h(Tabs,{label:'Modes',items}))))[0]).backgroundColor).toBe(colors.border);
 });

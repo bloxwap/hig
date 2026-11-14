@@ -180,6 +180,91 @@ describe('SwapPanel',()=>{
   const mark=document.querySelector('.hig-swap-flip > span')!;expect(mark.getAttribute('aria-hidden')).toBe('true');expect(mark.querySelector('svg')).toBeTruthy();
   expect(document.querySelector('.hig-swap-flip > button')).toBeNull();
  });
+ it('fixes the denomination when the switch is turned off: no conversion capsules and no setting',async()=>{
+  render(<Host initialFrom={eth} initialTo={usdc} denominationSwitch={false}/>);type('5');
+  expect(screen.queryByRole('button',{name:'Switch between dollars and token units'})).toBeNull();expect(reading(amount())).toBe('$5');
+  await userEvent.click(screen.getByRole('button',{name:'Settings'}));
+  expect(screen.queryByRole('radio',{name:'Units'})).toBeNull();expect(screen.getByRole('button',{name:/^Fees/})).toBeTruthy();
+  cleanup();
+  // The fixed denomination follows the `denomination` prop.
+  render(<Host initialFrom={eth} initialTo={usdc} denominationSwitch={false} denomination='token'/>);type('2');expect(reading(amount())).toBe('2');
+ });
+ it('seeds the entry from a mounted amount, in the default denomination',()=>{
+  const view=render(<Host initialFrom={eth} initialTo={usdc} amount='0.5'/>);expect(reading(amount())).toBe('$1000');expect(action().textContent).toBe('Swap');view.unmount();
+  render(<Host initialFrom={eth} initialTo={usdc} amount='0.5' denomination='token'/>);expect(reading(amount())).toBe('0.5');
+ });
+ it('shows a fixed destination as a compact card: no To token, no amount, one way, and the action ready from the From side alone',async()=>{
+  const submit=vi.fn(),press=vi.fn();
+  const view=render(<Host initialFrom={eth} fee={0.19} destination={{title:'Ether staking',subtitle:'Ethereum',detail:'3.1% APR'}} actionLabel='Stake' onSubmit={submit}/>);
+  const card=document.querySelector(".hig-swap-card[data-side='to']") as HTMLElement;
+  expect(card.getAttribute('data-compact')).toBe('true');expect(card.textContent).toBe('EtEther stakingEthereum3.1% APRFee $0.19');
+  expect(card.querySelector('.hig-swap-amount')).toBeNull();expect(card.querySelector('button')).toBeNull();
+  expect(screen.queryByRole('button',{name:'Select To token'})).toBeNull();expect(screen.queryByRole('button',{name:'Swap direction'})).toBeNull();expect(document.querySelector('.hig-swap-flip > span')).toBeTruthy();
+  // Before an amount the usual prompt shows; the host label names the action only once it is ready.
+  expect(action().textContent).toBe('Enter an amount');type('5');expect(action().textContent).toBe('Stake');
+  await userEvent.click(action());expect(submit).toHaveBeenCalledWith('send');
+  fireEvent.keyDown(window,{key:'k',ctrlKey:true});expect(screen.queryByRole('group',{name:'To'})).toBeNull();
+  view.unmount();
+  // A wallet destination shows its shortened address and can be a button, for example to change the recipient.
+  render(<Host initialFrom={usdc} destination={{title:'Recipient wallet',address:'0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688',onPress:press}}/>);
+  const wallet=screen.getByRole('button',{name:'Recipient wallet'});expect(wallet.closest('.hig-swap-card')?.textContent).toBe('Recipient wallet0x9e0f…7688');expect(wallet.closest('.hig-swap-card')?.querySelector('.hig-swap-meta svg')).toBeTruthy();
+  await userEvent.click(wallet);expect(press).toHaveBeenCalledTimes(1);type('5');expect(action().textContent).toBe('Send');
+ });
+ it('keeps a locked side fixed: no picker, no shortcut, and reset leaves its token',async()=>{
+  const reset=vi.fn();render(<Host initialFrom={eth} initialTo={usdc} lockFrom lockTo oneWay actionLabel='Unstake' onReset={reset}/>);
+  expect(screen.queryByRole('button',{name:'Select From token'})).toBeNull();expect(screen.queryByRole('button',{name:'Select To token'})).toBeNull();
+  expect(document.querySelectorAll('.hig-swap-hit')).toHaveLength(0);expect(document.querySelectorAll("[data-locked='true']")).toHaveLength(2);
+  fireEvent.keyDown(window,{key:'f',metaKey:true});expect(document.querySelector('.hig-swap-panel')?.getAttribute('data-view')).toBe('main');
+  // Only locked tokens and no amount: nothing to reset.
+  expect(screen.getByRole('button',{name:'Reset'})).toHaveProperty('disabled',true);
+  type('3');expect(action().textContent).toBe('Unstake');await userEvent.click(screen.getByRole('button',{name:'Reset'}));
+  expect(reading(amount())).toBe('$0');expect(screen.getByText('Ether')).toBeTruthy();expect(screen.getByText('USD Coin')).toBeTruthy();expect(reset).toHaveBeenCalledTimes(1);
+  await userEvent.click(screen.getByRole('button',{name:'Max'}));expect(reading(amount())).toBe('$4000');
+ });
+ it('presents a token with a caption as an account: name over caption, one disc, Max only, and a chevron while it can be changed',async()=>{
+  const account:SwapToken={id:'hl',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hl',balance:234.68,price:1,caption:'$234.68 available'};
+  const view=render(<Host initialFrom={account} destination={{title:'Papertrade'}} denominationSwitch={false}/>);
+  const from=document.querySelector(".hig-swap-card[data-side='from']") as HTMLElement;
+  expect(from.querySelector('[data-account]')?.textContent).toBe('USDUSDC on Hyperliquid$234.68 availableMax');
+  expect(screen.queryByRole('button',{name:'Test'})).toBeNull();expect(from.querySelector('.hig-swap-identity strong svg')).toBeTruthy();
+  await userEvent.click(screen.getByRole('button',{name:'Max'}));expect(reading(amount())).toBe('$234.68');
+  view.unmount();
+  render(<Host initialFrom={account} lockFrom destination={{title:'Papertrade'}}/>);
+  expect(document.querySelector(".hig-swap-card[data-side='from'] .hig-swap-identity strong svg")).toBeNull();
+ });
+ it('keeps the action disabled, asking for a destination, while the destination is pending',async()=>{
+  const pick=vi.fn(),submit=vi.fn();
+  const view=render(<Host initialFrom={eth} destination={{title:'To',subtitle:'Pick a destination',pending:true,onPress:pick}} onSubmit={submit}/>);type('5');
+  expect(action().textContent).toBe('Pick a destination');expect(action()).toHaveProperty('disabled',true);
+  expect(document.querySelector("[data-side='to']")?.getAttribute('data-pending')).toBe('true');
+  await userEvent.click(screen.getByRole('button',{name:'To'}));expect(pick).toHaveBeenCalledTimes(1);
+  view.rerender(<Host initialFrom={eth} destination={{title:'Recipient wallet',address:'0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688'}} onSubmit={submit}/>);
+  expect(action().textContent).toBe('Send');await userEvent.click(action());expect(submit).toHaveBeenCalledWith('send');
+ });
+ it('shows label and value rows as the bottom card, alone or under a destination',async()=>{
+  const submit=vi.fn(),rows=[{label:'Staked',value:'11.0735 HYPE'},{label:'Fee tier',value:'Wood'}];
+  const view=render(<Host initialFrom={eth} details={rows} actionLabel='Stake' onSubmit={submit}/>);
+  const card=document.querySelector(".hig-swap-card[data-side='to']") as HTMLElement;
+  expect([...card.querySelectorAll('dl > div')].map(row=>[row.querySelector('dt')?.textContent,row.querySelector('dd')?.textContent])).toEqual([['Staked','11.0735 HYPE'],['Fee tier','Wood']]);
+  expect(card.querySelector('.hig-swap-slot')).toBeNull();expect(screen.queryByRole('button',{name:'Swap direction'})).toBeNull();
+  type('2');expect(action().textContent).toBe('Stake');await userEvent.click(action());expect(submit).toHaveBeenCalledWith('send');
+  view.unmount();
+  render(<Host initialFrom={eth} destination={{title:'Pool'}} details={rows}/>);
+  const both=document.querySelector(".hig-swap-card[data-side='to']") as HTMLElement;expect(both.querySelector('.hig-swap-slot')).toBeTruthy();expect(both.querySelectorAll('dl > div')).toHaveLength(2);
+  cleanup();
+  // With a To token the rows are not the bottom card, so the pair still swaps normally.
+  render(<Host initialFrom={eth} initialTo={usdc} details={rows}/>);expect(screen.getByRole('button',{name:'Select To token'})).toBeTruthy();
+ });
+ it('adds a heading with optional Back, a note in a tone, an action icon, and can drop the settings and reset buttons',async()=>{
+  const back=vi.fn();
+  const view=render(<Host initialFrom={eth} initialTo={usdc} title='Withdraw from Papertrade' onBack={back} note='The minimum withdrawal is $10.00.' controls={false} actionIcon={<i data-testid='icon'/>}/>);
+  expect(screen.getByRole('heading',{name:'Withdraw from Papertrade'})).toBeTruthy();await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(back).toHaveBeenCalledTimes(1);
+  const note=screen.getByRole('note');expect(note.textContent).toBe('The minimum withdrawal is $10.00.');expect(note.getAttribute('data-tone')).toBe('muted');
+  expect(screen.queryByRole('button',{name:'Settings'})).toBeNull();expect(screen.queryByRole('button',{name:'Reset'})).toBeNull();
+  expect(document.querySelectorAll('.hig-swap-actions > *')).toHaveLength(1);expect(action().firstElementChild).toBe(screen.getByTestId('icon'));
+  view.rerender(<Host initialFrom={eth} initialTo={usdc} title='Unstake' note='Read this first.' noteTone='negative'/>);
+  expect(screen.queryByRole('button',{name:'Back'})).toBeNull();expect(screen.getByRole('note').getAttribute('data-tone')).toBe('negative');expect(screen.getByRole('button',{name:'Settings'})).toBeTruthy();
+ });
  it('lets the host control the view',async()=>{
   const viewed=vi.fn();const view=render(<Host view='to' onViewChange={viewed}/>);
   expect(screen.getByRole('group',{name:'To'})).toBeTruthy();

@@ -11,7 +11,7 @@ export const slippagePresets=[0.001,0.005,0.01] as const;
 export type SwapSettingsView='settings'|'slippage'|'fees';
 export interface SwapSettingsProps {
  view:SwapSettingsView;onViewChange:(view:SwapSettingsView)=>void;/** Pops to the settings list from a sub-setting, or out of settings from the list. */onBack:()=>void;
- denomination:SwapDenomination;onDenominationChange:(denomination:SwapDenomination)=>void;
+ denomination:SwapDenomination;/** Omit to hide the denomination setting. */onDenominationChange?:(denomination:SwapDenomination)=>void;
  slippage:number;onSlippageChange?:(slippage:number)=>void;
  fee?:number|null;fees?:readonly SwapFee[];quoteLoading?:boolean;
  /** Host rows shown under the built-in settings, such as language or theme. */
@@ -31,7 +31,7 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
  return <div className='hig-swap-settings-view' role='group' aria-label={title}>
   <SwapViewHeader title={title} titleRef={heading} backLabel={messages.back??en.back} onBack={onBack}/>
   {view==='settings'&&<div className='hig-swap-settings'>
-   <SegmentedControl label={(messages.swapDenomination??en.swapDenomination)} options={[{value:'usd',label:(messages.swapDollars??en.swapDollars)},{value:'token',label:(messages.swapUnits??en.swapUnits)}]} value={denomination} onValueChange={value=>onDenominationChange(value as SwapDenomination)}/>
+   {onDenominationChange&&<SegmentedControl label={(messages.swapDenomination??en.swapDenomination)} options={[{value:'usd',label:(messages.swapDollars??en.swapDollars)},{value:'token',label:(messages.swapUnits??en.swapUnits)}]} value={denomination} onValueChange={value=>onDenominationChange(value as SwapDenomination)}/>}
    {onSlippageChange&&slippageRow}
    {feesRow}
    {children}

@@ -46,12 +46,38 @@ Presentation mode uses a grid with logical numeric alignment and no block paddin
   submitting={executing} onSubmit={action => execute(action, quote)}/>
 ```
 
+One panel covers each flow with the same cards; the catalog page shows every one as an example state.
+
+| Flow | From card | Bottom card | Props | Example |
+| --- | --- | --- | --- | --- |
+| Swap | token | another token, same chain | the pair | `swap` |
+| Bridge | token | a token on another chain | the pair | `bridge` |
+| Send | token | recipient, still to be picked | `destination` with `pending` and `onPress` | `send` |
+| Deposit to an account | account, dollars only | the account | `caption` on the token, `lockFrom`, `destination`, `denominationSwitch={false}` | `deposit` |
+| Withdraw from an account | account | where it lands, with a limit note | as deposit, plus `note` | `withdraw` |
+| Withdraw to another chain | account the user can change | pressable destination | `destination` with `onPress` | `withdraw-chain` |
+| Stake | holding, token units | label and value rows | `details`, `denomination='token'` | `stake` |
+| Unstake | position, token units | rows, with a warning | `details`, `note`, `noteTone='negative'` | `unstake` |
+| Receive | QR code and address | hidden | `receive`, `receiving` | none |
+
+Stake and unstake are one example each: the asset changes only the token data, not the layout.
+
 - **Tokens.** A `SwapToken` is `{id, symbol, name, chain, chainId}` plus optional `icon`, `chainIcon`, `balance` (token units), `price` (USD per unit) and `keywords` (extra search text such as the contract address). `balance` enables Max, Test and the balance check; `price` enables the dollar and unit conversion and the estimate shown before `received` arrives.
 - **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
 - **Pushed views.** The token pickers and settings are views pushed inside the panel's own bounds, replacing the cards, each with a Back control; Escape pops one level on web and choosing a token pops to the cards. `view` / `onViewChange` (`'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees'`) control the stack when the host needs to.
 - **Pickers.** Pressing a card pushes its picker: search, chain filter chips, an optional Hot section from `hotTokenIds`, and the token list with arrow-key and Enter selection on web. The From picker shows the connected wallet with a disconnect control, or Connect wallet and the receive toggle; the To picker shows the recipient field when `onRecipientChange` is set, with a scan button when `onScanRecipient` is set. On web ⌘F / Ctrl+F and ⌘K / Ctrl+K open the From and To pickers while the panel is mounted; pass `shortcuts={false}` to leave the browser's own shortcuts alone.
 - **Settings.** The menu button pushes the settings view: the default denomination, slippage (presets plus a custom percent) and the fee breakdown one level deeper, then any host rows passed as `settings`.
 - **Receive view.** With `receive={{address, qr, onCopy}}` the From picker offers “Receive to an address”. The From card then shows the host's QR node beside the address in fixed-width rows with the leading and trailing characters emphasised, the To amount is hidden, and the action becomes “Send from your wallet” (calls `onConnect`). HIG ships no QR encoder or scanner: the host renders `qr` and implements `onScanRecipient`.
+- **Fixed destination.** `destination={{title, subtitle, icon, address, detail, onPress}}` replaces the To token with a place the host already knows: a recipient wallet, a staking pool, a trading account. The To card becomes one compact row with no picker and no amount, the panel is one-way, the action is ready from the From side alone, and `onSubmit` receives `'send'`. `address` shows shortened with the wallet's colour disc; `onPress` makes the card a button with a trailing chevron, for example to change the recipient; `fee` shows on the card when the host passes it.
+- **Accounts.** A token with a `caption` (for example `$22.72 available`) is presented as an account: the name over the caption beside one disc, with Max only. A small chevron follows the name while the side can still be changed.
+- **Pending destination.** `destination.pending` shows the destination as a placeholder; the action stays disabled and reads “Pick a destination” until the host supplies a real one.
+- **Details.** `details=[{label, value}]` adds label and value rows to the bottom card, under a destination or on their own. On their own they stand in for the To side exactly as a destination does.
+- **Note.** `note` is a line under the cards for a limit or a delay; `noteTone='warning'` or `'negative'` makes it a tinted capsule.
+- **Heading and controls.** `title` puts a heading above the cards and `onBack` a Back control beside it, for a panel that is its own screen or sheet. `controls={false}` leaves the action button alone at full width, and `actionIcon` puts a decoration before its text.
+- **Locked sides.** `lockFrom` / `lockTo` keep that side's token fixed: its card looks the same but does not open the picker, has no shortcut, and reset leaves the token in place.
+- **Action label.** `actionLabel` names the action once it is ready, in place of Send, Swap or Bridge: Stake, Deposit, Unstake. The host supplies the translated text. The prompts before it is ready (select a token, enter an amount, insufficient balance) do not change.
+- **Starting amount.** A mounted `amount` (token units) seeds the entry in the default denomination.
+- **Fixed denomination.** `denominationSwitch={false}` removes the conversion capsule under each amount and the denomination setting, and keeps both amounts in `denomination` (dollars by default). Use it when the host only has one of the two, for example dollars with no token price.
 - **One way.** `oneWay` is for flows that only run top to bottom, such as a deposit: the control between the cards becomes a decorative down arrow instead of the flip button, and the pair cannot be exchanged.
 - **Ownership.** The panel never fetches a quote, reads a wallet or submits a transaction. `onSubmit` is called once per accepted press and not while `submitting`.
 

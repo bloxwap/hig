@@ -612,6 +612,14 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
+        "swap",
+        "bridge",
+        "send",
+        "deposit",
+        "withdraw",
+        "withdraw-chain",
+        "stake",
+        "unstake",
         "busy"
       ]
     },

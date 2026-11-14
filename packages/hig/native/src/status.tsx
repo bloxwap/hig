@@ -8,18 +8,19 @@ import {formatNumber} from '@bloxwap/hig/contracts';
 import {Button} from './button.js';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useFills,useHIG} from './provider.js';
-import {withAlpha} from '@bloxwap/hig/tokens';
 import {blockText,plainText} from './text-content.js';
 import {roleColor,type AccentRole} from './roles.js';
 export type {AccentRole} from './roles.js';
 const severityRole={info:'info',note:'info',success:'positive',tip:'positive',warning:'warning',error:'negative'} as const;
-/** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (border stroke, soft white glow). */
+/** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (a faint `text` tint, title in `text`). */
 export type AlertSeverity=keyof typeof severityRole|'default';
 function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
 /** Neutral chip in the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
 export function Badge({children}:React.PropsWithChildren){const fills=useFills();return <Text style={{alignSelf:'flex-start',maxWidth:'100%',backgroundColor:fills.well,overflow:'hidden',borderRadius:9999,paddingVertical:4,paddingHorizontal:10}}>{children}</Text>;}
-/** Severity sets the glowing stroke from a token role (info/note → info, success/tip → positive, warning, error → negative, default → neutral border); `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
-export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.border:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,borderWidth:2,borderColor:accent,borderRadius:16,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:neutral?`0 0 20px ${withAlpha(colors.text,0.12)}`:`0 0 24px ${withAlpha(accent,0.55)}`}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
+/** Opaque sRGB blend of `tone` into `base` (both `#rrggbb`): the native counterpart of CSS `color-mix`. */
+const tint=(tone:string,base:string,amount:number)=>'#'+[1,3,5].map(i=>Math.round(parseInt(base.slice(i,i+2),16)*(1-amount)+parseInt(tone.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
+/** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning, error → negative; default → 6% of `text`), with no stroke or glow; `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
+export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.text:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,backgroundColor:tint(accent,colors.surface,neutral?0.06:0.1)}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading style={{color:accent}}>{title}</Heading>{children}{action}</Surface>;}
 export const Callout=Alert;
 export interface Notice {
  id:string;
@@ -81,17 +82,17 @@ export function useTransientNotice(duration=4000):{notice:Notice|null;show:(mess
 }
 export function Spinner({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){
- const {locale,messages,direction}=useHIG();const colors=useColors();
+ const {locale,messages,direction}=useHIG();const colors=useColors();const fills=useFills();
  const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));
  return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}>
   <Text>{label}{value===undefined?'…':` ${value}/${max}`}</Text>
-  <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{height:6,borderRadius:9999,overflow:'hidden',backgroundColor:colors.nested}}>
+  <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{height:6,borderRadius:9999,overflow:'hidden',backgroundColor:fills.raised}}>
    <View style={{width:`${fill}%`,height:'100%',alignSelf:value===undefined?'center':'flex-start',borderRadius:9999,backgroundColor:colors.action}}/>
   </View>
  </View>;
 }
 /** Pulses while content is on its way; still with reduced motion. */
-export function Skeleton({label}: {label?:string}){const {messages,reducedMotion}=useHIG();const colors=useColors();const pulse=useLoop(!reducedMotion,1500);return <Animated.View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10,opacity:pulse.interpolate({inputRange:[0,.5,1],outputRange:[1,.5,1]})}}/>;}
+export function Skeleton({label}: {label?:string}){const {messages,reducedMotion}=useHIG();const fills=useFills();const pulse=useLoop(!reducedMotion,1500);return <Animated.View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:fills.raised,borderRadius:10,opacity:pulse.interpolate({inputRange:[0,.5,1],outputRange:[1,.5,1]})}}/>;}
 export interface EmptyStateProps extends Omit<ViewProps,'children'> {
  title:string;
  description?:string;

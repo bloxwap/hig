@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-11-14T19:15:45.099Z",
-  "sourceCommit": "c986570c1c651a4bfbbbde3bd2c8500f293c197d",
+  "checkedAt": "2026-11-14T22:00:41.573Z",
+  "sourceCommit": "68d0de6fa3b1f821a497a42e56ecc58099072f88",
   "sourceDirty": true,
   "inputHashes": {
     "packages/hig/react/src/gesture-sheet.tsx": "20f24edc55f34c43601dbf196267cff251d6d592aec7f7c7af50f07727e94c64",
-    "packages/hig/react/src/styles.css": "e5e2a532979a74f5ffc6bddebdfad31355ffcd698d8148bea5b934fd3680e54c",
+    "packages/hig/react/src/styles.css": "0593caf8b2a5e023b2e0fba64476329bbc00dd5a870d6200d4afda7514de8c64",
     "packages/hig/package.json": "8f74b72008c0b028fe52758ace19896d65bebb849c1b126a0256f238c9b00311",
     "scripts/gesture-sheet-browser-smoke.mjs": "b35c8d572de76ea7e7df7e82539bb20abfdfbeb9b66bf5c40b2d69fa426be36c"
   },
@@ -338,9 +338,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -391,9 +391,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -446,13 +446,13 @@
           "x": 0,
           "y": 0,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
           "ref": true,
           "host": "markets",
-          "bottom": "607px",
+          "bottom": "606px",
           "maxHeight": "801.8px",
           "handleWidth": 100,
           "animation": "none",
@@ -813,9 +813,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -866,9 +866,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -921,13 +921,13 @@
           "x": 0,
           "y": 0,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
           "ref": true,
           "host": "markets",
-          "bottom": "607px",
+          "bottom": "606px",
           "maxHeight": "801.799988px",
           "handleWidth": 100,
           "animation": "none",

@@ -254,3 +254,130 @@ it('one-way mode shows a down arrow between the cards and offers no flip',()=>{
  const mark=tree.findAll(n=>n.props.testID==='swap-one-way'&&typeof n.type==='string')[0];
  expect(mark).toBeTruthy();expect(mark.props.onPress).toBeUndefined();expect(onFromChange).not.toHaveBeenCalled();
 });
+it('fixes the denomination when the switch is turned off: no conversion capsules and no setting',()=>{
+ const tree=mount({from:eth,to:usdc,denominationSwitch:false});
+ expect(tree.findAll(n=>n.props.testID==='swap-mode-from'||n.props.testID==='swap-mode-to')).toHaveLength(0);
+ press(tree,'swap-settings-button');
+ expect(tree.findAll(n=>n.props.accessibilityLabel==='Units'||n.props.accessibilityLabel==='Dollars')).toHaveLength(0);
+});
+const texts=tree=>tree.findAll(n=>n.type==='Text'&&typeof n.props.children==='string').map(n=>n.props.children);
+const exists=(tree,id)=>tree.findAll(n=>n.props.testID===id).length>0;
+it('amount seeds the entry on first render, in the default denomination',()=>{
+ let tree=mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,amount:'0.5'});
+ expect(node(tree,'swap-amount-from').props.accessibilityValue.text).toBe('$1000');expect(node(tree,'swap-action').props.disabled).toBeFalsy();
+ tree=mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,amount:'0.5',denomination:'token'});
+ expect(node(tree,'swap-amount-from').props.accessibilityValue.text).toBe('0.5');expect(node(tree,'swap-action').props.disabled).toBeFalsy();
+});
+it('a fixed destination is a compact, non-interactive To card and makes the panel one-way',()=>{
+ const address='0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
+ const tree=mount({defaultFrom:eth,destination:{title:'Savings wallet',subtitle:'Ethereum',address,detail:'Arrives in about 2 min'},fee:0.27});
+ const card=node(tree,'swap-destination');expect(card.props.onPress).toBeUndefined();expect(card.props.accessibilityRole).toBeUndefined();
+ const copy=texts(card);
+ for(const text of ['Savings wallet','Ethereum','0x71C7…976F','Arrives in about 2 min','Fee $0.27'])expect(copy).toContain(text);
+ // No To token card: no amount, capsule or picker target for that side.
+ for(const id of ['swap-card-to','swap-amount-to','swap-mode-to','swap-slot-to','swap-area-to','swap-flip'])expect(exists(tree,id)).toBe(false);
+ expect(exists(tree,'swap-one-way')).toBe(true);
+ // Without a fee prop there is no fee line.
+ expect(exists(mount({defaultFrom:eth,destination:{title:'Savings wallet'}}),'swap-destination-fee')).toBe(false);
+});
+it('a destination with onPress is one button named by its title',()=>{
+ const onPress=jest.fn();const tree=mount({defaultFrom:eth,destination:{title:'Lido staking',onPress}});
+ const card=node(tree,'swap-destination');expect(card.props.accessibilityRole).toBe('button');expect(card.props.accessibilityLabel).toBe('Lido staking');
+ press(tree,'swap-destination');expect(onPress).toHaveBeenCalledTimes(1);
+});
+it('a destination is ready with only the From side, names itself with actionLabel, and submits send',()=>{
+ const onSubmit=jest.fn();
+ let tree=mount({destination:{title:'Lido staking'},actionLabel:'Stake',onSubmit});
+ expect(actionText(tree)).toBe('Select a token');
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Lido staking'},actionLabel:'Stake',onSubmit});
+ expect(actionText(tree)).toBe('Enter an amount');expect(node(tree,'swap-action').props.disabled).toBe(true);
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Lido staking'},actionLabel:'Stake',amount:'0.5',onSubmit});
+ expect(actionText(tree)).toBe('Stake');press(tree,'swap-action');expect(onSubmit).toHaveBeenCalledWith('send');
+ // Over the balance, the reason still wins over the custom label.
+ tree=mount({defaultFrom:eth,destination:{title:'Lido staking'},actionLabel:'Stake',amount:'2',onSubmit});
+ expect(actionText(tree)).toBe('Insufficient ETH');
+ // actionLabel also replaces Swap for a token pair.
+ expect(actionText(mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,amount:'0.5',actionLabel:'Withdraw'}))).toBe('Withdraw');
+});
+it('locked sides offer no picker, keep their token on reset and count as untouched',()=>{
+ const onFromChange=jest.fn(),onToChange=jest.fn();
+ let tree=mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,lockFrom:true,lockTo:true,onFromChange,onToChange});
+ for(const id of ['swap-slot-from','swap-area-from','swap-slot-to','swap-area-to'])expect(exists(tree,id)).toBe(false);
+ expect(texts(tree)).toContain('Ether');expect(node(tree,'swap-reset').props.disabled).toBe(true);
+ // Capsules still work on a locked side.
+ press(tree,'swap-max');expect(node(tree,'swap-reset').props.disabled).toBeFalsy();
+ press(tree,'swap-reset');expect(onFromChange).not.toHaveBeenCalled();expect(onToChange).not.toHaveBeenCalled();
+ expect(texts(tree)).toContain('Ether');expect(node(tree,'swap-amount-from').props.accessibilityValue.text).toBe('$0');
+ // Only the unlocked side clears.
+ tree=mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,lockFrom:true,onFromChange,onToChange});
+ expect(exists(tree,'swap-slot-to')).toBe(true);press(tree,'swap-reset');expect(onToChange).toHaveBeenCalledWith(null);expect(onFromChange).not.toHaveBeenCalled();
+});
+it('an account (a token with a caption) reads name over caption beside one disc and offers Max only',()=>{
+ const account={id:'acct',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:999,balance:234.68,price:1,caption:'$234.68 available'};
+ let tree=mount({defaultFrom:account,wallet:{connected:true,address:'0x71C7656EC7ab88b098defB751B7401B5f6d8976F'}});
+ const copy=texts(node(tree,'swap-card-from'));
+ expect(copy).toContain('USDC on Hyperliquid');expect(copy).toContain('$234.68 available');
+ // No chain line, wallet address, balance line or Test capsule; Max enters the balance.
+ for(const text of ['Hyperliquid','0x71C7…976F','234.68 USDC'])expect(copy).not.toContain(text);
+ expect(exists(tree,'swap-test')).toBe(false);expect(exists(tree,'swap-max')).toBe(true);press(tree,'swap-max');expect(amount(tree)).toBe('$234.68');
+ // Selectable: a chevron follows the name. Locked: none. No balance: no Max.
+ expect(exists(tree,'swap-account-chevron-from')).toBe(true);
+ tree=mount({defaultFrom:{...account,balance:0},lockFrom:true});
+ expect(exists(tree,'swap-account-chevron-from')).toBe(false);expect(exists(tree,'swap-max')).toBe(false);expect(exists(tree,'swap-slot-from')).toBe(false);
+ // On the To side an account never offers Max.
+ expect(exists(mount({defaultTo:account}),'swap-max')).toBe(false);
+});
+it('a pending destination is a placeholder that keeps the action asking for a destination',()=>{
+ const onSubmit=jest.fn();const onPress=jest.fn();
+ let tree=mount({destination:{title:'To',subtitle:'Pick a destination',pending:true,onPress},onSubmit});
+ expect(actionText(tree)).toBe('Select a token');
+ tree=mount({defaultFrom:{...eth,balance:5},amount:'0.5',destination:{title:'To',subtitle:'Pick a destination',pending:true,onPress},onSubmit});
+ expect(actionText(tree)).toBe('Pick a destination');expect(action(tree).props.disabled).toBe(true);
+ expect(flat(node(tree,'swap-destination-title')).fontWeight).toBe('500');expect(exists(tree,'swap-destination-chevron')).toBe(true);
+ act(()=>{action(tree).props.onPress(event);});expect(onSubmit).not.toHaveBeenCalled();
+ press(tree,'swap-destination');expect(onPress).toHaveBeenCalledTimes(1);
+ // Chosen: the title is strong again, the title leads the subtitle and address, and the action is ready.
+ tree=mount({defaultFrom:{...eth,balance:5},amount:'0.5',destination:{title:'Savings wallet',subtitle:'Ethereum',address:'0x71C7656EC7ab88b098defB751B7401B5f6d8976F'},onSubmit});
+ expect(flat(node(tree,'swap-destination-title')).fontWeight).toBe('600');expect(exists(tree,'swap-destination-chevron')).toBe(false);
+ const order=texts(node(tree,'swap-destination'));expect(order.indexOf('Savings wallet')).toBeLessThan(order.indexOf('Ethereum'));expect(order.indexOf('Ethereum')).toBeLessThan(order.indexOf('0x71C7…976F'));
+ expect(actionText(tree)).toBe('Send');
+});
+it('details are the bottom card on their own (one-way, ready from the From side, submits send) or rows under a destination',()=>{
+ const onSubmit=jest.fn();const details=[{label:'Staked',value:'11.0735 HYPE'},{label:'Fee tier',value:'Wood'}];
+ let tree=mount({defaultFrom:{...eth,balance:5},amount:'0.5',details,actionLabel:'Stake',onSubmit});
+ expect(exists(tree,'swap-card-to')).toBe(false);expect(exists(tree,'swap-one-way')).toBe(true);expect(exists(tree,'swap-destination-title')).toBe(false);
+ const rows=texts(node(tree,'swap-details'));for(const text of ['Staked','11.0735 HYPE','Fee tier','Wood'])expect(rows).toContain(text);
+ expect(actionText(tree)).toBe('Stake');press(tree,'swap-action');expect(onSubmit).toHaveBeenCalledWith('send');
+ // Under a destination the rows share its card.
+ tree=mount({defaultFrom:eth,destination:{title:'Ether staking'},details});
+ expect(texts(node(tree,'swap-destination'))).toEqual(expect.arrayContaining(['Ether staking','Staked','Wood']));expect(flat(node(tree,'swap-details')).paddingTop).toBe(0);
+ // With a To token the pair still drives the panel and the rows are not shown.
+ tree=mount({defaultFrom:eth,defaultTo:usdc,details});expect(exists(tree,'swap-card-to')).toBe(true);expect(exists(tree,'swap-details')).toBe(false);expect(exists(tree,'swap-flip')).toBe(true);
+});
+it('shows a note under the cards: plain when muted, a tinted capsule for warning and negative',()=>{
+ let tree=mount({note:'The minimum withdrawal is $10.00.'});
+ expect(texts(node(tree,'swap-note'))).toContain('The minimum withdrawal is $10.00.');expect(flat(node(tree,'swap-note')).backgroundColor).toBeUndefined();
+ expect(flat(node(tree,'swap-note').findAll(n=>n.type==='Text')[0]).color).toBe(colors.muted);
+ tree=mount({note:'Transfer to spot afterwards.',noteTone:'negative'});
+ expect(flat(node(tree,'swap-note'))).toMatchObject({borderRadius:16,paddingVertical:12,paddingHorizontal:16,backgroundColor:`${colors.negative}24`});
+ expect(flat(node(tree,'swap-note').findAll(n=>n.type==='Text')[0]).color).toBe(colors.negative);
+ tree=mount({note:'Rates change.',noteTone:'warning'});expect(flat(node(tree,'swap-note')).backgroundColor).toBe(`${colors.warning}24`);
+ expect(exists(mount({}),'swap-note')).toBe(false);
+});
+it('a title heads the main view, with Back only when the host can go back',()=>{
+ const onBack=jest.fn();let tree=mount({title:'Withdraw from Papertrade',onBack});
+ expect(texts(node(tree,'swap-header'))).toContain('Withdraw from Papertrade');expect(name(tree,'swap-back')).toBe('Back');
+ press(tree,'swap-back');expect(onBack).toHaveBeenCalledTimes(1);
+ tree=mount({title:'Deposit'});expect(exists(tree,'swap-header')).toBe(true);expect(exists(tree,'swap-back')).toBe(false);
+ expect(exists(mount({}),'swap-header')).toBe(false);
+});
+it('controls={false} leaves the action on its own, and actionIcon rides before its text',()=>{
+ let tree=mount({controls:false});
+ expect(exists(tree,'swap-settings-button')).toBe(false);expect(exists(tree,'swap-reset')).toBe(false);expect(exists(tree,'swap-action')).toBe(true);
+ tree=mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,amount:'0.5',actionLabel:'Stake (2 signatures)',actionIcon:h(View,{testID:'bank'})});
+ expect(exists(tree,'swap-action-icon')).toBe(true);expect(exists(tree,'bank')).toBe(true);
+ const children=[].concat(action(tree).props.children);expect(children[children.length-1]).toBe('Stake (2 signatures)');
+ // The icon is decoration: it adds nothing to the busy name.
+ tree=mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,amount:'0.5',actionLabel:'Stake',actionIcon:h(View,{testID:'bank'}),submitting:true});
+ expect(action(tree).props.busy).toBe(true);expect(name(tree,'swap-action')).toMatch(/^Stake/);
+});

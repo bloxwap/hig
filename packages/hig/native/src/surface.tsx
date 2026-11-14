@@ -1,7 +1,7 @@
 import React,{forwardRef} from 'react';
 import {Text as RNText,View,StyleSheet,type TextProps,type ViewProps} from 'react-native';
 import {nativeMetrics as tokens} from '@bloxwap/hig/tokens';
-import {Raised,useColors,useHIG} from './provider.js';
+import {Raised,useColors,useFills,useHIG} from './provider.js';
 import {plainText} from './text-content.js';
 export type TextScript='latin'|'ko'|'zh';
 /** Korean and Chinese companion faces are set at their own spacing (0em): Latin tracking spreads CJK glyphs apart. Hosts override per script through HIGProvider `letterSpacingByScript`. */
@@ -27,4 +27,4 @@ export function Inline({style,...props}:ViewProps){const env=useHIG();return <Vi
 /** A filled card with no stroke; its fill and the space around it separate it from the page. */
 export function Surface({style,children,...props}:ViewProps){const env=useHIG();const colors=useColors();return <View {...props} style={[{direction:env.direction,backgroundColor:colors.surface,borderRadius:tokens.radius.xl,padding:tokens.space.xl,minWidth:0},style]}><Raised>{children}</Raised></View>;}
 export const Card=Surface;
-export function Separator(){const colors=useColors();return <View accessibilityRole='none' style={{height:2,borderRadius:9999,backgroundColor:colors.border}}/>;}
+export function Separator(){const fills=useFills();return <View accessibilityRole='none' style={{height:2,borderRadius:9999,backgroundColor:fills.raised}}/>;}

@@ -1,16 +1,27 @@
-:root { --hig-control: 48px; --hig-button: 44px; --hig-gap: 12px; --hig-fill:var(--hig-surface); --hig-fill-raised:var(--hig-nested); }
+:root { --hig-control: 48px; --hig-button: 44px; --hig-gap: 12px; --hig-action-gap:var(--hig-space-sm,8px); --hig-action-offset:calc(var(--hig-action-gap)*2); --hig-fill:var(--hig-surface); --hig-fill-raised:var(--hig-nested); }
+/* Actions that sit side by side (buttons, tabs, capsules, filter options) are 8px apart at every density; --hig-gap spaces content.
+   The call-to-action buttons that close a form sit a double step, 16px, below the rest of it, and 8px from each other. */
+.hig-form-action { margin-block-start:calc(var(--hig-action-offset) - var(--hig-gap)); }
+.hig-form-action + .hig-form-action { margin-block-start:calc(var(--hig-action-gap) - var(--hig-gap)); }
+/* Dialogs and default sheets space their content 12px apart; their closing buttons follow the same rule. */
+:is(.hig-dialog,.hig-gesture-sheet,.hig-gesture-dynamic) > :not(.hig-button) + .hig-button { margin-block-start:calc(var(--hig-action-offset) - 12px); }
+:is(.hig-dialog,.hig-gesture-sheet,.hig-gesture-dynamic) > .hig-button + .hig-button { margin-block-start:calc(var(--hig-action-gap) - 12px); }
 /* HIG separates layers with fill and space, never a resting stroke. A control well (input, segmented track, badge) takes --hig-fill and
    whatever sits on a well takes --hig-fill-raised; both step one shade lighter inside a surface or overlay so the well stays visible.
-   Borders stay in the box as transparent so sizes hold and forced-colors still draws an edge. */
+   Borders stay in the box as transparent so sizes hold and forced-colors still draws an edge.
+   Thin tracks and rules (switch, slider, progress, spinner ring, separator) take --hig-fill-raised, so they sit one step above the
+   wells around them in every container and never jump to the lightest grey on the page. */
 .hig-surface,.hig-dialog,.hig-gesture-sheet { --hig-fill:var(--hig-nested); --hig-fill-raised:var(--hig-border); }
 .hig-popover { --hig-fill:var(--hig-surface); --hig-fill-raised:var(--hig-border); }
 [data-hig-density='compact'] { --hig-control: 36px; --hig-button: 36px; --hig-gap: 8px; }
+/* A comfortable scope inside a compact one restores touch sizes, so a nested provider or a pinned control is not left compact. */
+[data-hig-density='compact'] [data-hig-density='comfortable'] { --hig-control: 48px; --hig-button: 44px; --hig-gap: 12px; }
 /* Every rule is scoped to HIG classes so a host that loads this file on some routes only gets no side effects elsewhere (#95).
    Element defaults for the whole page (box-sizing, focus ring, table, range) are opt-in: @bloxwap/hig/react/css/base. */
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-filter-chip :is(input,span,img),.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
 .hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);cursor:pointer;overflow-wrap:anywhere; }
 .hig-button[data-density='compact'] { padding-block:4px; }
-.hig-button[data-intent='secondary'],.hig-button[role='tab'][aria-selected='false'] { background:var(--hig-nested);color:var(--hig-text); }
+.hig-button[data-intent='secondary'] { background:var(--hig-nested);color:var(--hig-text); }
 .hig-button[data-intent='ghost'] { background:transparent;color:var(--hig-muted); }
 .hig-button > svg,.hig-icon-button > span { display:inline-flex;align-items:center;justify-content:center;flex:none; }
 .hig-icon-button { min-width:var(--hig-button);padding-inline:8px; }
@@ -18,7 +29,12 @@
 .hig-button[data-full] { width:100%; }
 .hig-button-spinner { flex:none;width:1em;height:1em;border:2px solid color-mix(in srgb,currentColor 30%,transparent);border-top-color:currentColor;border-radius:50%;animation:hig-spin .8s linear infinite; }
 .hig-icon-button[aria-busy='true'] > .hig-button-spinner ~ span[aria-hidden='true'] { display:none; }
-.hig-button:disabled { opacity:.5;cursor:default; }
+.hig-button:disabled { cursor:default; }
+/* Unavailable is neutral: a disabled button drops its intent colour for a well fill and muted text, so a dimmed accent never reads
+   as a second call to action. Busy keeps the intent colour under its spinner. */
+.hig-button:disabled:not([aria-busy='true']) { background:var(--hig-fill);color:var(--hig-muted); }
+.hig-button[data-intent='ghost']:disabled:not([aria-busy='true']) { background:transparent;color:var(--hig-faint); }
+.hig-button[aria-busy='true'] { opacity:.7; }
 .hig-button:active:not(:disabled) { transform:scale(.98); }
 .hig-button { transition:transform 160ms var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),filter 150ms ease; }
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment input):focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }
@@ -46,12 +62,13 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-field label,.hig-group legend,.hig-select-option[aria-selected='true'] { font-weight:600; }
 .hig-field p { margin:0;color:var(--hig-muted); }
 .hig-field [role='alert'],.hig-list-error > .hig-list-message { color:var(--hig-negative); }
-.hig-choice { display:inline-flex;align-items:center;min-height:var(--hig-control);max-width:100%;min-width:0;gap:8px;padding:4px 8px; }
+/* No leading inset: the control starts on the same edge as the labels and fields around it. */
+.hig-choice { display:inline-flex;align-items:center;min-height:var(--hig-control);max-width:100%;min-width:0;gap:8px;padding-block:4px;padding-inline:0 16px; }
 .hig-choice > span,.hig-market-row[data-mode='presentation'] .hig-market-name { min-width:0;overflow-wrap:anywhere; }
 .hig-choice input { accent-color:var(--hig-action);width:20px;height:20px; }
 .hig-group { border:0;padding:0;margin:0;min-width:0; }
 .hig-link { color:var(--hig-action);text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere; }
-.hig-separator { border:0;height:2px;border-radius:9999px;background:var(--hig-border);width:100%; }
+.hig-separator { border:0;height:2px;border-radius:9999px;background:var(--hig-fill-raised);width:100%; }
 .hig-backdrop { position:fixed;inset:0;background:#000b;z-index:40; }
 /* Centred with physical left: the content carries the provider dir, and inset-inline-start would flip to right:50% in RTL while the translate stays negative. */
 .hig-dialog { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:min(560px,calc(100vw - 32px));width:100%;max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:24px;background:var(--hig-overlay,#111);box-shadow:0 24px 64px #000a;z-index:41;display:flex;flex-direction:column;gap:12px;overflow-wrap:anywhere; }
@@ -80,7 +97,8 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-popover { max-width:min(360px,calc(100vw - 32px));max-height:var(--radix-popover-content-available-height,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;background:var(--hig-nested);color:var(--hig-text);padding:12px;border:1px solid transparent;border-radius:var(--hig-radius-xl,14px);box-shadow:0 8px 24px #0006;line-height:1.5;overflow-wrap:anywhere;z-index:50; }
 .hig-menu { min-width:min(12rem,calc(100vw - 32px));max-height:var(--radix-dropdown-menu-content-available-height,calc(100dvh - 32px));padding:4px; }
 .hig-menu-item { display:flex;align-items:center;min-height:var(--hig-control);padding:8px 12px;border-radius:var(--hig-radius-md,8px);cursor:pointer;outline:none; }
-.hig-menu-item[data-highlighted] { background:var(--hig-surface); }
+/* Highlight and press step lighter than the list, as Select options do. */
+.hig-menu-item[data-highlighted] { background:var(--hig-border); }
 .hig-menu-item:focus-visible,.hig-segment input:focus-visible + span { outline:2px solid var(--hig-focus);outline-offset:-2px; }
 .hig-menu-item[data-disabled],.hig-select-option[aria-disabled='true'],.hig-input:disabled,.hig-choice:has(input:disabled),.hig-segment:has(input:disabled),.hig-range:disabled { opacity:.5;cursor:not-allowed; }
 .hig-tooltip { max-height:var(--radix-tooltip-content-available-height,calc(100dvh - 32px));padding:8px 12px;border-radius:var(--hig-radius-lg,10px);font-size:.875rem; }
@@ -93,7 +111,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-data-list > .hig-button,.hig-list-error > .hig-button { align-self:flex-start; }
 .hig-list-message { margin:0;color:var(--hig-muted);line-height:1.5; }
 .hig-list { list-style:none;padding:0;margin:0; }
-.hig-list > li + li { border-block-start:1px solid var(--hig-border); }
+.hig-list > li + li { border-block-start:1px solid var(--hig-fill-raised); }
 .hig-table-scroll { min-width:0;max-width:100%;overflow:auto;overscroll-behavior-x:contain;border:1px solid transparent;border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface); }
 /* Class specificity so the opt-in base `table` rule cannot collapse HIG tables. */
 .hig-table { border-collapse:separate;border-spacing:0; }
@@ -112,6 +130,10 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-table[data-sticky-header='true'] > thead > tr > th { position:sticky;inset-block-start:0;z-index:1;background:var(--hig-surface); }
 .hig-table-state > td { padding-block:24px;color:var(--hig-muted);text-align:center; }
 /* A host-owned command option supplies its own target, keyboard model and compact row height. */
+/* The name button is the row's identity, so it takes the text colour; the trailing edge is inset as far as the button's own padding
+   insets the name, which lines the row up with the content of the cards around it. */
+.hig-market-row[data-mode='action'] { padding-inline-end:20px; }
+.hig-market-row[data-mode='action'] .hig-button[data-intent='ghost'] { color:var(--hig-text); }
 .hig-market-row[data-mode='presentation'] { display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--hig-gap);padding-block:0; }
 .hig-market-row[data-mode='presentation'][data-has-volume] { grid-template-columns:minmax(0,1fr) auto auto auto; }
 .hig-market-row[data-mode='presentation'] .hig-market-identity { display:flex;align-items:center;gap:8px;min-width:0; }
@@ -130,13 +152,16 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-empty-state { align-items:center;text-align:center;padding-block:var(--hig-space-xxxl,32px); }
 .hig-empty-state-icon { display:inline-flex; }
 .hig-empty-state-icon > svg { width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
-.hig-alert-actions { display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:100%; }
-:where(.hig-surface)[data-severity] { border-radius:16px;background:color-mix(in srgb,var(--hig-surface) 95%,transparent); }
-:where(.hig-surface)[data-severity='error'] { border:2px solid var(--hig-negative);box-shadow:0 0 24px color-mix(in srgb,var(--hig-negative) 55%,transparent); }
-:where(.hig-surface)[data-severity='warning'] { border:2px solid var(--hig-warning);box-shadow:0 0 24px color-mix(in srgb,var(--hig-warning) 55%,transparent); }
-:where(.hig-surface)[data-severity='info'],:where(.hig-surface)[data-severity='note'] { border:2px solid var(--hig-info);box-shadow:0 0 24px color-mix(in srgb,var(--hig-info) 55%,transparent); }
-:where(.hig-surface)[data-severity='success'],:where(.hig-surface)[data-severity='tip'] { border:2px solid var(--hig-positive);box-shadow:0 0 24px color-mix(in srgb,var(--hig-positive) 55%,transparent); }
-:where(.hig-surface)[data-severity='default'] { border:2px solid var(--hig-border);box-shadow:0 0 20px rgba(255,255,255,0.12); }
+.hig-alert-actions { display:flex;flex-wrap:wrap;align-items:center;gap:var(--hig-action-gap);max-width:100%; }
+/* Severity tints the fill and colours the title from a token role: no stroke and no glow, like every other layer. The tint is
+   10% so the negative title keeps 4.5:1 on it (12% measured 4.47). The neutral
+   default lifts the surface a touch with the text colour so it still reads inside a card. */
+:where(.hig-surface)[data-severity] { --hig-alert-tone:var(--hig-info);background:color-mix(in srgb,var(--hig-alert-tone) 10%,var(--hig-surface)); }
+:where(.hig-surface)[data-severity] > strong { color:var(--hig-alert-tone); }
+:where(.hig-surface)[data-severity='error'] { --hig-alert-tone:var(--hig-negative); }
+:where(.hig-surface)[data-severity='warning'] { --hig-alert-tone:var(--hig-warning); }
+:where(.hig-surface)[data-severity='success'],:where(.hig-surface)[data-severity='tip'] { --hig-alert-tone:var(--hig-positive); }
+:where(.hig-surface)[data-severity='default'] { --hig-alert-tone:var(--hig-text);background:color-mix(in srgb,var(--hig-text) 6%,var(--hig-surface)); }
 /* A notice is one capsule row: severity symbol, message, optional action, close. */
 .hig-toast-item { display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:var(--hig-button,44px);padding-block:5px;padding-inline:16px 5px;border:1px solid transparent;border-radius:9999px;background:var(--hig-nested);color:var(--hig-text);box-shadow:0 8px 24px #0006;font:500 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);overflow-wrap:anywhere; }
 .hig-toast-icon,.hig-toast-close > svg { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
@@ -155,8 +180,13 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 @media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled) {transform:none;} }
 [data-hig-motion='reduced'] .hig-button:active:not(:disabled) {transform:none;}
 .hig-tabs { display:grid;gap:var(--hig-gap);min-width:0; }
+.hig-tab-list,.hig-pagination { gap:var(--hig-action-gap); }
 .hig-tab-list { flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding:4px;margin:-4px; }
-.hig-tab { flex:none;white-space:nowrap; }
+/* The selected tab is a raised neutral capsule and the rest are bare muted labels, as in Navigation and the segmented control.
+   The action colour stays reserved for the one primary action on a screen. */
+.hig-tab { flex:none;white-space:nowrap;background:transparent;color:var(--hig-muted); }
+.hig-tab[aria-selected='true'] { background:var(--hig-fill-raised);color:var(--hig-text); }
+.hig-button.hig-tab:disabled:not([aria-busy='true']) { background:transparent;color:var(--hig-faint); }
 /* Disclosure: outline chevron on the trailing edge; the chevron turns and the panel height eases where the browser can interpolate to auto. */
 .hig-accordion { interpolate-size:allow-keywords; }
 /* The summary bleeds to the surface edge so the whole header row is the target. */
@@ -211,11 +241,11 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-choice input:checked { border-color:var(--hig-action); background:var(--hig-action); }
 .hig-choice input[type='radio'] { border-radius:50%; }
 .hig-choice input[type='radio']::before { width:8px; height:8px; border:0; border-radius:50%; background:var(--hig-onAction); transform:none; }
-.hig-switch input { position:relative; width:40px; height:24px; padding:3px; border:0; border-radius:9999px; background:var(--hig-border); display:block; transition:background-color .15s ease; }
+.hig-switch input { position:relative; width:40px; height:24px; padding:3px; border:0; border-radius:9999px; background:var(--hig-fill-raised); display:block; transition:background-color .15s ease; }
 .hig-switch input::before { position:absolute; inset-block-start:3px; inset-inline-start:3px; visibility:visible; width:18px; height:18px; border:0; border-radius:50%; background:var(--hig-text); transform:none; transition:inset-inline-start .15s ease, background .15s ease; }
 .hig-switch input:checked::before { inset-inline-start:19px; background:var(--hig-onAction); }
 
-.hig-group legend { margin-bottom:.5rem; }
+.hig-group legend { margin-bottom:.5rem; padding:0; }
 .hig-segmented-control { min-width:0; width:100%; }
 .hig-segments { position:relative; isolation:isolate; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:4px; padding:4px; border-radius:9999px; background:var(--hig-fill); }
 /* Logical positioning follows RTL and avoids WebKit rounding percentage transforms at fractional segment widths. */
@@ -228,7 +258,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 
 /* Filter: capsules in one row that scrolls sideways. The radio covers its capsule; the circle holds the option's image or an
    empty ring, and fills while a check draws in when chosen. */
-.hig-filter { display:flex;gap:8px;min-width:0;margin:-4px;padding:4px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none; }
+.hig-filter { display:flex;gap:var(--hig-action-gap);min-width:0;margin:-4px;padding:4px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none; }
 .hig-filter::-webkit-scrollbar { display:none; }
 .hig-filter-chip { position:relative;flex:none;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding-block:6px;padding-inline:8px 16px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);font-size:.875rem;font-weight:600;line-height:1.5;white-space:nowrap;cursor:pointer;transition:var(--hig-motion-duration-fast,180ms) ease;transition-property:background-color,color; }
 /* 40px capsule with a 44px hit area. */
@@ -247,25 +277,25 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-filter-chip:has(input:checked) .hig-filter-mark path { stroke-dashoffset:0;opacity:1;transition-delay:60ms; }
 .hig-filter-chip:active:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
 .hig-range { accent-color:var(--hig-action); min-height:48px; width:100%; appearance:none; -webkit-appearance:none; display:block; margin:0; padding:0; border:0; background:transparent; cursor:pointer; }
-.hig-range::-webkit-slider-runnable-track { height:6px; border-radius:9999px; background:linear-gradient(to right,var(--hig-action) var(--hig-range-fill),var(--hig-border) var(--hig-range-fill)); }
+.hig-range::-webkit-slider-runnable-track { height:6px; border-radius:9999px; background:linear-gradient(to right,var(--hig-action) var(--hig-range-fill),var(--hig-fill-raised) var(--hig-range-fill)); }
 /* Match the product slider's white 20 × 14 pill while retaining the native range interaction. */
 .hig-range::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:20px; height:14px; margin-top:-4px; border:0; border-radius:9999px; background:var(--hig-text); }
-.hig-range::-moz-range-track { height:6px; border-radius:9999px; background:var(--hig-border); }
+.hig-range::-moz-range-track { height:6px; border-radius:9999px; background:var(--hig-fill-raised); }
 .hig-range::-moz-range-progress { height:6px; border-radius:9999px; background:var(--hig-action); }
 .hig-range::-moz-range-thumb { width:20px; height:14px; border:0; border-radius:9999px; background:var(--hig-text); }
 /* Leave 1px inside the 48px range box beyond the 2px outline: WebKit rounds fractional shared edges into the neighbouring control. */
 .hig-range:focus-visible { outline-offset:-3px; border-radius:var(--hig-radius-lg,10px); }
-[dir='rtl'] .hig-range::-webkit-slider-runnable-track { background:linear-gradient(to left,var(--hig-action) var(--hig-range-fill),var(--hig-border) var(--hig-range-fill)); }
+[dir='rtl'] .hig-range::-webkit-slider-runnable-track { background:linear-gradient(to left,var(--hig-action) var(--hig-range-fill),var(--hig-fill-raised) var(--hig-range-fill)); }
 
 .hig-progress { display:flex; flex-direction:column; gap:.75rem; width:100%; line-height:1.5; }
-.hig-progress progress { appearance:none; -webkit-appearance:none; width:100%; height:6px; border:0; border-radius:9999px; overflow:hidden; background:var(--hig-nested); accent-color:var(--hig-action); }
-.hig-progress progress::-webkit-progress-bar { background:var(--hig-nested); border-radius:9999px; }
+.hig-progress progress { appearance:none; -webkit-appearance:none; width:100%; height:6px; border:0; border-radius:9999px; overflow:hidden; background:var(--hig-fill-raised); accent-color:var(--hig-action); }
+.hig-progress progress::-webkit-progress-bar { background:var(--hig-fill-raised); border-radius:9999px; }
 .hig-progress progress::-webkit-progress-value { background:var(--hig-action); border-radius:9999px; }
 .hig-progress progress::-moz-progress-bar { background:var(--hig-action); border-radius:9999px; }
-.hig-progress progress:not([value]) { background:linear-gradient(90deg,var(--hig-nested) 20%,var(--hig-action) 50%,var(--hig-nested) 80%); background-size:200% 100%; animation:hig-progress 1.5s linear infinite; }
+.hig-progress progress:not([value]) { background:linear-gradient(90deg,var(--hig-fill-raised) 20%,var(--hig-action) 50%,var(--hig-fill-raised) 80%); background-size:200% 100%; animation:hig-progress 1.5s linear infinite; }
 .hig-progress progress:not([value])::-webkit-progress-bar { background:inherit; background-size:inherit; animation:inherit; }
 .hig-spinner { display:inline-flex; align-items:center; gap:.625rem; line-height:1.5; color:var(--hig-muted); }
-.hig-spinner-indicator { flex:none; width:1rem; height:1rem; border:2px solid var(--hig-border); border-top-color:var(--hig-action); border-radius:50%; animation:hig-spin .8s linear infinite; }
+.hig-spinner-indicator { flex:none; width:1rem; height:1rem; border:2px solid var(--hig-fill-raised); border-top-color:var(--hig-action); border-radius:50%; animation:hig-spin .8s linear infinite; }
 .hig-status-indicator { display:inline-flex; align-items:center; gap:.5rem; line-height:1.5; }
 .hig-status-indicator { --hig-status:var(--hig-muted); }
 .hig-status-indicator::before { content:''; flex:none; width:7px; height:7px; margin-inline:3px; border-radius:50%; background:var(--hig-status); }
@@ -305,7 +335,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
    browser's tap flash, and a long press never selects a control label or opens the link callout. Content stays selectable. */
 :where(.hig-button,.hig-choice,.hig-segment,.hig-filter-chip,.hig-switch,.hig-range,.hig-menu-item,.hig-select-trigger,.hig-select-option,.hig-table-sort,.hig-navigation > .hig-link,.hig-accordion-summary,.hig-toast-close) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
 /* Press feedback on pointer-down for controls that had only hover or keyboard states. */
-.hig-menu-item:active:not([data-disabled]) { background:var(--hig-surface); }
+.hig-menu-item:active:not([data-disabled]) { background:var(--hig-border); }
 .hig-select-option:active:not([aria-disabled='true']) { background:var(--hig-border); }
 .hig-table-sort:active { background:var(--hig-nested); }
 .hig-navigation > .hig-link:active { background:var(--hig-nested); }
@@ -316,6 +346,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 @media (hover:hover) and (pointer:fine) {
   .hig-button:hover:not(:disabled) { filter:brightness(.9); }
   .hig-button[data-intent='ghost']:hover:not(:disabled) { background:var(--hig-nested);color:var(--hig-text);filter:none; }
+  .hig-tab[aria-selected='false']:hover:not(:disabled) { color:var(--hig-text);filter:none; }
   .hig-navigation > .hig-link:hover { background:var(--hig-nested);color:var(--hig-text); }
   .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
   .hig-toast-close:hover { color:var(--hig-text);background:var(--hig-border); }
@@ -355,7 +386,7 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-identity { display:flex;flex-direction:column;flex:1;min-width:0;font-size:.875rem;line-height:1.3;color:var(--hig-muted);overflow-wrap:anywhere; }
 .hig-swap-identity > strong { font-size:1rem;font-weight:600;color:var(--hig-text); }
 .hig-swap-meta { display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;max-width:60%;font-size:.875rem;color:var(--hig-muted);text-align:end; }
-.hig-swap-pills { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px; }
+.hig-swap-pills { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--hig-action-gap); }
 .hig-swap-pill { appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 12px;border:0;border-radius:9999px;background:var(--hig-fill);color:var(--hig-muted);font:inherit;font-size:.875rem;font-weight:500;cursor:pointer;pointer-events:auto;position:relative; }
 /* 32px capsule with a 44px hit area. */
 .hig-swap-pill::after { content:'';position:absolute;inset:-6px 0; }
@@ -365,16 +396,39 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-amount { max-width:100%;border-radius:var(--hig-radius-lg,10px);font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;overflow:hidden;pointer-events:auto;cursor:text; }
 .hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number { font-family:inherit; }
 .hig-swap-amount[data-muted] { color:var(--hig-muted);pointer-events:none; }
+/* An account reads name over caption beside one 40px disc; a pending destination is a placeholder. */
+.hig-swap-selected[data-account] { align-items:center; }
+.hig-swap-selected[data-account] .hig-swap-stack > * { width:40px;height:40px; }
+.hig-swap-identity > strong { display:inline-flex;align-items:center;gap:4px; }
+.hig-swap-identity > strong > svg { color:var(--hig-muted); }
+.hig-swap-meta[data-row] { flex-direction:row;align-items:center; }
+.hig-swap-meta[data-row] > span { display:flex;flex-direction:column;align-items:flex-end;gap:8px; }
+.hig-swap-card[data-pending] .hig-swap-identity > strong { font-weight:500; }
+/* Label and value rows: the bottom card of a stake, or under a destination. */
+.hig-swap-details { display:flex;flex-direction:column;gap:12px;margin:0;padding:16px; }
+.hig-swap-slot + .hig-swap-details { padding-block-start:0; }
+.hig-swap-details > div { display:flex;justify-content:space-between;gap:12px;color:var(--hig-muted); }
+.hig-swap-details dd { margin:0;color:var(--hig-text);text-align:end;overflow-wrap:anywhere; }
+/* A line under the cards. Muted is plain text; warning and negative are tinted capsules in the tone's colour. */
+.hig-swap-note { margin:8px 0 0;padding:0 4px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
+.hig-swap-note:not([data-tone='muted']) { padding:12px 16px;border-radius:16px;color:var(--hig-swap-tone);background:color-mix(in srgb,var(--hig-swap-tone) 14%,transparent); }
+.hig-swap-note[data-tone='warning'] { --hig-swap-tone:var(--hig-warning); }
+.hig-swap-note[data-tone='negative'] { --hig-swap-tone:var(--hig-negative); }
+.hig-swap-panel > .hig-swap-view > .hig-swap-view-header { margin-block-end:12px; }
+.hig-swap-view-header[data-plain] { margin-inline-start:4px;min-height:44px; }
+/* A compact card is the slot row alone: a fixed destination with no amount. */
+.hig-swap-card[data-compact] > .hig-swap-slot { border-radius:24px; }
+.hig-swap-card[data-compact] .hig-swap-selected { align-items:center; }
+.hig-swap-card[data-compact] .hig-swap-stack > * { width:40px;height:40px; }
 .hig-swap-flip { position:relative;z-index:1;display:flex;justify-content:center;height:8px; }
 .hig-swap-flip > * { appearance:none;position:absolute;top:50%;translate:0 -50%;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--hig-nested);color:var(--hig-muted);box-shadow:0 0 0 3px var(--hig-background);cursor:pointer;transition:transform var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
 .hig-swap-flip > span { cursor:auto; }
 .hig-swap-flip > button::after { content:'';position:absolute;inset:-6px; }
 .hig-swap-flip > :disabled { color:var(--hig-faint);background:var(--hig-surface);cursor:not-allowed; }
 .hig-swap-flip > :active:not(:disabled,span) { transform:rotate(180deg); }
-.hig-swap-actions { display:flex;align-items:center;gap:8px;margin-block-start:8px; }
+.hig-swap-actions { display:flex;align-items:center;gap:var(--hig-action-gap);margin-block-start:var(--hig-action-offset); }
 /* The row uses the standard button height (44 touch, 36 compact). */
 .hig-swap-actions > .hig-icon-button { flex:none; }
-.hig-swap-actions > .hig-button:disabled:not([aria-busy='true']) { background:var(--hig-surface);color:var(--hig-muted);opacity:1; }
 .hig-swap-keypad { display:grid;grid-template-columns:repeat(3,1fr);padding-block-start:8px; }
 .hig-swap-key { appearance:none;display:grid;place-items:center;height:56px;border:0;border-radius:16px;background:transparent;color:var(--hig-text);font:inherit;font-size:1.5rem;font-weight:600;line-height:1;cursor:pointer; }
 .hig-swap-key:active { background:var(--hig-nested); }
@@ -399,7 +453,7 @@ button.hig-swap-receive:active { opacity:.8; }
 /* In a gesture sheet the panel fills the sheet width and the sheet follows the height of the view on show. */
 .hig-gesture-sheet.hig-swap-sheet { max-width:30rem;margin-inline:auto;border-radius:24px 24px 0 0; }
 .hig-swap-sheet .hig-swap-panel { max-width:none;padding:4px 12px calc(16px + env(safe-area-inset-bottom,0px)); }
-.hig-swap-wallet { display:flex;align-items:stretch;gap:8px; }
+.hig-swap-wallet { display:flex;align-items:stretch;gap:var(--hig-action-gap); }
 .hig-swap-wallet > .hig-button:not(.hig-icon-button) { flex:1;min-height:var(--hig-control); }
 .hig-swap-wallet > .hig-button[aria-pressed='true'] { background:var(--hig-text);color:var(--hig-background); }
 .hig-swap-wallet > .hig-icon-button { flex:none;min-width:var(--hig-control); }

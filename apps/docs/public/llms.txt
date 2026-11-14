@@ -153,6 +153,10 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 ## When to use and examples
 
+Actions that sit side by side are 8 units apart at every density: buttons in an Alert, tabs, Pagination, Filter capsules and the SwapPanel action row. On web that is the `--hig-action-gap` variable (the `sm` space token); set it on a container to change it. Content inside `Stack` and `Inline` keeps the density gap (12 on touch, 8 compact), so put a row of buttons in a container that uses `--hig-action-gap`, not a bare `Inline`.
+
+The primary and secondary call-to-action buttons that close a form sit a double step below the rest of it: 16 units (`--hig-action-offset`, twice the action gap), and 8 units from each other. TradeEntry, the SwapPanel action row, and the buttons that end a Dialog or a default sheet follow this already. In a host form laid out with `Stack`, add `className='hig-form-action'` to each closing button on web, or a 4dp top margin on native, where the `Stack` gap is 12.
+
 Use one primary review action. Do: busy protects host requests, shows the leading spinner and announces the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 
 ## States, interaction and accessibility
@@ -370,7 +374,7 @@ Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Tabs` | `label`, `items`, `value`, `defaultValue`, and `onValueChange`. Items include panel content and optional `disabled`. |
+| `Tabs` | `label`, `items`, `value`, `defaultValue`, and `onValueChange`. Items include panel content and optional `disabled`. The selected tab is a raised neutral capsule with `text`; the others are bare `muted` labels. Tabs never use the action colour, which stays with the primary action. |
 | `Navigation` | Web links use `href`; native destinations use host callbacks. |
 | `Search` | `query`, `results`, `loading`, and `error`. The host supplies the search index and router. |
 
@@ -601,14 +605,48 @@ Presentation mode uses a grid with logical numeric alignment and no block paddin
   submitting={executing} onSubmit={action => execute(action, quote)}/>
 ```
 
+One panel covers each flow with the same cards; the catalog page shows every one as an example state.
+
+| Flow | From card | Bottom card | Props | Example |
+| --- | --- | --- | --- | --- |
+| Swap | token | another token, same chain | the pair | `swap` |
+| Bridge | token | a token on another chain | the pair | `bridge` |
+| Send | token | recipient, still to be picked | `destination` with `pending` and `onPress` | `send` |
+| Deposit to an account | account, dollars only | the account | `caption` on the token, `lockFrom`, `destination`, `denominationSwitch={false}` | `deposit` |
+| Withdraw from an account | account | where it lands, with a limit note | as deposit, plus `note` | `withdraw` |
+| Withdraw to another chain | account the user can change | pressable destination | `destination` with `onPress` | `withdraw-chain` |
+| Stake | holding, token units | label and value rows | `details`, `denomination='token'` | `stake` |
+| Unstake | position, token units | rows, with a warning | `details`, `note`, `noteTone='negative'` | `unstake` |
+| Receive | QR code and address | hidden | `receive`, `receiving` | none |
+
+Stake and unstake are one example each: the asset changes only the token data, not the layout.
+
 - **Tokens.** A `SwapToken` is `{id, symbol, name, chain, chainId}` plus optional `icon`, `chainIcon`, `balance` (token units), `price` (USD per unit) and `keywords` (extra search text such as the contract address). `balance` enables Max, Test and the balance check; `price` enables the dollar and unit conversion and the estimate shown before `received` arrives.
 - **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
 - **Pushed views.** The token pickers and settings are views pushed inside the panel's own bounds, replacing the cards, each with a Back control; Escape pops one level on web and choosing a token pops to the cards. `view` / `onViewChange` (`'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees'`) control the stack when the host needs to.
 - **Pickers.** Pressing a card pushes its picker: search, chain filter chips, an optional Hot section from `hotTokenIds`, and the token list with arrow-key and Enter selection on web. The From picker shows the connected wallet with a disconnect control, or Connect wallet and the receive toggle; the To picker shows the recipient field when `onRecipientChange` is set, with a scan button when `onScanRecipient` is set. On web ⌘F / Ctrl+F and ⌘K / Ctrl+K open the From and To pickers while the panel is mounted; pass `shortcuts={false}` to leave the browser's own shortcuts alone.
 - **Settings.** The menu button pushes the settings view: the default denomination, slippage (presets plus a custom percent) and the fee breakdown one level deeper, then any host rows passed as `settings`.
 - **Receive view.** With `receive={{address, qr, onCopy}}` the From picker offers “Receive to an address”. The From card then shows the host's QR node beside the address in fixed-width rows with the leading and trailing characters emphasised, the To amount is hidden, and the action becomes “Send from your wallet” (calls `onConnect`). HIG ships no QR encoder or scanner: the host renders `qr` and implements `onScanRecipient`.
+- **Fixed destination.** `destination={{title, subtitle, icon, address, detail, onPress}}` replaces the To token with a place the host already knows: a recipient wallet, a staking pool, a trading account. The To card becomes one compact row with no picker and no amount, the panel is one-way, the action is ready from the From side alone, and `onSubmit` receives `'send'`. `address` shows shortened with the wallet's colour disc; `onPress` makes the card a button with a trailing chevron, for example to change the recipient; `fee` shows on the card when the host passes it.
+- **Accounts.** A token with a `caption` (for example `$22.72 available`) is presented as an account: the name over the caption beside one disc, with Max only. A small chevron follows the name while the side can still be changed.
+- **Pending destination.** `destination.pending` shows the destination as a placeholder; the action stays disabled and reads “Pick a destination” until the host supplies a real one.
+- **Details.** `details=[{label, value}]` adds label and value rows to the bottom card, under a destination or on their own. On their own they stand in for the To side exactly as a destination does.
+- **Note.** `note` is a line under the cards for a limit or a delay; `noteTone='warning'` or `'negative'` makes it a tinted capsule.
+- **Heading and controls.** `title` puts a heading above the cards and `onBack` a Back control beside it, for a panel that is its own screen or sheet. `controls={false}` leaves the action button alone at full width, and `actionIcon` puts a decoration before its text.
+- **Locked sides.** `lockFrom` / `lockTo` keep that side's token fixed: its card looks the same but does not open the picker, has no shortcut, and reset leaves the token in place.
+- **Action label.** `actionLabel` names the action once it is ready, in place of Send, Swap or Bridge: Stake, Deposit, Unstake. The host supplies the translated text. The prompts before it is ready (select a token, enter an amount, insufficient balance) do not change.
+- **Starting amount.** A mounted `amount` (token units) seeds the entry in the default denomination.
+- **Fixed denomination.** `denominationSwitch={false}` removes the conversion capsule under each amount and the denomination setting, and keeps both amounts in `denomination` (dollars by default). Use it when the host only has one of the two, for example dollars with no token price.
 - **One way.** `oneWay` is for flows that only run top to bottom, such as a deposit: the control between the cards becomes a decorative down arrow instead of the flip button, and the pair cannot be exchanged.
 - **Ownership.** The panel never fetches a quote, reads a wallet or submits a transaction. `onSubmit` is called once per accepted press and not while `submitting`.
+
+`SwapAmountCard`, from the same web entry, is the From card on its own for a host that enters one amount without a pair, such as a position size. It draws the asset (`name`, `symbol`, `icon` as a URL or a host-drawn node, optional `chainIcon` and `context` line), capsule `actions` such as Max (use `SwapPill`), a `meta` line such as the balance, and the entered `value` with `prefix`, `suffix`, `fractionDigits` and `trailingDot`. `conversion` puts a capsule under the amount, and `onSelect` with `selectLabel` makes the slot choose the asset. The host owns the entry and the keypad; `SwapKeypad` is exported beside it.
+
+```tsx
+<SwapAmountCard name="USD Coin" symbol="USDC" context="Hyperliquid" value={Number(entry)} prefix="$"
+  fractionDigits={typedDecimals} trailingDot={entry.endsWith(".")} amountLabel="Size"
+  actions={<SwapPill onClick={useMax}>Max</SwapPill>} meta="1,000 USDC" />
+```
 
 `SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/recipes/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
 
@@ -715,8 +753,8 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/sta
 | Component | Key props and behavior |
 | --- | --- |
 | `Badge` | Quiet label; web adds explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`), standard span props and a forwarded span ref. The neutral default retains its appearance. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
-| `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the glowing stroke from a token role on web and native — a 2px tone border on all sides with a matching `0 0 24px` glow at 55% on a translucent (95%) surface, 16px radius: `default` → neutral (`border` token stroke, soft white 20px glow), info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
-| `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own stroke colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
+| `Alert` | `title`, `severity`, and an optional recovery `action`. Severity tints the fill and colours the title from a token role on web and native, with no stroke or glow: the surface mixed with 10% of the tone, at the Surface radius. `default` → neutral (6% of `text`, title in `text`), info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
+| `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own callout colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Each notice is one capsule row with no stroke: a severity symbol on the leading edge, the message, the optional action, and a close symbol on the trailing edge. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides the Dismiss wording inside the close button's accessible name; the button draws a symbol, not text. For transient notices on web, `toast()` and `Toaster` from `@bloxwap/hig/react/toast` raise the same capsule through Sonner. |
 | `Progress` | `label`, `value`, and `max`. |
 | `EmptyState` | `title`, optional `description`, optional `action`, and decorative `illustration`. A centred stack: symbol, title, description, action. `illustration` replaces the default symbol; `null` omits it. |
@@ -1287,6 +1325,7 @@ Rules:
 | `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
 | `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
 | `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
+| `swapChooseDestination` | Pick a destination | SwapPanel: action text while its destination is still to be chosen | — |
 | `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
 | `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
 | `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |
@@ -1463,6 +1502,16 @@ Pin @bloxwap/font 0.1.4. Vite: import `@bloxwap/font/css`, which loads unicode-r
 ## Geometry and layout (#8)
 
 Spaces 4/8/12/16/20/24/32/48; radius 6/8/10/14 and pill (`--hig-radius-sm`…`--hig-radius-xl`, `--hig-radius-pill`). Comfortable control/target 48 and gap 12; compact 36 and gap 8, reserved for pointer/keyboard dense layouts. CSS exposes each mode as `--hig-density-<mode>-<control|target|gap>`, and `--hig-density-control`, `--hig-density-target` and `--hig-density-gap` follow the nearest `[data-hig-density]`, which the React provider sets. Painted icons can be 16/20/24 while targets stay 48 on touch. Never expand adjacent invisible hit areas so they overlap. Use logical inline spacing, wrapping labels, safe-area insets, keyboard avoidance and a scrollable native sheet; preserve portrait/tablet rotation without locking orientation. Pro tables may scroll with column headers; app amount entry reflows. Elevation uses nested fills rather than unverified shadows. Layer order: document, sticky nav, contextual popover, modal, notification. Browser top layer handles modal stacking; native Modal remains platform-owned.
+
+### Form spacing
+
+Neutral fills step up from whatever they sit on, one shade at a time, so nothing on a screen jumps to the lightest grey. On the page (`background`), a well is `surface` and a raised fill is `nested`. Inside a Surface, Dialog or sheet, a well is `nested` and a raised fill is `border`. Wells are inputs, the segmented track, Badge and Avatar. Raised fills are what sits on a well (the selected segment, a pressed capsule) and every thin track or rule: the Switch off track, the Slider and Progress tracks, the Spinner ring, Skeleton and Separator. Web reads these from `--hig-fill` and `--hig-fill-raised`; native reads `useFills()`. A host-drawn control uses the same pair instead of a fixed role.
+
+An unavailable button is neutral: a well fill with `muted` text (`faint` and no fill for ghost), whatever its intent, so a dimmed accent never reads as a second call to action. A busy button keeps its intent colour at 70% under its spinner.
+
+Controls inside a card or sheet sit 8 units apart in both directions: a toggle above a field, rows of presets, two buttons side by side, capsules in a filter row. The action row at the bottom of a card or sheet, the primary action with its secondary beside it, sits 16 units below the content above it, so the decision reads as separate from the form. The two actions themselves stay 8 apart.
+
+Buttons, segmented controls and single-line text inputs share one height on web: 44 units on touch density, 36 compact. Rows in a list are capsules 8 units apart. A row that leads with a round avatar pads it equally on every side, so the capsule end is concentric with the avatar: a 40 unit avatar with 8 units of padding gives a 56 unit row with a 28 unit end radius. Every pane of a sheet shows its title in the header.
 
 ## Motion and gestures (#9)
 

@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "sourceCommit": "c986570c1c651a4bfbbbde3bd2c8500f293c197d",
+  "sourceCommit": "68d0de6fa3b1f821a497a42e56ecc58099072f88",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -38,8 +38,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4744,
-      "gzip": 2329,
+      "raw": 4856,
+      "gzip": 2379,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -72,7 +72,7 @@
       ]
     },
     "nativeLink": {
-      "raw": 3524,
+      "raw": 3525,
       "gzip": 1692,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
@@ -95,11 +95,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2169972,
-      "gzip": 620422
+      "raw": 2208260,
+      "gzip": 623233
     },
     "docsCSS": {
-      "raw": 140915
+      "raw": 144006
     },
     "fonts": {
       "raw": 592796

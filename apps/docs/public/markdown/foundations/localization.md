@@ -181,6 +181,7 @@ Rules:
 | `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
 | `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
 | `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
+| `swapChooseDestination` | Pick a destination | SwapPanel: action text while its destination is still to be chosen | — |
 | `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
 | `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
 | `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |

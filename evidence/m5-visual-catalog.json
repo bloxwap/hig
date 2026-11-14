@@ -6,7 +6,7 @@
     844
   ],
   "reducedMotion": true,
-  "executedStates": 111,
+  "executedStates": 119,
   "components": 69,
   "availableComponents": 69,
   "scope": "full shipped state matrix",
@@ -16,9 +16,8 @@
       "name": "Button",
       "state": "default",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/button-default.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -29,9 +28,8 @@
       "name": "Button",
       "state": "busy",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/button-busy.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -42,9 +40,8 @@
       "name": "Button",
       "state": "disabled",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/button-disabled.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -154,9 +151,8 @@
       "name": "Field",
       "state": "default",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/field-default.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -167,9 +163,8 @@
       "name": "Field",
       "state": "error",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/field-error.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -189,9 +184,8 @@
       "name": "Input",
       "state": "default",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/input-default.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -202,9 +196,8 @@
       "name": "Input",
       "state": "disabled",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/input-disabled.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -215,9 +208,8 @@
       "name": "Input",
       "state": "error",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/input-error.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -417,9 +409,8 @@
       "name": "Slider",
       "state": "focus-comfortable",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/slider-focus-comfortable.png"
       },
       "render": "passed",
       "capture": "artifacts/visual/slider-focus-comfortable.png",
@@ -429,9 +420,8 @@
       "name": "Slider",
       "state": "focus-compact",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/slider-focus-compact.png"
       },
       "render": "passed",
       "capture": "artifacts/visual/slider-focus-compact.png",
@@ -975,6 +965,78 @@
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
       "capture": "artifacts/visual/swap-panel-default.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "swap",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-swap.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "bridge",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-bridge.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "send",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-send.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "deposit",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-deposit.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "withdraw",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-withdraw.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "withdraw-chain",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-withdraw-chain.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "stake",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-stake.png",
+      "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
+    },
+    {
+      "name": "SwapPanel",
+      "state": "unstake",
+      "regression": null,
+      "render": "passed",
+      "accessibility": "no serious/critical axe findings",
+      "capture": "artifacts/visual/swap-panel-unstake.png",
       "behaviorTests": "Shared family contract tests; this capture alone is not full behavioral certification"
     },
     {

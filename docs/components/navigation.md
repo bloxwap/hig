@@ -10,7 +10,7 @@ Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Tabs` | `label`, `items`, `value`, `defaultValue`, and `onValueChange`. Items include panel content and optional `disabled`. |
+| `Tabs` | `label`, `items`, `value`, `defaultValue`, and `onValueChange`. Items include panel content and optional `disabled`. The selected tab is a raised neutral capsule with `text`; the others are bare `muted` labels. Tabs never use the action colour, which stays with the primary action. |
 | `Navigation` | Web links use `href`; native destinations use host callbacks. |
 | `Search` | `query`, `results`, `loading`, and `error`. The host supplies the search index and router. |
 

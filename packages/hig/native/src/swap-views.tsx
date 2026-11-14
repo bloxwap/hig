@@ -64,7 +64,7 @@ export function SwapPicker({side,onBack,tokens,chains,hotTokenIds,selected,onSel
 export type SwapSettingsView='settings'|'slippage'|'fees';
 export interface SwapSettingsProps {
  view:SwapSettingsView;onViewChange:(view:SwapSettingsView)=>void;onBack:()=>void;
- denomination:SwapDenomination;onDenominationChange:(denomination:SwapDenomination)=>void;
+ denomination:SwapDenomination;/** Omit to hide the denomination setting. */onDenominationChange?:(denomination:SwapDenomination)=>void;
  slippage:number;onSlippageChange?:(slippage:number)=>void;
  fee?:number|null;fees?:readonly SwapFee[];quoteLoading?:boolean;
  /** Host rows shown under the built-in settings, such as language or theme. */
@@ -85,7 +85,7 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
  const slippageRow=onSlippageChange?row(t.swapSlippageTitle,formatPercent(slippage),'slippage'):null,feesRow=row(t.swapFees,feeText,'fees');
  return <SwapSubview title={title} onBack={onBack} testID={`swap-view-${view}`}>
   {view==='settings'?<View style={{gap:12}}>
-   <SegmentedControl label={t.swapDenomination} options={[{value:'usd',label:t.swapDollars},{value:'token',label:t.swapUnits}]} value={denomination} onValueChange={value=>onDenominationChange(value as SwapDenomination)}/>
+   {onDenominationChange&&<SegmentedControl label={t.swapDenomination} options={[{value:'usd',label:t.swapDollars},{value:'token',label:t.swapUnits}]} value={denomination} onValueChange={value=>onDenominationChange(value as SwapDenomination)}/>}
    {slippageRow}
    {feesRow}
    {children}

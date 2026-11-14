@@ -12,6 +12,8 @@ export interface SwapToken {
  balance?:number|null;
  /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */
  price?:number|null;
+ /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */
+ caption?:string;
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
 }
@@ -75,6 +77,7 @@ const paths={
  close:<path d='m5.5 5.5 9 9m0-9-9 9'/>,
  back:<path d='m12 4.5-5.5 5.5 5.5 5.5'/>,
  chevron:<path d='m7.5 4.5 5.5 5.5-5.5 5.5'/>,
+ expand:<path d='m5 7.5 5 5 5-5'/>,
  delete:<path d='M7.5 4.5h8a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-8L2.5 10ZM10 8l4 4m0-4-4 4'/>,
  sliders:<path d='M4 6h6m4 0h2M4 14h2m4 0h6M12 4v4M8 12v4'/>,
  flask:<path d='M8 3.5h4M8.75 3.5v4.75L4.5 15.5a1 1 0 0 0 .9 1.5h9.2a1 1 0 0 0 .9-1.5l-4.25-7.25V3.5M6.5 12.5h7'/>,

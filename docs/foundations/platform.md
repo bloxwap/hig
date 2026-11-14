@@ -93,6 +93,10 @@ Spaces 4/8/12/16/20/24/32/48; radius 6/8/10/14 and pill (`--hig-radius-sm`…`--
 
 ### Form spacing
 
+Neutral fills step up from whatever they sit on, one shade at a time, so nothing on a screen jumps to the lightest grey. On the page (`background`), a well is `surface` and a raised fill is `nested`. Inside a Surface, Dialog or sheet, a well is `nested` and a raised fill is `border`. Wells are inputs, the segmented track, Badge and Avatar. Raised fills are what sits on a well (the selected segment, a pressed capsule) and every thin track or rule: the Switch off track, the Slider and Progress tracks, the Spinner ring, Skeleton and Separator. Web reads these from `--hig-fill` and `--hig-fill-raised`; native reads `useFills()`. A host-drawn control uses the same pair instead of a fixed role.
+
+An unavailable button is neutral: a well fill with `muted` text (`faint` and no fill for ghost), whatever its intent, so a dimmed accent never reads as a second call to action. A busy button keeps its intent colour at 70% under its spinner.
+
 Controls inside a card or sheet sit 8 units apart in both directions: a toggle above a field, rows of presets, two buttons side by side, capsules in a filter row. The action row at the bottom of a card or sheet, the primary action with its secondary beside it, sits 16 units below the content above it, so the decision reads as separate from the form. The two actions themselves stay 8 apart.
 
 Buttons, segmented controls and single-line text inputs share one height on web: 44 units on touch density, 36 compact. Rows in a list are capsules 8 units apart. A row that leads with a round avatar pads it equally on every side, so the capsule end is concentric with the avatar: a 40 unit avatar with 8 units of padding gives a 56 unit row with a 28 unit end radius. Every pane of a sheet shows its title in the header.

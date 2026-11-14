@@ -32,7 +32,38 @@ describe('fill and space instead of strokes',()=>{
  it('fills overlays with the darker overlay role and keeps the off switch dark',()=>{
   expect(rule('.hig-dialog')).toContain('background:var(--hig-overlay,#111)');
   expect(rule('.hig-gesture-sheet')).toContain('background:var(--hig-overlay,#111)');
-  expect(rule('.hig-switch input')).toContain('background:var(--hig-border)');
+  expect(rule('.hig-switch input')).toContain('background:var(--hig-fill-raised)');
+ });
+ it('paints every thin track and rule one step above the wells of its container',()=>{
+  for(const selector of ['.hig-switch input','.hig-separator','.hig-range::-moz-range-track','.hig-progress progress','.hig-progress progress::-webkit-progress-bar'])expect(rule(selector)).toContain('background:var(--hig-fill-raised)');
+  expect(rule('.hig-range::-webkit-slider-runnable-track')).toContain('var(--hig-fill-raised) var(--hig-range-fill)');
+  expect(rule('.hig-spinner-indicator')).toContain('border:2px solid var(--hig-fill-raised)');
+  expect(rule('.hig-list > li + li')).toContain('1px solid var(--hig-fill-raised)');
+  // A track never takes the lightest grey directly; only the container mapping does.
+  expect(css).not.toMatch(/\.hig-(range|progress|switch|spinner|separator)[^{]*\{[^}]*var\(--hig-(border|nested)\)/);
+ });
+ it('draws an unavailable button as a neutral well and keeps the intent colour while busy',()=>{
+  expect(rule('.hig-button:disabled')).not.toContain('opacity');
+  expect(rule(".hig-button:disabled:not([aria-busy='true'])")).toBe(' background:var(--hig-fill);color:var(--hig-muted); ');
+  expect(rule(".hig-button[data-intent='ghost']:disabled:not([aria-busy='true'])")).toContain('background:transparent;color:var(--hig-faint)');
+  expect(rule(".hig-button[aria-busy='true']")).toContain('opacity:.7');
+  expect(css).not.toContain('.hig-swap-actions > .hig-button:disabled');
+ });
+ it('restores touch sizes in a comfortable scope nested inside a compact one',()=>{
+  expect(rule("[data-hig-density='compact'] [data-hig-density='comfortable']")).toContain('--hig-control: 48px; --hig-button: 44px; --hig-gap: 12px;');
+ });
+ it('marks the selected tab with a raised neutral capsule, never the action colour',()=>{
+  expect(rule('.hig-tab')).toContain('background:transparent;color:var(--hig-muted)');
+  expect(rule(".hig-tab[aria-selected='true']")).toBe(' background:var(--hig-fill-raised);color:var(--hig-text); ');
+  expect(rule(".hig-button.hig-tab:disabled:not([aria-busy='true'])")).toContain('background:transparent;color:var(--hig-faint)');
+  expect(css).not.toContain("[role='tab']");
+ });
+ it('steps the menu highlight lighter, like a select option, and aligns choices and market rows to the content edge',()=>{
+  expect(rule('.hig-menu-item[data-highlighted]')).toBe(rule(".hig-select-option[data-active='true']"));
+  expect(rule('.hig-menu-item:active:not([data-disabled])')).toContain('background:var(--hig-border)');
+  expect(rule('.hig-choice')).toContain('padding-inline:0 16px');expect(rule('.hig-group legend')).toContain('padding:0');
+  expect(rule(".hig-market-row[data-mode='action']")).toContain('padding-inline-end:20px');
+  expect(rule(".hig-market-row[data-mode='action'] .hig-button[data-intent='ghost']")).toContain('color:var(--hig-text)');
  });
  it('sizes a comfortable segmented control to the 44px button height',()=>{expect(rule('.hig-segment span')).toContain('min-height:calc(var(--hig-button) - 8px)');expect(rule('.hig-segments')).toContain('padding:4px');});
 });
@@ -139,6 +170,19 @@ describe('Filter',()=>{
   expect(rule('.hig-filter-chip:has(input:checked) .hig-filter-mark')).toContain('background:currentColor');
   expect(css).toMatch(/prefers-reduced-motion:reduce\)\s*\{[^@]*\.hig-filter-chip,\.hig-filter-mark,\.hig-filter-mark > img,\.hig-filter-mark path \{ transition:none; \}/);
   expect(rule("[data-hig-motion='reduced'] :is(.hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path)")).toContain('transition:none');
+ });
+ it('spaces side-by-side actions 8px apart through one token, at every density',()=>{
+  expect(rule(':root')).toContain('--hig-action-gap:var(--hig-space-sm,8px)');
+  expect(css).not.toMatch(/data-hig-density='compact'\][^{]*\{[^}]*--hig-action-gap/);
+  for(const selector of ['.hig-alert-actions','.hig-tab-list,.hig-pagination','.hig-filter','.hig-swap-actions','.hig-swap-pills','.hig-swap-wallet'])expect(rule(selector)).toContain('gap:var(--hig-action-gap)');
+ });
+ it('sets closing call-to-action buttons a double step, 16px, below the form and 8px from each other',()=>{
+  expect(rule(':root')).toContain('--hig-action-offset:calc(var(--hig-action-gap)*2)');
+  expect(rule('.hig-form-action')).toContain('margin-block-start:calc(var(--hig-action-offset) - var(--hig-gap))');
+  expect(rule('.hig-form-action + .hig-form-action')).toContain('margin-block-start:calc(var(--hig-action-gap) - var(--hig-gap))');
+  expect(rule(':is(.hig-dialog,.hig-gesture-sheet,.hig-gesture-dynamic) > :not(.hig-button) + .hig-button')).toContain('calc(var(--hig-action-offset) - 12px)');
+  expect(rule(':is(.hig-dialog,.hig-gesture-sheet,.hig-gesture-dynamic) > .hig-button + .hig-button')).toContain('calc(var(--hig-action-gap) - 12px)');
+  expect(rule('.hig-swap-actions')).toContain('margin-block-start:var(--hig-action-offset)');
  });
  it('presents floating lists with a fade and keeps the switch sliding under reduced motion',()=>{
   expect(rule('.hig-select-list,.hig-popover')).toContain('animation:hig-present');

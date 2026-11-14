@@ -7,12 +7,31 @@ import {Button,IconButton} from './button.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {Toast,useTransientNotice} from './status.js';
 import {VerticalAddress,addressKind} from './data.js';
-import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SwapCapsule,SwapKeypad,TokenArt} from './swap-parts.js';
+import {withAlpha} from '@bloxwap/hig/tokens';
+import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHeader,SwapKeypad,TokenArt} from './swap-parts.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
 import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 export {swapAction,swapParentView,type SwapAction,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 /** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet, and sizes itself, so the panel does not animate its own height. */
 export const SwapHostContext=createContext<{listComponent?:React.ComponentType<FlatListProps<SwapToken>>;animateHeight?:boolean}>({});
+/** A fixed place the assets go, in place of a token the user picks: a wallet, a staking pool, a trading account. Shown as a compact To card with no amount. */
+export interface SwapDestination {
+ title:string;
+ /** One muted line under the title, such as the chain or a rate. */
+ subtitle?:string;
+ /** Image URL. Without one, `address` draws the wallet's colour disc. */
+ icon?:string;
+ /** A wallet address; shown shortened under the subtitle. */
+ address?:string;
+ /** Muted trailing text, such as an arrival time or a rate. */
+ detail?:string;
+ /** Makes the card a button with a trailing chevron, for example to change the recipient. */
+ onPress?:()=>void;
+ /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */
+ pending?:boolean;
+}
+/** One label and value row of the details card. */
+export interface SwapDetail {label:string;value:string}
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
 export interface SwapPanelProps {
@@ -47,6 +66,24 @@ export interface SwapPanelProps {
  /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */
  onReset?:()=>void;
  /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */
+ /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */
+ denominationSwitch?:boolean;
+ /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */
+ destination?:SwapDestination;
+ /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */
+ details?:readonly SwapDetail[];
+ /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */
+ note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
+ /** Heading above the cards, for a panel that is its own screen or sheet. `onBack` adds a Back control before it. */
+ title?:string;onBack?:()=>void;
+ /** `false` leaves the action button on its own, full width: no settings and no reset button. */
+ controls?:boolean;
+ /** Decoration before the action text. */
+ actionIcon?:React.ReactNode;
+ /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */
+ lockFrom?:boolean;lockTo?:boolean;
+ /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */
+ actionLabel?:string;
  /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */
  oneWay?:boolean;
  keypad?:'auto'|'always'|'never';
@@ -67,12 +104,13 @@ export interface SwapPanelProps {
  * or token units through the keypad, token pickers, settings, and one action that names itself from the chosen pair.
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
-export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',oneWay=false,settings,view:viewProp,onViewChange,style}:SwapPanelProps){
+export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelProps){
  const env=useHIG();const {locale,direction}=env;const colors=useColors();const t=useMessages();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
  const [isReceiving,setReceiving]=useControllable(receiving,false,onReceivingChange);
- const [entry,setEntry]=useState('0');const [fromMode,setFromMode]=useState(defaultMode);const [toMode,applyToMode]=useState(defaultMode);
+ // `amount` seeds the first render too, in the default denomination at the initial From token's price.
+ const [entry,setEntry]=useState(()=>amount===undefined?'0':unitsToEntry(Number(amount)||0,defaultMode,from?.price??0));const [fromMode,setFromMode]=useState(defaultMode);const [toMode,applyToMode]=useState(defaultMode);
  const host=useContext(SwapHostContext);
  const [ownView,keepView]=useState<SwapView>('main');const view=viewProp??ownView;
  const show=(next:SwapView)=>{if(next===view)return;if(viewProp===undefined)keepView(next);onViewChange?.(next);};
@@ -93,9 +131,11 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const receivedUsd=toPrice>0?receivedUnits*toPrice:sameAsset?usd:0;
  const action=swapAction(from,to);
  const insufficient=!!from&&(from.balance??0)>0&&units>(from.balance??0);
- const ready=!!from&&!!to&&units>0&&!insufficient;
- const actionText=showReceive?t.swapSendFromWallet:!from||!to?t.swapChooseToken:units<=0?t.swapEnterAmount:insufficient?t.swapInsufficient(from.symbol):action==='swap'?t.swapActionSwap:action==='bridge'?t.swapActionBridge:t.swapActionSend;
- const pristine=!from&&!to&&input===0;
+ // A destination or a details card stands in for the To token: one way, and ready from the From side alone.
+ const fixed=!!destination||(!!details&&!to);const oneWay=oneWayProp||fixed;
+ const ready=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;
+ const actionText=showReceive?t.swapSendFromWallet:!from||(!to&&!fixed)?t.swapChooseToken:destination?.pending?t.swapChooseDestination:units<=0?t.swapEnterAmount:insufficient?t.swapInsufficient(from.symbol):actionLabel??(action==='swap'&&!fixed?t.swapActionSwap:action==='bridge'&&!fixed?t.swapActionBridge:t.swapActionSend);
+ const pristine=(lockFrom||!from)&&(lockTo||!to)&&input===0;
  // Updater form: several keys can land before the next render, and each must build on the last.
  const latest=useRef(fromMode);latest.current=fromMode;
  const press=(key:string)=>setEntry(current=>applyAmountKey(current,key,latest.current));
@@ -103,15 +143,26 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const changeDenomination=(mode:SwapDenomination)=>{setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
  // A new default applies to an untouched entry at once; a typed amount keeps its denomination until reset.
  useEffect(()=>{if(input===0){setFromMode(defaultMode);applyToMode(defaultMode);}},[defaultMode]);
- const reset=()=>{setEntry('0');setFromMode(defaultMode);applyToMode(defaultMode);if(isReceiving)setReceiving(false);setFrom(null);setTo(null);onReset?.();};
+ const reset=()=>{setEntry('0');setFromMode(defaultMode);applyToMode(defaultMode);if(isReceiving)setReceiving(false);if(!lockFrom)setFrom(null);if(!lockTo)setTo(null);onReset?.();};
  const flip=()=>{if(!from||!to)return;setFrom(to);setTo(from);};
- const submit=()=>{if(submitting)return;if(showReceive){onConnect?.();return;}if(ready)onSubmit(action);};
+ const submit=()=>{if(submitting)return;if(showReceive){onConnect?.();return;}if(ready)onSubmit(fixed?'send':action);};
  // A copied address shows as a transient toast capsule (about 4s, dismissible), announced the way Toast announces any notice.
  const copyAddress=()=>{if(!receive?.onCopy)return;Promise.resolve().then(receive.onCopy).then(()=>showNotice(t.addressCopied)).catch(()=>{/* The host adapter reports its own failure. */});};
  const chainList=useMemo(()=>{if(chains)return chains;const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:token.chainIcon});return [...seen.values()];},[chains,tokens]);
  const usdText=(value:number)=>formatNumber(value,locale,{style:'currency',currency:'USD'});
  const fraction=entry.includes('.')?Math.min(entry.length-entry.indexOf('.')-1,fromMode==='usd'?2:8):0;
  const small={fontSize:14,lineHeight:19,color:colors.muted} as const;
+ // An account (a token with a `caption`) reads name over caption beside one disc, and offers Max only.
+ const account=(side:'from'|'to',token:SwapToken,locked:boolean)=><>
+  <View pointerEvents='none' testID={`swap-account-${side}`} style={{flex:1,minWidth:0,flexDirection:'row',alignItems:'center',gap:12}}>
+   <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><TokenArt uri={token.icon} symbol={token.symbol} size={40}/></View>
+   <View style={{flex:1,minWidth:0}}>
+    <View style={{flexDirection:'row',alignItems:'center',gap:4}}><Text style={{fontWeight:'600',lineHeight:21,flexShrink:1}}>{token.name}</Text>{locked?null:<View testID={`swap-account-chevron-${side}`}><SmallChevron color={colors.muted}/></View>}</View>
+    <Text style={small}>{token.caption}</Text>
+   </View>
+  </View>
+  {side==='from'&&(token.balance??0)>0?<SwapCapsule testID='swap-max' onPress={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
+ </>;
  const header=(side:'from'|'to',token:SwapToken)=><>
   <View pointerEvents='none' style={{flex:1,minWidth:0,flexDirection:'row',alignItems:'flex-start',gap:12}}>
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{alignItems:'center'}}>
@@ -138,36 +189,56 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
   return view.onCopy?<Pressable accessibilityRole='button' accessibilityLabel={`${t.copyAddress}: ${view.address}`} testID='swap-receive' onPress={copyAddress} style={({pressed})=>[layout,{opacity:pressed?0.8:1}]}>{body}</Pressable>:<View accessible accessibilityLabel={view.address} testID='swap-receive' style={layout}>{body}</View>;
  };
  const card=(side:'from'|'to')=>{
-  const token=side==='from'?from:to,label=side==='from'?t.swapFrom:t.swapTo,mode=side==='from'?fromMode:toMode;
+  const token=side==='from'?from:to,label=side==='from'?t.swapFrom:t.swapTo,mode=side==='from'?fromMode:toMode,locked=side==='from'?lockFrom:lockTo;
   const cardUnits=side==='from'?units:receivedUnits,cardUsd=side==='from'?usd:receivedUsd;
   const shown=side==='from'?input:mode==='token'?receivedUnits:receivedUsd;
   const options={minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false};
   const prefix=mode==='usd'?'$':'',suffix=side==='from'&&entry.endsWith('.')?'.':'';
   return <View testID={`swap-card-${side}`} style={{backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'}}><Raised>
    <View>
-    <Pressable accessibilityRole='button' accessibilityLabel={t.swapSelectToken(label)} testID={`swap-slot-${side}`} onPress={()=>show(side)} style={StyleSheet.absoluteFill}/>
+    {/* A locked side shows its token but offers no picker. */}
+    {locked?null:<Pressable accessibilityRole='button' accessibilityLabel={t.swapSelectToken(label)} testID={`swap-slot-${side}`} onPress={()=>show(side)} style={StyleSheet.absoluteFill}/>}
     <View pointerEvents='box-none' style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:84,padding:16}}>
-     {token?header(side,token):<View pointerEvents='none'><Text accessible={false} style={{fontSize:40,lineHeight:46,fontWeight:'500',letterSpacing:-0.8,color:colors.faint}}>{label}…</Text></View>}
+     {token?token.caption!==undefined?account(side,token,locked):header(side,token):<View pointerEvents='none'><Text accessible={false} style={{fontSize:40,lineHeight:46,fontWeight:'500',letterSpacing:-0.8,color:colors.faint}}>{label}…</Text></View>}
     </View>
    </View>
    {side==='from'&&showReceive&&receive?receiveView(receive):side==='to'&&showReceive?null:<View>
     {/* The slot above is the accessible control for the picker; this larger target is for touch only. */}
-    <Pressable accessible={false} importantForAccessibility='no' testID={`swap-area-${side}`} onPress={()=>show(side)} style={StyleSheet.absoluteFill}/>
+    {locked?null:<Pressable accessible={false} importantForAccessibility='no' testID={`swap-area-${side}`} onPress={()=>show(side)} style={StyleSheet.absoluteFill}/>}
     <View pointerEvents='box-none' style={{alignItems:'center',gap:8,paddingTop:4,paddingHorizontal:16,paddingBottom:20}}>
      <View pointerEvents='none' accessible accessibilityLabel={t.swapAmount(label)} accessibilityValue={{text:`${prefix}${formatNumber(shown,locale,options)}${suffix}`}} testID={`swap-amount-${side}`}>
       <AnimatedNumberReadout value={shown} prefix={prefix} suffix={suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
      </View>
-     <SwapCapsule label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
+     {denominationSwitch&&<SwapCapsule label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
       <Text accessible={false} style={[small,{opacity:0.5}]}>=</Text>
       <Text testID={`swap-conversion-${side}`} style={small}>{mode==='token'?usdText(cardUsd):`${formatNumber(cardUnits,locale,{maximumFractionDigits:8,useGrouping:false})}${token?` ${token.symbol}`:''}`}</Text>
       <FlipIcon color={colors.muted} size={14}/>
-     </SwapCapsule>
+     </SwapCapsule>}
     </View>
    </View>}
   </Raised></View>;
  };
- const fromCard=card('from'),toCard=card('to');
+ // The fixed bottom card is one compact row for the destination (artwork, where it goes, a trailing detail and fee), label and value rows, or both.
+ const fixedCard=()=>{
+  if(!fixed)return null;
+  const art=!destination?null:destination.icon?<TokenArt uri={destination.icon} size={40}/>:destination.address?<View style={{width:40,height:40,borderRadius:20,backgroundColor:addressColor(destination.address)}}/>:<View style={{width:40,height:40,borderRadius:20,backgroundColor:colors.nested,alignItems:'center',justifyContent:'center'}}><Text style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{destination.title.slice(0,2)}</Text></View>;
+  const row=destination?<View pointerEvents='none' style={{flexDirection:'row',alignItems:'center',gap:12,minHeight:84,padding:16}}>
+   <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{art}</View>
+   <View style={{flex:1,minWidth:0}}><Text testID='swap-destination-title' style={{fontWeight:destination.pending?'500':'600',lineHeight:21}}>{destination.title}</Text>{destination.subtitle?<Text style={small}>{destination.subtitle}</Text>:null}{destination.address?<Text style={small}>{shortAddress(destination.address)}</Text>:null}</View>
+   {destination.detail||fee!==undefined||destination.onPress?<View style={{flexDirection:'row',alignItems:'center',gap:8,maxWidth:'60%'}}>
+    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<Text testID='swap-destination-fee' style={[small,{textAlign:'right'}]}>{t.swapFee(quoteLoading?'…':fee!=null?usdText(fee):'—')}</Text>:null}</View>
+    {destination.onPress?<View testID='swap-destination-chevron'><SmallChevron color={colors.muted} trailing/></View>:null}
+   </View>:null}
+  </View>:null;
+  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text><Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text></View>)}</View>:null;
+  const shape:ViewStyle={backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'};
+  // With a pressable destination the whole card is the button; the rows inside it are read as part of it.
+  return destination?.onPress?<Pressable accessibilityRole='button' accessibilityLabel={destination.title} testID='swap-destination' onPress={destination.onPress} style={({pressed})=>[shape,{opacity:pressed?0.85:1}]}><Raised>{row}{rows}</Raised></Pressable>:<View testID='swap-destination' style={shape}><Raised>{row}{rows}</Raised></View>;
+ };
+ const fromCard=card('from'),toCard=fixedCard()??card('to');
+ const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
  const main=<View testID='swap-view-main'>
+  {title?<View style={{marginBottom:12}}><SwapHeader title={title} onBack={onBack}/></View>:null}
   {fromCard}
   <View style={{height:8,zIndex:1,alignItems:'center'}}>
    {/* A disc in the page colour breaks the seam between the cards; the control sits on it. */}
@@ -176,18 +247,20 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    </View>
   </View>
   {toCard}
+  {note?<View testID='swap-note' style={tone?{marginTop:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.14)}:{marginTop:8,paddingHorizontal:4}}><Text style={{fontSize:14,lineHeight:21,color:tone??colors.muted}}>{note}</Text></View>:null}
   {!showReceive&&keypad!=='never'?<SwapKeypad onKey={press} label={t.swapKeypad} deleteLabel={t.swapDelete}/>:null}
-  <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:8}}>
-   <IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' onPress={()=>show('settings')}><MenuIcon color={colors.text}/></IconButton>
-   <Button busy={submitting} disabled={!showReceive&&!ready} testID='swap-action' onPress={submit} style={{flex:1,alignSelf:'auto'}}>{actionText}</Button>
-   <IconButton intent='secondary' label={t.swapReset} disabled={pristine||submitting} testID='swap-reset' onPress={reset}><ResetIcon color={colors.text}/></IconButton>
+  <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:16}}>
+   {controls?<IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' onPress={()=>show('settings')}><MenuIcon color={colors.text}/></IconButton>:null}
+   {/* Button lays its children in a row: the decorative icon rides before the label and adds nothing to the name. */}
+   <Button busy={submitting} disabled={!showReceive&&!ready} testID='swap-action' onPress={submit} style={{flex:1,alignSelf:'auto'}}>{actionIcon?<View key='icon' testID='swap-action-icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{actionIcon}</View>:null}{actionText}</Button>
+   {controls?<IconButton intent='secondary' label={t.swapReset} disabled={pristine||submitting} testID='swap-reset' onPress={reset}><ResetIcon color={colors.text}/></IconButton>:null}
   </View>
   {notice?<View style={{marginTop:8,alignItems:'center'}}><Toast notices={[notice]} onDismiss={dismissNotice}/></View>:null}
  </View>;
  const body=view==='main'?main
   :view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={setFrom} wallet={wallet} onConnect={onConnect} onDisconnect={onDisconnect} receiving={isReceiving} onReceivingChange={receive?setReceiving:undefined} listComponent={host.listComponent}/>
   :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={setTo} wallet={wallet} recipient={recipient} onRecipientChange={onRecipientChange} onScanRecipient={onScanRecipient} listComponent={host.listComponent}/>
-  :<SwapSettings view={view} onViewChange={show} onBack={back} denomination={defaultMode} onDenominationChange={changeDenomination} slippage={slippage} onSlippageChange={onSlippageChange} fee={fee} fees={fees} quoteLoading={quoteLoading}>{settings}</SwapSettings>;
+  :<SwapSettings view={view} onViewChange={show} onBack={back} denomination={defaultMode} onDenominationChange={denominationSwitch?changeDenomination:undefined} slippage={slippage} onSlippageChange={onSlippageChange} fee={fee} fees={fees} quoteLoading={quoteLoading}>{settings}</SwapSettings>;
  return <View testID='swap-panel' style={[{direction,width:'100%',maxWidth:448,alignSelf:'center'},style]}><SwapStage view={view} animateHeight={host.animateHeight!==false}>{body}</SwapStage></View>;
 }
 const viewDepth=(view:SwapView)=>view==='main'?0:view==='slippage'||view==='fees'?2:1;

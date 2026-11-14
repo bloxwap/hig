@@ -49,7 +49,7 @@ describe('provider colour table selection',()=>{
 
 describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
  it('Alert accent for info, warning and error (negative), and tone action',()=>withOS('ios',()=>{
-  const accent=props=>flat(mount(React.createElement(Alert,{title:'Result',announce:false,...props})).findAll(n=>n.type===RN.View&&n.props.style)[0]).borderColor;
+  const accent=props=>flat(mount(React.createElement(Alert,{title:'Result',announce:false,...props})).findAll(n=>n.type===RN.Text&&n.props.accessibilityRole==='header')[0]).color;
   expect(accent({})).toBe(p3.info);
   expect(accent({severity:'warning'})).toBe(p3.warning);
   expect(accent({severity:'error'})).toBe(p3.negative);
@@ -59,13 +59,13 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
  }));
  it('Switch track for action and every tone role',()=>withOS('ios',()=>{
   const sw=props=>mount(React.createElement(Switch,{label:'Sound',...props})).findByType(RN.Switch).props;
-  expect(sw({}).trackColor).toEqual({true:p3.action,false:p3.border});expect(sw({}).ios_backgroundColor).toBe(p3.border);
+  expect(sw({}).trackColor).toEqual({true:p3.action,false:p3.nested});expect(sw({}).ios_backgroundColor).toBe(p3.nested);
   for(const tone of ['positive','negative','warning','info','buy','sell'])expect(sw({tone}).trackColor.true).toBe(p3[tone]);
  }));
  it('Text, Surface, Separator, Button, Link, Slider, Spinner, Badge, Skeleton, Field and brand paint from the P3 table',()=>withOS('ios',()=>{
   expect(flat(mount(React.createElement(Text,null,'Prose')).findByType(RN.Text)).color).toBe(p3.text);
   expect(flat(mount(React.createElement(Surface,{testID:'s'})).findAll(n=>n.type===RN.View&&n.props.testID==='s')[0]).backgroundColor).toBe(p3.surface);
-  expect(flat(mount(React.createElement(Separator)).findByType(RN.View)).backgroundColor).toBe(p3.border);
+  expect(flat(mount(React.createElement(Separator)).findByType(RN.View)).backgroundColor).toBe(p3.nested);
   const fill=intent=>{const pressable=mount(React.createElement(Button,{intent},'Go')).findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.style==='function')[0];return RN.StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor;};
   expect(fill('primary')).toBe(p3.action);expect(fill('destructive')).toBe(p3.negative);expect(fill('secondary')).toBe(p3.nested);
   expect(flat(mount(React.createElement(Button,null,'Go')).findAllByType(RN.Text).at(-1)).color).toBe(p3.onAction);
@@ -103,7 +103,7 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
   for(const role of ['action','warning','negative','info'])expect(android.map(([,v])=>v)).toContain(nativeSrgb[role]);
  });
  it('without colorSpace components keep the sRGB table on iOS',()=>withOS('ios',()=>{
-  const accent=flat(mount(React.createElement(Alert,{title:'Result',severity:'warning',announce:false}),{}).findAll(n=>n.type===RN.View&&n.props.style)[0]).borderColor;
+  const accent=flat(mount(React.createElement(Alert,{title:'Result',severity:'warning',announce:false}),{}).findAll(n=>n.type===RN.Text&&n.props.accessibilityRole==='header')[0]).color;
   expect(accent).toBe(nativeSrgb.warning);
   expect(mount(React.createElement(BrandMark),{}).findByType(require('react-native-svg').Rect).props.fill).toBe(readFileSync('packages/hig/tokens/assets/bloxwap-icon.svg','utf8').match(/<rect[^>]*fill="([^"]+)"/)[1]);
  }));

@@ -11,6 +11,8 @@ export interface SwapToken {
  balance?:number|null;
  /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */
  price?:number|null;
+ /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */
+ caption?:string;
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
 }
