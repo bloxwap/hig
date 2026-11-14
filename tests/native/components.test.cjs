@@ -166,13 +166,17 @@ it('native Menu and Select return focus to their own trigger on close (Android T
   expect(focus).toHaveBeenLastCalledWith('trigger-handle');
  }}finally{handle.mockRestore();focus.mockRestore();raf.mockRestore();}
 });
-it('native InstallCommand hides its empty status region from VoiceOver until a copy outcome exists (iOS audit regression)',async()=>{
+it('native InstallCommand shows a copy outcome as a transient toast capsule and mounts no empty status region (iOS audit regression)',async()=>{
  const {Text}=require('react-native');const {InstallCommand}=require('../../packages/hig/native/src/recipes');
  const tree=mount(React.createElement(InstallCommand,{command:'npm i x',onCopy:()=>Promise.resolve()}));
- const status=()=>tree.findAllByType(Text).find(t=>t.props.accessibilityLiveRegion==='polite');
- expect(status().props.accessibilityElementsHidden).toBe(true);
+ jest.useFakeTimers();try{
+ const {Toast}=require('../../packages/hig/native/src/status');const shown=()=>tree.findAllByType(Text).map(t=>t.props.children);
+ expect(tree.findAllByType(Toast)).toHaveLength(0);expect(shown()).toEqual(['npm i x','Copy install command']);
  await act(async()=>{tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented(){return false;}});});
- expect(status().props.children).toBe('Copied');expect(status().props.accessibilityElementsHidden).toBe(false);
+ expect(shown()).toContain('Copied');expect(tree.findByType(Toast).props.notices).toMatchObject([{message:'Copied',severity:'success'}]);
+ const close=tree.findAll(n=>n.props.accessibilityRole==='button'&&n.props.accessibilityLabel==='Dismiss Copied');expect(close.length).toBeGreaterThan(0);
+ act(()=>{jest.advanceTimersByTime(4000);});expect(tree.findAllByType(Toast)).toHaveLength(0);
+ }finally{jest.useRealTimers();}
 });
 it('native overlay focus requests also send viewHoverEnter on Android so TalkBack moves focus (emulator regression)',()=>{
  // focusNative reads Platform.OS per call, so the shared registry can be switched to Android for this test.
@@ -195,7 +199,7 @@ it('native switch keeps react-native-web semantics on Expo web (no nested intera
 it('native switch and alert accept token colour roles only (#67)',()=>{
  const {Switch}=require('../../packages/hig/native/src/switch');const {Alert}=require('../../packages/hig/native/src/status');const RN=require('react-native');const {nativeSrgb:colors,withAlpha}=require('../../packages/hig/tokens/dist/index.js');
  const track=props=>{const tree=mount(React.createElement(Switch,{label:'Sound',...props}));const value=tree.findByType(RN.Switch).props.trackColor;act(()=>root.unmount());root=null;return value;};
- expect(track({})).toEqual({true:colors.action,false:colors.nested});
+ expect(track({})).toEqual({true:colors.action,false:colors.border});
  expect(track({tone:'positive'}).true).toBe(colors.positive);
  // Untyped JS cannot smuggle a raw palette colour through the role prop.
  expect(track({tone:'#123456'}).true).toBe(colors.action);

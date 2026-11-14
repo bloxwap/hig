@@ -59,7 +59,7 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
  }));
  it('Switch track for action and every tone role',()=>withOS('ios',()=>{
   const sw=props=>mount(React.createElement(Switch,{label:'Sound',...props})).findByType(RN.Switch).props;
-  expect(sw({}).trackColor).toEqual({true:p3.action,false:p3.nested});expect(sw({}).ios_backgroundColor).toBe(p3.nested);
+  expect(sw({}).trackColor).toEqual({true:p3.action,false:p3.border});expect(sw({}).ios_backgroundColor).toBe(p3.border);
   for(const tone of ['positive','negative','warning','info','buy','sell'])expect(sw({tone}).trackColor.true).toBe(p3[tone]);
  }));
  it('Text, Surface, Separator, Button, Link, Slider, Spinner, Badge, Skeleton, Field and brand paint from the P3 table',()=>withOS('ios',()=>{
@@ -72,20 +72,24 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
   expect(flat(mount(React.createElement(Link,{href:'https://example.com'},'Docs')).findByType(RN.Text)).color).toBe(p3.action);
   expect(mount(React.createElement(Slider,{label:'Volume',value:20})).findAll(n=>n.props.minimumTrackTintColor)[0].props.minimumTrackTintColor).toBe(p3.action);
   expect(mount(React.createElement(Spinner)).findByType(RN.ActivityIndicator).props.color).toBe(p3.action);
-  expect(flat(mount(React.createElement(Badge,null,'New')).findByType(RN.Text)).backgroundColor).toBe(p3.nested);
+  expect(flat(mount(React.createElement(Badge,null,'New')).findByType(RN.Text)).backgroundColor).toBe(p3.surface);
+  expect(flat(mount(React.createElement(Surface,null,React.createElement(Badge,null,'New'))).findByType(RN.Text)).backgroundColor).toBe(p3.nested);
   expect(flat(mount(React.createElement(Skeleton)).findAll(n=>n.type===RN.View&&n.props.style)[0]).backgroundColor).toBe(p3.nested);
   const field=mount(React.createElement(Field,{label:'Amount',error:'Too precise'},React.createElement(Input)));
   expect(flat(field.findAllByType(RN.Text).find(t=>t.props.children==='Too precise')).color).toBe(p3.negative);
   const input=field.findByType(RN.TextInput);expect(input.props.placeholderTextColor).toBe(p3.muted);expect(flat(input)).toMatchObject({color:p3.text,backgroundColor:p3.surface,borderColor:p3.negative});
   const validField=mount(React.createElement(Field,{label:'Amount'},React.createElement(Input)));
-  expect(flat(validField.findByType(RN.TextInput)).borderColor).toBe(p3.border);
+  // No resting stroke: the ring is transparent until focus, and the fill steps up inside a Surface.
+  const valid=()=>validField.findByType(RN.TextInput);expect(flat(valid())).toMatchObject({borderColor:'transparent',backgroundColor:p3.surface});
+  act(()=>valid().props.onFocus({}));expect(flat(valid()).borderColor).toBe(p3.faint);act(()=>valid().props.onBlur({}));expect(flat(valid()).borderColor).toBe('transparent');
+  expect(flat(mount(React.createElement(Surface,null,React.createElement(Input))).findByType(RN.TextInput)).backgroundColor).toBe(p3.nested);
   const {Rect,Path}=require('react-native-svg');
   const mark=mount(React.createElement(BrandMark));expect(mark.findByType(Rect).props.fill).toBe(p3.action);expect(mark.findAll(n=>n.props.strokeWidth==='16')[0].props.stroke).toBe(p3.background);
   expect(mount(React.createElement(CheckIcon)).findByType(Path).props.stroke).toBe(p3.text);
  }));
  it('Dialog surface paints from the P3 table',()=>withOS('ios',()=>{
   const sheet=mount(React.createElement(Dialog,{open:true,onOpenChange:jest.fn(),title:'Review',description:'Verify amount'},null)).findByType(RN.ScrollView);
-  expect(RN.StyleSheet.flatten(sheet.props.contentContainerStyle).backgroundColor).toBe(p3.surface);
+  expect(RN.StyleSheet.flatten(sheet.props.contentContainerStyle).backgroundColor).toBe(p3.overlay);
  }));
  it('no sRGB-only value leaks into a P3 render, and Android ignores display-p3',()=>{
   const gallery=React.createElement(React.Fragment,null,React.createElement(Alert,{title:'Warning',severity:'warning',announce:false}),React.createElement(Alert,{title:'Error',severity:'error',announce:false}),React.createElement(Alert,{title:'Info',announce:false}),React.createElement(Switch,{label:'On',checked:true}),React.createElement(Button,{intent:'destructive'},'Delete'),React.createElement(Button,null,'Go'),React.createElement(Spinner),React.createElement(BrandMark));

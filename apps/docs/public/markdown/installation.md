@@ -66,6 +66,10 @@ The four Radix packages are optional peers with caret ranges: `@radix-ui/react-d
 
 The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
 
+### Sonner toasts
+
+`@bloxwap/hig/react/toast` exports `Toaster`, `toast()` and `dismissToast()`, which raise the HIG toast capsule through [Sonner](https://sonner.emilkowal.ski/). `sonner ^2.0.0` is an optional peer: install it for `@bloxwap/hig/react/toast`, `@bloxwap/hig/react/recipes` or `@bloxwap/hig/react/recipes/install-command`, and mount `<Toaster/>` once inside `HIGProvider`. Without a mounted toaster `InstallCommand` still announces its copy result to assistive technology but shows no toast. The controlled `Toast` in `@bloxwap/hig/react/status` needs no backend.
+
 ## Brand accent
 
 Pass `primaryColor` to the web or native `HIGProvider` to theme primary actions

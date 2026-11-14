@@ -107,15 +107,15 @@ const fr: Partial<HIGMessages> = {
 
 <HIGProvider locale='fr-FR' messages={fr}>…</HIGProvider>
 <Dialog closeLabel={t('checkout.back')} …/>   // one instance
-<Button busy busyLabel=''>…</Button>           // no visible suffix; busy state stays exposed
+<Button busy busyLabel=''>…</Button>           // no busy text in the name; spinner and busy state stay
 ```
 
 Resolution order, per key: the component prop, then the nearest `HIGProvider messages`, then any enclosing `HIGProvider messages`, then English. A nested provider for density or direction keeps the host's translations. `undefined` keys and values of the wrong type (a string where a function is expected, or the reverse) are ignored, so a partial catalog never blanks a label. `useMessages()` returns the complete resolved catalog; `useHIG().messages` holds only the host overrides. Each English default is also a named export of `@bloxwap/hig/contracts/messages`, and a component falls back per key (`messages.close ?? en.close`), so importing one component bundles only the copy it renders.
 
 Rules:
 
-- **Visible text and accessible names come from the same key.** The Close, Dismiss and busy text is the button content, so it is also the accessible name. The Toast dismiss name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it, so voice-control users can say the label they see. `stale` and `required` are appended to both the visible text and the accessible name.
-- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is the visible `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
+- **Visible text and accessible names come from the same key.** The Close text is the button content, so it is also the accessible name. A busy Button draws a spinner and a Toast close button draws a symbol; their `busy` and `dismiss` wording lives in the accessible name only. The Toast close name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it. `stale` and `required` are appended to both the visible text and the accessible name.
+- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
 - **Slider actions are labeled (#87).** The native Slider's increment and decrement accessibility actions carry `increase` and `decrease`. React Native 0.83 Android otherwise lists them with an empty label.
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
@@ -128,7 +128,7 @@ Rules:
 | `cancel` | Cancel | AlertDialog (web) decline button | `cancelLabel` |
 | `dismiss` | Dismiss | Toast dismiss button text | `dismissLabel` |
 | `dismissNotice` `(message, dismiss)` | {dismiss} {message} | Toast dismiss accessible name; must contain the `dismiss` argument | — |
-| `busy` | Working | Button busy suffix, shown as ` · {busy}`; `''` hides it | `busyLabel` |
+| `busy` | Working | Button busy text, appended to the accessible name as ` · {busy}` beside the visible spinner; `''` omits it | `busyLabel` |
 | `notifications` | Notifications | Toast region name (web) | — |
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
@@ -178,4 +178,4 @@ Rules:
 
 See `tests/tokens.test.ts`, `tests/data.dom.test.tsx`, `tests/glossary.test.ts`, `tests/built-in-strings.test.ts`, `tests/messages.dom.test.tsx`, `tests/native/messages.test.cjs`, `docs/foundations/localization.json` and the data chapter. Cite HIG 0.1.0 with this chapter anchor and a commit permalink.
 
-The native Button's busy suffix starts with the separator (`· Working`); the row supplies its visual gap. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.
+The native Button shows a leading spinner while busy and draws no busy text. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.

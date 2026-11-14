@@ -49,7 +49,8 @@ it('snaps on reduced motion, resize and RTL changes and hides absent selections'
 it('keeps touch and accessibility activation, option languages and feedback on the accepted value',()=>{
  const changed=jest.fn(),emit=jest.fn();mount({defaultValue:'all',onValueChange:changed},{feedback:{emit}});
  const trend=radios()[2];expect(trend.props).toMatchObject({accessibilityRole:'radio',accessibilityLabel:'Trend',accessibilityHint:'Recent direction',accessibilityLanguage:'en-US',accessibilityActions:[{name:'activate'}]});
- expect(StyleSheet.flatten(trend.props.style).minHeight).toBe(48);
+ // 36dp segments in a 44dp track; the slop restores the 48dp touch target.
+ expect(StyleSheet.flatten(trend.props.style).minHeight).toBe(36);expect(trend.props.hitSlop).toEqual({top:6,bottom:6});
  expect(trend.findAllByType(RNText).find(node=>node.props.children==='Recent direction').props.accessibilityLanguage).toBe('en-US');
  expect(indicator().props).toMatchObject({pointerEvents:'none',accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants'});
  act(()=>trend.props.onAccessibilityAction({nativeEvent:{actionName:'activate'}}));

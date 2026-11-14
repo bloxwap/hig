@@ -24,7 +24,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (busy state stays exposed). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: Intent; /** Shows a leading spinner and blocks activation. */\n    busy?: boolean; /** Busy text appended to the accessible name (not drawn; the spinner is the visible cue); defaults to HIGProvider `messages.busy`. `''` omits it (busy state stays exposed). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
       },
       "Button": {
         "entry": "button",
@@ -322,9 +322,13 @@
         "entry": "status",
         "signature": "export interface Notice {\n    id: string;\n    message: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}"
       },
+      "ToastNotice": {
+        "entry": "status",
+        "signature": "export declare function ToastNotice({ message, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
+      },
       "Toast": {
         "entry": "status",
-        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void; /** Dismiss button text; defaults to HIGProvider `messages.dismiss`. The accessible name comes from `messages.dismissNotice` and contains it. */\n    dismissLabel?: string;\n}): React.JSX.Element;"
+        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void; /** Dismiss wording inside the close button's accessible name (`messages.dismissNotice`); the button itself draws a close symbol. Defaults to HIGProvider `messages.dismiss`. */\n    dismissLabel?: string;\n}): React.JSX.Element;"
       },
       "Progress": {
         "entry": "status",
@@ -340,7 +344,7 @@
       },
       "EmptyState": {
         "entry": "status",
-        "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): React.JSX.Element;"
+        "signature": "export declare function EmptyState({ title, description, action, illustration }: {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    illustration?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "Avatar": {
         "entry": "status",
@@ -377,6 +381,22 @@
       "Separator": {
         "entry": "surface",
         "signature": "export declare function Separator(props: React.HTMLAttributes<HTMLHRElement>): React.JSX.Element;"
+      },
+      "Toaster": {
+        "entry": "toast",
+        "signature": "export declare function Toaster(props: ToasterProps): React.JSX.Element;"
+      },
+      "ToastOptions": {
+        "entry": "toast",
+        "signature": "export interface ToastOptions {\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button; defaults to the English `dismissNotice`. Pass the provider's translation from a component. */\n    dismissName?: string; /** Milliseconds before auto-dismiss; Sonner's default when omitted. */\n    duration?: number; /** Reuse an id to replace a notice instead of stacking it. */\n    id?: string | number;\n}"
+      },
+      "toast": {
+        "entry": "toast",
+        "signature": "export declare function toast(message: string, { severity, action, dismissName, duration, id }?: ToastOptions): string | number;"
+      },
+      "dismissToast": {
+        "entry": "toast",
+        "signature": "export declare function dismissToast(id?: string | number): void;"
       },
       "MarketRowProps": {
         "entry": "recipes/market-row",
@@ -426,7 +446,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label and busy suffix. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: Intent;\n    busy?: boolean; /** Busy text for this button's accessible name; defaults to HIGProvider `messages.busy`. `''` leaves the name unchanged (accessibilityState.busy stays set). The visible busy state is a leading spinner. */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
       },
       "busyAccessibilityLabel": {
         "entry": "button",
@@ -624,6 +644,14 @@
         "entry": "provider",
         "signature": "export declare const useHIG: () => HIGContext;"
       },
+      "Raised": {
+        "entry": "provider",
+        "signature": "export declare function Raised({ children }: React.PropsWithChildren): React.JSX.Element;"
+      },
+      "useFills": {
+        "entry": "provider",
+        "signature": "export declare function useFills(): {\n    well: string;\n    raised: string;\n};"
+      },
       "useColors": {
         "entry": "provider",
         "signature": "export declare function useColors(): HIGColors;"
@@ -734,7 +762,7 @@
       },
       "ToastProps": {
         "entry": "status",
-        "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss button text; defaults to HIGProvider messages.dismiss. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
+        "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss wording inside the close control's accessible name; defaults to HIGProvider messages.dismiss. The control shows an x, not text. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
       },
       "Toast": {
         "entry": "status",
@@ -754,7 +782,7 @@
       },
       "EmptyStateProps": {
         "entry": "status",
-        "signature": "export interface EmptyStateProps extends Omit<ViewProps, 'children'> {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    /** Decorative content, hidden from accessibility; the title and description supply its meaning. */\n    illustration?: React.ReactNode;\n    titleStyle?: TextProps['style'];\n    descriptionStyle?: TextProps['style'];\n    /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */\n    maxFontSizeMultiplier?: number;\n}"
+        "signature": "export interface EmptyStateProps extends Omit<ViewProps, 'children'> {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    /** Decorative mark above the title, hidden from accessibility; the title and description supply its meaning. Omitted, a neutral outline icon shows; `null` shows none. */\n    illustration?: React.ReactNode;\n    titleStyle?: TextProps['style'];\n    descriptionStyle?: TextProps['style'];\n    /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */\n    maxFontSizeMultiplier?: number;\n}"
       },
       "EmptyState": {
         "entry": "status",
@@ -802,7 +830,7 @@
       },
       "Surface": {
         "entry": "surface",
-        "signature": "export declare function Surface({ style, ...props }: ViewProps): React.JSX.Element;"
+        "signature": "export declare function Surface({ style, children, ...props }: ViewProps): React.JSX.Element;"
       },
       "Card": {
         "entry": "surface",
@@ -847,6 +875,30 @@
       "createNumberReelModel": {
         "entry": "animated-number-model",
         "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string): NumberReelModel | null;"
+      },
+      "SearchIcon": {
+        "entry": "icons",
+        "signature": "export declare function SearchIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "ChevronIcon": {
+        "entry": "icons",
+        "signature": "export declare function ChevronIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "CloseIcon": {
+        "entry": "icons",
+        "signature": "export declare function CloseIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "SeverityIconKind": {
+        "entry": "icons",
+        "signature": "export type SeverityIconKind = 'info' | 'success' | 'warning' | 'error';"
+      },
+      "SeverityIcon": {
+        "entry": "icons",
+        "signature": "export declare function SeverityIcon({ kind, color }: {\n    kind: SeverityIconKind;\n    color: string;\n}): React.JSX.Element;"
+      },
+      "EmptyIcon": {
+        "entry": "icons",
+        "signature": "export declare function EmptyIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
       "accentRoles": {
         "entry": "roles",

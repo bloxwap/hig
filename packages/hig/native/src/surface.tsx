@@ -1,7 +1,7 @@
 import React,{forwardRef} from 'react';
 import {Text as RNText,View,StyleSheet,type TextProps,type ViewProps} from 'react-native';
 import {nativeMetrics as tokens} from '@bloxwap/hig/tokens';
-import {useColors,useHIG} from './provider.js';
+import {Raised,useColors,useHIG} from './provider.js';
 import {plainText} from './text-content.js';
 export type TextScript='latin'|'ko'|'zh';
 /** Korean and Chinese companion faces are set at their own spacing (0em): Latin tracking spreads CJK glyphs apart. Hosts override per script through HIGProvider `letterSpacingByScript`. */
@@ -24,6 +24,7 @@ export const Text:React.ForwardRefExoticComponent<HIGTextProps&React.RefAttribut
 export const Heading:React.ForwardRefExoticComponent<HIGTextProps&React.RefAttributes<React.ComponentRef<typeof RNText>>>=forwardRef<React.ComponentRef<typeof RNText>,HIGTextProps>(function Heading({style,...props},ref){return <Text {...props} ref={ref} accessibilityRole='header' style={[{fontSize:24,lineHeight:30,fontWeight:'600'},style]}/>;});
 export function Stack({style,...props}:ViewProps){const env=useHIG();return <View {...props} style={[{direction:env.direction,gap:tokens.space.md},style]}/>;}
 export function Inline({style,...props}:ViewProps){const env=useHIG();return <View {...props} style={[{direction:env.direction,flexDirection:'row',flexWrap:'wrap',alignItems:'center',gap:tokens.space.md},style]}/>;}
-export function Surface({style,...props}:ViewProps){const env=useHIG();const colors=useColors();return <View {...props} style={[{direction:env.direction,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:tokens.radius.xl,padding:tokens.space.xl,minWidth:0},style]}/>;}
+/** A filled card with no stroke; its fill and the space around it separate it from the page. */
+export function Surface({style,children,...props}:ViewProps){const env=useHIG();const colors=useColors();return <View {...props} style={[{direction:env.direction,backgroundColor:colors.surface,borderRadius:tokens.radius.xl,padding:tokens.space.xl,minWidth:0},style]}><Raised>{children}</Raised></View>;}
 export const Card=Surface;
-export function Separator(){const colors=useColors();return <View accessibilityRole='none' style={{height:1,backgroundColor:colors.border}}/>;}
+export function Separator(){const colors=useColors();return <View accessibilityRole='none' style={{height:2,borderRadius:9999,backgroundColor:colors.border}}/>;}

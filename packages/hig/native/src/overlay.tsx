@@ -1,6 +1,6 @@
 import type {GestureResponderEvent,ModalProps,StyleProp,ViewProps,ViewStyle} from 'react-native';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useColors,useHIG} from './provider.js';
+import {Raised,useColors,useHIG} from './provider.js';
 import React,{useEffect,useRef,useId,useCallback} from 'react';
 import {Modal,KeyboardAvoidingView,Platform,ScrollView,AccessibilityInfo,findNodeHandle,Text as RNText,TextInput,View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -19,7 +19,7 @@ export interface DialogProps {
  /** Identifies the actual modal content surface in either mode. */testID?:string;
  /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */animationType?:ModalProps['animationType'];
 }
-/** Native focus requests remain best effort; host supplies a live trigger ref for restoration. */
+/** The panel has no stroke: it is the `overlay` fill, darker than a card, lifted by a soft shadow. Native focus requests remain best effort; host supplies a live trigger ref for restoration. */
 /** Android TalkBack ignores the TYPE_VIEW_FOCUSED event behind setAccessibilityFocus in RN 0.81 Fabric (emulator: focus fell back to the first screen element); a hover-enter event moves its focus. */
 function focusNative(target:React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null){if(Platform.OS==='web'||!target)return;const handle=findNodeHandle(target);if(handle==null)return;AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(target,'viewHoverEnter');}
 /** React Native's iOS Modal defaults to portrait only; opening an overlay must not rotate a landscape host. */
@@ -47,9 +47,9 @@ export function Dialog({open,onOpenChange,title,description,children,initialFocu
    {backdrop}
    <View accessible={false} accessibilityLabel={title} accessibilityViewIsModal onAccessibilityEscape={()=>onOpenChange(false)} collapsable={false} style={[{direction},contentStyle]} testID={testID}>
     {!titleRef&&<Heading ref={heading} accessible accessibilityLabel={title} style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{title}</Heading>}
-    {children}
+    <Raised>{children}</Raised>
    </View>
-  </Stage>:<SafeAreaView style={{flex:1,backgroundColor:'#000b',justifyContent:'center'}}><KeyboardAvoidingView behavior={Platform.OS==='ios'?'padding':'height'} style={{maxHeight:'90%'}}><ScrollView testID={testID} keyboardShouldPersistTaps='handled' contentContainerStyle={{padding:24,backgroundColor:colors.surface,borderRadius:14}}><Stack><Heading ref={heading}>{title}</Heading>{description!==undefined&&<Text>{description}</Text>}{children}<Button intent='secondary' suppressFeedback onPress={()=>onOpenChange(false)}>{closeLabel??messages.close??en.close}</Button></Stack></ScrollView></KeyboardAvoidingView></SafeAreaView>}
+  </Stage>:<SafeAreaView style={{flex:1,backgroundColor:'#000b',justifyContent:'center'}}><KeyboardAvoidingView behavior={Platform.OS==='ios'?'padding':'height'} style={{maxHeight:'90%'}}><ScrollView testID={testID} keyboardShouldPersistTaps='handled' contentContainerStyle={{padding:24,backgroundColor:colors.overlay,borderRadius:14,boxShadow:'0 16px 48px #0008'}}><Raised><Stack><Heading ref={heading}>{title}</Heading>{description!==undefined&&<Text>{description}</Text>}{children}<Button intent='secondary' suppressFeedback onPress={()=>onOpenChange(false)}>{closeLabel??messages.close??en.close}</Button></Stack></Raised></ScrollView></KeyboardAvoidingView></SafeAreaView>}
  </Modal>;
  return modal;
 }

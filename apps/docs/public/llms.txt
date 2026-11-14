@@ -146,14 +146,14 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. Native: the label and suffix render through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](../foundations/localization.md#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. A busy Button shows a spinner on the leading side of its label; a busy IconButton shows the spinner in place of its icon. The busy text (` · Working`) is not drawn: it is appended to the accessible name from HIGProvider `messages.busy` or `busyLabel`; `''` omits it while busy state stays exposed. Native: the label renders through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](../foundations/localization.md#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
 
 ## When to use and examples
 
-Use one primary review action. Do: busy protects host requests and displays the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
+Use one primary review action. Do: busy protects host requests, shows the leading spinner and announces the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 
 ## States, interaction and accessibility
 
@@ -255,7 +255,7 @@ Do: label Amount (BTC), describe available funds, keep 0,001 unchanged until hos
 
 ## States, interaction and accessibility
 
-Single-line inputs are 48-unit pills on the surface fill with a subtle border; focus thickens the border to a neutral ring and invalid inputs take the negative border. TextArea keeps a rounded rectangle. DOM label/id plus help/error aria-describedby; invalid state is explicit. Field required propagates to Input/TextArea for browser required semantics and form validation; explicit input props can override required. A disabled Field keeps its controls disabled even if a child requests otherwise. Native amount keyboardType and search returnKeyType remain host-overridable defaults for locale/negative-entry and submit flows. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.
+Single-line inputs are 48-unit pills with no resting stroke: the fill is `surface` on the page and `nested` inside a Surface, Dialog or sheet, so the field always reads against its container. Focus draws a neutral ring and invalid inputs take a negative ring. TextArea keeps a rounded rectangle. SearchInput insets a magnifying glass on the leading edge. DOM label/id plus help/error aria-describedby; invalid state is explicit. Field required propagates to Input/TextArea for browser required semantics and form validation; explicit input props can override required. A disabled Field keeps its controls disabled even if a child requests otherwise. Native amount keyboardType and search returnKeyType remain host-overridable defaults for locale/negative-entry and submit flows. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -557,7 +557,7 @@ All data and actions are supplied by the host application.
 | Recipe | Key props and behavior |
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
-| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web through Sonner, so mount `Toaster` from `@bloxwap/hig/react/toast` once near the app root. |
 | `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
 
 Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
@@ -645,7 +645,7 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 
 ## Platform mapping and limits
 
-SegmentedControl uses single-choice radio semantics on both platforms. Use it for a short set of related choices; use `RadioGroup` when options need longer descriptions. Web retains native radio keyboard behavior and a visible focus ring. Native segments keep 48dp minimum touch targets, wrapping labels, per-option language and accessibility activation. The decorative pill is hidden from accessibility and does not intercept taps. Its position follows RTL direction and available width; native layout changes snap into place, and rapid selections interrupt the current animation. `HIGProvider reducedMotion` and the OS motion preference disable movement. A controlled pill follows the accepted `value`, including programmatic changes. An absent value has no pill.
+SegmentedControl uses single-choice radio semantics on both platforms. Use it for a short set of related choices; use `RadioGroup` when options need longer descriptions. Web retains native radio keyboard behavior and a visible focus ring. The control is 44 units high on touch density (36 compact): a dark track with a lighter selected pill. Native segments extend their touch target to 48dp with hit slop and keep wrapping labels, per-option language and accessibility activation. The decorative pill is hidden from accessibility and does not intercept taps. Its position follows RTL direction and available width; native layout changes snap into place, and rapid selections interrupt the current animation. `HIGProvider reducedMotion` and the OS motion preference disable movement. A controlled pill follows the accepted `value`, including programmatic changes. An absent value has no pill.
 
 Slider accessibility increment/decrement, set-progress and disabled rejection are verified on the iOS Simulator and Android emulator (`evidence/native-sim/`); tactile drag feel and haptic rate remain physical-device work; the slider backend is an optional native peer. Earlier native SegmentedControl gallery captures show the previous radio-list rendering and do not validate the new animation on physical devices.
 
@@ -674,11 +674,11 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/sta
 | `Badge` | Quiet label; web adds explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`), standard span props and a forwarded span ref. The neutral default retains its appearance. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
 | `Alert` | `title`, `severity`, and an optional recovery `action`. Severity sets the glowing stroke from a token role on web and native — a 2px tone border on all sides with a matching `0 0 24px` glow at 55% on a translucent (95%) surface, 16px radius: `default` → neutral (`border` token stroke, soft white 20px glow), info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. |
 | `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own stroke colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
-| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Toast cards reuse the Alert glowing stroke at a pill (999) radius. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides visible Dismiss text; its accessible name contains that text. |
+| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Each notice is one capsule row with no stroke: a severity symbol on the leading edge, the message, the optional action, and a close symbol on the trailing edge. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides the Dismiss wording inside the close button's accessible name; the button draws a symbol, not text. For transient notices on web, `toast()` and `Toaster` from `@bloxwap/hig/react/toast` raise the same capsule through Sonner. |
 | `Progress` | `label`, `value`, and `max`. |
-| `EmptyState` | `title`, `description`, and an optional `action`. |
+| `EmptyState` | `title`, optional `description`, optional `action`, and decorative `illustration`. A centred stack: symbol, title, description, action. `illustration` replaces the default symbol; `null` omits it. |
 
-Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy. Its `description` is optional; omitted or empty text leaves no blank description node. Pass decorative `illustration` content before the heading; HIG hides the whole illustration subtree from VoiceOver/TalkBack navigation while keeping the heading and action accessible. The host controls the illustration's dimensions and spacing. Root `ViewProps`, including `style`, `testID` and layout events, pass to the Surface. `titleStyle` and `descriptionStyle` reach the actual text nodes; `maxFontSizeMultiplier` caps both, or inherits the provider policy when omitted. Text keeps the provider palette and heading semantics unless the host explicitly styles it.
+Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy, centred. Its `description` is optional; omitted or empty text leaves no blank description node. Decorative `illustration` content replaces the default symbol above the heading (`null` omits it); HIG hides the whole illustration subtree from VoiceOver/TalkBack navigation while keeping the heading and action accessible. The host controls the illustration's dimensions and spacing. Root `ViewProps`, including `style`, `testID` and layout events, pass to the Surface. `titleStyle` and `descriptionStyle` reach the actual text nodes; `maxFontSizeMultiplier` caps both, or inherits the provider policy when omitted. Text keeps the provider palette and heading semantics unless the host explicitly styles it.
 
 ```tsx
 <EmptyState
@@ -1170,15 +1170,15 @@ const fr: Partial<HIGMessages> = {
 
 <HIGProvider locale='fr-FR' messages={fr}>…</HIGProvider>
 <Dialog closeLabel={t('checkout.back')} …/>   // one instance
-<Button busy busyLabel=''>…</Button>           // no visible suffix; busy state stays exposed
+<Button busy busyLabel=''>…</Button>           // no busy text in the name; spinner and busy state stay
 ```
 
 Resolution order, per key: the component prop, then the nearest `HIGProvider messages`, then any enclosing `HIGProvider messages`, then English. A nested provider for density or direction keeps the host's translations. `undefined` keys and values of the wrong type (a string where a function is expected, or the reverse) are ignored, so a partial catalog never blanks a label. `useMessages()` returns the complete resolved catalog; `useHIG().messages` holds only the host overrides. Each English default is also a named export of `@bloxwap/hig/contracts/messages`, and a component falls back per key (`messages.close ?? en.close`), so importing one component bundles only the copy it renders.
 
 Rules:
 
-- **Visible text and accessible names come from the same key.** The Close, Dismiss and busy text is the button content, so it is also the accessible name. The Toast dismiss name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it, so voice-control users can say the label they see. `stale` and `required` are appended to both the visible text and the accessible name.
-- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is the visible `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
+- **Visible text and accessible names come from the same key.** The Close text is the button content, so it is also the accessible name. A busy Button draws a spinner and a Toast close button draws a symbol; their `busy` and `dismiss` wording lives in the accessible name only. The Toast close name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it. `stale` and `required` are appended to both the visible text and the accessible name.
+- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
 - **Slider actions are labeled (#87).** The native Slider's increment and decrement accessibility actions carry `increase` and `decrease`. React Native 0.83 Android otherwise lists them with an empty label.
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
@@ -1191,7 +1191,7 @@ Rules:
 | `cancel` | Cancel | AlertDialog (web) decline button | `cancelLabel` |
 | `dismiss` | Dismiss | Toast dismiss button text | `dismissLabel` |
 | `dismissNotice` `(message, dismiss)` | {dismiss} {message} | Toast dismiss accessible name; must contain the `dismiss` argument | — |
-| `busy` | Working | Button busy suffix, shown as ` · {busy}`; `''` hides it | `busyLabel` |
+| `busy` | Working | Button busy text, appended to the accessible name as ` · {busy}` beside the visible spinner; `''` omits it | `busyLabel` |
 | `notifications` | Notifications | Toast region name (web) | — |
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
@@ -1241,7 +1241,7 @@ Rules:
 
 See `tests/tokens.test.ts`, `tests/data.dom.test.tsx`, `tests/glossary.test.ts`, `tests/built-in-strings.test.ts`, `tests/messages.dom.test.tsx`, `tests/native/messages.test.cjs`, `docs/foundations/localization.json` and the data chapter. Cite HIG 0.1.0 with this chapter anchor and a commit permalink.
 
-The native Button's busy suffix starts with the separator (`· Working`); the row supplies its visual gap. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.
+The native Button shows a leading spinner while busy and draws no busy text. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.
 
 
 ## Native runtime differences · HIG 0.1.0
@@ -1869,6 +1869,10 @@ These are the rules that `@bloxwap/hig/react/css` applied to the whole page befo
 The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/recipes` or `@bloxwap/hig/react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
 
 The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
+
+### Sonner toasts
+
+`@bloxwap/hig/react/toast` exports `Toaster`, `toast()` and `dismissToast()`, which raise the HIG toast capsule through [Sonner](https://sonner.emilkowal.ski/). `sonner ^2.0.0` is an optional peer: install it for `@bloxwap/hig/react/toast`, `@bloxwap/hig/react/recipes` or `@bloxwap/hig/react/recipes/install-command`, and mount `<Toaster/>` once inside `HIGProvider`. Without a mounted toaster `InstallCommand` still announces its copy result to assistive technology but shows no toast. The controlled `Toast` in `@bloxwap/hig/react/status` needs no backend.
 
 ## Brand accent
 

@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-10-27T18:04:43.462Z",
-  "sourceCommit": "c5b9a9465712a7f7f07ef83a704ccb905bbc3314",
+  "checkedAt": "2026-11-14T17:33:39.356Z",
+  "sourceCommit": "5e75c3de5e62a45e93b453836219a95c7c6968bb",
   "sourceDirty": true,
   "inputHashes": {
-    "packages/react/src/gesture-sheet.tsx": "3ca2e4ff68df762f54e9d70cc0e30b1544623adf1bbdccea18623f211134b82e",
-    "packages/react/src/styles.css": "7f51fb5143876c6837dccdd1934f0f932ac05633323ca8483b7de2952055859a",
-    "packages/react/package.json": "af82af4f9f6bab0b25c3feb5e1fb0528a8d4278626517a43f1fd86e0bb8bc58c",
-    "scripts/gesture-sheet-browser-smoke.mjs": "652c3b1a23133c394fd8d85dfcb520ee764342db0348076d060a6919a24cabe5"
+    "packages/hig/react/src/gesture-sheet.tsx": "20f24edc55f34c43601dbf196267cff251d6d592aec7f7c7af50f07727e94c64",
+    "packages/hig/react/src/styles.css": "098686930524ae7fa6ea89c6e33882a851521349323fcaeb62165d7996de0a2f",
+    "packages/hig/package.json": "d5919f6c6e90b44ee2e2932cd78bc7b99ed8e6e9380ade4e6ba5b79dfb06f394",
+    "scripts/gesture-sheet-browser-smoke.mjs": "b35c8d572de76ea7e7df7e82539bb20abfdfbeb9b66bf5c40b2d69fa426be36c"
   },
   "backend": "vaul@1.1.2",
   "browserVersions": {
@@ -260,11 +260,11 @@
             false
           ],
           [
-            "return"
-          ],
-          [
             "settled",
             false
+          ],
+          [
+            "return"
           ],
           [
             "request",

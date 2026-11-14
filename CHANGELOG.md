@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+Design review pass over all 65 catalog components (web and native). HIG now separates layers with fill and space, not strokes.
+
+- No resting strokes. Surface, Card, inputs, Select, Dialog, Sheet, Menu, Popover, Table and EmptyState lose their border. Control wells (inputs, segmented track, Badge, Avatar) take `surface` on the page and step to `nested` inside a surface or overlay; focus and invalid states keep a ring. Web keeps a transparent 1px border in the box, so sizes are unchanged and forced-colors still draws an edge.
+- New colour role `overlay` (`#111111`, `--hig-overlay`): Dialog, AlertDialog, Sheet and GestureSheet panels use it, darker than a card, with a deeper shadow.
+- Button and IconButton: busy shows a leading spinner (in place of the icon on IconButton). The busy text is no longer drawn; it stays in the accessible name.
+- SegmentedControl is inverted (dark track, lighter selected segment) and 44px high on touch density, 36px compact. Switch: the off track is dark grey.
+- SearchInput and Search inset a magnifying glass on the leading edge. Web wraps the input in `span.hig-search-input`; the ref, class and props still reach the input.
+- Toast notices are single-row capsules: severity symbol, message, optional action, close symbol. The Dismiss wording moves to the close button's accessible name. Web markup changes from Alert sections to `.hig-toast-item`.
+- New web entry `@bloxwap/hig/react/toast` (`Toaster`, `toast()`, `dismissToast()`) raises the capsule through Sonner; `sonner ^2.0.0` is a new optional peer. `InstallCommand` reports its copy result as a toast. Hosts using `@bloxwap/hig/react/recipes` or `recipes/install-command` must install `sonner` and mount `Toaster`.
+- EmptyState is a centred stack under a default symbol. Web gains `illustration` (as on native) and `description` becomes optional.
+- Accordion: outline chevron on the trailing edge that turns as the panel opens; the panel height eases where the browser can interpolate to `auto`. The whole header row is the target.
+- Skeleton pulses, and StatusIndicator emits a ring in its status colour for `online` and `stale`. Both stop under reduced motion. Skeleton now fills its container width.
+- Separator is a 2px line with rounded ends. Table separates sections with space and type weight instead of rules.
+- Native: `useFills()` and `Raised` from `@bloxwap/hig/native/provider` expose the same page/raised fills for host-drawn controls; Button, IconButton and Tabs are 44dp with hit slop keeping a 48dp target; icons are drawn from plain Views, so `react-native-svg` stays optional. `InstallCommand` shows its copy result as a transient toast capsule (4s).
+- Examples: the IconButton example passes `busy`, and the Tooltip example confirms its copy with a toast.
+
 ## 0.3.0
 
 - Every JS export now has a `default` condition beside `import`. Jest/jest-expo, `require()` and Metro's CommonJS resolution can import HIG entries instead of failing with `ERR_PACKAGE_PATH_NOT_EXPORTED`.

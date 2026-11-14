@@ -1,11 +1,13 @@
 import React,{useEffect,useRef,useState} from 'react';
+import {tokens} from '@bloxwap/hig/tokens';
+import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {ActivityIndicator,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType,type ViewProps,type TextProps} from 'react-native';
+import {ActivityIndicator,Animated,Easing,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType,type ViewProps,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {Button} from './button.js';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useColors,useHIG} from './provider.js';
+import {useColors,useFills,useHIG} from './provider.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {blockText,plainText} from './text-content.js';
 import {roleColor,type AccentRole} from './roles.js';
@@ -14,7 +16,8 @@ const severityRole={info:'info',note:'info',success:'positive',tip:'positive',wa
 /** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (border stroke, soft white glow). */
 export type AlertSeverity=keyof typeof severityRole|'default';
 function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
-export function Badge({children}:React.PropsWithChildren){const colors=useColors();return <Text style={{alignSelf:'flex-start',maxWidth:'100%',backgroundColor:colors.nested,borderRadius:9999,paddingVertical:4,paddingHorizontal:10}}>{children}</Text>;}
+/** Neutral chip in the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
+export function Badge({children}:React.PropsWithChildren){const fills=useFills();return <Text style={{alignSelf:'flex-start',maxWidth:'100%',backgroundColor:fills.well,overflow:'hidden',borderRadius:9999,paddingVertical:4,paddingHorizontal:10}}>{children}</Text>;}
 /** Severity sets the glowing stroke from a token role (info/note → info, success/tip → positive, warning, error → negative, default → neutral border); `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. */
 export function Alert({title,children,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;announce?:boolean}>){const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.border:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,borderWidth:2,borderColor:accent,borderRadius:16,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:neutral?`0 0 20px ${withAlpha(colors.text,0.12)}`:`0 0 24px ${withAlpha(accent,0.55)}`}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading>{title}</Heading>{children}{action}</Surface>;}
 export const Callout=Alert;
@@ -30,15 +33,17 @@ export interface Notice {
 export interface ToastProps {
  notices:readonly Notice[];
  onDismiss?:(id:string)=>void;
- /** Dismiss button text; defaults to HIGProvider messages.dismiss. */
+ /** Dismiss wording inside the close control's accessible name; defaults to HIGProvider messages.dismiss. The control shows an x, not text. */
  dismissLabel?:string;
  /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */
  maxHeight?:DimensionValue;
  testID?:string;
 }
-/** Compact, scrollable notices remain visible until their host removes them. */
+/** Loops a 0→1 value while `active`; rests at 0 otherwise (reduced motion, or nothing to show). */
+function useLoop(active:boolean,duration:number,easing:(value:number)=>number=Easing.linear){const value=useRef(new Animated.Value(0)).current;useEffect(()=>{if(!active){value.stopAnimation();value.setValue(0);return;}const loop=Animated.loop(Animated.timing(value,{toValue:1,duration,easing,useNativeDriver:Platform.OS!=='web',isInteraction:false}));loop.start();return()=>loop.stop();},[active,duration,easing,value]);return value;}
+/** Each notice is one capsule row: severity symbol, message, optional action, then a close control. Compact, scrollable notices remain visible until their host removes them. */
 export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastProps){
- const {messages}=useHIG();const colors=useColors();
+ const {messages,direction}=useHIG();const colors=useColors();
  const {height}=useWindowDimensions();
  const dismiss=dismissLabel??messages.dismiss??en.dismiss;
  const unique=[...new Map(notices.map(n=>[n.id,n])).values()];
@@ -57,12 +62,12 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <View testID={testID} style={{maxHeight:maxHeight??height*.6,flexShrink:1}}>
   <ScrollView style={{flexGrow:0,flexShrink:1}} nestedScrollEnabled keyboardShouldPersistTaps='handled' accessibilityLabel={messages.notifications??en.notifications}>
-   <Stack style={{gap:8}}>{unique.map(n=><Surface key={n.id} accessibilityLiveRegion='none' style={{padding:12,gap:8,borderWidth:2,borderColor:colors[severityRole[n.severity]],borderRadius:999,backgroundColor:withAlpha(colors.surface,0.95),boxShadow:`0 0 24px ${withAlpha(colors[severityRole[n.severity]],0.55)}`}}>
-    <Text style={{fontWeight:'600'}}>{n.message}</Text>
-    {n.description?<Text>{n.description}</Text>:null}
+   <Stack style={{gap:8}}>{unique.map(n=><View key={n.id} accessibilityLiveRegion='none' style={{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'}}>
+    <SeverityIcon kind={n.severity} color={colors[severityRole[n.severity]]}/>
+    <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{n.message}</Text>{n.description?<Text>{n.description}</Text>:null}</View>
     {n.action}
-    {n.closable!==false&&onDismiss?<Button intent='ghost' accessibilityLabel={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onPress={()=>onDismiss(n.id)}>{dismiss}</Button>:null}
-   </Surface>)}</Stack>
+    {n.closable!==false&&onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} hitSlop={8} onPress={()=>onDismiss(n.id)} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null}
+   </View>)}</Stack>
   </ScrollView>
   {Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}
  </View>;
@@ -78,23 +83,30 @@ export function Progress({label,value,max=100}: {label:string;value?:number;max?
   </View>
  </View>;
 }
-export function Skeleton({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();return <View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10}}/>;}
+/** Pulses while content is on its way; still with reduced motion. */
+export function Skeleton({label}: {label?:string}){const {messages,reducedMotion}=useHIG();const colors=useColors();const pulse=useLoop(!reducedMotion,1500);return <Animated.View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:colors.nested,borderRadius:10,opacity:pulse.interpolate({inputRange:[0,.5,1],outputRange:[1,.5,1]})}}/>;}
 export interface EmptyStateProps extends Omit<ViewProps,'children'> {
  title:string;
  description?:string;
  action?:React.ReactNode;
- /** Decorative content, hidden from accessibility; the title and description supply its meaning. */
+ /** Decorative mark above the title, hidden from accessibility; the title and description supply its meaning. Omitted, a neutral outline icon shows; `null` shows none. */
  illustration?:React.ReactNode;
  titleStyle?:TextProps['style'];
  descriptionStyle?:TextProps['style'];
  /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */
  maxFontSizeMultiplier?:number;
 }
-export function EmptyState({title,description,action,illustration,titleStyle,descriptionStyle,maxFontSizeMultiplier,...props}:EmptyStateProps){return <Surface {...props} style={[{gap:12},props.style]}>
- {illustration!=null&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{illustration}</View>}
- <Heading style={titleStyle} maxFontSizeMultiplier={maxFontSizeMultiplier}>{title}</Heading>
- {description?<Text style={descriptionStyle} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
+/** A strokeless card, centred: icon, title, optional description, then the action. */
+export function EmptyState({title,description,action,illustration,titleStyle,descriptionStyle,maxFontSizeMultiplier,...props}:EmptyStateProps){const colors=useColors();const mark=illustration!==undefined?illustration:<EmptyIcon color={colors.muted}/>;return <Surface {...props} style={[{gap:12,alignItems:'center'},props.style]}>
+ {mark!=null&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{mark}</View>}
+ <Heading style={[{textAlign:'center'},titleStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{title}</Heading>
+ {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
-export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<Text accessibilityLabel={name}>{name.slice(0,2)}</Text>;}
-export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const {messages}=useHIG();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;return <Text>{label}: {text}</Text>;}
+/** Initials sit on the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
+export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){const fills=useFills();return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<View accessible accessibilityRole='image' accessibilityLabel={name} style={{width:40,height:40,borderRadius:20,backgroundColor:fills.well,alignItems:'center',justifyContent:'center'}}><Text accessible={false}>{name.slice(0,2)}</Text></View>;}
+const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
+const ringEasing=Easing.out(Easing.quad);
+/** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */
+export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const {messages,reducedMotion,direction}=useHIG();const colors=useColors();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;const color=colors[statusRole[state]??'muted'];const live=!reducedMotion&&(state==='online'||state==='stale');const ring=useLoop(live,1600,ringEasing);
+ return <View style={{direction,flexDirection:'row',alignItems:'center',gap:tokens.space.sm}}><View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{width:7,height:7}}>{live&&<Animated.View style={{position:'absolute',width:7,height:7,borderRadius:4,backgroundColor:color,opacity:ring.interpolate({inputRange:[0,1],outputRange:[.6,0]}),transform:[{scale:ring.interpolate({inputRange:[0,1],outputRange:[1,3]})}]}}/>}<View style={{width:7,height:7,borderRadius:4,backgroundColor:color}}/></View><Text style={{flexShrink:1,minWidth:0}}>{label}: {text}</Text></View>;}

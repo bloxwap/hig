@@ -17,7 +17,7 @@ import * as Surface from '@bloxwap/hig/react/surface';
 const C={...Chart,...AnimatedNumber,...Brand,...Button,...Data,...Field,...GestureSheet,...Navigation,...Overlay,...Provider,...Recipes,...Selection,...Status,...Surface};
 export function Example({name,state='default'}:{name:string;state?:string}){const empty=state==='empty';const [checked,setChecked]=useState(false);const [value,setValue]=useState('buy');const [range,setRange]=useState(25);const [open,setOpen]=useState(false);const [amount,setAmount]=useState('0.01');const [message,setMessage]=useState('');const [notices,setNotices]=useState([{id:'1',message:'Demo copied',severity:'success' as const}]);const choices=[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}];const rows=empty?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];const busy=state==='busy',disabled=state==='disabled',error=state==='error'?'Data unavailable. Retry when connected.':undefined;
 function preview(){switch(name){case "Button":return <C.Button busy={busy} disabled={disabled}>Review order</C.Button>;
-case "IconButton":return <C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>;
+case "IconButton":return <C.IconButton label='Confirm selection' busy={busy} disabled={disabled}><C.CheckIcon/></C.IconButton>;
 case "Link":return <C.Link href='https://github.com/bloxwap/hig'>Read HIG guidelines</C.Link>;
 case "Text":return <C.Text>Review the amount and asset before confirming.</C.Text>;
 case "Heading":return <C.Heading>Order details</C.Heading>;
@@ -44,7 +44,7 @@ case "Sheet":return <C.Sheet open={open} onOpenChange={setOpen} title='Order det
 case "GestureSheet":return <C.Stack><C.Button onClick={()=>setOpen(true)}>Open dynamic details</C.Button><C.GestureSheet open={open} onOpenChange={setOpen} title='Dynamic order details' description='Content grows and shrinks without changing the controlled open state.' enableDynamicSizing maxDynamicContentSize={480}><C.Stack><C.Text>Review the host-provided amount and terms.</C.Text>{checked&&<C.Text>Additional settlement details appear here and are removed when the example is collapsed.</C.Text>}<C.Button intent='secondary' onClick={()=>setChecked(!checked)}>{checked?'Show less':'Show more'}</C.Button></C.Stack></C.GestureSheet></C.Stack>;
 case "Menu":return <C.Menu label='Market actions' items={[{label:'Show details',onSelect:()=>setMessage('Details selected')},{label:'Unavailable action',disabled:true,onSelect:()=>{}}]}/>;
 case "Popover":return <C.Popover label='Precision help'><C.Text>Display rounding never changes order quantity.</C.Text></C.Popover>;
-case "Tooltip":return <C.Tooltip content='Copy the install command'><C.Button intent='secondary' onClick={()=>setMessage('Copy selected')}>Copy</C.Button></C.Tooltip>;
+case "Tooltip":return <><C.Tooltip content='Copy the install command'><C.Button intent='secondary' onClick={()=>setNotices([{id:'copy',message:'Copied',severity:'success'}])}>Copy</C.Button></C.Tooltip><C.Toast notices={notices.filter(n=>n.id==='copy')} onDismiss={()=>setNotices([])}/></>;
 case "Tabs":return <C.Tabs label='Example modes' items={[{value:'preview',label:'Preview',content:<C.Text>Visible preview</C.Text>},{value:'code',label:'Code',content:<C.Text>Copyable code</C.Text>}]}/>;
 case "Accordion":return <C.Accordion title='Advanced options' open={open} onOpenChange={setOpen}><C.Text>Host-owned advanced settings.</C.Text></C.Accordion>;
 case "Breadcrumb":return <C.Breadcrumb items={[{label:'Guidelines',href:'https://github.com/bloxwap/hig'},{label:'Components'}]}/>;

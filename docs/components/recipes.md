@@ -13,7 +13,7 @@ All data and actions are supplied by the host application.
 | Recipe | Key props and behavior |
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
-| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web through Sonner, so mount `Toaster` from `@bloxwap/hig/react/toast` once near the app root. |
 | `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
 
 Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:

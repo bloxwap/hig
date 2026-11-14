@@ -38,8 +38,9 @@ it('keeps host recovery actions and localized dismissal, respecting non-closable
  const tree=mount(h(HIGProvider,{messages:{dismiss:'Fermer'}},h(Toast,{notices,onDismiss:dismissed})));
  const buttons=tree.findAllByType(Button);
  expect(buttons).toHaveLength(2);
- const dismiss=buttons.find(node=>node.props.children==='Fermer');
- expect(dismiss.props.accessibilityLabel).toContain('Fermer');
+ // The close control is an x; the dismiss wording lives in its accessible name only.
+ const dismiss=buttons.find(node=>node.props.accessibilityLabel==='Fermer Copied');
+ expect(dismiss).toBeTruthy();expect(tree.findAllByType(RNText).some(node=>node.props.children==='Fermer')).toBe(false);
  act(()=>dismiss.props.onPress());expect(dismissed).toHaveBeenCalledWith('dismissible');
  act(()=>buttons.find(node=>node.props.children==='Retry').props.onPress());expect(retry).toHaveBeenCalledTimes(1);
  expect(JSON.stringify(root.toJSON())).toContain('Keep this');

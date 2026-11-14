@@ -132,6 +132,11 @@
       "import": "./react/dist/status.js",
       "default": "./react/dist/status.js"
     },
+    "./react/toast": {
+      "types": "./react/dist/toast.d.ts",
+      "import": "./react/dist/toast.js",
+      "default": "./react/dist/toast.js"
+    },
     "./react/data": {
       "types": "./react/dist/data.d.ts",
       "import": "./react/dist/data.js",
@@ -338,6 +343,7 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
     "vaul": "^1.1.2",
+    "sonner": "^2.0.0",
     "@bloxwap/chart": "^0.3.0 || ^0.4.0",
     "react-native": "^0.81.5 || ^0.83.10 || ^0.88.0",
     "react-native-svg": "15.12.1 || 15.15.3 || 15.16.0",
@@ -380,6 +386,9 @@
       "optional": true
     },
     "vaul": {
+      "optional": true
+    },
+    "sonner": {
       "optional": true
     },
     "react-native": {

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.3.0",
   "browser": "156.0.8078.4",
   "viewport": [
     390,
@@ -16,9 +16,8 @@
       "name": "Button",
       "state": "default",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/button-default.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -29,9 +28,8 @@
       "name": "Button",
       "state": "busy",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/button-busy.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -42,9 +40,8 @@
       "name": "Button",
       "state": "disabled",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/button-disabled.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -154,9 +151,8 @@
       "name": "Field",
       "state": "default",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/field-default.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -167,9 +163,8 @@
       "name": "Field",
       "state": "error",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/field-error.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -189,9 +184,8 @@
       "name": "Input",
       "state": "default",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/input-default.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -202,9 +196,8 @@
       "name": "Input",
       "state": "disabled",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/input-disabled.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -215,9 +208,8 @@
       "name": "Input",
       "state": "error",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/input-error.png"
       },
       "render": "passed",
       "accessibility": "no serious/critical axe findings",
@@ -399,9 +391,8 @@
       "name": "Slider",
       "state": "focus-comfortable",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/slider-focus-comfortable.png"
       },
       "render": "passed",
       "capture": "artifacts/visual/slider-focus-comfortable.png",
@@ -411,9 +402,8 @@
       "name": "Slider",
       "state": "focus-compact",
       "regression": {
-        "changedRatio": 0,
-        "maxChangedRatio": 0.02,
-        "channelTolerance": 24
+        "updated": true,
+        "baseline": "tests/visual-baselines/darwin/slider-focus-compact.png"
       },
       "render": "passed",
       "capture": "artifacts/visual/slider-focus-compact.png",

@@ -1,14 +1,16 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
-const {Text:RNText,Platform}=require('react-native');
+const {Text:RNText,Platform,ActivityIndicator,StyleSheet}=require('react-native');
+const {IconButton}=require('../../packages/hig/native/src/button');
 const {Button,busyAccessibilityLabel}=require('../../packages/hig/native/src/button');
 const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});
-it('uses the row gap alone before the busy suffix while keeping a spaced accessible name (#121)',()=>{
+it('shows a leading spinner instead of a busy suffix while keeping a spaced accessible name (#121)',()=>{
  act(()=>{root=create(h(Button,{busy:true},'Log ','out'));});
  const runs=root.root.findAllByType(RNText);
- expect(runs.map(node=>React.Children.toArray(node.props.children).join(''))).toEqual(['Log out','· Working']);
+ expect(runs.map(node=>React.Children.toArray(node.props.children).join(''))).toEqual(['Log out']);
+ const spinner=root.root.findByType(ActivityIndicator);expect(spinner.parent.children[0]).toBe(spinner);
  expect(busyAccessibilityLabel('Log out','Working','ios')).toBe('Log out · Working');
  expect(busyAccessibilityLabel('로그아웃','처리 중','android')).toBe('로그아웃');
  const control=root.root.findAll(node=>node.props.accessibilityRole==='button')[0];
@@ -16,4 +18,15 @@ it('uses the row gap alone before the busy suffix while keeping a spaced accessi
  act(()=>root.update(h(Button,{busy:true,busyLabel:'',accessibilityLabel:'Host name'},'Log out')));
  expect(root.root.findAllByType(RNText)).toHaveLength(1);
  expect(root.root.findAll(node=>node.props.accessibilityRole==='button')[0].props.accessibilityLabel).toBe('Host name');
+});
+it('is 44dp tall with a 48dp touch target; a busy IconButton swaps its icon for the spinner',()=>{
+ act(()=>{root=create(h(Button,null,'Review order'));});
+ const control=root.root.findAll(node=>node.props.accessibilityRole==='button')[0];
+ expect(StyleSheet.flatten(control.props.style({pressed:false}))).toMatchObject({minHeight:44,paddingVertical:10});expect(control.props.hitSlop).toEqual({top:2,bottom:2});
+ act(()=>root.update(h(IconButton,{label:'Confirm',busy:true},h(RNText,null,'icon'))));
+ expect(root.root.findAllByType(RNText)).toHaveLength(0);expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(1);
+ const icon=root.root.findAll(node=>node.props.accessibilityRole==='button')[0];
+ expect(StyleSheet.flatten(icon.props.style({pressed:false}))).toMatchObject({minHeight:44,minWidth:44});expect(icon.props.accessibilityLabel).toBe('Confirm');
+ act(()=>root.update(h(IconButton,{label:'Confirm'},h(RNText,null,'icon'))));
+ expect(root.root.findAllByType(RNText)).toHaveLength(1);expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(0);
 });

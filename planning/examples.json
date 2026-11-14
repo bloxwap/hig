@@ -22,8 +22,8 @@
       "slug": "icon-button",
       "entry": "button",
       "family": "actions-surfaces",
-      "web": "<C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>",
-      "native": "<C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>",
+      "web": "<C.IconButton label='Confirm selection' busy={busy} disabled={disabled}><C.CheckIcon/></C.IconButton>",
+      "native": "<C.IconButton label='Confirm selection' busy={busy} disabled={disabled}><C.CheckIcon/></C.IconButton>",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -415,7 +415,7 @@
       "slug": "tooltip",
       "entry": "overlay",
       "family": "overlays",
-      "web": "<C.Tooltip content='Copy the install command'><C.Button intent='secondary' onClick={()=>setMessage('Copy selected')}>Copy</C.Button></C.Tooltip>",
+      "web": "<><C.Tooltip content='Copy the install command'><C.Button intent='secondary' onClick={()=>setNotices([{id:'copy',message:'Copied',severity:'success'}])}>Copy</C.Button></C.Tooltip><C.Toast notices={notices.filter(n=>n.id==='copy')} onDismiss={()=>setNotices([])}/></>",
       "native": "<C.HelpText>Copy help is persistent on touch; no hover requirement.</C.HelpText>",
       "nativeSupport": "alternative",
       "states": [
