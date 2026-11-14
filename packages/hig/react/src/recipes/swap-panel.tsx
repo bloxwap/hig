@@ -13,6 +13,8 @@ import {SwapIcon,SwapKeypad,SwapPill,addressGradient,applyAmountKey,formatPercen
 export {swapAction,type SwapAction,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
 export type {SwapWallet} from './swap/picker.js';
 export type {SwapFee} from './swap/settings.js';
+export {SwapAmountCard,type SwapAmountCardProps} from './swap/amount-card.js';
+export {SwapPill,SwapKeypad} from './swap/shared.js';
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
 export interface SwapPanelProps {

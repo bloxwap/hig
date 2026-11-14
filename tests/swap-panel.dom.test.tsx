@@ -221,3 +221,24 @@ describe('SwapSheet',()=>{
   expect(readFileSync('packages/hig/react/src/recipes.tsx','utf8')).not.toMatch(/from '\.\/recipes\/swap-sheet/);
  });
 });
+
+describe('SwapAmountCard',()=>{
+ it('draws the From card anatomy on its own: asset, actions, balance and the entered amount',async()=>{
+  const {SwapAmountCard,SwapPill}=await import('../packages/hig/react/src/recipes/swap-panel');const onMax=vi.fn();
+  const {container}=render(<SwapAmountCard name='USD Coin' symbol='USDC' context='Demo' actions={<SwapPill onClick={onMax}>Max</SwapPill>} meta='1,000 USDC' value={12.5} prefix='$' fractionDigits={2} amountLabel='Size'/>);
+  const card=container.querySelector('.hig-swap-card')!;expect(card.getAttribute('data-side')).toBe('from');
+  expect(card.querySelector('.hig-swap-identity')?.textContent).toBe('DemoUSD Coin');expect(card.querySelector('.hig-swap-initials')?.textContent).toBe('USD');
+  expect(card.querySelector('.hig-swap-meta .hig-number')?.textContent).toBe('1,000 USDC');
+  expect(screen.getByRole('textbox',{name:'Size'}).textContent).toContain('$12.50');
+  // No asset picker without onSelect; the capsule action still works.
+  expect(card.querySelector('.hig-swap-hit')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Max'}));expect(onMax).toHaveBeenCalledTimes(1);
+ });
+ it('takes host-drawn artwork, keeps a typed trailing point and can choose the asset',async()=>{
+  const {SwapAmountCard}=await import('../packages/hig/react/src/recipes/swap-panel');const onSelect=vi.fn();
+  const {container}=render(<SwapAmountCard name='USD Coin' symbol='USDC' icon={<svg data-testid='art'/>} value={3} trailingDot amountLabel='Size' onSelect={onSelect} selectLabel='Choose asset'/>);
+  expect(screen.getByTestId('art')).toBeTruthy();expect(container.querySelector('.hig-swap-initials')).toBeNull();expect(container.querySelector('.hig-swap-meta')).toBeNull();
+  expect(screen.getByRole('textbox',{name:'Size'}).textContent).toContain('3.');
+  fireEvent.click(screen.getByRole('button',{name:'Choose asset'}));expect(onSelect).toHaveBeenCalledTimes(1);
+  cleanup();render(<SwapAmountCard name='Bitcoin' symbol='BTC' value={12} suffix='%' trailingDot amountLabel='Target'/>);expect(screen.getByRole('textbox',{name:'Target'}).textContent).toContain('12.%');
+ });
+});

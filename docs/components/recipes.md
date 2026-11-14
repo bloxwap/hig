@@ -55,6 +55,14 @@ Presentation mode uses a grid with logical numeric alignment and no block paddin
 - **One way.** `oneWay` is for flows that only run top to bottom, such as a deposit: the control between the cards becomes a decorative down arrow instead of the flip button, and the pair cannot be exchanged.
 - **Ownership.** The panel never fetches a quote, reads a wallet or submits a transaction. `onSubmit` is called once per accepted press and not while `submitting`.
 
+`SwapAmountCard`, from the same web entry, is the From card on its own for a host that enters one amount without a pair, such as a position size. It draws the asset (`name`, `symbol`, `icon` as a URL or a host-drawn node, optional `chainIcon` and `context` line), capsule `actions` such as Max (use `SwapPill`), a `meta` line such as the balance, and the entered `value` with `prefix`, `suffix`, `fractionDigits` and `trailingDot`. `conversion` puts a capsule under the amount, and `onSelect` with `selectLabel` makes the slot choose the asset. The host owns the entry and the keypad; `SwapKeypad` is exported beside it.
+
+```tsx
+<SwapAmountCard name="USD Coin" symbol="USDC" context="Hyperliquid" value={Number(entry)} prefix="$"
+  fractionDigits={typedDecimals} trailingDot={entry.endsWith(".")} amountLabel="Size"
+  actions={<SwapPill onClick={useMax}>Max</SwapPill>} meta="1,000 USDC" />
+```
+
 `SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/recipes/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
 
 ```tsx
