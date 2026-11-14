@@ -150,6 +150,8 @@
         "BalanceCard",
         "TradeEntry",
         "SwapPanel",
+        "FromPicker",
+        "ToPicker",
         "ActivityList",
         "InstallCommand",
         "CodeWindow",

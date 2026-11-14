@@ -278,6 +278,26 @@
         "entry": "recipes/activity-list",
         "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): React.JSX.Element;"
       },
+      "FromPicker": {
+        "entry": "recipes/pickers",
+        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, className, ...list }: FromPickerProps): React.JSX.Element;"
+      },
+      "ToPicker": {
+        "entry": "recipes/pickers",
+        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, className, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+      },
+      "FromPickerProps": {
+        "entry": "recipes/pickers",
+        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    className?: string;\n}"
+      },
+      "ToPickerProps": {
+        "entry": "recipes/pickers",
+        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    className?: string;\n}"
+      },
+      "PickerListProps": {
+        "entry": "recipes/pickers",
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
+      },
       "SwapPanel": {
         "entry": "recipes/swap-panel",
         "signature": "export declare function SwapPanel({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, onReset, destination, details, note, noteTone, title, onBack, controls, actionIcon, lockFrom, lockTo, actionLabel, oneWay: oneWayProp, denominationSwitch, keypad, shortcuts, captureKeyboard, view: viewProp, onViewChange, settings, className, style }: SwapPanelProps): React.JSX.Element;"
@@ -307,7 +327,7 @@
         "signature": "export type SwapDenomination = 'usd' | 'token';"
       },
       "SwapWallet": {
-        "entry": "recipes",
+        "entry": "recipes/pickers",
         "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
       },
       "SwapFee": {
@@ -744,6 +764,38 @@
         "entry": "overlay",
         "signature": "export declare function HelpText({ children }: React.PropsWithChildren): React.JSX.Element;"
       },
+      "SwapChain": {
+        "entry": "pickers",
+        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
+      },
+      "SwapToken": {
+        "entry": "pickers",
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Image URLs. A missing token icon falls back to the symbol's first letters. */\n    icon?: string;\n    chainIcon?: string;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+      },
+      "SwapWallet": {
+        "entry": "pickers",
+        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
+      },
+      "PickerListProps": {
+        "entry": "pickers",
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** Web only: focuses the search with a hardware pointer. Native never raises the keyboard on mount. */\n    autoFocus?: boolean;\n}"
+      },
+      "FromPickerProps": {
+        "entry": "pickers",
+        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "FromPicker": {
+        "entry": "pickers",
+        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, style, ...list }: FromPickerProps): React.JSX.Element;"
+      },
+      "ToPickerProps": {
+        "entry": "pickers",
+        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "ToPicker": {
+        "entry": "pickers",
+        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, style, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+      },
       "HIGColorSpace": {
         "entry": "provider",
         "signature": "export type HIGColorSpace = 'srgb' | 'display-p3';"
@@ -872,14 +924,6 @@
         "entry": "recipes",
         "signature": "export interface SwapPanelProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    submitting?: boolean;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet. `onBack` adds a Back control before it. */\n    title?: string;\n    onBack?: () => void;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    keypad?: 'auto' | 'always' | 'never';\n    /** Web only (⌘F / ⌘K picker shortcuts); accepted and ignored so one example serves both platforms. */\n    shortcuts?: boolean;\n    /** Web only (page-wide digit capture); accepted and ignored. */\n    captureKeyboard?: boolean;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    /** The view on show. Pickers and settings push inside the panel's own bounds; Back pops. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Web only; accepted and ignored. */\n    className?: string;\n    style?: StyleProp<ViewStyle>;\n}"
       },
-      "SwapToken": {
-        "entry": "recipes",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Image URLs. A missing token icon falls back to the symbol's first letters. */\n    icon?: string;\n    chainIcon?: string;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
-      },
-      "SwapChain": {
-        "entry": "recipes",
-        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
-      },
       "SwapAction": {
         "entry": "recipes",
         "signature": "export type SwapAction = 'send' | 'swap' | 'bridge';"
@@ -887,10 +931,6 @@
       "SwapDenomination": {
         "entry": "recipes",
         "signature": "export type SwapDenomination = 'usd' | 'token';"
-      },
-      "SwapWallet": {
-        "entry": "recipes",
-        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
       },
       "SwapFee": {
         "entry": "recipes",
@@ -1172,6 +1212,14 @@
         "entry": "swap-parts",
         "signature": "export declare function ScanIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
+      "WalletIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function WalletIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "LockIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function LockIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
       "LeaveIcon": {
         "entry": "swap-parts",
         "signature": "export declare function LeaveIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
@@ -1250,11 +1298,11 @@
       },
       "SwapPickerProps": {
         "entry": "swap-views",
-        "signature": "export interface SwapPickerProps {\n    side: 'from' | 'to';\n    onBack: () => void;\n    tokens: readonly SwapToken[];\n    chains: readonly SwapChain[];\n    hotTokenIds?: readonly string[];\n    selected: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    loading?: boolean;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    /** From side, before a wallet is connected: switch the panel to its receive view. */\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** To side: where the assets are sent. Omit `onRecipientChange` to hide the field. */\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** The scrolling list implementation; a sheet host passes its backend's list so drags hand off to the sheet. */\n    listComponent?: React.ComponentType<FlatListProps<SwapToken>>;\n}"
+        "signature": "export interface SwapPickerProps {\n    side: 'from' | 'to';\n    onBack: () => void;\n    tokens: readonly SwapToken[];\n    chains: readonly SwapChain[];\n    hotTokenIds?: readonly string[];\n    selected: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    loading?: boolean;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    /** From side, before a wallet is connected: the Generate address switch, which puts the panel in its receive view. */\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** To side: where the assets are sent. Omit `onRecipientChange` to hide the field. */\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n}"
       },
       "SwapPicker": {
         "entry": "swap-views",
-        "signature": "export declare function SwapPicker({ side, onBack, tokens, chains, hotTokenIds, selected, onSelect, loading, wallet, onConnect, onDisconnect, receiving, onReceivingChange, recipient, onRecipientChange, onScanRecipient, listComponent }: SwapPickerProps): React.JSX.Element;"
+        "signature": "export declare function SwapPicker({ side, onBack, selected, onSelect, wallet, onConnect, onDisconnect, receiving, onReceivingChange, recipient, onRecipientChange, onScanRecipient, ...list }: SwapPickerProps): React.JSX.Element;"
       },
       "SwapSettingsView": {
         "entry": "swap-views",

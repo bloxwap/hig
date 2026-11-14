@@ -453,8 +453,12 @@ button.hig-swap-receive:active { opacity:.8; }
 /* In a gesture sheet the panel fills the sheet width and the sheet follows the height of the view on show. */
 .hig-gesture-sheet.hig-swap-sheet { max-width:30rem;margin-inline:auto;border-radius:24px 24px 0 0; }
 .hig-swap-sheet .hig-swap-panel { max-width:none;padding:4px 12px calc(16px + env(safe-area-inset-bottom,0px)); }
+/* From and To pickers: a wallet or address row, the search, the chain filter and the token list, 16 apart. */
+.hig-picker { display:flex;flex-direction:column;gap:16px;width:100%;min-width:0;color:var(--hig-text);line-height:1.5; }
+/* The Generate address switch is a capsule the height of the button beside it: label, then the switch. */
+.hig-picker-toggle { flex:none;justify-content:space-between;gap:12px;min-height:var(--hig-button);padding:0 12px 0 16px;border-radius:9999px;background:var(--hig-fill);font-weight:500;white-space:nowrap; }
 .hig-swap-wallet { display:flex;align-items:stretch;gap:var(--hig-action-gap); }
-.hig-swap-wallet > .hig-button:not(.hig-icon-button) { flex:1;min-height:var(--hig-control); }
+.hig-swap-wallet > .hig-button:not(.hig-icon-button) { flex:1; }
 .hig-swap-wallet > .hig-button[aria-pressed='true'] { background:var(--hig-text);color:var(--hig-background); }
 .hig-swap-wallet > .hig-icon-button { flex:none;min-width:var(--hig-control); }
 .hig-swap-wallet-id { display:flex;align-items:center;gap:12px;flex:1;min-width:0;min-height:var(--hig-control);padding:8px 16px;border-radius:9999px;background:var(--hig-fill);font-weight:600;color:var(--hig-text); }

@@ -9,7 +9,7 @@ import {notify} from '../notify.js';
 import {VerticalAddress} from '../data.js';
 import {SwapPicker,type SwapWallet} from './swap/picker.js';
 import {SwapSettings,type SwapFee} from './swap/settings.js';
-import {SwapIcon,SwapKeypad,SwapPill,addressGradient,applyAmountKey,formatPercent,parentView,sanitizeAmount,shortAddress,swapAction,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
+import {SwapIcon,SwapKeypad,SwapPill,addressGradient,applyAmountKey,chainsOf,formatPercent,parentView,sanitizeAmount,shortAddress,swapAction,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
 export {swapAction,type SwapAction,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
 export type {SwapWallet} from './swap/picker.js';
 export type {SwapFee} from './swap/settings.js';
@@ -168,7 +168,7 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const inPanel=(event:React.SyntheticEvent)=>view==='main'&&!textTarget(event.target);
  const onKeyDown=(event:React.KeyboardEvent)=>{if(view!=='main'&&event.key==='Escape'){event.preventDefault();event.stopPropagation();back();return;}if(captureKeyboard||!inPanel(event))return;const pressed=amountKey(event);if(pressed){event.preventDefault();press(pressed);}};
  const onPaste=(event:React.ClipboardEvent)=>{if(!captureKeyboard&&inPanel(event)&&paste(event.clipboardData.getData('text')))event.preventDefault();};
- const chainList=useMemo(()=>{if(chains)return chains;const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:token.chainIcon});return [...seen.values()];},[chains,tokens]);
+ const chainList=useMemo(()=>chains??chainsOf(tokens),[chains,tokens]);
  const usdText=(value:number)=>formatNumber(value,locale,{style:'currency',currency:'USD'});
  const fraction=entry.includes('.')?Math.min(entry.length-entry.indexOf('.')-1,fromMode==='usd'?2:8):0;
  // An account (a token with a `caption`) reads name over caption beside one disc, and offers Max only.

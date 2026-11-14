@@ -1,64 +1,31 @@
-import React,{useMemo,useState} from 'react';
-import {FlatList,Pressable,View,useWindowDimensions,type FlatListProps} from 'react-native';
+import React,{useState} from 'react';
+import {Pressable,View} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
-import {Button,IconButton} from './button.js';
-import {Field,Input,SearchInput} from './field.js';
-import {Filter,SegmentedControl} from './radio-group.js';
+import {Field,Input} from './field.js';
+import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon} from './icons.js';
-import {LeaveIcon,ScanIcon,SwapSubview,TokenIcon} from './swap-parts.js';
-import {addressColor,formatPercent,pickerRows,shortAddress,slippagePresets,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapWallet} from './swap-shared.js';
+import {SwapSubview} from './swap-parts.js';
+import {FromPicker,ToPicker} from './pickers.js';
+import {formatPercent,shortAddress,slippagePresets,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapWallet} from './swap-shared.js';
 export interface SwapPickerProps {
  side:'from'|'to';onBack:()=>void;
  tokens:readonly SwapToken[];chains:readonly SwapChain[];hotTokenIds?:readonly string[];
  selected:SwapToken|null;onSelect:(token:SwapToken)=>void;loading?:boolean;
  wallet?:SwapWallet;onConnect?:()=>void;onDisconnect?:()=>void;
- /** From side, before a wallet is connected: switch the panel to its receive view. */
+ /** From side, before a wallet is connected: the Generate address switch, which puts the panel in its receive view. */
  receiving?:boolean;onReceivingChange?:(receiving:boolean)=>void;
  /** To side: where the assets are sent. Omit `onRecipientChange` to hide the field. */
  recipient?:string;onRecipientChange?:(address:string)=>void;onScanRecipient?:()=>void;
- /** The scrolling list implementation; a sheet host passes its backend's list so drags hand off to the sheet. */
- listComponent?:React.ComponentType<FlatListProps<SwapToken>>;
 }
-/** The token picker as a pushed view: wallet or recipient row, search, chain filter and the token list. Choosing a token pops back. */
-export function SwapPicker({side,onBack,tokens,chains,hotTokenIds,selected,onSelect,loading,wallet,onConnect,onDisconnect,receiving,onReceivingChange,recipient,onRecipientChange,onScanRecipient,listComponent}:SwapPickerProps){
- const {locale,direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();const window=useWindowDimensions();
- const [query,setQuery]=useState('');const [chain,pickChain]=useState('');
- // The filter speaks in strings; an empty value is every chain.
- const chainId=chain===''?null:chains.find(item=>String(item.chainId)===chain)?.chainId??null;
- const title=side==='from'?t.swapFrom:t.swapTo;const List=listComponent??FlatList;
- const {rows,hotCount}=useMemo(()=>pickerRows(tokens,query,chainId,hotTokenIds),[tokens,hotTokenIds,query,chainId]);
- const choose=(token:SwapToken)=>{onSelect(token);onBack();};
- const section=(heading:string)=><Text accessibilityRole='header' style={{paddingHorizontal:8,paddingTop:12,paddingBottom:6,fontSize:12,lineHeight:18,fontWeight:'600',letterSpacing:1,textTransform:'uppercase',color:colors.muted}}>{heading}</Text>;
- const chainOptions=useMemo(()=>[{value:'',label:t.swapAllChains},...chains.map(chain=>({value:String(chain.chainId),label:chain.name,icon:chain.icon}))],[chains,t.swapAllChains]);
- const empty=<Text accessibilityLiveRegion='polite' style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:21,color:colors.muted}}>{loading?`${t.loading}…`:t.swapNoTokens}</Text>;
- return <SwapSubview title={title} onBack={onBack} testID={`swap-picker-${side}`}>
-  {side==='from'&&wallet?(wallet.connected?
-   <View style={{flexDirection:'row',alignItems:'stretch',gap:8}}>
-    <View style={{flex:1,flexDirection:'row',alignItems:'center',gap:12,minHeight:48,paddingVertical:8,paddingHorizontal:16,borderRadius:9999,backgroundColor:fills.well}}><View style={{width:28,height:28,borderRadius:14,backgroundColor:addressColor(wallet.address??'')}}/><Text numberOfLines={1} style={{flex:1,fontWeight:'600'}}>{wallet.address?shortAddress(wallet.address):''}</Text></View>
-    {onDisconnect?<IconButton intent='secondary' label={t.swapDisconnect} onPress={onDisconnect} style={{minWidth:48,minHeight:48}}><LeaveIcon color={colors.text}/></IconButton>:null}
-   </View>:
-   <View style={{gap:8}}>
-    {onConnect?<Button fullWidth onPress={onConnect} style={{minHeight:48}}>{t.swapConnectWallet}</Button>:null}
-    {onReceivingChange?<Button fullWidth intent='secondary' accessibilityState={{selected:!!receiving}} onPress={()=>{onReceivingChange(!receiving);onBack();}} style={{minHeight:48}}>{t.swapReceiveToAddress}</Button>:null}
-   </View>):null}
-  {side==='to'&&onRecipientChange?<View style={{flexDirection:'row',alignItems:'center',gap:8}}>
-   <View style={{flex:1}}><Input accessibilityLabel={t.swapRecipient} placeholder={wallet?.address?shortAddress(wallet.address):t.swapRecipient} value={recipient??''} onChangeText={onRecipientChange} autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false}/></View>
-   {onScanRecipient?<IconButton intent='secondary' label={t.swapScan} onPress={onScanRecipient} style={{minWidth:48,minHeight:48}}><ScanIcon color={colors.text}/></IconButton>:null}
-  </View>:null}
-  <SearchInput accessibilityLabel={t.swapSearchTokens} placeholder={t.swapSearchTokens} value={query} onChangeText={setQuery} autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false}/>
-  {chains.length>1?<Filter label={t.swapChains} options={chainOptions} value={chain} onValueChange={pickChain}/>:null}
-  {/* A bounded height so the list scrolls inside the panel (and inside a sheet) instead of stretching it. */}
-  <List style={{height:Math.max(240,Math.round(window.height*0.5))}} data={rows} keyExtractor={token=>token.id} keyboardShouldPersistTaps='handled' accessibilityLabel={title} testID={`swap-list-${side}`} initialNumToRender={12} ListEmptyComponent={empty}
-   renderItem={({item:token,index})=>{const isSelected=selected?.id===token.id,balance=token.balance??0,price=token.price??0;return <View>
-    {hotCount>0&&index===0?section(t.swapHot):null}{hotCount>0&&index===hotCount?section(t.swapAllTokens):null}
-    <Pressable accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={`swap-token-${token.id}`} onPress={()=>choose(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
-     <TokenIcon token={token}/>
-     <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
-     {balance>0?<View style={{alignItems:'flex-end'}}><Text style={{fontWeight:'600'}}>{formatNumber(balance,locale,{maximumFractionDigits:6})}</Text>{price>0?<Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{formatNumber(balance*price,locale,{style:'currency',currency:'USD'})}</Text>:null}</View>:null}
-    </Pressable>
-   </View>;}}/>
+/** The panel's pushed picker view: the sub-view header over the From or To picker recipe. Choosing a token pops back; the Generate address switch does not. */
+export function SwapPicker({side,onBack,selected,onSelect,wallet,onConnect,onDisconnect,receiving,onReceivingChange,recipient,onRecipientChange,onScanRecipient,...list}:SwapPickerProps){
+ const t=useMessages();const choose=(token:SwapToken)=>{onSelect(token);onBack();};
+ return <SwapSubview title={side==='from'?t.swapFrom:t.swapTo} onBack={onBack} testID={`swap-picker-${side}`}>
+  {side==='from'
+   ?<FromPicker {...list} selected={selected} onSelect={choose} wallet={wallet??{connected:false}} onConnect={onConnect} onDisconnect={onDisconnect} generateAddress={!!receiving} onGenerateAddressChange={onReceivingChange}/>
+   :<ToPicker {...list} selected={selected} onSelect={choose} address={recipient} onAddressChange={onRecipientChange} addressPlaceholder={wallet?.address?shortAddress(wallet.address):undefined} onScan={onScanRecipient}/>}
  </SwapSubview>;
 }
 export type SwapSettingsView='settings'|'slippage'|'fees';

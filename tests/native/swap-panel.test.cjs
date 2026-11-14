@@ -80,7 +80,7 @@ it('filters the picker by search and chain, marks the selected row, and sections
  expect(chain('All').props.accessibilityState).toEqual({checked:true,disabled:false});
  act(()=>chain('Base').props.onPress(event));expect(list()).toEqual(['8453-usdc','8453-eth']);expect(chain('Base').props.accessibilityState).toEqual({checked:true,disabled:false});expect(chain('All').props.accessibilityState.checked).toBe(false);
  act(()=>chain('All').props.onPress(event));
- const search=tree.findAll(n=>n.props.accessibilityLabel==='Search name, symbol or address'&&n.props.onChangeText)[0];act(()=>search.props.onChangeText('usdbase'));
+ const search=tree.findAll(n=>n.props.accessibilityLabel==='Search name or paste address'&&n.props.onChangeText)[0];act(()=>search.props.onChangeText('usdbase'));
  expect(list()).toEqual(['8453-usdc']);
  act(()=>search.props.onChangeText('zzz'));expect(list()).toEqual([]);
 });
@@ -154,8 +154,10 @@ it('receive view: QR and address replace the amount, the keypad and To amount go
  const address='0x71C7656EC7ab88b098defB751B7401B5f6d8976F',onCopy=jest.fn(),onConnect=jest.fn(),onReceivingChange=jest.fn();
  const tree=mount({wallet:{connected:false},onConnect,receive:{address,qr:h(View,{testID:'qr'}),onCopy},onReceivingChange});
  press(tree,'swap-slot-from');
- const toggle=tree.findAll(n=>n.props.onPress&&n.props.accessibilityState?.selected===false&&[].concat(n.props.children).join('')==='Receive to an address')[0];act(()=>toggle.props.onPress(event));
- expect(onReceivingChange).toHaveBeenCalledWith(true);
+ // Generate address is a switch in the From picker. Turning it on does not leave the picker: the user still picks a chain and an asset there.
+ const toggle=tree.findAll(n=>n.props.testID==='picker-generate'&&n.props.onPress)[0];expect(toggle.props.accessibilityRole).toBe('switch');expect(toggle.props.accessibilityLabel).toBe('Generate address');expect(toggle.props.accessibilityState.checked).toBe(false);
+ act(()=>toggle.props.onPress(event));
+ expect(onReceivingChange).toHaveBeenCalledWith(true);expect(has(tree,'swap-picker-from')).toBe(true);press(tree,'swap-back');
  expect(node(tree,'swap-receive').props.accessibilityLabel).toBe(`Copy address: ${address}`);expect(has(tree,'qr')).toBe(true);
  expect(has(tree,'swap-amount-from')).toBe(false);expect(has(tree,'swap-amount-to')).toBe(false);expect(has(tree,'swap-keypad')).toBe(false);
  expect(actionText(tree)).toBe('Send from your wallet');expect(action(tree).props.disabled).toBe(false);press(tree,'swap-action');expect(onConnect).toHaveBeenCalledTimes(1);

@@ -496,6 +496,26 @@
       "support": "renderer"
     },
     {
+      "name": "FromPicker",
+      "states": [
+        "default",
+        "connected",
+        "no-logout",
+        "whitelist",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ToPicker",
+      "states": [
+        "default",
+        "tokens",
+        "no-chain"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "InstallCommand",
       "states": [
         "default"

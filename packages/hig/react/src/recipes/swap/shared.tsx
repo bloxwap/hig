@@ -84,6 +84,7 @@ const paths={
  scan:<path d='M4 7V5a1 1 0 0 1 1-1h2M13 4h2a1 1 0 0 1 1 1v2M16 13v2a1 1 0 0 1-1 1h-2M7 16H5a1 1 0 0 1-1-1v-2M4 10h12'/>,
  flame:<path d='M10 17a5 5 0 0 0 5-5c0-3-2.5-4.5-3-8-2 1-3.5 3-3.5 5.5C7.5 8.5 7 7.5 7 7c-1.5 1.5-2 3-2 5a5 5 0 0 0 5 5Z'/>,
  logout:<path d='M8 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8M12.5 6.5 16 10l-3.5 3.5M16 10H8'/>,
+ wallet:<path d='M3.5 6.5A1.5 1.5 0 0 1 5 5h9.5A1.5 1.5 0 0 1 16 6.5v.75M3.5 6.5v7A1.5 1.5 0 0 0 5 15h10.5a1 1 0 0 0 1-1V8.25a1 1 0 0 0-1-1H5a1.5 1.5 0 0 1-1.5-.75M13.25 11.25v.01'/>,
  lock:<path d='M5.5 9h9a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1ZM7 9V6.5a3 3 0 0 1 6 0V9'/>,
 };
 export type SwapIconName=keyof typeof paths;
@@ -103,6 +104,8 @@ const keys=['1','2','3','4','5','6','7','8','9','.','0','back'];
 export function SwapKeypad({onKey,label,deleteLabel}:{onKey:(key:string)=>void;label:string;deleteLabel:string}){
  return <div className='hig-swap-keypad' role='group' aria-label={label}>{keys.map(key=><button key={key} type='button' className='hig-swap-key' aria-label={key==='back'?deleteLabel:undefined} onClick={()=>onKey(key)}>{key==='back'?<SwapIcon name='delete' size={24}/>:key}</button>)}</div>;
 }
+/** Chains present in a token list, in first-seen order. */
+export function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:token.chainIcon});return [...seen.values()];}
 export type SwapView='main'|'from'|'to'|'settings'|'slippage'|'fees';
 /** Where Back leads from a pushed view. */
 export const parentView=(view:SwapView):SwapView=>view==='slippage'||view==='fees'?'settings':'main';

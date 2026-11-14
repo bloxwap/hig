@@ -1,5 +1,5 @@
-import React,{createContext,useContext,useEffect,useMemo,useRef,useState} from 'react';
-import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type FlatListProps,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
+import React,{useContext,useEffect,useMemo,useRef,useState} from 'react';
+import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {Raised,useColors,useControllable,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
@@ -8,12 +8,12 @@ import {AnimatedNumberReadout} from './animated-number.js';
 import {Toast,useTransientNotice} from './status.js';
 import {VerticalAddress,addressKind} from './data.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
-import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHeader,SwapKeypad,TokenArt} from './swap-parts.js';
+import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHeader,SwapHostContext,SwapKeypad,TokenArt} from './swap-parts.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
 import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 export {swapAction,swapParentView,type SwapAction,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 /** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet, and sizes itself, so the panel does not animate its own height. */
-export const SwapHostContext=createContext<{listComponent?:React.ComponentType<FlatListProps<SwapToken>>;animateHeight?:boolean}>({});
+export {SwapHostContext} from './swap-parts.js';
 /** A fixed place the assets go, in place of a token the user picks: a wallet, a staking pool, a trading account. Shown as a compact To card with no amount. */
 export interface SwapDestination {
  title:string;
@@ -258,8 +258,8 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
   {notice?<View style={{marginTop:8,alignItems:'center'}}><Toast notices={[notice]} onDismiss={dismissNotice}/></View>:null}
  </View>;
  const body=view==='main'?main
-  :view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={setFrom} wallet={wallet} onConnect={onConnect} onDisconnect={onDisconnect} receiving={isReceiving} onReceivingChange={receive?setReceiving:undefined} listComponent={host.listComponent}/>
-  :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={setTo} wallet={wallet} recipient={recipient} onRecipientChange={onRecipientChange} onScanRecipient={onScanRecipient} listComponent={host.listComponent}/>
+  :view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={setFrom} wallet={wallet} onConnect={onConnect} onDisconnect={onDisconnect} receiving={isReceiving} onReceivingChange={receive?setReceiving:undefined}/>
+  :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={setTo} wallet={wallet} recipient={recipient} onRecipientChange={onRecipientChange} onScanRecipient={onScanRecipient}/>
   :<SwapSettings view={view} onViewChange={show} onBack={back} denomination={defaultMode} onDenominationChange={denominationSwitch?changeDenomination:undefined} slippage={slippage} onSlippageChange={onSlippageChange} fee={fee} fees={fees} quoteLoading={quoteLoading}>{settings}</SwapSettings>;
  return <View testID='swap-panel' style={[{direction,width:'100%',maxWidth:448,alignSelf:'center'},style]}><SwapStage view={view} animateHeight={host.animateHeight!==false}>{body}</SwapStage></View>;
 }

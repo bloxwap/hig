@@ -172,6 +172,11 @@
       "import": "./react/dist/recipes/swap-panel.js",
       "default": "./react/dist/recipes/swap-panel.js"
     },
+    "./react/recipes/pickers": {
+      "types": "./react/dist/recipes/pickers.d.ts",
+      "import": "./react/dist/recipes/pickers.js",
+      "default": "./react/dist/recipes/pickers.js"
+    },
     "./react/recipes/swap-sheet": {
       "types": "./react/dist/recipes/swap-sheet.d.ts",
       "import": "./react/dist/recipes/swap-sheet.js",
@@ -223,6 +228,11 @@
       "types": "./native/dist/wallet-address.d.ts",
       "import": "./native/dist/wallet-address.js",
       "default": "./native/dist/wallet-address.js"
+    },
+    "./native/pickers": {
+      "types": "./native/dist/pickers.d.ts",
+      "import": "./native/dist/pickers.js",
+      "default": "./native/dist/pickers.js"
     },
     "./native/swap-sheet": {
       "types": "./native/dist/swap-sheet.d.ts",

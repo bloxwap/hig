@@ -174,8 +174,8 @@ export interface HIGMessages {
  swapConnectWallet: string;
  /** Accessible name of the token picker disconnect button. */
  swapDisconnect: string;
- /** Token picker toggle for the receive view. */
- swapReceiveToAddress: string;
+ /** Switch in the From picker that asks for a deposit address in place of a connected wallet. */
+ swapGenerateAddress: string;
  /** Recipient address field placeholder and accessible name. */
  swapRecipient: string;
  /** Accessible name of the recipient QR scan button. */
@@ -270,7 +270,7 @@ export const swapFeeTotal = 'Total';
 export const swapDenomination = 'Show amounts in';
 export const swapDollars = 'Dollars';
 export const swapUnits = 'Units';
-export const swapSearchTokens = 'Search name, symbol or address';
+export const swapSearchTokens = 'Search name or paste address';
 export const swapChains = 'Chains';
 export const swapAllChains = 'All';
 export const swapHot = 'Hot';
@@ -279,7 +279,7 @@ export const swapNoTokens = 'No tokens found';
 export const swapSelected = 'Selected';
 export const swapConnectWallet = 'Connect wallet';
 export const swapDisconnect = 'Disconnect wallet';
-export const swapReceiveToAddress = 'Receive to an address';
+export const swapGenerateAddress = 'Generate address';
 export const swapRecipient = 'Recipient address';
 export const swapScan = 'Scan QR code';
 export const copyAddress = 'Copy address';
@@ -290,7 +290,7 @@ export const swapControlKey = 'Ctrl';
 export const swapKeypad = 'Keypad';
 export const swapDelete = 'Delete';
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapReceiveToAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**

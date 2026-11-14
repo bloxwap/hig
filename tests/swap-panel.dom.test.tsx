@@ -74,14 +74,14 @@ describe('SwapPanel',()=>{
   const sheet=screen.getByRole('group',{name:'From'});expect(screen.queryByRole('dialog')).toBeNull();
   // The picker replaces the cards inside the panel; the title takes focus without a hardware pointer to type with.
   expect(document.querySelector('.hig-swap-panel')?.getAttribute('data-view')).toBe('from');expect(screen.queryByRole('textbox',{name:'From amount'})).toBeNull();
-  expect(document.activeElement).toBe(within(sheet).getByRole('heading',{name:'From'}));
+  expect(document.activeElement).toBe(screen.getByRole('heading',{name:'From'}));
   expect(within(sheet).getAllByRole('listitem').map(item=>item.textContent)).toEqual(['ETHEtherBase','USDUSD CoinEthereum','ETHEtherEthereum2$4,000.00','USDUSD CoinBase']);
   expect(within(sheet).getByText('Hot')).toBeTruthy();expect(within(sheet).getByText('All tokens')).toBeTruthy();
   // Chains are the standalone Filter: one radio group.
   await userEvent.click(within(within(sheet).getByRole('radiogroup',{name:'Chains'})).getByRole('radio',{name:'Base'}));
   expect(within(sheet).getAllByRole('listitem')).toHaveLength(2);expect(within(sheet).queryByText('Hot')).toBeNull();
   await userEvent.click(within(sheet).getByRole('radio',{name:'All'}));
-  const search=within(sheet).getByRole('searchbox',{name:'Search name, symbol or address'});
+  const search=within(sheet).getByRole('searchbox',{name:'Search name or paste address'});
   await userEvent.type(search,'0xa0b8');expect(within(sheet).getAllByRole('listitem')).toHaveLength(1);
   await userEvent.clear(search);await userEvent.type(search,'zzz');expect(within(sheet).getByRole('status').textContent).toBe('No tokens found');
   await userEvent.clear(search);await userEvent.type(search,'usd');await userEvent.keyboard('{ArrowDown}{Enter}');
@@ -138,7 +138,9 @@ describe('SwapPanel',()=>{
   render(<Host wallet={{connected:false}} onConnect={connect} receive={{address:'0xabc'}} onReceivingChange={receiving} recipient='' onRecipientChange={recipient} onScanRecipient={scan}/>);
   await userEvent.click(screen.getByRole('button',{name:'Select From token'}));
   await userEvent.click(screen.getByRole('button',{name:'Connect wallet'}));expect(connect).toHaveBeenCalled();
-  await userEvent.click(screen.getByRole('button',{name:'Receive to an address'}));expect(receiving).toHaveBeenCalledWith(true);expect(screen.queryByRole('group',{name:'From'})).toBeNull();
+  // Generate address is a switch: it reports the change and stays on the picker, so the user can go on to pick a chain and an asset.
+  await userEvent.click(screen.getByRole('switch',{name:'Generate address'}));expect(receiving).toHaveBeenCalledWith(true);expect(screen.getByRole('group',{name:'From'})).toBeTruthy();
+  await userEvent.click(screen.getByRole('button',{name:'Back'}));
   await userEvent.click(screen.getByRole('button',{name:'Select To token'}));
   await userEvent.type(screen.getByRole('textbox',{name:'Recipient address'}),'0');expect(recipient).toHaveBeenCalledWith('0');
   await userEvent.click(screen.getByRole('button',{name:'Scan QR code'}));expect(scan).toHaveBeenCalled();

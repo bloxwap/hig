@@ -1,10 +1,12 @@
-import React from 'react';
-import {Image,Pressable,View,type ViewStyle} from 'react-native';
+import React,{createContext} from 'react';
+import {Image,Pressable,View,type FlatListProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Heading,Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
 import type {SwapToken} from './swap-shared.js';
+/** What a host surface supplies to the swap views: a sheet passes its backend's list so drags hand off to the sheet, and turns off the panel's own height animation. */
+export const SwapHostContext=createContext<{listComponent?:React.ComponentType<FlatListProps<SwapToken>>;animateHeight?:boolean}>({});
 // Outline symbols drawn from plain views, like ./icons: decorative, so the control that holds them carries the name.
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const,pointerEvents:'none' as const};
 const stroke=1.75;
@@ -22,6 +24,10 @@ export function ResetIcon({color}: {color:string}){return <View {...hidden} styl
 export function DeleteIcon({color}: {color:string}){return <View {...hidden} style={{width:26,height:18,borderRadius:5,borderWidth:stroke,borderColor:color,...centre}}>{crossAngles.map(angle=><View key={angle} style={{position:'absolute',width:9,height:stroke,borderRadius:stroke,backgroundColor:color,transform:[{rotate:angle}]}}/>)}</View>;}
 /** Four viewfinder corners. */
 export function ScanIcon({color}: {color:string}){const corner=(style:ViewStyle)=><View style={[{position:'absolute',width:6,height:6,borderColor:color},style]}/>;return <View {...hidden} style={{width:18,height:18}}>{corner({left:0,top:0,borderLeftWidth:stroke,borderTopWidth:stroke,borderTopLeftRadius:3})}{corner({right:0,top:0,borderRightWidth:stroke,borderTopWidth:stroke,borderTopRightRadius:3})}{corner({left:0,bottom:0,borderLeftWidth:stroke,borderBottomWidth:stroke,borderBottomLeftRadius:3})}{corner({right:0,bottom:0,borderRightWidth:stroke,borderBottomWidth:stroke,borderBottomRightRadius:3})}<View style={{position:'absolute',left:0,right:0,top:8,height:stroke,borderRadius:stroke,backgroundColor:color}}/></View>;}
+/** A wallet: a rounded body with a clasp on the trailing edge. */
+export function WalletIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><View style={{width:16,height:12,borderRadius:3,borderWidth:stroke,borderColor:color,alignItems:'flex-end',justifyContent:'center'}}><View style={{width:5,height:4,borderTopLeftRadius:2,borderBottomLeftRadius:2,borderWidth:stroke,borderRightWidth:0,borderColor:color,marginEnd:-stroke}}/></View></View>;}
+/** A padlock: a shackle over a body. */
+export function LockIcon({color}: {color:string}){return <View {...hidden} style={{width:16,height:16,alignItems:'center',justifyContent:'flex-end'}}><View style={{width:8,height:7,borderTopLeftRadius:4,borderTopRightRadius:4,borderWidth:stroke,borderBottomWidth:0,borderColor:color}}/><View style={{width:12,height:8,borderRadius:2,borderWidth:stroke,borderColor:color}}/></View>;}
 /** A doorway with an arrow leaving it. */
 export function LeaveIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,flexDirection:'row',alignItems:'center'}}><View style={{width:8,height:14,borderWidth:stroke,borderRightWidth:0,borderColor:color,borderTopLeftRadius:3,borderBottomLeftRadius:3}}/><View style={{width:9,height:stroke,borderRadius:stroke,backgroundColor:color,marginStart:-2}}/><View style={{width:5,height:5,borderRightWidth:stroke,borderTopWidth:stroke,borderColor:color,marginStart:-5,transform:[{rotate:'45deg'}]}}/></View>;}
 /** Circular artwork from a URL, or the symbol's first letters when the host has none. */

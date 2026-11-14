@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-11-14T22:00:41.573Z",
-  "sourceCommit": "68d0de6fa3b1f821a497a42e56ecc58099072f88",
+  "checkedAt": "2026-11-14T22:20:53.078Z",
+  "sourceCommit": "fbaa053175f332fa538d263a3447a6316c93cc31",
   "sourceDirty": true,
   "inputHashes": {
     "packages/hig/react/src/gesture-sheet.tsx": "20f24edc55f34c43601dbf196267cff251d6d592aec7f7c7af50f07727e94c64",
-    "packages/hig/react/src/styles.css": "0593caf8b2a5e023b2e0fba64476329bbc00dd5a870d6200d4afda7514de8c64",
-    "packages/hig/package.json": "8f74b72008c0b028fe52758ace19896d65bebb849c1b126a0256f238c9b00311",
+    "packages/hig/react/src/styles.css": "59e76cfe95f22ce705bd933565ddae9f4c532339b08d178dceda10104751ec79",
+    "packages/hig/package.json": "19d328a33204d57ad082ea3e984e8d885c6de9e79f6a47f0a2e9e67b748e0c7d",
     "scripts/gesture-sheet-browser-smoke.mjs": "b35c8d572de76ea7e7df7e82539bb20abfdfbeb9b66bf5c40b2d69fa426be36c"
   },
   "backend": "vaul@1.1.2",

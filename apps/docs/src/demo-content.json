@@ -385,6 +385,14 @@
       "title": "SwapPanel"
     },
     {
+      "route": "components/from-picker",
+      "title": "FromPicker"
+    },
+    {
+      "route": "components/to-picker",
+      "title": "ToPicker"
+    },
+    {
       "route": "components/install-command",
       "title": "InstallCommand"
     },
@@ -962,6 +970,28 @@
         "stake",
         "unstake",
         "busy"
+      ]
+    },
+    {
+      "name": "FromPicker",
+      "route": "components/from-picker",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "connected",
+        "no-logout",
+        "whitelist",
+        "empty"
+      ]
+    },
+    {
+      "name": "ToPicker",
+      "route": "components/to-picker",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "tokens",
+        "no-chain"
       ]
     },
     {

@@ -624,6 +624,30 @@
       ]
     },
     {
+      "name": "FromPicker",
+      "route": "components/from-picker",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "connected",
+        "no-logout",
+        "whitelist",
+        "empty"
+      ]
+    },
+    {
+      "name": "ToPicker",
+      "route": "components/to-picker",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "tokens",
+        "no-chain"
+      ]
+    },
+    {
       "name": "InstallCommand",
       "route": "components/install-command",
       "entry": "recipes",

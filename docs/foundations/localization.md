@@ -198,7 +198,7 @@ Rules:
 | `swapDenomination` | Show amounts in | SwapPanel: label of the default amount denomination setting | — |
 | `swapDollars` | Dollars | SwapPanel: dollar denomination option | — |
 | `swapUnits` | Units | SwapPanel: token unit denomination option | — |
-| `swapSearchTokens` | Search name, symbol or address | SwapPanel: token picker search placeholder and accessible name | — |
+| `swapSearchTokens` | Search name or paste address | SwapPanel: token picker search placeholder and accessible name | — |
 | `swapChains` | Chains | SwapPanel: accessible name of the token picker chain filter | — |
 | `swapAllChains` | All | SwapPanel: chain filter option that clears the filter | — |
 | `swapHot` | Hot | SwapPanel: token picker section of host-ranked tokens | — |
@@ -207,7 +207,7 @@ Rules:
 | `swapSelected` | Selected | SwapPanel: marks the token picker row that is already selected | — |
 | `swapConnectWallet` | Connect wallet | SwapPanel: token picker button that asks the host to connect a wallet | — |
 | `swapDisconnect` | Disconnect wallet | SwapPanel: accessible name of the token picker disconnect button | — |
-| `swapReceiveToAddress` | Receive to an address | SwapPanel: token picker toggle for the receive view | — |
+| `swapGenerateAddress` | Generate address | FromPicker and SwapPanel: switch that asks for a deposit address in place of a connected wallet | — |
 | `swapRecipient` | Recipient address | SwapPanel: recipient address field placeholder and accessible name | — |
 | `swapScan` | Scan QR code | SwapPanel: accessible name of the recipient QR scan button | — |
 | `copyAddress` | Copy address | WalletAddress and the SwapPanel receive view: accessible name of an address that copies on press; the address follows it | — |
