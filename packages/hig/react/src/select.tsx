@@ -80,6 +80,8 @@ export function Select({label,options,value,defaultValue,disabled,onValueChange}
    const below=top+height-rect.bottom-gap-inset;const above=rect.top-top-gap-inset;
    const desired=Math.min(320,popup.scrollHeight||320);const upwards=below<desired&&above>below;
    const maxHeight=Math.max(0,Math.min(320,upwards?above:below));
+   // The presenting animation settles from the edge nearest the trigger.
+   popup.dataset.placement=upwards?'top':'bottom';
    const popupWidth=Math.min(rect.width,Math.max(0,width-inset*2));
    popup.style.width=`${popupWidth}px`;popup.style.maxHeight=`${maxHeight}px`;
    popup.style.left=`${Math.max(left+inset,Math.min(direction==='rtl'?rect.right-popupWidth:rect.left,left+width-popupWidth-inset))}px`;

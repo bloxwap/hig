@@ -171,6 +171,51 @@ Rules:
 | `statusStale` | stale | StatusIndicator `stale` | — |
 | `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
 | `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
+| `swapFrom` | From | SwapPanel: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
+| `swapTo` | To | SwapPanel: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
+| `swapSelectToken` `(side)` | Select {side} token | SwapPanel: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
+| `swapAmount` `(side)` | {side} amount | SwapPanel: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
+| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanel: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
+| `swapFlip` | Swap direction | SwapPanel: accessible name of the button that exchanges the two tokens | — |
+| `swapActionSend` | Send | SwapPanel: swap panel action when both sides are the same asset | — |
+| `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
+| `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
+| `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
+| `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
+| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
+| `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |
+| `swapReset` | Reset | SwapPanel: accessible name of the swap panel reset button | — |
+| `swapSettings` | Settings | SwapPanel: swap panel settings button and sheet title | — |
+| `swapMax` | Max | SwapPanel: capsule that enters the whole balance | — |
+| `swapTest` | Test | SwapPanel: capsule that enters a small trial amount | — |
+| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanel: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
+| `swapSlippageTitle` | Slippage | SwapPanel: slippage setting row, view title and preset group | — |
+| `swapSlippageCustom` | Custom slippage (%) | SwapPanel: label of the custom slippage field | — |
+| `swapFee` `(amount)` | Fee {amount} | SwapPanel: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
+| `swapFees` | Fees | SwapPanel: fee breakdown setting row and view title | — |
+| `swapFeeTotal` | Total | SwapPanel: total row of the fee breakdown | — |
+| `swapDenomination` | Show amounts in | SwapPanel: label of the default amount denomination setting | — |
+| `swapDollars` | Dollars | SwapPanel: dollar denomination option | — |
+| `swapUnits` | Units | SwapPanel: token unit denomination option | — |
+| `swapSearchTokens` | Search name, symbol or address | SwapPanel: token picker search placeholder and accessible name | — |
+| `swapChains` | Chains | SwapPanel: accessible name of the token picker chain filter | — |
+| `swapAllChains` | All | SwapPanel: chain filter option that clears the filter | — |
+| `swapHot` | Hot | SwapPanel: token picker section of host-ranked tokens | — |
+| `swapAllTokens` | All tokens | SwapPanel: token picker section after the hot tokens | — |
+| `swapNoTokens` | No tokens found | SwapPanel: token picker empty state | — |
+| `swapSelected` | Selected | SwapPanel: marks the token picker row that is already selected | — |
+| `swapConnectWallet` | Connect wallet | SwapPanel: token picker button that asks the host to connect a wallet | — |
+| `swapDisconnect` | Disconnect wallet | SwapPanel: accessible name of the token picker disconnect button | — |
+| `swapReceiveToAddress` | Receive to an address | SwapPanel: token picker toggle for the receive view | — |
+| `swapRecipient` | Recipient address | SwapPanel: recipient address field placeholder and accessible name | — |
+| `swapScan` | Scan QR code | SwapPanel: accessible name of the recipient QR scan button | — |
+| `copyAddress` | Copy address | WalletAddress and the SwapPanel receive view: accessible name of an address that copies on press; the address follows it | — |
+| `addressCopied` | Address copied | WalletAddress and the SwapPanel receive view: notice after the address is copied | — |
+| `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
+| `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
+| `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
+| `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
+| `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

@@ -5,6 +5,11 @@
     "//#docs:prepare": {
       "cache": false
     },
+    "dev": {
+      "dependsOn": ["//#docs:prepare"],
+      "cache": false,
+      "persistent": true
+    },
     "hig-docs#dev": {
       "dependsOn": ["//#docs:prepare"],
       "cache": false,

@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "sourceCommit": "f66a92282358b4236b03f7dbae5dda282b1621e9",
+  "sourceCommit": "c986570c1c651a4bfbbbde3bd2c8500f293c197d",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,12 +8,12 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "hig": 178
+    "hig": 196
   },
   "sizes": {
     "button": {
-      "raw": 1384,
-      "gzip": 775,
+      "raw": 1463,
+      "gzip": 801,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
@@ -25,8 +25,8 @@
       ]
     },
     "field": {
-      "raw": 808,
-      "gzip": 343,
+      "raw": 749,
+      "gzip": 334,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
@@ -38,8 +38,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4571,
-      "gzip": 2154,
+      "raw": 4744,
+      "gzip": 2329,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -55,8 +55,8 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 2360,
-      "gzip": 1158,
+      "raw": 2404,
+      "gzip": 1175,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -72,12 +72,12 @@
       ]
     },
     "nativeLink": {
-      "raw": 3455,
-      "gzip": 1669,
+      "raw": 3524,
+      "gzip": 1692,
       "inputs": [
+        "packages/hig/contracts/dist/messages.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
-        "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
         "packages/hig/native/dist/provider.js",
         "packages/hig/native/dist/text-content.js",
@@ -95,11 +95,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2071114,
-      "gzip": 592808
+      "raw": 2169972,
+      "gzip": 620422
     },
     "docsCSS": {
-      "raw": 119696
+      "raw": 140915
     },
     "fonts": {
       "raw": 592796

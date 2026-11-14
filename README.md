@@ -15,6 +15,19 @@ The [published documentation](https://bloxwap.github.io/hig/) updates automatica
 after pushes to `main`. The Documentation workflow builds and checks the static
 site, then deploys it to GitHub Pages. Pull requests build without deploying.
 
+## Local sites
+
+`bun dev` (or `npm run dev`) builds the packages once, then starts every site together in Turbo's terminal UI:
+
+| Site | URL | Workspace |
+| --- | --- | --- |
+| Docs and component catalog | [localhost:3905](http://localhost:3905) | `hig-docs` |
+| Web fixture (Vite) | [localhost:5173](http://localhost:5173), or the next free port | `hig-web-fixture` |
+| Next.js fixture | [localhost:4175](http://localhost:4175) | `hig-next-fixture` |
+| React Native gallery on web (Expo) | [localhost:8081](http://localhost:8081) | `hig-native-fixture` |
+
+Start one site with a filter, for example `bun dev --filter=hig-docs`; `bun dev --ui=stream` prints plain logs. The sites read the built packages, so rerun `npm run build` after changing a component.
+
 ## Validation
 
 ```sh

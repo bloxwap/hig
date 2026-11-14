@@ -2,6 +2,9 @@
   "name": "hig-web-fixture",
   "private": true,
   "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173"
+  },
   "dependencies": {
     "@bloxwap/haptic": "^0.3.0",
     "@bloxwap/hig": "0.3.0",
@@ -13,6 +16,7 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "sonner": "2.0.8",
+    "cuer": "0.0.4",
     "vaul": "1.1.2"
   }
 }

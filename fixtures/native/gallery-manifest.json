@@ -157,6 +157,14 @@
       "support": "renderer"
     },
     {
+      "name": "Filter",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Select",
       "states": [
         "default",
@@ -411,6 +419,20 @@
       "support": "alternative"
     },
     {
+      "name": "WalletAddress",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "VerticalAddress",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "BrandMark",
       "states": [
         "default"
@@ -454,6 +476,14 @@
         "default",
         "busy",
         "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "SwapPanel",
+      "states": [
+        "default",
+        "busy"
       ],
       "support": "renderer"
     },

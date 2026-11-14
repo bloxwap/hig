@@ -12,7 +12,9 @@ export const Input:React.ForwardRefExoticComponent<TextInputProps&React.RefAttri
 export const TextArea:React.ForwardRefExoticComponent<TextInputProps&React.RefAttributes<React.ComponentRef<typeof TextInput>>>=forwardRef<React.ComponentRef<typeof TextInput>,TextInputProps>(function TextArea(props,ref){return <Input {...props} ref={ref} multiline textAlignVertical='top'/>;});
 export const AmountInput:React.ForwardRefExoticComponent<TextInputProps&React.RefAttributes<React.ComponentRef<typeof TextInput>>>=forwardRef<React.ComponentRef<typeof TextInput>,TextInputProps>(function AmountInput(props,ref){return <Input {...props} ref={ref} keyboardType={props.keyboardType??'decimal-pad'}/>;});
 /** The magnifying glass sits inset on the leading edge and the text starts past it. */
+/** A search box is as tall as a button, 44dp, not a 48dp form field. */
+const searchSize={minHeight:44,paddingVertical:10};
 export const SearchInput:React.ForwardRefExoticComponent<TextInputProps&React.RefAttributes<React.ComponentRef<typeof TextInput>>>=forwardRef<React.ComponentRef<typeof TextInput>,TextInputProps>(function SearchInput({style,...props},ref){const colors=useColors();const {direction}=useHIG();
  // RN Web resolves `start` through its own locale context rather than this View's direction.
  const rtl=direction==='rtl',web=Platform.OS==='web';const edge=web?(rtl?{right:18}:{left:18}):{start:18};const inset=web?(rtl?{paddingRight:46}:{paddingLeft:46}):{paddingStart:46};
- return <View style={{direction,justifyContent:'center'}}><Input {...props} ref={ref} returnKeyType={props.returnKeyType??'search'} style={[inset,style]}/><View pointerEvents='none' style={{position:'absolute',...edge}}><SearchIcon color={colors.muted}/></View></View>;});
+ return <View style={{direction,justifyContent:'center'}}><Input {...props} ref={ref} returnKeyType={props.returnKeyType??'search'} style={[searchSize,inset,style]}/><View pointerEvents='none' style={{position:'absolute',...edge}}><SearchIcon color={colors.muted}/></View></View>;});

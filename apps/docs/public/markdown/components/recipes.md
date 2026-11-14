@@ -1,10 +1,10 @@
 # Recipes · HIG 0.1.0
 
-Composed patterns for balances, markets, trade review, and documentation.
+Composed patterns for balances, markets, trade review, swapping, and documentation.
 
-Includes `MarketRow`, `BalanceCard`, `TradeEntry`, `ActivityList`, `InstallCommand`, `CodeWindow`, and `MarketingHero`.
+Includes `MarketRow`, `BalanceCard`, `TradeEntry`, `SwapPanel`, `ActivityList`, `InstallCommand`, `CodeWindow`, and `MarketingHero`.
 
-Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig/react/recipes` or `@bloxwap/hig/native/recipes` according to applicability below. On web, each recipe also has its own entry, for example `@bloxwap/hig/react/recipes/install-command`, `recipes/code-window`, `recipes/market-row`, `recipes/balance-card`, `recipes/marketing-hero` and `recipes/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `recipes/trade-entry` and the aggregate `recipes` entry need `@radix-ui/react-dialog` for the confirm step. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig/react/recipes` or `@bloxwap/hig/native/recipes` according to applicability below. On web, each recipe also has its own entry, for example `@bloxwap/hig/react/recipes/install-command`, `recipes/code-window`, `recipes/market-row`, `recipes/balance-card`, `recipes/marketing-hero` and `recipes/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `recipes/swap-panel` needs none either. `recipes/trade-entry` and the aggregate `recipes` entry need `@radix-ui/react-dialog` for the confirm step. `recipes/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
@@ -13,7 +13,8 @@ All data and actions are supplied by the host application.
 | Recipe | Key props and behavior |
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
-| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web through Sonner, so mount `Toaster` from `@bloxwap/hig/react/toast` once near the app root. |
+| `SwapPanel` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The recipe itself does not load Sonner. |
 | `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
 
 Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
@@ -31,6 +32,34 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 ```
 
 Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
+
+### SwapPanel
+
+`SwapPanel` is a From card and a To card joined by a flip control, with one action button that names itself from the pair: the same asset is **Send**, different assets on one chain is **Swap**, and different assets across chains is **Bridge** (`swapAction(from, to)` returns the same value). Until the pair and amount are valid the button is disabled and says what is missing: select a token, enter an amount, or insufficient balance.
+
+```tsx
+<SwapPanel tokens={catalog} fromTokens={holdings} hotTokenIds={ranked}
+  from={from} to={to} onFromChange={setFrom} onToChange={setTo}
+  onAmountChange={setUnits} received={quote?.out} fee={quote?.feeUsd} fees={quote?.fees} quoteLoading={loading}
+  slippage={slippage} onSlippageChange={setSlippage}
+  wallet={{connected, address}} onConnect={connect} onDisconnect={disconnect}
+  submitting={executing} onSubmit={action => execute(action, quote)}/>
+```
+
+- **Tokens.** A `SwapToken` is `{id, symbol, name, chain, chainId}` plus optional `icon`, `chainIcon`, `balance` (token units), `price` (USD per unit) and `keywords` (extra search text such as the contract address). `balance` enables Max, Test and the balance check; `price` enables the dollar and unit conversion and the estimate shown before `received` arrives.
+- **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
+- **Pushed views.** The token pickers and settings are views pushed inside the panel's own bounds, replacing the cards, each with a Back control; Escape pops one level on web and choosing a token pops to the cards. `view` / `onViewChange` (`'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees'`) control the stack when the host needs to.
+- **Pickers.** Pressing a card pushes its picker: search, chain filter chips, an optional Hot section from `hotTokenIds`, and the token list with arrow-key and Enter selection on web. The From picker shows the connected wallet with a disconnect control, or Connect wallet and the receive toggle; the To picker shows the recipient field when `onRecipientChange` is set, with a scan button when `onScanRecipient` is set. On web ⌘F / Ctrl+F and ⌘K / Ctrl+K open the From and To pickers while the panel is mounted; pass `shortcuts={false}` to leave the browser's own shortcuts alone.
+- **Settings.** The menu button pushes the settings view: the default denomination, slippage (presets plus a custom percent) and the fee breakdown one level deeper, then any host rows passed as `settings`.
+- **Receive view.** With `receive={{address, qr, onCopy}}` the From picker offers “Receive to an address”. The From card then shows the host's QR node beside the address in fixed-width rows with the leading and trailing characters emphasised, the To amount is hidden, and the action becomes “Send from your wallet” (calls `onConnect`). HIG ships no QR encoder or scanner: the host renders `qr` and implements `onScanRecipient`.
+- **One way.** `oneWay` is for flows that only run top to bottom, such as a deposit: the control between the cards becomes a decorative down arrow instead of the flip button, and the pair cannot be exchanged.
+- **Ownership.** The panel never fetches a quote, reads a wallet or submits a transaction. `onSubmit` is called once per accepted press and not while `submitting`.
+
+`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/recipes/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
+
+```tsx
+<SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<Button>Swap</Button>} tokens={catalog} onSubmit={execute}/>
+```
 
 ## When to use and examples
 

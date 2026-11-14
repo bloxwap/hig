@@ -1,5 +1,5 @@
-import React,{useLayoutEffect,useRef,useState} from 'react';
-import {Animated,Easing,Platform,Pressable,View} from 'react-native';
+import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
+import {Animated,Easing,Image,Platform,Pressable,ScrollView,View} from 'react-native';
 import {tokens} from '@bloxwap/hig/tokens';
 import {useControllable,useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
@@ -50,4 +50,38 @@ export function SegmentedControl({label,options,value,defaultValue='',disabled,o
    </View>
   </View>
  </View>;
+}
+export interface FilterOption {value:string;label:string;disabled?:boolean;/** Image URL shown in the option's circle until it is selected. */icon?:string}
+export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void}
+/** Chips are 40dp; the slop restores a 44dp touch target. */
+const filterSlop={top:2,bottom:2};
+const hiddenMark={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const,pointerEvents:'none' as const};
+/** One chip. Its circle holds the option's icon or an empty ring; when the chip is selected the circle fills and a check settles in, and deselecting reverses it. */
+function FilterChip({option,checked,blocked,reducedMotion,onSelect}: {option:FilterOption;checked:boolean;blocked:boolean;reducedMotion:boolean;onSelect:()=>void}){
+ const colors=useColors();const fills=useFills();const progress=useRef(new Animated.Value(checked?1:0)).current;const first=useRef(true);
+ useEffect(()=>{
+  const target=checked?1:0;
+  // The first render and reduced motion show the final state at once.
+  if(first.current||reducedMotion){first.current=false;progress.stopAnimation();progress.setValue(target);return;}
+  const animation=Animated.timing(progress,{toValue:target,duration:220,easing:Easing.bezier(...tokens.easing.standard),useNativeDriver:Platform.OS!=='web',isInteraction:false});
+  animation.start();return()=>animation.stop();
+ },[checked,reducedMotion,progress]);
+ const ink=checked?colors.background:colors.text;
+ const activate=()=>{if(!blocked)onSelect();};
+ return <Pressable accessible accessibilityRole='radio' accessibilityLabel={option.label} aria-checked={checked} aria-disabled={blocked} accessibilityState={{checked,disabled:blocked}} accessibilityActions={[{name:'activate'}]} disabled={blocked} onPress={activate} onAccessibilityAction={event=>{if(event.nativeEvent.actionName==='activate')activate();}} hitSlop={filterSlop}
+  style={state=>({flexDirection:'row',alignItems:'center',gap:8,minHeight:40,paddingVertical:6,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:checked?colors.text:state.pressed?fills.raised:fills.well,opacity:blocked?0.5:1})}>
+  <View {...hiddenMark} style={{width:24,height:24,borderRadius:12,overflow:'hidden',alignItems:'center',justifyContent:'center'}}>
+   {option.icon?<Image source={{uri:option.icon}} accessible={false} style={{position:'absolute',width:24,height:24,borderRadius:12}}/>:<View style={{position:'absolute',width:24,height:24,borderRadius:12,borderWidth:2,borderColor:ink}}/>}
+   <Animated.View style={{position:'absolute',width:24,height:24,borderRadius:12,backgroundColor:colors.background,opacity:progress}}/>
+   <Animated.View style={{opacity:progress,transform:[{scale:progress.interpolate({inputRange:[0,1],outputRange:[0.4,1]})}]}}><View style={{width:11,height:6,borderLeftWidth:2,borderBottomWidth:2,borderColor:colors.text,transform:[{translateY:-1.5},{rotate:'-45deg'}]}}/></Animated.View>
+  </View>
+  <Text accessible={false} style={{fontSize:14,lineHeight:21,fontWeight:'600',color:ink}}>{option.label}</Text>
+ </Pressable>;
+}
+/** A horizontal, scrolling row of single-choice filter chips. The selected chip inverts and its circle shows a check that animates in. */
+export function Filter({label,options,value,defaultValue='',disabled,onValueChange}:FilterProps){
+ const [current,set]=useControllable(value,defaultValue,onValueChange);const {direction,reducedMotion}=useHIG();
+ return <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' accessibilityRole='radiogroup' accessibilityLabel={label} style={{flexGrow:0,direction}} contentContainerStyle={{direction,gap:8}}>
+  {options.map(option=><FilterChip key={option.value} option={option} checked={current===option.value} blocked={!!disabled||!!option.disabled} reducedMotion={!!reducedMotion} onSelect={()=>set(option.value)}/>)}
+ </ScrollView>;
 }

@@ -72,6 +72,13 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
   {Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}
  </View>;
 }
+/** One transient notice: shown for about four seconds, replaced by the next one, dismissible, and cleared on unmount. Render it with `Toast`, which announces it. */
+export function useTransientNotice(duration=4000):{notice:Notice|null;show:(message:string,severity?:Notice['severity'])=>void;dismiss:()=>void}{
+ const [notice,setNotice]=useState<Notice|null>(null);const sequence=useRef(0),timer=useRef<ReturnType<typeof setTimeout>|null>(null),alive=useRef(true);
+ useEffect(()=>{alive.current=true;return()=>{alive.current=false;if(timer.current!==null)clearTimeout(timer.current);};},[]);
+ const stop=()=>{if(timer.current!==null){clearTimeout(timer.current);timer.current=null;}};
+ return {notice,dismiss:()=>{stop();setNotice(null);},show:(message,severity='success')=>{if(!alive.current)return;stop();setNotice({id:`notice-${++sequence.current}`,message,severity});timer.current=setTimeout(()=>{timer.current=null;setNotice(null);},duration);}};
+}
 export function Spinner({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){
  const {locale,messages,direction}=useHIG();const colors=useColors();

@@ -2,7 +2,7 @@
 
 Controls for choosing options, changing preferences, and adjusting values.
 
-Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Select`, and `Slider`. See the navigation guide for `Tabs`.
+Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Filter`, `Select`, and `Slider`. See the navigation guide for `Tabs`.
 
 Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig/react/selection` or `@bloxwap/hig/native/selection` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -12,6 +12,7 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig/react/
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
 | Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. Native options also accept `description` (a second line) and `lang` (the label's BCP-47 language). |
+| `Filter` | One row of filter capsules that scrolls sideways: `label` (accessible name, not drawn), `options` of `{value, label, icon?, disabled?}`, and `value` / `defaultValue` / `onValueChange`. Single choice with radio semantics. Each capsule leads with a circle showing the option's `icon` image or an empty ring; the chosen capsule inverts and a check draws into its circle. Use an empty-string option for “All”. |
 | `SegmentedControl` | Equal-width segments with a shared selection pill on web and native. Accepted selection changes slide the pill using the base motion token (260ms); repeated or rejected changes do not move it. Initial placement and reduced motion are immediate. No additional animation peer is required. |
 | `Select` | A custom styled combobox/listbox on web. Arrow keys, Home/End, typeahead, Enter/Space, Escape and Tab support keyboard selection; disabled options cannot be selected. The popup escapes clipped containers while inheriting HIG theme and density. |
 | `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. Web uses the product slider’s white 20 × 14px oval thumb and 6px track. Native keeps the community backend’s platform thumb shape with HIG colors. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. Native increment/decrement actions use HIGProvider `messages.increase`/`messages.decrease`. |
@@ -44,6 +45,8 @@ Checkboxes, radio controls and sliders retain native HTML keyboard semantics. We
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
 ## Platform mapping and limits
+
+Filter uses the same single-choice radio semantics: on web the arrow keys move the selection inside one tab stop, and the check, colour and image transitions stop under reduced motion. Use it to narrow a list by one facet when the options do not fit equal-width segments; the row scrolls instead of wrapping.
 
 SegmentedControl uses single-choice radio semantics on both platforms. Use it for a short set of related choices; use `RadioGroup` when options need longer descriptions. Web retains native radio keyboard behavior and a visible focus ring. The control is 44 units high on touch density (36 compact): a dark track with a lighter selected pill. Native segments extend their touch target to 48dp with hit slop and keep wrapping labels, per-option language and accessibility activation. The decorative pill is hidden from accessibility and does not intercept taps. Its position follows RTL direction and available width; native layout changes snap into place, and rapid selections interrupt the current animation. `HIGProvider reducedMotion` and the OS motion preference disable movement. A controlled pill follows the accepted `value`, including programmatic changes. An absent value has no pill.
 

@@ -33,7 +33,7 @@ it('sheet Close follows HIGProvider messages, closeLabel and RTL',()=>{const {Te
  expect(label()).toEqual(['تم']);});
 it('sheet background and handle paint from the provider colour table (#93)',()=>{const RN=require('react-native');const {nativeSrgb,nativeColors}=require('../../packages/hig/tokens/dist/index.js');const descriptor=Object.getOwnPropertyDescriptor(RN.Platform,'OS');Object.defineProperty(RN.Platform,'OS',{value:'ios',configurable:true});
  try{const paint=props=>{act(()=>{root=create(React.createElement(HIGProvider,{reducedMotion:true,...props},React.createElement(GestureSheet,{title:'Review',description:'Verify amount',snapPoints:['50%'],open:true,onOpenChange:jest.fn()},null)));});const node=root.root.findAll(n=>n.props.testID==='backend')[0];const value=[node.props.backgroundStyle.backgroundColor,node.props.handleIndicatorStyle.backgroundColor];act(()=>root.unmount());root=null;return value;};
-  expect(paint({})).toEqual([nativeSrgb.overlay,nativeSrgb.muted]);
-  expect(paint({colorSpace:'display-p3'})).toEqual([nativeColors.iosDisplayP3.overlay,nativeColors.iosDisplayP3.muted]);
+  expect(paint({})).toEqual([nativeSrgb.overlay,nativeSrgb.action]);
+  expect(paint({colorSpace:'display-p3'})).toEqual([nativeColors.iosDisplayP3.overlay,nativeColors.iosDisplayP3.action]);
  }finally{Object.defineProperty(RN.Platform,'OS',descriptor);}
 });

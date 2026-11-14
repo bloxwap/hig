@@ -3,6 +3,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
+    "dev": "expo start --web --port 8081",
     "start": "expo start",
     "bundle": "expo export --platform android --platform ios",
     "bundle:web": "expo export --platform web"
@@ -12,6 +13,7 @@
     "@bloxwap/sfx": "^0.2.0",
     "@expo/metro-runtime": "~6.1.2",
     "@gorhom/bottom-sheet": "5.2.14",
+    "cuer": "0.0.4",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/slider": "5.0.1",
     "expo": "~54.0.13",

@@ -189,12 +189,30 @@ it('native overlay focus requests also send viewHoverEnter on Android so TalkBac
   expect(hover).toHaveBeenLastCalledWith(trigger.current,'viewHoverEnter');
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});handle.mockRestore();focus.mockRestore();hover.mockRestore();raf.mockRestore();}
 });
-it('native switch keeps react-native-web semantics on Expo web (no nested interactive controls)',()=>{
+it('native switch draws the HIG capsule on web as one named switch, not react-native-web\'s Switch',()=>{
  const RN=require('react-native');const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'web',configurable:true});
- try{const {Switch}=require('../../packages/hig/native/src/switch');const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:jest.fn()}));
-  expect(tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function')).toHaveLength(0);
-  expect(tree.findByType(RN.Switch).props.accessibilityLabel).toBe('Sound');
+ try{const {Switch}=require('../../packages/hig/native/src/switch');const {nativeSrgb}=require('../../packages/hig/tokens/src/index');const changed=jest.fn();
+  const flat=n=>RN.StyleSheet.flatten(n.props.style)??{};
+  const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:changed}));
+  const controls=()=>tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function');
+  expect(controls()).toHaveLength(1);expect(controls()[0].props.accessibilityLabel).toBe('Sound');expect(controls()[0].props.accessibilityState.checked).toBe(false);
+  // Views only inside the row, so nothing interactive nests (axe nested-interactive, label and target-size on Expo web).
+  expect(tree.findAllByType(RN.Switch)).toHaveLength(0);
+  const track=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===40&&flat(n).height===24)[0],thumb=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===18&&flat(n).height===18)[0];
+  expect(track().props['aria-hidden']).toBe(true);
+  expect(flat(track())).toMatchObject({borderRadius:12,padding:3,backgroundColor:nativeSrgb.border,transitionDuration:'150ms'});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.text,transform:[{translateX:0}],transitionProperty:'transform, background-color'});
+  // Space toggles once and ignores key repeat; Enter is RN Web's own press.
+  const prevent=jest.fn();act(()=>controls()[0].props.onKeyDown({key:' ',preventDefault:prevent}));act(()=>controls()[0].props.onKeyDown({key:' ',repeat:true,preventDefault:prevent}));
+  expect(changed).toHaveBeenCalledTimes(1);expect(changed).toHaveBeenCalledWith(true);expect(prevent).toHaveBeenCalledTimes(2);
+  act(()=>root.update(React.createElement(Switch,{label:'Sound',checked:true,onCheckedChange:changed})));
+  expect(flat(track())).toMatchObject({backgroundColor:nativeSrgb.action});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.onAction,transform:[{translateX:16}]});
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
+});
+it('native switch keeps the platform switch in one pressable row on iOS and Android',()=>{
+ const RN=require('react-native');const {Switch}=require('../../packages/hig/native/src/switch');
+ const tree=mount(React.createElement(Switch,{label:'Sound',checked:true,onCheckedChange:jest.fn()}));
+ expect(tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function')).toHaveLength(1);
+ expect(tree.findByType(RN.Switch).props.value).toBe(true);
 });
 it('native switch and alert accept token colour roles only (#67)',()=>{
  const {Switch}=require('../../packages/hig/native/src/switch');const {Alert}=require('../../packages/hig/native/src/status');const RN=require('react-native');const {nativeSrgb:colors,withAlpha}=require('../../packages/hig/tokens/dist/index.js');

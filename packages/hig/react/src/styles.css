@@ -7,7 +7,7 @@
 [data-hig-density='compact'] { --hig-control: 36px; --hig-button: 36px; --hig-gap: 8px; }
 /* Every rule is scoped to HIG classes so a host that loads this file on some routes only gets no side effects elsewhere (#95).
    Element defaults for the whole page (box-sizing, focus ring, table, range) are opt-in: @bloxwap/hig/react/css/base. */
-:where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
+:where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-filter-chip :is(input,span,img),.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
 .hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);cursor:pointer;overflow-wrap:anywhere; }
 .hig-button[data-density='compact'] { padding-block:4px; }
 .hig-button[data-intent='secondary'],.hig-button[role='tab'][aria-selected='false'] { background:var(--hig-nested);color:var(--hig-text); }
@@ -33,15 +33,16 @@
 .hig-balance-card > .hig-number { font-size:1.5rem;line-height:1.25;font-weight:600; }
 .hig-text { font-size:1rem;line-height:1.5; }
 .hig-heading { line-height:1.25; }
-.hig-input { width:100%;min-width:0;min-height:var(--hig-control);border-radius:9999px;border:1px solid transparent;padding: max(4px,calc((var(--hig-control) - 1.5em - 2px)/2)) 20px;background:var(--hig-fill);color:var(--hig-text);font:inherit;line-height:1.5; }
+.hig-input { width:100%;min-width:0;min-height:var(--hig-button);border-radius:9999px;border:1px solid transparent;padding: max(4px,calc((var(--hig-button) - 1.5em - 2px)/2)) 20px;background:var(--hig-fill);color:var(--hig-text);font:inherit;line-height:1.5; }
 .hig-input::placeholder { color:var(--hig-muted);opacity:1; }
 .hig-input:focus-visible { outline:0;border-color:var(--hig-faint);box-shadow:0 0 0 1px var(--hig-faint); }
 .hig-input[aria-invalid='true'] { border-color:var(--hig-negative); }
 .hig-input[aria-invalid='true']:focus-visible { box-shadow:0 0 0 1px var(--hig-negative); }
 textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
+/* Text fields are as tall as a button (44 touch, 36 compact). */
 .hig-search-input { position:relative;display:block;width:100%;min-width:0; }
 .hig-search-icon { position:absolute;inset-inline-start:16px;inset-block-start:50%;translate:0 -50%;width:20px;height:20px;color:var(--hig-muted);pointer-events:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
-.hig-search-input > .hig-input { padding-inline-start:46px; }
+.hig-search-input > .hig-input { padding-inline-start:42px; }
 .hig-field label,.hig-group legend,.hig-select-option[aria-selected='true'] { font-weight:600; }
 .hig-field p { margin:0;color:var(--hig-muted); }
 .hig-field [role='alert'],.hig-list-error > .hig-list-message { color:var(--hig-negative); }
@@ -74,7 +75,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-gesture-sheet:is([data-vaul-drawer-direction='left'],[data-vaul-drawer-direction='right'])[data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
 .hig-gesture-sheet[data-vaul-drawer-direction='left'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-left:calc(24px + env(safe-area-inset-left,0px)); }
 .hig-gesture-sheet[data-vaul-drawer-direction='right'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-right:calc(24px + env(safe-area-inset-right,0px)); }
-.hig-gesture-handle[data-vaul-handle] { flex:none;align-self:center;background:var(--hig-muted);margin-block:4px 12px; }
+.hig-gesture-handle[data-vaul-handle] { flex:none;align-self:center;width:100px;height:6px;border-radius:9999px;opacity:1;background:var(--hig-action);box-shadow:0 0 12px color-mix(in srgb,var(--hig-action) 60%,transparent);margin-block:4px 12px; }
 .hig-gesture-sheet[data-hig-motion='reduced'],.hig-gesture-backdrop[data-hig-motion='reduced'] { animation:none!important;transition:none!important; }
 .hig-popover { max-width:min(360px,calc(100vw - 32px));max-height:var(--radix-popover-content-available-height,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;background:var(--hig-nested);color:var(--hig-text);padding:12px;border:1px solid transparent;border-radius:var(--hig-radius-xl,14px);box-shadow:0 8px 24px #0006;line-height:1.5;overflow-wrap:anywhere;z-index:50; }
 .hig-menu { min-width:min(12rem,calc(100vw - 32px));max-height:var(--radix-dropdown-menu-content-available-height,calc(100dvh - 32px));padding:4px; }
@@ -188,6 +189,12 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-select-chevron,.hig-select-check,.hig-accordion-chevron { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
 .hig-select-trigger[aria-expanded='true'] .hig-select-chevron { transform:rotate(180deg); }
 .hig-select-list { position:fixed;inset:auto;margin:0;padding:6px;font:inherit;line-height:1.5;background:var(--hig-nested);box-shadow:0 12px 32px #0006;overflow:auto;overscroll-behavior:contain;z-index:50; }
+/* Floating lists present with a short fade and settle from their anchor edge. */
+.hig-select-list,.hig-popover { animation:hig-present var(--hig-motion-duration-fast,180ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-select-list { transform-origin:top center; }
+.hig-select-list[data-placement='top'] { transform-origin:bottom center;--hig-present-from:4px; }
+.hig-popover { transform-origin:var(--radix-dropdown-menu-content-transform-origin,var(--radix-popover-content-transform-origin,var(--radix-tooltip-content-transform-origin,center))); }
+@keyframes hig-present { from { opacity:0;transform:translateY(var(--hig-present-from,-4px)) scale(.97); } }
 .hig-select-option {min-height:var(--hig-control);padding:8px 12px;border-radius:var(--hig-radius-lg,10px);overflow-wrap:anywhere; }
 .hig-select-option > span { min-width:0; }
 .hig-select-check { visibility:hidden;color:var(--hig-action); }
@@ -204,7 +211,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-choice input:checked { border-color:var(--hig-action); background:var(--hig-action); }
 .hig-choice input[type='radio'] { border-radius:50%; }
 .hig-choice input[type='radio']::before { width:8px; height:8px; border:0; border-radius:50%; background:var(--hig-onAction); transform:none; }
-.hig-switch input { position:relative; width:40px; height:24px; padding:3px; border:0; border-radius:9999px; background:var(--hig-border); display:block; }
+.hig-switch input { position:relative; width:40px; height:24px; padding:3px; border:0; border-radius:9999px; background:var(--hig-border); display:block; transition:background-color .15s ease; }
 .hig-switch input::before { position:absolute; inset-block-start:3px; inset-inline-start:3px; visibility:visible; width:18px; height:18px; border:0; border-radius:50%; background:var(--hig-text); transform:none; transition:inset-inline-start .15s ease, background .15s ease; }
 .hig-switch input:checked::before { inset-inline-start:19px; background:var(--hig-onAction); }
 
@@ -219,6 +226,26 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-segment span { display:flex; justify-content:center; align-items:center; min-height:calc(var(--hig-button) - 8px); padding:2px .75rem; border-radius:9999px; color:var(--hig-muted); font-weight:500; line-height:1.5; text-align:center; overflow-wrap:anywhere; }
 .hig-segment input:focus-visible { outline:0; }
 
+/* Filter: capsules in one row that scrolls sideways. The radio covers its capsule; the circle holds the option's image or an
+   empty ring, and fills while a check draws in when chosen. */
+.hig-filter { display:flex;gap:8px;min-width:0;margin:-4px;padding:4px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none; }
+.hig-filter::-webkit-scrollbar { display:none; }
+.hig-filter-chip { position:relative;flex:none;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding-block:6px;padding-inline:8px 16px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);font-size:.875rem;font-weight:600;line-height:1.5;white-space:nowrap;cursor:pointer;transition:var(--hig-motion-duration-fast,180ms) ease;transition-property:background-color,color; }
+/* 40px capsule with a 44px hit area. */
+.hig-filter-chip input { appearance:none;-webkit-appearance:none;position:absolute;inset:-2px 0;width:100%;height:calc(100% + 4px);margin:0;border-radius:9999px;opacity:0;cursor:inherit; }
+.hig-filter-chip:has(input:checked) { background:var(--hig-text);color:var(--hig-background); }
+.hig-filter-chip:has(input:disabled) { opacity:.5;cursor:not-allowed; }
+.hig-filter-chip:has(input:focus-visible) { outline:2px solid var(--hig-focus);outline-offset:2px; }
+.hig-filter-mark { position:relative;flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 2px currentColor;overflow:hidden;transition:background-color var(--hig-motion-duration-fast,180ms) ease; }
+.hig-filter-mark:has(img) { box-shadow:none; }
+.hig-filter-mark > img { grid-area:1/1;width:100%;height:100%;object-fit:cover;transition:var(--hig-motion-duration-fast,180ms) ease;transition-property:opacity,transform; }
+.hig-filter-mark > svg { grid-area:1/1;width:16px;height:16px;fill:none;stroke:var(--hig-text);stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+/* pathLength=1 on the path, so the dash offset is the undrawn fraction. A fully undrawn round-capped stroke still paints its cap as a dot, so the check is also hidden until chosen. */
+.hig-filter-mark path { stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),opacity 60ms; }
+.hig-filter-chip:has(input:checked) .hig-filter-mark { background:currentColor; }
+.hig-filter-chip:has(input:checked) .hig-filter-mark > img { opacity:0;transform:scale(.6); }
+.hig-filter-chip:has(input:checked) .hig-filter-mark path { stroke-dashoffset:0;opacity:1;transition-delay:60ms; }
+.hig-filter-chip:active:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
 .hig-range { accent-color:var(--hig-action); min-height:48px; width:100%; appearance:none; -webkit-appearance:none; display:block; margin:0; padding:0; border:0; background:transparent; cursor:pointer; }
 .hig-range::-webkit-slider-runnable-track { height:6px; border-radius:9999px; background:linear-gradient(to right,var(--hig-action) var(--hig-range-fill),var(--hig-border) var(--hig-range-fill)); }
 /* Match the product slider's white 20 × 14 pill while retaining the native range interaction. */
@@ -254,7 +281,10 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
   .hig-spinner-indicator,.hig-progress progress:not([value]),.hig-skeleton,.hig-status-indicator::before { animation:none; }
   .hig-button-spinner { animation-duration:2.4s; }
   .hig-progress progress::-webkit-progress-bar { animation:none; }
-  .hig-switch input::before,.hig-segment-indicator,.hig-accordion-chevron,.hig-accordion-summary,.hig-accordion::details-content { transition:none; }
+  .hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path { transition:none; }
+  /* The switch keeps its 150ms thumb slide and colour ease, as platform switches do under Reduce Motion: it is a 16px state change, and the Motion switch itself must still animate off. */
+  .hig-segment-indicator,.hig-accordion-chevron,.hig-accordion-summary,.hig-accordion::details-content { transition:none; }
+  .hig-select-list,.hig-popover { animation:none; }
 }
 [data-hig-motion='reduced'] :is(.hig-spinner-indicator,.hig-progress progress,.hig-skeleton) { animation:none; }
 [data-hig-motion='reduced'] .hig-status-indicator::before { animation:none; }
@@ -262,7 +292,9 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 [data-hig-motion='reduced'] :is(.hig-accordion-chevron,.hig-accordion-summary) { transition:none; }
 [data-hig-motion='reduced'] .hig-accordion::details-content { transition:none; }
 [data-hig-motion='reduced'] .hig-progress progress::-webkit-progress-bar { animation:none; }
-[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-segment-indicator { transition:none; }
+[data-hig-motion='reduced'] .hig-segment-indicator { transition:none; }
+[data-hig-motion='reduced'] :is(.hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path) { transition:none; }
+[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'].hig-popover { animation:none; }
 @media(forced-colors:active) {
   .hig-choice input,.hig-select select,.hig-range { appearance:auto; -webkit-appearance:auto; }
   .hig-choice input::before,.hig-select::after { display:none; }
@@ -271,7 +303,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 
 /* Touch: HIG controls fire click without the double-tap-zoom wait, draw their own press state instead of the
    browser's tap flash, and a long press never selects a control label or opens the link callout. Content stays selectable. */
-:where(.hig-button,.hig-choice,.hig-segment,.hig-switch,.hig-range,.hig-menu-item,.hig-select-trigger,.hig-select-option,.hig-table-sort,.hig-navigation > .hig-link,.hig-accordion-summary,.hig-toast-close) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
+:where(.hig-button,.hig-choice,.hig-segment,.hig-filter-chip,.hig-switch,.hig-range,.hig-menu-item,.hig-select-trigger,.hig-select-option,.hig-table-sort,.hig-navigation > .hig-link,.hig-accordion-summary,.hig-toast-close) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
 /* Press feedback on pointer-down for controls that had only hover or keyboard states. */
 .hig-menu-item:active:not([data-disabled]) { background:var(--hig-surface); }
 .hig-select-option:active:not([aria-disabled='true']) { background:var(--hig-border); }
@@ -287,6 +319,132 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
   .hig-navigation > .hig-link:hover { background:var(--hig-nested);color:var(--hig-text); }
   .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
   .hig-toast-close:hover { color:var(--hig-text);background:var(--hig-border); }
+  .hig-filter-chip:hover:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
   .hig-accordion-summary:hover .hig-accordion-chevron { color:var(--hig-text); }
   .hig-breadcrumb .hig-link:hover { color:var(--hig-text);text-decoration:underline; }
 }
+
+/* Vertical address: fixed-width rows whose height sets the type size, so a column of rows can match a QR code's edge. */
+.hig-vertical-address { display:inline-flex;flex-direction:column;flex:none;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);font-size:calc(var(--hig-address-row,1.5em)*.9);line-height:var(--hig-address-row,1.5em);font-weight:500;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--hig-muted);text-align:start;white-space:pre; }
+.hig-vertical-address > [aria-hidden] { display:flex;flex-direction:column; }
+.hig-vertical-address [data-anchor] { font-weight:700;color:var(--hig-text); }
+/* WalletAddress: the QR code and the address column share one height; the hint sits under both. */
+.hig-wallet-address { appearance:none;display:inline-flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;margin:0;padding:12px;border:0;border-radius:var(--hig-radius-xl,14px);background:transparent;color:var(--hig-text);font:inherit;text-align:start; }
+button.hig-wallet-address { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+button.hig-wallet-address:active { opacity:.8; }
+.hig-wallet-address-body { display:flex;align-items:center;gap:16px;max-width:100%; }
+.hig-wallet-address-qr { flex:none;display:block;width:var(--hig-qr);height:var(--hig-qr); }
+.hig-wallet-address-qr > svg { display:block;width:100%;height:100%; }
+.hig-wallet-address-hint { display:inline-flex;align-items:center;gap:8px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
+.hig-wallet-address-hint > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
+/* SwapPanel: two cards joined by a flip control. Each card is one target for its token picker; capsules and the
+   amount sit on a pass-through layer above that target and take their own presses. */
+.hig-swap-panel { display:flex;flex-direction:column;width:100%;max-width:28rem;min-width:0;color:var(--hig-text);font-family:var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);line-height:1.5;outline:none; }
+.hig-swap-card { --hig-fill:var(--hig-nested);--hig-fill-raised:var(--hig-border);position:relative;display:flex;flex-direction:column;border:1px solid transparent;border-radius:24px;background:var(--hig-surface);transition:background var(--hig-motion-duration-fast,180ms) ease; }
+.hig-swap-slot,.hig-swap-amount-area { position:relative; }
+.hig-swap-hit { appearance:none;position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:inherit;background:transparent;cursor:pointer; }
+.hig-swap-slot { border-radius:24px 24px 0 0; }
+.hig-swap-slot-content { position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:5.25rem;padding:16px;pointer-events:none; }
+.hig-swap-placeholder { font-size:2.5rem;line-height:1.1;font-weight:500;letter-spacing:-.02em;color:var(--hig-faint); }
+.hig-swap-kbd { flex:none;padding:2px 8px;border-radius:var(--hig-radius-sm,6px);background:var(--hig-fill);color:var(--hig-muted);font:inherit;font-size:.75rem;font-weight:500;letter-spacing:.04em; }
+.hig-swap-selected { display:flex;align-items:flex-start;gap:12px;width:100%;min-width:0; }
+.hig-swap-stack { position:relative;flex:none;display:flex;flex-direction:column;align-items:center; }
+.hig-swap-stack > * { width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--hig-nested);box-shadow:0 0 0 2px var(--hig-surface); }
+.hig-swap-stack > * + * { margin-block-start:-14px; }
+.hig-swap-initials,.hig-swap-token-icon > span { display:grid;place-items:center;font-size:.625rem;font-weight:600;color:var(--hig-muted); }
+.hig-swap-identity { display:flex;flex-direction:column;flex:1;min-width:0;font-size:.875rem;line-height:1.3;color:var(--hig-muted);overflow-wrap:anywhere; }
+.hig-swap-identity > strong { font-size:1rem;font-weight:600;color:var(--hig-text); }
+.hig-swap-meta { display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;max-width:60%;font-size:.875rem;color:var(--hig-muted);text-align:end; }
+.hig-swap-pills { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px; }
+.hig-swap-pill { appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 12px;border:0;border-radius:9999px;background:var(--hig-fill);color:var(--hig-muted);font:inherit;font-size:.875rem;font-weight:500;cursor:pointer;pointer-events:auto;position:relative; }
+/* 32px capsule with a 44px hit area. */
+.hig-swap-pill::after { content:'';position:absolute;inset:-6px 0; }
+.hig-swap-equals { opacity:.5; }
+.hig-swap-icon { flex:none; }
+.hig-swap-amount-content { position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 16px 20px;pointer-events:none; }
+.hig-swap-amount { max-width:100%;border-radius:var(--hig-radius-lg,10px);font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;overflow:hidden;pointer-events:auto;cursor:text; }
+.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number { font-family:inherit; }
+.hig-swap-amount[data-muted] { color:var(--hig-muted);pointer-events:none; }
+.hig-swap-flip { position:relative;z-index:1;display:flex;justify-content:center;height:8px; }
+.hig-swap-flip > * { appearance:none;position:absolute;top:50%;translate:0 -50%;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--hig-nested);color:var(--hig-muted);box-shadow:0 0 0 3px var(--hig-background);cursor:pointer;transition:transform var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-swap-flip > span { cursor:auto; }
+.hig-swap-flip > button::after { content:'';position:absolute;inset:-6px; }
+.hig-swap-flip > :disabled { color:var(--hig-faint);background:var(--hig-surface);cursor:not-allowed; }
+.hig-swap-flip > :active:not(:disabled,span) { transform:rotate(180deg); }
+.hig-swap-actions { display:flex;align-items:center;gap:8px;margin-block-start:8px; }
+/* The row uses the standard button height (44 touch, 36 compact). */
+.hig-swap-actions > .hig-icon-button { flex:none; }
+.hig-swap-actions > .hig-button:disabled:not([aria-busy='true']) { background:var(--hig-surface);color:var(--hig-muted);opacity:1; }
+.hig-swap-keypad { display:grid;grid-template-columns:repeat(3,1fr);padding-block-start:8px; }
+.hig-swap-key { appearance:none;display:grid;place-items:center;height:56px;border:0;border-radius:16px;background:transparent;color:var(--hig-text);font:inherit;font-size:1.5rem;font-weight:600;line-height:1;cursor:pointer; }
+.hig-swap-key:active { background:var(--hig-nested); }
+.hig-swap-receive { appearance:none;position:relative;display:flex;align-items:center;justify-content:space-evenly;gap:12px;width:100%;margin:0;padding:8px 16px 20px;border:0;border-radius:0 0 24px 24px;background:transparent;color:inherit;font:inherit;text-align:start; }
+button.hig-swap-receive { cursor:pointer; }
+button.hig-swap-receive:active { opacity:.8; }
+.hig-swap-qr { flex:none;display:grid;width:clamp(112px,38vw,196px);aspect-ratio:1;padding:8px;border-radius:16px;background:var(--hig-background);color:var(--hig-text); }
+.hig-swap-qr > :is(svg,img,canvas) { display:block;width:100%;height:100%; }
+.hig-swap-receive .hig-vertical-address { --hig-address-row:clamp(1rem,5.3vw,1.72rem); }
+.hig-swap-receive .hig-vertical-address[data-kind='solana'] { --hig-address-row:clamp(.69rem,3.75vw,1.24rem); }
+/* Pushed views: the token pickers and settings replace the cards inside the panel. A push arrives from the trailing
+   edge and a pop from the leading edge. */
+.hig-swap-view { --hig-swap-from:24px;display:flex;flex-direction:column;min-width:0;animation:hig-swap-push var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-swap-view[data-direction='pop'],[dir='rtl'] .hig-swap-view[data-direction='push'] { --hig-swap-from:-24px; }
+@keyframes hig-swap-push { from { opacity:0;transform:translateX(var(--hig-swap-from)); } }
+.hig-swap-picker,.hig-swap-settings-view { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-swap-view-header { display:flex;align-items:center;gap:4px;min-width:0;margin-inline-start:-8px; }
+.hig-swap-view-title { margin:0;min-width:0;font-size:1.5rem;line-height:1.25;font-weight:700;overflow-wrap:anywhere;outline:none; }
+.hig-swap-back { appearance:none;flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
+.hig-swap-back:active { background:var(--hig-surface);color:var(--hig-text); }
+[dir='rtl'] .hig-swap-back > svg,[dir='rtl'] .hig-swap-setting-value > svg { transform:scaleX(-1); }
+/* In a gesture sheet the panel fills the sheet width and the sheet follows the height of the view on show. */
+.hig-gesture-sheet.hig-swap-sheet { max-width:30rem;margin-inline:auto;border-radius:24px 24px 0 0; }
+.hig-swap-sheet .hig-swap-panel { max-width:none;padding:4px 12px calc(16px + env(safe-area-inset-bottom,0px)); }
+.hig-swap-wallet { display:flex;align-items:stretch;gap:8px; }
+.hig-swap-wallet > .hig-button:not(.hig-icon-button) { flex:1;min-height:var(--hig-control); }
+.hig-swap-wallet > .hig-button[aria-pressed='true'] { background:var(--hig-text);color:var(--hig-background); }
+.hig-swap-wallet > .hig-icon-button { flex:none;min-width:var(--hig-control); }
+.hig-swap-wallet-id { display:flex;align-items:center;gap:12px;flex:1;min-width:0;min-height:var(--hig-control);padding:8px 16px;border-radius:9999px;background:var(--hig-fill);font-weight:600;color:var(--hig-text); }
+.hig-swap-wallet-id > span:nth-child(2) { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis; }
+.hig-swap-wallet-id > .hig-swap-icon { color:var(--hig-muted); }
+.hig-swap-avatar { flex:none;width:28px;height:28px;border-radius:50%; }
+.hig-swap-list { min-height:8rem;max-height:min(56dvh,30rem);margin-inline:-12px;padding:0 12px;overflow-y:auto;overscroll-behavior:contain; }
+.hig-swap-section { display:flex;align-items:center;gap:6px;margin:0;padding:12px 8px 6px;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--hig-muted); }
+.hig-swap-section:first-child { padding-block-start:0; }
+.hig-swap-empty { margin:0;padding:32px 0;text-align:center;font-size:.875rem;color:var(--hig-muted); }
+.hig-swap-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;margin:0 0 4px;padding:8px 16px 8px 8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer; }
+.hig-swap-row[data-active='true'] { background:var(--hig-fill); }
+.hig-swap-row[data-selected] { opacity:.5; }
+.hig-swap-row-text,.hig-swap-row-balance { display:flex;flex-direction:column;min-width:0;font-size:.875rem;color:var(--hig-muted); }
+.hig-swap-row-text { flex:1;overflow-wrap:anywhere; }
+.hig-swap-row-balance { flex:none;align-items:flex-end; }
+.hig-swap-row :is(strong) { font-size:1rem;font-weight:600;color:var(--hig-text); }
+.hig-swap-token-icon { position:relative;flex:none;display:grid;border-radius:50%;background:var(--hig-nested); }
+.hig-swap-token-icon > img:first-child { width:100%;height:100%;border-radius:50%;object-fit:cover; }
+.hig-swap-chain-badge { position:absolute;inset-block-end:0;inset-inline-end:0;width:16px;height:16px;border-radius:50%;object-fit:cover;background:var(--hig-surface);box-shadow:0 0 0 2px var(--hig-background); }
+.hig-swap-sheet .hig-swap-chain-badge { box-shadow:0 0 0 2px var(--hig-overlay,#111); }
+.hig-swap-settings { display:flex;flex-direction:column;gap:12px;min-width:0; }
+/* The view title already names the presets; the group keeps its legend for assistive technology only. */
+.hig-swap-presets .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+.hig-swap-setting { appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:var(--hig-control);padding:8px 16px;border:0;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);font:inherit;font-size:1rem;font-weight:600;text-align:start;cursor:pointer; }
+.hig-swap-setting-value { display:inline-flex;align-items:center;gap:6px;font-weight:500;color:var(--hig-muted); }
+.hig-swap-fees { display:flex;flex-direction:column;gap:12px;margin:0; }
+.hig-swap-fees > div { display:flex;justify-content:space-between;gap:12px;color:var(--hig-muted); }
+.hig-swap-fees dd { margin:0;color:var(--hig-text); }
+.hig-swap-fees-total { padding-block-start:12px;font-weight:600; }
+.hig-swap-fees-total > dt { color:var(--hig-text); }
+:where(.hig-swap-hit,.hig-swap-pill,.hig-swap-flip > button,.hig-swap-key,.hig-swap-row,.hig-swap-setting,.hig-swap-back,button.hig-swap-receive) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
+.hig-swap-hit:focus-visible { outline-offset:-2px; }
+.hig-swap-pill:active,.hig-swap-setting:active { background:var(--hig-fill-raised);color:var(--hig-text); }
+.hig-swap-row:active { background:var(--hig-fill); }
+.hig-swap-card:has(.hig-swap-hit:active) { background:color-mix(in srgb,var(--hig-surface) 92%,var(--hig-text)); }
+@media (hover:hover) and (pointer:fine) {
+  .hig-swap-card:has(.hig-swap-hit:hover) { background:color-mix(in srgb,var(--hig-surface) 97%,var(--hig-text)); }
+  .hig-swap-pill:hover,.hig-swap-setting:hover { background:var(--hig-fill-raised);color:var(--hig-text); }
+  .hig-swap-flip > button:hover:not(:disabled) { color:var(--hig-text); }
+  .hig-swap-key:hover,.hig-swap-back:hover { background:var(--hig-surface); }
+  .hig-swap-back:hover { color:var(--hig-text); }
+}
+@media(prefers-reduced-motion:reduce) { .hig-swap-view { animation:none; } .hig-swap-flip > *,.hig-swap-card { transition:none; } .hig-swap-flip > :active { transform:none; } }
+[data-hig-motion='reduced'] .hig-swap-view { animation:none; }
+[data-hig-motion='reduced'] :is(.hig-swap-flip > *,.hig-swap-card) { transition:none; }
+[data-hig-motion='reduced'] .hig-swap-flip > :active { transform:none; }

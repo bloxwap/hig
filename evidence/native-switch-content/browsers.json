@@ -12,7 +12,7 @@
         "pending rejects direct click and Space",
         "busy state preserved",
         "Tab leaves custom row in one step",
-        "default native input still works",
+        "default HIG-drawn switch checks and unchecks",
         "axe WCAG2/2.1/2.2 AA clear",
         "no runtime errors"
       ],
@@ -30,7 +30,7 @@
         "pending rejects direct click and Space",
         "busy state preserved",
         "Tab leaves custom row in one step",
-        "default native input still works",
+        "default HIG-drawn switch checks and unchecks",
         "axe WCAG2/2.1/2.2 AA clear",
         "no runtime errors"
       ],
@@ -48,7 +48,7 @@
         "pending rejects direct click and Space",
         "busy state preserved",
         "Tab leaves custom row in one step",
-        "default native input still works",
+        "default HIG-drawn switch checks and unchecks",
         "axe WCAG2/2.1/2.2 AA clear",
         "no runtime errors"
       ],
@@ -66,7 +66,7 @@
         "pending rejects direct click and Space",
         "busy state preserved",
         "Tab leaves custom row in one step",
-        "default native input still works",
+        "default HIG-drawn switch checks and unchecks",
         "axe WCAG2/2.1/2.2 AA clear",
         "no runtime errors"
       ],

@@ -167,6 +167,16 @@
       "import": "./react/dist/recipes/trade-entry.js",
       "default": "./react/dist/recipes/trade-entry.js"
     },
+    "./react/recipes/swap-panel": {
+      "types": "./react/dist/recipes/swap-panel.d.ts",
+      "import": "./react/dist/recipes/swap-panel.js",
+      "default": "./react/dist/recipes/swap-panel.js"
+    },
+    "./react/recipes/swap-sheet": {
+      "types": "./react/dist/recipes/swap-sheet.d.ts",
+      "import": "./react/dist/recipes/swap-sheet.js",
+      "default": "./react/dist/recipes/swap-sheet.js"
+    },
     "./react/recipes/install-command": {
       "types": "./react/dist/recipes/install-command.d.ts",
       "import": "./react/dist/recipes/install-command.js",
@@ -194,6 +204,11 @@
       "import": "./react/dist/animated-number.js",
       "default": "./react/dist/animated-number.js"
     },
+    "./react/wallet-address": {
+      "types": "./react/dist/wallet-address.d.ts",
+      "import": "./react/dist/wallet-address.js",
+      "default": "./react/dist/wallet-address.js"
+    },
     "./react/gesture-sheet": {
       "types": "./react/dist/gesture-sheet.d.ts",
       "import": "./react/dist/gesture-sheet.js",
@@ -203,6 +218,16 @@
       "types": "./chart/dist/index.d.ts",
       "import": "./chart/dist/index.js",
       "default": "./chart/dist/index.js"
+    },
+    "./native/wallet-address": {
+      "types": "./native/dist/wallet-address.d.ts",
+      "import": "./native/dist/wallet-address.js",
+      "default": "./native/dist/wallet-address.js"
+    },
+    "./native/swap-sheet": {
+      "types": "./native/dist/swap-sheet.d.ts",
+      "import": "./native/dist/swap-sheet.js",
+      "default": "./native/dist/swap-sheet.js"
     },
     "./native/provider": {
       "types": "./native/dist/provider.d.ts",
@@ -344,6 +369,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "vaul": "^1.1.2",
     "sonner": "^2.0.0",
+    "cuer": ">=0.0.3 <0.1.0",
     "@bloxwap/chart": "^0.3.0 || ^0.4.0",
     "react-native": "^0.81.5 || ^0.83.10 || ^0.88.0",
     "react-native-svg": "15.12.1 || 15.15.3 || 15.16.0",
@@ -389,6 +415,9 @@
       "optional": true
     },
     "sonner": {
+      "optional": true
+    },
+    "cuer": {
       "optional": true
     },
     "react-native": {

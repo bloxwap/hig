@@ -1,12 +1,16 @@
 "use client";
-import React from 'react';
+import React,{useEffect} from 'react';
 import {Toaster as SonnerToaster,toast as sonner,type ToasterProps} from 'sonner';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from './provider.js';
 import {ToastNotice,type Notice} from './status.js';
+import {registerNotifier} from './notify.js';
 export type {ToasterProps} from 'sonner';
 /** Sonner's host for transient HIG notices. Mount once near the app root, inside HIGProvider; any Sonner prop overrides the defaults. */
-export function Toaster(props:ToasterProps){const {direction}=useHIG();return <SonnerToaster position='bottom-center' theme='dark' dir={direction} {...props}/>;}
+export function Toaster(props:ToasterProps){const {direction}=useHIG();
+ // While mounted, HIG components that report a result (InstallCommand) raise it here instead of inline.
+ useEffect(()=>registerNotifier(toast),[]);
+ return <SonnerToaster position='bottom-center' theme='dark' dir={direction} {...props}/>;}
 export interface ToastOptions {severity?:Notice['severity'];action?:React.ReactNode;/** Accessible name of the close button; defaults to the English `dismissNotice`. Pass the provider's translation from a component. */dismissName?:string;/** Milliseconds before auto-dismiss; Sonner's default when omitted. */duration?:number;/** Reuse an id to replace a notice instead of stacking it. */id?:string|number}
 /** Raises a transient HIG capsule through Sonner and returns its id. Needs a mounted `Toaster` (or the host's own Sonner `Toaster`). */
 export function toast(message:string,{severity='info',action,dismissName,duration,id}:ToastOptions={}):string|number{

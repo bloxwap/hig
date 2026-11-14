@@ -255,7 +255,7 @@ Do: label Amount (BTC), describe available funds, keep 0,001 unchanged until hos
 
 ## States, interaction and accessibility
 
-Single-line inputs are 48-unit pills with no resting stroke: the fill is `surface` on the page and `nested` inside a Surface, Dialog or sheet, so the field always reads against its container. Focus draws a neutral ring and invalid inputs take a negative ring. TextArea keeps a rounded rectangle. SearchInput insets a magnifying glass on the leading edge. DOM label/id plus help/error aria-describedby; invalid state is explicit. Field required propagates to Input/TextArea for browser required semantics and form validation; explicit input props can override required. A disabled Field keeps its controls disabled even if a child requests otherwise. Native amount keyboardType and search returnKeyType remain host-overridable defaults for locale/negative-entry and submit flows. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.
+Single-line inputs are pills as tall as a button on web (44 units on touch density, 36 compact) and 48dp on native, with no resting stroke: the fill is `surface` on the page and `nested` inside a Surface, Dialog or sheet, so the field always reads against its container. Focus draws a neutral ring and invalid inputs take a negative ring. TextArea keeps a rounded rectangle. SearchInput insets a magnifying glass on the leading edge; its text starts 42 units in. DOM label/id plus help/error aria-describedby; invalid state is explicit. Field required propagates to Input/TextArea for browser required semantics and form validation; explicit input props can override required. A disabled Field keeps its controls disabled even if a child requests otherwise. Native amount keyboardType and search returnKeyType remain host-overridable defaults for locale/negative-entry and submit flows. RN visible label plus accessibilityLabel/Hint; errors stay visible and live. Secure input and autofill remain host-controlled native props.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -273,9 +273,9 @@ Source: docs/components/financial-data.md
 
 # Financial data · HIG 0.1.0
 
-Readable numbers, metrics, lists, and tables for host-provided financial data.
+Readable numbers, metrics, lists, tables, and wallet addresses for host-provided financial data.
 
-Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, and `List`. `Table` is web-only; native uses labeled lists.
+Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, and `WalletAddress`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data` or `@bloxwap/hig/native/data` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -284,8 +284,19 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data`
 | Component | Key props and behavior |
 | --- | --- |
 | Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
+| `VerticalAddress` | `address`, optional `kind` (`'ethereum'` or `'solana'`, inferred from a `0x` prefix) and `rowHeight`. The address in fixed-width monospace rows, always left to right: 6 characters per row for Ethereum-style addresses (42 characters make 7 rows) and 4 for Solana (44 make 11). The leading row and the trailing four characters, the ones people compare, are emphasised; the middle is dimmed. Assistive technology and copying get the plain address. |
+| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`. |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
 | `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
+
+`WalletAddress` needs the optional `cuer` peer (`>=0.0.3 <0.1.0`), and on native also `react-native-svg`; `VerticalAddress` needs neither and lives in the `data` entry. HIG never reads or writes the clipboard itself.
+
+```tsx
+import {WalletAddress} from '@bloxwap/hig/react/wallet-address';
+
+<WalletAddress address={account.address} onCopy={() => navigator.clipboard.writeText(account.address)}/>
+<WalletAddress address={solanaAddress} qrValue={`solana:${solanaAddress}`} arena='/sol.png' size={160}/>
+```
 
 Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
 
@@ -544,11 +555,11 @@ Source: docs/components/recipes.md
 
 # Recipes · HIG 0.1.0
 
-Composed patterns for balances, markets, trade review, and documentation.
+Composed patterns for balances, markets, trade review, swapping, and documentation.
 
-Includes `MarketRow`, `BalanceCard`, `TradeEntry`, `ActivityList`, `InstallCommand`, `CodeWindow`, and `MarketingHero`.
+Includes `MarketRow`, `BalanceCard`, `TradeEntry`, `SwapPanel`, `ActivityList`, `InstallCommand`, `CodeWindow`, and `MarketingHero`.
 
-Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig/react/recipes` or `@bloxwap/hig/native/recipes` according to applicability below. On web, each recipe also has its own entry, for example `@bloxwap/hig/react/recipes/install-command`, `recipes/code-window`, `recipes/market-row`, `recipes/balance-card`, `recipes/marketing-hero` and `recipes/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `recipes/trade-entry` and the aggregate `recipes` entry need `@radix-ui/react-dialog` for the confirm step. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig/react/recipes` or `@bloxwap/hig/native/recipes` according to applicability below. On web, each recipe also has its own entry, for example `@bloxwap/hig/react/recipes/install-command`, `recipes/code-window`, `recipes/market-row`, `recipes/balance-card`, `recipes/marketing-hero` and `recipes/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `recipes/swap-panel` needs none either. `recipes/trade-entry` and the aggregate `recipes` entry need `@radix-ui/react-dialog` for the confirm step. `recipes/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ## API and anatomy
 
@@ -557,7 +568,8 @@ All data and actions are supplied by the host application.
 | Recipe | Key props and behavior |
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
-| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web through Sonner, so mount `Toaster` from `@bloxwap/hig/react/toast` once near the app root. |
+| `SwapPanel` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The recipe itself does not load Sonner. |
 | `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
 
 Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
@@ -575,6 +587,34 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 ```
 
 Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
+
+### SwapPanel
+
+`SwapPanel` is a From card and a To card joined by a flip control, with one action button that names itself from the pair: the same asset is **Send**, different assets on one chain is **Swap**, and different assets across chains is **Bridge** (`swapAction(from, to)` returns the same value). Until the pair and amount are valid the button is disabled and says what is missing: select a token, enter an amount, or insufficient balance.
+
+```tsx
+<SwapPanel tokens={catalog} fromTokens={holdings} hotTokenIds={ranked}
+  from={from} to={to} onFromChange={setFrom} onToChange={setTo}
+  onAmountChange={setUnits} received={quote?.out} fee={quote?.feeUsd} fees={quote?.fees} quoteLoading={loading}
+  slippage={slippage} onSlippageChange={setSlippage}
+  wallet={{connected, address}} onConnect={connect} onDisconnect={disconnect}
+  submitting={executing} onSubmit={action => execute(action, quote)}/>
+```
+
+- **Tokens.** A `SwapToken` is `{id, symbol, name, chain, chainId}` plus optional `icon`, `chainIcon`, `balance` (token units), `price` (USD per unit) and `keywords` (extra search text such as the contract address). `balance` enables Max, Test and the balance check; `price` enables the dollar and unit conversion and the estimate shown before `received` arrives.
+- **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
+- **Pushed views.** The token pickers and settings are views pushed inside the panel's own bounds, replacing the cards, each with a Back control; Escape pops one level on web and choosing a token pops to the cards. `view` / `onViewChange` (`'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees'`) control the stack when the host needs to.
+- **Pickers.** Pressing a card pushes its picker: search, chain filter chips, an optional Hot section from `hotTokenIds`, and the token list with arrow-key and Enter selection on web. The From picker shows the connected wallet with a disconnect control, or Connect wallet and the receive toggle; the To picker shows the recipient field when `onRecipientChange` is set, with a scan button when `onScanRecipient` is set. On web ⌘F / Ctrl+F and ⌘K / Ctrl+K open the From and To pickers while the panel is mounted; pass `shortcuts={false}` to leave the browser's own shortcuts alone.
+- **Settings.** The menu button pushes the settings view: the default denomination, slippage (presets plus a custom percent) and the fee breakdown one level deeper, then any host rows passed as `settings`.
+- **Receive view.** With `receive={{address, qr, onCopy}}` the From picker offers “Receive to an address”. The From card then shows the host's QR node beside the address in fixed-width rows with the leading and trailing characters emphasised, the To amount is hidden, and the action becomes “Send from your wallet” (calls `onConnect`). HIG ships no QR encoder or scanner: the host renders `qr` and implements `onScanRecipient`.
+- **One way.** `oneWay` is for flows that only run top to bottom, such as a deposit: the control between the cards becomes a decorative down arrow instead of the flip button, and the pair cannot be exchanged.
+- **Ownership.** The panel never fetches a quote, reads a wallet or submits a transaction. `onSubmit` is called once per accepted press and not while `submitting`.
+
+`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/recipes/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
+
+```tsx
+<SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<Button>Swap</Button>} tokens={catalog} onSubmit={execute}/>
+```
 
 ## When to use and examples
 
@@ -602,7 +642,7 @@ Source: docs/components/selection.md
 
 Controls for choosing options, changing preferences, and adjusting values.
 
-Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Select`, and `Slider`. See the navigation guide for `Tabs`.
+Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Filter`, `Select`, and `Slider`. See the navigation guide for `Tabs`.
 
 Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig/react/selection` or `@bloxwap/hig/native/selection` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -612,6 +652,7 @@ Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig/react/
 | --- | --- |
 | Checkbox and switch | `checked`, `defaultChecked`, and `onCheckedChange`. Native `Switch` also takes `tone`, a token role (`action` default, `positive`, `negative`, `warning`, `info`, `buy`, `sell`) for the on track; raw colours are not accepted and fall back to `action`. On Android the thumb uses the `text` token, so the app theme accent never shows. |
 | Choice controls | `value`, `defaultValue`, and `onValueChange`. Options have `value`, `label`, and optional `disabled`. Native options also accept `description` (a second line) and `lang` (the label's BCP-47 language). |
+| `Filter` | One row of filter capsules that scrolls sideways: `label` (accessible name, not drawn), `options` of `{value, label, icon?, disabled?}`, and `value` / `defaultValue` / `onValueChange`. Single choice with radio semantics. Each capsule leads with a circle showing the option's `icon` image or an empty ring; the chosen capsule inverts and a check draws into its circle. Use an empty-string option for “All”. |
 | `SegmentedControl` | Equal-width segments with a shared selection pill on web and native. Accepted selection changes slide the pill using the base motion token (260ms); repeated or rejected changes do not move it. Initial placement and reduced motion are immediate. No additional animation peer is required. |
 | `Select` | A custom styled combobox/listbox on web. Arrow keys, Home/End, typeahead, Enter/Space, Escape and Tab support keyboard selection; disabled options cannot be selected. The popup escapes clipped containers while inheriting HIG theme and density. |
 | `Slider` | `min`, `max`, `step`, and `value`; a visible `label` is required. Web uses the product slider’s white 20 × 14px oval thumb and 6px track. Native keeps the community backend’s platform thumb shape with HIG colors. The DOM keyboard focus ring is drawn inside the 48px range box, so it never paints over the label or the next control at comfortable or compact density. Native increment/decrement actions use HIGProvider `messages.increase`/`messages.decrease`. |
@@ -644,6 +685,8 @@ Checkboxes, radio controls and sliders retain native HTML keyboard semantics. We
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
 ## Platform mapping and limits
+
+Filter uses the same single-choice radio semantics: on web the arrow keys move the selection inside one tab stop, and the check, colour and image transitions stop under reduced motion. Use it to narrow a list by one facet when the options do not fit equal-width segments; the row scrolls instead of wrapping.
 
 SegmentedControl uses single-choice radio semantics on both platforms. Use it for a short set of related choices; use `RadioGroup` when options need longer descriptions. Web retains native radio keyboard behavior and a visible focus ring. The control is 44 units high on touch density (36 compact): a dark track with a lighter selected pill. Native segments extend their touch target to 48dp with hit slop and keep wrapping labels, per-option language and accessibility activation. The decorative pill is hidden from accessibility and does not intercept taps. Its position follows RTL direction and available width; native layout changes snap into place, and rapid selections interrupt the current animation. `HIGProvider reducedMotion` and the OS motion preference disable movement. A controlled pill follows the accepted `value`, including programmatic changes. An absent value has no pill.
 
@@ -1234,6 +1277,51 @@ Rules:
 | `statusStale` | stale | StatusIndicator `stale` | — |
 | `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
 | `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
+| `swapFrom` | From | SwapPanel: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
+| `swapTo` | To | SwapPanel: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
+| `swapSelectToken` `(side)` | Select {side} token | SwapPanel: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
+| `swapAmount` `(side)` | {side} amount | SwapPanel: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
+| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanel: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
+| `swapFlip` | Swap direction | SwapPanel: accessible name of the button that exchanges the two tokens | — |
+| `swapActionSend` | Send | SwapPanel: swap panel action when both sides are the same asset | — |
+| `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
+| `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
+| `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
+| `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
+| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
+| `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |
+| `swapReset` | Reset | SwapPanel: accessible name of the swap panel reset button | — |
+| `swapSettings` | Settings | SwapPanel: swap panel settings button and sheet title | — |
+| `swapMax` | Max | SwapPanel: capsule that enters the whole balance | — |
+| `swapTest` | Test | SwapPanel: capsule that enters a small trial amount | — |
+| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanel: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
+| `swapSlippageTitle` | Slippage | SwapPanel: slippage setting row, view title and preset group | — |
+| `swapSlippageCustom` | Custom slippage (%) | SwapPanel: label of the custom slippage field | — |
+| `swapFee` `(amount)` | Fee {amount} | SwapPanel: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
+| `swapFees` | Fees | SwapPanel: fee breakdown setting row and view title | — |
+| `swapFeeTotal` | Total | SwapPanel: total row of the fee breakdown | — |
+| `swapDenomination` | Show amounts in | SwapPanel: label of the default amount denomination setting | — |
+| `swapDollars` | Dollars | SwapPanel: dollar denomination option | — |
+| `swapUnits` | Units | SwapPanel: token unit denomination option | — |
+| `swapSearchTokens` | Search name, symbol or address | SwapPanel: token picker search placeholder and accessible name | — |
+| `swapChains` | Chains | SwapPanel: accessible name of the token picker chain filter | — |
+| `swapAllChains` | All | SwapPanel: chain filter option that clears the filter | — |
+| `swapHot` | Hot | SwapPanel: token picker section of host-ranked tokens | — |
+| `swapAllTokens` | All tokens | SwapPanel: token picker section after the hot tokens | — |
+| `swapNoTokens` | No tokens found | SwapPanel: token picker empty state | — |
+| `swapSelected` | Selected | SwapPanel: marks the token picker row that is already selected | — |
+| `swapConnectWallet` | Connect wallet | SwapPanel: token picker button that asks the host to connect a wallet | — |
+| `swapDisconnect` | Disconnect wallet | SwapPanel: accessible name of the token picker disconnect button | — |
+| `swapReceiveToAddress` | Receive to an address | SwapPanel: token picker toggle for the receive view | — |
+| `swapRecipient` | Recipient address | SwapPanel: recipient address field placeholder and accessible name | — |
+| `swapScan` | Scan QR code | SwapPanel: accessible name of the recipient QR scan button | — |
+| `copyAddress` | Copy address | WalletAddress and the SwapPanel receive view: accessible name of an address that copies on press; the address follows it | — |
+| `addressCopied` | Address copied | WalletAddress and the SwapPanel receive view: notice after the address is copied | — |
+| `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
+| `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
+| `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
+| `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
+| `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 
@@ -1707,10 +1795,10 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | --- | --- | --- | --- |
 | Individual DOM Button gzip (React external) | 706 B | 850 B | ~20% API/behavior fix headroom, overlay/audio/chart excluded |
 | Individual AmountInput gzip | 325 B | 400 B | Small labelled primitive, ~23% headroom |
-| Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67 | 2,200 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports |
+| Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67; 2,329 B with the web-drawn capsule | 2,400 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports Raised again for the design review pass: on Expo web the Switch draws the HIG capsule with Space handling instead of react-native-web's Material switch. |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
-| Docs CSS | 124,111 B (with resizable drawer and per-place number motion) | 125,000 B | Tight headroom against the current Next CSS output; the gesture example remains lazy-loaded and Vaul injects its own runtime CSS rather than adding a second bundled stylesheet |
+| Docs CSS | 124,111 B (with resizable drawer and per-place number motion); 139,812 B with SwapPanel, Filter and the review-pass styles | 150,000 B | Tight headroom against the current Next CSS output; the gesture example remains lazy-loaded and Vaul injects its own runtime CSS rather than adding a second bundled stylesheet Raised for SwapPanel, Filter and WalletAddress, with about 10 KB of headroom for further components. |
 | Sans + Mono assets | 592,796 B | 600,000 B | Pins two approved faces; new script/face requires explicit review |
 | Native fixture faces from `@bloxwap/hig/native-fonts` (Sans 400/600, Mono 400) | 1,278,880 B | 1,400,000 B | Only the three registered faces; optional CJK and other weights stay unloaded. Every generated face hash is checked |
 | Font binaries in web/shared tarballs (tokens, contracts, react, feedback, native) | 0 files | 0 files | Native faces ship only in `@bloxwap/hig/native-fonts` (#64); `release:dry-run` fails otherwise and records `packedSizes` |
@@ -1866,13 +1954,17 @@ These are the rules that `@bloxwap/hig/react/css` applied to the whole page befo
 
 ### Radix overlay peers and Fumadocs
 
-The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/recipes` or `@bloxwap/hig/react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
+The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/recipes`, or `@bloxwap/hig/react/recipes/trade-entry` (dialog only for the recipes). `@bloxwap/hig/react/recipes/swap-sheet` presents the swap panel in a gesture sheet and needs `vaul`, like `gesture-sheet`; `recipes/swap-panel` itself needs no overlay peer. Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
 
 The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
 
 ### Sonner toasts
 
-`@bloxwap/hig/react/toast` exports `Toaster`, `toast()` and `dismissToast()`, which raise the HIG toast capsule through [Sonner](https://sonner.emilkowal.ski/). `sonner ^2.0.0` is an optional peer: install it for `@bloxwap/hig/react/toast`, `@bloxwap/hig/react/recipes` or `@bloxwap/hig/react/recipes/install-command`, and mount `<Toaster/>` once inside `HIGProvider`. Without a mounted toaster `InstallCommand` still announces its copy result to assistive technology but shows no toast. The controlled `Toast` in `@bloxwap/hig/react/status` needs no backend.
+`@bloxwap/hig/react/toast` exports `Toaster`, `toast()` and `dismissToast()`, which raise the HIG toast capsule through [Sonner](https://sonner.emilkowal.ski/). `sonner ^2.0.0` is an optional peer needed only by `@bloxwap/hig/react/toast`; no other entry loads it. Mount `<Toaster/>` once inside `HIGProvider`: while it is mounted, `InstallCommand` raises its copy result as a toast. Without a mounted toaster `InstallCommand` shows the result inline, as before. The controlled `Toast` in `@bloxwap/hig/react/status` needs no backend.
+
+### Wallet address QR codes
+
+`@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address` export `WalletAddress`, which draws its QR code with [Cuer](https://cuer.sh). `cuer` (`>=0.0.3 <0.1.0`) is an optional peer needed only by those two entries; the native entry also needs `react-native-svg`. `VerticalAddress` is in the `data` entries and needs neither.
 
 ## Brand accent
 

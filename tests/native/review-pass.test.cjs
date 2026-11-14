@@ -33,6 +33,13 @@ it('SearchInput insets a decorative magnifying glass on the leading edge and pad
  const icon=tree.findAll(n=>n.type===View&&n.props.pointerEvents==='none'&&flat(n)?.position==='absolute')[0];expect(flat(icon)).toMatchObject({start:18});
  expect(tree.findAll(n=>n.props.importantForAccessibility==='no-hide-descendants'&&n.props.accessible===false).length).toBeGreaterThan(0);
 });
+it('SearchInput is button height, 44dp, while other inputs keep 48dp',()=>{
+ const {StyleSheet,TextInput}=require('react-native');
+ const search=mount(h(HIGProvider,null,h(SearchInput,{value:'',onChangeText:jest.fn()})));
+ expect(StyleSheet.flatten(search.findByType(TextInput).props.style)).toMatchObject({minHeight:44,paddingVertical:10});
+ const plain=mount(h(HIGProvider,null,h(Input,{value:'',onChangeText:jest.fn()})));
+ expect(StyleSheet.flatten(plain.findByType(TextInput).props.style).minHeight).toBe(48);
+});
 it('SegmentedControl: dark well with a lighter selected segment, stepping up inside a Surface; 44dp tall, 36 compact',()=>{
  const control=h(SegmentedControl,{label:'Side',options:[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}],value:'buy'});
  const fills=tree=>{const track=tree.findAll(n=>n.type===View&&flat(n)?.padding===4&&flat(n).borderRadius===9999)[0];act(()=>track.findAll(n=>n.props.onLayout)[0].props.onLayout({nativeEvent:{layout:{width:200}}}));return [flat(track).backgroundColor,flat(tree.findByType(Animated.View)).backgroundColor];};
