@@ -1,6 +1,50 @@
 # Bloxwap Human Interface Guidelines
 
-HIG **0.1.1**: a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, `@bloxwap/hig`, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
+HIG **0.4.0** (`@bloxwap/hig`): a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
+
+The current GitHub release is [v0.4.0](https://github.com/bloxwap/hig/releases/tag/v0.4.0). npm `latest` is still **0.2.0**: 0.3.0 and 0.4.0 are tagged here and have not been published. Published docs: [bloxwap.github.io/hig](https://bloxwap.github.io/hig/).
+
+## Install
+
+`npm install @bloxwap/hig` resolves to 0.2.0 until 0.4.0 is published. The same command installs the current release after that publish. Pin `@bloxwap/hig@0.4.0` only once that version is on npm.
+
+`@bloxwap/chart` is the one required peer (`^0.3.0 || ^0.4.0` in this release; `^0.3.0` on the published 0.2.0). Every renderer, device, and overlay peer is optional. Install a peer only for the entry you import. The [installation guide](docs/installation.md) and the [package README](packages/hig/README.md) list the entries and peers.
+
+```sh
+npm install @bloxwap/hig @bloxwap/chart
+```
+
+## Use
+
+Import only the entries you use. Nothing loads from a root barrel.
+
+```tsx
+import '@bloxwap/hig/tokens/css';
+import '@bloxwap/hig/react/css';
+import {HIGProvider} from '@bloxwap/hig/react/provider';
+import {Button} from '@bloxwap/hig/react/button';
+
+export function Save() {
+  return (
+    <HIGProvider>
+      <Button onClick={() => console.log('Saved')}>Save</Button>
+    </HIGProvider>
+  );
+}
+```
+
+| Entry | Use |
+| --- | --- |
+| `@bloxwap/hig/tokens`, `@bloxwap/hig/tokens/css` | Semantic tokens and the role CSS |
+| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, and messages |
+| `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
+| `@bloxwap/hig/native/<component>` | React Native components |
+| `@bloxwap/hig/chart` | `PriceChart` and `chartTheme` for `@bloxwap/chart` |
+| `@bloxwap/hig/feedback` | Optional sound and haptic feedback |
+| `@bloxwap/hig/native-fonts` | Static TTFs for React Native and Expo |
+| `@bloxwap/hig/og-fonts` | Satori and `next/og` faces |
+
+`HIGProvider` accepts an opaque sRGB `primaryColor` (`#RGB` or `#RRGGBB`). Omit it to keep Bloxwap green. `density`, `locale`, and `direction` are set on the same provider.
 
 ## Local documentation
 
