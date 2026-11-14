@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "next dev --webpack --port 4175",
     "build": "next build --webpack",
     "start": "next start -p 4175"
   },

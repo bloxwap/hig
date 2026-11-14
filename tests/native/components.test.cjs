@@ -166,13 +166,17 @@ it('native Menu and Select return focus to their own trigger on close (Android T
   expect(focus).toHaveBeenLastCalledWith('trigger-handle');
  }}finally{handle.mockRestore();focus.mockRestore();raf.mockRestore();}
 });
-it('native InstallCommand hides its empty status region from VoiceOver until a copy outcome exists (iOS audit regression)',async()=>{
+it('native InstallCommand shows a copy outcome as a transient toast capsule and mounts no empty status region (iOS audit regression)',async()=>{
  const {Text}=require('react-native');const {InstallCommand}=require('../../packages/hig/native/src/recipes');
  const tree=mount(React.createElement(InstallCommand,{command:'npm i x',onCopy:()=>Promise.resolve()}));
- const status=()=>tree.findAllByType(Text).find(t=>t.props.accessibilityLiveRegion==='polite');
- expect(status().props.accessibilityElementsHidden).toBe(true);
+ jest.useFakeTimers();try{
+ const {Toast}=require('../../packages/hig/native/src/status');const shown=()=>tree.findAllByType(Text).map(t=>t.props.children);
+ expect(tree.findAllByType(Toast)).toHaveLength(0);expect(shown()).toEqual(['npm i x','Copy install command']);
  await act(async()=>{tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0].props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented(){return false;}});});
- expect(status().props.children).toBe('Copied');expect(status().props.accessibilityElementsHidden).toBe(false);
+ expect(shown()).toContain('Copied');expect(tree.findByType(Toast).props.notices).toMatchObject([{message:'Copied',severity:'success'}]);
+ const close=tree.findAll(n=>n.props.accessibilityRole==='button'&&n.props.accessibilityLabel==='Dismiss Copied');expect(close.length).toBeGreaterThan(0);
+ act(()=>{jest.advanceTimersByTime(4000);});expect(tree.findAllByType(Toast)).toHaveLength(0);
+ }finally{jest.useRealTimers();}
 });
 it('native overlay focus requests also send viewHoverEnter on Android so TalkBack moves focus (emulator regression)',()=>{
  // focusNative reads Platform.OS per call, so the shared registry can be switched to Android for this test.
@@ -185,12 +189,30 @@ it('native overlay focus requests also send viewHoverEnter on Android so TalkBac
   expect(hover).toHaveBeenLastCalledWith(trigger.current,'viewHoverEnter');
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});handle.mockRestore();focus.mockRestore();hover.mockRestore();raf.mockRestore();}
 });
-it('native switch keeps react-native-web semantics on Expo web (no nested interactive controls)',()=>{
+it('native switch draws the HIG capsule on web as one named switch, not react-native-web\'s Switch',()=>{
  const RN=require('react-native');const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'web',configurable:true});
- try{const {Switch}=require('../../packages/hig/native/src/switch');const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:jest.fn()}));
-  expect(tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function')).toHaveLength(0);
-  expect(tree.findByType(RN.Switch).props.accessibilityLabel).toBe('Sound');
+ try{const {Switch}=require('../../packages/hig/native/src/switch');const {nativeSrgb}=require('../../packages/hig/tokens/src/index');const changed=jest.fn();
+  const flat=n=>RN.StyleSheet.flatten(n.props.style)??{};
+  const tree=mount(React.createElement(Switch,{label:'Sound',checked:false,onCheckedChange:changed}));
+  const controls=()=>tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function');
+  expect(controls()).toHaveLength(1);expect(controls()[0].props.accessibilityLabel).toBe('Sound');expect(controls()[0].props.accessibilityState.checked).toBe(false);
+  // Views only inside the row, so nothing interactive nests (axe nested-interactive, label and target-size on Expo web).
+  expect(tree.findAllByType(RN.Switch)).toHaveLength(0);
+  const track=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===40&&flat(n).height===24)[0],thumb=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===18&&flat(n).height===18)[0];
+  expect(track().props['aria-hidden']).toBe(true);
+  expect(flat(track())).toMatchObject({borderRadius:12,padding:3,backgroundColor:nativeSrgb.nested,transitionDuration:'150ms'});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.text,transform:[{translateX:0}],transitionProperty:'transform, background-color'});
+  // Space toggles once and ignores key repeat; Enter is RN Web's own press.
+  const prevent=jest.fn();act(()=>controls()[0].props.onKeyDown({key:' ',preventDefault:prevent}));act(()=>controls()[0].props.onKeyDown({key:' ',repeat:true,preventDefault:prevent}));
+  expect(changed).toHaveBeenCalledTimes(1);expect(changed).toHaveBeenCalledWith(true);expect(prevent).toHaveBeenCalledTimes(2);
+  act(()=>root.update(React.createElement(Switch,{label:'Sound',checked:true,onCheckedChange:changed})));
+  expect(flat(track())).toMatchObject({backgroundColor:nativeSrgb.action});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.onAction,transform:[{translateX:16}]});
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
+});
+it('native switch keeps the platform switch in one pressable row on iOS and Android',()=>{
+ const RN=require('react-native');const {Switch}=require('../../packages/hig/native/src/switch');
+ const tree=mount(React.createElement(Switch,{label:'Sound',checked:true,onCheckedChange:jest.fn()}));
+ expect(tree.findAll(n=>n.props.accessibilityRole==='switch'&&typeof n.props.onPress==='function')).toHaveLength(1);
+ expect(tree.findByType(RN.Switch).props.value).toBe(true);
 });
 it('native switch and alert accept token colour roles only (#67)',()=>{
  const {Switch}=require('../../packages/hig/native/src/switch');const {Alert}=require('../../packages/hig/native/src/status');const RN=require('react-native');const {nativeSrgb:colors,withAlpha}=require('../../packages/hig/tokens/dist/index.js');
@@ -204,22 +226,22 @@ it('native switch and alert accept token colour roles only (#67)',()=>{
  expect(thumb()).toBeUndefined();
  const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});
  try{expect(thumb()).toBe(colors.text);}finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
- const accent=props=>{const tree=mount(React.createElement(Alert,{title:'Result',announce:false,...props}));const style=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.View&&n.props.style)[0].props.style);act(()=>root.unmount());root=null;return style;};
- expect(accent({}).borderColor).toBe(colors.info);
- expect(accent({severity:'success'}).borderColor).toBe(colors.positive);
- expect(accent({severity:'warning'}).borderColor).toBe(colors.warning);
- expect(accent({severity:'error'}).borderColor).toBe(colors.negative);
- expect(accent({severity:'note'}).borderColor).toBe(colors.info);
- expect(accent({severity:'tip'}).borderColor).toBe(colors.positive);
- expect(accent({severity:'error',tone:'action'}).borderColor).toBe(colors.action);
- expect(accent({severity:'error',tone:'rgb(1,2,3)'}).borderColor).toBe(colors.negative);
- // Bloxwap glowing stroke: 2px tone border on every side, tone glow at 55%, 16dp radius, translucent surface.
- const base=accent({});expect(base.borderWidth).toBe(2);expect(base.borderStartWidth).toBeUndefined();expect(base.borderRadius).toBe(16);
- expect(base.backgroundColor).toBe(withAlpha(colors.surface,0.95));expect(base.boxShadow).toBe(`0 0 24px ${withAlpha(colors.info,0.55)}`);
- expect(accent({severity:'error'}).boxShadow).toBe(`0 0 24px ${withAlpha(colors.negative,0.55)}`);
- // Neutral default: border-token stroke with the soft white glow.
- const neutral=accent({severity:'default'});expect(neutral.borderColor).toBe(colors.border);expect(neutral.boxShadow).toBe(`0 0 20px ${withAlpha(colors.text,0.12)}`);
- expect(accent({severity:'default',tone:'warning'}).borderColor).toBe(colors.warning);
+ // The title carries the tone; the panel is tinted with it.
+ const accent=props=>{const tree=mount(React.createElement(Alert,{title:'Result',announce:false,...props}));const style=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.View&&n.props.style)[0].props.style);const tone=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.Text&&n.props.accessibilityRole==='header')[0].props.style).color;act(()=>root.unmount());root=null;return {...style,tone};};
+ const tint=(tone,amount)=>'#'+[1,3,5].map(k=>Math.round(parseInt(colors.surface.slice(k,k+2),16)*(1-amount)+parseInt(tone.slice(k,k+2),16)*amount).toString(16).padStart(2,'0')).join('');
+ expect(accent({}).tone).toBe(colors.info);
+ expect(accent({severity:'success'}).tone).toBe(colors.positive);
+ expect(accent({severity:'warning'}).tone).toBe(colors.warning);
+ expect(accent({severity:'error'}).tone).toBe(colors.negative);
+ expect(accent({severity:'note'}).tone).toBe(colors.info);
+ expect(accent({severity:'tip'}).tone).toBe(colors.positive);
+ expect(accent({severity:'error',tone:'action'}).tone).toBe(colors.action);
+ expect(accent({severity:'error',tone:'rgb(1,2,3)'}).tone).toBe(colors.negative);
+ // No stroke and no glow: a 10% tone tint of the surface, 6% of text for the neutral default.
+ const base=accent({});expect(base.borderWidth).toBeUndefined();expect(base.borderColor).toBeUndefined();expect(base.boxShadow).toBeUndefined();
+ expect(base.backgroundColor).toBe(tint(colors.info,0.1));expect(accent({severity:'error'}).backgroundColor).toBe(tint(colors.negative,0.1));
+ const neutral=accent({severity:'default'});expect(neutral.tone).toBe(colors.text);expect(neutral.backgroundColor).toBe(tint(colors.text,0.06));
+ expect(accent({severity:'default',tone:'warning'}).tone).toBe(colors.warning);
 });
 it('native Text caps font scale from the prop or the provider and readouts pass it through (#67)',()=>{
  const {HIGProvider}=require('../../packages/hig/native/src/provider');const {Text,Heading}=require('../../packages/hig/native/src/surface');const {Text:RNText}=require('react-native');

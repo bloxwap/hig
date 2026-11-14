@@ -44,6 +44,6 @@ it('forwards host View props and text styles while isolating the decorative illu
  const title=tree.findAllByType(RNText).find(node=>node.props.children==='No matches'),description=tree.findAllByType(RNText).find(node=>node.props.children==='Change filters');
  expect(title.props.accessibilityRole).toBe('header');expect(title.props.maxFontSizeMultiplier).toBe(2);expect(description.props.maxFontSizeMultiplier).toBe(2);
  expect(StyleSheet.flatten(title.props.style)).toMatchObject({fontSize:20,lineHeight:28,fontWeight:'700',textAlign:'center',color:nativeSrgb.text});
- expect(StyleSheet.flatten(description.props.style)).toMatchObject({fontSize:14,lineHeight:20,textAlign:'center',color:nativeSrgb.text});
+ expect(StyleSheet.flatten(description.props.style)).toMatchObject({fontSize:14,lineHeight:20,textAlign:'center',color:nativeSrgb.muted});
  act(()=>tree.findByType(Button).props.onPress());expect(press).toHaveBeenCalledTimes(1);
 });

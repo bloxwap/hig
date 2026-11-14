@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-10-27T18:04:43.462Z",
-  "sourceCommit": "c5b9a9465712a7f7f07ef83a704ccb905bbc3314",
+  "checkedAt": "2026-11-14T23:02:24.597Z",
+  "sourceCommit": "0c1bbd44e547ba5af58dafd1886f578fe24351b2",
   "sourceDirty": true,
   "inputHashes": {
-    "packages/react/src/gesture-sheet.tsx": "3ca2e4ff68df762f54e9d70cc0e30b1544623adf1bbdccea18623f211134b82e",
-    "packages/react/src/styles.css": "7f51fb5143876c6837dccdd1934f0f932ac05633323ca8483b7de2952055859a",
-    "packages/react/package.json": "af82af4f9f6bab0b25c3feb5e1fb0528a8d4278626517a43f1fd86e0bb8bc58c",
-    "scripts/gesture-sheet-browser-smoke.mjs": "652c3b1a23133c394fd8d85dfcb520ee764342db0348076d060a6919a24cabe5"
+    "packages/hig/react/src/gesture-sheet.tsx": "20f24edc55f34c43601dbf196267cff251d6d592aec7f7c7af50f07727e94c64",
+    "packages/hig/react/src/styles.css": "8d81e4ed056a4d5c3c20092ba3130dd6cef379dcdd91e127b1aea9113ce521ad",
+    "packages/hig/package.json": "4049c28239c301cdf55409faf10511223deff917c6337b0e3431a55e943e072b",
+    "scripts/gesture-sheet-browser-smoke.mjs": "b35c8d572de76ea7e7df7e82539bb20abfdfbeb9b66bf5c40b2d69fa426be36c"
   },
   "backend": "vaul@1.1.2",
   "browserVersions": {
@@ -338,9 +338,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -391,9 +391,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -446,13 +446,13 @@
           "x": 0,
           "y": 0,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
           "ref": true,
           "host": "markets",
-          "bottom": "607px",
+          "bottom": "606px",
           "maxHeight": "801.8px",
           "handleWidth": 100,
           "animation": "none",
@@ -813,9 +813,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -866,9 +866,9 @@
         "passed": true,
         "initial": {
           "x": 0,
-          "y": 595,
+          "y": 594,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
@@ -921,13 +921,13 @@
           "x": 0,
           "y": 0,
           "width": 390,
-          "height": 237
+          "height": 238
         },
         "metrics": {
           "id": "radix-_r_0_",
           "ref": true,
           "host": "markets",
-          "bottom": "607px",
+          "bottom": "606px",
           "maxHeight": "801.799988px",
           "handleWidth": 100,
           "animation": "none",

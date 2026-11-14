@@ -28,36 +28,37 @@ const locales=[
  {locale:'ar-EG',messages:{busy:'جارٍ التنفيذ'},text:'تأكيد',busy:'جارٍ التنفيذ'},
 ];
 
-describe('#92 native Button label and busy suffix render through HIG Text',()=>{
- it('applies the provider font-scale cap to the label and the suffix, and a Button prop overrides it',()=>{
+const spinners=()=>rntl.screen.UNSAFE_root.findAllByType(RN.ActivityIndicator);
+// The busy state is a leading spinner; the busy word lives in the accessible name only, never as visible text.
+describe('#92 native Button label renders through HIG Text and busy shows a spinner, not a suffix',()=>{
+ it('applies the provider font-scale cap to the label, and a Button prop overrides it',()=>{
   // One tree per case keeps each render independent (RNTL keeps one live screen per test).
   render(h(View0,null,h(HIGProvider,{maxFontSizeMultiplier:2},h(Button,{busy:true},'Log out'),h(Button,{busy:true,busyLabel:'Busy (prop cap)',maxFontSizeMultiplier:1.5},'Sign out')),h(Button,{busy:true,busyLabel:'Uncapped'},'Leave')));
   expect(run('Log out').props.maxFontSizeMultiplier).toBe(2);
-  expect(run('· Working').props.maxFontSizeMultiplier).toBe(2);
   expect(run('Sign out').props.maxFontSizeMultiplier).toBe(1.5);
-  expect(run('· Busy (prop cap)').props.maxFontSizeMultiplier).toBe(1.5);
   expect(run('Leave').props.maxFontSizeMultiplier).toBeUndefined();
-  expect(run('· Uncapped').props.maxFontSizeMultiplier).toBeUndefined();
+  expect(runs().map(n=>[].concat(n.props.children).join(''))).toEqual(['Log out','Sign out','Leave']);expect(spinners()).toHaveLength(3);
  });
- it('gives the label and the busy suffix the registered family for the 600 weight',()=>{
+ it('gives the label the registered family for the 600 weight',()=>{
   // Without a registered 600 face (second provider) the base family is kept and the platform synthesizes the weight, on both runs.
   render(h(View0,null,h(HIGProvider,{fontFamily:'BloxwapSansRegular',fontFamilies:{400:'BloxwapSansRegular',600:'BloxwapSansSemiBold'},messages:{busy:'En cours'}},h(Button,{busy:true},'Déconnexion')),h(HIGProvider,{fontFamily:'BloxwapSansRegular'},h(Button,{busy:true},'Log out'))));
-  for(const text of ['Déconnexion','· En cours']){const s=style(run(text));expect(s.fontFamily).toBe('BloxwapSansSemiBold');expect(s.fontWeight).toBe('normal');expect(s.fontSize).toBe(16);}
-  for(const text of ['Log out','· Working']){const s=style(run(text));expect(s.fontFamily).toBe('BloxwapSansRegular');expect(s.fontWeight).toBe('600');}
+  for(const text of ['Déconnexion']){const s=style(run(text));expect(s.fontFamily).toBe('BloxwapSansSemiBold');expect(s.fontWeight).toBe('normal');expect(s.fontSize).toBe(16);}
+  for(const text of ['Log out']){const s=style(run(text));expect(s.fontFamily).toBe('BloxwapSansRegular');expect(s.fontWeight).toBe('600');}
  });
- it('applies per-script letter spacing to CJK label and suffix runs, not to Latin runs',()=>{
+ it('applies per-script letter spacing to CJK label runs, not to Latin runs',()=>{
   // The second provider has no override: default companion-face spacing (0em).
   render(h(View0,null,h(HIGProvider,{locale:'ko-KR',letterSpacingByScript:{ko:0.02,zh:0.01},messages:{busy:'처리 중'}},h(Button,{busy:true},'로그아웃'),h(Button,null,'中文'),h(Button,null,'Log out')),h(HIGProvider,{messages:{busy:'작업 중'}},h(Button,{busy:true},'취소'))));
   expect(style(run('로그아웃')).letterSpacing).toBeCloseTo(0.32);
-  expect(style(run('· 처리 중')).letterSpacing).toBeCloseTo(0.32);
   expect(style(run('中文')).letterSpacing).toBeCloseTo(0.16);
   expect(style(run('Log out')).letterSpacing).toBeUndefined();
-  expect(style(run('취소')).letterSpacing).toBe(0);expect(style(run('· 작업 중')).letterSpacing).toBe(0);
+  expect(style(run('취소')).letterSpacing).toBe(0);
  });
- it('keeps label colour, centring and writing direction on both runs',()=>{
+ it('keeps label colour, centring and writing direction, with the spinner leading in the label colour',()=>{
   render(h(HIGProvider,{direction:'rtl',messages:{busy:'جارٍ التنفيذ'}},h(Button,{busy:true,intent:'secondary'},'تأكيد')));
   const {nativeSrgb:colors}=require('../../packages/hig/tokens/dist/index.js');
-  for(const text of ['تأكيد','· جارٍ التنفيذ']){const s=style(run(text));expect(s.color).toBe(colors.text);expect(s.textAlign).toBe('center');expect(s.writingDirection).toBe('rtl');}
+  for(const text of ['تأكيد']){const s=style(run(text));expect(s.color).toBe(colors.text);expect(s.textAlign).toBe('center');expect(s.writingDirection).toBe('rtl');}
+  const [spinner]=spinners();expect(spinner.props.color).toBe(colors.text);
+  const row=spinner.parent;expect(row.children[0]).toBe(spinner);expect(RN.StyleSheet.flatten(row.props.style)).toMatchObject({flexDirection:'row',direction:'rtl'});
  });
 });
 
@@ -69,7 +70,7 @@ describe('#94 busy native Button keeps its accessible name',()=>{
   expect(button.props.accessibilityLabel).toContain(text);
   expect(button.props.accessibilityState).toEqual({disabled:true,busy:true});
   expect(rntl.screen.getByLabelText(`${text} · ${busy}`)).toBe(button);
-  expect(run(text)).toBeTruthy();expect(run(`· ${busy}`)).toBeTruthy();
+  expect(run(text)).toBeTruthy();expect(run(`· ${busy}`)).toBeUndefined();expect(spinners()).toHaveLength(1);
  }));
  it.each(locales)('Android: busy Button in $locale is named with the visible label; the platform busy state description supplies the busy word once',({locale,messages,text,busy})=>withOS('android',()=>{
   render(h(HIGProvider,{locale,messages},h(Button,{busy:true},text)));
@@ -77,8 +78,8 @@ describe('#94 busy native Button keeps its accessible name',()=>{
   expect(button.props.accessibilityLabel).toBe(text);
   expect(button.props.accessibilityLabel).not.toContain(busy);
   expect(button.props.accessibilityState.busy).toBe(true);
-  // The visible suffix still renders.
-  expect(run(`· ${busy}`)).toBeTruthy();
+  // The spinner is the visible busy state; no suffix text renders.
+  expect(run(`· ${busy}`)).toBeUndefined();expect(spinners()).toHaveLength(1);
  }));
  it('an empty busy label names the Button with its text alone; busy state stays set',()=>{
   for(const os of ['ios','android'])withOS(os,()=>{

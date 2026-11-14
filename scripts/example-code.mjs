@@ -2,7 +2,8 @@ import {readFileSync} from 'node:fs';
 const manifest=JSON.parse(readFileSync('planning/examples.json','utf8'));
 export function exampleCode(name,platform='react',density='comfortable',state='default'){
  const example=manifest.examples.find(e=>e.name===name);if(!example)throw Error('Unknown example');
- const body=platform==='react'?example.web:example.native;
+ // A state may carry its own example (`variants[state]`); otherwise every state shares the entry's `web` / `native` body.
+ const body=(example.variants?.[state]??example)[platform==='react'?'web':'native'];
  // The build generator supplies symbol entry maps, source is authoritative.
  const mapping=JSON.parse(readFileSync('planning/example-symbols.json','utf8'))[platform];
  const needed=new Set([...body.matchAll(/C\.([A-Z]\w+)/g)].map(m=>m[1]));needed.add('HIGProvider');needed.add('Stack');needed.add('Text');

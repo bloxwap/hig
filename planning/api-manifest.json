@@ -24,7 +24,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (busy state stays exposed). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: Intent; /** Shows a leading spinner and blocks activation. */\n    busy?: boolean; /** Busy text appended to the accessible name (not drawn; the spinner is the visible cue); defaults to HIGProvider `messages.busy`. `''` omits it (busy state stays exposed). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
       },
       "Button": {
         "entry": "button",
@@ -53,6 +53,22 @@
       "Percent": {
         "entry": "data",
         "signature": "export declare function Percent(props: NumberProps): React.JSX.Element;"
+      },
+      "AddressKind": {
+        "entry": "data",
+        "signature": "export type AddressKind = 'ethereum' | 'solana';"
+      },
+      "addressKind": {
+        "entry": "data",
+        "signature": "export declare const addressKind: (address: string) => AddressKind;"
+      },
+      "addressRows": {
+        "entry": "data",
+        "signature": "export declare function addressRows(address: string, kind: AddressKind): string[];"
+      },
+      "VerticalAddress": {
+        "entry": "data",
+        "signature": "export declare function VerticalAddress({ address, kind, rowHeight, className }: {\n    address: string; /** Row layout; inferred from the address when omitted. */\n    kind?: AddressKind; /** Row height in CSS pixels; the type size follows it. Defaults to the surrounding line height. */\n    rowHeight?: number;\n    className?: string;\n}): React.JSX.Element;"
       },
       "Metric": {
         "entry": "data",
@@ -262,6 +278,74 @@
         "entry": "recipes/activity-list",
         "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): React.JSX.Element;"
       },
+      "FromPicker": {
+        "entry": "recipes/pickers",
+        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, className, ...list }: FromPickerProps): React.JSX.Element;"
+      },
+      "ToPicker": {
+        "entry": "recipes/pickers",
+        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, className, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+      },
+      "FromPickerProps": {
+        "entry": "recipes/pickers",
+        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    className?: string;\n}"
+      },
+      "ToPickerProps": {
+        "entry": "recipes/pickers",
+        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    className?: string;\n}"
+      },
+      "PickerListProps": {
+        "entry": "recipes/pickers",
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
+      },
+      "SwapPanel": {
+        "entry": "recipes/swap-panel",
+        "signature": "export declare function SwapPanel({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, onReset, destination, details, note, noteTone, title, onBack, controls, actionIcon, lockFrom, lockTo, actionLabel, oneWay: oneWayProp, denominationSwitch, keypad, shortcuts, captureKeyboard, view: viewProp, onViewChange, settings, className, style }: SwapPanelProps): React.JSX.Element;"
+      },
+      "swapAction": {
+        "entry": "recipes",
+        "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
+      },
+      "SwapPanelProps": {
+        "entry": "recipes/swap-panel",
+        "signature": "export interface SwapPanelProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    submitting?: boolean;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet (“Withdraw from Papertrade”). `onBack` adds a Back control beside it. */\n    title?: string;\n    onBack?: () => void;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    /** `auto` shows the keypad for a coarse pointer (touch), where there is no hardware keyboard. */\n    keypad?: 'auto' | 'always' | 'never';\n    /** ⌘F / Ctrl+F opens the From picker and ⌘K / Ctrl+K the To picker while the panel is mounted. */\n    shortcuts?: boolean;\n    /** Digits typed anywhere on the page (outside a text field) drive the amount, not only inside the panel. */\n    captureKeyboard?: boolean;\n    /** The view on show. The panel pushes its token pickers and settings as views inside its own bounds; `main` is the cards. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+      },
+      "SwapToken": {
+        "entry": "recipes",
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Image URLs. A missing token icon falls back to the symbol's first letters. */\n    icon?: string;\n    chainIcon?: string;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+      },
+      "SwapChain": {
+        "entry": "recipes",
+        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
+      },
+      "SwapAction": {
+        "entry": "recipes",
+        "signature": "export type SwapAction = 'send' | 'swap' | 'bridge';"
+      },
+      "SwapDenomination": {
+        "entry": "recipes",
+        "signature": "export type SwapDenomination = 'usd' | 'token';"
+      },
+      "SwapWallet": {
+        "entry": "recipes/pickers",
+        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
+      },
+      "SwapFee": {
+        "entry": "recipes",
+        "signature": "export interface SwapFee {\n    label: string;\n    usd: number;\n}"
+      },
+      "SwapReceive": {
+        "entry": "recipes/swap-panel",
+        "signature": "export interface SwapReceive {\n    address: string;\n    qr?: React.ReactNode; /** Host clipboard adapter. When set, the whole view copies the address. */\n    onCopy?: () => Promise<void> | void;\n}"
+      },
+      "SwapDestination": {
+        "entry": "recipes/swap-panel",
+        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line above the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** Image URL. Without one, `address` draws the wallet's colour disc. */\n    icon?: string;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
+      },
+      "SwapDetail": {
+        "entry": "recipes/swap-panel",
+        "signature": "export interface SwapDetail {\n    label: string;\n    value: string;\n}"
+      },
       "Choice": {
         "entry": "selection",
         "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
@@ -285,6 +369,18 @@
       "SegmentedControl": {
         "entry": "selection",
         "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): React.JSX.Element;"
+      },
+      "FilterOption": {
+        "entry": "selection",
+        "signature": "export interface FilterOption extends Choice {\n    icon?: string;\n}"
+      },
+      "FilterProps": {
+        "entry": "selection",
+        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void;\n}"
+      },
+      "Filter": {
+        "entry": "selection",
+        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange }: FilterProps): React.JSX.Element;"
       },
       "Select": {
         "entry": "selection",
@@ -322,9 +418,13 @@
         "entry": "status",
         "signature": "export interface Notice {\n    id: string;\n    message: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}"
       },
+      "ToastNotice": {
+        "entry": "status",
+        "signature": "export declare function ToastNotice({ message, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
+      },
       "Toast": {
         "entry": "status",
-        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void; /** Dismiss button text; defaults to HIGProvider `messages.dismiss`. The accessible name comes from `messages.dismissNotice` and contains it. */\n    dismissLabel?: string;\n}): React.JSX.Element;"
+        "signature": "export declare function Toast({ notices, onDismiss, dismissLabel }: {\n    notices: readonly Notice[];\n    onDismiss: (id: string) => void; /** Dismiss wording inside the close button's accessible name (`messages.dismissNotice`); the button itself draws a close symbol. Defaults to HIGProvider `messages.dismiss`. */\n    dismissLabel?: string;\n}): React.JSX.Element;"
       },
       "Progress": {
         "entry": "status",
@@ -340,7 +440,7 @@
       },
       "EmptyState": {
         "entry": "status",
-        "signature": "export declare function EmptyState({ title, description, action }: {\n    title: string;\n    description: string;\n    action?: React.ReactNode;\n}): React.JSX.Element;"
+        "signature": "export declare function EmptyState({ title, description, action, illustration }: {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    illustration?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "Avatar": {
         "entry": "status",
@@ -378,9 +478,61 @@
         "entry": "surface",
         "signature": "export declare function Separator(props: React.HTMLAttributes<HTMLHRElement>): React.JSX.Element;"
       },
+      "Toaster": {
+        "entry": "toast",
+        "signature": "export declare function Toaster(props: ToasterProps): React.JSX.Element;"
+      },
+      "ToastOptions": {
+        "entry": "toast",
+        "signature": "export interface ToastOptions {\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button; defaults to the English `dismissNotice`. Pass the provider's translation from a component. */\n    dismissName?: string; /** Milliseconds before auto-dismiss; Sonner's default when omitted. */\n    duration?: number; /** Reuse an id to replace a notice instead of stacking it. */\n    id?: string | number;\n}"
+      },
+      "toast": {
+        "entry": "toast",
+        "signature": "export declare function toast(message: string, { severity, action, dismissName, duration, id }?: ToastOptions): string | number;"
+      },
+      "dismissToast": {
+        "entry": "toast",
+        "signature": "export declare function dismissToast(id?: string | number): void;"
+      },
+      "WalletAddressProps": {
+        "entry": "wallet-address",
+        "signature": "export interface WalletAddressProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** QR payload when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR; the code then uses high error correction. */\n    arena?: string;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+      },
+      "WalletAddress": {
+        "entry": "wallet-address",
+        "signature": "export declare function WalletAddress({ address, kind, qrValue, arena, size, onCopy, className, style }: WalletAddressProps): React.JSX.Element;"
+      },
       "MarketRowProps": {
         "entry": "recipes/market-row",
         "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity, such as symbol/name with its existing compact layout. */\n    identity?: React.ReactNode;\n});"
+      },
+      "SwapView": {
+        "entry": "recipes/swap-panel",
+        "signature": "export type SwapView = 'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees';"
+      },
+      "SwapAmountCard": {
+        "entry": "recipes/swap-panel",
+        "signature": "export declare function SwapAmountCard({ name, symbol, icon, chainIcon, context, actions, meta, value, amountLabel, prefix, suffix, fractionDigits, trailingDot, maximumFractionDigits, conversion, onSelect, selectLabel, className, style }: SwapAmountCardProps): React.JSX.Element;"
+      },
+      "SwapAmountCardProps": {
+        "entry": "recipes/swap-panel",
+        "signature": "export interface SwapAmountCardProps {\n    /** Asset name, drawn in the slot. */\n    name: string;\n    /** Asset symbol; its first letters stand in when there is no `icon`. */\n    symbol: string;\n    /** Asset artwork: an image URL, or a node the host draws. */\n    icon?: string | React.ReactNode;\n    /** Chain or venue artwork, stacked above the asset. */\n    chainIcon?: string;\n    /** Line above the name: the chain, venue or account the amount comes from. */\n    context?: React.ReactNode;\n    /** Capsule actions on the trailing edge, such as Max. Use `SwapPill`. */\n    actions?: React.ReactNode;\n    /** Supporting line under the actions, such as the available balance. */\n    meta?: React.ReactNode;\n    /** The entered amount. */\n    value: number;\n    /** Accessible name of the amount. */\n    amountLabel: string;\n    /** Text before the amount, such as a currency sign. */\n    prefix?: string;\n    /** Text after the amount, such as a percent sign. */\n    suffix?: string;\n    /** Decimal places typed so far, so `1.50` keeps its zero. */\n    fractionDigits?: number;\n    /** Set while the entry ends with a decimal point that has no digits after it yet. */\n    trailingDot?: boolean;\n    /** Most decimal places the amount can show. */\n    maximumFractionDigits?: number;\n    /** Capsule under the amount, such as the converted value. Use `SwapPill`. */\n    conversion?: React.ReactNode;\n    /** Makes the slot a button that chooses the asset. Requires `selectLabel`. */\n    onSelect?: () => void;\n    selectLabel?: string;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+      },
+      "SwapPill": {
+        "entry": "recipes/swap-panel",
+        "signature": "export declare function SwapPill({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>): React.JSX.Element;"
+      },
+      "SwapKeypad": {
+        "entry": "recipes/swap-panel",
+        "signature": "export declare function SwapKeypad({ onKey, label, deleteLabel }: {\n    onKey: (key: string) => void;\n    label: string;\n    deleteLabel: string;\n}): React.JSX.Element;"
+      },
+      "SwapSheetProps": {
+        "entry": "recipes/swap-sheet",
+        "signature": "export interface SwapSheetProps extends SwapPanelProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    /** Accessible name of the sheet; not drawn. */\n    title: string;\n    /** One element that opens the sheet and accepts a ref. */\n    trigger?: React.ReactNode;\n}"
+      },
+      "SwapSheet": {
+        "entry": "recipes/swap-sheet",
+        "signature": "export declare function SwapSheet({ open, onOpenChange, title, trigger, view: viewProp, onViewChange, ...panel }: SwapSheetProps): React.JSX.Element;"
       },
       "AnimatedNumberToken": {
         "entry": "animated-number-model",
@@ -401,6 +553,18 @@
       "createAnimatedNumberTransitions": {
         "entry": "animated-number-model",
         "signature": "export declare function createAnimatedNumberTransitions(previous: AnimatedNumberModel | null, next: AnimatedNumberModel): readonly AnimatedNumberTransitionToken[];"
+      },
+      "NotifyOptions": {
+        "entry": "notify",
+        "signature": "export interface NotifyOptions {\n    severity?: 'info' | 'success' | 'warning' | 'error'; /** Accessible name of the notice's close button. */\n    dismissName?: string;\n    duration?: number;\n    id?: string | number;\n}"
+      },
+      "registerNotifier": {
+        "entry": "notify",
+        "signature": "export declare function registerNotifier(notifier: Notifier): () => void;"
+      },
+      "notify": {
+        "entry": "notify",
+        "signature": "export declare function notify(message: string, options?: NotifyOptions): boolean;"
       }
     },
     "native": {
@@ -426,7 +590,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: Intent;\n    busy?: boolean; /** Busy suffix for this button; defaults to HIGProvider `messages.busy`. `''` hides it (accessibilityState.busy stays set). */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label and busy suffix. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: Intent;\n    busy?: boolean; /** Busy text for this button's accessible name; defaults to HIGProvider `messages.busy`. `''` leaves the name unchanged (accessibilityState.busy stays set). The visible busy state is a leading spinner. */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
       },
       "busyAccessibilityLabel": {
         "entry": "button",
@@ -495,6 +659,26 @@
       "List": {
         "entry": "data",
         "signature": "export declare function List<T>({ items, keyFor, render, empty, label, loading, error, onRetry, onLoadMore }: ListProps<T>): React.JSX.Element;"
+      },
+      "AddressKind": {
+        "entry": "data",
+        "signature": "export type AddressKind = 'ethereum' | 'solana';"
+      },
+      "addressKind": {
+        "entry": "data",
+        "signature": "export declare function addressKind(address: string): AddressKind;"
+      },
+      "addressRows": {
+        "entry": "data",
+        "signature": "export declare function addressRows(address: string, kind?: AddressKind): {\n    character: string;\n    anchor: boolean;\n}[][];"
+      },
+      "VerticalAddressProps": {
+        "entry": "data",
+        "signature": "export interface VerticalAddressProps {\n    address: string;\n    kind?: AddressKind; /** Row height in dp; the font size follows it. */\n    rowHeight?: number;\n    testID?: string;\n}"
+      },
+      "VerticalAddress": {
+        "entry": "data",
+        "signature": "export declare function VerticalAddress({ address, kind, rowHeight, testID }: VerticalAddressProps): React.JSX.Element;"
       },
       "Field": {
         "entry": "field",
@@ -580,6 +764,38 @@
         "entry": "overlay",
         "signature": "export declare function HelpText({ children }: React.PropsWithChildren): React.JSX.Element;"
       },
+      "SwapChain": {
+        "entry": "pickers",
+        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
+      },
+      "SwapToken": {
+        "entry": "pickers",
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Image URLs. A missing token icon falls back to the symbol's first letters. */\n    icon?: string;\n    chainIcon?: string;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+      },
+      "SwapWallet": {
+        "entry": "pickers",
+        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
+      },
+      "PickerListProps": {
+        "entry": "pickers",
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** Web only: focuses the search with a hardware pointer. Native never raises the keyboard on mount. */\n    autoFocus?: boolean;\n}"
+      },
+      "FromPickerProps": {
+        "entry": "pickers",
+        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "FromPicker": {
+        "entry": "pickers",
+        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, style, ...list }: FromPickerProps): React.JSX.Element;"
+      },
+      "ToPickerProps": {
+        "entry": "pickers",
+        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "ToPicker": {
+        "entry": "pickers",
+        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, style, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+      },
       "HIGColorSpace": {
         "entry": "provider",
         "signature": "export type HIGColorSpace = 'srgb' | 'display-p3';"
@@ -624,6 +840,14 @@
         "entry": "provider",
         "signature": "export declare const useHIG: () => HIGContext;"
       },
+      "Raised": {
+        "entry": "provider",
+        "signature": "export declare function Raised({ children }: React.PropsWithChildren): React.JSX.Element;"
+      },
+      "useFills": {
+        "entry": "provider",
+        "signature": "export declare function useFills(): {\n    well: string;\n    raised: string;\n};"
+      },
       "useColors": {
         "entry": "provider",
         "signature": "export declare function useColors(): HIGColors;"
@@ -647,6 +871,18 @@
       "SegmentedControl": {
         "entry": "radio-group",
         "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): React.JSX.Element;"
+      },
+      "FilterOption": {
+        "entry": "radio-group",
+        "signature": "export interface FilterOption {\n    value: string;\n    label: string;\n    disabled?: boolean; /** Image URL shown in the option's circle until it is selected. */\n    icon?: string;\n}"
+      },
+      "FilterProps": {
+        "entry": "radio-group",
+        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void;\n}"
+      },
+      "Filter": {
+        "entry": "radio-group",
+        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange }: FilterProps): React.JSX.Element;"
       },
       "MarketRow": {
         "entry": "recipes",
@@ -675,6 +911,46 @@
       "ActivityList": {
         "entry": "recipes",
         "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): React.JSX.Element;"
+      },
+      "SwapPanel": {
+        "entry": "recipes",
+        "signature": "export declare function SwapPanel({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, onReset, keypad, destination, details, note, noteTone, title, onBack, controls, actionIcon, lockFrom, lockTo, actionLabel, oneWay: oneWayProp, denominationSwitch, settings, view: viewProp, onViewChange, style }: SwapPanelProps): React.JSX.Element;"
+      },
+      "swapAction": {
+        "entry": "recipes",
+        "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
+      },
+      "SwapPanelProps": {
+        "entry": "recipes",
+        "signature": "export interface SwapPanelProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    submitting?: boolean;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet. `onBack` adds a Back control before it. */\n    title?: string;\n    onBack?: () => void;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    keypad?: 'auto' | 'always' | 'never';\n    /** Web only (⌘F / ⌘K picker shortcuts); accepted and ignored so one example serves both platforms. */\n    shortcuts?: boolean;\n    /** Web only (page-wide digit capture); accepted and ignored. */\n    captureKeyboard?: boolean;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    /** The view on show. Pickers and settings push inside the panel's own bounds; Back pops. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Web only; accepted and ignored. */\n    className?: string;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "SwapAction": {
+        "entry": "recipes",
+        "signature": "export type SwapAction = 'send' | 'swap' | 'bridge';"
+      },
+      "SwapDenomination": {
+        "entry": "recipes",
+        "signature": "export type SwapDenomination = 'usd' | 'token';"
+      },
+      "SwapFee": {
+        "entry": "recipes",
+        "signature": "export interface SwapFee {\n    label: string;\n    usd: number;\n}"
+      },
+      "SwapReceive": {
+        "entry": "recipes",
+        "signature": "export interface SwapReceive {\n    address: string;\n    qr?: React.ReactNode; /** Host clipboard adapter. When set, the whole view copies the address. */\n    onCopy?: () => Promise<void> | void;\n}"
+      },
+      "SwapDestination": {
+        "entry": "recipes",
+        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line under the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** Image URL. Without one, `address` draws the wallet's colour disc. */\n    icon?: string;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
+      },
+      "SwapDetail": {
+        "entry": "recipes",
+        "signature": "export interface SwapDetail {\n    label: string;\n    value: string;\n}"
+      },
+      "SwapView": {
+        "entry": "recipes",
+        "signature": "export type SwapView = 'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees';"
       },
       "Select": {
         "entry": "select",
@@ -734,11 +1010,15 @@
       },
       "ToastProps": {
         "entry": "status",
-        "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss button text; defaults to HIGProvider messages.dismiss. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
+        "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss wording inside the close control's accessible name; defaults to HIGProvider messages.dismiss. The control shows an x, not text. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
       },
       "Toast": {
         "entry": "status",
         "signature": "export declare function Toast({ notices, onDismiss, dismissLabel, maxHeight, testID }: ToastProps): React.JSX.Element;"
+      },
+      "useTransientNotice": {
+        "entry": "status",
+        "signature": "export declare function useTransientNotice(duration?: number): {\n    notice: Notice | null;\n    show: (message: string, severity?: Notice['severity']) => void;\n    dismiss: () => void;\n};"
       },
       "Spinner": {
         "entry": "status",
@@ -754,7 +1034,7 @@
       },
       "EmptyStateProps": {
         "entry": "status",
-        "signature": "export interface EmptyStateProps extends Omit<ViewProps, 'children'> {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    /** Decorative content, hidden from accessibility; the title and description supply its meaning. */\n    illustration?: React.ReactNode;\n    titleStyle?: TextProps['style'];\n    descriptionStyle?: TextProps['style'];\n    /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */\n    maxFontSizeMultiplier?: number;\n}"
+        "signature": "export interface EmptyStateProps extends Omit<ViewProps, 'children'> {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    /** Decorative mark above the title, hidden from accessibility; the title and description supply its meaning. Omitted, a neutral outline icon shows; `null` shows none. */\n    illustration?: React.ReactNode;\n    titleStyle?: TextProps['style'];\n    descriptionStyle?: TextProps['style'];\n    /** Applies to both actual text nodes; omitted values retain the provider's scaling policy. */\n    maxFontSizeMultiplier?: number;\n}"
       },
       "EmptyState": {
         "entry": "status",
@@ -802,7 +1082,7 @@
       },
       "Surface": {
         "entry": "surface",
-        "signature": "export declare function Surface({ style, ...props }: ViewProps): React.JSX.Element;"
+        "signature": "export declare function Surface({ style, children, ...props }: ViewProps): React.JSX.Element;"
       },
       "Card": {
         "entry": "surface",
@@ -812,9 +1092,29 @@
         "entry": "surface",
         "signature": "export declare function Separator(): React.JSX.Element;"
       },
+      "SwapSheetProps": {
+        "entry": "swap-sheet",
+        "signature": "export interface SwapSheetProps extends SwapPanelProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    /** Accessible name of the sheet. */\n    title: string;\n}"
+      },
+      "SwapSheet": {
+        "entry": "swap-sheet",
+        "signature": "export declare function SwapSheet({ open, onOpenChange, title, view: viewProp, onViewChange, style, ...panel }: SwapSheetProps): React.JSX.Element;"
+      },
       "SwitchProps": {
         "entry": "switch",
         "signature": "export interface SwitchProps extends CheckedProps {\n    tone?: AccentRole;\n}"
+      },
+      "WalletAddressProps": {
+        "entry": "wallet-address",
+        "signature": "export interface WalletAddressProps {\n    address: string;\n    kind?: AddressKind;\n    /** QR payload when it differs from the address, e.g. an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR. */\n    arena?: string;\n    /** QR edge in dp; default 196. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    testID?: string;\n}"
+      },
+      "qrGeometry": {
+        "entry": "wallet-address",
+        "signature": "export declare function qrGeometry(grid: readonly (readonly boolean[])[], withArena: boolean): {\n    edge: number;\n    finders: {\n        x: number;\n        y: number;\n    }[];\n    dots: string;\n    count: number;\n    arena: {\n        origin: number;\n        size: number;\n    } | null;\n};"
+      },
+      "WalletAddress": {
+        "entry": "wallet-address",
+        "signature": "export declare function WalletAddress({ address, kind, qrValue, arena, size, onCopy, testID }: WalletAddressProps): React.JSX.Element;"
       },
       "NumberTrend": {
         "entry": "animated-number-model",
@@ -848,6 +1148,30 @@
         "entry": "animated-number-model",
         "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string): NumberReelModel | null;"
       },
+      "SearchIcon": {
+        "entry": "icons",
+        "signature": "export declare function SearchIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "ChevronIcon": {
+        "entry": "icons",
+        "signature": "export declare function ChevronIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "CloseIcon": {
+        "entry": "icons",
+        "signature": "export declare function CloseIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "SeverityIconKind": {
+        "entry": "icons",
+        "signature": "export type SeverityIconKind = 'info' | 'success' | 'warning' | 'error';"
+      },
+      "SeverityIcon": {
+        "entry": "icons",
+        "signature": "export declare function SeverityIcon({ kind, color }: {\n    kind: SeverityIconKind;\n    color: string;\n}): React.JSX.Element;"
+      },
+      "EmptyIcon": {
+        "entry": "icons",
+        "signature": "export declare function EmptyIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
       "accentRoles": {
         "entry": "roles",
         "signature": "export declare const accentRoles: readonly ['action', 'positive', 'negative', 'warning', 'info', 'buy', 'sell'];"
@@ -855,6 +1179,142 @@
       "roleColor": {
         "entry": "roles",
         "signature": "export declare function roleColor(role: unknown, fallback: AccentRole, colors: HIGColors): string;"
+      },
+      "swapParentView": {
+        "entry": "swap-panel",
+        "signature": "export declare const swapParentView: (view: SwapView) => SwapView;"
+      },
+      "SwapHostContext": {
+        "entry": "swap-panel",
+        "signature": "export declare const SwapHostContext: React.Context<{\n    listComponent?: React.ComponentType<FlatListProps<SwapToken>>;\n    animateHeight?: boolean;\n}>;"
+      },
+      "DownIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function DownIcon({ color, size }: {\n    color: string;\n    size?: number;\n}): React.JSX.Element;"
+      },
+      "FlipIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function FlipIcon({ color, size }: {\n    color: string;\n    size?: number;\n}): React.JSX.Element;"
+      },
+      "MenuIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function MenuIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "ResetIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function ResetIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "DeleteIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function DeleteIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "ScanIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function ScanIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "WalletIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function WalletIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "LockIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function LockIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "LeaveIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function LeaveIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "TokenArt": {
+        "entry": "swap-parts",
+        "signature": "export declare function TokenArt({ uri, symbol, size, ring }: {\n    uri?: string;\n    symbol?: string;\n    size: number;\n    ring?: string;\n}): React.JSX.Element;"
+      },
+      "TokenIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function TokenIcon({ token, size }: {\n    token: SwapToken;\n    size?: number;\n}): React.JSX.Element;"
+      },
+      "SwapCapsule": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapCapsule({ children, onPress, label, testID }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string;\n}): React.JSX.Element;"
+      },
+      "SwapKeypad": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapKeypad({ onKey, label, deleteLabel }: {\n    onKey: (key: string) => void;\n    label: string;\n    deleteLabel: string;\n}): React.JSX.Element;"
+      },
+      "SwapHeader": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapHeader({ title, onBack }: {\n    title: string;\n    onBack?: () => void;\n}): React.JSX.Element;"
+      },
+      "SmallChevron": {
+        "entry": "swap-parts",
+        "signature": "export declare function SmallChevron({ color, trailing }: {\n    color: string;\n    trailing?: boolean;\n}): React.JSX.Element;"
+      },
+      "SwapSubview": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapSubview({ title, onBack, testID, children }: React.PropsWithChildren<{\n    title: string;\n    onBack: () => void;\n    testID?: string;\n}>): React.JSX.Element;"
+      },
+      "slippagePresets": {
+        "entry": "swap-shared",
+        "signature": "export declare const slippagePresets: readonly [0.001, 0.005, 0.01];"
+      },
+      "trimNumber": {
+        "entry": "swap-shared",
+        "signature": "export declare const trimNumber: (value: number, digits?: number) => string;"
+      },
+      "sanitizeAmount": {
+        "entry": "swap-shared",
+        "signature": "export declare function sanitizeAmount(raw: string): string;"
+      },
+      "unitsToEntry": {
+        "entry": "swap-shared",
+        "signature": "export declare function unitsToEntry(units: number, mode: SwapDenomination, price: number): string;"
+      },
+      "applyAmountKey": {
+        "entry": "swap-shared",
+        "signature": "export declare function applyAmountKey(current: string, key: string, mode: SwapDenomination): string;"
+      },
+      "fuzzyMatch": {
+        "entry": "swap-shared",
+        "signature": "export declare function fuzzyMatch(query: string, text: string): boolean;"
+      },
+      "formatPercent": {
+        "entry": "swap-shared",
+        "signature": "export declare const formatPercent: (fraction: number) => string;"
+      },
+      "testAmount": {
+        "entry": "swap-shared",
+        "signature": "export declare function testAmount(token: SwapToken): number;"
+      },
+      "shortAddress": {
+        "entry": "swap-shared",
+        "signature": "export declare const shortAddress: (address: string) => string;"
+      },
+      "addressColor": {
+        "entry": "swap-shared",
+        "signature": "export declare function addressColor(address: string): string;"
+      },
+      "pickerRows": {
+        "entry": "swap-shared",
+        "signature": "export declare function pickerRows(tokens: readonly SwapToken[], query: string, chainId: string | number | null, hotTokenIds?: readonly string[]): {\n    rows: SwapToken[];\n    hotCount: number;\n};"
+      },
+      "SwapPickerProps": {
+        "entry": "swap-views",
+        "signature": "export interface SwapPickerProps {\n    side: 'from' | 'to';\n    onBack: () => void;\n    tokens: readonly SwapToken[];\n    chains: readonly SwapChain[];\n    hotTokenIds?: readonly string[];\n    selected: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    loading?: boolean;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    /** From side, before a wallet is connected: the Generate address switch, which puts the panel in its receive view. */\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** To side: where the assets are sent. Omit `onRecipientChange` to hide the field. */\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n}"
+      },
+      "SwapPicker": {
+        "entry": "swap-views",
+        "signature": "export declare function SwapPicker({ side, onBack, selected, onSelect, wallet, onConnect, onDisconnect, receiving, onReceivingChange, recipient, onRecipientChange, onScanRecipient, ...list }: SwapPickerProps): React.JSX.Element;"
+      },
+      "SwapSettingsView": {
+        "entry": "swap-views",
+        "signature": "export type SwapSettingsView = 'settings' | 'slippage' | 'fees';"
+      },
+      "SwapSettingsProps": {
+        "entry": "swap-views",
+        "signature": "export interface SwapSettingsProps {\n    view: SwapSettingsView;\n    onViewChange: (view: SwapSettingsView) => void;\n    onBack: () => void;\n    denomination: SwapDenomination; /** Omit to hide the denomination setting. */\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    slippage: number;\n    onSlippageChange?: (slippage: number) => void;\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Host rows shown under the built-in settings, such as language or theme. */\n    children?: React.ReactNode;\n}"
+      },
+      "SwapSettings": {
+        "entry": "swap-views",
+        "signature": "export declare function SwapSettings({ view, onViewChange, onBack, denomination, onDenominationChange, slippage, onSlippageChange, fee, fees, quoteLoading, children }: SwapSettingsProps): React.JSX.Element;"
       },
       "plainText": {
         "entry": "text-content",

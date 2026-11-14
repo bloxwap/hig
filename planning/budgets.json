@@ -6,7 +6,7 @@
     "gzip": 400
   },
   "nativeSwitch": {
-    "gzip": 2200
+    "gzip": 2400
   },
   "feedbackContract": {
     "gzip": 1200
@@ -15,7 +15,7 @@
     "gzip": 650000
   },
   "docsCSS": {
-    "raw": 125000
+    "raw": 150000
   },
   "fonts": {
     "raw": 600000

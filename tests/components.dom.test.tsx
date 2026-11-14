@@ -69,13 +69,19 @@ describe('DOM behavior contracts',()=>{
   const note=screen.getByText('createChart').closest('section')!;expect(note.getAttribute('data-severity')).toBe('note');expect(note.querySelector('strong')?.textContent).toBe('Use createChart');expect(note.querySelector('strong code')).toBeTruthy();
   expect(screen.getByText('Tip').closest('section')!.getAttribute('data-severity')).toBe('tip');
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');
-  for(const [severity,role] of [['note','info'],['info','info'],['tip','positive'],['success','positive'],['warning','warning'],['error','negative']])expect(css).toMatch(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{[^}]*border:2px solid var\\(--hig-${role}\\);box-shadow:0 0 24px color-mix\\(in srgb,var\\(--hig-${role}\\) 55%,transparent\\)`));
-  // Neutral default: border-token stroke with the soft white glow, and toast cards are pills on a translucent 16px panel base.
-  expect(css).toMatch(/\[data-severity='default'\][^{]*\{[^}]*border:2px solid var\(--hig-border\);box-shadow:0 0 20px rgba\(255,255,255,0\.12\)/);
-  expect(css).toMatch(/:where\(\.hig-surface\)\[data-severity\]\s*\{[^}]*border-radius:16px;background:color-mix\(in srgb,var\(--hig-surface\) 95%,transparent\)/);
-  expect(css).toMatch(/:where\(\.hig-toast\) :where\(\.hig-surface\)\[data-severity\]\s*\{[^}]*border-radius:999px/);
+  // Severity tints the fill and colours the title from a token role; there is no stroke or glow.
+  const tone=(severity:string)=>css.match(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{ --hig-alert-tone:var\\(--hig-([a-z]+)\\)`))?.[1];
+  for(const [severity,role] of [['tip','positive'],['success','positive'],['warning','warning'],['error','negative'],['default','text']])expect(tone(severity)).toBe(role);
+  expect(css).toMatch(/:where\(\.hig-surface\)\[data-severity\] \{ --hig-alert-tone:var\(--hig-info\);background:color-mix\(in srgb,var\(--hig-alert-tone\) 10%,var\(--hig-surface\)\); \}/);
+  expect(css).toContain(':where(.hig-surface)[data-severity] > strong { color:var(--hig-alert-tone); }');
+  expect(css).toMatch(/\[data-severity='default'\][^{]*\{[^}]*background:color-mix\(in srgb,var\(--hig-text\) 6%,var\(--hig-surface\)\)/);
+  expect(css).not.toMatch(/\[data-severity[^{]*\{[^}]*(border:|box-shadow|border-radius)/);
+  // A toast notice is its own strokeless capsule row, not an Alert: symbol, message, close.
+  expect(css).toMatch(/\.hig-toast-item\s*\{[^}]*border:1px solid transparent;border-radius:9999px;background:var\(--hig-nested\)/);
   render(<Toast notices={[{id:'n',message:'Copied',severity:'success'}]} onDismiss={()=>{}}/>);
-  expect(document.querySelector('aside.hig-toast section.hig-surface[data-severity=success]')).toBeTruthy();
+  const capsule=document.querySelector('aside.hig-toast > .hig-toast-item[data-severity=success]')!;
+  expect([...capsule.children].map(node=>node.getAttribute('class'))).toEqual(['hig-toast-icon','hig-toast-message','hig-toast-close']);
+  expect(document.querySelector('aside.hig-toast .hig-surface')).toBeNull();
  });
  it('scopes component CSS to HIG classes and keeps every focusable part inside the scoped focus ring (#95)',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8').replace(/\/\*[\s\S]*?\*\//g,'');

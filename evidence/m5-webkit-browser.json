@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.4.0",
   "browser": "27.2",
   "platform": "darwin arm64 webkit headless; no physical-device claim",
   "viewport": [

@@ -209,6 +209,10 @@
       "title": "SegmentedControl"
     },
     {
+      "route": "components/filter",
+      "title": "Filter"
+    },
+    {
       "route": "components/select",
       "title": "Select"
     },
@@ -345,6 +349,14 @@
       "title": "Table"
     },
     {
+      "route": "components/wallet-address",
+      "title": "WalletAddress"
+    },
+    {
+      "route": "components/vertical-address",
+      "title": "VerticalAddress"
+    },
+    {
       "route": "components/brand-mark",
       "title": "BrandMark"
     },
@@ -367,6 +379,18 @@
     {
       "route": "components/trade-entry",
       "title": "TradeEntry"
+    },
+    {
+      "route": "components/swap-panel",
+      "title": "SwapPanel"
+    },
+    {
+      "route": "components/from-picker",
+      "title": "FromPicker"
+    },
+    {
+      "route": "components/to-picker",
+      "title": "ToPicker"
     },
     {
       "route": "components/install-command",
@@ -559,6 +583,15 @@
     {
       "name": "SegmentedControl",
       "route": "components/segmented-control",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Filter",
+      "route": "components/filter",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -854,6 +887,22 @@
       ]
     },
     {
+      "name": "WalletAddress",
+      "route": "components/wallet-address",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "VerticalAddress",
+      "route": "components/vertical-address",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "BrandMark",
       "route": "components/brand-mark",
       "nativeSupport": "renderer",
@@ -904,6 +953,45 @@
         "default",
         "busy",
         "error"
+      ]
+    },
+    {
+      "name": "SwapPanel",
+      "route": "components/swap-panel",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "swap",
+        "bridge",
+        "send",
+        "deposit",
+        "withdraw",
+        "withdraw-chain",
+        "stake",
+        "unstake",
+        "busy"
+      ]
+    },
+    {
+      "name": "FromPicker",
+      "route": "components/from-picker",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "connected",
+        "no-logout",
+        "whitelist",
+        "empty"
+      ]
+    },
+    {
+      "name": "ToPicker",
+      "route": "components/to-picker",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "tokens",
+        "no-chain"
       ]
     },
     {

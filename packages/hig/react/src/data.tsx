@@ -8,6 +8,22 @@ export function NumberReadout({value,options,stale,label,prefix='',suffix=''}:Nu
 export function Usd(props:NumberProps){return <NumberReadout {...props} options={{style:'currency',currency:'USD',...props.options}}/>;}
 /** Input is percent points: 5 means 5%, not 500%. */
 export function Percent(props:NumberProps){return <NumberReadout {...props} value={props.value==null?props.value:props.value/100} options={{maximumFractionDigits:Math.max(3,props.options?.minimumFractionDigits??0),...props.options,style:'percent'}}/>;}
+export type AddressKind='ethereum'|'solana';
+/** `0x…` is Ethereum-style (EVM); anything else lays out as Solana (base58). */
+export const addressKind=(address:string):AddressKind=>address.startsWith('0x')?'ethereum':'solana';
+/** Fixed-width rows: 6 characters for Ethereum-style addresses (42 characters make 7 rows), 4 for Solana (44 make 11). */
+export function addressRows(address:string,kind:AddressKind):string[]{const size=kind==='ethereum'?6:4,rows:string[]=[];for(let index=0;index<address.length;index+=size)rows.push(address.slice(index,index+size));return rows;}
+/**
+ * A wallet address in HIG's vertical style: fixed-width monospace rows with the leading row and the trailing four characters
+ * emphasised, the characters people compare, and the middle dimmed. Always left to right. Selecting it copies the plain address.
+ */
+export function VerticalAddress({address,kind,rowHeight,className}:{address:string;/** Row layout; inferred from the address when omitted. */kind?:AddressKind;/** Row height in CSS pixels; the type size follows it. Defaults to the surrounding line height. */rowHeight?:number;className?:string}){
+ const layout=kind??addressKind(address),rows=addressRows(address,layout),size=layout==='ethereum'?6:4,tail=address.length-4;
+ return <span className={`hig-vertical-address${className?` ${className}`:''}`} dir='ltr' translate='no' data-kind={layout} style={rowHeight?{'--hig-address-row':`${rowHeight}px`} as React.CSSProperties:undefined}>
+  <span className='hig-sr-only'>{address}</span>
+  <span aria-hidden='true'>{rows.map((row,rowIndex)=><span key={rowIndex}>{Array.from(row).map((character,index)=>{const position=rowIndex*size+index;return <span key={index} data-anchor={position<size||position>=tail||undefined}>{character}</span>;})}</span>)}</span>
+ </span>;
+}
 export function Metric({label,value}: {label:string;value:React.ReactNode}){return <dl className='hig-surface'><dt>{label}</dt><dd>{value}</dd></dl>;}
 export const Stat=Metric;
 export interface ListProps<T> {items:readonly T[];keyFor:(item:T)=>string;render:(item:T)=>React.ReactNode;empty?:string;label?:string;loading?:boolean;error?:string;onRetry?:()=>void;onLoadMore?:()=>void}

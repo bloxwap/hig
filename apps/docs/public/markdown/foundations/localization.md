@@ -107,15 +107,15 @@ const fr: Partial<HIGMessages> = {
 
 <HIGProvider locale='fr-FR' messages={fr}>…</HIGProvider>
 <Dialog closeLabel={t('checkout.back')} …/>   // one instance
-<Button busy busyLabel=''>…</Button>           // no visible suffix; busy state stays exposed
+<Button busy busyLabel=''>…</Button>           // no busy text in the name; spinner and busy state stay
 ```
 
 Resolution order, per key: the component prop, then the nearest `HIGProvider messages`, then any enclosing `HIGProvider messages`, then English. A nested provider for density or direction keeps the host's translations. `undefined` keys and values of the wrong type (a string where a function is expected, or the reverse) are ignored, so a partial catalog never blanks a label. `useMessages()` returns the complete resolved catalog; `useHIG().messages` holds only the host overrides. Each English default is also a named export of `@bloxwap/hig/contracts/messages`, and a component falls back per key (`messages.close ?? en.close`), so importing one component bundles only the copy it renders.
 
 Rules:
 
-- **Visible text and accessible names come from the same key.** The Close, Dismiss and busy text is the button content, so it is also the accessible name. The Toast dismiss name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it, so voice-control users can say the label they see. `stale` and `required` are appended to both the visible text and the accessible name.
-- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is the visible `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
+- **Visible text and accessible names come from the same key.** The Close text is the button content, so it is also the accessible name. A busy Button draws a spinner and a Toast close button draws a symbol; their `busy` and `dismiss` wording lives in the accessible name only. The Toast close name is `dismissNotice(message, dismiss)`. A translation must keep the `dismiss` argument in it. `stale` and `required` are appended to both the visible text and the accessible name.
+- **A busy Button keeps its name (#94).** When a native Button has text children and is busy, HIG sets its accessible name, because React Native Android otherwise announces only the busy state. On iOS the name is `{text} · {busy}` (the text alone when `busy` is `''`). On Android the name is `{text}`: Android appends its own localized busy state description, so the suffix would be spoken twice where the host's `busy` matches it (Korean `처리 중`). An explicit `accessibilityLabel` always wins.
 - **Slider actions are labeled (#87).** The native Slider's increment and decrement accessibility actions carry `increase` and `decrease`. React Native 0.83 Android otherwise lists them with an empty label.
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
@@ -128,7 +128,7 @@ Rules:
 | `cancel` | Cancel | AlertDialog (web) decline button | `cancelLabel` |
 | `dismiss` | Dismiss | Toast dismiss button text | `dismissLabel` |
 | `dismissNotice` `(message, dismiss)` | {dismiss} {message} | Toast dismiss accessible name; must contain the `dismiss` argument | — |
-| `busy` | Working | Button busy suffix, shown as ` · {busy}`; `''` hides it | `busyLabel` |
+| `busy` | Working | Button busy text, appended to the accessible name as ` · {busy}` beside the visible spinner; `''` omits it | `busyLabel` |
 | `notifications` | Notifications | Toast region name (web) | — |
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
@@ -171,6 +171,52 @@ Rules:
 | `statusStale` | stale | StatusIndicator `stale` | — |
 | `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
 | `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
+| `swapFrom` | From | SwapPanel: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
+| `swapTo` | To | SwapPanel: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
+| `swapSelectToken` `(side)` | Select {side} token | SwapPanel: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
+| `swapAmount` `(side)` | {side} amount | SwapPanel: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
+| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanel: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
+| `swapFlip` | Swap direction | SwapPanel: accessible name of the button that exchanges the two tokens | — |
+| `swapActionSend` | Send | SwapPanel: swap panel action when both sides are the same asset | — |
+| `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
+| `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
+| `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
+| `swapChooseDestination` | Pick a destination | SwapPanel: action text while its destination is still to be chosen | — |
+| `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
+| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
+| `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |
+| `swapReset` | Reset | SwapPanel: accessible name of the swap panel reset button | — |
+| `swapSettings` | Settings | SwapPanel: swap panel settings button and sheet title | — |
+| `swapMax` | Max | SwapPanel: capsule that enters the whole balance | — |
+| `swapTest` | Test | SwapPanel: capsule that enters a small trial amount | — |
+| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanel: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
+| `swapSlippageTitle` | Slippage | SwapPanel: slippage setting row, view title and preset group | — |
+| `swapSlippageCustom` | Custom slippage (%) | SwapPanel: label of the custom slippage field | — |
+| `swapFee` `(amount)` | Fee {amount} | SwapPanel: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
+| `swapFees` | Fees | SwapPanel: fee breakdown setting row and view title | — |
+| `swapFeeTotal` | Total | SwapPanel: total row of the fee breakdown | — |
+| `swapDenomination` | Show amounts in | SwapPanel: label of the default amount denomination setting | — |
+| `swapDollars` | Dollars | SwapPanel: dollar denomination option | — |
+| `swapUnits` | Units | SwapPanel: token unit denomination option | — |
+| `swapSearchTokens` | Search name or paste address | SwapPanel: token picker search placeholder and accessible name | — |
+| `swapChains` | Chains | SwapPanel: accessible name of the token picker chain filter | — |
+| `swapAllChains` | All | SwapPanel: chain filter option that clears the filter | — |
+| `swapHot` | Hot | SwapPanel: token picker section of host-ranked tokens | — |
+| `swapAllTokens` | All tokens | SwapPanel: token picker section after the hot tokens | — |
+| `swapNoTokens` | No tokens found | SwapPanel: token picker empty state | — |
+| `swapSelected` | Selected | SwapPanel: marks the token picker row that is already selected | — |
+| `swapConnectWallet` | Connect wallet | SwapPanel: token picker button that asks the host to connect a wallet | — |
+| `swapDisconnect` | Disconnect wallet | SwapPanel: accessible name of the token picker disconnect button | — |
+| `swapGenerateAddress` | Generate address | FromPicker and SwapPanel: switch that asks for a deposit address in place of a connected wallet | — |
+| `swapRecipient` | Recipient address | SwapPanel: recipient address field placeholder and accessible name | — |
+| `swapScan` | Scan QR code | SwapPanel: accessible name of the recipient QR scan button | — |
+| `copyAddress` | Copy address | WalletAddress and the SwapPanel receive view: accessible name of an address that copies on press; the address follows it | — |
+| `addressCopied` | Address copied | WalletAddress and the SwapPanel receive view: notice after the address is copied | — |
+| `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
+| `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
+| `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
+| `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
+| `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 
@@ -178,4 +224,4 @@ Rules:
 
 See `tests/tokens.test.ts`, `tests/data.dom.test.tsx`, `tests/glossary.test.ts`, `tests/built-in-strings.test.ts`, `tests/messages.dom.test.tsx`, `tests/native/messages.test.cjs`, `docs/foundations/localization.json` and the data chapter. Cite HIG 0.1.0 with this chapter anchor and a commit permalink.
 
-The native Button's busy suffix starts with the separator (`· Working`); the row supplies its visual gap. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.
+The native Button shows a leading spinner while busy and draws no busy text. On iOS its accessible name remains `Action · Working`. Android speaks the action name and its localized busy state once.

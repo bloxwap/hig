@@ -5,3 +5,4 @@ export {RadioGroup} from './radio-group.js';
 export {Select} from './select.js';
 export {Slider} from './slider.js';
 export {SegmentedControl} from './radio-group.js';
+export {Filter,type FilterOption,type FilterProps} from './radio-group.js';

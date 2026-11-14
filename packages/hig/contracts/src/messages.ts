@@ -102,6 +102,98 @@ export interface HIGMessages {
  increase: string;
  /** Native Slider decrement accessibility action label. */
  decrease: string;
+ /** Swap panel source side: card placeholder (with an ellipsis) and picker title. */
+ swapFrom: string;
+ /** Swap panel destination side: card placeholder (with an ellipsis) and picker title. */
+ swapTo: string;
+ /** Accessible name of a swap card's token slot; receives `swapFrom` or `swapTo`. */
+ swapSelectToken: (side: string) => string;
+ /** Accessible name of a swap card's amount; receives `swapFrom` or `swapTo`. */
+ swapAmount: (side: string) => string;
+ /** Accessible name of the conversion capsule that switches an amount between dollars and token units. */
+ swapSwitchDenomination: string;
+ /** Accessible name of the button that exchanges the two tokens. */
+ swapFlip: string;
+ /** Swap panel action when both sides are the same asset. */
+ swapActionSend: string;
+ /** Swap panel action for different assets on one chain. */
+ swapActionSwap: string;
+ /** Swap panel action for different assets across chains. */
+ swapActionBridge: string;
+ /** Swap panel action text while a side has no token. */
+ swapChooseToken: string;
+ /** Swap panel action text while its destination is still to be chosen. */
+ swapChooseDestination: string;
+ /** Swap panel action text while the amount is zero. */
+ swapEnterAmount: string;
+ /** Swap panel action text when the amount exceeds the known balance. */
+ swapInsufficient: (symbol: string) => string;
+ /** Swap panel action text in the receive view. */
+ swapSendFromWallet: string;
+ /** Accessible name of the swap panel reset button. */
+ swapReset: string;
+ /** Swap panel settings button and sheet title. */
+ swapSettings: string;
+ /** Capsule that enters the whole balance. */
+ swapMax: string;
+ /** Capsule that enters a small trial amount. */
+ swapTest: string;
+ /** Slippage capsule on the destination card; receives a percent such as `0.5%`. */
+ swapSlippage: (percent: string) => string;
+ /** Slippage setting row, view title and preset group. */
+ swapSlippageTitle: string;
+ /** Label of the custom slippage field. */
+ swapSlippageCustom: string;
+ /** Fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash. */
+ swapFee: (amount: string) => string;
+ /** Fee breakdown setting row and view title. */
+ swapFees: string;
+ /** Total row of the fee breakdown. */
+ swapFeeTotal: string;
+ /** Label of the default amount denomination setting. */
+ swapDenomination: string;
+ /** Dollar denomination option. */
+ swapDollars: string;
+ /** Token unit denomination option. */
+ swapUnits: string;
+ /** Token picker search placeholder and accessible name. */
+ swapSearchTokens: string;
+ /** Accessible name of the token picker chain filter. */
+ swapChains: string;
+ /** Chain filter option that clears the filter. */
+ swapAllChains: string;
+ /** Token picker section of host-ranked tokens. */
+ swapHot: string;
+ /** Token picker section after the hot tokens. */
+ swapAllTokens: string;
+ /** Token picker empty state. */
+ swapNoTokens: string;
+ /** Marks the token picker row that is already selected. */
+ swapSelected: string;
+ /** Token picker button that asks the host to connect a wallet. */
+ swapConnectWallet: string;
+ /** Accessible name of the token picker disconnect button. */
+ swapDisconnect: string;
+ /** Switch in the From picker that asks for a deposit address in place of a connected wallet. */
+ swapGenerateAddress: string;
+ /** Recipient address field placeholder and accessible name. */
+ swapRecipient: string;
+ /** Accessible name of the recipient QR scan button. */
+ swapScan: string;
+ /** Accessible name of a wallet address that copies on press (WalletAddress, the SwapPanel receive view); the address follows it. */
+ copyAddress: string;
+ /** Notice after a wallet address is copied. */
+ addressCopied: string;
+ /** Visible hint under a wallet address that copies on press. */
+ tapToCopy: string;
+ /** Accessible name of a wallet address QR code. */
+ qrCode: string;
+ /** Control key legend in the swap panel's shortcut hint on non-Apple keyboards (`Ctrl K`). Apple keyboards show ⌘. */
+ swapControlKey: string;
+ /** Accessible name of the swap panel keypad. */
+ swapKeypad: string;
+ /** Accessible name of the keypad delete key. */
+ swapDelete: string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.
 export const close = 'Close';
@@ -151,8 +243,54 @@ export const statusOffline = 'offline';
 export const statusStale = 'stale';
 export const increase = 'Increase';
 export const decrease = 'Decrease';
+export const swapFrom = 'From';
+export const swapTo = 'To';
+export const swapSelectToken = (side: string) => `Select ${side} token`;
+export const swapAmount = (side: string) => `${side} amount`;
+export const swapSwitchDenomination = 'Switch between dollars and token units';
+export const swapFlip = 'Swap direction';
+export const swapActionSend = 'Send';
+export const swapActionSwap = 'Swap';
+export const swapActionBridge = 'Bridge';
+export const swapChooseToken = 'Select a token';
+export const swapChooseDestination = 'Pick a destination';
+export const swapEnterAmount = 'Enter an amount';
+export const swapInsufficient = (symbol: string) => `Insufficient ${symbol}`;
+export const swapSendFromWallet = 'Send from your wallet';
+export const swapReset = 'Reset';
+export const swapSettings = 'Settings';
+export const swapMax = 'Max';
+export const swapTest = 'Test';
+export const swapSlippage = (percent: string) => `Slippage ${percent}`;
+export const swapSlippageTitle = 'Slippage';
+export const swapSlippageCustom = 'Custom slippage (%)';
+export const swapFee = (amount: string) => `Fee ${amount}`;
+export const swapFees = 'Fees';
+export const swapFeeTotal = 'Total';
+export const swapDenomination = 'Show amounts in';
+export const swapDollars = 'Dollars';
+export const swapUnits = 'Units';
+export const swapSearchTokens = 'Search name or paste address';
+export const swapChains = 'Chains';
+export const swapAllChains = 'All';
+export const swapHot = 'Hot';
+export const swapAllTokens = 'All tokens';
+export const swapNoTokens = 'No tokens found';
+export const swapSelected = 'Selected';
+export const swapConnectWallet = 'Connect wallet';
+export const swapDisconnect = 'Disconnect wallet';
+export const swapGenerateAddress = 'Generate address';
+export const swapRecipient = 'Recipient address';
+export const swapScan = 'Scan QR code';
+export const copyAddress = 'Copy address';
+export const addressCopied = 'Address copied';
+export const tapToCopy = 'Tap to copy';
+export const qrCode = 'QR code';
+export const swapControlKey = 'Ctrl';
+export const swapKeypad = 'Keypad';
+export const swapDelete = 'Delete';
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale, increase, decrease};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**
@@ -162,7 +300,7 @@ export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as reado
  */
 export function resolveMessages<T extends Partial<HIGMessages>>(base: T, overrides?: Partial<HIGMessages>): T {
  if (!overrides) return base;
- const formatters = ['dismissNotice', 'pageOf', 'resultCount', 'progressValue', 'reviewAssetOrder', 'amountInAsset', 'availableAmount', 'confirmOrderDescription'];
+ const formatters = ['dismissNotice', 'pageOf', 'resultCount', 'progressValue', 'reviewAssetOrder', 'amountInAsset', 'availableAmount', 'confirmOrderDescription', 'swapSelectToken', 'swapAmount', 'swapInsufficient', 'swapSlippage', 'swapFee'];
  const resolved: Record<string, unknown> = {...base};
  for (const [key, value] of Object.entries(overrides)) {
   if (value !== undefined && typeof value === (formatters.includes(key) ? 'function' : 'string')) resolved[key] = value;

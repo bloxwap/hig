@@ -1,23 +1,46 @@
-:root { --hig-control: 48px; --hig-button: 44px; --hig-gap: 12px; }
+:root { --hig-control: 48px; --hig-button: 44px; --hig-gap: 12px; --hig-action-gap:var(--hig-space-sm,8px); --hig-action-offset:calc(var(--hig-action-gap)*2); --hig-fill:var(--hig-surface); --hig-fill-raised:var(--hig-nested); }
+/* Actions that sit side by side (buttons, tabs, capsules, filter options) are 8px apart at every density; --hig-gap spaces content.
+   The call-to-action buttons that close a form sit a double step, 16px, below the rest of it, and 8px from each other. */
+.hig-form-action { margin-block-start:calc(var(--hig-action-offset) - var(--hig-gap)); }
+.hig-form-action + .hig-form-action { margin-block-start:calc(var(--hig-action-gap) - var(--hig-gap)); }
+/* Dialogs and default sheets space their content 12px apart; their closing buttons follow the same rule. */
+:is(.hig-dialog,.hig-gesture-sheet,.hig-gesture-dynamic) > :not(.hig-button) + .hig-button { margin-block-start:calc(var(--hig-action-offset) - 12px); }
+:is(.hig-dialog,.hig-gesture-sheet,.hig-gesture-dynamic) > .hig-button + .hig-button { margin-block-start:calc(var(--hig-action-gap) - 12px); }
+/* HIG separates layers with fill and space, never a resting stroke. A control well (input, segmented track, badge) takes --hig-fill and
+   whatever sits on a well takes --hig-fill-raised; both step one shade lighter inside a surface or overlay so the well stays visible.
+   Borders stay in the box as transparent so sizes hold and forced-colors still draws an edge.
+   Thin tracks and rules (switch, slider, progress, spinner ring, separator) take --hig-fill-raised, so they sit one step above the
+   wells around them in every container and never jump to the lightest grey on the page. */
+.hig-surface,.hig-dialog,.hig-gesture-sheet { --hig-fill:var(--hig-nested); --hig-fill-raised:var(--hig-border); }
+.hig-popover { --hig-fill:var(--hig-surface); --hig-fill-raised:var(--hig-border); }
 [data-hig-density='compact'] { --hig-control: 36px; --hig-button: 36px; --hig-gap: 8px; }
+/* A comfortable scope inside a compact one restores touch sizes, so a nested provider or a pinned control is not left compact. */
+[data-hig-density='compact'] [data-hig-density='comfortable'] { --hig-control: 48px; --hig-button: 44px; --hig-gap: 12px; }
 /* Every rule is scoped to HIG classes so a host that loads this file on some routes only gets no side effects elsewhere (#95).
    Element defaults for the whole page (box-sizing, focus ring, table, range) are opt-in: @bloxwap/hig/react/css/base. */
-:where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
+:where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-filter-chip :is(input,span,img),.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
 .hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);min-width:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);cursor:pointer;overflow-wrap:anywhere; }
 .hig-button[data-density='compact'] { padding-block:4px; }
-.hig-button[data-intent='secondary'],.hig-button[role='tab'][aria-selected='false'] { background:var(--hig-nested);color:var(--hig-text); }
+.hig-button[data-intent='secondary'] { background:var(--hig-nested);color:var(--hig-text); }
 .hig-button[data-intent='ghost'] { background:transparent;color:var(--hig-muted); }
 .hig-button > svg,.hig-icon-button > span { display:inline-flex;align-items:center;justify-content:center;flex:none; }
 .hig-icon-button { min-width:var(--hig-button);padding-inline:8px; }
 .hig-button[data-intent='destructive'] { background:var(--hig-negative);color:var(--hig-background); }
 .hig-button[data-full] { width:100%; }
-.hig-button:disabled { opacity:.5;cursor:default; }
+.hig-button-spinner { flex:none;width:1em;height:1em;border:2px solid color-mix(in srgb,currentColor 30%,transparent);border-top-color:currentColor;border-radius:50%;animation:hig-spin .8s linear infinite; }
+.hig-icon-button[aria-busy='true'] > .hig-button-spinner ~ span[aria-hidden='true'] { display:none; }
+.hig-button:disabled { cursor:default; }
+/* Unavailable is neutral: a disabled button drops its intent colour for a well fill and muted text, so a dimmed accent never reads
+   as a second call to action. Busy keeps the intent colour under its spinner. */
+.hig-button:disabled:not([aria-busy='true']) { background:var(--hig-fill);color:var(--hig-muted); }
+.hig-button[data-intent='ghost']:disabled:not([aria-busy='true']) { background:transparent;color:var(--hig-faint); }
+.hig-button[aria-busy='true'] { opacity:.7; }
 .hig-button:active:not(:disabled) { transform:scale(.98); }
 .hig-button { transition:transform var(--hig-motion-duration-fast) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),filter var(--hig-motion-duration-fast) ease; }
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment input):focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }
 .hig-stack,.hig-field,.hig-toast { display:flex;flex-direction:column;gap:var(--hig-gap);min-width:0; }
 .hig-inline { display:flex;flex-wrap:wrap;align-items:center;gap:var(--hig-gap); }
-.hig-surface,.hig-dialog,.hig-select-list {border:1px solid var(--hig-border);border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface);color:var(--hig-text); }
+.hig-surface,.hig-dialog,.hig-select-list {border:1px solid transparent;border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface);color:var(--hig-text); }
 .hig-surface { padding:var(--hig-space-xl,20px);min-width:0;overflow-wrap:anywhere; }
 .hig-surface > :first-child { margin-block-start:0; }
 .hig-surface > :last-child { margin-block-end:0; }
@@ -26,27 +49,32 @@
 .hig-balance-card > .hig-number { font-size:1.5rem;line-height:1.25;font-weight:600; }
 .hig-text { font-size:1rem;line-height:1.5; }
 .hig-heading { line-height:1.25; }
-.hig-input { width:100%;min-width:0;min-height:var(--hig-control);border-radius:9999px;border:1px solid var(--hig-border);padding: max(4px,calc((var(--hig-control) - 1.5em - 2px)/2)) 20px;background:var(--hig-surface);color:var(--hig-text);font:inherit;line-height:1.5; }
+.hig-input { width:100%;min-width:0;min-height:var(--hig-button);border-radius:9999px;border:1px solid transparent;padding: max(4px,calc((var(--hig-button) - 1.5em - 2px)/2)) 20px;background:var(--hig-fill);color:var(--hig-text);font:inherit;line-height:1.5; }
 .hig-input::placeholder { color:var(--hig-muted);opacity:1; }
 .hig-input:focus-visible { outline:0;border-color:var(--hig-faint);box-shadow:0 0 0 1px var(--hig-faint); }
 .hig-input[aria-invalid='true'] { border-color:var(--hig-negative); }
 .hig-input[aria-invalid='true']:focus-visible { box-shadow:0 0 0 1px var(--hig-negative); }
 textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
+/* Text fields are as tall as a button (44 touch, 36 compact). */
+.hig-search-input { position:relative;display:block;width:100%;min-width:0; }
+.hig-search-icon { position:absolute;inset-inline-start:16px;inset-block-start:50%;translate:0 -50%;width:20px;height:20px;color:var(--hig-muted);pointer-events:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
+.hig-search-input > .hig-input { padding-inline-start:42px; }
 .hig-field label,.hig-group legend,.hig-select-option[aria-selected='true'] { font-weight:600; }
 .hig-field p { margin:0;color:var(--hig-muted); }
 .hig-field [role='alert'],.hig-list-error > .hig-list-message { color:var(--hig-negative); }
-.hig-choice { display:inline-flex;align-items:center;min-height:var(--hig-control);max-width:100%;min-width:0;gap:8px;padding:4px 8px; }
+/* No leading inset: the control starts on the same edge as the labels and fields around it. */
+.hig-choice { display:inline-flex;align-items:center;min-height:var(--hig-control);max-width:100%;min-width:0;gap:8px;padding-block:4px;padding-inline:0 16px; }
 .hig-choice > span,.hig-market-row[data-mode='presentation'] .hig-market-name { min-width:0;overflow-wrap:anywhere; }
 .hig-choice input { accent-color:var(--hig-action);width:20px;height:20px; }
 .hig-group { border:0;padding:0;margin:0;min-width:0; }
 .hig-link { display:inline-flex;align-items:center;min-height:var(--hig-button);min-width:var(--hig-button);color:var(--hig-action);text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere; }
-.hig-separator { border:0;border-top:1px solid var(--hig-border);width:100%; }
+.hig-separator { border:0;height:2px;border-radius:9999px;background:var(--hig-fill-raised);width:100%; }
 .hig-backdrop { position:fixed;inset:0;background:#000b;z-index:40; }
 /* Centred with physical left: the content carries the provider dir, and inset-inline-start would flip to right:50% in RTL while the translate stays negative. */
-.hig-dialog { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:min(560px,calc(100vw - 32px));width:100%;max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:24px;box-shadow:0 16px 48px #0003;z-index:41;display:flex;flex-direction:column;gap:12px;overflow-wrap:anywhere; }
+.hig-dialog { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:min(560px,calc(100vw - 32px));width:100%;max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:24px;background:var(--hig-overlay,#111);box-shadow:0 24px 64px #000a;z-index:41;display:flex;flex-direction:column;gap:12px;overflow-wrap:anywhere; }
 .hig-dialog-title { margin:0;font-size:1.25rem;font-weight:600;line-height:1.3; }
 .hig-dialog-description { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-.hig-gesture-sheet { position:fixed;z-index:41;display:flex;flex-direction:column;max-height:95dvh;background:var(--hig-surface);color:var(--hig-text);outline:none; }
+.hig-gesture-sheet { position:fixed;z-index:41;display:flex;flex-direction:column;max-height:95dvh;background:var(--hig-overlay,#111);color:var(--hig-text);box-shadow:0 0 64px #000a;outline:none; }
 .hig-gesture-sheet[data-vaul-drawer-direction='bottom'] { inset:auto 0 0;border-radius:14px 14px 0 0; }
 .hig-gesture-sheet[data-vaul-drawer-direction='top'] { inset:0 0 auto;border-radius:0 0 14px 14px; }
 .hig-gesture-sheet[data-vaul-drawer-direction='left'] { inset:0 auto 0 0;width:min(420px,95vw);max-height:none;border-radius:0 14px 14px 0; }
@@ -64,12 +92,13 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-gesture-sheet:is([data-vaul-drawer-direction='left'],[data-vaul-drawer-direction='right'])[data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
 .hig-gesture-sheet[data-vaul-drawer-direction='left'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-left:calc(24px + env(safe-area-inset-left,0px)); }
 .hig-gesture-sheet[data-vaul-drawer-direction='right'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-right:calc(24px + env(safe-area-inset-right,0px)); }
-.hig-gesture-handle[data-vaul-handle] { flex:none;align-self:center;background:var(--hig-muted);margin-block:4px 12px; }
+.hig-gesture-handle[data-vaul-handle] { flex:none;align-self:center;width:100px;height:6px;border-radius:9999px;opacity:1;background:var(--hig-action);box-shadow:0 0 12px color-mix(in srgb,var(--hig-action) 60%,transparent);margin-block:4px 12px; }
 .hig-gesture-sheet[data-hig-motion='reduced'],.hig-gesture-backdrop[data-hig-motion='reduced'] { animation:none!important;transition:none!important; }
-.hig-popover { max-width:min(360px,calc(100vw - 32px));max-height:var(--radix-popover-content-available-height,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;background:var(--hig-nested);color:var(--hig-text);padding:12px;border:1px solid var(--hig-border);border-radius:var(--hig-radius-xl,14px);box-shadow:0 8px 24px #0003;line-height:1.5;overflow-wrap:anywhere;z-index:50; }
+.hig-popover { max-width:min(360px,calc(100vw - 32px));max-height:var(--radix-popover-content-available-height,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;background:var(--hig-nested);color:var(--hig-text);padding:12px;border:1px solid transparent;border-radius:var(--hig-radius-xl,14px);box-shadow:0 8px 24px #0006;line-height:1.5;overflow-wrap:anywhere;z-index:50; }
 .hig-menu { min-width:min(12rem,calc(100vw - 32px));max-height:var(--radix-dropdown-menu-content-available-height,calc(100dvh - 32px));padding:4px; }
 .hig-menu-item { display:flex;align-items:center;min-height:var(--hig-control);padding:8px 12px;border-radius:var(--hig-radius-md,8px);cursor:pointer;outline:none; }
-.hig-menu-item[data-highlighted] { background:var(--hig-surface); }
+/* Highlight and press step lighter than the list, as Select options do. */
+.hig-menu-item[data-highlighted] { background:var(--hig-border); }
 .hig-menu-item:focus-visible,.hig-segment input:focus-visible + span { outline:2px solid var(--hig-focus);outline-offset:-2px; }
 .hig-menu-item[data-disabled],.hig-select-option[aria-disabled='true'],.hig-input:disabled,.hig-choice:has(input:disabled),.hig-segment:has(input:disabled),.hig-range:disabled { opacity:.5;cursor:not-allowed; }
 .hig-tooltip { max-height:var(--radix-tooltip-content-available-height,calc(100dvh - 32px));padding:8px 12px;border-radius:var(--hig-radius-lg,10px);font-size:.875rem; }
@@ -82,16 +111,18 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-data-list > .hig-button,.hig-list-error > .hig-button { align-self:flex-start; }
 .hig-list-message { margin:0;color:var(--hig-muted);line-height:1.5; }
 .hig-list { list-style:none;padding:0;margin:0; }
-.hig-list > li + li { border-block-start:1px solid var(--hig-border); }
-.hig-table-scroll { min-width:0;max-width:100%;overflow:auto;overscroll-behavior-x:contain;border:1px solid var(--hig-border);border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface); }
+.hig-list > li + li { border-block-start:1px solid var(--hig-fill-raised); }
+.hig-table-scroll { min-width:0;max-width:100%;overflow:auto;overscroll-behavior-x:contain;border:1px solid transparent;border-radius:var(--hig-radius-xl,14px);background:var(--hig-surface); }
 /* Class specificity so the opt-in base `table` rule cannot collapse HIG tables. */
 .hig-table { border-collapse:separate;border-spacing:0; }
 :where(.hig-table) { width:100%;color:var(--hig-text);line-height:1.5; }
-.hig-table > caption:not(.hig-sr-only) { padding:12px;text-align:start;font-weight:600;border-bottom:1px solid var(--hig-border); }
-:where(.hig-table > * > tr) > :is(th,td) { padding:12px;text-align:start;vertical-align:middle;border-bottom:1px solid var(--hig-border); }
+/* Sections are separated by space and type weight, not rules. */
+.hig-table > caption:not(.hig-sr-only) { padding:20px 20px 8px;text-align:start;font-weight:600; }
+:where(.hig-table > * > tr) > :is(th,td) { padding:14px 20px;text-align:start;vertical-align:middle;border:0; }
 .hig-table > thead > tr > th { color:var(--hig-muted);font-size:.875rem;font-weight:600;background:var(--hig-surface); }
-.hig-table > tbody > tr:last-child > td { border-bottom:0; }
-.hig-table > tbody > tr:focus-within > td,.hig-select-option[data-active='true'] { background:var(--hig-nested); }
+.hig-table > thead > tr > th { padding-block:16px 6px; }
+.hig-table > tbody > tr:focus-within > td { background:var(--hig-nested); }
+.hig-select-option[data-active='true'] { background:var(--hig-border); }
 .hig-table-sort { appearance:none;display:inline-flex;align-items:center;justify-content:inherit;gap:6px;max-width:100%;min-height:var(--hig-button);margin:-6px;padding:6px;border:0;border-radius:var(--hig-radius-md,6px);background:transparent;color:inherit;font:inherit;text-align:inherit;cursor:pointer; }
 .hig-table-sort-icon { flex:none; }
 .hig-table [aria-sort='ascending'] .hig-table-sort-up,.hig-table [aria-sort='descending'] .hig-table-sort-down,.hig-segment input:checked + span { color:var(--hig-text); }
@@ -99,34 +130,76 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-table[data-sticky-header='true'] > thead > tr > th { position:sticky;inset-block-start:0;z-index:1;background:var(--hig-surface); }
 .hig-table-state > td { padding-block:24px;color:var(--hig-muted);text-align:center; }
 /* A host-owned command option supplies its own target, keyboard model and compact row height. */
+/* The name button is the row's identity, so it takes the text colour; the trailing edge is inset as far as the button's own padding
+   insets the name, which lines the row up with the content of the cards around it. */
+.hig-market-row[data-mode='action'] { padding-inline-end:20px; }
+.hig-market-row[data-mode='action'] .hig-button[data-intent='ghost'] { color:var(--hig-text); }
 .hig-market-row[data-mode='presentation'] { display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--hig-gap);padding-block:0; }
 .hig-market-row[data-mode='presentation'][data-has-volume] { grid-template-columns:minmax(0,1fr) auto auto auto; }
 .hig-market-row[data-mode='presentation'] .hig-market-identity { display:flex;align-items:center;gap:8px;min-width:0; }
 .hig-market-row[data-mode='presentation'] :is(.hig-market-price,.hig-market-change,.hig-market-volume) { text-align:end; }
 .hig-market-row[data-mode='presentation'] .hig-number { font-family:inherit; }
-.hig-badge { display:inline-flex;align-items:center;gap:4px;width:fit-content;max-width:100%;min-width:0;padding:4px 10px;border-radius:9999px;background:var(--hig-nested);color:var(--hig-text);line-height:1.5;vertical-align:middle;overflow-wrap:anywhere; }
+.hig-badge { display:inline-flex;align-items:center;gap:4px;width:fit-content;max-width:100%;min-width:0;padding:4px 10px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);line-height:1.5;vertical-align:middle;overflow-wrap:anywhere; }
 .hig-badge[data-tone='positive'] { color:var(--hig-positive);background:color-mix(in srgb,var(--hig-positive) 15%,transparent); }
 .hig-badge[data-tone='negative'] { color:var(--hig-negative);background:color-mix(in srgb,var(--hig-negative) 15%,transparent); }
 .hig-badge[data-tone='warning'] { color:var(--hig-warning);background:color-mix(in srgb,var(--hig-warning) 15%,transparent); }
 .hig-badge[data-tone='info'] { color:var(--hig-info);background:color-mix(in srgb,var(--hig-info) 15%,transparent); }
-.hig-avatar { display:inline-grid;place-items:center;width:40px;height:40px;border-radius:9999px;background:var(--hig-nested); }
-.hig-skeleton { min-height:48px;background:var(--hig-nested);border-radius:10px; }
+.hig-avatar { display:inline-grid;place-items:center;width:40px;height:40px;border-radius:9999px;background:var(--hig-fill); }
+.hig-skeleton { width:100%;min-height:48px;background:var(--hig-fill-raised);border-radius:10px;animation:hig-pulse 1.5s ease-in-out infinite; }
 .hig-alert,.hig-empty-state { display:flex;flex-direction:column;align-items:flex-start;gap:var(--hig-gap);overflow-wrap:anywhere;line-height:1.5; }
 .hig-alert > :is(strong,p),.hig-empty-state > :is(h3,p) { margin:0;max-width:100%; }
-.hig-empty-state > p,.hig-select-chevron { color:var(--hig-muted); }
-.hig-alert-actions { display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:100%; }
-:where(.hig-surface)[data-severity] { border-radius:16px;background:color-mix(in srgb,var(--hig-surface) 95%,transparent); }
-:where(.hig-surface)[data-severity='error'] { border:2px solid var(--hig-negative);box-shadow:0 0 24px color-mix(in srgb,var(--hig-negative) 55%,transparent); }
-:where(.hig-surface)[data-severity='warning'] { border:2px solid var(--hig-warning);box-shadow:0 0 24px color-mix(in srgb,var(--hig-warning) 55%,transparent); }
-:where(.hig-surface)[data-severity='info'],:where(.hig-surface)[data-severity='note'] { border:2px solid var(--hig-info);box-shadow:0 0 24px color-mix(in srgb,var(--hig-info) 55%,transparent); }
-:where(.hig-surface)[data-severity='success'],:where(.hig-surface)[data-severity='tip'] { border:2px solid var(--hig-positive);box-shadow:0 0 24px color-mix(in srgb,var(--hig-positive) 55%,transparent); }
-:where(.hig-surface)[data-severity='default'] { border:2px solid var(--hig-border);box-shadow:0 0 20px rgba(255,255,255,0.12); }
-:where(.hig-toast) :where(.hig-surface)[data-severity] { border-radius:999px; }
+.hig-empty-state > p,.hig-select-chevron,.hig-empty-state-icon { color:var(--hig-muted); }
+.hig-empty-state { align-items:center;text-align:center;padding-block:var(--hig-space-xxxl,32px); }
+.hig-empty-state-icon { display:inline-flex; }
+.hig-empty-state-icon > svg { width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
+.hig-alert-actions { display:flex;flex-wrap:wrap;align-items:center;gap:var(--hig-action-gap);max-width:100%; }
+/* Severity tints the fill and colours the title from a token role: no stroke and no glow, like every other layer. The tint is
+   10% so the negative title keeps 4.5:1 on it (12% measured 4.47). The neutral
+   default lifts the surface a touch with the text colour so it still reads inside a card. */
+:where(.hig-surface)[data-severity] { --hig-alert-tone:var(--hig-info);background:color-mix(in srgb,var(--hig-alert-tone) 10%,var(--hig-surface)); }
+:where(.hig-surface)[data-severity] > strong { color:var(--hig-alert-tone); }
+:where(.hig-surface)[data-severity='error'] { --hig-alert-tone:var(--hig-negative); }
+:where(.hig-surface)[data-severity='warning'] { --hig-alert-tone:var(--hig-warning); }
+:where(.hig-surface)[data-severity='success'],:where(.hig-surface)[data-severity='tip'] { --hig-alert-tone:var(--hig-positive); }
+:where(.hig-surface)[data-severity='default'] { --hig-alert-tone:var(--hig-text);background:color-mix(in srgb,var(--hig-text) 6%,var(--hig-surface)); }
+/* A notice is one capsule row: severity symbol, message, optional action, close. */
+.hig-toast-item { display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:var(--hig-button,44px);padding-block:5px;padding-inline:16px 5px;border:1px solid transparent;border-radius:9999px;background:var(--hig-nested);color:var(--hig-text);box-shadow:0 8px 24px #0006;font:500 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);overflow-wrap:anywhere; }
+.hig-toast-icon,.hig-toast-close > svg { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
+.hig-toast-icon { color:var(--hig-info); }
+.hig-toast-item[data-severity='success'] .hig-toast-icon { color:var(--hig-positive); }
+.hig-toast-item[data-severity='warning'] .hig-toast-icon { color:var(--hig-warning); }
+.hig-toast-item[data-severity='error'] .hig-toast-icon { color:var(--hig-negative); }
+.hig-toast-message { flex:1;min-width:0; }
+/* Inside Sonner's fixed-width slot the capsule hugs its content and centres. */
+[data-sonner-toast] .hig-toast-item { margin-inline:auto; }
+.hig-toast-item .hig-button { min-height:32px;padding-block:2px; }
+/* 32px disc with a 44px hit area. */
+/* The target is the full button height (44 touch, 36 compact); the 32px disc is drawn inside it and negative margins keep the capsule's size. */
+.hig-toast-close { appearance:none;position:relative;isolation:isolate;flex:none;display:inline-grid;place-items:center;width:var(--hig-button,44px);height:var(--hig-button,44px);margin:calc((32px - var(--hig-button,44px))/2);padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
+.hig-toast-close::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2);border-radius:50%; }
+.hig-toast-close:active { color:var(--hig-text); }
+.hig-toast-close:active::before { background:var(--hig-border); }
 @media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled) {transform:none;} }
 [data-hig-motion='reduced'] .hig-button:active:not(:disabled) {transform:none;}
 .hig-tabs { display:grid;gap:var(--hig-gap);min-width:0; }
+.hig-tab-list,.hig-pagination { gap:var(--hig-action-gap); }
 .hig-tab-list { flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding:4px;margin:-4px; }
-.hig-tab { flex:none;white-space:nowrap; }
+/* The selected tab is a raised neutral capsule and the rest are bare muted labels, as in Navigation and the segmented control.
+   The action colour stays reserved for the one primary action on a screen. */
+.hig-tab { flex:none;white-space:nowrap;background:transparent;color:var(--hig-muted); }
+.hig-tab[aria-selected='true'] { background:var(--hig-fill-raised);color:var(--hig-text); }
+.hig-button.hig-tab:disabled:not([aria-busy='true']) { background:transparent;color:var(--hig-faint); }
+/* Disclosure: outline chevron on the trailing edge; the chevron turns and the panel height eases where the browser can interpolate to auto. */
+.hig-accordion { interpolate-size:allow-keywords; }
+/* The summary bleeds to the surface edge so the whole header row is the target. */
+.hig-accordion > .hig-accordion-summary { display:flex;align-items:center;justify-content:space-between;gap:12px;margin:calc(var(--hig-space-xl,20px) * -1);padding:var(--hig-space-xl,20px);list-style:none;font-weight:600;line-height:1.5;cursor:pointer;border-radius:inherit;transition:margin-block-end var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-accordion-summary::-webkit-details-marker { display:none; }
+.hig-accordion-chevron { color:var(--hig-muted);transition:transform var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-accordion[open] > .hig-accordion-summary .hig-accordion-chevron { transform:rotate(180deg); }
+.hig-accordion[open] > .hig-accordion-summary { margin-block-end:-8px; }
+.hig-accordion > .hig-accordion-summary + * { margin-block-start:0; }
+.hig-accordion::details-content { block-size:0;overflow:clip;opacity:0;transition:block-size var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),opacity var(--hig-motion-duration-base,260ms) ease,content-visibility var(--hig-motion-duration-base,260ms) allow-discrete; }
+.hig-accordion[open]::details-content { block-size:auto;opacity:1; }
 .hig-breadcrumb { list-style:none;padding:0;margin:0;gap:8px;color:var(--hig-muted); }
 .hig-breadcrumb > li { display:inline-flex;align-items:center;gap:8px;min-width:0; }
 .hig-breadcrumb .hig-link { color:var(--hig-muted);text-decoration:none; }
@@ -145,9 +218,15 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-select-trigger {text-align:start;line-height:1.5; }
 .hig-select-trigger[aria-expanded='true'] { border-color:var(--hig-faint); }
 .hig-select-value { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-.hig-select-chevron,.hig-select-check { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
+.hig-select-chevron,.hig-select-check,.hig-accordion-chevron { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
 .hig-select-trigger[aria-expanded='true'] .hig-select-chevron { transform:rotate(180deg); }
-.hig-select-list { position:fixed;inset:auto;margin:0;padding:6px;font:inherit;line-height:1.5;box-shadow:0 12px 32px #0004;overflow:auto;overscroll-behavior:contain;z-index:50; }
+.hig-select-list { position:fixed;inset:auto;margin:0;padding:6px;font:inherit;line-height:1.5;background:var(--hig-nested);box-shadow:0 12px 32px #0006;overflow:auto;overscroll-behavior:contain;z-index:50; }
+/* Floating lists present with a short fade and settle from their anchor edge. */
+.hig-select-list,.hig-popover { animation:hig-present var(--hig-motion-duration-fast,180ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-select-list { transform-origin:top center; }
+.hig-select-list[data-placement='top'] { transform-origin:bottom center;--hig-present-from:4px; }
+.hig-popover { transform-origin:var(--radix-dropdown-menu-content-transform-origin,var(--radix-popover-content-transform-origin,var(--radix-tooltip-content-transform-origin,center))); }
+@keyframes hig-present { from { opacity:0;transform:translateY(var(--hig-present-from,-4px)) scale(.97); } }
 .hig-select-option {min-height:var(--hig-control);padding:8px 12px;border-radius:var(--hig-radius-lg,10px);overflow-wrap:anywhere; }
 .hig-select-option > span { min-width:0; }
 .hig-select-check { visibility:hidden;color:var(--hig-action); }
@@ -164,55 +243,93 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-choice input:checked { border-color:var(--hig-action); background:var(--hig-action); }
 .hig-choice input[type='radio'] { border-radius:50%; }
 .hig-choice input[type='radio']::before { width:8px; height:8px; border:0; border-radius:50%; background:var(--hig-onAction); transform:none; }
-.hig-switch input { position:relative; width:40px; height:24px; padding:3px; border:0; border-radius:9999px; background:var(--hig-muted); display:block; }
+.hig-switch input { position:relative; width:40px; height:24px; padding:3px; border:0; border-radius:9999px; background:var(--hig-fill-raised); display:block; transition:background-color var(--hig-motion-duration-fast) ease; }
 .hig-switch input::before { position:absolute; inset-block-start:3px; inset-inline-start:3px; visibility:visible; width:18px; height:18px; border:0; border-radius:50%; background:var(--hig-text); transform:none; transition:inset-inline-start var(--hig-motion-duration-fast) ease, background var(--hig-motion-duration-fast) ease; }
 .hig-switch input:checked::before { inset-inline-start:19px; background:var(--hig-onAction); }
 
-.hig-group legend { margin-bottom:.5rem; }
+.hig-group legend { margin-bottom:.5rem; padding:0; }
 .hig-segmented-control { min-width:0; width:100%; }
-.hig-segments { position:relative; isolation:isolate; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:4px; padding:4px; border-radius:9999px; background:var(--hig-nested); }
+.hig-segments { position:relative; isolation:isolate; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:4px; padding:0 4px; border-radius:9999px; background:var(--hig-fill); }
 /* Logical positioning follows RTL and avoids WebKit rounding percentage transforms at fractional segment widths. */
-.hig-segment-indicator { position:absolute; z-index:-1; pointer-events:none; inset-block:4px; inset-inline-start:calc(4px + var(--hig-segment-index) * (100% - 4px) / var(--hig-segment-count)); width:calc((100% - (var(--hig-segment-count) + 1) * 4px) / var(--hig-segment-count)); border-radius:9999px; background:var(--hig-surface); box-shadow:0 1px 3px #0003; transition:inset-inline-start var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-segment-indicator { position:absolute; z-index:-1; pointer-events:none; inset-block:4px; inset-inline-start:calc(4px + var(--hig-segment-index) * (100% - 4px) / var(--hig-segment-count)); width:calc((100% - (var(--hig-segment-count) + 1) * 4px) / var(--hig-segment-count)); border-radius:9999px; background:var(--hig-fill-raised); box-shadow:0 1px 3px #0003; transition:inset-inline-start var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
 .hig-segment-indicator[data-disabled] { opacity:.5; }
-.hig-segment { position:relative; min-width:0; cursor:pointer; }
-.hig-segment input { position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:inherit; }
-.hig-segment span { display:flex; justify-content:center; align-items:center; min-height:var(--hig-control); padding:.5rem .75rem; border-radius:9999px; color:var(--hig-muted); font-weight:500; line-height:1.5; text-align:center; overflow-wrap:anywhere; }
+/* The label, not the pill inside it, is the target: it spans the full control height (44 touch, 36 compact). */
+.hig-segment { position:relative; min-width:0; padding-block:4px; cursor:pointer; }
+/* The radio covers the pill area only, so it lines up with the indicator; the label around it is the full-height target. */
+.hig-segment input { position:absolute; inset:4px 0; width:100%; height:calc(100% - 8px); margin:0; opacity:0; cursor:inherit; }
+.hig-segment span { display:flex; justify-content:center; align-items:center; min-height:calc(var(--hig-button) - 8px); padding:2px .75rem; border-radius:9999px; color:var(--hig-muted); font-weight:500; line-height:1.5; text-align:center; overflow-wrap:anywhere; }
 .hig-segment input:focus-visible { outline:0; }
 
+/* Filter: capsules in one row that scrolls sideways. The radio covers its capsule; the circle holds the option's image or an
+   empty ring, and fills while a check draws in when chosen. */
+.hig-filter { display:flex;gap:var(--hig-action-gap);min-width:0;margin:-4px;padding:4px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none; }
+.hig-filter::-webkit-scrollbar { display:none; }
+.hig-filter-chip { position:relative;flex:none;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding-block:6px;padding-inline:8px 16px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);font-size:.875rem;font-weight:600;line-height:1.5;white-space:nowrap;cursor:pointer;transition:var(--hig-motion-duration-fast,180ms) ease;transition-property:background-color,color; }
+/* 40px capsule with a 44px hit area. */
+.hig-filter-chip input { appearance:none;-webkit-appearance:none;position:absolute;inset:-2px 0;width:100%;height:calc(100% + 4px);margin:0;border-radius:9999px;opacity:0;cursor:inherit; }
+.hig-filter-chip:has(input:checked) { background:var(--hig-text);color:var(--hig-background); }
+.hig-filter-chip:has(input:disabled) { opacity:.5;cursor:not-allowed; }
+.hig-filter-chip:has(input:focus-visible) { outline:2px solid var(--hig-focus);outline-offset:2px; }
+.hig-filter-mark { position:relative;flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 2px currentColor;overflow:hidden;transition:background-color var(--hig-motion-duration-fast,180ms) ease; }
+.hig-filter-mark:has(img) { box-shadow:none; }
+.hig-filter-mark > img { grid-area:1/1;width:100%;height:100%;object-fit:cover;transition:var(--hig-motion-duration-fast,180ms) ease;transition-property:opacity,transform; }
+.hig-filter-mark > svg { grid-area:1/1;width:16px;height:16px;fill:none;stroke:var(--hig-text);stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+/* pathLength=1 on the path, so the dash offset is the undrawn fraction. A fully undrawn round-capped stroke still paints its cap as a dot, so the check is also hidden until chosen. */
+.hig-filter-mark path { stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),opacity var(--hig-motion-duration-fast,180ms); }
+.hig-filter-chip:has(input:checked) .hig-filter-mark { background:currentColor; }
+.hig-filter-chip:has(input:checked) .hig-filter-mark > img { opacity:0;transform:scale(.6); }
+.hig-filter-chip:has(input:checked) .hig-filter-mark path { stroke-dashoffset:0;opacity:1; }
+.hig-filter-chip:active:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
 .hig-range { accent-color:var(--hig-action); min-height:48px; width:100%; appearance:none; -webkit-appearance:none; display:block; margin:0; padding:0; border:0; background:transparent; cursor:pointer; }
-.hig-range::-webkit-slider-runnable-track { height:6px; border-radius:9999px; background:linear-gradient(to right,var(--hig-action) var(--hig-range-fill),var(--hig-border) var(--hig-range-fill)); }
+.hig-range::-webkit-slider-runnable-track { height:6px; border-radius:9999px; background:linear-gradient(to right,var(--hig-action) var(--hig-range-fill),var(--hig-fill-raised) var(--hig-range-fill)); }
 /* Match the product slider's white 20 × 14 pill while retaining the native range interaction. */
 .hig-range::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:20px; height:14px; margin-top:-4px; border:0; border-radius:9999px; background:var(--hig-text); }
-.hig-range::-moz-range-track { height:6px; border-radius:9999px; background:var(--hig-border); }
+.hig-range::-moz-range-track { height:6px; border-radius:9999px; background:var(--hig-fill-raised); }
 .hig-range::-moz-range-progress { height:6px; border-radius:9999px; background:var(--hig-action); }
 .hig-range::-moz-range-thumb { width:20px; height:14px; border:0; border-radius:9999px; background:var(--hig-text); }
 /* Leave 1px inside the 48px range box beyond the 2px outline: WebKit rounds fractional shared edges into the neighbouring control. */
 .hig-range:focus-visible { outline-offset:-3px; border-radius:var(--hig-radius-lg,10px); }
-[dir='rtl'] .hig-range::-webkit-slider-runnable-track { background:linear-gradient(to left,var(--hig-action) var(--hig-range-fill),var(--hig-border) var(--hig-range-fill)); }
+[dir='rtl'] .hig-range::-webkit-slider-runnable-track { background:linear-gradient(to left,var(--hig-action) var(--hig-range-fill),var(--hig-fill-raised) var(--hig-range-fill)); }
 
 .hig-progress { display:flex; flex-direction:column; gap:.75rem; width:100%; line-height:1.5; }
-.hig-progress progress { appearance:none; -webkit-appearance:none; width:100%; height:6px; border:0; border-radius:9999px; overflow:hidden; background:var(--hig-nested); accent-color:var(--hig-action); }
-.hig-progress progress::-webkit-progress-bar { background:var(--hig-nested); border-radius:9999px; }
+.hig-progress progress { appearance:none; -webkit-appearance:none; width:100%; height:6px; border:0; border-radius:9999px; overflow:hidden; background:var(--hig-fill-raised); accent-color:var(--hig-action); }
+.hig-progress progress::-webkit-progress-bar { background:var(--hig-fill-raised); border-radius:9999px; }
 .hig-progress progress::-webkit-progress-value { background:var(--hig-action); border-radius:9999px; }
 .hig-progress progress::-moz-progress-bar { background:var(--hig-action); border-radius:9999px; }
-.hig-progress progress:not([value]) { background:linear-gradient(90deg,var(--hig-nested) 20%,var(--hig-action) 50%,var(--hig-nested) 80%); background-size:200% 100%; animation:hig-progress 1.5s linear infinite; }
+.hig-progress progress:not([value]) { background:linear-gradient(90deg,var(--hig-fill-raised) 20%,var(--hig-action) 50%,var(--hig-fill-raised) 80%); background-size:200% 100%; animation:hig-progress 1.5s linear infinite; }
 .hig-progress progress:not([value])::-webkit-progress-bar { background:inherit; background-size:inherit; animation:inherit; }
 .hig-spinner { display:inline-flex; align-items:center; gap:.625rem; line-height:1.5; color:var(--hig-muted); }
-.hig-spinner-indicator { flex:none; width:1rem; height:1rem; border:2px solid var(--hig-border); border-top-color:var(--hig-action); border-radius:50%; animation:hig-spin .8s linear infinite; }
+.hig-spinner-indicator { flex:none; width:1rem; height:1rem; border:2px solid var(--hig-fill-raised); border-top-color:var(--hig-action); border-radius:50%; animation:hig-spin .8s linear infinite; }
 .hig-status-indicator { display:inline-flex; align-items:center; gap:.5rem; line-height:1.5; }
-.hig-status-indicator::before { content:''; flex:none; width:7px; height:7px; border-radius:50%; background:var(--hig-muted); }
-.hig-status-indicator[data-state='online']::before { background:var(--hig-positive); }
-.hig-status-indicator[data-state='stale']::before { background:var(--hig-warning); }
+.hig-status-indicator { --hig-status:var(--hig-muted); }
+.hig-status-indicator::before { content:''; flex:none; width:7px; height:7px; margin-inline:3px; border-radius:50%; background:var(--hig-status); }
+.hig-status-indicator[data-state='online'] { --hig-status:var(--hig-positive); }
+.hig-status-indicator[data-state='stale'] { --hig-status:var(--hig-warning); }
+/* A live source emits a ring in its own status colour; offline stays still. */
+.hig-status-indicator:is([data-state='online'],[data-state='stale'])::before { animation:hig-status-pulse 2s ease-out infinite; }
+@keyframes hig-status-pulse { 0% { box-shadow:0 0 0 0 color-mix(in srgb,var(--hig-status) 70%,transparent); } 70%,100% { box-shadow:0 0 0 7px color-mix(in srgb,var(--hig-status) 0%,transparent); } }
+@keyframes hig-pulse { 50% { opacity:.45; } }
 @keyframes hig-spin { to { transform:rotate(360deg); } }
 @keyframes hig-progress { to { background-position:-200% 0; } }
 @media(prefers-reduced-motion:reduce) {
-  .hig-spinner-indicator,.hig-progress progress:not([value]) { animation:none; }
-  .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
-  .hig-button,.hig-switch input::before,.hig-segment-indicator { transition:none; }
+  .hig-spinner-indicator,.hig-progress progress:not([value]),.hig-skeleton,.hig-status-indicator::before { animation:none; }
+  .hig-button-spinner { animation:none; }
+  .hig-progress progress::-webkit-progress-bar,.hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
+  .hig-button,.hig-switch input,.hig-switch input::before { transition:none; }
+  .hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path { transition:none; }
+  .hig-segment-indicator,.hig-accordion-chevron,.hig-accordion-summary,.hig-accordion::details-content { transition:none; }
+  .hig-select-list,.hig-popover { animation:none; }
 }
-[data-hig-motion='reduced'] .hig-spinner-indicator,[data-hig-motion='reduced'] .hig-progress progress:not([value]) { animation:none; }
-[data-hig-motion='reduced'] .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
-[data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-segment-indicator { transition:none; }
+[data-hig-motion='reduced'] :is(.hig-spinner-indicator,.hig-progress progress,.hig-skeleton) { animation:none; }
+[data-hig-motion='reduced'] .hig-status-indicator::before { animation:none; }
+[data-hig-motion='reduced'] .hig-button-spinner { animation:none; }
+[data-hig-motion='reduced'] :is(.hig-accordion-chevron,.hig-accordion-summary) { transition:none; }
+[data-hig-motion='reduced'] .hig-accordion::details-content { transition:none; }
+[data-hig-motion='reduced'] .hig-progress progress::-webkit-progress-bar,[data-hig-motion='reduced'] .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
+[data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-switch input,[data-hig-motion='reduced'] .hig-switch input::before { transition:none; }
+[data-hig-motion='reduced'] .hig-segment-indicator { transition:none; }
+[data-hig-motion='reduced'] :is(.hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path) { transition:none; }
+[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'].hig-popover { animation:none; }
 @media(forced-colors:active) {
   .hig-choice input,.hig-select select,.hig-range { appearance:auto; -webkit-appearance:auto; }
   .hig-choice input::before,.hig-select::after { display:none; }
@@ -221,10 +338,11 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 
 /* Touch: HIG controls fire click without the double-tap-zoom wait, draw their own press state instead of the
    browser's tap flash, and a long press never selects a control label or opens the link callout. Content stays selectable. */
-:where(.hig-button,.hig-choice,.hig-segment,.hig-switch,.hig-range,.hig-menu-item,.hig-select-trigger,.hig-select-option,.hig-table-sort,.hig-navigation > .hig-link) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
+:where(.hig-button,.hig-choice,.hig-segment,.hig-filter-chip,.hig-switch,.hig-range,.hig-menu-item,.hig-select-trigger,.hig-select-option,.hig-table-sort,.hig-navigation > .hig-link,.hig-accordion-summary,.hig-toast-close) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
 /* Press feedback on pointer-down for controls that had only hover or keyboard states. */
-.hig-menu-item:active:not([data-disabled]) { background:var(--hig-surface); }
-.hig-select-option:active:not([aria-disabled='true']),.hig-table-sort:active { background:var(--hig-nested); }
+.hig-menu-item:active:not([data-disabled]) { background:var(--hig-border); }
+.hig-select-option:active:not([aria-disabled='true']) { background:var(--hig-border); }
+.hig-table-sort:active { background:var(--hig-nested); }
 .hig-navigation > .hig-link:active { background:var(--hig-nested); }
 .hig-segment:active:not(:has(input:disabled)) span { color:var(--hig-text); }
 /* iOS zooms into any text field under 16px and never zooms back out. Inputs inherit the host size, so floor it on touch. */
@@ -233,11 +351,192 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 @media (hover:hover) and (pointer:fine) {
   .hig-button:hover:not(:disabled) { filter:brightness(.9); }
   .hig-button[data-intent='ghost']:hover:not(:disabled) { background:var(--hig-nested);color:var(--hig-text);filter:none; }
+  .hig-tab[aria-selected='false']:hover:not(:disabled) { color:var(--hig-text);filter:none; }
   .hig-navigation > .hig-link:hover { background:var(--hig-nested);color:var(--hig-text); }
   .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
+  .hig-toast-close:hover { color:var(--hig-text); }
+  .hig-toast-close:hover::before { background:var(--hig-border); }
+  .hig-filter-chip:hover:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
+  .hig-accordion-summary:hover .hig-accordion-chevron { color:var(--hig-text); }
   .hig-breadcrumb .hig-link:hover { color:var(--hig-text);text-decoration:underline; }
 }
 
+/* Vertical address: fixed-width rows whose height sets the type size, so a column of rows can match a QR code's edge. */
+.hig-vertical-address { display:inline-flex;flex-direction:column;flex:none;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);font-size:calc(var(--hig-address-row,1.5em)*.9);line-height:var(--hig-address-row,1.5em);font-weight:500;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--hig-muted);text-align:start;white-space:pre; }
+.hig-vertical-address > [aria-hidden] { display:flex;flex-direction:column; }
+.hig-vertical-address [data-anchor] { font-weight:700;color:var(--hig-text); }
+/* WalletAddress: the QR code and the address column share one height; the hint sits under both. */
+.hig-wallet-address { appearance:none;display:inline-flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;margin:0;padding:12px;border:0;border-radius:var(--hig-radius-xl,14px);background:transparent;color:var(--hig-text);font:inherit;text-align:start; }
+button.hig-wallet-address { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+button.hig-wallet-address:active { opacity:.8; }
+.hig-wallet-address-body { display:flex;align-items:center;gap:16px;max-width:100%; }
+.hig-wallet-address-qr { flex:none;display:block;width:var(--hig-qr);height:var(--hig-qr); }
+.hig-wallet-address-qr > svg { display:block;width:100%;height:100%; }
+.hig-wallet-address-hint { display:inline-flex;align-items:center;gap:8px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
+.hig-wallet-address-hint > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
+/* SwapPanel: two cards joined by a flip control. Each card is one target for its token picker; capsules and the
+   amount sit on a pass-through layer above that target and take their own presses. */
+.hig-swap-panel { display:flex;flex-direction:column;width:100%;max-width:28rem;min-width:0;color:var(--hig-text);font-family:var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);line-height:1.5;outline:none; }
+.hig-swap-card { --hig-fill:var(--hig-nested);--hig-fill-raised:var(--hig-border);position:relative;display:flex;flex-direction:column;border:1px solid transparent;border-radius:24px;background:var(--hig-surface);transition:background var(--hig-motion-duration-fast,180ms) ease; }
+.hig-swap-slot,.hig-swap-amount-area { position:relative; }
+.hig-swap-hit { appearance:none;position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:inherit;background:transparent;cursor:pointer; }
+.hig-swap-slot { border-radius:24px 24px 0 0; }
+.hig-swap-slot-content { position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:5.25rem;padding:16px;pointer-events:none; }
+.hig-swap-placeholder { font-size:2.5rem;line-height:1.1;font-weight:500;letter-spacing:-.02em;color:var(--hig-faint); }
+.hig-swap-kbd { flex:none;padding:2px 8px;border-radius:var(--hig-radius-sm,6px);background:var(--hig-fill);color:var(--hig-muted);font:inherit;font-size:.75rem;font-weight:500;letter-spacing:.04em; }
+.hig-swap-selected { display:flex;align-items:flex-start;gap:12px;width:100%;min-width:0; }
+.hig-swap-stack { position:relative;flex:none;display:flex;flex-direction:column;align-items:center; }
+.hig-swap-stack > * { width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--hig-nested);box-shadow:0 0 0 2px var(--hig-surface); }
+.hig-swap-stack > * + * { margin-block-start:-14px; }
+.hig-swap-initials,.hig-swap-token-icon > span { display:grid;place-items:center;font-size:.625rem;font-weight:600;color:var(--hig-muted); }
+.hig-swap-identity { display:flex;flex-direction:column;flex:1;min-width:0;font-size:.875rem;line-height:1.3;color:var(--hig-muted);overflow-wrap:anywhere; }
+.hig-swap-identity > strong { font-size:1rem;font-weight:600;color:var(--hig-text); }
+.hig-swap-meta { display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;max-width:60%;font-size:.875rem;color:var(--hig-muted);text-align:end; }
+.hig-swap-pills { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--hig-action-gap); }
+.hig-swap-pill { appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:var(--hig-button,44px);margin-block:calc((32px - var(--hig-button,44px))/2);padding:4px 12px;border:0;border-radius:9999px;background:transparent;color:var(--hig-muted);font:inherit;font-size:.875rem;font-weight:500;cursor:pointer;pointer-events:auto;position:relative;isolation:isolate; }
+/* A 32px capsule drawn inside a full-height target (44 touch, 36 compact); negative margins keep the row as tall as the capsule. */
+.hig-swap-pill::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2) 0;border-radius:9999px;background:var(--hig-fill); }
+.hig-swap-equals { opacity:.5; }
+.hig-swap-icon { flex:none; }
+.hig-swap-amount-content { position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 16px 20px;pointer-events:none; }
+.hig-swap-amount { max-width:100%;border-radius:var(--hig-radius-lg,10px);font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;overflow:hidden;pointer-events:auto;cursor:text; }
+.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number { font-family:inherit; }
+.hig-swap-amount[data-muted] { color:var(--hig-muted);pointer-events:none; }
+/* An account reads name over caption beside one 40px disc; a pending destination is a placeholder. */
+.hig-swap-selected[data-account] { align-items:center; }
+.hig-swap-selected[data-account] .hig-swap-stack > * { width:40px;height:40px; }
+.hig-swap-identity > strong { display:inline-flex;align-items:center;gap:4px; }
+.hig-swap-identity > strong > svg { color:var(--hig-muted); }
+.hig-swap-meta[data-row] { flex-direction:row;align-items:center; }
+.hig-swap-meta[data-row] > span { display:flex;flex-direction:column;align-items:flex-end;gap:8px; }
+.hig-swap-card[data-pending] .hig-swap-identity > strong { font-weight:500; }
+/* Label and value rows: the bottom card of a stake, or under a destination. */
+.hig-swap-details { display:flex;flex-direction:column;gap:12px;margin:0;padding:16px; }
+.hig-swap-slot + .hig-swap-details { padding-block-start:0; }
+.hig-swap-details > div { display:flex;justify-content:space-between;gap:12px;color:var(--hig-muted); }
+.hig-swap-details dd { margin:0;color:var(--hig-text);text-align:end;overflow-wrap:anywhere; }
+/* A line under the cards. Muted is plain text; warning and negative are tinted capsules in the tone's colour. */
+.hig-swap-note { margin:8px 0 0;padding:0 4px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
+.hig-swap-note:not([data-tone='muted']) { padding:12px 16px;border-radius:16px;color:var(--hig-swap-tone);background:color-mix(in srgb,var(--hig-swap-tone) 14%,transparent); }
+.hig-swap-note[data-tone='warning'] { --hig-swap-tone:var(--hig-warning); }
+.hig-swap-note[data-tone='negative'] { --hig-swap-tone:var(--hig-negative); }
+.hig-swap-panel > .hig-swap-view > .hig-swap-view-header { margin-block-end:12px; }
+.hig-swap-view-header[data-plain] { margin-inline-start:4px;min-height:44px; }
+/* A compact card is the slot row alone: a fixed destination with no amount. */
+.hig-swap-card[data-compact] > .hig-swap-slot { border-radius:24px; }
+.hig-swap-card[data-compact] .hig-swap-selected { align-items:center; }
+.hig-swap-card[data-compact] .hig-swap-stack > * { width:40px;height:40px; }
+.hig-swap-flip { position:relative;z-index:1;display:flex;justify-content:center;height:8px; }
+.hig-swap-flip > * { appearance:none;position:absolute;top:50%;translate:0 -50%;display:grid;place-items:center;width:var(--hig-button,44px);height:var(--hig-button,44px);isolation:isolate;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer;transition:transform var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+/* The 32px disc and its page-coloured ring are drawn inside the full-size target. */
+.hig-swap-flip > *::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2);border-radius:50%;background:var(--hig-nested);box-shadow:0 0 0 3px var(--hig-background); }
+.hig-swap-flip > span { cursor:auto; }
+.hig-swap-flip > :disabled { color:var(--hig-faint);cursor:not-allowed; }
+.hig-swap-flip > :disabled::before { background:var(--hig-surface); }
+.hig-swap-flip > :active:not(:disabled,span) { transform:rotate(180deg); }
+.hig-swap-actions { display:flex;align-items:center;gap:var(--hig-action-gap);margin-block-start:var(--hig-action-offset); }
+/* The row uses the standard button height (44 touch, 36 compact). */
+.hig-swap-actions > .hig-icon-button { flex:none; }
+.hig-swap-keypad { display:grid;grid-template-columns:repeat(3,1fr);padding-block-start:8px; }
+.hig-swap-key { appearance:none;display:grid;place-items:center;height:56px;border:0;border-radius:16px;background:transparent;color:var(--hig-text);font:inherit;font-size:1.5rem;font-weight:600;line-height:1;cursor:pointer; }
+.hig-swap-key:active { background:var(--hig-nested); }
+.hig-swap-receive { appearance:none;position:relative;display:flex;align-items:center;justify-content:space-evenly;gap:12px;width:100%;margin:0;padding:8px 16px 20px;border:0;border-radius:0 0 24px 24px;background:transparent;color:inherit;font:inherit;text-align:start; }
+button.hig-swap-receive { cursor:pointer; }
+button.hig-swap-receive:active { opacity:.8; }
+.hig-swap-qr { flex:none;display:grid;width:clamp(112px,38vw,196px);aspect-ratio:1;padding:8px;border-radius:16px;background:var(--hig-background);color:var(--hig-text); }
+.hig-swap-qr > :is(svg,img,canvas) { display:block;width:100%;height:100%; }
+.hig-swap-receive .hig-vertical-address { --hig-address-row:clamp(1rem,5.3vw,1.72rem); }
+.hig-swap-receive .hig-vertical-address[data-kind='solana'] { --hig-address-row:clamp(.69rem,3.75vw,1.24rem); }
+/* Pushed views: the token pickers and settings replace the cards inside the panel. A push arrives from the trailing
+   edge and a pop from the leading edge. */
+.hig-swap-view { --hig-swap-from:24px;display:flex;flex-direction:column;min-width:0;animation:hig-swap-push var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
+.hig-swap-view[data-direction='pop'],[dir='rtl'] .hig-swap-view[data-direction='push'] { --hig-swap-from:-24px; }
+@keyframes hig-swap-push { from { opacity:0;transform:translateX(var(--hig-swap-from)); } }
+.hig-swap-picker,.hig-swap-settings-view { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-swap-view-header { display:flex;align-items:center;gap:4px;min-width:0;margin-inline-start:-8px; }
+.hig-swap-view-title { margin:0;min-width:0;font-size:1.5rem;line-height:1.25;font-weight:700;overflow-wrap:anywhere;outline:none; }
+.hig-swap-back { appearance:none;flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
+.hig-swap-back:active { background:var(--hig-surface);color:var(--hig-text); }
+[dir='rtl'] .hig-swap-back > svg,[dir='rtl'] .hig-swap-setting-value > svg { transform:scaleX(-1); }
+/* In a gesture sheet the panel fills the sheet width and the sheet follows the height of the view on show. */
+.hig-gesture-sheet.hig-swap-sheet { max-width:30rem;margin-inline:auto;border-radius:24px 24px 0 0; }
+.hig-swap-sheet .hig-swap-panel { max-width:none;padding:4px 12px calc(16px + env(safe-area-inset-bottom,0px)); }
+/* From and To pickers: a wallet or address row, the search, the chain filter and the token list, 16 apart. */
+.hig-picker { display:flex;flex-direction:column;gap:16px;width:100%;min-width:0;color:var(--hig-text);line-height:1.5; }
+/* The Generate address switch is a capsule the height of the button beside it: label, then the switch. */
+.hig-picker-toggle { flex:none;justify-content:space-between;gap:12px;min-height:var(--hig-button);padding:0 12px 0 16px;border-radius:9999px;background:var(--hig-fill);font-weight:500;white-space:nowrap; }
+.hig-swap-wallet { display:flex;align-items:stretch;gap:var(--hig-action-gap); }
+.hig-swap-wallet > .hig-button:not(.hig-icon-button) { flex:1; }
+.hig-swap-wallet > .hig-button[aria-pressed='true'] { background:var(--hig-text);color:var(--hig-background); }
+.hig-swap-wallet > .hig-icon-button { flex:none;min-width:var(--hig-control); }
+.hig-swap-wallet-id { display:flex;align-items:center;gap:12px;flex:1;min-width:0;min-height:var(--hig-control);padding:8px 16px;border-radius:9999px;background:var(--hig-fill);font-weight:600;color:var(--hig-text); }
+.hig-swap-wallet-id > span:nth-child(2) { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis; }
+.hig-swap-wallet-id > .hig-swap-icon { color:var(--hig-muted); }
+.hig-swap-avatar { flex:none;width:28px;height:28px;border-radius:50%; }
+.hig-swap-list { min-height:8rem;max-height:min(56dvh,30rem);margin-inline:-12px;padding:0 12px;overflow-y:auto;overscroll-behavior:contain; }
+.hig-swap-section { display:flex;align-items:center;gap:6px;margin:0;padding:12px 8px 6px;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--hig-muted); }
+.hig-swap-section:first-child { padding-block-start:0; }
+.hig-swap-empty { margin:0;padding:32px 0;text-align:center;font-size:.875rem;color:var(--hig-muted); }
+.hig-swap-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;margin:0 0 4px;padding:8px 16px 8px 8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer; }
+.hig-swap-row[data-active='true'] { background:var(--hig-fill); }
+.hig-swap-row[data-selected] { opacity:.5; }
+.hig-swap-row-text,.hig-swap-row-balance { display:flex;flex-direction:column;min-width:0;font-size:.875rem;color:var(--hig-muted); }
+.hig-swap-row-text { flex:1;overflow-wrap:anywhere; }
+.hig-swap-row-balance { flex:none;align-items:flex-end; }
+.hig-swap-row :is(strong) { font-size:1rem;font-weight:600;color:var(--hig-text); }
+.hig-swap-token-icon { position:relative;flex:none;display:grid;border-radius:50%;background:var(--hig-nested); }
+.hig-swap-token-icon > img:first-child { width:100%;height:100%;border-radius:50%;object-fit:cover; }
+.hig-swap-chain-badge { position:absolute;inset-block-end:0;inset-inline-end:0;width:16px;height:16px;border-radius:50%;object-fit:cover;background:var(--hig-surface);box-shadow:0 0 0 2px var(--hig-background); }
+.hig-swap-sheet .hig-swap-chain-badge { box-shadow:0 0 0 2px var(--hig-overlay,#111); }
+.hig-swap-settings { display:flex;flex-direction:column;gap:12px;min-width:0; }
+/* The view title already names the presets; the group keeps its legend for assistive technology only. */
+.hig-swap-presets .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+.hig-swap-setting { appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:var(--hig-control);padding:8px 16px;border:0;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);font:inherit;font-size:1rem;font-weight:600;text-align:start;cursor:pointer; }
+.hig-swap-setting-value { display:inline-flex;align-items:center;gap:6px;font-weight:500;color:var(--hig-muted); }
+.hig-swap-fees { display:flex;flex-direction:column;gap:12px;margin:0; }
+.hig-swap-fees > div { display:flex;justify-content:space-between;gap:12px;color:var(--hig-muted); }
+.hig-swap-fees dd { margin:0;color:var(--hig-text); }
+.hig-swap-fees-total { padding-block-start:12px;font-weight:600; }
+.hig-swap-fees-total > dt { color:var(--hig-text); }
+:where(.hig-swap-hit,.hig-swap-pill,.hig-swap-flip > button,.hig-swap-key,.hig-swap-row,.hig-swap-setting,.hig-swap-back,button.hig-swap-receive) { -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none; }
+.hig-swap-hit:focus-visible { outline-offset:-2px; }
+.hig-swap-pill:active { color:var(--hig-text); }
+.hig-swap-pill:active::before,.hig-swap-setting:active { background:var(--hig-fill-raised); }
+.hig-swap-setting:active { color:var(--hig-text); }
+.hig-swap-row:active { background:var(--hig-fill); }
+.hig-swap-card:has(.hig-swap-hit:active) { background:color-mix(in srgb,var(--hig-surface) 92%,var(--hig-text)); }
+@media (hover:hover) and (pointer:fine) {
+  .hig-swap-card:has(.hig-swap-hit:hover) { background:color-mix(in srgb,var(--hig-surface) 97%,var(--hig-text)); }
+  .hig-swap-pill:hover,.hig-swap-setting:hover { color:var(--hig-text); }
+  .hig-swap-pill:hover::before,.hig-swap-setting:hover { background:var(--hig-fill-raised); }
+  .hig-swap-flip > button:hover:not(:disabled) { color:var(--hig-text); }
+  .hig-swap-key:hover,.hig-swap-back:hover { background:var(--hig-surface); }
+  .hig-swap-back:hover { color:var(--hig-text); }
+}
+@media(prefers-reduced-motion:reduce) { .hig-swap-view { animation:none; } .hig-swap-flip > *,.hig-swap-card { transition:none; } .hig-swap-flip > :active { transform:none; } }
+[data-hig-motion='reduced'] .hig-swap-view { animation:none; }
+[data-hig-motion='reduced'] :is(.hig-swap-flip > *,.hig-swap-card) { transition:none; }
+[data-hig-motion='reduced'] .hig-swap-flip > :active { transform:none; }
 /* Inline prose links retain line layout (WCAG inline-text exception). */
 p .hig-link { display:inline;min-height:0;min-width:0; }
 .hig-input,.hig-range,.hig-menu-item,.hig-select-option,.hig-table-sort,.hig-choice,.hig-segment { min-width:var(--hig-button); }
+
+/* Reduced-motion stops for the selectors above, one per animated or transitioned selector in each preference path
+   (tests/motion-css.test.ts). Elements portalled out of the provider carry data-hig-motion themselves and are stopped where they are styled. */
+@media(prefers-reduced-motion:reduce) {
+  .hig-accordion > .hig-accordion-summary { transition:none; }
+  .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before { animation:none; }
+}
+[data-hig-motion='reduced'] .hig-accordion > .hig-accordion-summary { transition:none; }
+[data-hig-motion='reduced'] .hig-accordion-chevron { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-chip { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-mark { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-mark > img { transition:none; }
+[data-hig-motion='reduced'] .hig-filter-mark path { transition:none; }
+[data-hig-motion='reduced'] .hig-swap-card { transition:none; }
+[data-hig-motion='reduced'] .hig-swap-flip > * { transition:none; }
+[data-hig-motion='reduced'] .hig-skeleton { animation:none; }
+[data-hig-motion='reduced'] .hig-popover { animation:none; }
+[data-hig-motion='reduced'] .hig-progress progress:not([value]) { animation:none; }
+[data-hig-motion='reduced'] .hig-spinner-indicator { animation:none; }
+[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before { animation:none; }
