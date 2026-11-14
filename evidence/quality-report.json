@@ -1,6 +1,6 @@
 {
-  "version": "0.3.0",
-  "sourceCommit": "68d0de6fa3b1f821a497a42e56ecc58099072f88",
+  "version": "0.4.0",
+  "sourceCommit": "dbcd95234644e23f6574299ccb4456543a0f3aeb",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,12 +8,12 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "hig": 196
+    "hig": 181
   },
   "sizes": {
     "button": {
-      "raw": 1463,
-      "gzip": 801,
+      "raw": 1384,
+      "gzip": 775,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
@@ -25,8 +25,8 @@
       ]
     },
     "field": {
-      "raw": 749,
-      "gzip": 334,
+      "raw": 808,
+      "gzip": 343,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
@@ -38,8 +38,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4856,
-      "gzip": 2379,
+      "raw": 4571,
+      "gzip": 2154,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -55,8 +55,8 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 2404,
-      "gzip": 1175,
+      "raw": 2360,
+      "gzip": 1158,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -72,12 +72,12 @@
       ]
     },
     "nativeLink": {
-      "raw": 3525,
-      "gzip": 1692,
+      "raw": 3455,
+      "gzip": 1669,
       "inputs": [
-        "packages/hig/contracts/dist/messages.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
+        "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
         "packages/hig/native/dist/provider.js",
         "packages/hig/native/dist/text-content.js",
@@ -87,19 +87,20 @@
       ]
     },
     "feedbackContract": {
-      "raw": 2951,
+      "raw": 2955,
       "gzip": 996,
       "inputs": [
+        "packages/hig/feedback/dist/presets.js",
         "packages/hig/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
     "docsJS": {
-      "raw": 2208260,
-      "gzip": 623233
+      "raw": 2091187,
+      "gzip": 597033
     },
     "docsCSS": {
-      "raw": 144006
+      "raw": 120235
     },
     "fonts": {
       "raw": 592796
@@ -109,7 +110,7 @@
       "scope": "Only three explicitly registered fixture faces; optional CJK/other weight assets remain unloaded"
     },
     "nativeCues": {
-      "raw": 103618
+      "raw": 103720
     }
   },
   "baseline": "HIG candidate measurements; representative authenticated source React/Metro baselines in evidence/issue-1-18; deployed production deltas not claimed",

@@ -1,4 +1,4 @@
-# Recipes · HIG 0.1.0
+# Recipes
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 

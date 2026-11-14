@@ -1,6 +1,6 @@
-# Numbers, currency, dates and built-in strings · HIG 0.1.0
+# Numbers, currency, dates and built-in strings
 
-Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents consume [`docs/foundations/glossary.json`](glossary.json). Machine-readable format profiles: [`docs/foundations/localization.json`](localization.json). Host owns locale selection, parsing and time zone; HIG formats display only.
+Issue #47. Vocabulary is locked in the [trading glossary](glossary.md); agents consume [`docs/foundations/glossary.json`](/glossary.json). Machine-readable format profiles: [`docs/foundations/localization.json`](/localization.json). Host owns locale selection, parsing and time zone; HIG formats display only.
 
 `HIGProvider` locale is a BCP 47 tag (`en-US` default). Direction (`ltr`/`rtl`) is independent. `de-DE` and `ar-EG` are Intl fixtures already covered by tests, not approved translation locales.
 

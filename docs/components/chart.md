@@ -1,4 +1,4 @@
-# Charts · HIG 0.1.0
+# Charts
 
 Web price charts with text summaries and native readout alternatives.
 

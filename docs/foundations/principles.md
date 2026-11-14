@@ -1,4 +1,4 @@
-# Principles and content · HIG 0.1.0
+# Principles and content
 
 Issues #2, #3. Rules are candidate guidance anchored to SDK source and the public marketing surface; the pinned monorepo audit and live-origin snapshots are in `evidence/issue-1-18/`. Do not represent example trading actions as live product behavior.
 

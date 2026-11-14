@@ -1,4 +1,4 @@
-# Status & feedback · HIG 0.1.0
+# Status & feedback
 
 Visible progress, notifications, and recoverable states that keep people informed.
 

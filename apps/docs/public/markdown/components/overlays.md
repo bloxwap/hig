@@ -1,4 +1,4 @@
-# Overlays · HIG 0.1.0
+# Overlays
 
 Dialogs, sheets, menus, and contextual help with explicit dismissal and focus behavior.
 
@@ -10,7 +10,7 @@ Issue #16. Entry: `overlay`. Import platform entries from `@bloxwap/hig/react/ov
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](../foundations/localization.md#built-in-component-strings). |
+| `Dialog` | Controlled `open` and `onOpenChange`, plus `title`, `description`, and `children`. The web `trigger` is one element that accepts a ref. `closeLabel` overrides the Close button (`Sheet`, web `Popover`, native `Menu` and `GestureSheet` too); web `AlertDialog` takes `cancelLabel`. Defaults come from HIGProvider [`messages`](https://bloxwap.github.io/hig/docs/guides/foundations/localization/#built-in-component-strings). |
 | Web host composition | `title` remains required; `titleHidden` keeps its accessible name when the host renders a visible heading in the card. `description` is optional; `descriptionHidden` keeps supplied supporting text available to assistive technology. `contentRef` reaches the actual modal element. `contentProps` accepts layout classes/styles, DOM attributes and Radix focus/Escape/outside events; HIG retains ownership of the dialog id, role, naming associations, locale, direction, children and mounting behavior. Owned props and `dangerouslySetInnerHTML` are filtered at runtime for JavaScript callers too; the caller's object is left unchanged. |
 | Web close control | Omit `closeButton` for the current translated action, pass a ref-capable button element for a custom control, or pass `null` when the host supplies its own explicit dismissal action. Custom controls are composed with Radix Close; disabled buttons and `event.preventDefault()` retain their normal behavior. `closeLabel`/`cancelLabel` label only the default action. |
 | Optional web `GestureSheet` | A separate Vaul modal root owns real drag, optional fixed snap points, scroll handoff and focus scope. The Dialog title/description, trigger, close control and `contentRef` contracts apply. For fixed detents, `backendProps` retains typed Vaul flags and snap-point options. For opt-in content sizing, use top-level `enableDynamicSizing` with optional `maxDynamicContentSize` and omit Vaul snap props. `contentProps` retains host layout, DOM data attributes, focus/Escape/outside events and pointer capture events. `handleProps`/`handleRef` customize the actual backend handle; `handle={false}` omits it. `overlayProps` observes outside-pointer actions or retains host overlay styling. |

@@ -1,4 +1,4 @@
-# Fields & inputs · HIG 0.1.0
+# Fields & inputs
 
 Labeled inputs for text, search, and amounts, with visible help and validation.
 

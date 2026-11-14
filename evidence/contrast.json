@@ -201,6 +201,95 @@
       "aa": true
     }
   ],
+  "nonText": [
+    {
+      "fg": "focus",
+      "bg": "background",
+      "ratio": 14.5,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "focus",
+      "bg": "surface",
+      "ratio": 13.13,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "focus",
+      "bg": "nested",
+      "ratio": 11.08,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "faint",
+      "bg": "background",
+      "ratio": 5.37,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "faint",
+      "bg": "surface",
+      "ratio": 4.86,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "faint",
+      "bg": "nested",
+      "ratio": 4.1,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "negative",
+      "bg": "background",
+      "ratio": 6.25,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "negative",
+      "bg": "surface",
+      "ratio": 5.66,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "negative",
+      "bg": "nested",
+      "ratio": 4.78,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "action",
+      "bg": "background",
+      "ratio": 14.5,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "action",
+      "bg": "surface",
+      "ratio": 13.13,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "fg": "action",
+      "bg": "nested",
+      "ratio": 11.08,
+      "threshold": 3,
+      "passes": true
+    }
+  ],
+  "nonTextExclusions": {
+    "border": "Decorative separator only; meaningful edges and focus use tested indicator roles."
+  },
   "unsupportedPairings": [
     {
       "fg": "faint",

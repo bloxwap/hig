@@ -1,4 +1,4 @@
-# Navigation · HIG 0.1.0
+# Navigation
 
 Tabs, disclosure, search, and navigation that keep the current location clear.
 

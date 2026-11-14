@@ -1,4 +1,4 @@
-# Actions & surfaces · HIG 0.1.0
+# Actions & surfaces
 
 Buttons, typography, and layout primitives for clear actions and related content.
 
@@ -10,22 +10,18 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. A busy Button shows a spinner on the leading side of its label; a busy IconButton shows the spinner in place of its icon. The busy text (` · Working`) is not drawn: it is appended to the accessible name from HIGProvider `messages.busy` or `busyLabel`; `''` omits it while busy state stays exposed. Native: the label renders through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](../foundations/localization.md#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. Native: the label and suffix render through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](https://bloxwap.github.io/hig/docs/guides/foundations/localization/#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
 
 ## When to use and examples
 
-Actions that sit side by side are 8 units apart at every density: buttons in an Alert, tabs, Pagination, Filter capsules and the SwapPanel action row. On web that is the `--hig-action-gap` variable (the `sm` space token); set it on a container to change it. Content inside `Stack` and `Inline` keeps the density gap (12 on touch, 8 compact), so put a row of buttons in a container that uses `--hig-action-gap`, not a bare `Inline`.
-
-The primary and secondary call-to-action buttons that close a form sit a double step below the rest of it: 16 units (`--hig-action-offset`, twice the action gap), and 8 units from each other. TradeEntry, the SwapPanel action row, and the buttons that end a Dialog or a default sheet follow this already. In a host form laid out with `Stack`, add `className='hig-form-action'` to each closing button on web, or a 4dp top margin on native, where the `Stack` gap is 12.
-
-Use one primary review action. Do: busy protects host requests, shows the leading spinner and announces the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
+Use one primary review action. Do: busy protects host requests and displays the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 
 ## States, interaction and accessibility
 
-DOM semantic button/anchor, forwarded focus, target min-height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
+DOM semantic button/anchor, forwarded focus, target minimum width and height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -40,3 +36,5 @@ See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consume
 Native `Button contentMode="custom"` renders host Text/View children directly, preserving layouts with separate identity and trailing nodes. The root retains minimum target, disabled/busy, propagation, ref and accepted-feedback behavior. Hosts own visible busy content in this mode; `busyLabel` still controls the accessible busy suffix. Keep child content noninteractive and give icon-only actions an accessible label.
 
 Native `Link` accepts a forwarded View ref, root Pressable props and `contentMode="custom"` for host label/icon nodes. Required `href` retains its destination. Without `onPress`, it opens through Linking and reports failures to `onError`; a supplied `onPress` replaces that navigation so host WebBrowser/route handlers run exactly once. Disabled links reject activation. The root always has link semantics.
+
+The catalog browser gate measures controls at both densities, including their clickable wrapping labels for checkbox, radio and switch inputs. Only inline prose links matching `p .hig-link` are exempt from the target minimum (WCAG 2.5.8 inline-text exception); standalone and breadcrumb links retain the full target. Hidden controls are not targets.

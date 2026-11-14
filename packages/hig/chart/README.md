@@ -1,6 +1,6 @@
 # @bloxwap/hig/chart
 
-Version 0.3.0, an entry of `@bloxwap/hig`. The HIG adapter for [`@bloxwap/chart`](https://github.com/bloxwap/chart): `PriceChart` (a
+Version 0.4.0, an entry of `@bloxwap/hig`. The HIG adapter for [`@bloxwap/chart`](https://github.com/bloxwap/chart): `PriceChart` (a
 `<figure>` with a required text `summary`, lazy-loading `@bloxwap/chart/react` inside `Suspense`) and
 `chartTheme` (HIG token colors in sRGB for the canvas). Web only; React Native uses labeled readouts and lists
 from `@bloxwap/hig/native/data`.

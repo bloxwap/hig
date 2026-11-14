@@ -3,6 +3,24 @@ import {oklchToSrgb,oklchToDisplayP3,srgbHexToDisplayP3,p3ChannelsToHex} from '.
 const upstream=JSON.parse(readFileSync('packages/hig/tokens/upstream-palette.json','utf8'));
 const sourceColors={web:upstream.semanticOklch,android:Object.fromEntries(Object.entries(upstream.semanticOklch).map(([k,v])=>[k,oklchToSrgb(v)])),iosDisplayP3:Object.fromEntries(Object.entries(upstream.semanticOklch).map(([k,v])=>[k,oklchToDisplayP3(v)]))};
 const tokens=JSON.parse(readFileSync('packages/hig/tokens/source.json','utf8'));
+// Validate source invariants before mutating tokens or writing any generated files.
+function record(value,path){
+ if(!value||typeof value!=='object'||Array.isArray(value)||!Object.keys(value).length)throw new Error(`${path} must be a non-empty object`);
+ return value;
+}
+for(const [name,color] of Object.entries(record(tokens.colors,'colors'))){
+ if(!color||!['srgb','oklch'].some(key=>typeof color[key]==='string'&&color[key].trim().length))throw new Error(`colors.${name} requires srgb or oklch`);
+}
+record(tokens.density,'density');
+const comfortableKeys=Object.keys(record(tokens.density.comfortable,'density.comfortable')).sort();
+record(tokens.density.compact,'density.compact');
+for(const [mode,metrics] of Object.entries(tokens.density)){
+ const keys=Object.keys(record(metrics,`density.${mode}`)).sort();
+ if(JSON.stringify(keys)!==JSON.stringify(comfortableKeys))throw new Error(`density.${mode} must have the same keys as density.comfortable (${comfortableKeys.join(', ')})`);
+}
+for(const group of ['motion','space'])for(const [name,value] of Object.entries(record(tokens[group],group))){
+ if(typeof value!=='number'||!Number.isFinite(value)||value<=0)throw new Error(`${group}.${name} must be a positive finite number`);
+}
 mkdirSync('packages/hig/tokens/generated',{recursive:true});mkdirSync('evidence',{recursive:true});mkdirSync('packages/hig/tokens/src',{recursive:true});
 for(const color of Object.values(tokens.colors)){if(color.oklch)color.srgb=oklchToSrgb(color.oklch);}
 const srgb=Object.fromEntries(Object.entries(tokens.colors).map(([k,v])=>[k,v.srgb]));
@@ -60,5 +78,6 @@ writeFileSync('packages/hig/tokens/generated/manifest.json',JSON.stringify(token
 function lum(hex){const x=hex.slice(1).match(/../g).map(h=>parseInt(h,16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return x[0]*.2126+x[1]*.7152+x[2]*.0722;}
 const pairs=[...['text','muted','negative','warning','info','positive','buy','sell'].flatMap(fg=>['background','surface','nested'].map(bg=>[fg,bg])),['faint','background'],['faint','surface'],...['action','negative','warning','info','positive','buy','sell'].map(bg=>['onAction',bg])];
 const report=pairs.map(([fg,bg])=>{const a=lum(srgb[fg]),b=lum(srgb[bg]),ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);return {fg,bg,ratio:Number(ratio.toFixed(2)),aa:ratio>=4.5};});
+const nonText=['focus','faint','negative','action'].flatMap(fg=>['background','surface','nested'].map(bg=>{const a=lum(srgb[fg]),b=lum(srgb[bg]),ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);return {fg,bg,ratio:Number(ratio.toFixed(2)),threshold:3,passes:ratio>=3};}));
 const faintNestedRatio=(lum(srgb.faint)+.05)/(lum(srgb.nested)+.05);
-writeFileSync('evidence/contrast.json',JSON.stringify({version:tokens.version,space:'sRGB fallback',pairs:report,unsupportedPairings:[{fg:'faint',bg:'nested',ratio:Number(faintNestedRatio.toFixed(2)),aa:false,alternative:'muted on nested (approved normal-text pair)'}],p3:'Not device-certified; use tested fallback if uncertain'},null,2)+'\n');
+writeFileSync('evidence/contrast.json',JSON.stringify({version:tokens.version,space:'sRGB fallback',pairs:report,nonText,nonTextExclusions:{border:"Decorative separator only; meaningful edges and focus use tested indicator roles."},unsupportedPairings:[{fg:'faint',bg:'nested',ratio:Number(faintNestedRatio.toFixed(2)),aa:false,alternative:'muted on nested (approved normal-text pair)'}],p3:'Not device-certified; use tested fallback if uncertain'},null,2)+'\n');

@@ -1,4 +1,4 @@
-# Documentation website and migration shell · HIG 0.1.0
+# Documentation website and migration shell
 
 HIG uses Next.js static export and Fumadocs, matching the sibling SDK sites. SFX and Haptic pin `fumadocs-core`/`fumadocs-ui` 16.17.1, `fumadocs-mdx` 15.4.7 and Next 16.4.0; HIG uses those versions. Font uses 16.15.17/15.4.5/16.3.6 and Chart 16.15.14/15.4.5/16.3.6. React 19.2 satisfies the current Fumadocs peer contract.
 

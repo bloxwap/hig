@@ -26,7 +26,7 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 5
     outputs:
-      code: ${{ github.event_name != 'pull_request' && 'true' || steps.filter.outputs.code }}
+      code: ${{ github.event_name != 'pull_request' && 'true' || steps.filter.outputs.code == 'true' || steps.filter.outputs.docs == 'true' }}
     steps:
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         if: github.event_name == 'pull_request'
@@ -34,16 +34,18 @@ jobs:
         with:
           predicate-quantifier: some-with-excludes
           filters: |
+            docs:
+              - 'docs/**'
             code:
               - '**'
               - '!**/*.md'
               - '!.github/ISSUE_TEMPLATE/**'
               - '!.github/pull_request_template.md'
 
-  quality:
-    needs: paths-filter
+  compiler:
+    # Every same-repository PR, including docs-only and Renovate dependency PRs.
     # Security: never run fork PR code on the self-hosted runner.
-    if: (needs.paths-filter.outputs.code == 'true') && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 40
     steps:
@@ -67,12 +69,53 @@ jobs:
       - run: bun install --frozen-lockfile
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh
+      - name: Check compiler platform selection and comparison
+        run: npx vitest run tests/compiler.test.ts
+      - name: Exercise TypeScript 7 fallback scripts
+        run: npm run docs:check:tsc && npm run typecheck:tsc
+      - name: Compare tsrs and TypeScript 7 emit
+        run: npm run compiler:parity
+
+  quality:
+    needs: paths-filter
+    # Security: never run fork PR code on the self-hosted runner.
+    if: (needs.paths-filter.outputs.code == 'true') && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Point temp dirs at $RUNNER_TEMP
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.22.1'
+          # Minis keep ~/.npm on disk. Do not add cache: npm (1.1–1.3 GB at ~1 MB/s).
+          # setup-node v5+ auto-caches npm when packageManager is set; keep this pin
+          # or set package-manager-cache: false if the action is upgraded.
+      - name: Install CPython 3.12
+        run: bash scripts/ci-setup-python.sh
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.4.2'
+      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci (#181).
+      - name: package-lock.json matches package.json and bun.lock
+        run: node scripts/check-lockfiles.mjs --npm
+      - run: bun install --frozen-lockfile
+      - name: Native fonts (on-disk reuse)
+        run: bash scripts/ci-native-fonts.sh
       # Bun rewrites nested npm run calls, but check uses npm workspace (-w) flags.
       - run: npm run check
+      - name: Committed docs and examples match generators (#172)
+        run: node scripts/check-generated-drift.mjs
       - run: bun run examples:check
       - run: bun run quality
       - run: bun run smoke:ssr
       - run: bun run smoke:packed
+      - name: Packed CSS types (TS 6/7) and minimum web peers (#175, #184)
+        run: bun run smoke:packed-compat
       - run: bun run smoke:packed-og
         env:
           NEXT_TELEMETRY_DISABLED: '1'
@@ -117,6 +160,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Point temp dirs at $RUNNER_TEMP
         run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -182,6 +226,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Point temp dirs at $RUNNER_TEMP
         run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -220,10 +265,44 @@ jobs:
             artifacts/visual/
           retention-days: 7
 
+  linux-visual:
+    needs: paths-filter
+    if: needs.paths-filter.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HIG_VISUAL_ONLY: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.22.1'
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.4.2'
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Compare Linux Chromium baselines
+        run: node scripts/run-browser-gates.mjs
+      # Keep fresh captures even on success for intentional baseline regeneration.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: hig-linux-visual-${{ github.sha }}
+          path: |
+            artifacts/visual/
+            evidence/visual-actuals/
+            evidence/gaps-b-visual-baselines.json
+          retention-days: 7
+
   # Same job name as the previous single required check. Always reports so
   # docs-only PRs are not stuck on "Waiting for status to be reported."
   candidate:
-    needs: [paths-filter, quality, native, browser]
+    needs: [paths-filter, compiler, quality, native, browser, linux-visual]
     # Security: never run fork PR code on the self-hosted runner.
     if: (always() && !cancelled()) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
@@ -231,15 +310,21 @@ jobs:
     steps:
       - name: Confirm candidate quality
         env:
+          COMPILER: ${{ needs.compiler.result }}
           CHANGES: ${{ needs.paths-filter.result }}
           CODE: ${{ needs.paths-filter.outputs.code }}
           QUALITY: ${{ needs.quality.result }}
           NATIVE: ${{ needs.native.result }}
           BROWSER: ${{ needs.browser.result }}
+          LINUX_VISUAL: ${{ needs.linux-visual.result }}
         run: |
           set -euo pipefail
           if [ "$CHANGES" != success ]; then
             echo "paths-filter job: $CHANGES"
+            exit 1
+          fi
+          if [ "$COMPILER" != success ]; then
+            echo "compiler job: $COMPILER"
             exit 1
           fi
           if [ "$CODE" != true ]; then
@@ -247,7 +332,7 @@ jobs:
             exit 0
           fi
           failed=0
-          for pair in "quality:$QUALITY" "native:$NATIVE" "browser:$BROWSER"; do
+          for pair in "quality:$QUALITY" "native:$NATIVE" "browser:$BROWSER" "linux-visual:$LINUX_VISUAL"; do
             job="${pair%%:*}"
             result="${pair#*:}"
             echo "$job: $result"

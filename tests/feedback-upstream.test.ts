@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import * as sfx from '@bloxwap/sfx';
 import * as haptic from '@bloxwap/haptic';
@@ -25,7 +26,7 @@ afterEach(async()=>{
  vi.doUnmock('@bloxwap/sfx');vi.restoreAllMocks();vi.unstubAllGlobals();
 });
 
-describe('SFX per-root cancellation with 0.2.0',()=>{
+describe(`SFX per-root cancellation with ${JSON.parse(readFileSync('node_modules/@bloxwap/sfx/package.json','utf8')).version}`,()=>{
  it('cancels only one root, renews its scope, and leaves host-owned playback running',async()=>{
   const clock=vi.spyOn(performance,'now').mockReturnValue(0);
   await sfx.preload(['tick','toggle','success','error']);
@@ -84,7 +85,7 @@ describe('SFX per-root cancellation with 0.2.0',()=>{
  });
 });
 
-describe('optional canonical Haptic backend with 0.2.0',()=>{
+describe(`optional canonical Haptic backend with ${JSON.parse(readFileSync('node_modules/@bloxwap/haptic/package.json','utf8')).version}`,()=>{
  it('rechecks current activation/visibility, uses upstream presets and creates no helper DOM',async()=>{
   const vibrate=vi.fn<(pattern:number|number[])=>boolean>(()=>true),createElement=vi.fn();
   const activation={hasBeenActive:false};const doc={hidden:false,createElement};

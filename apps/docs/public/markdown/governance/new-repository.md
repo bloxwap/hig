@@ -1,4 +1,4 @@
-# New repository setup and upgrades · HIG 0.1.2
+# New repository setup and upgrades
 
 Issue #36. These steps adopt HIG in a new or existing Bloxwap repository without copying component folders, palettes, fonts or feedback engines. The five SDK docs sites followed this path: bloxwap/hyperliquid#180, bloxwap/chart#53, bloxwap/font#11, bloxwap/sfx#50 and bloxwap/haptic#26.
 
@@ -26,7 +26,7 @@ Native consumers install `@bloxwap/hig-native` and `@bloxwap/hig-native-fonts` i
 
 Building candidates requires `npm run generate:fonts` with Python packages `fonttools[woff]==4.61.1` and `brotli==1.2.1`. Registry consumers use the packaged fonts without generating them.
 
-For unpublished changes only, follow the [release dry-run procedure](release.md) and consume its exact packed candidate archives. Never copy `packages/*/src`, `dist` folders, token CSS, palettes, fonts or feedback engines. Replace candidate `file:` dependencies with registry versions and remove obsolete archives when adopting a published release. Retain provenance manifests and historical validation records.
+For unpublished changes only, follow the [release dry-run procedure](https://bloxwap.github.io/hig/docs/guides/governance/release/) and consume its exact packed candidate archives. Never copy `packages/*/src`, `dist` folders, token CSS, palettes, fonts or feedback engines. Replace candidate `file:` dependencies with registry versions and remove obsolete archives when adopting a published release. Retain provenance manifests and historical validation records.
 
 Then follow the installation chapter for your platform: import `@bloxwap/hig/tokens/css` and `@bloxwap/hig/react/css` once (add `@bloxwap/hig/react/css/base` first only when HIG owns the whole page), use per-component imports, load fonts through `@bloxwap/font`, and on native register fonts from the HIG font manifest.
 

@@ -1,4 +1,4 @@
-# New repository setup and upgrades · HIG 0.1.2
+# New repository setup and upgrades
 
 Issue #36. These steps adopt HIG in a new or existing Bloxwap repository without copying component folders, palettes, fonts or feedback engines. The five SDK docs sites followed this path: bloxwap/hyperliquid#180, bloxwap/chart#53, bloxwap/font#11, bloxwap/sfx#50 and bloxwap/haptic#26.
 

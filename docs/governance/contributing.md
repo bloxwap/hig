@@ -1,4 +1,4 @@
-# Contribution, ownership and admission · HIG 0.1.0
+# Contribution, ownership and admission
 
 Issue #36. This chapter sets out how HIG stays the one maintained design system for Bloxwap. It covers who owns what, how changes are reviewed, how components enter and leave the catalog, which platforms are supported, and how a product can justify an exception. Release, semver and deprecation rules are in the release chapter. Setting up and upgrading a repository is covered in the new-repository chapter.
 

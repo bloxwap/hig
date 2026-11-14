@@ -10,7 +10,7 @@ HIG is the one maintained Bloxwap design system. Read the governance chapters be
 Every PR:
 
 1. Links its issue and explains intent, states, accessibility, platform mapping, migration and rollback.
-2. Runs `npm ci && npm run check` (build, lint, generation drift, typecheck, web and native tests), plus the relevant smokes: `smoke:ssr`, `smoke:packed`, `smoke:packed-native`, `smoke:packed-boundaries`, `smoke:packed-examples`, `examples:check`, `quality`.
+2. Runs `npm ci && npm run check` (build, lint, generation drift, typecheck, web and native tests), plus the relevant smokes: `smoke:ssr`, `smoke:packed`, `smoke:packed-native`, `smoke:packed-boundaries`, `smoke:packed-compat`, `smoke:packed-examples`, `examples:check`, `quality`.
 3. Updates source and generated artifacts together and keeps examples out of runtime packages.
 4. Labels evidence as automated, browser, iOS Simulator, Android emulator or physical device. It never claims a mock or simulator proves physical sound, haptics, VoiceOver or display output.
 5. Lists checks it did not run and any upstream gaps. Every drift exception it adds has an owner, a reason, an expiry no more than 180 days ahead, and a tracking issue.

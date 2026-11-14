@@ -7,3 +7,5 @@ check(['packages/hig/native-fonts/src/index.ts','packages/hig/og-fonts/src/index
 check(['apps/docs/public/favicon.svg','fixtures/next/public/favicon.svg','apps/docs/public/og.svg','apps/docs/public/og.png','planning/brand-artifacts.json'],'./generate-brand.mjs');
 check(['docs/foundations/glossary.md','apps/docs/public/glossary.json'],'./generate-glossary.mjs');
 console.log('Token, native font manifest, brand and glossary generation drift passed');
+
+check(['planning/anchors.json'],'./generate-docs.mjs');

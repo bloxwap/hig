@@ -1,7 +1,8 @@
 import type {FeedbackAdapter,FeedbackEvent,FeedbackPreferences,FeedbackSink} from '@bloxwap/hig/contracts/feedback';
 export type {FeedbackAdapter,FeedbackEvent,FeedbackPreferences,FeedbackSink,FeedbackCapability,PreferenceStorage,FeedbackIntent} from '@bloxwap/hig/contracts/feedback';
 export const defaultPreferences:FeedbackPreferences={version:1,sound:false,haptics:false,volume:0.3,motion:true};
-export const presets={press:{sound:null,haptic:null,cooldown:0},activate:{sound:'tick',haptic:'selection',cooldown:80},release:{sound:null,haptic:null,cooldown:0},cancel:{sound:null,haptic:null,cooldown:0},selection:{sound:'tick',haptic:'selection',cooldown:80},toggle:{sound:'toggle',haptic:'selection',cooldown:80},disclosure:{sound:null,haptic:null,cooldown:120},success:{sound:'success',haptic:'success',cooldown:400},warning:{sound:null,haptic:'warning',cooldown:400},error:{sound:'error',haptic:'error',cooldown:400},notification:{sound:null,haptic:null,cooldown:800}} as const;
+import {presets} from './presets.js';
+export {presets} from './presets.js';
 function attempt(fn?:()=>void|Promise<void>){if(!fn)return;try{Promise.resolve(fn()).catch(()=>{});}catch{/* Feedback never changes the primary action. */}}
 export interface ControllerOptions {sound?:FeedbackAdapter;haptics?:FeedbackAdapter;preferences?:Partial<FeedbackPreferences>;now?:()=>number;policy?:{sound?:boolean;haptics?:boolean};maxRemembered?:number}
 export class FeedbackController implements FeedbackSink {

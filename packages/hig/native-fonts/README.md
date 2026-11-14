@@ -1,6 +1,6 @@
 # @bloxwap/hig/native-fonts
 
-Version 0.3.0, an entry of `@bloxwap/hig`. Static Bloxwap Sans/Mono (and Korean/Simplified Chinese Sans) TTF faces for React Native and Expo hosts, derived reproducibly from pinned `@bloxwap/font` 0.1.4 by `npm run generate:fonts`.
+Version 0.4.0, an entry of `@bloxwap/hig`. Static Bloxwap Sans/Mono (and Korean/Simplified Chinese Sans) TTF faces for React Native and Expo hosts, derived reproducibly from pinned `@bloxwap/font` 0.1.4 by `npm run generate:fonts`.
 
 Web hosts never import this entry: load fonts through `@bloxwap/font` and use `@bloxwap/hig/tokens/css`. Open Graph card renderers (Satori, `next/og`) use the much smaller `@bloxwap/hig/og-fonts` entry instead (#99).
 

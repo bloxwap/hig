@@ -60,6 +60,8 @@ jobs:
               - 'scripts/**'
               - 'types/**'
               # Both manifests feed generated examples and API documentation.
+              - 'planning/anchors.json'
+              - 'planning/renamed-anchors.json'
               - 'planning/examples.json'
               - 'planning/example-symbols.json'
 
@@ -71,13 +73,12 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 15
     env:
-      NEXT_PUBLIC_BASE_PATH: /hig
-      HIG_DOCS_ORIGIN: https://bloxwap.github.io
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Point temp dirs at $RUNNER_TEMP
         run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -91,7 +92,13 @@ jobs:
           bun-version: '1.4.2'
       # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
       - run: bun install --frozen-lockfile
+      - name: Exercise a custom deployment on pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "NEXT_PUBLIC_BASE_PATH=/preview-docs" >> "$GITHUB_ENV"
+          echo "HIG_DOCS_ORIGIN=https://docs.example" >> "$GITHUB_ENV"
       - run: bun run docs:build
+      - run: bun run test:web -- tests/docs.test.ts tests/docs-site-config.test.ts
       - run: bun run --filter hig-docs check
       - name: Require GNU tar (gtar) for Pages artifacts
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

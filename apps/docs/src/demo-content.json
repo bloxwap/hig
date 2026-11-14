@@ -14,79 +14,79 @@
     },
     {
       "route": "guides/ci-runners",
-      "title": "CI runners · HIG 0.1.0"
+      "title": "CI runners"
     },
     {
       "route": "guides/components/actions-surfaces",
-      "title": "Actions & surfaces · HIG 0.1.0"
+      "title": "Actions & surfaces"
     },
     {
       "route": "guides/components/chart",
-      "title": "Charts · HIG 0.1.0"
+      "title": "Charts"
     },
     {
       "route": "guides/components/fields",
-      "title": "Fields & inputs · HIG 0.1.0"
+      "title": "Fields & inputs"
     },
     {
       "route": "guides/components/financial-data",
-      "title": "Financial data · HIG 0.1.0"
+      "title": "Financial data"
     },
     {
       "route": "guides/components/navigation",
-      "title": "Navigation · HIG 0.1.0"
+      "title": "Navigation"
     },
     {
       "route": "guides/components/overlays",
-      "title": "Overlays · HIG 0.1.0"
+      "title": "Overlays"
     },
     {
       "route": "guides/components/recipes",
-      "title": "Recipes · HIG 0.1.0"
+      "title": "Recipes"
     },
     {
       "route": "guides/components/selection",
-      "title": "Selection controls · HIG 0.1.0"
+      "title": "Selection controls"
     },
     {
       "route": "guides/components/status",
-      "title": "Status & feedback · HIG 0.1.0"
+      "title": "Status & feedback"
     },
     {
       "route": "guides/feedback/adapters",
-      "title": "Optional adapters and installation · HIG 0.1.0"
+      "title": "Optional adapters and installation"
     },
     {
       "route": "guides/feedback/contract",
-      "title": "Semantic feedback · HIG 0.1.0"
+      "title": "Semantic feedback"
     },
     {
       "route": "guides/feedback/preferences",
-      "title": "Preferences, preview and device review · HIG 0.1.0"
+      "title": "Preferences, preview and device review"
     },
     {
       "route": "guides/foundations/glossary",
-      "title": "Trading glossary · HIG 0.3.0"
+      "title": "Trading glossary"
     },
     {
       "route": "guides/foundations/localization",
-      "title": "Numbers, currency, dates and built-in strings · HIG 0.1.0"
+      "title": "Numbers, currency, dates and built-in strings"
     },
     {
       "route": "guides/foundations/native-runtime-differences",
-      "title": "Native runtime differences · HIG 0.1.0"
+      "title": "Native runtime differences"
     },
     {
       "route": "guides/foundations/platform",
-      "title": "Foundation and platform rules · HIG 0.1.0"
+      "title": "Foundation and platform rules"
     },
     {
       "route": "guides/foundations/principles",
-      "title": "Principles and content · HIG 0.1.0"
+      "title": "Principles and content"
     },
     {
       "route": "guides/foundations/source-reconciliation",
-      "title": "Pinned source reconciliation · HIG 0.1.0"
+      "title": "Pinned source reconciliation"
     },
     {
       "route": "guides/governance/adoption",
@@ -94,23 +94,23 @@
     },
     {
       "route": "guides/governance/contributing",
-      "title": "Contribution, ownership and admission · HIG 0.1.0"
+      "title": "Contribution, ownership and admission"
     },
     {
       "route": "guides/governance/new-repository",
-      "title": "New repository setup and upgrades · HIG 0.1.2"
+      "title": "New repository setup and upgrades"
     },
     {
       "route": "guides/governance/quality",
-      "title": "Quality, budgets and evidence · HIG 0.1.0"
+      "title": "Quality, budgets and evidence"
     },
     {
       "route": "guides/governance/release",
-      "title": "Release candidates, semver and rollback · HIG 0.1.2"
+      "title": "Release candidates, semver and rollback"
     },
     {
       "route": "guides/installation",
-      "title": "Installation and citation · HIG 0.1.1"
+      "title": "Installation and citation"
     },
     {
       "route": "guides/migration/native",
@@ -126,7 +126,7 @@
     },
     {
       "route": "guides/website",
-      "title": "Documentation website and migration shell · HIG 0.1.0"
+      "title": "Documentation website and migration shell"
     },
     {
       "route": "components/button",
