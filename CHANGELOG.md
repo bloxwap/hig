@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0
 
 Design review pass over all 65 catalog components (web and native). HIG now separates layers with fill and space, not strokes.
 
