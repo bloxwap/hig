@@ -9,7 +9,7 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Metric | Measured initial | Limit | Reason |
 | --- | --- | --- | --- |
 | Individual DOM Button gzip (React external) | 706 B | 850 B | ~20% API/behavior fix headroom, overlay/audio/chart excluded |
-| Individual AmountInput gzip | 325 B | 400 B | Small labelled primitive, ~23% headroom |
+| Individual Input gzip | 292 B | 400 B | Small labelled primitive, ~27% headroom |
 | Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67; 2,329 B with the web-drawn capsule | 2,400 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports Raised again for the design review pass: on Expo web the Switch draws the HIG capsule with Space handling instead of react-native-web's Material switch. |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |

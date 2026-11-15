@@ -61,16 +61,17 @@ site, then deploys it to GitHub Pages. Pull requests build without deploying.
 
 ## Local sites
 
-`bun dev` (or `npm run dev`) builds the packages once, then starts every site together in Turbo's terminal UI:
+`bun dev` (or `npm run dev`) starts the documentation site only, the same as `bun docs:dev`: the docs and component catalog at [localhost:3905](http://localhost:3905) (`hig-docs`).
 
-| Site | URL | Workspace |
+The fixtures are test consumers, not documentation. `bun dev:fixtures` (or `npm run dev:fixtures`) builds the packages once, then starts them together in Turbo's terminal UI:
+
+| Fixture | URL | Workspace |
 | --- | --- | --- |
-| Docs and component catalog | [localhost:3905](http://localhost:3905) | `hig-docs` |
 | Web fixture (Vite) | [localhost:5173](http://localhost:5173), or the next free port | `hig-web-fixture` |
 | Next.js fixture | [localhost:4175](http://localhost:4175) | `hig-next-fixture` |
 | React Native gallery on web (Expo) | [localhost:8081](http://localhost:8081) | `hig-native-fixture` |
 
-Start one site with a filter, for example `bun dev --filter=hig-docs`; `bun dev --ui=stream` prints plain logs. The sites read the built packages, so rerun `npm run build` after changing a component.
+Start one fixture with a filter, for example `bun dev:fixtures --filter=hig-web-fixture`; add `--ui=stream` for plain logs. The sites read the built packages, so rerun `npm run build` after changing a component.
 
 ## Validation
 
@@ -83,6 +84,7 @@ npm run smoke:ssr
 npm run bundle -w hig-native-fixture
 npm run bundle:web -w hig-native-fixture
 npm run dev
+npm run dev:fixtures
 npm run start -w hig-native-fixture
 ```
 

@@ -7,7 +7,7 @@
     "@/components/ui/textarea": {"entry":"field","exports":["TextArea"]},
     "@workspace/ui/button": {"entry":"button","exports":["Button","IconButton","Link"]},
     "@workspace/ui/card": {"entry":"surface","exports":["Card","Surface"]},
-    "@workspace/ui/input": {"entry":"field","exports":["Input","AmountInput","SearchInput"]},
+    "@workspace/ui/input": {"entry":"field","exports":["Input","SearchInput"]},
     "@workspace/ui-native/button": {"entry":"button","exports":["Button","IconButton"]},
     "@workspace/ui-native/switch": {"entry":"switch","exports":["Switch"],"nativeOnly":true},
     "@workspace/ui-native/checkbox": {"entry":"checkbox","exports":["Checkbox"],"nativeOnly":true}

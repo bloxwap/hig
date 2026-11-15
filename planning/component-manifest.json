@@ -30,7 +30,6 @@
         "Label",
         "Input",
         "TextArea",
-        "AmountInput",
         "SearchInput"
       ],
       "docs": "docs/components/fields.md",

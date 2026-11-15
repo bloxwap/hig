@@ -366,10 +366,6 @@
         "entry": "field",
         "signature": "export declare const TextArea: React.ForwardRefExoticComponent<React.TextareaHTMLAttributes<HTMLTextAreaElement> & React.RefAttributes<HTMLTextAreaElement>>;"
       },
-      "AmountInput": {
-        "entry": "field",
-        "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<Omit<React.InputHTMLAttributes<HTMLInputElement>, \"type\"> & React.RefAttributes<HTMLInputElement>>;"
-      },
       "SearchInput": {
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
@@ -1135,10 +1131,6 @@
       "TextArea": {
         "entry": "field",
         "signature": "export declare const TextArea: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
-      },
-      "AmountInput": {
-        "entry": "field",
-        "signature": "export declare const AmountInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
       "SearchInput": {
         "entry": "field",

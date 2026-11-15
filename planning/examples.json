@@ -150,8 +150,8 @@
       "slug": "field",
       "entry": "field",
       "family": "fields",
-      "web": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.AmountInput value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
-      "native": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
+      "web": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.Input type='text' inputMode='decimal' value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
+      "native": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.Input keyboardType='decimal-pad' value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -201,22 +201,6 @@
       "states": [
         "default",
         "disabled"
-      ],
-      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
-    },
-    {
-      "name": "AmountInput",
-      "slug": "amount-input",
-      "entry": "field",
-      "family": "fields",
-      "web": "<C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
-      "native": "<C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "disabled",
-        "error"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"

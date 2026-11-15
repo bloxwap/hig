@@ -185,10 +185,6 @@
       "title": "TextArea"
     },
     {
-      "route": "components/amount-input",
-      "title": "AmountInput"
-    },
-    {
       "route": "components/search-input",
       "title": "SearchInput"
     },
@@ -570,17 +566,6 @@
       "states": [
         "default",
         "disabled"
-      ]
-    },
-    {
-      "name": "AmountInput",
-      "route": "components/amount-input",
-      "family": "fields",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "disabled",
-        "error"
       ]
     },
     {
