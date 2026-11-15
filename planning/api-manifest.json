@@ -254,21 +254,25 @@
         "entry": "blocks/leaderboard-card",
         "signature": "export type LeaderboardText = string | {\n    highlight: string;\n};"
       },
-      "TradeHistoryCard": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export declare function TradeHistoryCard({ labels, symbol, side, leverage, entry, exit, pnl, priceOptions, surface, onSelect, className, ...rest }: TradeHistoryCardProps): React.JSX.Element;"
+      "TradeHistoryListBlock": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, className, ...rest }: TradeHistoryListBlockProps): React.JSX.Element;"
       },
-      "tradeHistoryTitle": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export declare const tradeHistoryTitle: ({ symbol, side, leverage, labels }: {\n    symbol: string;\n    side: 'long' | 'short';\n    leverage?: number;\n    labels: Pick<TradeHistoryLabels, 'long' | 'short'>;\n}, locale?: string) => string;"
+      "tradeHistorySide": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'>, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
       },
-      "TradeHistoryCardProps": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export interface TradeHistoryCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    labels: TradeHistoryLabels;\n    /** Ticker: AMZN. */\n    symbol: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    entry: number;\n    exit: number;\n    /** Net profit and loss in dollars, on the trailing edge of the title row. */\n    pnl?: number | null;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set false to draw no card: no surface fill, padding or radius. Default `true`. */\n    surface?: boolean;\n    /** Makes the whole card a button, for example to open the trade's detail. */\n    onSelect?: () => void;\n}"
+      "TradeHistoryListBlockProps": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. */\n    pnlOptions?: Intl.NumberFormatOptions;\n}"
       },
-      "TradeHistoryLabels": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export interface TradeHistoryLabels {\n    entry: string;\n    exit: string;\n    long: string;\n    short: string;\n}"
+      "TradeHistoryListLabels": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n}"
+      },
+      "TradeHistoryItem": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n}"
       },
       "TradeHistoryDetailCard": {
         "entry": "blocks/trade-history-detail-card",
@@ -1012,21 +1016,25 @@
         "entry": "manage-position-card",
         "signature": "export interface ManagePositionCardSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
       },
-      "TradeHistoryCard": {
-        "entry": "trade-history-card",
-        "signature": "export declare function TradeHistoryCard({ labels, symbol, side, leverage, entry, exit, pnl, priceOptions, surface, onSelect, testID }: TradeHistoryCardProps): React.JSX.Element;"
+      "TradeHistoryListBlock": {
+        "entry": "trade-history-list-block",
+        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, testID }: TradeHistoryListBlockProps): React.JSX.Element;"
       },
-      "tradeHistoryTitle": {
-        "entry": "trade-history-card",
-        "signature": "export declare const tradeHistoryTitle: ({ symbol, side, leverage, labels }: {\n    symbol: string;\n    side: 'long' | 'short';\n    leverage?: number;\n    labels: Pick<TradeHistoryLabels, 'long' | 'short'>;\n}, locale?: string) => string;"
+      "tradeHistorySide": {
+        "entry": "trade-history-list-block",
+        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'>, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
       },
-      "TradeHistoryCardProps": {
-        "entry": "trade-history-card",
-        "signature": "export interface TradeHistoryCardProps {\n    labels: TradeHistoryLabels;\n    /** Ticker: AMZN. */\n    symbol: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    entry: number;\n    exit: number;\n    /** Net profit and loss in dollars, on the trailing edge of the title row. */\n    pnl?: number | null;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set false to draw no card. Default `true`. */\n    surface?: boolean;\n    /** Makes the whole card a button, for example to open the detail. */\n    onSelect?: () => void;\n    testID?: string;\n}"
+      "TradeHistoryListBlockProps": {
+        "entry": "trade-history-list-block",
+        "signature": "export interface TradeHistoryListBlockProps {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. */\n    pnlOptions?: Intl.NumberFormatOptions;\n    testID?: string;\n}"
       },
-      "TradeHistoryLabels": {
-        "entry": "trade-history-card",
-        "signature": "export interface TradeHistoryLabels {\n    entry: string;\n    exit: string;\n    long: string;\n    short: string;\n}"
+      "TradeHistoryListLabels": {
+        "entry": "trade-history-list-block",
+        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n}"
+      },
+      "TradeHistoryItem": {
+        "entry": "trade-history-list-block",
+        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n}"
       },
       "TradeHistoryDetailCard": {
         "entry": "trade-history-detail-card",

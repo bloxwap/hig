@@ -24,7 +24,7 @@ export {AccountCard,accountRows,assetValue,AssetBalanceRow,type AccountCardProps
 export {LanguageCard,filterLanguages,type LanguageCardProps,type LanguageOption} from './language-card.js';
 export {TokenActionCard,tokenActionLabel,type TokenActionCardProps,type TokenAction,type TokenActionId} from './token-action-card.js';
 export {ManagePositionCard,positionCorridor,type ManagePositionCardProps,type ManagePositionCardLabels,type ManagePositionCardAction,type ManagePositionCardSummary} from './manage-position-card.js';
-export {TradeHistoryCard,tradeHistoryTitle,type TradeHistoryCardProps,type TradeHistoryLabels} from './trade-history-card.js';
+export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './trade-history-list-block.js';
 export {TradeHistoryDetailCard,type TradeHistoryDetailCardProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-card.js';
 export {TargetCard,targetLayout,targetFormat,type TargetCardProps,type TargetCardLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-card.js';
 export {PositionCard,type PositionCardProps,type PositionCardDetail,type PositionCardFigure,type PositionCardRow,type PositionCardFlag} from './position-card.js';

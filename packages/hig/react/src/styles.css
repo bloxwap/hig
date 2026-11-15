@@ -624,10 +624,25 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 @media(prefers-reduced-motion:reduce) { .hig-target-rest,.hig-target-move,.hig-target-entry { transition:none; } }
 [data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-target-entry { transition:none; }
 @media(forced-colors:active) { .hig-target-move,.hig-target-entry { forced-color-adjust:none; } }
-/* TradeHistoryCard: a BarPnl for a closed trade; as a button, the hit area lies over the card.
+/* TradeHistoryListBlock: a header, then one capsule row per closed trade, 8px apart.
    TradeHistoryDetailCard: header, the asset row, the result and the figures 8px apart, then the actions in one row 16px below. */
-.hig-trade-history-card { position:relative;width:100%;min-width:0;border-radius:var(--hig-radius-xl,14px); }
-.hig-trade-history-card:has(> .hig-swap-hit:active) > .hig-surface { background:var(--hig-nested); }
+.hig-trade-history-list { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
+.hig-trade-rows { display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none; }
+.hig-trade-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px;padding-inline-end:16px;border:0;border-radius:28px;background:var(--hig-fill);color:var(--hig-text);font:inherit;text-align:start; }
+button.hig-trade-row { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+button.hig-trade-row:active { background:var(--hig-fill-raised); }
+.hig-trade-row-identity,.hig-trade-row-result { display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted); }
+.hig-trade-row-identity { flex:1;overflow-wrap:anywhere; }
+.hig-trade-row-result { flex:none;align-items:flex-end;text-align:end; }
+.hig-trade-row strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
+.hig-trade-row-side { display:inline-flex;align-items:center;gap:4px;font-weight:600; }
+.hig-trade-row-side[data-side='long'] { color:var(--hig-positive); }
+.hig-trade-row-side[data-side='short'] { color:var(--hig-negative); }
+.hig-trade-row .hig-trade-pnl[data-tone='up'] { color:var(--hig-positive); }
+.hig-trade-row .hig-trade-pnl[data-tone='down'] { color:var(--hig-negative); }
+.hig-trade-row-chevron { flex:none;color:var(--hig-muted); }
+[dir='rtl'] .hig-trade-row-chevron { transform:scaleX(-1); }
+@media(hover:hover) and (pointer:fine) { button.hig-trade-row:hover { background:var(--hig-fill-raised); } }
 .hig-trade-pnl[data-tone='up'],.hig-trade-result[data-tone='up'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-positive); }
 .hig-trade-pnl[data-tone='down'],.hig-trade-result[data-tone='down'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-negative); }
 .hig-trade-detail { display:flex;flex-direction:column;gap:16px;min-width:0; }

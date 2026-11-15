@@ -155,7 +155,7 @@
         "TokenActionCard",
         "LanguageCard",
         "ManagePositionCard",
-        "TradeHistoryCard",
+        "TradeHistoryListBlock",
         "TradeHistoryDetailCard",
         "TargetCard",
         "PositionCard",

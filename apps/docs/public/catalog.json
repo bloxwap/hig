@@ -679,14 +679,14 @@
       ]
     },
     {
-      "name": "TradeHistoryCard",
-      "route": "components/trade-history-card",
+      "name": "TradeHistoryListBlock",
+      "route": "components/trade-history-list-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "loss",
-        "no-card"
+        "empty",
+        "static"
       ]
     },
     {
