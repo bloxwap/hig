@@ -280,7 +280,7 @@
       },
       "SignalsGroup": {
         "entry": "blocks/signals-block",
-        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A capsule on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
+        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A small pill on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
       },
       "SignalsItem": {
         "entry": "blocks/signals-block",
@@ -1214,7 +1214,7 @@
       },
       "SignalsGroup": {
         "entry": "signals-block",
-        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A capsule on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
+        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A small pill on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
       },
       "SignalsItem": {
         "entry": "signals-block",

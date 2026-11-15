@@ -68,7 +68,8 @@ describe('SignalsBlock',()=>{
   const first=within(trend).getByRole('switch',{name:'Trend'}) as HTMLInputElement;expect(first.checked).toBe(true);
   expect(document.getElementById(first.getAttribute('aria-describedby')!)!.textContent).toBe('Direction marks on markets that just moved hard.');
   await userEvent.click(first);expect(flip).toHaveBeenCalledWith(false);
-  await userEvent.click(within(trend).getByRole('button',{name:'How it works'}));expect(help).toHaveBeenCalledTimes(1);expect(within(trend).getByRole('button',{name:'How it works'}).dataset.intent).toBe('secondary');
+  await userEvent.click(within(trend).getByRole('button',{name:'How it works'}));expect(help).toHaveBeenCalledTimes(1);// It is the small pill, not a full-size button.
+  expect(within(trend).getByRole('button',{name:'How it works'}).className).toBe('hig-swap-pill');expect(trend.querySelector('.hig-button')).toBeNull();
   // Only the verified group carries the mark and it has no help capsule; its switch is off, blocked and has no description.
   expect(within(swing).getByRole('img',{name:'Verified'})).toBeTruthy();expect(within(trend).queryByRole('img')).toBeNull();expect(within(swing).queryByRole('button')).toBeNull();
   const last=within(swing).getByRole('switch',{name:'Swing'}) as HTMLInputElement;expect([last.checked,last.disabled,last.hasAttribute('aria-describedby')]).toEqual([false,true,false]);
