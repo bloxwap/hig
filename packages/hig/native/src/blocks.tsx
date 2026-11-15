@@ -32,6 +32,6 @@ export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type Lea
 export {SoundHapticsBlock,soundLevel,type SoundHapticsBlockProps,type SoundSection,type SoundVolume} from './sound-haptics-block.js';
 export {SignalsBlock,type SignalsBlockProps,type SignalsGroup,type SignalsItem} from './signals-block.js';
 export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} from './notifications-block.js';
-export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
+export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel-block.js';

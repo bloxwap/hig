@@ -778,8 +778,8 @@
       ]
     },
     {
-      "name": "FromPicker",
-      "route": "components/from-picker",
+      "name": "FromPickerBlock",
+      "route": "components/from-picker-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -791,8 +791,8 @@
       ]
     },
     {
-      "name": "ToPicker",
-      "route": "components/to-picker",
+      "name": "ToPickerBlock",
+      "route": "components/to-picker-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [

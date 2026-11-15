@@ -93,6 +93,11 @@ it('blocks entries exist for every block, and each published recipes path is a d
  for(const key of published){const twin=key.replace('/recipes','/blocks');expect(exportsMap[twin],twin).toBeDefined();expect(exportsMap[key],key).toEqual(exportsMap[twin]);expect(JSON.stringify(exportsMap[twin])).not.toContain('recipes');}
  for(const key of ['./react/blocks/account-block','./react/blocks/token-action-block','./react/blocks/manage-position-block','./react/blocks/trade-history-list-block','./react/blocks/trade-history-detail-block','./react/blocks/target-block','./native/target-block','./react/blocks/position-block','./native/position-block','./react/blocks/leaderboard-block','./native/leaderboard-block','./react/blocks/sound-haptics-block','./native/sound-haptics-block','./react/blocks/signals-block','./native/signals-block','./react/blocks/notifications-block','./native/notifications-block','./react/blocks/language-block','./native/language-block'])expect(exportsMap[key],key).toBeDefined();
 });
+it('FromPicker and ToPicker keep working as deprecated aliases of the picker blocks',async()=>{
+ const web=await import('../packages/hig/react/src/blocks/pickers'),aggregate=await import('../packages/hig/react/src/blocks');
+ expect(web.FromPicker).toBe(web.FromPickerBlock);expect(web.ToPicker).toBe(web.ToPickerBlock);expect(aggregate.FromPicker).toBe(aggregate.FromPickerBlock);expect(aggregate.ToPicker).toBe(aggregate.ToPickerBlock);
+ for(const file of ['packages/hig/react/src/blocks/pickers.tsx','packages/hig/native/src/pickers.tsx']){const source=readFileSync(file,'utf8');expect(source).toMatch(/@deprecated Renamed `FromPickerBlock`[\s\S]*export const FromPicker=FromPickerBlock;/);expect(source).toMatch(/@deprecated Renamed `ToPickerBlock`[\s\S]*export const ToPicker=ToPickerBlock;/);}
+});
 it('SwapPanel keeps working as a deprecated alias of SwapPanelBlock, by name and by path',async()=>{
  const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
  for(const key of ['./react/blocks/swap-panel','./react/recipes/swap-panel'])expect(exportsMap[key],key).toEqual(exportsMap['./react/blocks/swap-panel-block']);

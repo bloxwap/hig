@@ -8,7 +8,7 @@ import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {SwapSubview} from './swap-parts.js';
-import {FromPicker,ToPicker} from './pickers.js';
+import {FromPickerBlock,ToPickerBlock} from './pickers.js';
 import {formatPercent,shortAddress,slippagePresets,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapWallet} from './swap-shared.js';
 export interface SwapPickerProps {
  side:'from'|'to';onBack:()=>void;
@@ -25,8 +25,8 @@ export function SwapPicker({side,onBack,selected,onSelect,wallet,onConnect,onDis
  const t=useMessages();const choose=(token:SwapToken)=>{onSelect(token);onBack();};
  return <SwapSubview title={side==='from'?t.swapFrom:t.swapTo} onBack={onBack} testID={`swap-picker-${side}`}>
   {side==='from'
-   ?<FromPicker {...list} selected={selected} onSelect={choose} wallet={wallet??{connected:false}} onConnect={onConnect} onDisconnect={onDisconnect} generateAddress={!!receiving} onGenerateAddressChange={onReceivingChange}/>
-   :<ToPicker {...list} selected={selected} onSelect={choose} address={recipient} onAddressChange={onRecipientChange} addressPlaceholder={wallet?.address?shortAddress(wallet.address):undefined} onScan={onScanRecipient}/>}
+   ?<FromPickerBlock {...list} selected={selected} onSelect={choose} wallet={wallet??{connected:false}} onConnect={onConnect} onDisconnect={onDisconnect} generateAddress={!!receiving} onGenerateAddressChange={onReceivingChange}/>
+   :<ToPickerBlock {...list} selected={selected} onSelect={choose} address={recipient} onAddressChange={onRecipientChange} addressPlaceholder={wallet?.address?shortAddress(wallet.address):undefined} onScan={onScanRecipient}/>}
  </SwapSubview>;
 }
 export type SwapSettingsView='settings'|'slippage'|'fees';
