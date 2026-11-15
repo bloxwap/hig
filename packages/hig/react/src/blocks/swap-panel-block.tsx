@@ -35,7 +35,7 @@ export interface SwapDestination {
 export interface SwapDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
-export interface SwapPanelProps {
+export interface SwapPanelBlockProps {
  /** Catalog for the To side, and for the From side unless `fromTokens` is given. */
  tokens:readonly SwapToken[];
  /** Assets offered on the From side, typically the connected wallet's holdings. */
@@ -117,7 +117,7 @@ const amountKey=(event:{key:string;metaKey:boolean;ctrlKey:boolean;altKey:boolea
  * or token units, token pickers, settings, and one action that names itself from the chosen pair.
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
-export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,keypad='auto',shortcuts=true,captureKeyboard=false,view:viewProp,onViewChange,settings,className,style}:SwapPanelProps){
+export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,keypad='auto',shortcuts=true,captureKeyboard=false,view:viewProp,onViewChange,settings,className,style}:SwapPanelBlockProps){
  const {messages}=useHIG();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
@@ -260,3 +260,8 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
   <p className='hig-sr-only' role='status'>{copied}</p>
  </section>;
 }
+
+/** @deprecated Renamed `SwapPanelBlock`. The old name and the `blocks/swap-panel` and `recipes/swap-panel` import paths keep working until the next major release. */
+export const SwapPanel=SwapPanelBlock;
+/** @deprecated Renamed `SwapPanelBlockProps`. */
+export type SwapPanelProps=SwapPanelBlockProps;

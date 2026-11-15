@@ -31,4 +31,4 @@ export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type Posi
 export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type LeaderboardPromo,type LeaderboardEntry} from './leaderboard-block.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
-export {SwapPanel,swapAction,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel.js';
+export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel-block.js';

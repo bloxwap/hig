@@ -371,7 +371,7 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-wallet-address-qr > svg { display:block;width:100%;height:100%; }
 .hig-wallet-address-hint { display:inline-flex;align-items:center;gap:8px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
 .hig-wallet-address-hint > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
-/* SwapPanel: two cards joined by a flip control. Each card is one target for its token picker; capsules and the
+/* SwapPanelBlock: two cards joined by a flip control. Each card is one target for its token picker; capsules and the
    amount sit on a pass-through layer above that target and take their own presses. */
 .hig-swap-panel { display:flex;flex-direction:column;width:100%;max-width:28rem;min-width:0;color:var(--hig-text);font-family:var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);line-height:1.5;outline:none; }
 .hig-swap-card { --hig-fill:var(--hig-nested);--hig-fill-raised:var(--hig-border);position:relative;display:flex;flex-direction:column;border:1px solid transparent;border-radius:24px;background:var(--hig-surface);transition:background var(--hig-motion-duration-fast,180ms) ease; }

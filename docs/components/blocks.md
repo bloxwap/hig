@@ -2,9 +2,9 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPicker`, `ToPicker`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `InstallCommand`, and `MarketingHero`.
 
-Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel-block` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountBlock` and `TokenActionBlock`, `LanguageBlock`, exist only under `blocks`.
 
@@ -15,7 +15,7 @@ All data and actions are supplied by the host application.
 | Block | Key props and behavior |
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
-| `SwapPanel` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
+| `SwapPanelBlock` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
 | `AccountBlock` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
 | `TokenActionBlock` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
 | `TradeHistoryListBlock` | A history of closed trades: a header, then one row per trade with the asset, its side and leverage, and the net result over its age. Details below. |
@@ -46,12 +46,14 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 
 Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
 
-### SwapPanel
+### SwapPanelBlock
 
-`SwapPanel` is a From card and a To card joined by a flip control, with one action button that names itself from the pair: the same asset is **Send**, different assets on one chain is **Swap**, and different assets across chains is **Bridge** (`swapAction(from, to)` returns the same value). Until the pair and amount are valid the button is disabled and says what is missing: select a token, enter an amount, or insufficient balance.
+`SwapPanelBlock` was called `SwapPanel` through 0.5.x. The old component name, its `SwapPanelProps` type and the import paths `@bloxwap/hig/react/blocks/swap-panel` and `@bloxwap/hig/react/recipes/swap-panel` still work and are deprecated; they are removed in the next major release. The swap pieces around it keep their names: `SwapSheet`, `SwapAmountCard`, `SwapPill`, `SwapKeypad`, `SwapToken` and the other `Swap…` types.
+
+`SwapPanelBlock` is a From card and a To card joined by a flip control, with one action button that names itself from the pair: the same asset is **Send**, different assets on one chain is **Swap**, and different assets across chains is **Bridge** (`swapAction(from, to)` returns the same value). Until the pair and amount are valid the button is disabled and says what is missing: select a token, enter an amount, or insufficient balance.
 
 ```tsx
-<SwapPanel tokens={catalog} fromTokens={holdings} hotTokenIds={ranked}
+<SwapPanelBlock tokens={catalog} fromTokens={holdings} hotTokenIds={ranked}
   from={from} to={to} onFromChange={setFrom} onToChange={setTo}
   onAmountChange={setUnits} received={quote?.out} fee={quote?.feeUsd} fees={quote?.fees} quoteLoading={loading}
   slippage={slippage} onSlippageChange={setSlippage}
@@ -108,7 +110,7 @@ Stake and unstake are one example each: the asset changes only the token data, n
   actions={<SwapPill onClick={useMax}>Max</SwapPill>} meta="1,000 USDC" />
 ```
 
-`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/blocks/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
+`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/blocks/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanelBlock` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
 
 ```tsx
 <SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<Button>Swap</Button>} tokens={catalog} onSubmit={execute}/>
@@ -116,7 +118,7 @@ Stake and unstake are one example each: the asset changes only the token data, n
 
 ### FromPicker and ToPicker
 
-The two pickers are the swap panel's token views as standalone blocks, for a host that picks a source or a destination outside the panel: in its own sheet, a page, or a step of a flow. They carry no sheet or overlay of their own; place them in a `Dialog`, a `GestureSheet` or any container. `SwapPanel` uses the same two blocks for its pushed views.
+The two pickers are the swap panel's token views as standalone blocks, for a host that picks a source or a destination outside the panel: in its own sheet, a page, or a step of a flow. They carry no sheet or overlay of their own; place them in a `Dialog`, a `GestureSheet` or any container. `SwapPanelBlock` uses the same two blocks for its pushed views.
 
 Both share one token list: `tokens` (a wallet's holdings, a whitelist or a whole catalog), `selected`, `onSelect`, optional `chains`, `hotTokenIds` and `loading`. The search and address fields are the standard rounded HIG inputs. `chainFilter={false}` leaves out the chain filter, for a single chain or a list that should not be narrowed by chain; it is also left out when the tokens are all on one chain.
 
@@ -145,7 +147,7 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 | `FromPicker`, connected | `wallet={{connected:true, address}}`; `onDisconnect` shows the sign-out button, omit it where signing out does not belong |
 | `FromPicker`, whitelist | no `wallet`: the token list alone |
 
-- **Generate address** is a switch, not an action: it reports the new value and the user goes on to pick a chain and an asset. The host then shows the address to send to, for example with `WalletAddress`, or `SwapPanel`'s receive view.
+- **Generate address** is a switch, not an action: it reports the new value and the user goes on to pick a chain and an asset. The host then shows the address to send to, for example with `WalletAddress`, or `SwapPanelBlock`'s receive view.
 - **Scanning** and **connecting** belong to the host: HIG ships no QR scanner and no wallet connection. `onScan` and `onConnect` only report the press.
 - **Search** matches the token's name, symbol, chain and `keywords`, so put the contract address in `keywords` to make a pasted address find its token.
 - **Keyboard** on web: with focus in the search field, the arrow keys move through the list and Enter selects.
@@ -188,7 +190,7 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Actions.** Each action is `{id, onSelect}` plus optional `label`, `disabled` and `intent`. The ids `send`, `receive`, `stake` and `unstake` take a built-in translated label; any other id needs `label`. They render in the order given, full width, 8 units apart and 16 below the bars. Leave out the actions a token does not support.
 - **Intent.** Actions default to `secondary`, because the card offers equal choices. Set `intent: 'primary'` on at most one, or `'destructive'` for something like a burn.
 - **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountBlock`.
-- **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanel`.
+- **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanelBlock`.
 
 ### LanguageBlock
 

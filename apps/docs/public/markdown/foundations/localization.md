@@ -170,52 +170,52 @@ Rules:
 | `statusStale` | stale | StatusIndicator `stale` | — |
 | `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
 | `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
-| `swapFrom` | From | SwapPanel: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
-| `swapTo` | To | SwapPanel: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
-| `swapSelectToken` `(side)` | Select {side} token | SwapPanel: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
-| `swapAmount` `(side)` | {side} amount | SwapPanel: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
-| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanel: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
-| `swapFlip` | Swap direction | SwapPanel: accessible name of the button that exchanges the two tokens | — |
-| `swapActionSend` | Send | SwapPanel: swap panel action when both sides are the same asset | — |
-| `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
-| `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
-| `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
-| `swapChooseDestination` | Pick a destination | SwapPanel: action text while its destination is still to be chosen | — |
-| `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
-| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
-| `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |
-| `swapReset` | Reset | SwapPanel: accessible name of the swap panel reset button | — |
-| `swapSettings` | Settings | SwapPanel: swap panel settings button and sheet title | — |
-| `swapMax` | Max | SwapPanel: capsule that enters the whole balance | — |
-| `swapTest` | Test | SwapPanel: capsule that enters a small trial amount | — |
-| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanel: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
-| `swapSlippageTitle` | Slippage | SwapPanel: slippage setting row, view title and preset group | — |
-| `swapSlippageCustom` | Custom slippage (%) | SwapPanel: label of the custom slippage field | — |
-| `swapFee` `(amount)` | Fee {amount} | SwapPanel: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
-| `swapFees` | Fees | SwapPanel: fee breakdown setting row and view title | — |
-| `swapFeeTotal` | Total | SwapPanel: total row of the fee breakdown | — |
-| `swapDenomination` | Show amounts in | SwapPanel: label of the default amount denomination setting | — |
-| `swapDollars` | Dollars | SwapPanel: dollar denomination option | — |
-| `swapUnits` | Units | SwapPanel: token unit denomination option | — |
-| `swapSearchTokens` | Search name or paste address | SwapPanel: token picker search placeholder and accessible name | — |
-| `swapChains` | Chains | SwapPanel: accessible name of the token picker chain filter | — |
-| `swapAllChains` | All | SwapPanel: chain filter option that clears the filter | — |
-| `swapHot` | Hot | SwapPanel: token picker section of host-ranked tokens | — |
-| `swapAllTokens` | All tokens | SwapPanel: token picker section after the hot tokens | — |
-| `swapNoTokens` | No tokens found | SwapPanel: token picker empty state | — |
-| `swapSelected` | Selected | SwapPanel: marks the token picker row that is already selected | — |
-| `swapConnectWallet` | Connect wallet | SwapPanel: token picker button that asks the host to connect a wallet | — |
-| `swapDisconnect` | Disconnect wallet | SwapPanel: accessible name of the token picker disconnect button | — |
-| `swapGenerateAddress` | Generate address | FromPicker and SwapPanel: switch that asks for a deposit address in place of a connected wallet | — |
-| `swapRecipient` | Recipient address | SwapPanel: recipient address field placeholder and accessible name | — |
-| `swapScan` | Scan QR code | SwapPanel: accessible name of the recipient QR scan button | — |
-| `copyAddress` | Copy address | WalletAddress and the SwapPanel receive view: accessible name of an address that copies on press; the address follows it | — |
-| `addressCopied` | Address copied | WalletAddress and the SwapPanel receive view: notice after the address is copied | — |
+| `swapFrom` | From | SwapPanelBlock: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
+| `swapTo` | To | SwapPanelBlock: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
+| `swapSelectToken` `(side)` | Select {side} token | SwapPanelBlock: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
+| `swapAmount` `(side)` | {side} amount | SwapPanelBlock: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
+| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanelBlock: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
+| `swapFlip` | Swap direction | SwapPanelBlock: accessible name of the button that exchanges the two tokens | — |
+| `swapActionSend` | Send | SwapPanelBlock: swap panel action when both sides are the same asset | — |
+| `swapActionSwap` | Swap | SwapPanelBlock: swap panel action for different assets on one chain | — |
+| `swapActionBridge` | Bridge | SwapPanelBlock: swap panel action for different assets across chains | — |
+| `swapChooseToken` | Select a token | SwapPanelBlock: swap panel action text while a side has no token | — |
+| `swapChooseDestination` | Pick a destination | SwapPanelBlock: action text while its destination is still to be chosen | — |
+| `swapEnterAmount` | Enter an amount | SwapPanelBlock: swap panel action text while the amount is zero | — |
+| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanelBlock: swap panel action text when the amount exceeds the known balance | — |
+| `swapSendFromWallet` | Send from your wallet | SwapPanelBlock: swap panel action text in the receive view | — |
+| `swapReset` | Reset | SwapPanelBlock: accessible name of the swap panel reset button | — |
+| `swapSettings` | Settings | SwapPanelBlock: swap panel settings button and sheet title | — |
+| `swapMax` | Max | SwapPanelBlock: capsule that enters the whole balance | — |
+| `swapTest` | Test | SwapPanelBlock: capsule that enters a small trial amount | — |
+| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanelBlock: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
+| `swapSlippageTitle` | Slippage | SwapPanelBlock: slippage setting row, view title and preset group | — |
+| `swapSlippageCustom` | Custom slippage (%) | SwapPanelBlock: label of the custom slippage field | — |
+| `swapFee` `(amount)` | Fee {amount} | SwapPanelBlock: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
+| `swapFees` | Fees | SwapPanelBlock: fee breakdown setting row and view title | — |
+| `swapFeeTotal` | Total | SwapPanelBlock: total row of the fee breakdown | — |
+| `swapDenomination` | Show amounts in | SwapPanelBlock: label of the default amount denomination setting | — |
+| `swapDollars` | Dollars | SwapPanelBlock: dollar denomination option | — |
+| `swapUnits` | Units | SwapPanelBlock: token unit denomination option | — |
+| `swapSearchTokens` | Search name or paste address | SwapPanelBlock: token picker search placeholder and accessible name | — |
+| `swapChains` | Chains | SwapPanelBlock: accessible name of the token picker chain filter | — |
+| `swapAllChains` | All | SwapPanelBlock: chain filter option that clears the filter | — |
+| `swapHot` | Hot | SwapPanelBlock: token picker section of host-ranked tokens | — |
+| `swapAllTokens` | All tokens | SwapPanelBlock: token picker section after the hot tokens | — |
+| `swapNoTokens` | No tokens found | SwapPanelBlock: token picker empty state | — |
+| `swapSelected` | Selected | SwapPanelBlock: marks the token picker row that is already selected | — |
+| `swapConnectWallet` | Connect wallet | SwapPanelBlock: token picker button that asks the host to connect a wallet | — |
+| `swapDisconnect` | Disconnect wallet | SwapPanelBlock: accessible name of the token picker disconnect button | — |
+| `swapGenerateAddress` | Generate address | FromPicker and SwapPanelBlock: switch that asks for a deposit address in place of a connected wallet | — |
+| `swapRecipient` | Recipient address | SwapPanelBlock: recipient address field placeholder and accessible name | — |
+| `swapScan` | Scan QR code | SwapPanelBlock: accessible name of the recipient QR scan button | — |
+| `copyAddress` | Copy address | WalletAddress and the SwapPanelBlock receive view: accessible name of an address that copies on press; the address follows it | — |
+| `addressCopied` | Address copied | WalletAddress and the SwapPanelBlock receive view: notice after the address is copied | — |
 | `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
 | `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
-| `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
-| `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
-| `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
+| `swapControlKey` | Ctrl | SwapPanelBlock: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
+| `swapKeypad` | Keypad | SwapPanelBlock: accessible name of the swap panel keypad | — |
+| `swapDelete` | Delete | SwapPanelBlock: accessible name of the keypad delete key | — |
 | `account` | Account | AccountBlock: default heading | — |
 | `deposit` | Deposit | AccountBlock: default label of the deposit action | — |
 | `accountBalance` | Total balance | AccountBlock: accessible label of the total balance | — |

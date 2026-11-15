@@ -153,9 +153,9 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 ## When to use and examples
 
-Actions that sit side by side are 8 units apart at every density: buttons in an Alert, tabs, Pagination, Filter capsules and the SwapPanel action row. On web that is the `--hig-action-gap` variable (the `sm` space token); set it on a container to change it. Content inside `Stack` and `Inline` keeps the density gap (12 on touch, 8 compact), so put a row of buttons in a container that uses `--hig-action-gap`, not a bare `Inline`.
+Actions that sit side by side are 8 units apart at every density: buttons in an Alert, tabs, Pagination, Filter capsules and the SwapPanelBlock action row. On web that is the `--hig-action-gap` variable (the `sm` space token); set it on a container to change it. Content inside `Stack` and `Inline` keeps the density gap (12 on touch, 8 compact), so put a row of buttons in a container that uses `--hig-action-gap`, not a bare `Inline`.
 
-The primary and secondary call-to-action buttons that close a form sit a double step below the rest of it: 16 units (`--hig-action-offset`, twice the action gap), and 8 units from each other. TradeEntry, the SwapPanel action row, and the buttons that end a Dialog or a default sheet follow this already. In a host form laid out with `Stack`, add `className='hig-form-action'` to each closing button on web, or a 4dp top margin on native, where the `Stack` gap is 12.
+The primary and secondary call-to-action buttons that close a form sit a double step below the rest of it: 16 units (`--hig-action-offset`, twice the action gap), and 8 units from each other. TradeEntry, the SwapPanelBlock action row, and the buttons that end a Dialog or a default sheet follow this already. In a host form laid out with `Stack`, add `className='hig-form-action'` to each closing button on web, or a 4dp top margin on native, where the `Stack` gap is 12.
 
 Use one primary review action. Do: busy protects host requests, shows the leading spinner and announces the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 
@@ -187,9 +187,9 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPicker`, `ToPicker`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `InstallCommand`, and `MarketingHero`.
 
-Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel-block` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountBlock` and `TokenActionBlock`, `LanguageBlock`, exist only under `blocks`.
 
@@ -200,7 +200,7 @@ All data and actions are supplied by the host application.
 | Block | Key props and behavior |
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
-| `SwapPanel` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
+| `SwapPanelBlock` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
 | `AccountBlock` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
 | `TokenActionBlock` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
 | `TradeHistoryListBlock` | A history of closed trades: a header, then one row per trade with the asset, its side and leverage, and the net result over its age. Details below. |
@@ -231,12 +231,14 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 
 Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
 
-### SwapPanel
+### SwapPanelBlock
 
-`SwapPanel` is a From card and a To card joined by a flip control, with one action button that names itself from the pair: the same asset is **Send**, different assets on one chain is **Swap**, and different assets across chains is **Bridge** (`swapAction(from, to)` returns the same value). Until the pair and amount are valid the button is disabled and says what is missing: select a token, enter an amount, or insufficient balance.
+`SwapPanelBlock` was called `SwapPanel` through 0.5.x. The old component name, its `SwapPanelProps` type and the import paths `@bloxwap/hig/react/blocks/swap-panel` and `@bloxwap/hig/react/recipes/swap-panel` still work and are deprecated; they are removed in the next major release. The swap pieces around it keep their names: `SwapSheet`, `SwapAmountCard`, `SwapPill`, `SwapKeypad`, `SwapToken` and the other `Swap…` types.
+
+`SwapPanelBlock` is a From card and a To card joined by a flip control, with one action button that names itself from the pair: the same asset is **Send**, different assets on one chain is **Swap**, and different assets across chains is **Bridge** (`swapAction(from, to)` returns the same value). Until the pair and amount are valid the button is disabled and says what is missing: select a token, enter an amount, or insufficient balance.
 
 ```tsx
-<SwapPanel tokens={catalog} fromTokens={holdings} hotTokenIds={ranked}
+<SwapPanelBlock tokens={catalog} fromTokens={holdings} hotTokenIds={ranked}
   from={from} to={to} onFromChange={setFrom} onToChange={setTo}
   onAmountChange={setUnits} received={quote?.out} fee={quote?.feeUsd} fees={quote?.fees} quoteLoading={loading}
   slippage={slippage} onSlippageChange={setSlippage}
@@ -293,7 +295,7 @@ Stake and unstake are one example each: the asset changes only the token data, n
   actions={<SwapPill onClick={useMax}>Max</SwapPill>} meta="1,000 USDC" />
 ```
 
-`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/blocks/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
+`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/blocks/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanelBlock` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
 
 ```tsx
 <SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<Button>Swap</Button>} tokens={catalog} onSubmit={execute}/>
@@ -301,7 +303,7 @@ Stake and unstake are one example each: the asset changes only the token data, n
 
 ### FromPicker and ToPicker
 
-The two pickers are the swap panel's token views as standalone blocks, for a host that picks a source or a destination outside the panel: in its own sheet, a page, or a step of a flow. They carry no sheet or overlay of their own; place them in a `Dialog`, a `GestureSheet` or any container. `SwapPanel` uses the same two blocks for its pushed views.
+The two pickers are the swap panel's token views as standalone blocks, for a host that picks a source or a destination outside the panel: in its own sheet, a page, or a step of a flow. They carry no sheet or overlay of their own; place them in a `Dialog`, a `GestureSheet` or any container. `SwapPanelBlock` uses the same two blocks for its pushed views.
 
 Both share one token list: `tokens` (a wallet's holdings, a whitelist or a whole catalog), `selected`, `onSelect`, optional `chains`, `hotTokenIds` and `loading`. The search and address fields are the standard rounded HIG inputs. `chainFilter={false}` leaves out the chain filter, for a single chain or a list that should not be narrowed by chain; it is also left out when the tokens are all on one chain.
 
@@ -330,7 +332,7 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 | `FromPicker`, connected | `wallet={{connected:true, address}}`; `onDisconnect` shows the sign-out button, omit it where signing out does not belong |
 | `FromPicker`, whitelist | no `wallet`: the token list alone |
 
-- **Generate address** is a switch, not an action: it reports the new value and the user goes on to pick a chain and an asset. The host then shows the address to send to, for example with `WalletAddress`, or `SwapPanel`'s receive view.
+- **Generate address** is a switch, not an action: it reports the new value and the user goes on to pick a chain and an asset. The host then shows the address to send to, for example with `WalletAddress`, or `SwapPanelBlock`'s receive view.
 - **Scanning** and **connecting** belong to the host: HIG ships no QR scanner and no wallet connection. `onScan` and `onConnect` only report the press.
 - **Search** matches the token's name, symbol, chain and `keywords`, so put the contract address in `keywords` to make a pasted address find its token.
 - **Keyboard** on web: with focus in the search field, the arrow keys move through the list and Enter selects.
@@ -373,7 +375,7 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Actions.** Each action is `{id, onSelect}` plus optional `label`, `disabled` and `intent`. The ids `send`, `receive`, `stake` and `unstake` take a built-in translated label; any other id needs `label`. They render in the order given, full width, 8 units apart and 16 below the bars. Leave out the actions a token does not support.
 - **Intent.** Actions default to `secondary`, because the card offers equal choices. Set `intent: 'primary'` on at most one, or `'destructive'` for something like a burn.
 - **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountBlock`.
-- **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanel`.
+- **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanelBlock`.
 
 ### LanguageBlock
 
@@ -778,7 +780,7 @@ See `tests/animated-number-model.test.ts`, `tests/animated-number.dom.test.tsx`,
 
 ## Optional number motion
 
-Number motion is optional for a readout on its own and required inside the swap card: `SwapPanel`, `SwapAmountCard` and the pickers update every changing number through `AnimatedNumberReadout` (see the SwapPanel live numbers rule in the blocks chapter).
+Number motion is optional for a readout on its own and required inside the swap card: `SwapPanelBlock`, `SwapAmountCard` and the pickers update every changing number through `AnimatedNumberReadout` (see the SwapPanelBlock live numbers rule in the blocks chapter).
 
 `AnimatedNumberReadout` lives in the separate `animated-number` entry on both platforms. It moves changed numeric places rather than fading the whole reading or interpolating financial values. The final visible output remains the canonical `Intl.NumberFormat` result used by `NumberReadout`, including the host's `prefix`, `suffix`, locale, options and stale text. Localized digits, grouping and decimal marks, currency tokens, and scientific-notation tokens are preserved; motion never assumes ASCII digits or a decimal point.
 
@@ -1650,52 +1652,52 @@ Rules:
 | `statusStale` | stale | StatusIndicator `stale` | — |
 | `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
 | `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
-| `swapFrom` | From | SwapPanel: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
-| `swapTo` | To | SwapPanel: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
-| `swapSelectToken` `(side)` | Select {side} token | SwapPanel: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
-| `swapAmount` `(side)` | {side} amount | SwapPanel: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
-| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanel: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
-| `swapFlip` | Swap direction | SwapPanel: accessible name of the button that exchanges the two tokens | — |
-| `swapActionSend` | Send | SwapPanel: swap panel action when both sides are the same asset | — |
-| `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
-| `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
-| `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
-| `swapChooseDestination` | Pick a destination | SwapPanel: action text while its destination is still to be chosen | — |
-| `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
-| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
-| `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |
-| `swapReset` | Reset | SwapPanel: accessible name of the swap panel reset button | — |
-| `swapSettings` | Settings | SwapPanel: swap panel settings button and sheet title | — |
-| `swapMax` | Max | SwapPanel: capsule that enters the whole balance | — |
-| `swapTest` | Test | SwapPanel: capsule that enters a small trial amount | — |
-| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanel: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
-| `swapSlippageTitle` | Slippage | SwapPanel: slippage setting row, view title and preset group | — |
-| `swapSlippageCustom` | Custom slippage (%) | SwapPanel: label of the custom slippage field | — |
-| `swapFee` `(amount)` | Fee {amount} | SwapPanel: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
-| `swapFees` | Fees | SwapPanel: fee breakdown setting row and view title | — |
-| `swapFeeTotal` | Total | SwapPanel: total row of the fee breakdown | — |
-| `swapDenomination` | Show amounts in | SwapPanel: label of the default amount denomination setting | — |
-| `swapDollars` | Dollars | SwapPanel: dollar denomination option | — |
-| `swapUnits` | Units | SwapPanel: token unit denomination option | — |
-| `swapSearchTokens` | Search name or paste address | SwapPanel: token picker search placeholder and accessible name | — |
-| `swapChains` | Chains | SwapPanel: accessible name of the token picker chain filter | — |
-| `swapAllChains` | All | SwapPanel: chain filter option that clears the filter | — |
-| `swapHot` | Hot | SwapPanel: token picker section of host-ranked tokens | — |
-| `swapAllTokens` | All tokens | SwapPanel: token picker section after the hot tokens | — |
-| `swapNoTokens` | No tokens found | SwapPanel: token picker empty state | — |
-| `swapSelected` | Selected | SwapPanel: marks the token picker row that is already selected | — |
-| `swapConnectWallet` | Connect wallet | SwapPanel: token picker button that asks the host to connect a wallet | — |
-| `swapDisconnect` | Disconnect wallet | SwapPanel: accessible name of the token picker disconnect button | — |
-| `swapGenerateAddress` | Generate address | FromPicker and SwapPanel: switch that asks for a deposit address in place of a connected wallet | — |
-| `swapRecipient` | Recipient address | SwapPanel: recipient address field placeholder and accessible name | — |
-| `swapScan` | Scan QR code | SwapPanel: accessible name of the recipient QR scan button | — |
-| `copyAddress` | Copy address | WalletAddress and the SwapPanel receive view: accessible name of an address that copies on press; the address follows it | — |
-| `addressCopied` | Address copied | WalletAddress and the SwapPanel receive view: notice after the address is copied | — |
+| `swapFrom` | From | SwapPanelBlock: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
+| `swapTo` | To | SwapPanelBlock: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
+| `swapSelectToken` `(side)` | Select {side} token | SwapPanelBlock: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
+| `swapAmount` `(side)` | {side} amount | SwapPanelBlock: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
+| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanelBlock: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
+| `swapFlip` | Swap direction | SwapPanelBlock: accessible name of the button that exchanges the two tokens | — |
+| `swapActionSend` | Send | SwapPanelBlock: swap panel action when both sides are the same asset | — |
+| `swapActionSwap` | Swap | SwapPanelBlock: swap panel action for different assets on one chain | — |
+| `swapActionBridge` | Bridge | SwapPanelBlock: swap panel action for different assets across chains | — |
+| `swapChooseToken` | Select a token | SwapPanelBlock: swap panel action text while a side has no token | — |
+| `swapChooseDestination` | Pick a destination | SwapPanelBlock: action text while its destination is still to be chosen | — |
+| `swapEnterAmount` | Enter an amount | SwapPanelBlock: swap panel action text while the amount is zero | — |
+| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanelBlock: swap panel action text when the amount exceeds the known balance | — |
+| `swapSendFromWallet` | Send from your wallet | SwapPanelBlock: swap panel action text in the receive view | — |
+| `swapReset` | Reset | SwapPanelBlock: accessible name of the swap panel reset button | — |
+| `swapSettings` | Settings | SwapPanelBlock: swap panel settings button and sheet title | — |
+| `swapMax` | Max | SwapPanelBlock: capsule that enters the whole balance | — |
+| `swapTest` | Test | SwapPanelBlock: capsule that enters a small trial amount | — |
+| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanelBlock: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
+| `swapSlippageTitle` | Slippage | SwapPanelBlock: slippage setting row, view title and preset group | — |
+| `swapSlippageCustom` | Custom slippage (%) | SwapPanelBlock: label of the custom slippage field | — |
+| `swapFee` `(amount)` | Fee {amount} | SwapPanelBlock: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
+| `swapFees` | Fees | SwapPanelBlock: fee breakdown setting row and view title | — |
+| `swapFeeTotal` | Total | SwapPanelBlock: total row of the fee breakdown | — |
+| `swapDenomination` | Show amounts in | SwapPanelBlock: label of the default amount denomination setting | — |
+| `swapDollars` | Dollars | SwapPanelBlock: dollar denomination option | — |
+| `swapUnits` | Units | SwapPanelBlock: token unit denomination option | — |
+| `swapSearchTokens` | Search name or paste address | SwapPanelBlock: token picker search placeholder and accessible name | — |
+| `swapChains` | Chains | SwapPanelBlock: accessible name of the token picker chain filter | — |
+| `swapAllChains` | All | SwapPanelBlock: chain filter option that clears the filter | — |
+| `swapHot` | Hot | SwapPanelBlock: token picker section of host-ranked tokens | — |
+| `swapAllTokens` | All tokens | SwapPanelBlock: token picker section after the hot tokens | — |
+| `swapNoTokens` | No tokens found | SwapPanelBlock: token picker empty state | — |
+| `swapSelected` | Selected | SwapPanelBlock: marks the token picker row that is already selected | — |
+| `swapConnectWallet` | Connect wallet | SwapPanelBlock: token picker button that asks the host to connect a wallet | — |
+| `swapDisconnect` | Disconnect wallet | SwapPanelBlock: accessible name of the token picker disconnect button | — |
+| `swapGenerateAddress` | Generate address | FromPicker and SwapPanelBlock: switch that asks for a deposit address in place of a connected wallet | — |
+| `swapRecipient` | Recipient address | SwapPanelBlock: recipient address field placeholder and accessible name | — |
+| `swapScan` | Scan QR code | SwapPanelBlock: accessible name of the recipient QR scan button | — |
+| `copyAddress` | Copy address | WalletAddress and the SwapPanelBlock receive view: accessible name of an address that copies on press; the address follows it | — |
+| `addressCopied` | Address copied | WalletAddress and the SwapPanelBlock receive view: notice after the address is copied | — |
 | `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
 | `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
-| `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
-| `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
-| `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
+| `swapControlKey` | Ctrl | SwapPanelBlock: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
+| `swapKeypad` | Keypad | SwapPanelBlock: accessible name of the swap panel keypad | — |
+| `swapDelete` | Delete | SwapPanelBlock: accessible name of the keypad delete key | — |
 | `account` | Account | AccountBlock: default heading | — |
 | `deposit` | Deposit | AccountBlock: default label of the deposit action | — |
 | `accountBalance` | Total balance | AccountBlock: accessible label of the total balance | — |
@@ -1859,7 +1861,7 @@ Buttons, segmented controls and single-line text inputs share one height on web:
 
 ## Motion and gestures (#9)
 
-Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. CSS exposes `--hig-motion-duration-<fast|base|slow>` and `--hig-motion-easing-standard`. The durations become 0ms under `prefers-reduced-motion: reduce` and inside `[data-hig-motion='reduced']`, which the React provider sets when the host or OS asks for reduced motion. Press response ends on release/cancel; action executes on accepted activation, never press-in. Drag/scroll cancellation clears visual and feedback state. Interrupt transitions from current state instead of queuing. Reduced motion uses immediate state changes, static skeletons and unanimated numeric readouts. Outcome messages remain explicit. **Do** animate deliberate disclosure once; **don't** replay an entrance, highlight or sound for every live-data update. A number that updates in place is the one exception: it moves only its changed places through `AnimatedNumberReadout`, and in the swap card this is required for every number that can change while the card is shown (amounts, conversions, balances, fees, slippage and detail figures; see the SwapPanel live numbers rule). Native segmented selection uses an interruptible core Animated transform with the same timing and easing; physical-device animation feel remains unverified. Motion preference is independent from sound/haptics.
+Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. CSS exposes `--hig-motion-duration-<fast|base|slow>` and `--hig-motion-easing-standard`. The durations become 0ms under `prefers-reduced-motion: reduce` and inside `[data-hig-motion='reduced']`, which the React provider sets when the host or OS asks for reduced motion. Press response ends on release/cancel; action executes on accepted activation, never press-in. Drag/scroll cancellation clears visual and feedback state. Interrupt transitions from current state instead of queuing. Reduced motion uses immediate state changes, static skeletons and unanimated numeric readouts. Outcome messages remain explicit. **Do** animate deliberate disclosure once; **don't** replay an entrance, highlight or sound for every live-data update. A number that updates in place is the one exception: it moves only its changed places through `AnimatedNumberReadout`, and in the swap card this is required for every number that can change while the card is shown (amounts, conversions, balances, fees, slippage and detail figures; see the SwapPanelBlock live numbers rule). Native segmented selection uses an interruptible core Animated transform with the same timing and easing; physical-device animation feel remains unverified. Motion preference is independent from sound/haptics.
 
 ## Accessibility and localization (#10)
 
@@ -2191,7 +2193,7 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67; 2,329 B with the web-drawn capsule | 2,400 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports Raised again for the design review pass: on Expo web the Switch draws the HIG capsule with Space handling instead of react-native-web's Material switch. |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
-| Docs CSS | 124,111 B (with resizable drawer and per-place number motion); 139,812 B with SwapPanel, Filter and the review-pass styles; 150,567 B with BarMark, AssetBalanceRow and AccountBlock ; 167,406 B with the blocks added after 0.5.2 (account, token action, manage position, target, position, language, leaderboard and trade history) | 185,000 B | Tight headroom against the current Next CSS output; the gesture example remains lazy-loaded and Vaul injects its own runtime CSS rather than adding a second bundled stylesheet Raised for SwapPanel, Filter and WalletAddress, with about 10 KB of headroom for further components. |
+| Docs CSS | 124,111 B (with resizable drawer and per-place number motion); 139,812 B with SwapPanelBlock, Filter and the review-pass styles; 150,567 B with BarMark, AssetBalanceRow and AccountBlock ; 167,406 B with the blocks added after 0.5.2 (account, token action, manage position, target, position, language, leaderboard and trade history) | 185,000 B | Tight headroom against the current Next CSS output; the gesture example remains lazy-loaded and Vaul injects its own runtime CSS rather than adding a second bundled stylesheet Raised for SwapPanelBlock, Filter and WalletAddress, with about 10 KB of headroom for further components. |
 | Sans + Mono assets | 592,796 B | 600,000 B | Pins two approved faces; new script/face requires explicit review |
 | Native fixture faces from `@bloxwap/hig/native-fonts` (Sans 400/600, Mono 400) | 1,278,880 B | 1,400,000 B | Only the three registered faces; optional CJK and other weights stay unloaded. Every generated face hash is checked |
 | Font binaries in web/shared tarballs (tokens, contracts, react, feedback, native) | 0 files | 0 files | Native faces ship only in `@bloxwap/hig/native-fonts` (#64); `release:dry-run` fails otherwise and records `packedSizes` |
@@ -2353,7 +2355,7 @@ These are the rules that `@bloxwap/hig/react/css` applied to the whole page befo
 
 ### Radix overlay peers and Fumadocs
 
-The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/blocks`, or `@bloxwap/hig/react/blocks/trade-entry` (dialog only for the blocks). `@bloxwap/hig/react/blocks/swap-sheet` presents the swap panel in a gesture sheet and needs `vaul`, like `gesture-sheet`; `blocks/swap-panel` itself needs no overlay peer. Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
+The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/blocks`, or `@bloxwap/hig/react/blocks/trade-entry` (dialog only for the blocks). `@bloxwap/hig/react/blocks/swap-sheet` presents the swap panel in a gesture sheet and needs `vaul`, like `gesture-sheet`; `blocks/swap-panel-block` itself needs no overlay peer. Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
 
 The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](https://bloxwap.github.io/hig/docs/guides/components/overlays/#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
 

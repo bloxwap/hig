@@ -185,15 +185,20 @@
       "import": "./react/dist/blocks/trade-entry.js",
       "default": "./react/dist/blocks/trade-entry.js"
     },
+    "./react/blocks/swap-panel-block": {
+      "types": "./react/dist/blocks/swap-panel-block.d.ts",
+      "import": "./react/dist/blocks/swap-panel-block.js",
+      "default": "./react/dist/blocks/swap-panel-block.js"
+    },
     "./react/blocks/swap-panel": {
-      "types": "./react/dist/blocks/swap-panel.d.ts",
-      "import": "./react/dist/blocks/swap-panel.js",
-      "default": "./react/dist/blocks/swap-panel.js"
+      "types": "./react/dist/blocks/swap-panel-block.d.ts",
+      "import": "./react/dist/blocks/swap-panel-block.js",
+      "default": "./react/dist/blocks/swap-panel-block.js"
     },
     "./react/recipes/swap-panel": {
-      "types": "./react/dist/blocks/swap-panel.d.ts",
-      "import": "./react/dist/blocks/swap-panel.js",
-      "default": "./react/dist/blocks/swap-panel.js"
+      "types": "./react/dist/blocks/swap-panel-block.d.ts",
+      "import": "./react/dist/blocks/swap-panel-block.js",
+      "default": "./react/dist/blocks/swap-panel-block.js"
     },
     "./react/blocks/pickers": {
       "types": "./react/dist/blocks/pickers.d.ts",

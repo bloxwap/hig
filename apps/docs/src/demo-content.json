@@ -429,8 +429,8 @@
       "title": "TradeEntry"
     },
     {
-      "route": "components/swap-panel",
-      "title": "SwapPanel"
+      "route": "components/swap-panel-block",
+      "title": "SwapPanelBlock"
     },
     {
       "route": "components/from-picker",
@@ -1184,8 +1184,8 @@
       ]
     },
     {
-      "name": "SwapPanel",
-      "route": "components/swap-panel",
+      "name": "SwapPanelBlock",
+      "route": "components/swap-panel-block",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [

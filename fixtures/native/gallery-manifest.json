@@ -581,7 +581,7 @@
       "support": "renderer"
     },
     {
-      "name": "SwapPanel",
+      "name": "SwapPanelBlock",
       "states": [
         "default",
         "swap",

@@ -1,4 +1,4 @@
-// SwapPanel block: one panel for send, swap and bridge. The host owns tokens, prices, quote and wallet; the panel owns the entry.
+// SwapPanelBlock block: one panel for send, swap and bridge. The host owns tokens, prices, quote and wallet; the panel owns the entry.
 // Pickers and settings are views pushed inside the panel, never a dialog; SwapSheet presents the panel in the gesture sheet.
 jest.mock('@gorhom/bottom-sheet',()=>{
  const React=require('react'),{View,ScrollView,FlatList}=require('react-native');
@@ -12,7 +12,7 @@ const {create,act}=require('react-test-renderer');
 const {StyleSheet,View,Modal,BackHandler,Animated}=require('react-native');
 const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {SwapPanel,swapAction}=require('../../packages/hig/native/src/blocks');
+const {SwapPanelBlock,swapAction}=require('../../packages/hig/native/src/blocks');
 const {SwapSheet}=require('../../packages/hig/native/src/swap-sheet');
 const shared=require('../../packages/hig/native/src/swap-shared');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
@@ -24,7 +24,7 @@ const baseEth={id:'8453-eth',symbol:'ETH',name:'Ether',chain:'Base',chainId:8453
 const tokens=[eth,usdc,baseUsdc,baseEth];
 const event={stopPropagation(){},isDefaultPrevented:()=>false,preventDefault(){}};
 let root;
-function mount(props){if(root)act(()=>root.unmount());act(()=>{root=create(h(HIGProvider,{reducedMotion:true},h(SwapPanel,{tokens,onSubmit:jest.fn(),...props})));});return root.root;}
+function mount(props){if(root)act(()=>root.unmount());act(()=>{root=create(h(HIGProvider,{reducedMotion:true},h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),...props})));});return root.root;}
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.useRealTimers();jest.restoreAllMocks();});
 const all=(tree,id)=>tree.findAll(node=>node.props.testID===id&&typeof node.type!=='string');
 const node=(tree,id)=>{const hits=all(tree,id);if(!hits.length)throw new Error(`No ${id}`);return hits[0];};
@@ -37,7 +37,7 @@ const amount=(tree,side='from')=>node(tree,`swap-amount-${side}`).props.accessib
 const read=(tree,id)=>{const hit=all(tree,id).find(found=>found.props.accessibilityLabel||found.props.children!==undefined);if(!hit)throw new Error(`No reading for ${id}`);return hit.props.accessibilityLabel??[].concat(hit.props.children).join('');};
 // Live numbers: the readouts under an element (or the element itself when it is one).
 const flows=(tree,id)=>[...new Set(all(tree,id).flatMap(hit=>hit.type===AnimatedNumberReadout?[hit]:hit.findAllByType(AnimatedNumberReadout)))];
-const update=props=>{act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(SwapPanel,{tokens,onSubmit:jest.fn(),...props})));});return root.root;};
+const update=props=>{act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),...props})));});return root.root;};
 const conversion=(tree,side='from')=>read(tree,`swap-conversion-${side}`);
 const action=tree=>node(tree,'swap-action');
 const actionText=tree=>[].concat(action(tree).props.children).join('');
@@ -149,7 +149,7 @@ it('reset clears the entry, both tokens and the receive view',()=>{
  expect(actionText(tree)).toBe('Select a token');expect(node(tree,'swap-reset').props.disabled).toBe(true);
 });
 it('resyncs the entry when the host sets a different amount',()=>{
- const render=amount=>h(HIGProvider,null,h(SwapPanel,{tokens,onSubmit:jest.fn(),defaultFrom:eth,defaultTo:usdc,amount}));
+ const render=amount=>h(HIGProvider,null,h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),defaultFrom:eth,defaultTo:usdc,amount}));
  act(()=>{root=create(render(undefined));});const tree=root.root;type(tree,'30');expect(amount(tree)).toBe('$30');
  act(()=>root.update(render('0')));expect(amount(tree)).toBe('$0');
  act(()=>root.update(render('0.25')));expect(amount(tree)).toBe('$500');
@@ -185,7 +185,7 @@ it('wallet row and recipient field appear in the pickers when the host supplies 
  act(()=>tree.findAll(n=>n.props.accessibilityLabel==='Scan QR code'&&n.props.onPress)[0].props.onPress(event));expect(onScanRecipient).toHaveBeenCalledTimes(1);
 });
 it('uses the provider translations and keeps helper behaviour in step with web',()=>{
- act(()=>{root=create(h(HIGProvider,{messages:{swapFrom:'De',swapChooseToken:'Choisir un jeton',swapSelectToken:side=>`Choisir le jeton ${side}`}},h(SwapPanel,{tokens,onSubmit:jest.fn()})));});
+ act(()=>{root=create(h(HIGProvider,{messages:{swapFrom:'De',swapChooseToken:'Choisir un jeton',swapSelectToken:side=>`Choisir le jeton ${side}`}},h(SwapPanelBlock,{tokens,onSubmit:jest.fn()})));});
  expect(node(root.root,'swap-slot-from').props.accessibilityLabel).toBe('Choisir le jeton De');expect(actionText(root.root)).toBe('Choisir un jeton');
  expect(shared.sanitizeAmount('00012.5.6abc')).toBe('12.56');expect(shared.sanitizeAmount('.')).toBe('0');
  expect(shared.applyAmountKey('1.25','3','usd')).toBe('1.25');expect(shared.applyAmountKey('1.25','3','token')).toBe('1.253');expect(shared.applyAmountKey('7','back','usd')).toBe('0');
@@ -204,7 +204,7 @@ it('shows exactly one view inside its own bounds, with Back and no dialog or clo
  press(tree,'swap-setting-fees');expect(views()).toEqual(['swap-view-fees']);press(tree,'swap-back');press(tree,'swap-back');expect(views()).toEqual(['swap-view-main']);
 });
 it('follows a controlled view and only reports the view it wants',()=>{
- const onViewChange=jest.fn();const render=view=>h(HIGProvider,{reducedMotion:true},h(SwapPanel,{tokens,onSubmit:jest.fn(),view,onViewChange}));
+ const onViewChange=jest.fn();const render=view=>h(HIGProvider,{reducedMotion:true},h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),view,onViewChange}));
  act(()=>{root=create(render('main'));});const tree=root.root;
  press(tree,'swap-slot-from');expect(onViewChange).toHaveBeenCalledWith('from');expect(has(tree,'swap-view-main')).toBe(true);
  act(()=>root.update(render('from')));expect(has(tree,'swap-picker-from')).toBe(true);
@@ -221,7 +221,7 @@ it('Android back pops a pushed view and is not intercepted on the main view',()=
 it('slides a pushed view in from the trailing side and a popped one from the leading side, and not at all with reduced motion',()=>{
  const timing=jest.spyOn(Animated,'timing').mockImplementation(()=>({start:jest.fn(),stop:jest.fn()}));
  const offset=tree=>{const stage=tree.findAll(n=>n.props.testID==='swap-stage'&&typeof n.type!=='string')[0];const inner=root.toJSON();void stage;const find=node=>{if(!node||typeof node==='string')return null;if(node.props?.testID==='swap-stage')return node.children[0];for(const child of node.children??[]){const hit=find(child);if(hit)return hit;}return null;};return StyleSheet.flatten(find(inner).props.style);};
- const render=direction=>h(HIGProvider,{reducedMotion:false,direction},h(SwapPanel,{tokens,onSubmit:jest.fn()}));
+ const render=direction=>h(HIGProvider,{reducedMotion:false,direction},h(SwapPanelBlock,{tokens,onSubmit:jest.fn()}));
  act(()=>{root=create(render('ltr'));});let tree=root.root;expect(timing).not.toHaveBeenCalled();
  press(tree,'swap-settings-button');expect(timing).toHaveBeenCalledTimes(1);expect(timing.mock.calls[0][1]).toMatchObject({toValue:1,duration:260});
  // The mocked animation never advances, so the view rests at its starting offset: trailing side for a push.
@@ -252,7 +252,7 @@ it('SwapSheet presents the panel in the gesture sheet, pushes views inside it, a
 });
 it('keeps the sheet backend and Dialog out of the block: only swap-sheet imports them',()=>{
  const {readFileSync}=require('fs');
- for(const file of ['swap-panel.tsx','swap-views.tsx','swap-parts.tsx','swap-shared.ts','blocks.tsx']){const source=readFileSync(`packages/hig/native/src/${file}`,'utf8');expect(source).not.toMatch(/gesture-sheet|bottom-sheet|swap-sheet/);if(file!=='blocks.tsx')expect(source).not.toMatch(/overlay\.js/);}
+ for(const file of ['swap-panel-block.tsx','swap-views.tsx','swap-parts.tsx','swap-shared.ts','blocks.tsx']){const source=readFileSync(`packages/hig/native/src/${file}`,'utf8');expect(source).not.toMatch(/gesture-sheet|bottom-sheet|swap-sheet/);if(file!=='blocks.tsx')expect(source).not.toMatch(/overlay\.js/);}
  expect(readFileSync('packages/hig/native/src/swap-sheet.tsx','utf8')).toContain("from './gesture-sheet.js'");
 });
 it('one-way mode shows a down arrow between the cards and offers no flip',()=>{

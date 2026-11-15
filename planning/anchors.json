@@ -23,7 +23,7 @@
   ],
   "/docs/guides/components/blocks/": [
     "api-and-anatomy",
-    "swappanel",
+    "swappanelblock",
     "frompicker-and-topicker",
     "accountblock",
     "tokenactionblock",

@@ -731,8 +731,8 @@
       ]
     },
     {
-      "name": "SwapPanel",
-      "route": "components/swap-panel",
+      "name": "SwapPanelBlock",
+      "route": "components/swap-panel-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [

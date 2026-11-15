@@ -14,4 +14,4 @@ export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type Lea
 export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './blocks/trade-history-list-block.js';
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './blocks/trade-history-detail-block.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './blocks/pickers.js';
-export {SwapPanel,swapAction,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-panel.js';
+export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-panel-block.js';

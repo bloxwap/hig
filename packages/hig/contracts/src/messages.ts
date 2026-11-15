@@ -178,7 +178,7 @@ export interface HIGMessages {
  swapRecipient: string;
  /** Accessible name of the recipient QR scan button. */
  swapScan: string;
- /** Accessible name of a wallet address that copies on press (WalletAddress, the SwapPanel receive view); the address follows it. */
+ /** Accessible name of a wallet address that copies on press (WalletAddress, the SwapPanelBlock receive view); the address follows it. */
  copyAddress: string;
  /** Notice after a wallet address is copied. */
  addressCopied: string;

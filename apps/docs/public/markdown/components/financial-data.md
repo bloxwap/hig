@@ -136,7 +136,7 @@ See `tests/animated-number-model.test.ts`, `tests/animated-number.dom.test.tsx`,
 
 ## Optional number motion
 
-Number motion is optional for a readout on its own and required inside the swap card: `SwapPanel`, `SwapAmountCard` and the pickers update every changing number through `AnimatedNumberReadout` (see the SwapPanel live numbers rule in the blocks chapter).
+Number motion is optional for a readout on its own and required inside the swap card: `SwapPanelBlock`, `SwapAmountCard` and the pickers update every changing number through `AnimatedNumberReadout` (see the SwapPanelBlock live numbers rule in the blocks chapter).
 
 `AnimatedNumberReadout` lives in the separate `animated-number` entry on both platforms. It moves changed numeric places rather than fading the whole reading or interpolating financial values. The final visible output remains the canonical `Intl.NumberFormat` result used by `NumberReadout`, including the host's `prefix`, `suffix`, locale, options and stale text. Localized digits, grouping and decimal marks, currency tokens, and scientific-notation tokens are preserved; motion never assumes ASCII digits or a decimal point.
 

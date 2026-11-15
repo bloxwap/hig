@@ -161,7 +161,7 @@
         "PositionBlock",
         "LeaderboardBlock",
         "TradeEntry",
-        "SwapPanel",
+        "SwapPanelBlock",
         "FromPicker",
         "ToPicker",
         "InstallCommand",

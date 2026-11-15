@@ -5,7 +5,7 @@ import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {FromPicker,ToPicker} from '../packages/hig/react/src/blocks/pickers';
-import type {SwapToken} from '../packages/hig/react/src/blocks/swap-panel';
+import type {SwapToken} from '../packages/hig/react/src/blocks/swap-panel-block';
 afterEach(cleanup);
 const eth:SwapToken={id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:2,price:2000};
 const usdc:SwapToken={id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,keywords:'0xa0b8'};
