@@ -445,12 +445,12 @@
       "title": "SwapPanelBlock"
     },
     {
-      "route": "components/from-picker",
-      "title": "FromPicker"
+      "route": "components/from-picker-block",
+      "title": "FromPickerBlock"
     },
     {
-      "route": "components/to-picker",
-      "title": "ToPicker"
+      "route": "components/to-picker-block",
+      "title": "ToPickerBlock"
     },
     {
       "route": "components/install-command",
@@ -1243,8 +1243,8 @@
       ]
     },
     {
-      "name": "FromPicker",
-      "route": "components/from-picker",
+      "name": "FromPickerBlock",
+      "route": "components/from-picker-block",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -1256,8 +1256,8 @@
       ]
     },
     {
-      "name": "ToPicker",
-      "route": "components/to-picker",
+      "name": "ToPickerBlock",
+      "route": "components/to-picker-block",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [

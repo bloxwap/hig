@@ -66,7 +66,7 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
   </div>
  </>;
 }
-export interface FromPickerProps extends PickerListProps {
+export interface FromPickerBlockProps extends PickerListProps {
  /** The connected wallet. Omit for a list with no wallet row at all. */
  wallet?:SwapWallet;
  /** Shows Connect wallet while no wallet is connected. */
@@ -82,7 +82,7 @@ export interface FromPickerProps extends PickerListProps {
  * the tokens it holds (or a whitelist). With no wallet it offers Connect wallet and a Generate address switch above the list.
  * The host owns the wallet, the token data and the generated address.
  */
-export function FromPicker({wallet,onConnect,onDisconnect,generateAddress=false,onGenerateAddressChange,className,...list}:FromPickerProps){
+export function FromPickerBlock({wallet,onConnect,onDisconnect,generateAddress=false,onGenerateAddressChange,className,...list}:FromPickerBlockProps){
  const {messages}=useHIG();const id=useId();const label=messages.swapFrom??en.swapFrom;
  return <div className={`hig-picker${className?` ${className}`:''}`} role='group' aria-label={label}>
   {wallet?.connected
@@ -94,7 +94,7 @@ export function FromPicker({wallet,onConnect,onDisconnect,generateAddress=false,
   <TokenList {...list} label={label}/>
  </div>;
 }
-export interface ToPickerProps extends Partial<PickerListProps> {
+export interface ToPickerBlockProps extends Partial<PickerListProps> {
  /** The destination address field. Omit `onAddressChange` to hide it. */
  address?:string;onAddressChange?:(address:string)=>void;
  /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */
@@ -107,10 +107,19 @@ export interface ToPickerProps extends Partial<PickerListProps> {
  * Where the assets go. On its own it is a destination address field with a scan button. With `tokens` it adds the
  * searchable token list, with the chain filter or, with `chainFilter={false}`, without it.
  */
-export function ToPicker({address,onAddressChange,addressPlaceholder,onScan,className,tokens,onSelect,...list}:ToPickerProps){
+export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan,className,tokens,onSelect,...list}:ToPickerBlockProps){
  const {messages}=useHIG();const label=messages.swapTo??en.swapTo;
  return <div className={`hig-picker${className?` ${className}`:''}`} role='group' aria-label={label}>
   {onAddressChange&&<div className='hig-swap-wallet'><Input aria-label={messages.swapRecipient??en.swapRecipient} placeholder={addressPlaceholder??messages.swapRecipient??en.swapRecipient} value={address??''} onChange={event=>onAddressChange(event.target.value)} autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>{onScan&&<IconButton intent='secondary' label={messages.swapScan??en.swapScan} onClick={onScan}><SwapIcon name='scan'/></IconButton>}</div>}
   {tokens&&onSelect&&<TokenList {...list} tokens={tokens} onSelect={onSelect} label={label}/>}
  </div>;
 }
+
+/** @deprecated Renamed `FromPickerBlock`. The old name keeps working until the next major release. */
+export const FromPicker=FromPickerBlock;
+/** @deprecated Renamed `FromPickerBlockProps`. */
+export type FromPickerProps=FromPickerBlockProps;
+/** @deprecated Renamed `ToPickerBlock`. The old name keeps working until the next major release. */
+export const ToPicker=ToPickerBlock;
+/** @deprecated Renamed `ToPickerBlockProps`. */
+export type ToPickerProps=ToPickerBlockProps;

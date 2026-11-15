@@ -2,7 +2,7 @@
 import React,{useEffect,useRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from '../../provider.js';
-import {FromPicker,ToPicker,type SwapWallet} from '../pickers.js';
+import {FromPickerBlock,ToPickerBlock,type SwapWallet} from '../pickers.js';
 import {SwapViewHeader,shortAddress,type SwapChain,type SwapToken} from './shared.js';
 export type {SwapWallet} from '../pickers.js';
 export interface SwapPickerProps {
@@ -25,7 +25,7 @@ export function SwapPicker({side,onBack,selected,onSelect,wallet,onConnect,onDis
  return <div className='hig-swap-picker'>
   <SwapViewHeader title={title} titleRef={heading} backLabel={messages.back??en.back} onBack={onBack}/>
   {side==='from'
-   ?<FromPicker {...list} autoFocus selected={selected} onSelect={choose} wallet={wallet??{connected:false}} onConnect={onConnect} onDisconnect={onDisconnect} generateAddress={!!receiving} onGenerateAddressChange={onReceivingChange}/>
-   :<ToPicker {...list} autoFocus selected={selected} onSelect={choose} address={recipient} onAddressChange={onRecipientChange} addressPlaceholder={wallet?.address?shortAddress(wallet.address):undefined} onScan={onScanRecipient}/>}
+   ?<FromPickerBlock {...list} autoFocus selected={selected} onSelect={choose} wallet={wallet??{connected:false}} onConnect={onConnect} onDisconnect={onDisconnect} generateAddress={!!receiving} onGenerateAddressChange={onReceivingChange}/>
+   :<ToPickerBlock {...list} autoFocus selected={selected} onSelect={choose} address={recipient} onAddressChange={onRecipientChange} addressPlaceholder={wallet?.address?shortAddress(wallet.address):undefined} onScan={onScanRecipient}/>}
  </div>;
 }

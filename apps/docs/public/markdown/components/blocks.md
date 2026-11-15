@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPicker`, `ToPicker`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, `NotificationsBlock`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, `NotificationsBlock`, `InstallCommand`, and `MarketingHero`.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/market-row` and `blocks/marketing-hero`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel-block` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -28,8 +28,8 @@ All data and actions are supplied by the host application.
 | `SoundHapticsBlock` | Sound, microphone, haptics and flash settings: one card per channel with a switch, and for a channel that is on its device, input meter and volume steps. Details below. |
 | `SignalsBlock` | The signals the viewer receives, in groups with a heading, a help capsule and switches. Details below. |
 | `NotificationsBlock` | The notifications the viewer receives: one card per kind with a switch, and a failure under its card. Details below. |
-| `FromPicker` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
-| `ToPicker` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
+| `FromPickerBlock` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
+| `ToPickerBlock` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
 | `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. |
 | `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
 
@@ -119,36 +119,36 @@ Stake and unstake are one example each: the asset changes only the token data, n
 <SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<Button>Swap</Button>} tokens={catalog} onSubmit={execute}/>
 ```
 
-### FromPicker and ToPicker
+### FromPickerBlock and ToPickerBlock
 
 The two pickers are the swap panel's token views as standalone blocks, for a host that picks a source or a destination outside the panel: in its own sheet, a page, or a step of a flow. They carry no sheet or overlay of their own; place them in a `Dialog`, a `GestureSheet` or any container. `SwapPanelBlock` uses the same two blocks for its pushed views.
 
 Both share one token list: `tokens` (a wallet's holdings, a whitelist or a whole catalog), `selected`, `onSelect`, optional `chains`, `hotTokenIds` and `loading`. The search and address fields are the standard rounded HIG inputs. `chainFilter={false}` leaves out the chain filter, for a single chain or a list that should not be narrowed by chain; it is also left out when the tokens are all on one chain.
 
 ```tsx
-import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
+import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers';
 
 // Destination address only
-<ToPicker address={address} onAddressChange={setAddress} addressPlaceholder={shortWallet} onScan={openScanner}/>
+<ToPickerBlock address={address} onAddressChange={setAddress} addressPlaceholder={shortWallet} onScan={openScanner}/>
 // Address, then the asset, filtered by chain
-<ToPicker address={address} onAddressChange={setAddress} onScan={openScanner} tokens={catalog} selected={to} onSelect={setTo}/>
+<ToPickerBlock address={address} onAddressChange={setAddress} onScan={openScanner} tokens={catalog} selected={to} onSelect={setTo}/>
 // The same without the chain filter
-<ToPicker tokens={catalog} chainFilter={false} selected={to} onSelect={setTo}/>
+<ToPickerBlock tokens={catalog} chainFilter={false} selected={to} onSelect={setTo}/>
 
 // No wallet yet: connect, or generate an address to send to
-<FromPicker wallet={{connected: false}} onConnect={connect} generateAddress={generating} onGenerateAddressChange={setGenerating} tokens={catalog} onSelect={setFrom}/>
+<FromPickerBlock wallet={{connected: false}} onConnect={connect} generateAddress={generating} onGenerateAddressChange={setGenerating} tokens={catalog} onSelect={setFrom}/>
 // Connected: holdings, with sign-out
-<FromPicker wallet={{connected: true, address}} onDisconnect={disconnect} tokens={holdings} selected={from} onSelect={setFrom}/>
+<FromPickerBlock wallet={{connected: true, address}} onDisconnect={disconnect} tokens={holdings} selected={from} onSelect={setFrom}/>
 ```
 
 | Variant | Props |
 | --- | --- |
-| `ToPicker`, address only | `address`, `onAddressChange`, optional `addressPlaceholder` and `onScan`; no `tokens` |
-| `ToPicker`, with chains | add `tokens` and `onSelect` |
-| `ToPicker`, without chains | add `chainFilter={false}` |
-| `FromPicker`, not connected | `wallet={{connected:false}}`, `onConnect`, and `generateAddress` / `onGenerateAddressChange` for the switch |
-| `FromPicker`, connected | `wallet={{connected:true, address}}`; `onDisconnect` shows the sign-out button, omit it where signing out does not belong |
-| `FromPicker`, whitelist | no `wallet`: the token list alone |
+| `ToPickerBlock`, address only | `address`, `onAddressChange`, optional `addressPlaceholder` and `onScan`; no `tokens` |
+| `ToPickerBlock`, with chains | add `tokens` and `onSelect` |
+| `ToPickerBlock`, without chains | add `chainFilter={false}` |
+| `FromPickerBlock`, not connected | `wallet={{connected:false}}`, `onConnect`, and `generateAddress` / `onGenerateAddressChange` for the switch |
+| `FromPickerBlock`, connected | `wallet={{connected:true, address}}`; `onDisconnect` shows the sign-out button, omit it where signing out does not belong |
+| `FromPickerBlock`, whitelist | no `wallet`: the token list alone |
 
 - **Generate address** is a switch, not an action: it reports the new value and the user goes on to pick a chain and an asset. The host then shows the address to send to, for example with `WalletAddress`, or `SwapPanelBlock`'s receive view.
 - **Scanning** and **connecting** belong to the host: HIG ships no QR scanner and no wallet connection. `onScan` and `onConnect` only report the press.

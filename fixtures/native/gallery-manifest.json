@@ -620,7 +620,7 @@
       "support": "renderer"
     },
     {
-      "name": "FromPicker",
+      "name": "FromPickerBlock",
       "states": [
         "default",
         "connected",
@@ -631,7 +631,7 @@
       "support": "renderer"
     },
     {
-      "name": "ToPicker",
+      "name": "ToPickerBlock",
       "states": [
         "default",
         "tokens",
