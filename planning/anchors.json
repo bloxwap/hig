@@ -57,6 +57,7 @@
   ],
   "/docs/guides/components/financial-data/": [
     "api-and-anatomy",
+    "marketrow",
     "assetbalancerow",
     "barmark",
     "barpnl",

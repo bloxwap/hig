@@ -2,7 +2,7 @@
 
 Labeled inputs for text, search, and amounts, with visible help and validation.
 
-Includes `Field`, `Label`, `Input`, `TextArea`, and `SearchInput`.
+Includes `Field`, `Label`, `Input`, `TextArea`, `SearchInput`, and `TradeEntry`.
 
 Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/field` or `@bloxwap/hig/native/field` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -13,6 +13,7 @@ Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/fiel
 | `Field` | `label`, `id` (web), `description`, `error`, `required`, and `disabled`. |
 | `Input`, `TextArea` | Platform input props and forwarded refs. |
 | Amounts | No dedicated component. Use `Input` with `type='text' inputMode='decimal'` on web or `keyboardType='decimal-pad'` on native; `value` stays a raw string. |
+| `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. Trade confirm remains host-controlled. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
 
 ## When to use and examples
 

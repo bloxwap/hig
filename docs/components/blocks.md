@@ -2,7 +2,9 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, `NotificationsBlock`, `InstallCommand`, and `MarketingHero`.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`.
+
+`MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/market-row` and `blocks/marketing-hero`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel-block` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -14,7 +16,6 @@ All data and actions are supplied by the host application.
 
 | Block | Key props and behavior |
 | --- | --- |
-| `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
 | `SwapPanelBlock` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
 | `AccountBlock` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
 | `TokenActionBlock` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
@@ -30,22 +31,6 @@ All data and actions are supplied by the host application.
 | `NotificationsBlock` | The notifications the viewer receives: one card per kind with a switch, and a failure under its card. Details below. |
 | `FromPickerBlock` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
 | `ToPickerBlock` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
-| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. |
-| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
-
-Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
-
-```tsx
-<CommandItem onSelect={()=>openMarket(market.symbol)}>
-  <MarketRow mode='presentation' symbol={market.symbol} name={market.name}
-    price={market.price} priceOptions={{style:'decimal',maximumFractionDigits:8}}
-    change={market.change} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2}}
-    identity={<><strong>{market.symbol}</strong> {market.name}</>} icon={<MarketIcon symbol={market.symbol}/>}
-    favorite={<FavoriteIndicator selected={market.favorite}/>}
-    volume={<NumberReadout value={market.volume} options={{notation:'compact'}}/>}
-    style={{gridTemplateColumns:'minmax(0,1fr) 12ch 8ch 10ch'}}/>
-</CommandItem>
-```
 
 Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
 
@@ -377,7 +362,7 @@ Do: compose primitives and explicit outcomes in comfortable app or compact Pro c
 
 ## States, interaction and accessibility
 
-Native InstallCommand renders code in the provider's `monoFontFamily` (for example the registered `BloxwapMonoRegular`; platform monospace otherwise) and keeps code left-to-right inside RTL roots. Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show market, entry and feedback preference previews.
+Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show market, entry and feedback preference previews.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
