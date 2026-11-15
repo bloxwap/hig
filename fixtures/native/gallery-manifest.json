@@ -108,15 +108,6 @@
       "support": "renderer"
     },
     {
-      "name": "AmountInput",
-      "states": [
-        "default",
-        "disabled",
-        "error"
-      ],
-      "support": "renderer"
-    },
-    {
       "name": "SearchInput",
       "states": [
         "default",

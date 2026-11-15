@@ -31,11 +31,10 @@ case "Inline":return <C.Inline><C.Badge>Demo</C.Badge><C.Text>Updated just now</
 case "Surface":return <C.Surface><C.Text>Keep related decisions together.</C.Text></C.Surface>;
 case "Card":return <C.Card><C.Heading>Sample balance</C.Heading><C.Usd value={1250.45}/></C.Card>;
 case "Separator":return <C.Stack><C.Text>Order amount</C.Text><C.Separator/><C.Text>Host-provided terms</C.Text></C.Stack>;
-case "Field":return <C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
+case "Field":return <C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.Input keyboardType='decimal-pad' value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
 case "Label":return <C.Stack><C.Label>Amount</C.Label><C.Input accessibilityLabel='Amount' value={amount} onChangeText={setAmount}/></C.Stack>;
 case "Input":return <C.Field label='Asset search' error={error}><C.Input value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
 case "TextArea":return <C.Field label='Note' description='Optional, kept by the host'><C.TextArea value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
-case "AmountInput":return <C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
 case "SearchInput":return <C.Field label='Search markets'><C.SearchInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>;
 case "Checkbox":return <C.Checkbox label='Show order details' checked={checked} onCheckedChange={setChecked} disabled={disabled}/>;
 case "Switch":return <C.Stack><C.Switch label='Preference preview' checked={checked} onCheckedChange={setChecked} disabled={disabled}/><C.Switch label='Info tone preview' tone='info' checked={!checked} onCheckedChange={next=>setChecked(!next)} disabled={disabled}/></C.Stack>;

@@ -2,7 +2,7 @@
 
 Labeled inputs for text, search, and amounts, with visible help and validation.
 
-Includes `Field`, `Label`, `Input`, `TextArea`, `AmountInput`, and `SearchInput`.
+Includes `Field`, `Label`, `Input`, `TextArea`, and `SearchInput`.
 
 Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/field` or `@bloxwap/hig/native/field` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -12,7 +12,7 @@ Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/fiel
 | --- | --- |
 | `Field` | `label`, `id` (web), `description`, `error`, `required`, and `disabled`. |
 | `Input`, `TextArea` | Platform input props and forwarded refs. |
-| `AmountInput` | Text input with decimal keyboard hints; `value` stays a raw string. |
+| Amounts | No dedicated component. Use `Input` with `type='text' inputMode='decimal'` on web or `keyboardType='decimal-pad'` on native; `value` stays a raw string. |
 
 ## When to use and examples
 
@@ -26,7 +26,7 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 
 ## Platform mapping and limits
 
-RN decimal-pad has locale/platform differences; no implicit money parser. Host owns safe area and keyboard avoidance: on Android 15 edge-to-edge (Expo 54) the window no longer resizes for the IME, so wrap scrollable forms in `KeyboardAvoidingView behavior='padding'` on Android and use `automaticallyAdjustKeyboardInsets` on the iOS ScrollView, as the native gallery does. iOS Simulator and Android emulator runs show the AmountInput decimal pad and the focused field kept above the keyboard (`evidence/native-sim/`); physical IME composition and hardware-keyboard behavior remain device observations.
+RN decimal-pad has locale/platform differences; no implicit money parser. Host owns safe area and keyboard avoidance: on Android 15 edge-to-edge (Expo 54) the window no longer resizes for the IME, so wrap scrollable forms in `KeyboardAvoidingView behavior='padding'` on Android and use `automaticallyAdjustKeyboardInsets` on the iOS ScrollView, as the native gallery does. iOS Simulator and Android emulator runs show the decimal pad and the focused field kept above the keyboard (`evidence/native-sim/`); physical IME composition and hardware-keyboard behavior remain device observations.
 
 ## Validation and citation
 

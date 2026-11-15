@@ -53,7 +53,7 @@
       "entry": "surface",
       "family": "actions-surfaces",
       "web": "<C.Text>Review the amount and asset before confirming.</C.Text>",
-      "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>\ud55c\uad6d\uc5b4 \u00b7 \u4e2d\u6587</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
+      "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>한국어 · 中文</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -150,8 +150,8 @@
       "slug": "field",
       "entry": "field",
       "family": "fields",
-      "web": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.AmountInput value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
-      "native": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
+      "web": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.Input type='text' inputMode='decimal' value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
+      "native": "<C.Field label='Amount (BTC)' description='Available: 0.25 BTC' error={error}><C.Input keyboardType='decimal-pad' value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -201,22 +201,6 @@
       "states": [
         "default",
         "disabled"
-      ],
-      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
-    },
-    {
-      "name": "AmountInput",
-      "slug": "amount-input",
-      "entry": "field",
-      "family": "fields",
-      "web": "<C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChange={e=>setAmount(e.target.value)} disabled={disabled}/></C.Field>",
-      "native": "<C.Field label='Amount (BTC)' description='Raw decimal string; host validates precision' error={error}><C.AmountInput value={amount} onChangeText={setAmount} editable={!disabled}/></C.Field>",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "disabled",
-        "error"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
@@ -346,8 +330,8 @@
       "slug": "dialog",
       "entry": "overlay",
       "family": "overlays",
-      "web": "<C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided amount and terms.' trigger={<C.Button>Open review</C.Button>}><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog></C.Stack>",
+      "web": "<C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided amount and terms.' trigger={<C.Button>Open review</C.Button>}><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -361,7 +345,7 @@
       "entry": "overlay",
       "family": "overlays",
       "web": "<C.AlertDialog open={open} onOpenChange={setOpen} title='Confirm cancellation' description='The host defines the actual consequence.' trigger={<C.Button intent='destructive'>Review cancellation</C.Button>}><C.Button intent='destructive' onClick={()=>{setMessage('Demo cancellation accepted');setOpen(false);}}>Confirm cancellation</C.Button></C.AlertDialog>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.AlertDialog></C.Stack>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.AlertDialog></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -375,7 +359,7 @@
       "entry": "overlay",
       "family": "overlays",
       "web": "<C.Sheet open={open} onOpenChange={setOpen} title='Order details' description='Scrollable, explicit close action.' trigger={<C.Button>Open details</C.Button>}><C.Text>Terms supplied by host.</C.Text></C.Sheet>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Sheet></C.Stack>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Sheet></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"

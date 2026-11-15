@@ -136,17 +136,6 @@
       ]
     },
     {
-      "name": "AmountInput",
-      "route": "components/amount-input",
-      "entry": "field",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "disabled",
-        "error"
-      ]
-    },
-    {
       "name": "SearchInput",
       "route": "components/search-input",
       "entry": "field",

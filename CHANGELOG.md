@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Breaking: `AmountInput` is removed from `@bloxwap/hig/react/field` and `@bloxwap/hig/native/field`, with its catalog page and examples. Use `Input` with `type='text' inputMode='decimal'` on web or `keyboardType='decimal-pad'` on native; the rendered input is the same. `TradeEntry` does this itself and is unchanged.
+
 ## 0.5.2
 
 SwapPanel takes the last host rules that kept apps on their own amount sheets (web and native).
