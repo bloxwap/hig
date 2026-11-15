@@ -101,3 +101,15 @@ describe('settings blocks',()=>{
   expect(readFileSync('packages/hig/react/src/blocks/setting-switch.tsx','utf8')).toContain("<label className='hig-choice hig-setting-switch'");
  });
 });
+
+it('switch rows keep the track flush with the trailing edge and level with the first line of the label',()=>{
+ const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
+ // Top-aligned row; the text is padded so its first line is centred on the control height, where the track is centred too.
+ expect(rule('.hig-setting-switch {')).toContain('align-items:flex-start');
+ expect(rule('.hig-setting-switch-text {')).toContain('padding-block:calc((var(--hig-control) - 1.5em)/2)');
+ const track=rule('.hig-setting-switch > .hig-switch {');expect(track).toContain('justify-content:flex-end');expect(track).toContain('height:var(--hig-control)');expect(track).not.toMatch(/min-width/);
+ // A list row that holds a switch aligns to the first line as well.
+ expect(rule('.hig-list-row:has(> .hig-list-row-trailing .hig-switch) {')).toContain('align-items:flex-start');
+ // The switch keeps its 44-unit target; the track is flush right inside it.
+ const inRow=rule('.hig-list-row-trailing .hig-switch {');expect(inRow).toMatch(/padding-inline:0;justify-content:flex-end/);expect(inRow).not.toMatch(/min-width/);
+});

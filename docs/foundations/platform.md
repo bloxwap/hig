@@ -99,7 +99,7 @@ An unavailable button is neutral: a well fill with `muted` text (`faint` and no 
 
 Controls inside a card or sheet sit 8 units apart in both directions: a toggle above a field, rows of presets, two buttons side by side, capsules in a filter row. The action row at the bottom of a card or sheet, the primary action with its secondary beside it, sits 16 units below the content above it, so the decision reads as separate from the form. The two actions themselves stay 8 apart.
 
-Buttons, segmented controls and single-line text inputs share one height on web: 44 units on touch density, 36 compact. Rows in a list are capsules 8 units apart. A row that leads with a round avatar pads it equally on every side, so the capsule end is concentric with the avatar: a 40 unit avatar with 8 units of padding gives a 56 unit row with a 28 unit end radius. Every pane of a sheet shows its title in the header.
+Buttons, segmented controls and single-line text inputs share one height on web: 44 units on touch density, 36 compact. Rows in a list are capsules 8 units apart. A row that leads with a round avatar pads it equally on every side, so the capsule end is concentric with the avatar: a 40 unit avatar with 8 units of padding gives a 56 unit row with a 28 unit end radius. Every pane of a sheet shows its title in the header. A switch in a row sits flush with the row's trailing edge, in line with the content above and below it, and level with the first line of its label: when the label or its description wraps, the switch stays at the top and does not drift to the middle.
 
 ## Motion and gestures (#9)
 

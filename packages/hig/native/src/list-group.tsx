@@ -36,16 +36,18 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
 /** One row of a ListGroup: the label leads; a value, icons, a badge or a control trail. With `onSelect` the whole row is one button and shows a disclosure chevron; without it the row is static, so a control in `trailing` is its only target. */
 export function ListRow({label,leading,value,trailing,onSelect,disabled,testID}:ListRowProps){
  const colors=useColors(),fills=useFills(),{direction}=useHIG();
- const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:pressed?fills.raised:fills.well,opacity:disabled?0.5:1});
+ const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'flex-start',gap:12,minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:pressed?fills.raised:fills.well,opacity:disabled?0.5:1});
  const text=typeof value==='string'||typeof value==='number';
  const reading=[label,text?String(value):null].filter(Boolean).join(', ');
- const lead=leading==null?null:<View {...hidden}>{leading}</View>;
- const name=<Text {...(onSelect?hidden:{})} style={{flex:1,flexShrink:1,minWidth:0,fontSize:16,lineHeight:24,color:colors.text}}>{label}</Text>;
- const amount=value==null||value===false?null:text?<Text {...(onSelect?hidden:{})} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',fontSize:16,lineHeight:24,color:colors.muted,textAlign:'right'}}>{value}</Text>:value;
- const extra=trailing==null?null:<View pointerEvents={onSelect?'none':'auto'} {...(onSelect?hidden:{})} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>;
+ // Everything aligns to the first line of the label, so a trailing switch stays at the top when the label wraps.
+ const first:ViewStyle={minHeight:40,justifyContent:'center'};
+ const lead=leading==null?null:<View {...hidden} style={first}>{leading}</View>;
+ const name=<Text {...(onSelect?hidden:{})} style={{flex:1,flexShrink:1,minWidth:0,paddingVertical:8,fontSize:16,lineHeight:24,color:colors.text}}>{label}</Text>;
+ const amount=value==null||value===false?null:text?<Text {...(onSelect?hidden:{})} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',paddingVertical:8,fontSize:16,lineHeight:24,color:colors.muted,textAlign:'right'}}>{value}</Text>:<View style={first}>{value}</View>;
+ const extra=trailing==null?null:<View pointerEvents={onSelect?'none':'auto'} {...(onSelect?hidden:{})} style={{flexDirection:'row',alignItems:'center',gap:8,minHeight:40}}>{trailing}</View>;
  if(!onSelect)return <View testID={testID} style={row(false)}>{lead}{name}{amount}{extra}</View>;
  return <Pressable testID={testID} accessibilityRole='button' accessibilityLabel={reading} accessibilityState={{disabled:!!disabled}} disabled={disabled} onPress={onSelect} style={({pressed})=>row(pressed)}>
   {lead}{name}{amount}{extra}
-  <View {...hidden} testID={testID?`${testID}-chevron`:undefined} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
+  <View {...hidden} style={first}><View testID={testID?`${testID}-chevron`:undefined} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View></View>
  </Pressable>;
 }
