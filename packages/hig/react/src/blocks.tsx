@@ -11,7 +11,7 @@ export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type 
 export {TargetBlock,targetLayout,targetFormat,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice} from './blocks/target-block.js';
 export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag} from './blocks/position-block.js';
 export {ProfileBlock,type ProfileBlockProps,type ProfileSection,type ProfileRow,type ProfileStatus} from './blocks/profile-block.js';
-export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type LeaderboardPromo,type LeaderboardEntry} from './blocks/leaderboard-block.js';
+export {RewardBlock,rewardProgress,type RewardBlockProps,type RewardPromo,type RewardEntry} from './blocks/reward-block.js';
 export {SoundHapticsBlock,soundLevel,type SoundHapticsBlockProps,type SoundSection,type SoundVolume} from './blocks/sound-haptics-block.js';
 export {SignalsBlock,type SignalsBlockProps,type SignalsGroup,type SignalsItem} from './blocks/signals-block.js';
 export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} from './blocks/notifications-block.js';

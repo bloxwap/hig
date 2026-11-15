@@ -29,7 +29,7 @@ export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHist
 export {TargetBlock,targetLayout,targetFormat,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-block.js';
 export {ProfileBlock,type ProfileBlockProps,type ProfileRow,type ProfileSection,type ProfileStatus} from './profile-block.js';
 export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag} from './position-block.js';
-export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type LeaderboardPromo,type LeaderboardEntry} from './leaderboard-block.js';
+export {RewardBlock,rewardProgress,type RewardBlockProps,type RewardPromo,type RewardEntry} from './reward-block.js';
 export {SoundHapticsBlock,soundLevel,type SoundHapticsBlockProps,type SoundSection,type SoundVolume} from './sound-haptics-block.js';
 export {SignalsBlock,type SignalsBlockProps,type SignalsGroup,type SignalsItem} from './signals-block.js';
 export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} from './notifications-block.js';

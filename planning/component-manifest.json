@@ -162,7 +162,7 @@
         "TradeHistoryDetailBlock",
         "TargetBlock",
         "PositionBlock",
-        "LeaderboardBlock",
+        "RewardBlock",
         "ProfileBlock",
         "SoundHapticsBlock",
         "SignalsBlock",

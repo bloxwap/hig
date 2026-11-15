@@ -1,6 +1,6 @@
 {
   "version": "0.5.2",
-  "sourceCommit": "db95d0ad49381a3c842b0bef6653356e688816ce",
+  "sourceCommit": "419e34de93056533fd4501d1305097551639eba1",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,7 +8,7 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "hig": 325
+    "hig": 331
   },
   "sizes": {
     "button": {
@@ -96,11 +96,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2387479,
-      "gzip": 641168
+      "raw": 2397144,
+      "gzip": 642167
     },
     "docsCSS": {
-      "raw": 169636
+      "raw": 171228
     },
     "fonts": {
       "raw": 592796

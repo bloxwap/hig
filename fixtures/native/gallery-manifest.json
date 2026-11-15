@@ -539,7 +539,7 @@
       "support": "renderer"
     },
     {
-      "name": "LeaderboardBlock",
+      "name": "RewardBlock",
       "states": [
         "default",
         "sweepstakes"

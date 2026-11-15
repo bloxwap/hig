@@ -293,10 +293,10 @@
       "import": "./react/dist/blocks/position-block.js",
       "default": "./react/dist/blocks/position-block.js"
     },
-    "./react/blocks/leaderboard-block": {
-      "types": "./react/dist/blocks/leaderboard-block.d.ts",
-      "import": "./react/dist/blocks/leaderboard-block.js",
-      "default": "./react/dist/blocks/leaderboard-block.js"
+    "./react/blocks/reward-block": {
+      "types": "./react/dist/blocks/reward-block.d.ts",
+      "import": "./react/dist/blocks/reward-block.js",
+      "default": "./react/dist/blocks/reward-block.js"
     },
     "./react/blocks/sound-haptics-block": {
       "types": "./react/dist/blocks/sound-haptics-block.d.ts",
@@ -393,10 +393,10 @@
       "import": "./native/dist/position-block.js",
       "default": "./native/dist/position-block.js"
     },
-    "./native/leaderboard-block": {
-      "types": "./native/dist/leaderboard-block.d.ts",
-      "import": "./native/dist/leaderboard-block.js",
-      "default": "./native/dist/leaderboard-block.js"
+    "./native/reward-block": {
+      "types": "./native/dist/reward-block.d.ts",
+      "import": "./native/dist/reward-block.js",
+      "default": "./native/dist/reward-block.js"
     },
     "./native/sound-haptics-block": {
       "types": "./native/dist/sound-haptics-block.d.ts",
