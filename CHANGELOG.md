@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.1
 
 - The brand mark has its own canonical source (#201). `npm run generate` reads the approved SVG's geometry and fills into the new `@bloxwap/hig/tokens/brand` entry (`brandMark`: view box, radius, stroke, paths, and sRGB and Display P3 fills), and the web and native `BrandMark` draw from it. Rendering is unchanged. The two `copied-palette` drift exceptions are deleted, so nothing expires. Native: `useColorSpace()` from `@bloxwap/hig/native/provider` returns the colour space a subtree paints in.
 

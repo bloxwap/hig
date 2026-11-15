@@ -4,20 +4,20 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "stable-simulation",
-  "sourceCommit": "7ce989a4ff3701e2b3f3db5f08e7b52d48baf9cf",
+  "sourceCommit": "e8d1573a59fee358d1a7a292580e2a97bc2af7d6",
   "sourceTreeDirty": true,
-  "sourceVersion": "0.5.0",
-  "artifactVersion": "0.5.0",
-  "docsGuidelineVersion": "0.5.0",
+  "sourceVersion": "0.5.1",
+  "artifactVersion": "0.5.1",
+  "docsGuidelineVersion": "0.5.1",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig",
-      "version": "0.5.0",
-      "file": "bloxwap-hig-0.5.0.tgz",
-      "bytes": 5478547,
-      "unpackedBytes": 15008445,
-      "sha256": "c5e11af62b8432d1a54c2dd725eb6c0f026751bcb3793b4bf445ade603cd191a",
+      "version": "0.5.1",
+      "file": "bloxwap-hig-0.5.1.tgz",
+      "bytes": 5479258,
+      "unpackedBytes": 15011240,
+      "sha256": "cd49b8573de0b387d958b6094a2e34d0c4d7d3f4b5d7e6829acf8be7dd89ff26",
       "files": [
         "LICENSE",
         "README.md",
@@ -230,6 +230,8 @@
         "react/dist/wallet-address.js",
         "react/README.md",
         "tokens/assets/bloxwap-icon.svg",
+        "tokens/dist/brand.d.ts",
+        "tokens/dist/brand.js",
         "tokens/dist/index.d.ts",
         "tokens/dist/index.js",
         "tokens/dist/manifest.json",
@@ -243,7 +245,7 @@
         "README.md": 2424,
         "chart/dist/index.d.ts": 423,
         "chart/dist/index.js": 1677,
-        "chart/README.md": 1204,
+        "chart/README.md": 1214,
         "contracts/dist/announcements.d.ts": 508,
         "contracts/dist/announcements.js": 650,
         "contracts/dist/feedback.d.ts": 1443,
@@ -306,8 +308,8 @@
         "native/dist/animated-number-model.js": 5712,
         "native/dist/animated-number.d.ts": 514,
         "native/dist/animated-number.js": 8572,
-        "native/dist/brand.d.ts": 372,
-        "native/dist/brand.js": 1165,
+        "native/dist/brand.d.ts": 383,
+        "native/dist/brand.js": 1284,
         "native/dist/button.d.ts": 2004,
         "native/dist/button.js": 5597,
         "native/dist/checkbox.d.ts": 215,
@@ -326,8 +328,8 @@
         "native/dist/overlay.js": 6486,
         "native/dist/pickers.d.ts": 3300,
         "native/dist/pickers.js": 9396,
-        "native/dist/provider.d.ts": 5784,
-        "native/dist/provider.js": 6729,
+        "native/dist/provider.d.ts": 5990,
+        "native/dist/provider.js": 7020,
         "native/dist/radio-group.d.ts": 1199,
         "native/dist/radio-group.js": 10729,
         "native/dist/recipes.d.ts": 1831,
@@ -377,14 +379,14 @@
         "og-fonts/fonts/manifest.json": 2300,
         "og-fonts/fonts/OFL.txt": 4391,
         "og-fonts/README.md": 2853,
-        "package.json": 15277,
+        "package.json": 15465,
         "react/dist/animated-number-model.d.ts": 772,
         "react/dist/animated-number-model.js": 5099,
         "react/dist/animated-number.d.ts": 409,
         "react/dist/animated-number.js": 5421,
         "react/dist/base.css": 689,
-        "react/dist/brand.d.ts": 286,
-        "react/dist/brand.js": 962,
+        "react/dist/brand.d.ts": 364,
+        "react/dist/brand.js": 1083,
         "react/dist/button.d.ts": 950,
         "react/dist/button.js": 1961,
         "react/dist/data.d.ts": 4013,
@@ -450,6 +452,8 @@
         "react/dist/wallet-address.js": 2804,
         "react/README.md": 1886,
         "tokens/assets/bloxwap-icon.svg": 8236,
+        "tokens/dist/brand.d.ts": 881,
+        "tokens/dist/brand.js": 890,
         "tokens/dist/index.d.ts": 14855,
         "tokens/dist/index.js": 13186,
         "tokens/dist/manifest.json": 3203,
@@ -509,22 +513,22 @@
   ],
   "packedSizes": {
     "package": {
-      "file": "bloxwap-hig-0.5.0.tgz",
-      "bytes": 5478547,
-      "unpackedBytes": 15008445
+      "file": "bloxwap-hig-0.5.1.tgz",
+      "bytes": 5479258,
+      "unpackedBytes": 15011240
     },
     "webTokens": {
       "entry": "@bloxwap/hig/tokens",
-      "files": 8,
-      "unpackedBytes": 48324,
-      "gzipBytes": 10518,
+      "files": 10,
+      "unpackedBytes": 50095,
+      "gzipBytes": 11492,
       "fontFiles": 0
     },
     "nativeFonts": {
       "entry": "@bloxwap/hig/native-fonts",
       "files": 20,
       "unpackedBytes": 12067941,
-      "gzipBytes": 4413623,
+      "gzipBytes": 4413624,
       "fontFiles": 15
     },
     "ogFonts": {
@@ -539,7 +543,7 @@
   "chartAdapter": {
     "package": "@bloxwap/hig",
     "entry": "@bloxwap/hig/chart",
-    "file": "bloxwap-hig-0.5.0.tgz",
+    "file": "bloxwap-hig-0.5.1.tgz",
     "peer": "@bloxwap/chart",
     "peerOptional": false
   },
@@ -629,8 +633,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2238355,
-      "gzip": 625234
+      "raw": 2242803,
+      "gzip": 626640
     },
     "docsCSS": {
       "raw": 146649
