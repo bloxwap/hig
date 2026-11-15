@@ -38,8 +38,8 @@ export interface PositionBlockProps {
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** The position being opened or edited as a screen: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows that open the host's own views. */
 export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,testID}:PositionBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale,monoFontFamily}=useHIG();
- const figure={fontSize:16,lineHeight:24,fontWeight:'600'} as const;
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
+ const figure={fontSize:16,lineHeight:24,fontWeight:'500'} as const;
  const shown=groups.filter(group=>group.length>0);
  return <View testID={testID} style={{padding:16}}>
   <View testID='position-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
@@ -47,17 +47,17 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
    <Text testID='position-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{title}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction??(onClose?<IconButton intent='ghost' label={t.close} suppressFeedback testID='position-close' onPress={onClose}><CloseIcon color={colors.text}/></IconButton>:null)}</View>
   </View>
-  {details.length>0?<View testID='position-details' style={{gap:12,marginTop:16,paddingHorizontal:4}}>
+  {details.length>0?<View testID='position-details' style={{gap:12,marginTop:16,paddingVertical:16,paddingHorizontal:20,borderRadius:20,backgroundColor:fills.well}}>
    {details.map((detail,index)=>{
     const live=typeof detail.value==='string'?null:detail.value,reading=live?formatNumberReadout(live.value,locale,live.options,undefined,live.prefix,live.suffix).text:detail.value as string;
     return <View key={detail.id??index} testID={`position-detail-${detail.id??index}`} accessible accessibilityLabel={`${detail.label}, ${reading}`} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
      <Text {...hidden} style={{flexShrink:1,fontSize:16,lineHeight:24,color:colors.muted}}>{detail.label}</Text>
-     <View {...hidden} style={{flexShrink:1}}>{live?<AnimatedNumberReadout {...live} tone={detail.tone??'text'} style={figure}/>:<Text style={{...figure,fontFamily:monoFontFamily,color:detail.tone?colors[detail.tone]:colors.text,textAlign:'right'}}>{reading}</Text>}</View>
+     <View {...hidden} style={{flexShrink:1}}>{live?<AnimatedNumberReadout {...live} tone={detail.tone??'text'} style={figure}/>:<Text style={{...figure,color:detail.tone?colors[detail.tone]:colors.text,textAlign:'right'}}>{reading}</Text>}</View>
     </View>;
    })}
   </View>:null}
-  {note?<Text testID='position-note' style={{color:colors.muted,fontSize:14,lineHeight:21,marginTop:16,paddingHorizontal:4}}>{note}</Text>:null}
-  {paperTrade||shown.length>0?<View testID='position-groups' style={{gap:8,marginTop:16}}>
+  {note?<Text testID='position-note' style={{color:colors.muted,fontSize:13,lineHeight:20,marginTop:8,paddingHorizontal:20}}>{note}</Text>:null}
+  {paperTrade||shown.length>0?<View testID='position-groups' style={{gap:24,marginTop:16}}>
    {paperTrade?<SwitchRow testID='position-paper-trade' label={paperTrade.label} checked={paperTrade.checked} disabled={paperTrade.disabled} onCheckedChange={paperTrade.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,borderRadius:20,backgroundColor:fills.well,opacity:paperTrade.disabled?0.5:1}}>
     <View style={{flex:1,flexDirection:'row',alignItems:'center',gap:12}}>
      <Text style={{flex:1,flexShrink:1,minWidth:0,fontSize:16,lineHeight:24,color:colors.text}}>{paperTrade.label}</Text>

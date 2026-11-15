@@ -34,7 +34,7 @@ import {ListGroup, ListRow} from '@bloxwap/hig/react/list-group';
 - **Trailing content.** `value` is short muted text such as `Off`, `English` or a balance. `trailing` takes anything richer: icons, a `Badge`, or a control. Both can be used together; the value comes first.
 - **Leading content.** `leading` is decorative artwork before the label, such as an icon.
 - **Disabled.** `disabled` dims the row and blocks `onSelect` and `href`.
-- **Anatomy.** Rows are 56 units high with 20 units of inline padding. The group has a 20-unit radius; the first and last rows take its corners. A group without a `title` is the container alone. Stack groups with the page gap between them.
+- **Anatomy.** Rows are 56 units high with 20 units of inline padding. The group has a 20-unit radius; the first and last rows take its corners. A group without a `title` is the container alone. Stack groups 24 units apart: that gap is what separates one group from the next, where rows inside a group are 2 apart.
 - **Accessibility.** With a `title` the group is a region named by it, and its rows are a list. A selectable row is one button named by its label and value. The chevron and `leading` are decorative.
 
 ## When to use and examples

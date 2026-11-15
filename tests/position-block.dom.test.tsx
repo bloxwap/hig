@@ -55,4 +55,8 @@ describe('PositionBlock',()=>{
   expect(screen.getByRole('button',{name:'Fermer'})).toBeTruthy();expect(lines()[0][1]).toMatch(/^0,53\s\$US$/);
   const source=readFileSync('packages/hig/react/src/blocks/position-block.tsx','utf8');expect(source.match(/messages\.\w+/g)).toEqual(['messages.close']);
  });
+ it('stacks its list groups 24 apart, the standard gap between groups',()=>{
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-groups {'))??'';
+  expect(rule).toContain('gap:24px');
+ });
 });
