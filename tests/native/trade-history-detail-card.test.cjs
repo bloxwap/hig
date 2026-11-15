@@ -34,7 +34,9 @@ it('shows the host title as the heading, Back only with onBack, and the host act
 });
 it('shows the asset with an arrow and the host side word in the direction colour, then the leverage',()=>{
  let view=mount();const row=host(view,'trade-asset');
- expect(row.props.accessibilityLabel).toBe('Amazon, Short, 20×');expect(flat(row)).toMatchObject({minHeight:56,borderRadius:28,paddingStart:8,paddingEnd:16,backgroundColor:nativeSrgb.surface});
+ expect(row.props.accessibilityLabel).toBe('Amazon, Short, 20×');
+ // One centred line on the screen, not a capsule.
+ expect(flat(row)).toMatchObject({flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,marginTop:16});expect(flat(row).backgroundColor).toBeUndefined();expect(flat(row).borderRadius).toBeUndefined();
  expect(text(host(view,'trade-side-arrow'))).toBe('↓');expect(flat(host(view,'trade-side-arrow')).color).toBe(nativeSrgb.sell);
  expect(text(host(view,'trade-side'))).toBe('Short');expect(flat(host(view,'trade-side'))).toMatchObject({color:nativeSrgb.sell,fontWeight:'600',textTransform:'uppercase'});
  expect(text(host(view,'trade-leverage'))).toBe('20×');expect(flat(host(view,'trade-leverage')).color).toBe(nativeSrgb.muted);
@@ -45,10 +47,10 @@ it('shows the asset with an arrow and the host side word in the direction colour
  expect(host(view,'trade-asset').findAll(node=>node.type==='Image')[0].props.source).toEqual({uri:'https://example.com/amzn.png'});
  view=mount({icon:h(View,{testID:'art'})});expect(has(host(view,'trade-asset'),'art')).toBe(true);
 });
-it('reads the net result as the figure, toned for a gain or a loss, under the host caption',()=>{
+it('reads the net result as the figure, toned for a gain or a loss, named by the host caption without drawing it or a card',()=>{
  let view=mount();const card=host(view,'trade-pnl');
- expect(flat(card)).toMatchObject({alignItems:'center',paddingVertical:24,gap:8,backgroundColor:nativeSrgb.surface});
- const caption=card.findAll(node=>node.type==='Text'&&text(node)==='Net PnL')[0];expect(flat(caption)).toMatchObject({fontSize:12,lineHeight:18,fontWeight:'600',color:nativeSrgb.muted,textTransform:'uppercase',letterSpacing:0.5});
+ expect(flat(card)).toMatchObject({alignItems:'center',gap:4});expect(flat(card).backgroundColor).toBeUndefined();expect(flat(card).paddingVertical).toBeUndefined();
+ expect(card.findAll(node=>node.type==='Text'&&text(node)==='Net PnL')).toHaveLength(0);expect(figure(view).props.label).toBe('Net PnL');
  expect(figure(view).props).toMatchObject({value:1.418,tone:'up',options:{style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:4}});expect(flat(figure(view))).toMatchObject({fontSize:40,lineHeight:48,fontWeight:'700'});
  view=mount({pnl:-4.2});expect(figure(view).props.tone).toBe('down');
  view=mount({pnl:0});expect(figure(view).props.tone).toBe('text');
@@ -66,14 +68,14 @@ it('keeps the host wording of the return on margin around a live number, in the 
  view=mount({pnlPercent:null});expect(flows(view,'trade-pnl-percent')).toHaveLength(0);expect(text(host(view,'trade-pnl-percent'))).toBe('— on margin');
  view=mount({pnlPercent:undefined});expect(has(view,'trade-pnl-percent')).toBe(false);
 });
-it('lists the host rows: a number is a live readout with its format and affixes, a string is drawn as given',()=>{
- let view=mount();const card=host(view,'trade-details');expect(flat(card)).toMatchObject({gap:12,backgroundColor:nativeSrgb.surface});
+it('lists the host figures three to a line, a label over its value: a number is a live readout with its format and affixes, a string is drawn as given',()=>{
+ let view=mount();const card=host(view,'trade-details');expect(flat(card)).toMatchObject({flexDirection:'row',flexWrap:'wrap',rowGap:16,marginTop:20});expect(flat(card).backgroundColor).toBeUndefined();
  const live=card.findAllByType(AnimatedNumberReadout);expect(live.map(flow=>flow.props.value)).toEqual([267.6,3.734]);
  expect(live[0].props).toMatchObject({options:{style:'currency',currency:'USD'},tone:'text'});expect(live[1].props).toMatchObject({suffix:' AMZN',options:{maximumFractionDigits:6}});
  expect(host(view,'trade-detail-Held').findAllByType(AnimatedNumberReadout)).toHaveLength(0);
  expect(host(view,'trade-detail-Held').findAll(node=>node.type==='Text').map(text)).toEqual(['Held','38m 20s']);
  expect(host(view,'trade-detail-Entry').findAll(node=>node.type==='Text'&&text(node)==='Entry').map(node=>flat(node).color)).toEqual([nativeSrgb.muted]);
- expect(flat(host(view,'trade-detail-Entry'))).toMatchObject({flexDirection:'row',justifyContent:'space-between'});
+ expect(flat(host(view,'trade-detail-Entry'))).toMatchObject({width:'33.333%',gap:2});
  view=mount({details:[]});expect(has(view,'trade-details')).toBe(false);
 });
 it('puts the host actions side by side in order, secondary unless told otherwise, and leaves the row out without any',()=>{
@@ -85,4 +87,11 @@ it('puts the host actions side by side in order, secondary unless told otherwise
  expect(buttons.every(node=>node.props.fullWidth===true)).toBe(true);expect(buttons.map(node=>flat(node.parent).flex)).toEqual([1,1,1]);
  expect(button(view,'trade-action-export').props).toMatchObject({disabled:true,busy:true});
  act(()=>button(view,'trade-action-save').props.onPress());act(()=>button(view,'trade-action-share').props.onPress());expect(save).toHaveBeenCalledTimes(1);expect(share).toHaveBeenCalledTimes(1);
+});
+it('draws one bar from entry to exit without a card in place of two rows, and none without both prices',()=>{
+ const {BarPnl}=require('../../packages/hig/native/src/bar-pnl');
+ let view=mount();expect(view.findAllByType(BarPnl)).toHaveLength(0);
+ view=mount({entry:267.6});expect(view.findAllByType(BarPnl)).toHaveLength(0);
+ view=mount({labels:{...labels,entry:'Entry',exit:'Exit'},entry:267.6,exit:267.18,priceOptions:{style:'currency',currency:'USD'}});
+ expect(view.findByType(BarPnl).props).toEqual({testID:'trade-bar',surface:false,fit:true,side:'short',entry:267.6,mark:267.18,labels:{entry:'Entry',mark:'Exit',liquidation:''},priceOptions:{style:'currency',currency:'USD'}});
 });

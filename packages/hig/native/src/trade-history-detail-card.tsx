@@ -1,7 +1,8 @@
 import React from 'react';
 import {Image,View,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
-import {Surface,Text} from './surface.js';
+import {Text} from './surface.js';
+import {BarPnl} from './bar-pnl.js';
 import {Button,IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
@@ -11,8 +12,10 @@ export type {AssetArtwork} from './asset-balance-row.js';
 /** The trading words of the block. HIG's built-in strings hold no trading terms, so the host supplies them, translated. */
 export interface TradeHistoryDetailLabels {
  title:string;
- /** Caption above the figure: NET PNL. */
+ /** Names the figure for assistive technology: Net PnL. It is not drawn; the signed figure and the line under it carry the meaning on screen. */
  netPnl:string;
+ /** Names of the two prices under the bar. Needed with `entry` and `exit`. */
+ entry?:string;exit?:string;
  /** `+2.84% on margin`: receives the formatted percent. */
  onMargin:(percent:string)=>string;
  long:string;short:string;
@@ -31,6 +34,10 @@ export interface TradeHistoryDetailCardProps {
  pnl:number|null;
  /** Return on margin as a fraction: 0.0284 reads +2.84%. */
  pnlPercent?:number|null;
+ /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */
+ entry?:number;exit?:number;
+ /** Format of the two prices. Defaults to US dollars. */
+ priceOptions?:Intl.NumberFormatOptions;
  details:readonly TradeHistoryDetail[];
  actions?:readonly TradeHistoryAction[];
  /** Shows Back on the leading edge of the header. */
@@ -43,7 +50,7 @@ const pnlUsd:Intl.NumberFormatOptions={style:'currency',currency:'USD',signDispl
 const pnlShare:Intl.NumberFormatOptions={style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'};
 const gearing:Intl.NumberFormatOptions={maximumFractionDigits:6};
 const numberMark='',unknown='—',times='×',up='↑',down='↓';
-const avatar=40;
+const avatar=24,empty='';
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const known=(value:number|null|undefined):value is number=>value!=null&&Number.isFinite(value);
 type Tone='up'|'down'|'text';
@@ -58,25 +65,30 @@ function Sentence({template,text,value,options,tone,testID}:{template:(amount:st
   {parts[1]?<Text accessible={false} style={words}>{parts[1]}</Text>:null}
  </View>;
 }
-/** The full record of one closed trade: the asset with its side and leverage, the net profit and loss with its return on margin, the host's label and value rows, and the host's actions side by side. */
-export function TradeHistoryDetailCard({labels,name,icon,side,leverage,pnl,pnlPercent,details,actions=[],onBack,headerAction,testID}:TradeHistoryDetailCardProps){
+/** The full record of one closed trade, drawn on the screen without cards because none of it is pressable: the asset with its side and leverage on one line, the net profit and loss with its return on margin, a bar from the entry price to the exit price, the host's other figures as a compact grid, and the host's actions side by side. */
+export function TradeHistoryDetailCard({labels,name,icon,side,leverage,pnl,pnlPercent,entry,exit,priceOptions,details,actions=[],onBack,headerAction,testID}:TradeHistoryDetailCardProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
  const long=side==='long',word=long?labels.long:labels.short,tint=long?colors.up:colors.down;
  const tone:Tone=known(pnl)&&pnl>0?'up':known(pnl)&&pnl<0?'down':'text';
  const turns=known(leverage)?formatNumberReadout(leverage,locale,gearing).text+times:null;
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
- const art=typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} style={shape as object}/>:<View style={shape}>{icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{name.slice(0,3)}</Text>}</View>;
+ const art=typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} style={shape as object}/>:<View style={shape}>{icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:9,lineHeight:12,fontWeight:'600',color:colors.muted}}>{name.slice(0,3)}</Text>}</View>;
  const meta={fontSize:14,lineHeight:20} as const;
+ // Three figures to a line: a small label over its value.
+ const rows=details.map(detail=><View key={detail.label} testID={`trade-detail-${detail.label}`} style={{width:'33.333%',paddingEnd:8,gap:2}}>
+  <Text numberOfLines={1} style={{fontSize:12,lineHeight:16,color:colors.muted}}>{detail.label}</Text>
+  {typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} tone='text' style={{fontSize:15,lineHeight:22,fontWeight:'600'}}/>:<Text style={{fontSize:15,lineHeight:22,fontWeight:'600',color:colors.text}}>{detail.value}</Text>}
+ </View>);
  return <View testID={testID} style={{padding:16}}>
   <View testID='trade-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
    <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='trade-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
    <Text testID='trade-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
   </View>
-  <View testID='trade-asset' accessible accessibilityLabel={[name,word,turns].filter(Boolean).join(', ')} style={{flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:fills.well,marginTop:16}}>
+  <View testID='trade-asset' accessible accessibilityLabel={[name,word,turns].filter(Boolean).join(', ')} style={{direction,flexDirection:'row',flexWrap:'wrap',alignItems:'center',justifyContent:'center',gap:8,marginTop:16}}>
    <View {...hidden}>{art}</View>
-   <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
-    <Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{name}</Text>
+   <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{name}</Text>
+   <View {...hidden}>
     <View style={{direction,flexDirection:'row',alignItems:'center',gap:4}}>
      <Text testID='trade-side-arrow' style={{...meta,fontWeight:'600',color:tint}}>{long?up:down}</Text>
      <Text testID='trade-side' style={{...meta,fontWeight:'600',color:tint,textTransform:'uppercase'}}>{word}</Text>
@@ -84,17 +96,14 @@ export function TradeHistoryDetailCard({labels,name,icon,side,leverage,pnl,pnlPe
     </View>
    </View>
   </View>
-  <Surface testID='trade-pnl' style={{alignItems:'center',paddingVertical:24,gap:8,marginTop:8}}>
-   <Text style={{fontSize:12,lineHeight:18,fontWeight:'600',color:colors.muted,textTransform:'uppercase',letterSpacing:0.5}}>{labels.netPnl}</Text>
-   <AnimatedNumberReadout testID='trade-pnl-value' value={pnl} options={pnlUsd} tone={tone} style={{fontSize:40,lineHeight:48,fontWeight:'700'}}/>
+  <View testID='trade-pnl' style={{alignItems:'center',gap:4,marginTop:8}}>
+   <AnimatedNumberReadout testID='trade-pnl-value' label={labels.netPnl} value={pnl} options={pnlUsd} tone={tone} style={{fontSize:40,lineHeight:48,fontWeight:'700'}}/>
    {pnlPercent!==undefined?<Sentence testID='trade-pnl-percent' template={labels.onMargin} text={known(pnlPercent)?formatNumberReadout(pnlPercent,locale,pnlShare).text:unknown} value={known(pnlPercent)?pnlPercent:null} options={pnlShare} tone={tone}/>:null}
-  </Surface>
-  {details.length>0?<Surface testID='trade-details' style={{gap:12,marginTop:8}}>
-   {details.map(detail=><View key={detail.label} testID={`trade-detail-${detail.label}`} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
-    <Text style={{fontSize:16,lineHeight:24,color:colors.muted,flexShrink:1}}>{detail.label}</Text>
-    {typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} tone='text' style={{fontSize:16,lineHeight:24}}/>:<Text style={{fontSize:16,lineHeight:24,color:colors.text,flexShrink:1}}>{detail.value}</Text>}
-   </View>)}
-  </Surface>:null}
+  </View>
+  {known(entry)&&known(exit)?<View style={{marginTop:20,paddingHorizontal:4}}><BarPnl testID='trade-bar' surface={false} fit side={side} entry={entry} mark={exit} labels={{entry:labels.entry??empty,mark:labels.exit??empty,liquidation:empty}} priceOptions={priceOptions}/></View>:null}
+  {details.length>0?<View testID='trade-details' style={{direction,flexDirection:'row',flexWrap:'wrap',rowGap:16,marginTop:20,paddingHorizontal:4}}>
+   {rows}
+  </View>:null}
   {actions.length>0?<View testID='trade-actions' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>
    {actions.map(action=><View key={action.id} style={{flex:1,minWidth:0}}><Button fullWidth testID={`trade-action-${action.id}`} intent={action.intent??'secondary'} disabled={action.disabled} busy={action.busy} onPress={action.onSelect}>{action.label}</Button></View>)}
   </View>:null}

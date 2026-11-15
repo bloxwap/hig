@@ -269,7 +269,8 @@ Stake and unstake are one example each: the asset changes only the token data, n
 - **Fixed destination.** `destination={{title, subtitle, icon, address, detail, onPress}}` replaces the To token with a place the host already knows: a recipient wallet, a staking pool, a trading account. The To card becomes one compact row with no picker and no amount, the panel is one-way, the action is ready from the From side alone, and `onSubmit` receives `'send'`. `address` shows shortened with the wallet's colour disc; `onPress` makes the card a button with a trailing chevron, for example to change the recipient; `fee` shows on the card when the host passes it.
 - **Accounts.** A token with a `caption` (for example `$22.72 available`, or the same as a live figure, `{value:22.72, options:{style:'currency', currency:'USD'}, suffix:' available'}`) is presented as an account: the name over the caption beside one disc, with Max only. A small chevron follows the name while the side can still be changed.
 - **Pending destination.** `destination.pending` shows the destination as a placeholder; the action stays disabled and reads “Pick a destination” until the host supplies a real one.
-- **Details.** `details=[{label, value, options, prefix, suffix}]` adds label and value rows to the bottom card, under a destination or on their own. On their own they stand in for the To side exactly as a destination does. A number `value` is formatted with `options` between `prefix` and `suffix` and updates place by place; a string is drawn as given.
+- **Prices.** `entry` and `exit` draw one `BarPnl` without a card, scaled to the two prices: the stretch between them is filled in the result colour and the two prices read under it. This replaces an Entry row and an Exit row. `priceOptions` formats them; the default is US dollars. Leave either out and there is no bar.
+- **Details.** `details=[{label, value, options, prefix, suffix}]` are the other figures, such as size, notional, time held, fees and funding. They are drawn three to a line as a small label over its value, in the order given. A number is formatted with `options` between `prefix` and `suffix` and updates place by place; a string is drawn as given, which suits a duration the host has already formatted.
 - **Note.** `note` is a line under the cards for a limit or a delay; `noteTone='warning'` or `'negative'` makes it a tinted capsule.
 - **Heading and controls.** `title` puts a heading above the cards and `onBack` a Back control beside it, for a panel that is its own screen or sheet. `controls={false}` leaves the action button alone at full width, and `actionIcon` puts a decoration before its text.
 - **Locked sides.** `lockFrom` / `lockTo` keep that side's token fixed: its card looks the same but does not open the picker, has no shortcut, and reset leaves the token in place.
@@ -478,20 +479,21 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 
 ### TradeHistoryDetailCard
 
-`TradeHistoryDetailCard` is the full record of one closed trade. Under the shared header it shows the asset with its side and leverage, the net result as the headline figure with the return on margin under it, the trade's figures as label and value rows, and the host's actions in one row. It is available from `@bloxwap/hig/react/blocks/trade-history-detail-card`, `@bloxwap/hig/native/trade-history-detail-card` and the `blocks` aggregates.
+`TradeHistoryDetailCard` is the full record of one closed trade. Under the shared header it shows the asset with its side and leverage on one line, the net result as the headline figure with the return on margin under it, one bar from the entry price to the exit price, the trade's other figures as a compact grid, and the host's actions in one row. Nothing above the actions is pressable, so none of it is drawn as a card: it sits directly on the screen. It is available from `@bloxwap/hig/react/blocks/trade-history-detail-card`, `@bloxwap/hig/native/trade-history-detail-card` and the `blocks` aggregates.
 
 ```tsx
 <TradeHistoryDetailCard labels={t.trade} name="Amazon" icon={amzn} side="short" leverage={20}
   pnl={1.418} pnlPercent={0.0284}
-  details={[{label: t.entry, value: 267.6, options: usd}, {label: t.exit, value: 267.18, options: usd},
-            {label: t.size, value: 3.734, suffix: ' AMZN'}, {label: t.held, value: '38m 20s'}]}
+  entry={267.6} exit={267.18}
+  details={[{label: t.size, value: 3.734, suffix: ' AMZN'}, {label: t.notional, value: 999.23, options: usd},
+            {label: t.held, value: '38m 20s'}]}
   actions={[{id: 'save', label: t.saveImage, onSelect: saveImage},
             {id: 'share', label: t.share, intent: 'primary', onSelect: share}]}
   onBack={goBack}/>
 ```
 
-- **Labels.** `labels` supplies `title`, `netPnl`, `long`, `short` and one sentence that receives a formatted figure, `onMargin(percent)`. The detail rows and the actions carry their own labels. HIG ships no trading terms.
-- **Asset.** The row shows the artwork (`icon` as an image URL or a host element, else the first letters of the name), the `name`, an arrow and the side word in the positive role for long and the negative role for short, and the `leverage` as `20×`.
+- **Labels.** `labels` supplies `title`, `long`, `short`, `entry` and `exit` (the names of the two prices under the bar), one sentence that receives a formatted figure, `onMargin(percent)`, and `netPnl`. `netPnl` names the figure for assistive technology and is not drawn: on screen the signed figure and the sentence under it carry the meaning. The detail figures and the actions carry their own labels. HIG ships no trading terms.
+- **Asset.** One centred line shows a small disc with the artwork (`icon` as an image URL or a host element, else the first letters of the name), the `name`, an arrow and the side word in the positive role for long and the negative role for short, and the `leverage` as `20×`.
 - **Result.** `pnl` is the headline figure, signed, in the positive role for a gain and the negative role for a loss; `null` reads as unknown. `pnlPercent` is the return on margin as a fraction and reads inside the host's sentence, for example +2.84% on margin; leave it out to hide the line.
 - **Details.** `details=[{label, value, options, prefix, suffix}]` draws one row each, in the order given. A number is formatted with `options` between `prefix` and `suffix`; a string is drawn as given, which suits a duration the host has already formatted.
 - **Actions.** `actions=[{id, label, onSelect, intent, disabled, busy}]` draws the buttons in one row with equal widths, 8 units apart and 16 below the details. `intent` defaults to `secondary`; set `primary` on the one that matters, such as Share.

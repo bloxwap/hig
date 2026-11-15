@@ -272,15 +272,15 @@
       },
       "TradeHistoryDetailCard": {
         "entry": "blocks/trade-history-detail-card",
-        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, details, actions, onBack, headerAction, className, ...rest }: TradeHistoryDetailCardProps): React.JSX.Element;"
+        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, entry, exit, priceOptions, details, actions, onBack, headerAction, className, ...rest }: TradeHistoryDetailCardProps): React.JSX.Element;"
       },
       "TradeHistoryDetailCardProps": {
         "entry": "blocks/trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** The trade's figures in the order shown: entry, exit, size, notional, time held, fees, funding. */\n    details: readonly TradeHistoryDetail[];\n    /** Actions in one row under the details, such as Save image and Share. */\n    actions?: readonly TradeHistoryAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface TradeHistoryDetailCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** The trade's other figures in the order shown: size, notional, time held, fees, funding. They are drawn as a grid of small labels over values. */\n    details: readonly TradeHistoryDetail[];\n    /** Actions in one row under the details, such as Save image and Share. */\n    actions?: readonly TradeHistoryAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
       "TradeHistoryDetailLabels": {
         "entry": "blocks/trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Caption above the figure: NET PNL. */\n    netPnl: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
+        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Names the figure for assistive technology: Net PnL. It is not drawn; the signed figure and the line under it carry the meaning on screen. */\n    netPnl: string;\n    /** Names of the two prices under the bar. Needed with `entry` and `exit`. */\n    entry?: string;\n    exit?: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
       },
       "TradeHistoryDetail": {
         "entry": "blocks/trade-history-detail-card",
@@ -1030,15 +1030,15 @@
       },
       "TradeHistoryDetailCard": {
         "entry": "trade-history-detail-card",
-        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, details, actions, onBack, headerAction, testID }: TradeHistoryDetailCardProps): React.JSX.Element;"
+        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, entry, exit, priceOptions, details, actions, onBack, headerAction, testID }: TradeHistoryDetailCardProps): React.JSX.Element;"
       },
       "TradeHistoryDetailCardProps": {
         "entry": "trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailCardProps {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    details: readonly TradeHistoryDetail[];\n    actions?: readonly TradeHistoryAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface TradeHistoryDetailCardProps {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    details: readonly TradeHistoryDetail[];\n    actions?: readonly TradeHistoryAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "TradeHistoryDetailLabels": {
         "entry": "trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Caption above the figure: NET PNL. */\n    netPnl: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
+        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Names the figure for assistive technology: Net PnL. It is not drawn; the signed figure and the line under it carry the meaning on screen. */\n    netPnl: string;\n    /** Names of the two prices under the bar. Needed with `entry` and `exit`. */\n    entry?: string;\n    exit?: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
       },
       "TradeHistoryDetail": {
         "entry": "trade-history-detail-card",
