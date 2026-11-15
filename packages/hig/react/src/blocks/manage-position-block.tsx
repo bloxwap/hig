@@ -5,9 +5,10 @@ import {useHIG} from '../provider.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {BarMark} from '../bar-mark.js';
 import {BarPnl} from '../bar-pnl.js';
+import {ListGroup,ListRow} from '../list-group.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
-import {SwapIcon,SwapNumber} from './swap/shared.js';
+import {SwapNumber} from './swap/shared.js';
 /** The words of the block. They are trading terms, so the host supplies them in its own vocabulary and language; HIG ships none. */
 export interface ManagePositionBlockLabels {
  title:string;margin:string;
@@ -53,7 +54,7 @@ export function positionCorridor({side,entry,mark,liquidation}:{side:'long'|'sho
  const traveled=side==='long'?entry-mark:mark-entry,buffer=Math.max(0,Math.min(span,span-traveled));
  return {total:span,buffer,drawdown:span-buffer,share:buffer/span};
 }
-/** Manage one open position: margin against notional (with the share left before liquidation) as a `BarMark` and the liquidation, mark and entry prices as a `BarPnl`, both drawn without a card because they are read-only, the host's actions as rows, and the position itself underneath. */
+/** Manage one open position: margin against notional (with the share left before liquidation) as a `BarMark` and the liquidation, mark and entry prices as a `BarPnl`, both drawn without a card because they are read-only, the host's actions as one `ListGroup` of rows, and the position itself underneath. */
 export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,className,...rest}:ManagePositionBlockProps){
  const {locale}=useHIG();const corridor=positionCorridor({side,entry,mark,liquidation});
  const pnlTone=!known(position?.pnl)||position.pnl===0?undefined:position.pnl>0?'up':'down';
@@ -63,7 +64,7 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
    <BarMark surface={false} title={mode??labels.margin} description={corridor.share===null?labels.toLiquidation('—'):<SwapNumber template={labels.toLiquidation} value={Number((corridor.share*100).toFixed(1))} suffix='%' options={{maximumFractionDigits:1}}/>} elements={[{id:'margin',label:labels.margin,value:margin,detail:formatNumber(margin,locale,usd),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:known(notional)?formatNumber(notional,locale,usd):'—',tone:'positive'}]}/>
    <BarPnl surface={false} compact side={side} entry={entry} mark={mark} liquidation={liquidation} labels={{liquidation:labels.liquidation,mark:labels.mark,entry:labels.entry}} priceOptions={priceOptions}/>
   </div>
-  {actions.length>0&&<div className='hig-token-actions'>{actions.map(action=><button key={action.id} type='button' className='hig-swap-setting' disabled={action.disabled} onClick={action.onSelect}><span>{action.label}</span><SwapIcon name='chevron' size={16}/></button>)}</div>}
+  {actions.length>0&&<ListGroup className='hig-manage-actions'>{actions.map(action=><ListRow key={action.id} label={action.label} disabled={action.disabled} onSelect={action.onSelect}/>)}</ListGroup>}
   {position&&<div className='hig-asset-row hig-position-row'>
    <span className='hig-asset-row-icon' aria-hidden='true'>{typeof position.icon==='string'?<img src={position.icon} alt=''/>:position.icon??position.name.slice(0,3)}</span>
    <span className='hig-asset-row-identity'><strong>{position.name}</strong><span><span className='hig-position-side' data-side={side} aria-hidden='true'>{side==='long'?'↑':'↓'}</span><span className='hig-sr-only'>{side==='long'?labels.long:labels.short}</span>{position.leverage!=null&&<span className='hig-position-side hig-position-leverage' data-side={side}> {formatNumber(position.leverage,locale)}×</span>}{known(position.size)&&<> · <AnimatedNumberReadout value={position.size} options={{maximumFractionDigits:6}}/></>}</span></span>

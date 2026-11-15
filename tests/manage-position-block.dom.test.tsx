@@ -52,10 +52,11 @@ describe('ManagePositionBlock',()=>{
   // Unknown prices read as the unknown dash in both elements.
   view.rerender(<ManagePositionBlock {...base} mark={null} liquidation={null}/>);expect(description('Demo')).toBe('— to liquidation');expect(prices().find(([label])=>label==='Entry')![1]).toBe('$64,700');
  });
- it('lists the host actions as rows in order, and reports presses only for enabled ones',async()=>{
+ it('lists the host actions as one list group of rows in order, and reports presses only for enabled ones',async()=>{
   const stop=vi.fn(),take=vi.fn(),close=vi.fn(),back=vi.fn();
   render(<ManagePositionBlock {...base} onBack={back} actions={[{id:'stop-loss',label:'Stop Loss',onSelect:stop},{id:'take-profit',label:'Take Profit',onSelect:take,disabled:true},{id:'close',label:'Close',onSelect:close}]}/>);
-  const rows=[...document.querySelectorAll<HTMLButtonElement>('.hig-token-actions > button')];expect(rows.map(row=>row.textContent)).toEqual(['Stop Loss','Take Profit','Close']);
+  const group=document.querySelector('.hig-manage-actions')!;expect(group.classList.contains('hig-list-group')).toBe(true);expect(document.querySelectorAll('.hig-manage-position-block .hig-list-group')).toHaveLength(1);
+  const rows=[...group.querySelectorAll<HTMLButtonElement>('.hig-list-group-rows > li > button.hig-list-row')];expect(rows.map(row=>row.textContent)).toEqual(['Stop Loss','Take Profit','Close']);expect(rows[1].disabled).toBe(true);expect(document.querySelector('.hig-manage-position-block .hig-swap-setting')).toBeNull();
   for(const row of rows)await userEvent.click(row);await userEvent.click(screen.getByRole('button',{name:'Back'}));
   expect(stop).toHaveBeenCalledTimes(1);expect(take).not.toHaveBeenCalled();expect(close).toHaveBeenCalledTimes(1);expect(back).toHaveBeenCalledTimes(1);
   expect(rows.every(row=>row.querySelector('svg')!==null)).toBe(true);
@@ -69,7 +70,7 @@ describe('ManagePositionBlock',()=>{
   expect(row().querySelector('.hig-position-side')!.getAttribute('data-side')).toBe('long');expect(row().querySelector('.hig-asset-row-amounts strong')!.getAttribute('data-tone')).toBe('down');
   view.rerender(<ManagePositionBlock {...base} side='short' position={{name:'Ether',icon:'/eth.png',pnl:12.5,pnlPercent:0.05}}/>);
   expect(spoken(row())).toBe('Ether↓Short+$12.50+5.00%');expect(row().querySelector('img')?.getAttribute('src')).toBe('/eth.png');expect(row().querySelector('.hig-asset-row-amounts strong')!.getAttribute('data-tone')).toBe('up');
-  view.rerender(<ManagePositionBlock {...base}/>);expect(document.querySelector('.hig-position-row')).toBeNull();expect(document.querySelector('.hig-token-actions')).toBeNull();
+  view.rerender(<ManagePositionBlock {...base}/>);expect(document.querySelector('.hig-position-row')).toBeNull();expect(document.querySelector('.hig-manage-actions')).toBeNull();
  });
  it('ships no trading words of its own: every label is the host\'s, in any language',()=>{
   const fr={title:'Gérer la position',margin:'Marge',notional:'Notionnel',liquidation:'Liquidation',toLiquidation:(percent:string)=>`${percent} avant liquidation`,mark:'Marque',entry:'Entrée',long:'Achat',short:'Vente'};

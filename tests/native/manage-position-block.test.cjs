@@ -94,14 +94,17 @@ it('keeps the same live numbers when the figures change',()=>{
  expect(host(root.root,'manage-to-liquidation').props.accessibilityLabel).toBe('56.7% to liquidation');
 });
 
-it('lists the host actions in order as capsule rows that report a press, and leaves them out when there are none',()=>{
+it('lists the host actions in order as one list group of rows that report a press, and leaves them out when there are none',()=>{
  expect(has(mount(),'manage-actions')).toBe(false);
  const stop=jest.fn(),take=jest.fn(),close=jest.fn();
  const view=mount({actions:[{id:'stop',label:'Stop Loss',onSelect:stop},{id:'take',label:'Take Profit',onSelect:take,disabled:true},{id:'close',label:'Close',onSelect:close}]});
- const rows=host(view,'manage-actions').findAll(node=>typeof node.type==='string'&&String(node.props.testID).startsWith('manage-action-'));
+ const rows=host(view,'manage-actions').findAll(node=>typeof node.type==='string'&&/^manage-action-[a-z]+$/.test(String(node.props.testID)));
  expect(rows.map(row=>[row.props.testID,text(row.findAll(node=>node.type==='Text')[0])])).toEqual([['manage-action-stop','Stop Loss'],['manage-action-take','Take Profit'],['manage-action-close','Close']]);
  expect(rows.map(row=>row.props.accessibilityRole)).toEqual(['button','button','button']);
- expect(flat(rows[0])).toMatchObject({flexDirection:'row',minHeight:48,borderRadius:9999,paddingHorizontal:16,backgroundColor:nativeSrgb.surface});expect(flat(host(view,'manage-actions'))).toMatchObject({gap:8,marginTop:16});
+ // The rows share one rounded container, 2 apart, as in any ListGroup.
+ const {ListGroup,ListRow}=require('../../packages/hig/native/src/list-group');expect(host(view,'manage-actions').findAllByType(ListGroup)).toHaveLength(1);expect(host(view,'manage-actions').findAllByType(ListRow)).toHaveLength(3);
+ expect(flat(rows[0])).toMatchObject({flexDirection:'row',minHeight:56,paddingHorizontal:20,backgroundColor:nativeSrgb.surface});expect(flat(rows[0]).borderRadius).toBeUndefined();expect(flat(host(view,'manage-actions'))).toMatchObject({marginTop:16});
+ expect(all(view,'manage-action-stop-chevron').length).toBeGreaterThan(0);
  const press=id=>{const pressable=all(view,`manage-action-${id}`).find(node=>'onPress' in node.props);if(!pressable.props.disabled)act(()=>{pressable.props.onPress({});});return pressable;};
  press('stop');press('close');expect(stop).toHaveBeenCalledTimes(1);expect(close).toHaveBeenCalledTimes(1);
  expect(press('take').props.disabled).toBe(true);expect(take).not.toHaveBeenCalled();expect(rows[1].props.accessibilityState).toMatchObject({disabled:true});

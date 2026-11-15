@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image,Pressable,View,type ViewStyle} from 'react-native';
+import {Image,View,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
@@ -8,6 +8,7 @@ import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import {BarMark,type BarMarkElement} from './bar-mark.js';
 import {BarPnl} from './bar-pnl.js';
+import {ListGroup,ListRow} from './list-group.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 export type {AssetArtwork} from './asset-balance-row.js';
 /** Every trading word of the block. HIG's built-in strings hold no trading terms, so the host supplies them, translated. */
@@ -82,7 +83,6 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
  const corridor=positionCorridor({side,entry,mark,liquidation}),long=side==='long';
  const marginBar:BarMarkElement[]=[{id:'margin',label:labels.margin,value:margin,detail:read(margin,usd),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:read(notional,usd),tone:'positive'}];
  const left=corridor.share===null?null:corridor.share*100;
- const capsule=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well});
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const row=()=>{
   if(!position)return null;const {name,icon,leverage,size,pnl,pnlPercent}=position;
@@ -117,11 +117,8 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
    <BarMark testID='manage-margin' surface={false} title={mode??labels.margin} elements={marginBar} description={<Sentence testID='manage-to-liquidation' template={labels.toLiquidation} text={left===null?unknown:formatNumberReadout(left,locale,tenth).text+percent} value={left} options={tenth} suffix={percent}/>}/>
    <BarPnl testID='manage-liquidation' surface={false} compact side={side} entry={entry} mark={mark} liquidation={liquidation} labels={{liquidation:labels.liquidation,mark:labels.mark,entry:labels.entry}} priceOptions={priceOptions}/>
   </View>
-  {actions.length>0?<View testID='manage-actions' style={{gap:8,marginTop:16}}>
-   {actions.map(action=><Pressable key={action.id} testID={`manage-action-${action.id}`} accessibilityRole='button' accessibilityState={{disabled:!!action.disabled}} disabled={action.disabled} onPress={action.onSelect} style={({pressed})=>({...capsule(pressed),opacity:action.disabled?0.5:1})}>
-    <Text numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{action.label}</Text>
-    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
-   </Pressable>)}
+  {actions.length>0?<View testID='manage-actions' style={{marginTop:16}}>
+   <ListGroup>{actions.map(action=><ListRow key={action.id} testID={`manage-action-${action.id}`} label={action.label} disabled={action.disabled} onSelect={action.onSelect}/>)}</ListGroup>
   </View>:null}
   {row()}
  </View>;

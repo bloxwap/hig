@@ -548,7 +548,6 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-manage-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 /* The two bars are read-only, so they sit on the page without a card, further apart than cards would be. */
 .hig-token-card > .hig-token-bars,.hig-manage-position-block > .hig-token-bars { gap:20px;padding-inline:4px; }
-.hig-manage-position-block .hig-swap-setting:disabled { color:var(--hig-muted);cursor:default; }
 .hig-position-side[data-side='long'],.hig-position-row [data-tone='up'] { color:var(--hig-positive); }
 .hig-position-side[data-side='short'],.hig-position-row [data-tone='down'] { color:var(--hig-negative); }
 /* PositionBlock: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
