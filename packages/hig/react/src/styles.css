@@ -688,6 +688,20 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-trade-details .hig-number { font-family:inherit; }
 .hig-trade-actions { display:flex;gap:var(--hig-action-gap); }
 .hig-trade-actions > * { flex:1 1 0;min-width:0; }
+/* ProfileBlock: a top bar, the avatar with its status dot, the name, then list groups 24px apart. */
+.hig-profile-block { display:flex;flex-direction:column;gap:24px;min-width:0; }
+.hig-profile-bar { display:flex;align-items:center;justify-content:space-between;min-height:var(--hig-button); }
+.hig-profile-identity { display:flex;flex-direction:column;align-items:center;gap:16px;margin-block-start:-16px; }
+.hig-profile-avatar { position:relative;display:block;width:144px;height:144px;border-radius:50%;background:var(--hig-fill); }
+.hig-profile-artwork { display:grid;place-items:center;width:100%;height:100%;border-radius:50%;overflow:hidden;color:var(--hig-muted);font-size:2.5rem;font-weight:600; }
+.hig-profile-artwork > img { width:100%;height:100%;object-fit:cover; }
+.hig-profile-status { position:absolute;inset-block-start:10px;inset-inline-end:10px;width:20px;height:20px;border-radius:50%;background:var(--hig-warning);box-shadow:0 0 0 3px var(--hig-background); }
+.hig-profile-status[data-tone='positive'] { background:var(--hig-positive); }
+.hig-profile-status[data-tone='negative'] { background:var(--hig-negative); }
+.hig-profile-status[data-tone='info'] { background:var(--hig-info); }
+.hig-profile-name { display:flex;align-items:center;justify-content:center;gap:4px;max-width:100%; }
+.hig-profile-name > h2 { margin:0;min-width:0;font-size:1.75rem;line-height:1.2;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.hig-profile-name > .hig-button { flex:none;color:var(--hig-muted); }
 /* BarMark: one bar divided among its elements. Segments are flex shares of the bar with a 2px gap that shows the card, and the
    remainder of a larger total is an empty track segment. Colours come from tone roles (or a host colour) through one custom property. */
 .hig-bar-mark { display:flex;flex-direction:column;gap:12px; }

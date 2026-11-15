@@ -11,6 +11,8 @@ export function ChevronIcon({color}: {color:string}){return <View {...hidden} st
 /** A QR glyph: three finder squares and two cells. */
 export function QrIcon({color}: {color:string}){const finder=(position:object)=><View style={{position:'absolute',width:7,height:7,borderRadius:1.5,borderWidth:stroke,borderColor:color,...position}}/>;const cell=(position:object)=><View style={{position:'absolute',width:3,height:3,backgroundColor:color,...position}}/>;return <View {...hidden} style={{width:20,height:20}}>{finder({left:2,top:2})}{finder({right:2,top:2})}{finder({left:2,bottom:2})}{cell({right:6,bottom:6})}{cell({right:2,bottom:2})}</View>;}
 export function CloseIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><Bar length={14} color={color} angle='45deg'/><Bar length={14} color={color} angle='-45deg'/></View>;}
+/** A pencil: a slanted barrel over the line it writes on. */
+export function EditIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><View style={{position:'absolute',top:6,width:13,height:5,borderRadius:1.5,borderWidth:stroke,borderColor:color,transform:[{rotate:'-45deg'}]}}/><View style={{position:'absolute',bottom:2,start:3,width:14,height:stroke,borderRadius:stroke,backgroundColor:color}}/></View>;}
 export type SeverityIconKind='info'|'success'|'warning'|'error';
 /** Shape as well as colour tells the severities apart: warning is a diamond, the others a circle with their own mark. */
 export function SeverityIcon({kind,color}: {kind:SeverityIconKind;color:string}){

@@ -220,6 +220,7 @@ Rules:
 | `deposit` | Deposit | AccountBlock: default label of the deposit action | — |
 | `accountBalance` | Total balance | AccountBlock: accessible label of the total balance | — |
 | `showAddress` | Show account address | AccountBlock: accessible name of the header button that shows the account address | — |
+| `editName` | Edit name | ProfileBlock: accessible name of the control that edits the profile name | — |
 | `language` | Language | LanguageBlock: default heading | — |
 | `searchLanguages` | Search languages | LanguageBlock: search placeholder and accessible name | — |
 | `receive` | Receive | TokenActionBlock: built-in label of the `receive` action | — |

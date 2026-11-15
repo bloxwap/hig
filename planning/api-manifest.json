@@ -230,6 +230,26 @@
         "entry": "blocks/position-block",
         "signature": "export interface PositionBlockFlag {\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
       },
+      "ProfileBlock": {
+        "entry": "blocks/profile-block",
+        "signature": "export declare function ProfileBlock({ name, address, avatar, status, onEditName, onShowAddress, onClose, sections, className, ...rest }: ProfileBlockProps): React.JSX.Element;"
+      },
+      "ProfileBlockProps": {
+        "entry": "blocks/profile-block",
+        "signature": "export interface ProfileBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** The name under the avatar: a display name or a shortened address. */\n    name: string;\n    /** Colours the avatar when there is no artwork. */\n    address?: string;\n    /** An image URL or an element the host draws. */\n    avatar?: AssetArtwork;\n    status?: ProfileStatus;\n    /** Shows the edit control after the name. */\n    onEditName?: () => void;\n    /** Shows the address control on the leading edge of the top bar. */\n    onShowAddress?: () => void;\n    /** Shows Close on the trailing edge of the top bar. */\n    onClose?: () => void;\n    sections: readonly ProfileSection[];\n}"
+      },
+      "ProfileSection": {
+        "entry": "blocks/profile-block",
+        "signature": "export interface ProfileSection {\n    id: string;\n    /** Heading above the group, such as Rewards or Settings. */\n    title?: string;\n    rows: readonly ProfileRow[];\n}"
+      },
+      "ProfileRow": {
+        "entry": "blocks/profile-block",
+        "signature": "export interface ProfileRow {\n    id: string;\n    label: string;\n    /** Artwork before the label, such as an icon. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as a balance or `Off`. */\n    value?: React.ReactNode;\n    /** Anything richer on the trailing edge: icons or a `Badge`. */\n    trailing?: React.ReactNode;\n    onSelect?: () => void;\n    disabled?: boolean;\n    /** With `onCheckedChange`, the row is a switch: the track trails and the label names it. */\n    checked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n}"
+      },
+      "ProfileStatus": {
+        "entry": "blocks/profile-block",
+        "signature": "export interface ProfileStatus {\n    /** Read out for the dot. */\n    label: string;\n    tone?: 'positive' | 'warning' | 'negative' | 'info';\n}"
+      },
       "LeaderboardBlock": {
         "entry": "blocks/leaderboard-block",
         "signature": "export declare function LeaderboardBlock({ title, promo, tabs, you, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, footnote, onBack, headerAction, className, ...rest }: LeaderboardBlockProps): React.JSX.Element;"
@@ -1156,6 +1176,26 @@
         "entry": "target-block",
         "signature": "export type TargetPrice = 'entry' | 'trigger';"
       },
+      "ProfileBlock": {
+        "entry": "profile-block",
+        "signature": "export declare function ProfileBlock({ name, address, avatar, status, onEditName, onShowAddress, onClose, sections, testID }: ProfileBlockProps): React.JSX.Element;"
+      },
+      "ProfileBlockProps": {
+        "entry": "profile-block",
+        "signature": "export interface ProfileBlockProps {\n    /** The name under the avatar: a display name or a shortened address. */\n    name: string;\n    /** Colours the avatar when there is no artwork. */\n    address?: string;\n    avatar?: AssetArtwork;\n    status?: ProfileStatus;\n    onEditName?: () => void;\n    onShowAddress?: () => void;\n    onClose?: () => void;\n    sections: readonly ProfileSection[];\n    testID?: string;\n}"
+      },
+      "ProfileRow": {
+        "entry": "profile-block",
+        "signature": "export interface ProfileRow {\n    id: string;\n    label: string;\n    leading?: React.ReactNode;\n    value?: React.ReactNode;\n    trailing?: React.ReactNode;\n    onSelect?: () => void;\n    disabled?: boolean;\n    /** With `onCheckedChange`, the row is a switch: the track trails and the label names it. */\n    checked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n}"
+      },
+      "ProfileSection": {
+        "entry": "profile-block",
+        "signature": "export interface ProfileSection {\n    id: string;\n    /** Heading above the group, such as Rewards or Settings. */\n    title?: string;\n    rows: readonly ProfileRow[];\n}"
+      },
+      "ProfileStatus": {
+        "entry": "profile-block",
+        "signature": "export interface ProfileStatus {\n    /** Read out for the dot, for example Demo. */\n    label: string;\n    tone?: 'positive' | 'warning' | 'negative' | 'info';\n}"
+      },
       "PositionBlock": {
         "entry": "position-block",
         "signature": "export declare function PositionBlock({ title, details, note, paperTrade, groups, onClose, onBack, headerAction, testID }: PositionBlockProps): React.JSX.Element;"
@@ -1859,6 +1899,10 @@
       "CloseIcon": {
         "entry": "icons",
         "signature": "export declare function CloseIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "EditIcon": {
+        "entry": "icons",
+        "signature": "export declare function EditIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
       "SeverityIconKind": {
         "entry": "icons",

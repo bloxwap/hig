@@ -5,7 +5,7 @@ import {useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {AssetBalanceRow,type AssetArtwork} from '../asset-balance-row.js';
-import {ScreenHeader} from './screen-header.js';
+import {ScreenHeader,qrIcon} from './screen-header.js';
 export {AssetBalanceRow,type AssetArtwork,type AssetBalanceRowProps} from '../asset-balance-row.js';
 /** One holding of the account. The host supplies every figure; HIG sorts, formats and lays it out. */
 export interface AccountAsset {
@@ -49,7 +49,6 @@ export function accountRows(assets:readonly AccountAsset[],pinnedSymbol='USDC'):
  return {pinned,rest};
 }
 /** An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. */
-const qrIcon=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinejoin='round'><rect x='3' y='3' width='5.5' height='5.5' rx='1'/><rect x='11.5' y='3' width='5.5' height='5.5' rx='1'/><rect x='3' y='11.5' width='5.5' height='5.5' rx='1'/><path d='M11.5 11.5h2v2h-2zM15 15h2v2h-2z' fill='currentColor' stroke='none'/></svg>;
 export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets,pinnedSymbol='USDC',onDeposit,depositLabel,onAssetSelect,className,...rest}:AccountBlockProps){
  const {messages}=useHIG();const {pinned,rest:others}=accountRows(assets,pinnedSymbol);
  const total=balance!==undefined?balance:assets.reduce((sum,asset)=>sum+(assetValue(asset)??0),0);

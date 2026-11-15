@@ -160,6 +160,7 @@
         "TargetBlock",
         "PositionBlock",
         "LeaderboardBlock",
+        "ProfileBlock",
         "SoundHapticsBlock",
         "SignalsBlock",
         "NotificationsBlock",
