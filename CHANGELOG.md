@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.2
 
 SwapPanel takes the last host rules that kept apps on their own amount sheets (web and native).
 

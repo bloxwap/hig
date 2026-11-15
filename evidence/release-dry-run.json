@@ -4,20 +4,20 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "stable-simulation",
-  "sourceCommit": "e8d1573a59fee358d1a7a292580e2a97bc2af7d6",
+  "sourceCommit": "ba9281dd2a6e30dd8857abf1d47a67fba6d31387",
   "sourceTreeDirty": true,
-  "sourceVersion": "0.5.1",
-  "artifactVersion": "0.5.1",
-  "docsGuidelineVersion": "0.5.1",
+  "sourceVersion": "0.5.2",
+  "artifactVersion": "0.5.2",
+  "docsGuidelineVersion": "0.5.2",
   "versionPolicy": "Prerelease package metadata references the same source/contract/docs candidate version and commit; no source versions or git refs are mutated.",
   "artifacts": [
     {
       "package": "@bloxwap/hig",
-      "version": "0.5.1",
-      "file": "bloxwap-hig-0.5.1.tgz",
-      "bytes": 5479258,
-      "unpackedBytes": 15011240,
-      "sha256": "cd49b8573de0b387d958b6094a2e34d0c4d7d3f4b5d7e6829acf8be7dd89ff26",
+      "version": "0.5.2",
+      "file": "bloxwap-hig-0.5.2.tgz",
+      "bytes": 5482837,
+      "unpackedBytes": 15025988,
+      "sha256": "828db2dff19ae94cf32d180272927376f70c2460b3bfa5c10a9d3d1bd8c5d9e2",
       "files": [
         "LICENSE",
         "README.md",
@@ -326,14 +326,14 @@
         "native/dist/navigation.js": 6634,
         "native/dist/overlay.d.ts": 2781,
         "native/dist/overlay.js": 6486,
-        "native/dist/pickers.d.ts": 3300,
-        "native/dist/pickers.js": 9396,
+        "native/dist/pickers.d.ts": 3312,
+        "native/dist/pickers.js": 9563,
         "native/dist/provider.d.ts": 5990,
         "native/dist/provider.js": 7020,
         "native/dist/radio-group.d.ts": 1199,
         "native/dist/radio-group.js": 10729,
-        "native/dist/recipes.d.ts": 1831,
-        "native/dist/recipes.js": 4600,
+        "native/dist/recipes.d.ts": 1925,
+        "native/dist/recipes.js": 4659,
         "native/dist/roles.d.ts": 667,
         "native/dist/roles.js": 566,
         "native/dist/select.d.ts": 157,
@@ -348,16 +348,16 @@
         "native/dist/status.js": 13019,
         "native/dist/surface.d.ts": 1655,
         "native/dist/surface.js": 4076,
-        "native/dist/swap-panel.d.ts": 8218,
-        "native/dist/swap-panel.js": 25918,
-        "native/dist/swap-parts.d.ts": 3518,
-        "native/dist/swap-parts.js": 10395,
-        "native/dist/swap-shared.d.ts": 3755,
-        "native/dist/swap-shared.js": 4141,
+        "native/dist/swap-panel.d.ts": 9500,
+        "native/dist/swap-panel.js": 28306,
+        "native/dist/swap-parts.d.ts": 4265,
+        "native/dist/swap-parts.js": 12159,
+        "native/dist/swap-shared.d.ts": 4631,
+        "native/dist/swap-shared.js": 4209,
         "native/dist/swap-sheet.d.ts": 773,
         "native/dist/swap-sheet.js": 1930,
         "native/dist/swap-views.d.ts": 2260,
-        "native/dist/swap-views.js": 5346,
+        "native/dist/swap-views.js": 6113,
         "native/dist/switch-row.d.ts": 801,
         "native/dist/switch-row.js": 1503,
         "native/dist/switch.d.ts": 660,
@@ -420,9 +420,9 @@
         "react/dist/recipes/marketing-hero.d.ts": 204,
         "react/dist/recipes/marketing-hero.js": 400,
         "react/dist/recipes/pickers.d.ts": 3268,
-        "react/dist/recipes/pickers.js": 8857,
-        "react/dist/recipes/swap-panel.d.ts": 8266,
-        "react/dist/recipes/swap-panel.js": 22555,
+        "react/dist/recipes/pickers.js": 8729,
+        "react/dist/recipes/swap-panel.d.ts": 9629,
+        "react/dist/recipes/swap-panel.js": 23556,
         "react/dist/recipes/swap-sheet.d.ts": 863,
         "react/dist/recipes/swap-sheet.js": 1451,
         "react/dist/recipes/swap/amount-card.d.ts": 2096,
@@ -430,9 +430,9 @@
         "react/dist/recipes/swap/picker.d.ts": 1336,
         "react/dist/recipes/swap/picker.js": 1825,
         "react/dist/recipes/swap/settings.d.ts": 1248,
-        "react/dist/recipes/swap/settings.js": 3937,
-        "react/dist/recipes/swap/shared.d.ts": 4975,
-        "react/dist/recipes/swap/shared.js": 7513,
+        "react/dist/recipes/swap/settings.js": 3878,
+        "react/dist/recipes/swap/shared.d.ts": 7200,
+        "react/dist/recipes/swap/shared.js": 9357,
         "react/dist/recipes/trade-entry.d.ts": 406,
         "react/dist/recipes/trade-entry.js": 1784,
         "react/dist/select.d.ts": 310,
@@ -443,7 +443,7 @@
         "react/dist/slider.js": 842,
         "react/dist/status.d.ts": 3397,
         "react/dist/status.js": 7226,
-        "react/dist/styles.css": 60795,
+        "react/dist/styles.css": 61073,
         "react/dist/surface.d.ts": 19630,
         "react/dist/surface.js": 853,
         "react/dist/toast.d.ts": 1220,
@@ -513,9 +513,9 @@
   ],
   "packedSizes": {
     "package": {
-      "file": "bloxwap-hig-0.5.1.tgz",
-      "bytes": 5479258,
-      "unpackedBytes": 15011240
+      "file": "bloxwap-hig-0.5.2.tgz",
+      "bytes": 5482837,
+      "unpackedBytes": 15025988
     },
     "webTokens": {
       "entry": "@bloxwap/hig/tokens",
@@ -535,7 +535,7 @@
       "entry": "@bloxwap/hig/og-fonts",
       "files": 12,
       "unpackedBytes": 2193866,
-      "gzipBytes": 840600,
+      "gzipBytes": 840599,
       "fontFiles": 5,
       "limit": 1000000
     }
@@ -543,7 +543,7 @@
   "chartAdapter": {
     "package": "@bloxwap/hig",
     "entry": "@bloxwap/hig/chart",
-    "file": "bloxwap-hig-0.5.1.tgz",
+    "file": "bloxwap-hig-0.5.2.tgz",
     "peer": "@bloxwap/chart",
     "peerOptional": false
   },
@@ -633,11 +633,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2242803,
-      "gzip": 626640
+      "raw": 2245735,
+      "gzip": 627069
     },
     "docsCSS": {
-      "raw": 146649
+      "raw": 146913
     },
     "fonts": {
       "raw": 592796
