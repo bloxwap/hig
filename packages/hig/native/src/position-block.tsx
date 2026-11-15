@@ -47,7 +47,7 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
    <Text testID='position-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{title}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction??(onClose?<IconButton intent='ghost' label={t.close} suppressFeedback testID='position-close' onPress={onClose}><CloseIcon color={colors.text}/></IconButton>:null)}</View>
   </View>
-  {details.length>0?<View testID='position-details' style={{gap:12,marginTop:16,paddingVertical:16,paddingHorizontal:20,borderRadius:20,backgroundColor:fills.well}}>
+  {details.length>0?<View testID='position-details' style={{gap:12,marginTop:16,paddingHorizontal:20}}>
    {details.map((detail,index)=>{
     const live=typeof detail.value==='string'?null:detail.value,reading=live?formatNumberReadout(live.value,locale,live.options,undefined,live.prefix,live.suffix).text:detail.value as string;
     return <View key={detail.id??index} testID={`position-detail-${detail.id??index}`} accessible accessibilityLabel={`${detail.label}, ${reading}`} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>

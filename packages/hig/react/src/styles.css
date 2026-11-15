@@ -574,8 +574,8 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 @media(forced-colors:active) { .hig-setting-meter > span { forced-color-adjust:none; } }
 /* PositionBlock: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
 .hig-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
-/* The summary is one quiet container with the list groups' radius and text inset; its values use the interface face. */
-.hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding:16px 20px;border-radius:20px;background:var(--hig-fill); }
+/* The summary sits directly on the screen, with no card, on the list rows' text inset; its values use the interface face. */
+.hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:20px; }
 .hig-position-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
 .hig-position-details dd { margin:0;color:var(--hig-text);font-family:inherit;font-weight:500;text-align:end;overflow-wrap:anywhere; }
 .hig-position-details dd .hig-number { font-family:inherit; }
