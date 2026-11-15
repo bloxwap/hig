@@ -93,7 +93,7 @@ import {BarMark} from '@bloxwap/hig/react/bar-mark';
 
 ### BarPnl
 
-`BarPnl` shows a position's profit or loss as one bar: the stretch between the entry and mark prices is tinted, a tick marks each price, and the liquidation, mark and entry prices read under the bar. It is available from `@bloxwap/hig/react/bar-pnl` and `@bloxwap/hig/native/bar-pnl`.
+`BarPnl` shows a position's profit or loss as one bar: the stretch between the entry and mark prices is filled solid in the result colour, a tick marks each price, and the liquidation, mark and entry prices read under the bar. It is available from `@bloxwap/hig/react/bar-pnl` and `@bloxwap/hig/native/bar-pnl`.
 
 ```tsx
 import {BarPnl} from '@bloxwap/hig/react/bar-pnl';
@@ -105,11 +105,12 @@ import {BarPnl} from '@bloxwap/hig/react/bar-pnl';
 
 - **Prices.** `entry` is required. `mark` may be `null` while it is unknown: the bar then draws no profit or loss and the readout shows the unknown dash. `liquidation` is optional; without it the readouts are mark and entry alone.
 - **Side.** `side` is `long` or `short`. Without it the position is `short` when the liquidation price is above entry and `long` otherwise.
-- **Result.** A long is in profit when mark is above entry, a short when it is below. The tinted stretch, the mark tick and the mark price take `positive` in profit and `negative` at a loss; the entry tick and price stay `text`, and the liquidation tick and price are always `negative`. When mark equals entry nothing is tinted.
+- **Result.** A long is in profit when mark is above entry, a short when it is below. The stretch is solid `positive` in profit and solid `negative` at a loss, and the mark price takes the same role (the mark tick merges into the fill); the entry tick and price stay `text`, and the liquidation tick and price are always `negative`. When mark equals entry nothing is tinted.
 - **Scale.** With a liquidation price the bar runs from it to the same distance on the other side of entry, so entry sits in the middle and the liquidation tick sits on the edge. A mark beyond either end stretches the bar. Without a liquidation price the bar is centred on entry. Prices rise from the leading edge to the trailing edge, so the layout follows the writing direction.
 - **Readouts.** The prices sit under the bar in price order, lowest first, each over its label. Mark and entry therefore trade places when the mark crosses the entry. `barPnlLayout({entry, mark, liquidation, side})` returns the same positions, order and result for a host-drawn bar.
 - **Labels.** `labels` is host text for the three prices. HIG ships no trading terms of its own, so there is no default.
 - **Compact prices.** `compact` shortens the three prices for a phone: no fraction at 1,000 and above (`$64,700`), at most two fraction digits from 1 (`$142.96`, `$3,520`), and four significant digits below 1 (`$0.4821`), with trailing zeros dropped. It keeps the currency and other `priceOptions`. `barPnlCompactOptions(value, priceOptions)` returns the same format for host text.
+- **Fit.** `fit` scales the bar to the prices themselves, so the stretch from entry to mark fills it, with a liquidation price at one end when there is one. Use it for a finished trade, as `TradeHistoryCard` does; an open position keeps the default, which centres entry so the move reads against the room left.
 - **Card.** `surface={false}` draws no card: no surface fill, padding or radius, for a bar that sits inside another card or directly on the page. The track then takes the page's raised fill so it stays visible.
 - **Header.** `title` and `description` are optional and sit above the bar as in `BarMark`. `priceOptions` formats the three prices; the default is US dollars.
 - **Accessibility.** The bar is decorative. Each readout reads its label and price. With a `title` the card is a group named by it.

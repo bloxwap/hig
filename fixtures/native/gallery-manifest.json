@@ -523,6 +523,23 @@
       "support": "renderer"
     },
     {
+      "name": "TradeHistoryCard",
+      "states": [
+        "default",
+        "loss",
+        "no-card"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TradeHistoryDetailCard",
+      "states": [
+        "default",
+        "loss"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "TokenActionCard",
       "states": [
         "default",

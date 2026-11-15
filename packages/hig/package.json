@@ -278,6 +278,16 @@
       "import": "./react/dist/blocks/target-card.js",
       "default": "./react/dist/blocks/target-card.js"
     },
+    "./react/blocks/trade-history-card": {
+      "types": "./react/dist/blocks/trade-history-card.d.ts",
+      "import": "./react/dist/blocks/trade-history-card.js",
+      "default": "./react/dist/blocks/trade-history-card.js"
+    },
+    "./react/blocks/trade-history-detail-card": {
+      "types": "./react/dist/blocks/trade-history-detail-card.d.ts",
+      "import": "./react/dist/blocks/trade-history-detail-card.js",
+      "default": "./react/dist/blocks/trade-history-detail-card.js"
+    },
     "./react/bar-mark": {
       "types": "./react/dist/bar-mark.d.ts",
       "import": "./react/dist/bar-mark.js",
@@ -332,6 +342,16 @@
       "types": "./native/dist/target-card.d.ts",
       "import": "./native/dist/target-card.js",
       "default": "./native/dist/target-card.js"
+    },
+    "./native/trade-history-card": {
+      "types": "./native/dist/trade-history-card.d.ts",
+      "import": "./native/dist/trade-history-card.js",
+      "default": "./native/dist/trade-history-card.js"
+    },
+    "./native/trade-history-detail-card": {
+      "types": "./native/dist/trade-history-detail-card.d.ts",
+      "import": "./native/dist/trade-history-detail-card.js",
+      "default": "./native/dist/trade-history-detail-card.js"
     },
     "./native/bar-mark": {
       "types": "./native/dist/bar-mark.d.ts",

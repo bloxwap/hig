@@ -64,7 +64,7 @@
       },
       "BarPnlProps": {
         "entry": "bar-pnl",
-        "signature": "export interface BarPnlProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Price the position was opened at. */\n    entry: number;\n    /** Current mark price. `null` or omitted reads as unknown and draws no profit or loss. */\n    mark?: number | null;\n    /** Liquidation price. Omit it, or pass `null`, for a position that cannot be liquidated. */\n    liquidation?: number | null;\n    /** Direction of the position. Defaults to `long` when the liquidation price is below entry (or unknown) and `short` when it is above. */\n    side?: BarPnlSide;\n    /** Host text for the three prices, for example `{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}`. HIG ships no trading terms of its own. */\n    labels: Record<BarPnlKind, string>;\n    /** Heading on the leading edge above the bar, such as `BTC Long 10×`. */\n    title?: string;\n    /** A line on the trailing edge of the title row, such as the profit or loss in dollars. */\n    description?: React.ReactNode;\n    /** Format of the three prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Shortens the three prices for narrow screens: `$64,700` for `$64,700.00`, `$142.96`, `$0.4821`. Trailing zeros are dropped. Default `false`. */\n    compact?: boolean;\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and readouts keep their spacing. Default `true`. */\n    surface?: boolean;\n}"
+        "signature": "export interface BarPnlProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Price the position was opened at. */\n    entry: number;\n    /** Current mark price. `null` or omitted reads as unknown and draws no profit or loss. */\n    mark?: number | null;\n    /** Liquidation price. Omit it, or pass `null`, for a position that cannot be liquidated. */\n    liquidation?: number | null;\n    /** Direction of the position. Defaults to `long` when the liquidation price is below entry (or unknown) and `short` when it is above. */\n    side?: BarPnlSide;\n    /** Host text for the three prices, for example `{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}`. HIG ships no trading terms of its own. */\n    labels: Record<BarPnlKind, string>;\n    /** Heading on the leading edge above the bar, such as `BTC Long 10×`. */\n    title?: string;\n    /** A line on the trailing edge of the title row, such as the profit or loss in dollars. */\n    description?: React.ReactNode;\n    /** Format of the three prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Shortens the three prices for narrow screens: `$64,700` for `$64,700.00`, `$142.96`, `$0.4821`. Trailing zeros are dropped. Default `false`. */\n    compact?: boolean;\n    /** Scales the bar to the prices themselves, so the stretch from entry to mark fills it. For a finished trade, where the move is the whole story. Default `false`. */\n    fit?: boolean;\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and readouts keep their spacing. Default `true`. */\n    surface?: boolean;\n}"
       },
       "barPnlCompactOptions": {
         "entry": "bar-pnl",
@@ -72,11 +72,11 @@
       },
       "barPnlLayout": {
         "entry": "bar-pnl",
-        "signature": "export declare function barPnlLayout({ entry, mark, liquidation, side }: {\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    side?: BarPnlSide;\n}): {\n    side: BarPnlSide;\n    result: BarPnlResult;\n    positions: Partial<Record<BarPnlKind, number>>;\n    order: BarPnlKind[];\n};"
+        "signature": "export declare function barPnlLayout({ entry, mark, liquidation, side, fit }: {\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    side?: BarPnlSide;\n    fit?: boolean;\n}): {\n    side: BarPnlSide;\n    result: BarPnlResult;\n    positions: Partial<Record<BarPnlKind, number>>;\n    order: BarPnlKind[];\n};"
       },
       "BarPnl": {
         "entry": "bar-pnl",
-        "signature": "export declare function BarPnl({ entry, mark, liquidation, side, labels, title, description, priceOptions, compact, surface, className, ...rest }: BarPnlProps): React.JSX.Element;"
+        "signature": "export declare function BarPnl({ entry, mark, liquidation, side, labels, title, description, priceOptions, compact, fit, surface, className, ...rest }: BarPnlProps): React.JSX.Element;"
       },
       "MarketRow": {
         "entry": "blocks/market-row",
@@ -189,6 +189,42 @@
       "TargetPrice": {
         "entry": "blocks/target-card",
         "signature": "export type TargetPrice = 'entry' | 'mark' | 'trigger';"
+      },
+      "TradeHistoryCard": {
+        "entry": "blocks/trade-history-card",
+        "signature": "export declare function TradeHistoryCard({ labels, symbol, side, leverage, entry, exit, pnl, priceOptions, surface, onSelect, className, ...rest }: TradeHistoryCardProps): React.JSX.Element;"
+      },
+      "tradeHistoryTitle": {
+        "entry": "blocks/trade-history-card",
+        "signature": "export declare const tradeHistoryTitle: ({ symbol, side, leverage, labels }: {\n    symbol: string;\n    side: 'long' | 'short';\n    leverage?: number;\n    labels: Pick<TradeHistoryLabels, 'long' | 'short'>;\n}, locale?: string) => string;"
+      },
+      "TradeHistoryCardProps": {
+        "entry": "blocks/trade-history-card",
+        "signature": "export interface TradeHistoryCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    labels: TradeHistoryLabels;\n    /** Ticker: AMZN. */\n    symbol: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    entry: number;\n    exit: number;\n    /** Net profit and loss in dollars, on the trailing edge of the title row. */\n    pnl?: number | null;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set false to draw no card: no surface fill, padding or radius. Default `true`. */\n    surface?: boolean;\n    /** Makes the whole card a button, for example to open the trade's detail. */\n    onSelect?: () => void;\n}"
+      },
+      "TradeHistoryLabels": {
+        "entry": "blocks/trade-history-card",
+        "signature": "export interface TradeHistoryLabels {\n    entry: string;\n    exit: string;\n    long: string;\n    short: string;\n}"
+      },
+      "TradeHistoryDetailCard": {
+        "entry": "blocks/trade-history-detail-card",
+        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, details, actions, onBack, headerAction, className, ...rest }: TradeHistoryDetailCardProps): React.JSX.Element;"
+      },
+      "TradeHistoryDetailCardProps": {
+        "entry": "blocks/trade-history-detail-card",
+        "signature": "export interface TradeHistoryDetailCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** The trade's figures in the order shown: entry, exit, size, notional, time held, fees, funding. */\n    details: readonly TradeHistoryDetail[];\n    /** Actions in one row under the details, such as Save image and Share. */\n    actions?: readonly TradeHistoryAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      },
+      "TradeHistoryDetailLabels": {
+        "entry": "blocks/trade-history-detail-card",
+        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Caption above the figure: NET PNL. */\n    netPnl: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
+      },
+      "TradeHistoryDetail": {
+        "entry": "blocks/trade-history-detail-card",
+        "signature": "export interface TradeHistoryDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
+      "TradeHistoryAction": {
+        "entry": "blocks/trade-history-detail-card",
+        "signature": "export interface TradeHistoryAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    intent?: 'primary' | 'secondary';\n    disabled?: boolean;\n    busy?: boolean;\n}"
       },
       "FromPicker": {
         "entry": "blocks/pickers",
@@ -822,7 +858,7 @@
       },
       "BarPnlProps": {
         "entry": "bar-pnl",
-        "signature": "export interface BarPnlProps {\n    /** Price the position was opened at. */\n    entry: number;\n    /** Current mark price. `null` or omitted reads as unknown and draws no profit or loss. */\n    mark?: number | null;\n    /** Liquidation price. Omit it, or pass `null`, for a position that cannot be liquidated. */\n    liquidation?: number | null;\n    /** Direction of the position. Defaults to `long` when the liquidation price is below entry (or unknown) and `short` when it is above. */\n    side?: BarPnlSide;\n    /** Host text for the three prices, for example `{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}`. HIG ships no trading terms of its own. */\n    labels: Record<BarPnlKind, string>;\n    /** Heading on the leading edge above the bar, such as `BTC Long 10×`. */\n    title?: string;\n    /** Trailing text on the title row, such as the profit or loss in dollars. A string is drawn muted; an element is rendered as given. */\n    description?: React.ReactNode;\n    /** Format of the three prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Shortens the three prices for narrow screens: `$64,700` for `$64,700.00`, `$142.96`, `$0.4821`. Trailing zeros are dropped. Default `false`. */\n    compact?: boolean;\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and readouts keep their spacing. Default `true`. */\n    surface?: boolean;\n    testID?: string;\n}"
+        "signature": "export interface BarPnlProps {\n    /** Price the position was opened at. */\n    entry: number;\n    /** Current mark price. `null` or omitted reads as unknown and draws no profit or loss. */\n    mark?: number | null;\n    /** Liquidation price. Omit it, or pass `null`, for a position that cannot be liquidated. */\n    liquidation?: number | null;\n    /** Direction of the position. Defaults to `long` when the liquidation price is below entry (or unknown) and `short` when it is above. */\n    side?: BarPnlSide;\n    /** Host text for the three prices, for example `{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}`. HIG ships no trading terms of its own. */\n    labels: Record<BarPnlKind, string>;\n    /** Heading on the leading edge above the bar, such as `BTC Long 10×`. */\n    title?: string;\n    /** Trailing text on the title row, such as the profit or loss in dollars. A string is drawn muted; an element is rendered as given. */\n    description?: React.ReactNode;\n    /** Format of the three prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Shortens the three prices for narrow screens: `$64,700` for `$64,700.00`, `$142.96`, `$0.4821`. Trailing zeros are dropped. Default `false`. */\n    compact?: boolean;\n    /** Scales the bar to the prices themselves, so the stretch from entry to mark fills it. For a finished trade, where the move is the whole story. Default `false`. */\n    fit?: boolean;\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and readouts keep their spacing. Default `true`. */\n    surface?: boolean;\n    testID?: string;\n}"
       },
       "barPnlCompactOptions": {
         "entry": "bar-pnl",
@@ -830,11 +866,11 @@
       },
       "barPnlLayout": {
         "entry": "bar-pnl",
-        "signature": "export declare function barPnlLayout({ entry, mark, liquidation, side }: {\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    side?: BarPnlSide;\n}): {\n    side: BarPnlSide;\n    result: BarPnlResult;\n    positions: Partial<Record<BarPnlKind, number>>;\n    order: BarPnlKind[];\n};"
+        "signature": "export declare function barPnlLayout({ entry, mark, liquidation, side, fit }: {\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    side?: BarPnlSide;\n    fit?: boolean;\n}): {\n    side: BarPnlSide;\n    result: BarPnlResult;\n    positions: Partial<Record<BarPnlKind, number>>;\n    order: BarPnlKind[];\n};"
       },
       "BarPnl": {
         "entry": "bar-pnl",
-        "signature": "export declare function BarPnl({ entry, mark, liquidation, side, labels, title, description, priceOptions, compact, surface, testID }: BarPnlProps): React.JSX.Element;"
+        "signature": "export declare function BarPnl({ entry, mark, liquidation, side, labels, title, description, priceOptions, compact, fit, surface, testID }: BarPnlProps): React.JSX.Element;"
       },
       "MarketRow": {
         "entry": "blocks",
@@ -895,6 +931,42 @@
       "ManagePositionCardSummary": {
         "entry": "manage-position-card",
         "signature": "export interface ManagePositionCardSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
+      },
+      "TradeHistoryCard": {
+        "entry": "trade-history-card",
+        "signature": "export declare function TradeHistoryCard({ labels, symbol, side, leverage, entry, exit, pnl, priceOptions, surface, onSelect, testID }: TradeHistoryCardProps): React.JSX.Element;"
+      },
+      "tradeHistoryTitle": {
+        "entry": "trade-history-card",
+        "signature": "export declare const tradeHistoryTitle: ({ symbol, side, leverage, labels }: {\n    symbol: string;\n    side: 'long' | 'short';\n    leverage?: number;\n    labels: Pick<TradeHistoryLabels, 'long' | 'short'>;\n}, locale?: string) => string;"
+      },
+      "TradeHistoryCardProps": {
+        "entry": "trade-history-card",
+        "signature": "export interface TradeHistoryCardProps {\n    labels: TradeHistoryLabels;\n    /** Ticker: AMZN. */\n    symbol: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    entry: number;\n    exit: number;\n    /** Net profit and loss in dollars, on the trailing edge of the title row. */\n    pnl?: number | null;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set false to draw no card. Default `true`. */\n    surface?: boolean;\n    /** Makes the whole card a button, for example to open the detail. */\n    onSelect?: () => void;\n    testID?: string;\n}"
+      },
+      "TradeHistoryLabels": {
+        "entry": "trade-history-card",
+        "signature": "export interface TradeHistoryLabels {\n    entry: string;\n    exit: string;\n    long: string;\n    short: string;\n}"
+      },
+      "TradeHistoryDetailCard": {
+        "entry": "trade-history-detail-card",
+        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, details, actions, onBack, headerAction, testID }: TradeHistoryDetailCardProps): React.JSX.Element;"
+      },
+      "TradeHistoryDetailCardProps": {
+        "entry": "trade-history-detail-card",
+        "signature": "export interface TradeHistoryDetailCardProps {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    details: readonly TradeHistoryDetail[];\n    actions?: readonly TradeHistoryAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "TradeHistoryDetailLabels": {
+        "entry": "trade-history-detail-card",
+        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Caption above the figure: NET PNL. */\n    netPnl: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
+      },
+      "TradeHistoryDetail": {
+        "entry": "trade-history-detail-card",
+        "signature": "export interface TradeHistoryDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
+      "TradeHistoryAction": {
+        "entry": "trade-history-detail-card",
+        "signature": "export interface TradeHistoryAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    intent?: 'primary' | 'secondary';\n    disabled?: boolean;\n    busy?: boolean;\n}"
       },
       "TargetCard": {
         "entry": "target-card",

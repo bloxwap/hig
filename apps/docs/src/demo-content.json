@@ -401,6 +401,14 @@
       "title": "TargetCard"
     },
     {
+      "route": "components/trade-history-card",
+      "title": "TradeHistoryCard"
+    },
+    {
+      "route": "components/trade-history-detail-card",
+      "title": "TradeHistoryDetailCard"
+    },
+    {
       "route": "components/token-action-card",
       "title": "TokenActionCard"
     },
@@ -1089,6 +1097,27 @@
       "states": [
         "default",
         "stop-loss"
+      ]
+    },
+    {
+      "name": "TradeHistoryCard",
+      "route": "components/trade-history-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss",
+        "no-card"
+      ]
+    },
+    {
+      "name": "TradeHistoryDetailCard",
+      "route": "components/trade-history-detail-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss"
       ]
     },
     {

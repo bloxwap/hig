@@ -23,6 +23,8 @@ export function MarketingHero({title,description,href,cta}: {title:string;descri
 export {AccountCard,accountRows,assetValue,AssetBalanceRow,type AccountCardProps,type AccountAsset,type AssetArtwork,type AssetBalanceRowProps} from './account-card.js';
 export {TokenActionCard,tokenActionLabel,type TokenActionCardProps,type TokenAction,type TokenActionId} from './token-action-card.js';
 export {ManagePositionCard,positionCorridor,type ManagePositionCardProps,type ManagePositionCardLabels,type ManagePositionCardAction,type ManagePositionCardSummary} from './manage-position-card.js';
+export {TradeHistoryCard,tradeHistoryTitle,type TradeHistoryCardProps,type TradeHistoryLabels} from './trade-history-card.js';
+export {TradeHistoryDetailCard,type TradeHistoryDetailCardProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-card.js';
 export {TargetCard,targetLayout,targetFormat,type TargetCardProps,type TargetCardLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-card.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';

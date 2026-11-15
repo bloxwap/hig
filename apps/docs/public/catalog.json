@@ -659,6 +659,27 @@
       ]
     },
     {
+      "name": "TradeHistoryCard",
+      "route": "components/trade-history-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss",
+        "no-card"
+      ]
+    },
+    {
+      "name": "TradeHistoryDetailCard",
+      "route": "components/trade-history-detail-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss"
+      ]
+    },
+    {
       "name": "TokenActionCard",
       "route": "components/token-action-card",
       "entry": "blocks",

@@ -63,7 +63,9 @@ describe('ManagePositionCard',()=>{
  it('shows the position row with the side read out, leverage, size, and toned profit and loss',()=>{
   const view=render(<ManagePositionCard {...base} position={{name:'Bitcoin',leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}}/>);
   const row=()=>document.querySelector('.hig-position-row')!;
-  expect(spoken(row())).toBe('BitBitcoin↑Long 40× · 0.006182-$0.0247-0.25%');expect(row().querySelector('.hig-position-side')!.getAttribute('aria-hidden')).toBe('true');
+  expect(spoken(row())).toBe('BitBitcoin↑Long 40× · 0.006182-$0.0247-0.25%');
+  // The leverage takes the arrow's colour: both are the side.
+  expect(row().querySelector('.hig-position-leverage')!.getAttribute('data-side')).toBe('long');expect(row().querySelector('.hig-position-leverage')!.classList.contains('hig-position-side')).toBe(true);expect(row().querySelector('.hig-position-side')!.getAttribute('aria-hidden')).toBe('true');
   expect(row().querySelector('.hig-position-side')!.getAttribute('data-side')).toBe('long');expect(row().querySelector('.hig-asset-row-amounts strong')!.getAttribute('data-tone')).toBe('down');
   view.rerender(<ManagePositionCard {...base} side='short' position={{name:'Ether',icon:'/eth.png',pnl:12.5,pnlPercent:0.05}}/>);
   expect(spoken(row())).toBe('Ether↓Short+$12.50+5.00%');expect(row().querySelector('img')?.getAttribute('src')).toBe('/eth.png');expect(row().querySelector('.hig-asset-row-amounts strong')!.getAttribute('data-tone')).toBe('up');

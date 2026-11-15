@@ -187,7 +187,7 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `ManagePositionCard`, `TargetCard`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `ManagePositionCard`, `TradeHistoryCard`, `TradeHistoryDetailCard`, `TargetCard`, `InstallCommand`, and `MarketingHero`.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -203,6 +203,8 @@ All data and actions are supplied by the host application.
 | `SwapPanel` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
 | `AccountCard` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
 | `TokenActionCard` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
+| `TradeHistoryCard` | One closed trade: the asset, side and leverage, the net profit and loss, and a bar from the entry price to the exit price. Details below. |
+| `TradeHistoryDetailCard` | The full record of one closed trade: the asset, the net result as the headline figure, the trade's figures as rows, and the host's actions. Details below. |
 | `ManagePositionCard` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetCard` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry, mark and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `FromPicker` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
@@ -413,6 +415,43 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Actions.** `onSubmit` is the confirming action, labelled by `labels.submit`, with `busy` and `submitDisabled`. `onCancel` adds Cancel beside it. `onBack` and `headerAction` are the header controls, as in `AccountCard`.
 - **Live numbers.** The headline figure and the three prices update through `AnimatedNumberReadout`.
 - **Ownership.** The block never reads a position or a price feed and never places an order.
+
+### TradeHistoryCard
+
+`TradeHistoryCard` is one closed trade in a history list. It is a `BarPnl` for a finished trade: the title reads the ticker, the side and the leverage (`AMZN · Short 20×`), the trailing edge reads the net profit and loss, and the bar is filled from the entry price to the exit price (`BarPnl` with `fit`), in the positive role for a gain and the negative role for a loss, with the two prices under it in price order. It is available from `@bloxwap/hig/react/blocks/trade-history-card`, `@bloxwap/hig/native/trade-history-card` and the `blocks` aggregates.
+
+```tsx
+<TradeHistoryCard labels={t.history} symbol="AMZN" side="short" leverage={20}
+  entry={267.6} exit={267.18} pnl={1.418} onSelect={() => open(trade.id)}/>
+```
+
+- **Labels.** `labels` supplies `entry`, `exit`, `long` and `short`. They are trading terms, so HIG ships none.
+- **Result.** `pnl` is the net profit and loss in dollars, signed, in the positive role for a gain and the negative role for a loss. Leave it out to show the bar alone; `null` reads as unknown. The bar's colour follows the prices and the side, not `pnl`, so a trade that moved the right way but lost to fees shows a positive bar beside a negative figure.
+- **Prices.** The two prices are US dollars with cents by default. `priceOptions` changes the format, for example more fraction digits for a low-priced asset or another currency.
+- **Selection.** `onSelect` makes the whole card one button, named with the title and the result, for example to open `TradeHistoryDetailCard`. Without it the card is not interactive.
+- **Card.** `surface={false}` draws it without a card, as on `BarMark` and `BarPnl`.
+- **Lists.** Cards in a list sit 8 units apart. The host orders them and pages them.
+
+### TradeHistoryDetailCard
+
+`TradeHistoryDetailCard` is the full record of one closed trade. Under the shared header it shows the asset with its side and leverage, the net result as the headline figure with the return on margin under it, the trade's figures as label and value rows, and the host's actions in one row. It is available from `@bloxwap/hig/react/blocks/trade-history-detail-card`, `@bloxwap/hig/native/trade-history-detail-card` and the `blocks` aggregates.
+
+```tsx
+<TradeHistoryDetailCard labels={t.trade} name="Amazon" icon={amzn} side="short" leverage={20}
+  pnl={1.418} pnlPercent={0.0284}
+  details={[{label: t.entry, value: 267.6, options: usd}, {label: t.exit, value: 267.18, options: usd},
+            {label: t.size, value: 3.734, suffix: ' AMZN'}, {label: t.held, value: '38m 20s'}]}
+  actions={[{id: 'save', label: t.saveImage, onSelect: saveImage},
+            {id: 'share', label: t.share, intent: 'primary', onSelect: share}]}
+  onBack={goBack}/>
+```
+
+- **Labels.** `labels` supplies `title`, `netPnl`, `long`, `short` and one sentence that receives a formatted figure, `onMargin(percent)`. The detail rows and the actions carry their own labels. HIG ships no trading terms.
+- **Asset.** The row shows the artwork (`icon` as an image URL or a host element, else the first letters of the name), the `name`, an arrow and the side word in the positive role for long and the negative role for short, and the `leverage` as `20×`.
+- **Result.** `pnl` is the headline figure, signed, in the positive role for a gain and the negative role for a loss; `null` reads as unknown. `pnlPercent` is the return on margin as a fraction and reads inside the host's sentence, for example +2.84% on margin; leave it out to hide the line.
+- **Details.** `details=[{label, value, options, prefix, suffix}]` draws one row each, in the order given. A number is formatted with `options` between `prefix` and `suffix`; a string is drawn as given, which suits a duration the host has already formatted.
+- **Actions.** `actions=[{id, label, onSelect, intent, disabled, busy}]` draws the buttons in one row with equal widths, 8 units apart and 16 below the details. `intent` defaults to `secondary`; set `primary` on the one that matters, such as Share.
+- **Ownership.** The card never reads trade history, renders an image or opens a share sheet. The host does each of those when an action reports a press.
 
 ## When to use and examples
 
@@ -625,7 +664,7 @@ import {BarMark} from '@bloxwap/hig/react/bar-mark';
 
 ### BarPnl
 
-`BarPnl` shows a position's profit or loss as one bar: the stretch between the entry and mark prices is tinted, a tick marks each price, and the liquidation, mark and entry prices read under the bar. It is available from `@bloxwap/hig/react/bar-pnl` and `@bloxwap/hig/native/bar-pnl`.
+`BarPnl` shows a position's profit or loss as one bar: the stretch between the entry and mark prices is filled solid in the result colour, a tick marks each price, and the liquidation, mark and entry prices read under the bar. It is available from `@bloxwap/hig/react/bar-pnl` and `@bloxwap/hig/native/bar-pnl`.
 
 ```tsx
 import {BarPnl} from '@bloxwap/hig/react/bar-pnl';
@@ -637,11 +676,12 @@ import {BarPnl} from '@bloxwap/hig/react/bar-pnl';
 
 - **Prices.** `entry` is required. `mark` may be `null` while it is unknown: the bar then draws no profit or loss and the readout shows the unknown dash. `liquidation` is optional; without it the readouts are mark and entry alone.
 - **Side.** `side` is `long` or `short`. Without it the position is `short` when the liquidation price is above entry and `long` otherwise.
-- **Result.** A long is in profit when mark is above entry, a short when it is below. The tinted stretch, the mark tick and the mark price take `positive` in profit and `negative` at a loss; the entry tick and price stay `text`, and the liquidation tick and price are always `negative`. When mark equals entry nothing is tinted.
+- **Result.** A long is in profit when mark is above entry, a short when it is below. The stretch is solid `positive` in profit and solid `negative` at a loss, and the mark price takes the same role (the mark tick merges into the fill); the entry tick and price stay `text`, and the liquidation tick and price are always `negative`. When mark equals entry nothing is tinted.
 - **Scale.** With a liquidation price the bar runs from it to the same distance on the other side of entry, so entry sits in the middle and the liquidation tick sits on the edge. A mark beyond either end stretches the bar. Without a liquidation price the bar is centred on entry. Prices rise from the leading edge to the trailing edge, so the layout follows the writing direction.
 - **Readouts.** The prices sit under the bar in price order, lowest first, each over its label. Mark and entry therefore trade places when the mark crosses the entry. `barPnlLayout({entry, mark, liquidation, side})` returns the same positions, order and result for a host-drawn bar.
 - **Labels.** `labels` is host text for the three prices. HIG ships no trading terms of its own, so there is no default.
 - **Compact prices.** `compact` shortens the three prices for a phone: no fraction at 1,000 and above (`$64,700`), at most two fraction digits from 1 (`$142.96`, `$3,520`), and four significant digits below 1 (`$0.4821`), with trailing zeros dropped. It keeps the currency and other `priceOptions`. `barPnlCompactOptions(value, priceOptions)` returns the same format for host text.
+- **Fit.** `fit` scales the bar to the prices themselves, so the stretch from entry to mark fills it, with a liquidation price at one end when there is one. Use it for a finished trade, as `TradeHistoryCard` does; an open position keeps the default, which centres entry so the move reads against the room left.
 - **Card.** `surface={false}` draws no card: no surface fill, padding or radius, for a bar that sits inside another card or directly on the page. The track then takes the page's raised fill so it stays visible.
 - **Header.** `title` and `description` are optional and sit above the bar as in `BarMark`. `priceOptions` formats the three prices; the default is US dollars.
 - **Accessibility.** The bar is decorative. Each readout reads its label and price. With a `title` the card is a group named by it.

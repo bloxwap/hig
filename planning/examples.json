@@ -1067,6 +1067,53 @@
       }
     },
     {
+      "name": "TradeHistoryCard",
+      "slug": "trade-history-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} onSelect={()=>setMessage('The host opens the trade')}/>",
+      "native": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} onSelect={()=>setMessage('The host opens the trade')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss",
+        "no-card"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "loss": {
+          "web": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='BTC' side='long' leverage={40} entry={64700} exit={64522.5} pnl={-1.12} onSelect={()=>setMessage('The host opens the trade')}/>",
+          "native": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='BTC' side='long' leverage={40} entry={64700} exit={64522.5} pnl={-1.12} onSelect={()=>setMessage('The host opens the trade')}/>"
+        },
+        "no-card": {
+          "web": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} surface={false}/>",
+          "native": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} surface={false}/>"
+        }
+      }
+    },
+    {
+      "name": "TradeHistoryDetailCard",
+      "slug": "trade-history-detail-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.TradeHistoryDetailCard labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short'}} name='Amazon' side='short' leverage={20} pnl={1.418} pnlPercent={0.0284} details={[{label:'Entry',value:267.6,options:{style:'currency',currency:'USD'}},{label:'Exit',value:267.18,options:{style:'currency',currency:'USD'}},{label:'Size',value:3.734,suffix:' AMZN',options:{maximumFractionDigits:4}},{label:'Notional',value:999.23,options:{style:'currency',currency:'USD'}},{label:'Held',value:'38m 20s'},{label:'Fees',value:0.1639,options:{style:'currency',currency:'USD',maximumFractionDigits:4}},{label:'Funding',value:0.0063,options:{style:'currency',currency:'USD',maximumFractionDigits:4,signDisplay:'exceptZero'}}]} actions={[{id:'save',label:'Save image',onSelect:()=>setMessage('The host saves the image')},{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.TradeHistoryDetailCard labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short'}} name='Amazon' side='short' leverage={20} pnl={1.418} pnlPercent={0.0284} details={[{label:'Entry',value:267.6,options:{style:'currency',currency:'USD'}},{label:'Exit',value:267.18,options:{style:'currency',currency:'USD'}},{label:'Size',value:3.734,suffix:' AMZN',options:{maximumFractionDigits:4}},{label:'Notional',value:999.23,options:{style:'currency',currency:'USD'}},{label:'Held',value:'38m 20s'},{label:'Fees',value:0.1639,options:{style:'currency',currency:'USD',maximumFractionDigits:4}},{label:'Funding',value:0.0063,options:{style:'currency',currency:'USD',maximumFractionDigits:4,signDisplay:'exceptZero'}}]} actions={[{id:'save',label:'Save image',onSelect:()=>setMessage('The host saves the image')},{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "loss": {
+          "web": "<C.TradeHistoryDetailCard labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short'}} name='Bitcoin' side='long' leverage={40} pnl={-1.12} pnlPercent={-0.112} details={[{label:'Entry',value:64700,options:{style:'currency',currency:'USD'}},{label:'Exit',value:64522.5,options:{style:'currency',currency:'USD'}},{label:'Size',value:0.006182,suffix:' BTC',options:{maximumFractionDigits:6}},{label:'Notional',value:399.98,options:{style:'currency',currency:'USD'}},{label:'Held',value:'2h 4m'},{label:'Fees',value:0.0721,options:{style:'currency',currency:'USD',maximumFractionDigits:4}}]} actions={[{id:'save',label:'Save image',onSelect:()=>setMessage('The host saves the image')},{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]}/>",
+          "native": "<C.TradeHistoryDetailCard labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short'}} name='Bitcoin' side='long' leverage={40} pnl={-1.12} pnlPercent={-0.112} details={[{label:'Entry',value:64700,options:{style:'currency',currency:'USD'}},{label:'Exit',value:64522.5,options:{style:'currency',currency:'USD'}},{label:'Size',value:0.006182,suffix:' BTC',options:{maximumFractionDigits:6}},{label:'Notional',value:399.98,options:{style:'currency',currency:'USD'}},{label:'Held',value:'2h 4m'},{label:'Fees',value:0.0721,options:{style:'currency',currency:'USD',maximumFractionDigits:4}}]} actions={[{id:'save',label:'Save image',onSelect:()=>setMessage('The host saves the image')},{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]}/>"
+        }
+      }
+    },
+    {
       "name": "TokenActionCard",
       "slug": "token-action-card",
       "entry": "blocks",

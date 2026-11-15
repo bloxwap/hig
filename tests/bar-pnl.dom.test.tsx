@@ -2,6 +2,7 @@
 import React from 'react';
 import {afterEach,describe,expect,it} from 'vitest';
 import {cleanup,render,screen} from '@testing-library/react';
+import {readFileSync} from 'node:fs';
 import {BarPnl,barPnlLayout,barPnlCompactOptions} from '../packages/hig/react/src/bar-pnl';
 afterEach(cleanup);
 const labels={liquidation:'Liquidation',mark:'Mark',entry:'Entry'};
@@ -22,6 +23,12 @@ describe('barPnlLayout',()=>{
   expect(barPnlLayout({entry:100,mark:140,liquidation:80}).positions).toEqual({entry:1/3,mark:1,liquidation:0});
   expect(barPnlLayout({entry:100,mark:70,liquidation:80}).positions).toEqual({entry:0.6,mark:0,liquidation:0.2});
   expect(barPnlLayout({entry:100,mark:105})).toEqual({side:'long',result:'profit',positions:{entry:0.5,mark:0.75},order:['entry','mark']});
+ });
+ it('fit scales the bar to the prices themselves, so the move fills it',()=>{
+  expect(barPnlLayout({entry:267.6,mark:267.18,side:'short',fit:true})).toEqual({side:'short',result:'profit',positions:{entry:1,mark:0},order:['mark','entry']});
+  expect(barPnlLayout({entry:100,mark:110,liquidation:80,fit:true}).positions).toEqual({liquidation:0,entry:2/3,mark:1});
+  // Nothing moved: both ticks sit in the middle.
+  expect(barPnlLayout({entry:100,mark:100,fit:true}).positions).toEqual({entry:0.5,mark:0.5});
  });
  it('is flat when mark equals entry or is unknown, keeping mark on the side it would move to',()=>{
   expect(barPnlLayout({entry:100,mark:100,liquidation:80})).toMatchObject({result:'flat',positions:{entry:0.5,mark:0.5},order:['liquidation','entry','mark']});
@@ -70,4 +77,10 @@ describe('BarPnl',()=>{
   view.rerender(<BarPnl entry={1.5} mark={2} labels={{liquidation:'Liq.',mark:'Now',entry:'Open'}} priceOptions={{maximumFractionDigits:1}}/>);
   expect(readouts()).toEqual(['Open1.5','Now2']);
  });
+});
+
+it('fills the stretch between entry and mark solid in the result colour',()=>{
+ const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
+ expect(rule('.hig-bar-pnl-move {')).toContain('background:var(--hig-bar-pnl-tone);');expect(rule('.hig-bar-pnl-move {')).not.toContain('color-mix');
+ expect(rule(".hig-bar-pnl[data-result='profit']")).toContain('var(--hig-positive)');expect(rule(".hig-bar-pnl[data-result='loss']")).toContain('var(--hig-negative)');
 });
