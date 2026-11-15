@@ -132,3 +132,46 @@ it('shows the position row: direction, leverage and size, with profit and loss t
  view=mount({position:{name:'Solana',pnl:0}});expect(view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-position-pnl').props.tone).toBe('text');
  expect(row().props.accessibilityLabel).toBe('Solana, Long, $0.00');expect(has(view,'manage-position-leverage')).toBe(false);expect(has(view,'manage-position-pnl-percent')).toBe(false);
 });
+
+it('puts a trailing value with an optional tone on an action row, read with its label',()=>{
+ const cancel=jest.fn();
+ const view=mount({actions:[{id:'tp',label:'Take Profit',value:{value:66000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}},tone:'positive',onSelect:cancel},{id:'sl',label:'Stop Loss',value:'$63,500',tone:'negative',onSelect:()=>{}},{id:'plain',label:'Trailing',value:'Off',onSelect:()=>{}},{id:'close',label:'Close',onSelect:()=>{}}]});
+ const press=id=>all(view,`manage-action-${id}`).find(node=>typeof node.type!=='string'&&'onPress' in node.props);
+ expect(['tp','sl','plain','close'].map(id=>press(id).props.accessibilityLabel)).toEqual(['Take Profit, $66,000','Stop Loss, $63,500','Trailing, Off','Close']);
+ const figure=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-action-tp-value');expect([figure.props.value,figure.props.tone]).toEqual([66000,'positive']);
+ expect(flat(host(view,'manage-action-sl-value')).color).toBe(nativeSrgb.negative);expect(text(host(view,'manage-action-sl-value'))).toBe('$63,500');
+ // Without a tone, host text is the row's own muted value.
+ expect(has(view,'manage-action-plain-value')).toBe(false);
+ act(()=>{press('tp').props.onPress({});});expect(cancel).toHaveBeenCalledTimes(1);
+});
+
+it('adds a badge after the name and a caption under the row',()=>{
+ const view=mount({position:{name:'Bitcoin',badge:'Papertrade',caption:'Estimated, funding unavailable',pnl:1.5}});
+ expect(text(host(view,'manage-position-badge'))).toBe('Papertrade');expect(flat(host(view,'manage-position-badge'))).toMatchObject({borderRadius:9999,backgroundColor:nativeSrgb.nested});
+ const caption=host(view,'manage-position-caption');expect(text(caption)).toBe('Estimated, funding unavailable');expect(flat(caption)).toMatchObject({marginTop:8,paddingHorizontal:16,color:nativeSrgb.muted});
+ expect(host(view,'manage-position-row').props.accessibilityRole).toBeUndefined();
+});
+
+it('makes the position row one button named by the host label, with its figures and caption as the hint',()=>{
+ const open=jest.fn();
+ const view=mount({position:{name:'Bitcoin',leverage:40,pnl:-0.0247,caption:'Stale',label:'View Bitcoin',onSelect:open}});
+ const row=host(view,'manage-position-row');expect(row.props.accessibilityRole).toBe('button');expect(row.props.accessibilityLabel).toBe('View Bitcoin');expect(row.props.accessibilityHint).toBe('Bitcoin, Long, 40×, -$0.0247. Stale');
+ act(()=>{all(view,'manage-position-row').find(node=>typeof node.type!=='string'&&'onPress' in node.props).props.onPress({});});expect(open).toHaveBeenCalledTimes(1);
+});
+
+it('falls back to the initials when the icon fails to load, and tries a new icon again',()=>{
+ const {Image}=require('react-native');
+ let view=mount({position:{name:'Bitcoin',icon:'https://example.test/btc.png'}});
+ expect(view.findAllByType(Image)).toHaveLength(1);expect(has(view,'manage-position-initials')).toBe(false);
+ act(()=>{view.findByType(Image).props.onError({});});
+ expect(view.findAllByType(Image)).toHaveLength(0);expect(text(host(view,'manage-position-initials'))).toBe('Bit');
+ act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(ManagePositionBlock,{...base,position:{name:'Bitcoin',icon:'https://example.test/btc-2.png'}})));});
+ view=root.root;expect(view.findAllByType(Image)).toHaveLength(1);
+});
+
+it('formats the profit and loss with pnlOptions merged over the default, and names the heading with headingId',()=>{
+ let view=mount({position:{name:'Bitcoin',pnl:5.1234},pnlOptions:{maximumFractionDigits:3},headingId:'manage-heading'});
+ expect(host(view,'manage-position-row').props.accessibilityLabel).toBe('Bitcoin, Long, +$5.123');expect(host(view,'manage-title').props.nativeID).toBe('manage-heading');
+ view=mount({position:{name:'Bitcoin',pnl:-2},pnlOptions:{minimumFractionDigits:2}},{locale:'fr-FR',numberFormat:{currencyDisplay:'narrowSymbol'}});
+ expect(host(view,'manage-position-row').props.accessibilityLabel).toMatch(/-2,00\s\$$/);
+});

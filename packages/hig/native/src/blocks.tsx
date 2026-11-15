@@ -23,12 +23,12 @@ export function MarketingHero({title,description,href,cta}: {title:string;descri
 export {AccountBlock,accountRows,assetValue,AssetBalanceRow,type AccountBlockProps,type AccountAsset,type AssetArtwork,type AssetBalanceRowProps} from './account-block.js';
 export {LanguageBlock,filterLanguages,type LanguageBlockProps,type LanguageOption} from './language-block.js';
 export {TokenActionBlock,tokenActionLabel,type TokenActionBlockProps,type TokenAction,type TokenActionId} from './token-action-block.js';
-export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type ManagePositionBlockLabels,type ManagePositionBlockAction,type ManagePositionBlockSummary} from './manage-position-block.js';
+export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type ManagePositionBlockLabels,type ManagePositionBlockAction,type ManagePositionBlockSummary,type ManagePositionBlockFigure} from './manage-position-block.js';
 export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './trade-history-list-block.js';
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-block.js';
-export {TargetBlock,targetLayout,targetFormat,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-block.js';
+export {TargetBlock,targetLayout,targetFormat,targetPresets,targetUnits,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice,type TargetPreset,type TargetUnitOption} from './target-block.js';
 export {ProfileBlock,type ProfileBlockProps,type ProfileRow,type ProfileSection,type ProfileStatus} from './profile-block.js';
-export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag} from './position-block.js';
+export {PositionBlock,PositionBlockHeader,type PositionBlockProps,type PositionBlockHeaderProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag,type PositionBlockFlagAction} from './position-block.js';
 export {RewardBlock,rewardProgress,type RewardBlockProps,type RewardPromo,type RewardEntry} from './reward-block.js';
 export {SoundHapticsBlock,soundLevel,type SoundHapticsBlockProps,type SoundSection,type SoundVolume} from './sound-haptics-block.js';
 export {SignalsBlock,type SignalsBlockProps,type SignalsGroup,type SignalsItem} from './signals-block.js';

@@ -46,16 +46,18 @@ export interface TargetBlockProps {
  /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */
  trigger?:number|null;
  unit:TargetUnit;
- /** Units offered, in order. Defaults to all three; one unit hides the control. */
- units?:readonly TargetUnit[];
+ /** Units offered, in order. Defaults to all three; one unit hides the control. `{unit, disabled}` shows a unit that cannot be chosen now, dimmed. */
+ units?:readonly (TargetUnit|TargetUnitOption)[];
  onUnitChange?:(unit:TargetUnit)=>void;
  /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */
  value:number|null;
  onValueChange?:(value:number)=>void;
- /** Quick choices in the current unit. The one equal to `value` is shown selected. */
- presets?:readonly number[];
+ /** Quick choices in the current unit. The one equal to `value` is shown selected. `{value, disabled}` shows a choice that cannot be taken now, dimmed. */
+ presets?:readonly (number|TargetPreset)[];
  /** Shows the Custom row; the host opens its own entry. */
  onCustom?:()=>void;
+ /** The value the host's own entry set, in the current unit. The Custom row then shows it on its trailing edge and reads as selected, and no quick choice does. */
+ customValue?:number|null;
  /** Format of prices. Defaults to US dollars. */
  priceOptions?:Intl.NumberFormatOptions;
  /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */
@@ -68,10 +70,22 @@ export interface TargetBlockProps {
  onCancel?:()=>void;
  /** Shows Back on the leading edge of the header. */
  onBack?:()=>void;
- /** A control on the trailing edge of the header, usually an IconButton. It takes the place of the info button, and the note is then always shown. */
+ /** A control on the trailing edge of the header, usually an IconButton. It takes the place of the info button, and the note is then always shown, unless `headerActionBesideInfo` is set. */
  headerAction?:React.ReactNode;
+ /** Set true to keep the info button when `headerAction` is given: the info button comes first and `headerAction` sits on the trailing edge. */
+ headerActionBesideInfo?:boolean;
+ /** Sets `nativeID` on the title, so a sheet around the pane can name itself with `accessibilityLabelledBy` (Android). */
+ headingId?:string;
  testID?:string;
 }
+/** A quick choice that can be shown dimmed. */
+export interface TargetPreset {value:number;disabled?:boolean}
+/** A unit that can be shown dimmed. */
+export interface TargetUnitOption {unit:TargetUnit;disabled?:boolean}
+/** The quick choices as `{value, disabled}`, whichever form the host gave. */
+export function targetPresets(presets:readonly (number|TargetPreset)[]):TargetPreset[]{return presets.map(preset=>typeof preset==='number'?{value:preset}:preset);}
+/** The units as `{unit, disabled}`, whichever form the host gave. */
+export function targetUnits(units:readonly (TargetUnit|TargetUnitOption)[]):TargetUnitOption[]{return units.map(unit=>typeof unit==='string'?{unit}:unit);}
 const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
 const allUnits:readonly TargetUnit[]=['dollar','price','percent'];
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
@@ -100,9 +114,12 @@ export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** A take profit or a stop loss on one position as a screen: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. The bar is decorative; each price reads its label and value. */
-export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
+export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,customValue,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,headerActionBesideInfo,headingId,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();const [open,setOpen]=useState(false);
- const info=note&&labels.info&&!headerAction?labels.info:undefined;
+ const info=note&&labels.info&&(!headerAction||headerActionBesideInfo)?labels.info:undefined;
+ // With the info button beside a host control, both header sides widen together so the title stays centred.
+ const pair=!!info&&headerAction!=null,side=pair?92:44;
+ const custom=known(customValue)?customValue:null,customText=custom===null?null:formatNumber(custom,locale,present(targetFormat(unit,priceOptions)));
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
@@ -112,9 +129,9 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const part=(grow:number)=>({flexGrow:grow,flexShrink:1,flexBasis:0,backgroundColor:fills.raised});
  return <View testID={testID} style={{padding:16}}>
   <View testID='target-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
-   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='target-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
-   <Text testID='target-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
-   <View style={{minWidth:44,alignItems:'flex-end'}}>{info?<IconButton intent='ghost' label={info} suppressFeedback testID='target-info' accessibilityState={{expanded:open}} onPress={()=>setOpen(!open)}><SeverityIcon kind='info' color={colors.text}/></IconButton>:headerAction}</View>
+   <View style={{minWidth:side,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='target-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
+   <Text testID='target-title' nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
+   <View style={{minWidth:side,alignItems:'flex-end'}}>{info?(()=>{const button=<IconButton intent='ghost' label={info} suppressFeedback testID='target-info' accessibilityState={{expanded:open}} onPress={()=>setOpen(!open)}><SeverityIcon kind='info' color={colors.text}/></IconButton>;return pair?<View testID='target-header-actions' style={{direction,flexDirection:'row',alignItems:'center',gap:4}}>{button}{headerAction}</View>:button;})():headerAction}</View>
   </View>
   <View style={{alignItems:'center',marginTop:16}}><AnimatedNumberReadout testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {note&&!info?<Text testID='target-note' style={{color:colors.muted,fontSize:14,lineHeight:21,textAlign:'center',marginTop:16}}>{note}</Text>:null}
@@ -135,13 +152,20 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
     </View>)}
    </View>
   </PriceCard>
-  {units.length>1?<View testID='target-units' style={{marginTop:16}}><SegmentedControl label={labels.unit} options={units.map(option=>({value:option,label:labels.units[option]}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/></View>:null}
-  {onCustom?<Pressable testID='target-custom' accessibilityRole='button' onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well,marginTop:16})}>
+  {units.length>1?<View testID='target-units' style={{marginTop:16}}><SegmentedControl label={labels.unit} options={targetUnits(units).map(option=>({value:option.unit,label:labels.units[option.unit],disabled:option.disabled}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/></View>:null}
+  {onCustom&&customText===null?<Pressable testID='target-custom' accessibilityRole='button' onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well,marginTop:16})}>
    <Text numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.custom}</Text>
    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
   </Pressable>:null}
+  {onCustom&&customText!==null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityLabel={`${labels.custom}, ${customText}`} accessibilityState={{selected:true}} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:14,borderRadius:9999,borderWidth:2,borderColor:tone,backgroundColor:pressed?fills.raised:fills.well,marginTop:16})}>
+   <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.custom}</Text>
+   <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>
+    <Text testID='target-custom-value' numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:tone}}>{customText}</Text>
+    <View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
+   </View>
+  </Pressable>:null}
   {presets.length>0?<View testID='target-presets' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>
-   {presets.map(preset=><Button key={preset} testID={`target-preset-${preset}`} intent={preset===value?intent:'secondary'} accessibilityState={{selected:preset===value}} onPress={()=>onValueChange?.(preset)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>)}
+   {targetPresets(presets).map(({value:preset,disabled})=>{const selected=custom===null&&preset===value;return <Button key={preset} testID={`target-preset-${preset}`} intent={selected?intent:'secondary'} disabled={disabled} accessibilityState={{selected}} onPress={()=>onValueChange?.(preset)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>;})}
   </View>:null}
   {info&&open?<Pressable testID='target-popover-dismiss' {...hidden} onPress={()=>setOpen(false)} style={{position:'absolute',top:0,bottom:0,left:0,right:0,zIndex:1}}/>:null}
   {info&&open?<View testID='target-popover' accessibilityLiveRegion='polite' style={{position:'absolute',top:64,...(direction==='rtl'?{left:16}:{right:16}),maxWidth:280,zIndex:2,padding:12,borderRadius:14,backgroundColor:colors.nested}}><Text testID='target-note' style={{color:colors.text,fontSize:14,lineHeight:21}}>{note}</Text></View>:null}

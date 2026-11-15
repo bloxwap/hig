@@ -136,3 +136,39 @@ it('sizes the headline figure like the SwapPanel amount',()=>{
  const view=mount({});
  expect(view.findAll(node=>node.props.testID==='target-amount')[0].props.style).toMatchObject({fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9});
 });
+
+it('dims a preset or a unit the host cannot offer now',()=>{
+ const change=jest.fn();
+ const view=mount({value:2,presets:[1,{value:2},{value:5,disabled:true}],units:['dollar',{unit:'price',disabled:true},{unit:'percent'}],onValueChange:change});
+ expect([1,2,5].map(value=>{const node=button(view,`target-preset-${value}`);return [node.props.disabled,node.props.accessibilityState.selected,node.props.intent];})).toEqual([[undefined,false,'secondary'],[undefined,true,'primary'],[true,false,'secondary']]);
+ expect(view.findByType(SegmentedControl).props.options).toEqual([{value:'dollar',label:'Dollar',disabled:undefined},{value:'price',label:'Price',disabled:true},{value:'percent',label:'Percent',disabled:undefined}]);
+ act(()=>{button(view,'target-preset-1').props.onPress({});});expect(change).toHaveBeenCalledWith(1);
+});
+
+it('shows the custom value on the Custom row, which then reads as selected in place of any preset',()=>{
+ const custom=jest.fn();
+ let view=mount({value:2,presets:[1,2],onCustom:custom});
+ expect(host(view,'target-custom').props.accessibilityState?.selected).toBeFalsy();expect(has(view,'target-custom-value')).toBe(false);expect(button(view,'target-preset-2').props.accessibilityState.selected).toBe(true);
+ view=mount({value:2,presets:[1,2],onCustom:custom,customValue:2});
+ const row=host(view,'target-custom');expect(row.props.accessibilityLabel).toBe('Custom, +$2.00');expect(row.props.accessibilityState).toMatchObject({selected:true});
+ expect(text(host(view,'target-custom-value'))).toBe('+$2.00');expect(flat(host(view,'target-custom-value')).color).toBe(nativeSrgb.positive);expect(flat(row)).toMatchObject({borderWidth:2,borderColor:nativeSrgb.positive,minHeight:48});
+ expect([1,2].map(value=>button(view,`target-preset-${value}`).props.accessibilityState.selected)).toEqual([false,false]);
+ act(()=>{all(view,'target-custom').find(node=>'onPress' in node.props&&typeof node.type!=='string').props.onPress({});});expect(custom).toHaveBeenCalledTimes(1);
+ view=mount({kind:'stop-loss',unit:'percent',value:-0.035,onCustom:custom,customValue:-0.035});expect(text(host(view,'target-custom-value'))).toBe('-3.5%');expect(flat(host(view,'target-custom')).borderColor).toBe(nativeSrgb.negative);
+});
+
+it('formats dollar presets and the custom value with the provider money presentation',()=>{
+ const view=mount({value:2,presets:[1],onCustom:()=>{},customValue:2.5},{locale:'fr-FR',numberFormat:{currencyDisplay:'narrowSymbol'}});
+ expect(text(host(view,'target-custom-value'))).toMatch(/^\+2,50\s\$$/);expect(button(view,'target-preset-1').props.children).toMatch(/^\+1\s\$$/);
+});
+
+it('keeps the info button beside a host header control with headerActionBesideInfo, and names the heading',()=>{
+ const info={labels:{...labels,info:'How this order fills'},note:'Fills at your price or better.',headerAction:h(View,{testID:'receive'})};
+ let view=mount(info);expect(has(view,'target-info')).toBe(false);expect(has(view,'target-note')).toBe(true);
+ view=mount({...info,headerActionBesideInfo:true,headingId:'target-heading'});
+ const pair=host(view,'target-header-actions');expect(pair.findAll(node=>node.props.testID==='target-info'||node.props.testID==='receive').filter(node=>typeof node.type==='string').map(node=>node.props.testID)[0]).toBe('target-info');
+ expect(has(view,'receive')).toBe(true);expect(has(view,'target-note')).toBe(false);expect(host(view,'target-title').props.nativeID).toBe('target-heading');
+ // Both header sides widen together, so the title stays centred.
+ const sides=host(view,'target-header').children.filter(child=>child.props.testID!=='target-title').map(child=>flat(child).minWidth);expect(sides).toEqual([92,92]);
+ act(()=>{all(view,'target-info').find(node=>node.props.onPress&&typeof node.type!=='string').props.onPress({});});expect(text(host(view,'target-note'))).toBe('Fills at your price or better.');
+});

@@ -31,7 +31,7 @@ import {ListGroup, ListRow} from '@bloxwap/hig/react/list-group';
 
 - **Rows that open a view.** `onSelect` makes the whole row one button and shows the disclosure chevron on the trailing edge. On web `href` makes it a link instead. The chevron mirrors in right-to-left layouts.
 - **Rows that hold a control.** A row without `onSelect` or `href` is static, so a control in `trailing`, such as a `Switch`, is its only target. On web a `Switch` in `trailing` keeps its label for assistive technology and hides it visually, because the row already shows it.
-- **Trailing content.** `value` is short muted text such as `Off`, `English` or a balance. `trailing` takes anything richer: icons, a `Badge`, or a control. Both can be used together; the value comes first.
+- **Trailing content.** `value` is short muted text such as `Off`, `English` or a balance. `trailing` takes anything richer: icons, a `Badge`, or a control. Both can be used together; the value comes first. A `value` can also be an element, such as a live `AnimatedNumberReadout`; on native give it `valueLabel`, the text it reads as, so a selectable row still reads its label and value.
 - **Leading content.** `leading` is decorative artwork before the label, such as an icon.
 - **Disabled.** `disabled` dims the row and blocks `onSelect` and `href`.
 - **Anatomy.** Rows are 56 units high with 20 units of inline padding. The group has a 20-unit radius; the first and last rows take its corners. A group without a `title` is the container alone. Stack groups 24 units apart: that gap is what separates one group from the next, where rows inside a group are 2 apart.
