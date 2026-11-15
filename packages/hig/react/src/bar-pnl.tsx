@@ -55,7 +55,7 @@ export function barPnlLayout({entry,mark,liquidation,side}:{entry:number;mark?:n
  const order=(Object.keys(positions) as BarPnlKind[]).sort((a,b)=>values[a]-values[b]||rank[a]-rank[b]);
  return {side:direction,result,positions,order};
 }
-/** A position's profit or loss as one bar: the stretch between entry and mark is tinted, a tick marks each price, and the liquidation, mark and entry prices read under the bar in price order, so mark and entry trade places as the position moves. */
+/** A position's profit or loss as one bar: the stretch between entry and mark is filled solid in the result colour, a tick marks each price, and the liquidation, mark and entry prices read under the bar in price order, so mark and entry trade places as the position moves. */
 export function BarPnl({entry,mark,liquidation,side,labels,title,description,priceOptions=usd,compact=false,surface=true,className,...rest}:BarPnlProps){
  const id=useId();
  const {result,positions,order}=barPnlLayout({entry,mark,liquidation,side});

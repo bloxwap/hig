@@ -2,7 +2,7 @@
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {StyleSheet}=require('react-native');
-const {nativeSrgb:colors,withAlpha}=require('@bloxwap/hig/tokens');
+const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {BarPnl,barPnlLayout}=require('../../packages/hig/native/src/bar-pnl');
 const h=React.createElement;
@@ -27,14 +27,14 @@ it('reads each price with its host label in price order, and swaps mark and entr
  expect(readings(tree)).toEqual(['Liquidation, $63,000.00','Mark, $64,450.00','Entry, $64,700.00']);
  tree=mount({entry:142.96,mark:149.1});expect(readings(tree)).toEqual(['Entry, $142.96','Mark, $149.10']);expect(host(tree,'pnl-liquidation-tick')).toBeUndefined();
 });
-it('tints the stretch between entry and mark in the result tone, with the mark tick in that tone and the entry tick in text',()=>{
+it('fills the stretch between entry and mark solid in the result tone, with the mark tick in that tone and the entry tick in text',()=>{
  let tree=mount({entry:100,mark:105,liquidation:80});
- expect(flat(host(tree,'pnl-move'))).toMatchObject({flexGrow:0.125,backgroundColor:withAlpha(colors.positive,0.24),borderStartColor:colors.text,borderEndColor:colors.positive});
+ expect(flat(host(tree,'pnl-move'))).toMatchObject({flexGrow:0.125,backgroundColor:colors.positive,borderStartColor:colors.text,borderEndColor:colors.positive});
  expect(flat(host(tree,'pnl-liquidation-tick'))).toMatchObject({start:'0%',marginStart:0,backgroundColor:colors.negative});
  tree=mount({entry:100,mark:90,liquidation:80});
- expect(flat(host(tree,'pnl-move'))).toMatchObject({flexGrow:0.25,backgroundColor:withAlpha(colors.negative,0.24),borderStartColor:colors.negative,borderEndColor:colors.text});
+ expect(flat(host(tree,'pnl-move'))).toMatchObject({flexGrow:0.25,backgroundColor:colors.negative,borderStartColor:colors.negative,borderEndColor:colors.text});
  tree=mount({entry:100,mark:100,liquidation:120});
- expect(flat(host(tree,'pnl-move'))).toMatchObject({flexGrow:0,minWidth:6,backgroundColor:withAlpha(colors.muted,0.24)});expect(flat(host(tree,'pnl-liquidation-tick'))).toMatchObject({start:'100%',marginStart:-3});
+ expect(flat(host(tree,'pnl-move'))).toMatchObject({flexGrow:0,minWidth:6,backgroundColor:colors.muted});expect(flat(host(tree,'pnl-liquidation-tick'))).toMatchObject({start:'100%',marginStart:-3});
  expect(host(tree,'pnl-bar').props.importantForAccessibility).toBe('no-hide-descendants');
 });
 it('draws no card with surface={false}: a plain view with the same gap and no surface fill or padding',()=>{

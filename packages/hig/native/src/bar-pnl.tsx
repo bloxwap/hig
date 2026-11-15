@@ -1,6 +1,5 @@
 import React from 'react';
 import {View} from 'react-native';
-import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useFills,useHIG} from './provider.js';
 import {Surface,Text} from './surface.js';
 import {AnimatedNumberReadout} from './animated-number.js';
@@ -61,7 +60,7 @@ export function barPnlLayout({entry,mark,liquidation,side}:{entry:number;mark?:n
  const order=(Object.keys(positions) as BarPnlKind[]).sort((a,b)=>values[a]-values[b]||rank[a]-rank[b]);
  return {side:direction,result,positions,order};
 }
-/** A position's profit or loss as one bar: the stretch between entry and mark is tinted, a tick marks each price, and the liquidation, mark and entry prices read under the bar in price order, so mark and entry trade places as the position moves. The bar is decorative; each readout reads its label and price. */
+/** A position's profit or loss as one bar: the stretch between entry and mark is filled solid in the result colour, a tick marks each price, and the liquidation, mark and entry prices read under the bar in price order, so mark and entry trade places as the position moves. The bar is decorative; each readout reads its label and price. */
 export function BarPnl({entry,mark,liquidation,side,labels,title,description,priceOptions=usd,compact=false,surface=true,testID}:BarPnlProps){
  const colors=useColors(),{locale,direction}=useHIG();
  const {result,positions,order}=barPnlLayout({entry,mark,liquidation,side});
@@ -92,7 +91,7 @@ function Bar({from,to,markLeads,tone,liquidation,testID}:{from:number;to:number;
  const part=(grow:number)=>({flexGrow:grow,flexShrink:1,flexBasis:0,backgroundColor:track});
  return <View {...hidden} testID={testID?`${testID}-bar`:undefined} style={{flexDirection:'row',height:24,borderRadius:8,overflow:'hidden'}}>
   <View style={part(from)}/>
-  <View testID={testID?`${testID}-move`:undefined} style={{flexGrow:to-from,flexShrink:1,flexBasis:0,minWidth:6,backgroundColor:withAlpha(tone,0.24),borderStartWidth:3,borderEndWidth:3,borderStartColor:markLeads?tone:colors.text,borderEndColor:markLeads?colors.text:tone}}/>
+  <View testID={testID?`${testID}-move`:undefined} style={{flexGrow:to-from,flexShrink:1,flexBasis:0,minWidth:6,backgroundColor:tone,borderStartWidth:3,borderEndWidth:3,borderStartColor:markLeads?tone:colors.text,borderEndColor:markLeads?colors.text:tone}}/>
   <View style={part(1-to)}/>
   {liquidation===undefined?null:<View testID={testID?`${testID}-liquidation-tick`:undefined} style={{position:'absolute',top:0,bottom:0,width:3,start:`${liquidation*100}%`,marginStart:liquidation<=0?0:liquidation>=1?-3:-1.5,backgroundColor:colors.negative}}/>}
  </View>;
