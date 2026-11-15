@@ -2,7 +2,7 @@ import React from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {withAlpha} from '@bloxwap/hig/tokens';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Surface,Text} from './surface.js';
 import {IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
@@ -82,12 +82,12 @@ export function rewardProgress(amount:number|null|undefined,goal:number|null|und
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
 export function RewardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,testID}:RewardBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale,monoFontFamily}=useHIG();
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale,monoFontFamily}=useHIG(),present=usePresentNumber();
  const money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(promo.amount,promo.goal):null;
- const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,money)):undefined:promo?.caption;
+ const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
  const caps={fontFamily:monoFontFamily,fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase'} as const;
  const standing=(entry:RewardEntry,id:string,style?:ViewStyle)=>{
-  const mine=!!entry.you,reading=[String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,entry.detail,formatNumberReadout(entry.score,locale,scoreOptions).text].filter(Boolean).join(', ');
+  const mine=!!entry.you,reading=[String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,entry.detail,formatNumberReadout(entry.score,locale,present(scoreOptions)).text].filter(Boolean).join(', ');
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
   return <View key={entry.id} testID={id} accessible accessibilityLabel={reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:fills.well,...style}}>
    <Text {...hidden} style={{minWidth:24,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.muted}}>{entry.rank}</Text>
@@ -119,7 +119,7 @@ export function RewardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,s
      <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
     </Pressable>:null}
    </View>
-   <View testID='reward-amount' accessible accessibilityLabel={[formatNumberReadout(promo.amount,locale,money).text,caption].filter(Boolean).join(' ')} style={{gap:4}}>
+   <View testID='reward-amount' accessible accessibilityLabel={[formatNumberReadout(promo.amount,locale,present(money)).text,caption].filter(Boolean).join(' ')} style={{gap:4}}>
     <View {...hidden} style={{alignItems:'flex-start'}}><AnimatedNumberReadout value={promo.amount} options={money} tone='positive' style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9}}/></View>
     {caption?<Text {...hidden} testID='reward-caption' style={{fontFamily:monoFontFamily,fontSize:15,lineHeight:22,color:colors.muted}}>{caption}</Text>:null}
    </View>

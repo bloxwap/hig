@@ -2,13 +2,13 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/market-row` and `blocks/marketing-hero`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel-block` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
-Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountBlock` and `TokenActionBlock`, `LanguageBlock`, exist only under `blocks`.
+Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. The native one is also a real file, `native/dist/recipes.js`, that re-exports the blocks, so a Jest `moduleNameMapper` that maps `@bloxwap/hig/native/<entry>` to `native/dist/<entry>.js` resolves it. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountBlock` and `TokenActionBlock`, `LanguageBlock`, exist only under `blocks`.
 
 ## API and anatomy
 
@@ -379,6 +379,45 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 - **Top bar.** `onShowAddress` shows the address control and `onClose` shows Close. Leave either out to hide it.
 - **Sections.** Each section is `{id, title, rows}`; a section with no rows is not drawn. A row is `{id, label}` plus optional `leading`, `value`, `trailing`, `disabled`, and either `onSelect` (the whole row is a button with a chevron) or `onCheckedChange` with `checked` (the row is a switch, named by its label). The host writes every label and value.
 - **Ownership.** The block never reads an account, a balance or a setting. Each control only reports the press; the host opens its accounts, history, rewards and settings screens.
+
+### ScreenHeader
+
+`ScreenHeader` is the header every block draws: Back on the leading edge, the title centred, and an optional control on the trailing edge, with the title centred whichever of the two are present. It has its own entry for a host pane that has no block, such as a keypad pushed from `TargetBlock` or a pane between two blocks, so the pane matches the blocks around it: `@bloxwap/hig/react/blocks/screen-header` on web and `@bloxwap/hig/native/screen-header` on native. The native entry also exports `ChevronIcon`, the glyph its Back control draws (it points down; rotate it).
+
+```tsx
+import {ScreenHeader} from '@bloxwap/hig/react/blocks/screen-header';
+// Native: import {ScreenHeader} from '@bloxwap/hig/native/screen-header';
+
+<ScreenHeader title={t.editTarget} onBack={goBack} action={<IconButton label={t.done} onClick={done}>{check}</IconButton>}/>
+```
+
+- **Props.** `title` is host text. `onBack` shows Back, named by the built-in translated `back` message. `action` is the trailing control.
+- **Heading id (web).** `headingId` sets the `id` of the `h2`, so a `Dialog` or sheet around the pane can name itself with `aria-labelledby` and the title is read once. Without it the heading has no `id`.
+- **Test IDs (native).** `testID` prefixes `<testID>-header`, `<testID>-back` and `<testID>-title`; without it the header sets none. `SettingHeader`, the name the settings blocks use inside HIG, is the same component.
+- **Targets.** On native the Back control and every other header `IconButton` is drawn at 44dp and reaches 48dp on every side through `hitSlop`.
+
+### Shared host hooks
+
+Two `HIGProvider` settings reach every block at once. Both are optional and inherited by nested providers; without them nothing a block draws changes.
+
+**Press decoration (web).** iOS Safari gives a haptic only when the finger lands on a native `<input type="checkbox" switch>`, so a host that wants that haptic has to put its own element inside each control it presses. `pressDecoration={({kind, disabled}) => node}` draws the host's node inside every pressable HIG control: `Button` and the block action buttons (`kind: 'button'`, which includes the small capsules such as a help pill), `IconButton` (`'icon-button'`), a pressable or linked `ListRow`, a pressable `AssetBalanceRow` and the block rows that open something (`'row'`), `Switch` and the settings switch rows (`'switch'`), and the header's Back, Close, address and info controls (`'back'`). `disabled` is true when the control will not act, so the host can leave its node out.
+
+```tsx
+<HIGProvider pressDecoration={({disabled}) => disabled ? null : <HapticSwitch/>}>…</HIGProvider>
+```
+
+- **Layout.** The node sits in one `span.hig-press-decoration` that is the control's last child: absolutely positioned over the whole control (`inset: 0`), clipped to its radius, out of flow so it adds no gap or size, and with `pointer-events: none` on the layer itself while its children take pointer events. A control with no position of its own becomes `position: relative` only while it holds the layer. The layer's `data-kind` names the control kind.
+- **Presses.** A press on the host's element reaches the control once. A button receives it by bubbling. A switch is drawn as a `<label>`, which by the HTML rules ignores a press on an interactive element inside it, so the layer hands that press to the switch; a host `<label for>` inside the layer is left to send its own click to its control first. The host keeps its own element out of the accessibility tree and tab order.
+- **Host controls.** `PressDecoration` from `@bloxwap/hig/react/provider` draws the same layer inside a host control: `<PressDecoration kind='button'/>`; pass `input` (a ref to the switch input) for a host switch drawn as a label.
+- **Native.** There is no native equivalent: native haptics are called directly.
+
+**Money format.** The blocks format dollars with fixed Intl options, so French reads `12,50 $US` where a host that uses `narrowSymbol` reads `12,50 $`. `numberFormat={{currencyDisplay, useGrouping}}` sets how money reads across the provider, on web and native: `currencyDisplay` is `'symbol'`, `'narrowSymbol'`, `'code'` or `'name'`, and `useGrouping` takes Intl's values, such as `'always'` to group a four-digit Spanish amount. It is merged under every currency format HIG draws: the blocks (totals, rows, prices, presets, legends, captions and their spoken labels), `BarMark`, `BarPnl`, `AssetBalanceRow`, the swap pieces, and `NumberReadout`, `Usd` and `AnimatedNumberReadout`. Options a format sets itself win, so a block's `priceOptions` or a figure's own `options` keep their fields. Only `style: 'currency'` formats change; percentages and plain numbers do not. `presentNumberFormat(options, numberFormat)` from `@bloxwap/hig/contracts` returns the same merge for a host-drawn figure.
+
+```tsx
+<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay: 'narrowSymbol'}}>…</HIGProvider>
+```
+
+**Native targets.** Every block control drawn under the 48dp comfortable target keeps its drawn size and reaches 48dp through `hitSlop`: the header `IconButton`s (Back, Close, address, info) and `ProfileBlock`'s round top-bar controls and edit control reach 2dp beyond each 44dp edge, and the 32dp `SignalsBlock` help pill reaches 8dp beyond each edge.
 
 ## When to use and examples
 

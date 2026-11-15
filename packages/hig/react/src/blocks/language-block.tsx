@@ -1,7 +1,7 @@
 "use client";
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,useHIG} from '../provider.js';
 import {SearchInput} from '../field.js';
 import {ScreenHeader} from './screen-header.js';
 /** One language the host offers. */
@@ -62,6 +62,7 @@ export function LanguageBlock({title,onBack,headerAction,languages,value=null,on
    <span className='hig-language-flag' aria-hidden='true'>{typeof language.flag==='string'?<img src={language.flag} alt=''/>:language.flag??language.code.slice(0,2).toUpperCase()}</span>
    <span className='hig-language-text'><strong>{language.name}</strong>{language.description&&<span lang=''>{language.description}</span>}</span>
    {selected&&check}
+   <PressDecoration kind='row'/>
   </button>;})}</div>}
  </section>;
 }

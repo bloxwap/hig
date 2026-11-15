@@ -1,7 +1,7 @@
 import React,{useState} from 'react';
 import {Pressable,View} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Surface,Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
@@ -101,7 +101,7 @@ export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}
 }
 /** A take profit or a stop loss on one position as a screen: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. The bar is decorative; each price reads its label and value. */
 export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();const [open,setOpen]=useState(false);
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();const [open,setOpen]=useState(false);
  const info=note&&labels.info&&!headerAction?labels.info:undefined;
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
@@ -129,7 +129,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
     <View style={part(1-to)}/>
    </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>
-    {order.map((price,index)=><View key={price} accessible accessibilityLabel={`${labels[price]}, ${formatNumberReadout(prices[price],locale,priceOptions).text}`} testID={`target-${price}`} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
+    {order.map((price,index)=><View key={price} accessible accessibilityLabel={`${labels[price]}, ${formatNumberReadout(prices[price],locale,present(priceOptions)).text}`} testID={`target-${price}`} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
      <View {...hidden}><AnimatedNumberReadout value={prices[price]} options={priceOptions} tone={price==='trigger'?(stop?'negative':'positive'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
      <Text {...hidden} numberOfLines={1} style={{color:colors.muted,fontSize:12,lineHeight:16}}>{labels[price]}</Text>
     </View>)}
@@ -141,7 +141,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
   </Pressable>:null}
   {presets.length>0?<View testID='target-presets' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>
-   {presets.map(preset=><Button key={preset} testID={`target-preset-${preset}`} intent={preset===value?intent:'secondary'} accessibilityState={{selected:preset===value}} onPress={()=>onValueChange?.(preset)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(preset,locale,targetFormat(unit,priceOptions,preset))}</Button>)}
+   {presets.map(preset=><Button key={preset} testID={`target-preset-${preset}`} intent={preset===value?intent:'secondary'} accessibilityState={{selected:preset===value}} onPress={()=>onValueChange?.(preset)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>)}
   </View>:null}
   {info&&open?<Pressable testID='target-popover-dismiss' {...hidden} onPress={()=>setOpen(false)} style={{position:'absolute',top:0,bottom:0,left:0,right:0,zIndex:1}}/>:null}
   {info&&open?<View testID='target-popover' accessibilityLiveRegion='polite' style={{position:'absolute',top:64,...(direction==='rtl'?{left:16}:{right:16}),maxWidth:280,zIndex:2,padding:12,borderRadius:14,backgroundColor:colors.nested}}><Text testID='target-note' style={{color:colors.text,fontSize:14,lineHeight:21}}>{note}</Text></View>:null}

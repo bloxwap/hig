@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG} from './provider.js';
+import {useColors,useFills,useHIG,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
@@ -26,9 +26,9 @@ const avatar=40;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** One holding as a capsule row: a round avatar, the asset's name over its symbol, and its dollar value over its units. The avatar is padded equally on every side, so the capsule end is concentric with it, and both numbers update place by place. */
 export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,onSelect,testID}:AssetBalanceRowProps){
- const colors=useColors(),fills=useFills(),{locale}=useHIG();
+ const colors=useColors(),fills=useFills(),{locale}=useHIG(),present=usePresentNumber();
  const hasUnits=balance!==undefined;
- const label=[name,symbol,formatNumberReadout(value,locale,usd).text,hasUnits?formatNumberReadout(balance,locale,balanceOptions).text:null].filter(Boolean).join(', ');
+ const label=[name,symbol,formatNumberReadout(value,locale,present(usd)).text,hasUnits?formatNumberReadout(balance,locale,balanceOptions).text:null].filter(Boolean).join(', ');
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const art=typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} style={shape as object}/>:<View style={shape}>{icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{symbol.slice(0,3)}</Text>}</View>;
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well});

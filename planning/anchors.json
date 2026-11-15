@@ -36,6 +36,8 @@
     "rewardblock",
     "soundhapticsblock-signalsblock-and-notificationsblock",
     "profileblock",
+    "screenheader",
+    "shared-host-hooks",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",

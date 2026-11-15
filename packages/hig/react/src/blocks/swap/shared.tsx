@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../animated-number.js';
+import {PressDecoration} from '../../provider.js';
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
 export interface SwapToken {
  /** Unique per asset and chain, for example `${chainId}-${address}`. */
@@ -124,7 +125,7 @@ export function TokenIcon({token,size=44}:{token:SwapToken;size?:number}){
  </span>;
 }
 /** Small capsule action that sits on a card: Max, Test, the slippage setting and the denomination switch. */
-export function SwapPill({children,...props}:React.ButtonHTMLAttributes<HTMLButtonElement>){return <button type='button' {...props} className='hig-swap-pill'>{children}</button>;}
+export function SwapPill({children,...props}:React.ButtonHTMLAttributes<HTMLButtonElement>){return <button type='button' {...props} className='hig-swap-pill'>{children}<PressDecoration kind='button' disabled={!!props.disabled}/></button>;}
 const keys=['1','2','3','4','5','6','7','8','9','.','0','back'];
 /** Numeric keypad. Emits `0`–`9`, `.` or `back`. */
 export function SwapKeypad({onKey,label,deleteLabel}:{onKey:(key:string)=>void;label:string;deleteLabel:string}){
@@ -137,5 +138,5 @@ export type SwapView='main'|'from'|'to'|'settings'|'slippage'|'fees';
 export const parentView=(view:SwapView):SwapView=>view==='slippage'||view==='fees'?'settings':'main';
 /** Header of a pushed view: Back on the leading edge, then the title, which takes focus when the view arrives. */
 export function SwapViewHeader({title,titleRef,backLabel,onBack}:{title:string;titleRef:React.Ref<HTMLHeadingElement>;backLabel:string;onBack:()=>void}){
- return <div className='hig-swap-view-header'><button type='button' className='hig-swap-back' aria-label={backLabel} onClick={onBack}><SwapIcon name='back'/></button><h2 ref={titleRef} tabIndex={-1} className='hig-swap-view-title'>{title}</h2></div>;
+ return <div className='hig-swap-view-header'><button type='button' className='hig-swap-back' aria-label={backLabel} onClick={onBack}><SwapIcon name='back'/><PressDecoration kind='back'/></button><h2 ref={titleRef} tabIndex={-1} className='hig-swap-view-title'>{title}</h2></div>;
 }

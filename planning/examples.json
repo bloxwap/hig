@@ -1008,7 +1008,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "local-money"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1016,6 +1017,10 @@
         "empty": {
           "web": "<C.AccountBlock assets={[]} onDeposit={()=>setMessage('The host opens its deposit flow')}/>",
           "native": "<C.AccountBlock assets={[]} onDeposit={()=>setMessage('The host opens its deposit flow')}/>"
+        },
+        "local-money": {
+          "web": "<C.HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><C.AccountBlock assets={[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:1042.09,price:1},{id:'sol',name:'Solana',symbol:'SOL',balance:1.42,price:142.96}]} onDeposit={()=>setMessage('The host opens its deposit flow')}/></C.HIGProvider>",
+          "native": "<C.HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><C.AccountBlock assets={[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:1042.09,price:1},{id:'sol',name:'Solana',symbol:'SOL',balance:1.42,price:142.96}]} onDeposit={()=>setMessage('The host opens its deposit flow')}/></C.HIGProvider>"
         }
       }
     },
@@ -1105,6 +1110,27 @@
         "minimal": {
           "web": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>",
           "native": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>"
+        }
+      }
+    },
+    {
+      "name": "ScreenHeader",
+      "slug": "screen-header",
+      "entry": "blocks/screen-header",
+      "family": "blocks",
+      "web": "<C.ScreenHeader title='Edit name' onBack={()=>setMessage('The host goes back')} action={<C.IconButton intent='ghost' label='Done' onClick={()=>setMessage('The host saves the name')}>✓</C.IconButton>}/>",
+      "native": "<C.ScreenHeader title='Edit name' onBack={()=>setMessage('The host goes back')} action={<C.IconButton intent='ghost' label='Done' onPress={()=>setMessage('The host saves the name')}>✓</C.IconButton>}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "minimal"
+      ],
+      "a11y": "The title is a level-two heading (native: header role); Back is named by the translated built-in back text; the trailing control names itself; on web headingId lets a dialog be labelled by the heading; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "minimal": {
+          "web": "<C.ScreenHeader title='Edit name'/>",
+          "native": "<C.ScreenHeader title='Edit name'/>"
         }
       }
     },

@@ -328,6 +328,11 @@
       "import": "./react/dist/blocks/profile-block.js",
       "default": "./react/dist/blocks/profile-block.js"
     },
+    "./react/blocks/screen-header": {
+      "types": "./react/dist/blocks/screen-header.d.ts",
+      "import": "./react/dist/blocks/screen-header.js",
+      "default": "./react/dist/blocks/screen-header.js"
+    },
     "./react/bar-mark": {
       "types": "./react/dist/bar-mark.d.ts",
       "import": "./react/dist/bar-mark.js",
@@ -427,6 +432,11 @@
       "types": "./native/dist/profile-block.d.ts",
       "import": "./native/dist/profile-block.js",
       "default": "./native/dist/profile-block.js"
+    },
+    "./native/screen-header": {
+      "types": "./native/dist/screen-header.d.ts",
+      "import": "./native/dist/screen-header.js",
+      "default": "./native/dist/screen-header.js"
     },
     "./native/bar-mark": {
       "types": "./native/dist/bar-mark.d.ts",

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
@@ -53,7 +53,7 @@ const avatar=40;
 function Arrow({color,down}:{color:string;down:boolean}){return <View style={{width:12,height:14,alignItems:'center',transform:down?[{rotate:'180deg'}]:undefined}}><View style={{position:'absolute',top:1,width:7,height:7,borderLeftWidth:1.75,borderTopWidth:1.75,borderColor:color,transform:[{rotate:'45deg'}]}}/><View style={{width:1.75,height:14,borderRadius:1,backgroundColor:color}}/></View>;}
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the direction colour, and the net result in the result colour over its age. */
 export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,testID}:TradeHistoryListBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well});
  return <View testID={testID} style={{direction,padding:16,gap:16}}>
@@ -66,7 +66,7 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
   <View testID={testID?`${testID}-rows`:undefined} style={{gap:8}}>
    {trades.map(trade=>{
     const side=colors[trade.side==='long'?'positive':'negative'];
-    const reading=[trade.name,tradeHistorySide(trade,labels,locale),formatNumber(trade.pnl,locale,pnlOptions),trade.time].filter(Boolean).join(', ');
+    const reading=[trade.name,tradeHistorySide(trade,labels,locale),formatNumber(trade.pnl,locale,present(pnlOptions)),trade.time].filter(Boolean).join(', ');
     const content=<>
      <View {...hidden}>{typeof trade.icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:trade.icon}} style={shape as object}/>:<View style={shape}>{trade.icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{trade.name.slice(0,3)}</Text>}</View>}</View>
      <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>

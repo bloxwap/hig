@@ -409,6 +409,10 @@
       "title": "ProfileBlock"
     },
     {
+      "route": "components/screen-header",
+      "title": "ScreenHeader"
+    },
+    {
       "route": "components/reward-block",
       "title": "RewardBlock"
     },
@@ -1103,7 +1107,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "local-money"
       ]
     },
     {
@@ -1140,6 +1145,16 @@
     {
       "name": "ProfileBlock",
       "route": "components/profile-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "minimal"
+      ]
+    },
+    {
+      "name": "ScreenHeader",
+      "route": "components/screen-header",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [

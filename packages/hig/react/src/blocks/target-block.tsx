@@ -2,7 +2,7 @@
 import React,{useEffect,useId,useRef,useState} from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,usePresentNumber,useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {SegmentedControl} from '../selection.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
@@ -97,7 +97,7 @@ export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}
 }
 /** Set a take profit or a stop loss on one position: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. */
 export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetBlockProps){
- const {messages,locale}=useHIG();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
+ const {messages,locale}=useHIG();const present=usePresentNumber();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
  // The popover closes on a press outside it, on Escape, and when focus leaves it.
  useEffect(()=>{if(!open)return;const outside=(event:Event)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
  const info=note&&labels.info&&!headerAction?labels.info:undefined;
@@ -106,7 +106,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
  const intent=kind==='stop-loss'?'destructive':'primary';
  return <section {...rest} className={`hig-target-block${className?` ${className}`:''}`} data-kind={kind}>
-  <ScreenHeader title={labels.title} onBack={onBack} action={info?<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>:headerAction}/>
+  <ScreenHeader title={labels.title} onBack={onBack} action={info?<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/><PressDecoration kind='back'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>:headerAction}/>
   <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={targetFormat(unit,priceOptions)}/></p>
   {note&&!info&&<p className='hig-target-note'>{note}</p>}
   <section className={surface?'hig-surface hig-target-prices':'hig-target-prices'} data-surface={surface?undefined:'false'} aria-labelledby={position?id:undefined}>
@@ -119,8 +119,8 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <dl className='hig-bar-pnl-readouts'>{order.map(price=><div key={price} data-price={price}><dt>{labels[price]}</dt><dd><AnimatedNumberReadout value={prices[price]} options={priceOptions}/></dd></div>)}</dl>
   </section>
   {units.length>1&&<SegmentedControl label={labels.unit} options={units.map(option=>({value:option,label:labels.units[option]}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
-  {onCustom&&<button type='button' className='hig-swap-setting' onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/></button>}
-  {presets.length>0&&<div className='hig-target-presets'>{presets.map(preset=><Button key={preset} fullWidth intent={preset===value?intent:'secondary'} aria-pressed={preset===value} onClick={()=>onValueChange?.(preset)}>{formatNumber(preset,locale,targetFormat(unit,priceOptions,preset))}</Button>)}</div>}
+  {onCustom&&<button type='button' className='hig-swap-setting' onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>}
+  {presets.length>0&&<div className='hig-target-presets'>{presets.map(preset=><Button key={preset} fullWidth intent={preset===value?intent:'secondary'} aria-pressed={preset===value} onClick={()=>onValueChange?.(preset)}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>)}</div>}
   <div className='hig-target-actions'>
    {onCancel&&<Button fullWidth intent='secondary' onClick={onCancel}>{labels.cancel??messages.cancel??en.cancel}</Button>}
    <Button fullWidth intent={intent} disabled={submitDisabled??value===null} busy={busy} onClick={onSubmit}>{labels.submit}</Button>

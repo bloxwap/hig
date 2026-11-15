@@ -1,5 +1,6 @@
 "use client";
 import React,{Children,useId} from 'react';
+import {PressDecoration} from './provider.js';
 export interface ListGroupProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  /** Heading above the group, such as “Settings”. Omit it for an untitled group. */
  title?:string;
@@ -41,7 +42,7 @@ export function ListRow({label,leading,value,trailing,onSelect,href,disabled,cla
   {(onSelect||href!=null)&&chevron}
  </>;
  const classes=`hig-list-row${className?` ${className}`:''}`;
- if(action&&href!=null)return <a {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)} className={classes} href={href} onClick={onSelect}>{content}</a>;
- if(onSelect)return <button type='button' {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)} className={classes} disabled={disabled} onClick={onSelect}>{content}</button>;
+ if(action&&href!=null)return <a {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)} className={classes} href={href} onClick={onSelect}>{content}<PressDecoration kind='row'/></a>;
+ if(onSelect)return <button type='button' {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)} className={classes} disabled={disabled} onClick={onSelect}>{content}<PressDecoration kind='row' disabled={!!disabled}/></button>;
  return <div {...rest} className={classes} aria-disabled={disabled||undefined}>{content}</div>;
 }

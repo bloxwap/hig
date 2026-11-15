@@ -12,7 +12,7 @@
       },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ duration, trend, ...props }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ duration, trend, options: requested, ...rest }: AnimatedNumberProps): React.JSX.Element;"
       },
       "AssetArtwork": {
         "entry": "asset-balance-row",
@@ -666,9 +666,17 @@
         "entry": "overlay",
         "signature": "export declare function Tooltip({ content, children }: React.PropsWithChildren<{\n    content: string;\n}>): React.JSX.Element;"
       },
+      "PressDecorationKind": {
+        "entry": "provider",
+        "signature": "export type PressDecorationKind = 'button' | 'icon-button' | 'row' | 'switch' | 'back';"
+      },
+      "PressDecorationInfo": {
+        "entry": "provider",
+        "signature": "export interface PressDecorationInfo {\n    kind: PressDecorationKind; /** The control is disabled or busy and will not act on a press. */\n    disabled: boolean;\n}"
+      },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink; /** Brand accent as opaque sRGB hex (#RGB or #RRGGBB). Nested providers inherit it; omitted at the root, Bloxwap green applies. */\n    primaryColor?: string; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink; /** Brand accent as opaque sRGB hex (#RGB or #RRGGBB). Nested providers inherit it; omitted at the root, Bloxwap green applies. */\n    primaryColor?: string; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n    /** Host content drawn inside every pressable HIG control, such as a native switch input that gives iOS Safari a haptic. It sits in an absolutely positioned layer over the control that changes no layout and catches no pointer events itself; its children do. Nested providers inherit it. Omitted, nothing is drawn. */\n    pressDecoration?: (info: PressDecorationInfo) => React.ReactNode;\n    /** Money presentation merged under every currency format HIG draws: the blocks, BarMark, BarPnl, AssetBalanceRow, the swap pieces and the number readouts. Options a format sets itself win. Nested providers inherit it. */\n    numberFormat?: NumberFormatPresentation;\n}"
       },
       "HIGProviderProps": {
         "entry": "provider",
@@ -676,11 +684,19 @@
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, primaryColor, messages }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, primaryColor, messages, pressDecoration, numberFormat }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
         "signature": "export declare const useHIG: () => HIGContext;"
+      },
+      "usePresentNumber": {
+        "entry": "provider",
+        "signature": "export declare function usePresentNumber(): <T extends Intl.NumberFormatOptions | undefined>(options: T) => T;"
+      },
+      "PressDecoration": {
+        "entry": "provider",
+        "signature": "export declare function PressDecoration({ kind, disabled, input }: {\n    kind: PressDecorationKind;\n    disabled?: boolean;\n    input?: React.RefObject<HTMLInputElement | null>;\n}): React.JSX.Element | null;"
       },
       "useThemeStyle": {
         "entry": "provider",
@@ -898,6 +914,18 @@
         "entry": "blocks/swap-sheet",
         "signature": "export declare function SwapSheet({ open, onOpenChange, title, trigger, view: viewProp, onViewChange, ...panel }: SwapSheetProps): React.JSX.Element;"
       },
+      "ScreenHeaderProps": {
+        "entry": "blocks/screen-header",
+        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** `id` of the heading, so a dialog or sheet can name itself with `aria-labelledby` instead of repeating the title. */\n    headingId?: string;\n}"
+      },
+      "ScreenHeader": {
+        "entry": "blocks/screen-header",
+        "signature": "export declare function ScreenHeader({ title, onBack, action, headingId }: ScreenHeaderProps): React.JSX.Element;"
+      },
+      "qrIcon": {
+        "entry": "blocks/screen-header",
+        "signature": "export declare const qrIcon: React.JSX.Element;"
+      },
       "AnimatedNumberToken": {
         "entry": "animated-number-model",
         "signature": "export interface AnimatedNumberToken {\n    key: string;\n    text: string;\n    digit: boolean;\n    value?: number;\n    place?: number;\n    section?: 'number' | 'exponent';\n}"
@@ -974,7 +1002,7 @@
       },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ value, options, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ value, options: requested, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration }: AnimatedNumberProps): React.JSX.Element;"
       },
       "BarMarkTone": {
         "entry": "bar-mark",
@@ -1330,7 +1358,7 @@
       },
       "SwapCapsule": {
         "entry": "blocks",
-        "signature": "export declare function SwapCapsule({ children, onPress, label, testID }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string;\n}): React.JSX.Element;"
+        "signature": "export declare function SwapCapsule({ children, onPress, label, testID, hitSlop }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string; /** Defaults to a 44dp target, as on the swap card. */\n    hitSlop?: Insets;\n}): React.JSX.Element;"
       },
       "SwapPanelBlock": {
         "entry": "blocks",
@@ -1626,7 +1654,7 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    primaryColor?: string; /** Market-direction colours for `up`/`down`; inherited by nested providers, like `primaryColor`. */\n    marketColors?: HIGMarketColors;\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered static companion faces by script and weight. Text selects the detected script and nearest registered weight. */\n    fontFamiliesByScript?: Readonly<Partial<Record<'latin' | 'ko' | 'zh', Readonly<Record<string, string>>>>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    primaryColor?: string; /** Market-direction colours for `up`/`down`; inherited by nested providers, like `primaryColor`. */\n    marketColors?: HIGMarketColors;\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink;\n    fontFamily?: string;\n    fontFamilies?: Readonly<Record<string, string>>; /** Registered static companion faces by script and weight. Text selects the detected script and nearest registered weight. */\n    fontFamiliesByScript?: Readonly<Partial<Record<'latin' | 'ko' | 'zh', Readonly<Record<string, string>>>>>; /** Registered monospace face for code/commands, e.g. BloxwapMonoRegular. */\n    monoFontFamily?: string; /** Default Dynamic Type / font-scale cap for HIG Text; a Text prop overrides it. Leave unset for prose. */\n    maxFontSizeMultiplier?: number; /** Per-script letter spacing in em for Korean and Chinese companion faces; overrides `scriptLetterSpacing`. */\n    letterSpacingByScript?: Readonly<Partial<Record<'ko' | 'zh', number>>>; /** Colour space HIG paints in; defaults to `srgb` and is inherited by nested providers. Read the resolved table with `useColors()`. */\n    colorSpace: HIGColorSpace; /** Money presentation merged under every currency format HIG draws: the blocks, BarMark, BarPnl, AssetBalanceRow, the swap pieces and the number readouts. Options a format sets itself win. Nested providers inherit it. */\n    numberFormat?: NumberFormatPresentation; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n}"
       },
       "HIGProviderProps": {
         "entry": "provider",
@@ -1634,11 +1662,15 @@
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, fontFamiliesByScript, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, primaryColor, marketColors, messages }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, fontFamily, fontFamilies, fontFamiliesByScript, monoFontFamily, maxFontSizeMultiplier, letterSpacingByScript, colorSpace, primaryColor, marketColors, messages, numberFormat }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
         "signature": "export declare const useHIG: () => HIGContext;"
+      },
+      "usePresentNumber": {
+        "entry": "provider",
+        "signature": "export declare function usePresentNumber(): <T extends Intl.NumberFormatOptions | undefined>(options: T) => T;"
       },
       "Raised": {
         "entry": "provider",
@@ -1687,6 +1719,18 @@
       "Filter": {
         "entry": "radio-group",
         "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange }: FilterProps): React.JSX.Element;"
+      },
+      "ChevronIcon": {
+        "entry": "screen-header",
+        "signature": "export declare function ChevronIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "ScreenHeaderProps": {
+        "entry": "screen-header",
+        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** Prefix of the test IDs: `<testID>-header`, `<testID>-back` and `<testID>-title`. Omitted, the header sets none. */\n    testID?: string;\n}"
+      },
+      "ScreenHeader": {
+        "entry": "screen-header",
+        "signature": "export declare function ScreenHeader({ title, onBack, action, testID }: ScreenHeaderProps): React.JSX.Element;"
       },
       "Select": {
         "entry": "select",
@@ -1888,10 +1932,6 @@
         "entry": "icons",
         "signature": "export declare function SearchIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
-      "ChevronIcon": {
-        "entry": "icons",
-        "signature": "export declare function ChevronIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
       "QrIcon": {
         "entry": "icons",
         "signature": "export declare function QrIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
@@ -1925,8 +1965,8 @@
         "signature": "export declare function roleColor(role: unknown, fallback: AccentRole, colors: HIGColors): string;"
       },
       "SettingHeader": {
-        "entry": "setting-header",
-        "signature": "export declare function SettingHeader({ title, onBack, action, testID }: {\n    title: string;\n    onBack?: () => void;\n    action?: React.ReactNode;\n    testID: string;\n}): React.JSX.Element;"
+        "entry": "screen-header",
+        "signature": "export declare function ScreenHeader({ title, onBack, action, testID }: ScreenHeaderProps): React.JSX.Element;"
       },
       "SettingSwitchProps": {
         "entry": "setting-switch",

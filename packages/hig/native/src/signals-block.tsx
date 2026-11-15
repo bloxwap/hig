@@ -28,6 +28,8 @@ export interface SignalsBlockProps {
  headerAction?:React.ReactNode;
  testID?:string;
 }
+/** The 32dp help pill keeps a 48dp touch target: 8dp beyond each edge, clear of the switches 8dp below the 44dp heading row. */
+const helpSlop={top:8,bottom:8,left:8,right:8};
 /** The signals the viewer receives, as a screen, in groups: each group has a heading with an optional verified mark and a small help pill, and its signals as switches with a line of explanation, sharing one rounded container. */
 export function SignalsBlock({title,groups,verifiedLabel,onBack,headerAction,testID}:SignalsBlockProps){
  const colors=useColors(),{direction}=useHIG();
@@ -39,7 +41,7 @@ export function SignalsBlock({title,groups,verifiedLabel,onBack,headerAction,tes
      <Text accessible={false} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:colors.muted}}>{group.title}</Text>
      {group.verified?<View testID={`${id}-verified`} style={{transform:[{scale:0.8}]}}><SeverityIcon kind='success' color={colors.warning}/></View>:null}
     </View>
-    {group.help?<SwapCapsule testID={`${id}-help`} onPress={group.help.onSelect}><Text style={{fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{group.help.label}</Text></SwapCapsule>:null}
+    {group.help?<SwapCapsule testID={`${id}-help`} hitSlop={helpSlop} onPress={group.help.onSelect}><Text style={{fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{group.help.label}</Text></SwapCapsule>:null}
    </View>
    {group.items.length>0?<View testID={`${id}-items`} style={{gap:2,borderRadius:20,overflow:'hidden'}}>{group.items.map(item=><SettingCard key={item.id} joined testID={`${id}-${item.id}`}><SettingSwitch testID={`${id}-${item.id}-switch`} label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} onCheckedChange={item.onCheckedChange}/></SettingCard>)}</View>:null}
   </View>;

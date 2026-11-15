@@ -41,7 +41,7 @@ Readout `prefix` and `suffix` are host-localized display strings, not parsers or
 
 ## Currency, signed PnL and compact notation
 
-USD uses ISO `currency:'USD'`. Intl places the symbol (`$1,234.50` vs `1.234,50 $`). USDC is a ticker, not a reliable ISO 4217 code: use `formatTicker(amount, 'USDC', locale)`, which formats the number without `style:'currency'` and appends `USDC` after a no-break space. Never show USDC as `$` or `USD`.
+USD uses ISO `currency:'USD'`. Intl places the symbol (`$1,234.50` vs `1.234,50 $`). Intl's default `symbol` display can read `$US` or `US$` outside `en-US`; a host that writes dollars as `$` sets `HIGProvider numberFormat={{currencyDisplay:'narrowSymbol'}}` (and `useGrouping`, for example `'always'` for Spanish four-digit amounts), and every currency format HIG draws follows it, with a format's own options still winning ([blocks](../components/blocks.md#shared-host-hooks)). USDC is a ticker, not a reliable ISO 4217 code: use `formatTicker(amount, 'USDC', locale)`, which formats the number without `style:'currency'` and appends `USDC` after a no-break space. Never show USDC as `$` or `USD`.
 
 Signed PnL always includes a sign except at zero (`+$12.34`, `-$12.34`). Color is not a substitute for the sign. Don’t use accounting parentheses.
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image,View,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
@@ -78,8 +78,8 @@ function Sentence({template,text,value,options,suffix,testID}:{template:(amount:
 }
 /** One open position as a screen: margin and notional under the share left before liquidation, then the liquidation, mark and entry prices as a `BarPnl`, what can be done, and the position itself. Both bars are drawn without a card, because nothing in them can be pressed. */
 export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,testID}:ManagePositionBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
- const read=(value:number|null|undefined,options:Intl.NumberFormatOptions)=>known(value)?formatNumberReadout(value,locale,options).text:unknown;
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();
+ const read=(value:number|null|undefined,options:Intl.NumberFormatOptions)=>known(value)?formatNumberReadout(value,locale,present(options)).text:unknown;
  const corridor=positionCorridor({side,entry,mark,liquidation}),long=side==='long';
  const marginBar:BarMarkElement[]=[{id:'margin',label:labels.margin,value:margin,detail:read(margin,usd),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:read(notional,usd),tone:'positive'}];
  const left=corridor.share===null?null:corridor.share*100;

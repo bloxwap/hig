@@ -5,10 +5,11 @@ import {createAnimatedNumberModel,createAnimatedNumberTransitions} from './anima
 import {useHIG} from './provider.js';
 import {tokens as higTokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
+import {presentNumberFormat} from '@bloxwap/hig/contracts';
 export type AnimatedNumberTrend=-1|0|1|((oldValue:number,newValue:number)=>-1|0|1);
 export interface AnimatedNumberProps extends NumberProps {duration?:number;trend?:AnimatedNumberTrend}
-export function AnimatedNumberReadout({duration=180,trend,...props}:AnimatedNumberProps){
- const {locale,direction,reducedMotion,messages}=useHIG();const element=useRef<HTMLSpanElement>(null);const previous=useRef<{value:number|null|undefined;signature:string;model:ReturnType<typeof createAnimatedNumberModel>}|null>(null);const generation=useRef(0);const active=useRef<Animation[]>([]);
+export function AnimatedNumberReadout({duration=180,trend,options:requested,...rest}:AnimatedNumberProps){
+ const {locale,direction,reducedMotion,messages,numberFormat}=useHIG();const props={...rest,options:presentNumberFormat(requested,numberFormat)};const element=useRef<HTMLSpanElement>(null);const previous=useRef<{value:number|null|undefined;signature:string;model:ReturnType<typeof createAnimatedNumberModel>}|null>(null);const generation=useRef(0);const active=useRef<Animation[]>([]);
  const signature=JSON.stringify([locale,direction,props.options??{}]);
  const frame=useMemo(()=>{const model=createAnimatedNumberModel(props.value,locale,props.options),prior=previous.current,changed=!!prior&&prior.signature===signature&&!Object.is(prior.value,props.value);let movement:-1|0|1=0;
   if(changed&&prior&&model.animatable&&prior.model.animatable&&Number.isFinite(prior.value)&&Number.isFinite(props.value)){const requested=typeof trend==='function'?trend(prior.value as number,props.value as number):trend??Math.sign((props.value as number)-(prior.value as number));movement=requested===-1||requested===1?requested:0;}

@@ -1,7 +1,7 @@
 "use client";
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useControllable,useHIG} from '../provider.js';
+import {PressDecoration,useControllable,useHIG} from '../provider.js';
 import {Button,IconButton} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {notify} from '../notify.js';
@@ -239,7 +239,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  </div>;
  const fromCard=card('from'),toCard=fixedCard||card('to');
  const body=view==='main'?<>
-  {title&&<div className='hig-swap-view-header' data-plain={onBack?undefined:'true'}>{onBack&&<button type='button' className='hig-swap-back' aria-label={messages.back??en.back} onClick={onBack}><SwapIcon name='back'/></button>}<h2 className='hig-swap-view-title'>{title}</h2></div>}
+  {title&&<div className='hig-swap-view-header' data-plain={onBack?undefined:'true'}>{onBack&&<button type='button' className='hig-swap-back' aria-label={messages.back??en.back} onClick={onBack}><SwapIcon name='back'/><PressDecoration kind='back'/></button>}<h2 className='hig-swap-view-title'>{title}</h2></div>}
   {banner}
   {fromCard}
   <div className='hig-swap-flip'>{oneWay?<span aria-hidden='true'><SwapIcon name='down' size={16}/></span>:<button type='button' aria-label={(messages.swapFlip??en.swapFlip)} disabled={!from||!to} onClick={flip}><SwapIcon name='flip' size={16}/></button>}</div>

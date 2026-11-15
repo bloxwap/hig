@@ -1,7 +1,7 @@
 import React,{useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {Raised,useColors,useControllable,useHIG,useMessages} from './provider.js';
+import {Raised,useColors,useControllable,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {AnimatedNumberReadout} from './animated-number.js';
@@ -117,7 +117,7 @@ export interface SwapPanelBlockProps {
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
 export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelBlockProps){
- const env=useHIG();const {locale,direction}=env;const colors=useColors();const t=useMessages();
+ const env=useHIG();const {locale,direction}=env;const present=usePresentNumber();const colors=useColors();const t=useMessages();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
  const [isReceiving,setReceiving]=useControllable(receiving,false,onReceivingChange);
@@ -164,7 +164,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  // A copied address shows as a transient toast capsule (about 4s, dismissible), announced the way Toast announces any notice.
  const copyAddress=()=>{if(!receive?.onCopy)return;Promise.resolve().then(receive.onCopy).then(()=>showNotice(t.addressCopied)).catch(()=>{/* The host adapter reports its own failure. */});};
  const chainList=useMemo(()=>{if(chains)return chains;const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];},[chains,tokens]);
- const usdText=(value:number)=>formatNumber(value,locale,{style:'currency',currency:'USD'});
+ const usdText=(value:number)=>formatNumber(value,locale,present({style:'currency',currency:'USD'}));
  const fraction=entry.includes('.')?Math.min(entry.length-entry.indexOf('.')-1,fromMode==='usd'?2:8):0;
  const smallType={fontSize:14,lineHeight:19} as const,small={...smallType,color:colors.muted} as const;
  // Live numbers: the fee and slippage sentences keep their translated wording around a number that updates in place.

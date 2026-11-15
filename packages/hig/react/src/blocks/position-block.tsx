@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,useHIG} from '../provider.js';
 import {Switch} from '../selection.js';
 import {ListGroup,ListRow} from '../list-group.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
@@ -36,7 +36,7 @@ export interface PositionBlockProps extends Omit<React.HTMLAttributes<HTMLElemen
 export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,className,...rest}:PositionBlockProps){
  const {messages}=useHIG();
  return <section {...rest} className={`hig-position-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} action={headerAction??(onClose&&<button type='button' className='hig-swap-back' aria-label={messages.close??en.close} onClick={onClose}><SwapIcon name='close'/></button>)}/>
+  <ScreenHeader title={title} onBack={onBack} action={headerAction??(onClose&&<button type='button' className='hig-swap-back' aria-label={messages.close??en.close} onClick={onClose}><SwapIcon name='close'/><PressDecoration kind='back'/></button>)}/>
   {details.length>0&&<dl className='hig-position-details'>{details.map((detail,index)=><div key={detail.id??index} data-tone={detail.tone}><dt>{detail.label}</dt><dd className='hig-number'>{typeof detail.value==='string'?detail.value:<AnimatedNumberReadout {...detail.value}/>}</dd></div>)}</dl>}
   {note&&<p className='hig-position-note'>{note}</p>}
   {(paperTrade||groups.some(group=>group.length>0))&&<div className='hig-position-groups'>

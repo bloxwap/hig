@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon,CloseIcon} from './icons.js';
@@ -38,7 +38,7 @@ export interface PositionBlockProps {
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** The position being opened or edited as a screen: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows that open the host's own views. */
 export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,testID}:PositionBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();
  const figure={fontSize:16,lineHeight:24,fontWeight:'500'} as const;
  const shown=groups.filter(group=>group.length>0);
  return <View testID={testID} style={{padding:16}}>
@@ -49,7 +49,7 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
   </View>
   {details.length>0?<View testID='position-details' style={{gap:12,marginTop:16,paddingHorizontal:20}}>
    {details.map((detail,index)=>{
-    const live=typeof detail.value==='string'?null:detail.value,reading=live?formatNumberReadout(live.value,locale,live.options,undefined,live.prefix,live.suffix).text:detail.value as string;
+    const live=typeof detail.value==='string'?null:detail.value,reading=live?formatNumberReadout(live.value,locale,present(live.options),undefined,live.prefix,live.suffix).text:detail.value as string;
     return <View key={detail.id??index} testID={`position-detail-${detail.id??index}`} accessible accessibilityLabel={`${detail.label}, ${reading}`} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
      <Text {...hidden} style={{flexShrink:1,fontSize:16,lineHeight:24,color:colors.muted}}>{detail.label}</Text>
      <View {...hidden} style={{flexShrink:1}}>{live?<AnimatedNumberReadout {...live} tone={detail.tone??'text'} style={figure}/>:<Text style={{...figure,color:detail.tone?colors[detail.tone]:colors.text,textAlign:'right'}}>{reading}</Text>}</View>

@@ -1,7 +1,7 @@
 "use client";
 import React,{useEffect,useId,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,useHIG} from '../provider.js';
 import {Button,IconButton} from '../button.js';
 import {Input,SearchInput} from '../field.js';
 import {Filter} from '../selection.js';
@@ -52,6 +52,7 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
   <TokenIcon token={token}/>
   <span className='hig-swap-row-text'><strong>{token.name}</strong><span>{token.chain}{isSelected?' · '+(messages.swapSelected??en.swapSelected):''}</span></span>
   {(token.balance??0)>0&&<span className='hig-swap-row-balance'><strong><SwapNumber value={token.balance} options={{maximumFractionDigits:6}}/></strong>{(token.price??0)>0&&<SwapNumber {...usdNumber((token.balance??0)*(token.price??0))}/>}</span>}
+  <PressDecoration kind='row'/>
  </button></div>;};
  return <>
   <SearchInput ref={search} aria-label={messages.swapSearchTokens??en.swapSearchTokens} placeholder={messages.swapSearchTokens??en.swapSearchTokens} value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>

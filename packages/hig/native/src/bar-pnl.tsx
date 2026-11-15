@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import {useColors,useFills,useHIG} from './provider.js';
+import {useColors,useFills,useHIG,usePresentNumber} from './provider.js';
 import {Surface,Text} from './surface.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
@@ -66,7 +66,7 @@ export function barPnlLayout({entry,mark,liquidation,side,fit}:{entry:number;mar
 }
 /** A position's profit or loss as one bar: the stretch between entry and mark is filled solid in the result colour, a tick marks each price, and the liquidation, mark and entry prices read under the bar in price order, so mark and entry trade places as the position moves. The bar is decorative; each readout reads its label and price. */
 export function BarPnl({entry,mark,liquidation,side,labels,title,description,priceOptions=usd,compact=false,fit=false,surface=true,testID}:BarPnlProps){
- const colors=useColors(),{locale,direction}=useHIG();
+ const colors=useColors(),{locale,direction}=useHIG(),present=usePresentNumber();
  const {result,positions,order}=barPnlLayout({entry,mark,liquidation,side,fit});
  const tone=result==='profit'?colors.positive:result==='loss'?colors.negative:colors.muted;
  const from=Math.min(positions.entry??0.5,positions.mark??0.5),to=Math.max(positions.entry??0.5,positions.mark??0.5);
@@ -81,7 +81,7 @@ export function BarPnl({entry,mark,liquidation,side,labels,title,description,pri
   </View>:null}
   <Bar from={from} to={to} markLeads={markLeads} tone={tone} liquidation={positions.liquidation} testID={testID}/>
   <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>
-   {order.map((kind,index)=><View key={kind} accessible accessibilityLabel={`${labels[kind]}, ${formatNumberReadout(values[kind],locale,format(kind)).text}`} testID={testID?`${testID}-${kind}`:undefined} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
+   {order.map((kind,index)=><View key={kind} accessible accessibilityLabel={`${labels[kind]}, ${formatNumberReadout(values[kind],locale,present(format(kind))).text}`} testID={testID?`${testID}-${kind}`:undefined} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
     <View {...hidden}><AnimatedNumberReadout value={values[kind]} options={format(kind)} tone={kind==='liquidation'?'negative':kind==='mark'&&result!=='flat'?(result==='profit'?'positive':'negative'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
     <Text {...hidden} numberOfLines={1} style={{color:colors.muted,fontSize:12,lineHeight:16}}>{labels[kind]}</Text>
    </View>)}

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useHIG} from '../provider.js';
+import {usePresentNumber,useHIG} from '../provider.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {BarMark} from '../bar-mark.js';
 import {BarPnl} from '../bar-pnl.js';
@@ -56,12 +56,12 @@ export function positionCorridor({side,entry,mark,liquidation}:{side:'long'|'sho
 }
 /** Manage one open position: margin against notional (with the share left before liquidation) as a `BarMark` and the liquidation, mark and entry prices as a `BarPnl`, both drawn without a card because they are read-only, the host's actions as one `ListGroup` of rows, and the position itself underneath. */
 export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,className,...rest}:ManagePositionBlockProps){
- const {locale}=useHIG();const corridor=positionCorridor({side,entry,mark,liquidation});
+ const {locale}=useHIG();const present=usePresentNumber();const corridor=positionCorridor({side,entry,mark,liquidation});
  const pnlTone=!known(position?.pnl)||position.pnl===0?undefined:position.pnl>0?'up':'down';
  return <section {...rest} className={`hig-manage-position-block${className?` ${className}`:''}`}>
   <ScreenHeader title={labels.title} onBack={onBack} action={headerAction}/>
   <div className='hig-token-bars'>
-   <BarMark surface={false} title={mode??labels.margin} description={corridor.share===null?labels.toLiquidation('—'):<SwapNumber template={labels.toLiquidation} value={Number((corridor.share*100).toFixed(1))} suffix='%' options={{maximumFractionDigits:1}}/>} elements={[{id:'margin',label:labels.margin,value:margin,detail:formatNumber(margin,locale,usd),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:known(notional)?formatNumber(notional,locale,usd):'—',tone:'positive'}]}/>
+   <BarMark surface={false} title={mode??labels.margin} description={corridor.share===null?labels.toLiquidation('—'):<SwapNumber template={labels.toLiquidation} value={Number((corridor.share*100).toFixed(1))} suffix='%' options={{maximumFractionDigits:1}}/>} elements={[{id:'margin',label:labels.margin,value:margin,detail:formatNumber(margin,locale,present(usd)),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:known(notional)?formatNumber(notional,locale,present(usd)):'—',tone:'positive'}]}/>
    <BarPnl surface={false} compact side={side} entry={entry} mark={mark} liquidation={liquidation} labels={{liquidation:labels.liquidation,mark:labels.mark,entry:labels.entry}} priceOptions={priceOptions}/>
   </div>
   {actions.length>0&&<ListGroup className='hig-manage-actions'>{actions.map(action=><ListRow key={action.id} label={action.label} disabled={action.disabled} onSelect={action.onSelect}/>)}</ListGroup>}

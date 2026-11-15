@@ -4,7 +4,8 @@ const symbols=JSON.parse(readFileSync('planning/example-symbols.json','utf8'));
 for(const platform of ['react','native']){
  const modules=[...new Set(Object.values(symbols[platform]))].sort();
  // A module is a subpath of @bloxwap/hig/<platform> or a full package name such as @bloxwap/hig/chart (#96).
- const namespace=m=>m.replace(/^@bloxwap\/hig\//,'').replace(/(^|-)([a-z])/g,(_,prefix,letter)=>letter.toUpperCase());
+ // A nested subpath such as blocks/screen-header joins its parts: BlocksScreenHeader.
+ const namespace=m=>m.replace(/^@bloxwap\/hig\//,'').replace(/(^|[-/])([a-z])/g,(_,prefix,letter)=>letter.toUpperCase());
  const specifier=m=>m.startsWith('@')?m:`@bloxwap/hig/${platform}/${m}`;
  const imports=modules.map(module=>`import * as ${namespace(module)} from '${specifier(module)}';`).join('\n');
  const object=modules.map(m=>`...${namespace(m)}`).join(',');

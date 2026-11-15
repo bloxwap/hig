@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useHIG} from '../provider.js';
+import {PressDecoration,usePresentNumber,useHIG} from '../provider.js';
 import {SegmentedControl} from '../selection.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
@@ -86,18 +86,18 @@ function Standing({entry,scoreOptions,verifiedLabel,as:Tag='li'}:{entry:RewardEn
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
 export function RewardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,className,...rest}:RewardBlockProps){
- const {locale}=useHIG();
+ const {locale}=useHIG();const present=usePresentNumber();
  const money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(promo.amount,promo.goal):null;
- const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,money)):undefined:promo?.caption;
+ const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
  return <section {...rest} className={`hig-reward-block${className?` ${className}`:''}`}>
   <ScreenHeader title={title} onBack={onBack} action={headerAction}/>
   {promo&&<section className='hig-surface hig-reward-promo'>
-   <div className='hig-reward-promo-top'><span className='hig-reward-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<button type='button' className='hig-reward-rules' onClick={promo.rules.onSelect}>{promo.rules.label}<SwapIcon name='chevron' size={16}/></button>}</div>
+   <div className='hig-reward-promo-top'><span className='hig-reward-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<button type='button' className='hig-reward-rules' onClick={promo.rules.onSelect}>{promo.rules.label}<SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>}</div>
    <p className='hig-reward-amount'><AnimatedNumberReadout value={promo.amount} options={money}/></p>
    {caption&&<p className='hig-reward-caption hig-number'>{caption}</p>}
    {promo.goal!==undefined&&<div className='hig-reward-track' aria-hidden='true'><span style={{width:`${(share??0)*100}%`}}/></div>}
    {(promo.headline||promo.description)&&<p className='hig-reward-summary'>{promo.headline&&<strong>{promo.headline}</strong>}{promo.headline&&promo.description?' ':null}{promo.description}</p>}
-   {promo.action&&<button type='button' className='hig-reward-action' onClick={promo.action.onSelect}><span>{promo.action.label}</span><SwapIcon name='chevron' size={16}/></button>}
+   {promo.action&&<button type='button' className='hig-reward-action' onClick={promo.action.onSelect}><span>{promo.action.label}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>}
   </section>}
   {tabs&&<SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/>}
   {you&&<div className='hig-reward-you'><Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel}/></div>}

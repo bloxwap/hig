@@ -634,7 +634,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "local-money"
       ]
     },
     {
@@ -672,6 +673,16 @@
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "minimal"
+      ]
+    },
+    {
+      "name": "ScreenHeader",
+      "route": "components/screen-header",
+      "entry": "blocks/screen-header",
       "nativeSupport": "renderer",
       "states": [
         "default",

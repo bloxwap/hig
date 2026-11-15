@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import {AnimatedNumberReadout} from './animated-number.js';
+import {PressDecoration} from './provider.js';
 /** Artwork for an asset: an image URL, or an element the host draws. */
 export type AssetArtwork=string|React.ReactElement;
 export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElement>,'onSelect'> {
@@ -25,5 +26,5 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
   <span className='hig-asset-row-amounts'><strong><AnimatedNumberReadout value={value} options={usd}/></strong>{balance!==undefined&&<span><AnimatedNumberReadout value={balance} options={balanceOptions}/></span>}</span>
  </>;
  const classes=`hig-asset-row${className?` ${className}`:''}`;
- return onSelect?<button type='button' {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)} className={classes} onClick={onSelect}>{content}</button>:<div {...rest} className={classes}>{content}</div>;
+ return onSelect?<button type='button' {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)} className={classes} onClick={onSelect}>{content}<PressDecoration kind='row'/></button>:<div {...rest} className={classes}>{content}</div>;
 }

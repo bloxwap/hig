@@ -807,3 +807,8 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-language-text > strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 .hig-language-check { flex:none;color:var(--hig-text); }
 @media(hover:hover) and (pointer:fine) { .hig-language-row:hover { background:var(--hig-fill); } }
+/* Press decoration: the host layer HIGProvider pressDecoration draws inside a pressable control. Out of flow, so it changes no
+   layout; it catches no pointer events itself, its children do. Zero specificity keeps a control that is already positioned as it is. */
+:where(:has(> .hig-press-decoration)) { position:relative; }
+span.hig-press-decoration[data-kind],.hig-list-row-trailing .hig-switch > span.hig-press-decoration[data-kind] { position:absolute;inset:0;display:block;width:auto;height:auto;margin:0;padding:0;border:0;border-radius:inherit;overflow:hidden;clip:auto;white-space:normal;pointer-events:none; }
+span.hig-press-decoration[data-kind] > * { pointer-events:auto; }

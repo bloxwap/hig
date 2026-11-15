@@ -2,6 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {PixelRatio,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type TextStyle} from 'react-native';
 import Reanimated,{cancelAnimation,Easing,ReduceMotion,useAnimatedStyle,useSharedValue,withTiming} from 'react-native-reanimated';
 import * as en from '@bloxwap/hig/contracts/messages';
+import {presentNumberFormat} from '@bloxwap/hig/contracts';
 import {tokens} from '@bloxwap/hig/tokens';
 import {type NumberProps} from './data.js';
 import {createNumberReelModel,formatNumberReadout,numberTrendDirection,safeNumberLayout,type NumberTrend} from './animated-number-model.js';
@@ -49,8 +50,8 @@ function recordGlyph(measurements:React.MutableRefObject<{key:string;values:Map<
  setMetrics(current=>current?.key===key&&current.width===measuredWidth&&current.height===measuredHeight?current:{key,width:measuredWidth,height:measuredHeight});
 }
 
-export function AnimatedNumberReadout({value,options,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier,trend,prefix,suffix,duration=180}:AnimatedNumberProps){
- const {locale,messages,direction,reducedMotion,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript,maxFontSizeMultiplier:providerMaxFontSizeMultiplier}=useHIG(),colors=useColors();
+export function AnimatedNumberReadout({value,options:requested,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier,trend,prefix,suffix,duration=180}:AnimatedNumberProps){
+ const {locale,messages,direction,reducedMotion,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript,maxFontSizeMultiplier:providerMaxFontSizeMultiplier,numberFormat}=useHIG(),colors=useColors();const options=presentNumberFormat(requested,numberFormat);
  const reading=formatNumberReadout(value,locale,options,formattedValue,prefix,suffix),staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  const previousValue=useRef(value),directionTrend=numberTrendDirection(trend,previousValue.current,value);
  useEffect(()=>{previousValue.current=value;},[value]);

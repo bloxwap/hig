@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useHIG} from '../provider.js';
+import {PressDecoration,usePresentNumber,useHIG} from '../provider.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
@@ -48,7 +48,7 @@ const arrow=(side:'long'|'short')=><svg aria-hidden='true' focusable='false' vie
 const chevron=<svg className='hig-trade-row-chevron' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><path d='m7.5 4.5 5.5 5.5-5.5 5.5'/></svg>;
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the direction colour, and the net result in the result colour over its age. */
 export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,className,...rest}:TradeHistoryListBlockProps){
- const {locale}=useHIG();
+ const {locale}=useHIG();const present=usePresentNumber();
  const row=(trade:TradeHistoryItem)=>{
   const side=tradeHistorySide(trade,labels,locale),tone=trade.pnl==null||trade.pnl===0?undefined:trade.pnl>0?'up':'down';
   const content=<>
@@ -57,7 +57,7 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
    <span className='hig-trade-row-result'><strong className='hig-trade-pnl' data-tone={tone}><AnimatedNumberReadout value={trade.pnl} options={pnlOptions}/></strong>{trade.time&&<span>{trade.time}</span>}</span>
    {onSelect&&chevron}
   </>;
-  return <li key={trade.id}>{onSelect?<button type='button' className='hig-trade-row' aria-label={[trade.name,side,formatNumber(trade.pnl,locale,pnlOptions),trade.time].filter(Boolean).join(', ')} onClick={()=>onSelect(trade)}>{content}</button>:<div className='hig-trade-row'>{content}</div>}</li>;
+  return <li key={trade.id}>{onSelect?<button type='button' className='hig-trade-row' aria-label={[trade.name,side,formatNumber(trade.pnl,locale,present(pnlOptions)),trade.time].filter(Boolean).join(', ')} onClick={()=>onSelect(trade)}>{content}<PressDecoration kind='row'/></button>:<div className='hig-trade-row'>{content}</div>}</li>;
  };
  return <section {...rest} className={`hig-trade-history-list${className?` ${className}`:''}`}>
   <ScreenHeader title={labels.title} onBack={onBack} action={headerAction}/>

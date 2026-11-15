@@ -501,7 +501,8 @@
       "name": "AccountBlock",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "local-money"
       ],
       "support": "renderer"
     },
@@ -532,6 +533,14 @@
     },
     {
       "name": "ProfileBlock",
+      "states": [
+        "default",
+        "minimal"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ScreenHeader",
       "states": [
         "default",
         "minimal"

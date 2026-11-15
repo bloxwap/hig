@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {AssetBalanceRow,type AssetArtwork} from '../asset-balance-row.js';
@@ -54,7 +54,7 @@ export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,as
  const total=balance!==undefined?balance:assets.reduce((sum,asset)=>sum+(assetValue(asset)??0),0);
  const row=(asset:AccountAsset,pin:boolean)=><li key={asset.id} data-pinned={pin||undefined}><AssetBalanceRow name={asset.name} symbol={asset.symbol} icon={asset.icon} value={assetValue(asset)} balance={pin?undefined:asset.balance??null} onSelect={onAssetSelect&&(()=>onAssetSelect(asset))}/></li>;
  return <section {...rest} className={`hig-account-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title??messages.account??en.account} onBack={onBack} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}</button>)}/>
+  <ScreenHeader title={title??messages.account??en.account} onBack={onBack} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}<PressDecoration kind='back'/></button>)}/>
   <div className='hig-account-summary'>
    <div className='hig-account-balance'><AnimatedNumberReadout value={total} label={messages.accountBalance??en.accountBalance} options={usd}/></div>
    {onDeposit&&<Button onClick={onDeposit}>{depositLabel??messages.deposit??en.deposit}</Button>}
