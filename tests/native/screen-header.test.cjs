@@ -48,6 +48,13 @@ it('sets nativeID on the title only when the host passes headingId, for accessib
  view=mount(h(header.ScreenHeader,{title:'Pane',headingId:'pane-title'}));
  expect(headers(view).some(node=>node.props.nativeID==='pane-title')).toBe(true);
 });
+it('draws a host badge beside the title, read with it as one header (Unreleased)',()=>{
+ const view=mount(h(header.ScreenHeader,{title:'Trade',badge:'Demo',testID:'pane',headingId:'pane-title'}));
+ const heading=view.findAll(node=>node.props.accessibilityRole==='header'&&typeof node.type==='string');
+ expect(heading).toHaveLength(1);expect(heading[0].props).toMatchObject({accessible:true,accessibilityLabel:'Trade, Demo',nativeID:'pane-title'});
+ expect(text(all(view,'pane-badge').find(node=>typeof node.type==='string'))).toBe('Demo');
+ const plain=mount(h(header.ScreenHeader,{title:'Trade',testID:'pane'}));expect(all(plain,'pane-badge')).toHaveLength(0);
+});
 it('keeps the deprecated recipes path as a real module, so a Jest moduleNameMapper to native/dist/<entry>.js resolves it',()=>{
  const recipes=require('../../packages/hig/native/src/recipes'),blocks=require('../../packages/hig/native/src/blocks');
  expect(Object.keys(recipes).sort()).toEqual(Object.keys(blocks).sort());for(const key of Object.keys(blocks))expect(recipes[key]).toBe(blocks[key]);

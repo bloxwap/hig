@@ -560,6 +560,16 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 /* A switch sits flush with the trailing edge and level with the first line of its label, however long the text beside it runs. */
 .hig-setting-switch { display:flex;align-items:flex-start;gap:12px;min-height:var(--hig-control);padding:0;line-height:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent; }
 .hig-setting-switch[data-disabled] { opacity:.5;cursor:not-allowed; }
+.hig-setting-switch[data-locked] { cursor:default; }
+.hig-setting-switch-accessory { display:inline-flex;align-items:center;margin-inline-start:6px;vertical-align:middle; }
+.hig-setting-hint { margin:0;padding-inline:20px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-settings-description { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-notifications-group { display:flex;flex-direction:column;gap:8px;margin-block-start:8px; }
+.hig-notifications-action { margin-block-start:8px; }
+.hig-setting-notes {display:flex;flex-direction:column;gap:4px;padding-block-end:12px; }
+.hig-setting-notes > p { padding-inline:0; }
+.hig-setting-body > .hig-setting-action:not(:first-child) { margin-block-start:8px; }
+.hig-setting-choices legend { margin-block-end:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-setting-switch-text { flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;padding-block:calc((var(--hig-control) - 1.5em)/2);overflow-wrap:anywhere; }
 .hig-setting-switch-description,.hig-setting-caption { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-setting-switch > .hig-switch { flex:none;display:inline-flex;align-items:center;justify-content:flex-end;height:var(--hig-control); }
@@ -626,6 +636,14 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-reward-verified { flex:none;display:inline-flex;color:var(--hig-warning); }
 .hig-reward-score { flex:none;font-weight:600; }
 .hig-reward-row[data-you] :is(.hig-reward-identity > strong,.hig-reward-score) { color:var(--hig-action); }
+a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
+.hig-reward-status { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-reward-skeleton { min-height:64px;border-radius:20px; }
+.hig-reward-pagination { display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px; }
+.hig-reward-pagination > :first-child { justify-self:start; }
+.hig-reward-pagination > :last-child { justify-self:end; }
+.hig-reward-page { color:var(--hig-muted);font-size:.875rem;text-align:center; }
+.hig-reward-block[data-sticky-header] > .hig-screen-header { position:sticky;inset-block-start:0;z-index:1;background:var(--hig-screen-background,var(--hig-background)); }
 @media(prefers-reduced-motion:reduce) { .hig-reward-track > span { transition:none; } }
 [data-hig-motion='reduced'] .hig-reward-track > span { transition:none; }
 @media(forced-colors:active) { .hig-reward-track > span { forced-color-adjust:none; } }
@@ -665,15 +683,28 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-trade-row-result { flex:none;align-items:flex-end;text-align:end; }
 .hig-trade-row strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 .hig-trade-row-side { display:inline-flex;align-items:center;gap:4px;font-weight:600; }
-.hig-trade-row-side[data-side='long'] { color:var(--hig-positive); }
-.hig-trade-row-side[data-side='short'] { color:var(--hig-negative); }
-.hig-trade-row .hig-trade-pnl[data-tone='up'] { color:var(--hig-positive); }
-.hig-trade-row .hig-trade-pnl[data-tone='down'] { color:var(--hig-negative); }
+.hig-trade-row-side[data-side='long'] { color:var(--hig-up,var(--hig-buy)); }
+.hig-trade-row-side[data-side='short'] { color:var(--hig-down,var(--hig-sell)); }
+.hig-trade-row .hig-trade-pnl[data-tone='up'] { color:var(--hig-up,var(--hig-buy)); }
+.hig-trade-row .hig-trade-pnl[data-tone='down'] { color:var(--hig-down,var(--hig-sell)); }
+.hig-trade-row-note,.hig-trade-leverage-note { color:var(--hig-muted);font-weight:400; }
+.hig-trade-row-note { margin-inline-start:4px; }
+.hig-trade-row-meta { display:inline-flex;align-items:center;gap:4px;min-width:0; }
+.hig-trade-row-tag { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.hig-trade-skeleton { min-height:56px;border-radius:28px; }
+.hig-trade-error { color:var(--hig-negative); }
+.hig-trade-empty-title,.hig-trade-empty-description { display:block; }
+.hig-trade-empty-title { color:var(--hig-text);font-weight:600; }
+.hig-trade-notice,.hig-trade-footer { display:flex;flex-direction:column;gap:8px;min-width:0; }
+.hig-trade-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-screen-badge { font-size:.75rem;line-height:1.33;font-weight:600;vertical-align:middle; }
 .hig-trade-row-chevron { flex:none;color:var(--hig-muted); }
 [dir='rtl'] .hig-trade-row-chevron { transform:scaleX(-1); }
 @media(hover:hover) and (pointer:fine) { button.hig-trade-row:hover { background:var(--hig-fill-raised); } }
-.hig-trade-pnl[data-tone='up'],.hig-trade-result[data-tone='up'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-positive); }
-.hig-trade-pnl[data-tone='down'],.hig-trade-result[data-tone='down'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-negative); }
+.hig-trade-pnl[data-tone='up'],.hig-trade-result[data-tone='up'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-up,var(--hig-buy)); }
+.hig-trade-pnl[data-tone='down'],.hig-trade-result[data-tone='down'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-down,var(--hig-sell)); }
+.hig-trade-side[data-side='long'] { color:var(--hig-up,var(--hig-buy)); }
+.hig-trade-side[data-side='short'] { color:var(--hig-down,var(--hig-sell)); }
 .hig-trade-detail { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-trade-summary { display:flex;flex-direction:column;gap:20px;padding-inline:4px; }
 .hig-trade-side { font-weight:600;text-transform:uppercase; }
@@ -806,6 +837,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-language-text { flex:1;display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted);overflow-wrap:anywhere; }
 .hig-language-text > strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 .hig-language-check { flex:none;color:var(--hig-text); }
+.hig-language-row:disabled { opacity:.5;cursor:not-allowed; }
 @media(hover:hover) and (pointer:fine) { .hig-language-row:hover { background:var(--hig-fill); } }
 /* Press decoration: the host layer HIGProvider pressDecoration draws inside a pressable control. Out of flow, so it changes no
    layout; it catches no pointer events itself, its children do. Zero specificity keeps a control that is already positioned as it is. */

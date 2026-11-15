@@ -32,4 +32,9 @@ describe('ScreenHeader',()=>{
   rerender(<div role='dialog' aria-labelledby='position-title'><ScreenHeader title='Position' headingId='position-title'/></div>);
   expect(screen.getByRole('dialog',{name:'Position'})).toBeTruthy();expect(container.querySelector('h2')?.id).toBe('position-title');
  });
+ it('draws a host badge beside the title, inside the heading (Unreleased)',()=>{
+  const {container}=render(<ScreenHeader title='Trade' badge='Demo' headingId='trade-title'/>);
+  expect(container.querySelector('h2')!.innerHTML).toBe('Trade <span class="hig-badge hig-screen-badge">Demo</span>');
+  expect(screen.getByRole('heading',{name:'Trade Demo'}).id).toBe('trade-title');
+ });
 });

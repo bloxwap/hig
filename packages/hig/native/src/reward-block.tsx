@@ -1,10 +1,10 @@
 import React from 'react';
-import {Image,Pressable,View,type ViewStyle} from 'react-native';
+import {Image,Pressable,ScrollView,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Surface,Text} from './surface.js';
-import {IconButton} from './button.js';
+import {Button,IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon,SeverityIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
@@ -24,13 +24,17 @@ export interface RewardPromo {
  goal?:number;
  /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */
  caption?:string|((goal:string)=>string);
- /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. */
- headline?:string;
+ /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host Text elements for an accented word. */
+ headline?:React.ReactNode;
  /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */
  description?:string;
  /** A full-width action under the description: Draws and winners. The host opens its own destination. */
  action?:{label:string;onSelect:()=>void};
 }
+/** A host figure that updates place by place: `{value:1090779, options:{style:'currency',currency:'USD',maximumFractionDigits:0}, suffix:' vol'}`. */
+export interface RewardFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+/** One step of the paging control under the list. */
+export interface RewardPageStep {label:string;onSelect:()=>void;disabled?:boolean}
 /** One trader in the standings. */
 export interface RewardEntry {
  id:string;rank:number;
@@ -40,10 +44,12 @@ export interface RewardEntry {
  avatar?:AssetArtwork;
  /** Shows the verified mark after the name. */
  verified?:boolean;
- /** The line under the name: `$1,090,779 vol`. */
- detail?:string;
+ /** The line under the name: `$1,090,779 vol` as text, or the same as a live figure. */
+ detail?:string|RewardFigure;
  /** Points or entries. `null` reads as unknown. */
  score:number|null;
+ /** Format of this entry's score, in place of the block's `scoreOptions`, for a prize list where some amounts have cents. */
+ scoreOptions?:Intl.NumberFormatOptions;
  /** Marks the viewer's own row: the name and score take the action colour. */
  you?:boolean;
 }
@@ -55,12 +61,30 @@ export interface RewardBlockProps {
  tabs?:{label:string;options:readonly {value:string;label:string}[];value:string;onValueChange:(value:string)=>void};
  /** The viewer's own standing, pinned above the list on a tinted row. */
  you?:RewardEntry;
+ /** Names the pinned row for assistive technology, read before its rank: Your rank. */
+ youLabel?:string;
+ /** A muted line between the pinned row and the list, announced when it changes: You're not ranked yet. */
+ status?:string;
+ /** Host artwork in place of the built-in verified mark. */
+ verifiedMark?:React.ReactNode;
+ /** Draws skeleton rows in place of the entries while the host loads them. */
+ loading?:boolean;
+ /** Host text that names the skeleton rows for assistive technology: Loading standings. Without it they are only marked busy. */
+ loadingLabel?:string;
+ /** Paging under the list: Previous and Next as buttons with the host's range between them, such as 1–25. */
+ pagination?:{previous?:RewardPageStep;next?:RewardPageStep;label?:string};
+ /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view (`scrollComponent`) with the header as a sticky first child. Place it in a bounded container, such as a sheet body. */
+ stickyHeader?:boolean;
+ /** Fill behind the pinned header, so rows do not show through. Defaults to the background role; in a sheet pass the sheet's fill (`useColors().overlay`). */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
  /** The column heading over the names: Top 25 by volume. */
  listTitle?:string;
  /** The column heading over the scores: Entries. */
  scoreTitle?:string;
  entries:readonly RewardEntry[];
- /** Format of every score. Defaults to a whole number. */
+ /** Format of every score. Defaults to a whole number. An entry's own `scoreOptions` wins. */
  scoreOptions?:Intl.NumberFormatOptions;
  /** Words for the verified mark, read after the name. */
  verifiedLabel?:string;
@@ -81,13 +105,15 @@ export function rewardProgress(amount:number|null|undefined,goal:number|null|und
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,testID}:RewardBlockProps){
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent:Scroll=ScrollView,testID}:RewardBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale,monoFontFamily}=useHIG(),present=usePresentNumber();
  const money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(promo.amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
  const caps={fontFamily:monoFontFamily,fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase'} as const;
- const standing=(entry:RewardEntry,id:string,style?:ViewStyle)=>{
-  const mine=!!entry.you,reading=[String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,entry.detail,formatNumberReadout(entry.score,locale,present(scoreOptions)).text].filter(Boolean).join(', ');
+ const standing=(entry:RewardEntry,id:string,style?:ViewStyle,lead?:string)=>{
+  const figure=entry.detail!=null&&typeof entry.detail==='object'?entry.detail:null,detail=typeof entry.detail==='string'?entry.detail:undefined,score=entry.scoreOptions??scoreOptions;
+  const said=figure?formatNumberReadout(figure.value,locale,present(figure.options),undefined,figure.prefix,figure.suffix).text:detail;
+  const mine=!!entry.you,reading=[lead,String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,said,formatNumberReadout(entry.score,locale,present(score)).text].filter(Boolean).join(', ');
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
   return <View key={entry.id} testID={id} accessible accessibilityLabel={reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:fills.well,...style}}>
    <Text {...hidden} style={{minWidth:24,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.muted}}>{entry.rank}</Text>
@@ -95,22 +121,38 @@ export function RewardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,s
    <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
      <Text testID={`${id}-name`} numberOfLines={1} style={{flexShrink:1,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:mine?colors.action:colors.text}}>{entry.name}</Text>
-     {entry.verified?<View testID={`${id}-verified`} style={{transform:[{scale:0.8}]}}><SeverityIcon kind='success' color={colors.warning}/></View>:null}
+     {entry.verified?(verifiedMark!=null?<View testID={`${id}-verified`}>{verifiedMark}</View>:<View testID={`${id}-verified`} style={{transform:[{scale:0.8}]}}><SeverityIcon kind='success' color={colors.warning}/></View>):null}
     </View>
-    {entry.detail?<Text numberOfLines={1} style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20,color:colors.muted}}>{entry.detail}</Text>:null}
+    {figure?<View style={{alignItems:'flex-start'}}><AnimatedNumberReadout testID={`${id}-detail`} value={figure.value} options={figure.options} prefix={figure.prefix} suffix={figure.suffix} tone='muted' style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20}}/></View>
+     :detail?<Text numberOfLines={1} style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:null}
    </View>
-   <View {...hidden}><AnimatedNumberReadout value={entry.score} options={scoreOptions} tone={mine?'positive':'text'} testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
+   <View {...hidden}><AnimatedNumberReadout value={entry.score} options={score} tone={mine?'positive':'text'} testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
   </View>;
  };
  // Rows are built here so their test ids are code, not JSX text.
- const pinned=you?standing({...you,you:true},'reward-you',{marginTop:16,borderRadius:20,backgroundColor:withAlpha(colors.action,0.12)}):null;
+ const pinned=you?standing({...you,you:true},'reward-you',{marginTop:16,borderRadius:20,backgroundColor:withAlpha(colors.action,0.12)},youLabel):null;
  const rows=entries.map(entry=>standing(entry,`reward-row-${entry.id}`));
- return <View testID={testID} style={{padding:16}}>
-  <View testID='reward-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
+ const header=<View testID='reward-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
    <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='reward-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
    <Text testID='reward-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{title}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
-  </View>
+  </View>;
+ const small={fontSize:14,lineHeight:21,color:colors.muted} as const;
+ const list=loading?<View testID='reward-loading' accessible={!!loadingLabel} accessibilityLabel={loadingLabel} accessibilityState={{busy:true}} style={{gap:2,marginTop:16,borderRadius:20,overflow:'hidden'}}>
+   {[0,1,2,3,4].map(index=><View key={index} style={{minHeight:64,backgroundColor:fills.raised}}/>)}
+  </View>:entries.length>0||listTitle||scoreTitle?<View testID='reward-list' style={{gap:8,marginTop:16}}>
+   {listTitle||scoreTitle?<View style={{direction,flexDirection:'row',justifyContent:'space-between',gap:12,paddingHorizontal:4}}>
+    <Text testID='reward-list-title' style={{...caps,flexShrink:1,color:colors.muted}}>{listTitle}</Text>
+    <Text testID='reward-score-title' style={{...caps,flexShrink:1,color:colors.muted,textAlign:'right'}}>{scoreTitle}</Text>
+   </View>:null}
+   {entries.length>0?<View testID='reward-rows' style={{gap:2,borderRadius:20,overflow:'hidden'}}>{rows}</View>:null}
+  </View>:null;
+ const pages=pagination?<View testID='reward-pagination' style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginTop:16}}>
+   <View style={{flex:1,alignItems:'flex-start'}}>{pagination.previous?<Button testID='reward-previous' intent='secondary' disabled={pagination.previous.disabled} onPress={pagination.previous.onSelect}>{pagination.previous.label}</Button>:null}</View>
+   {pagination.label?<Text testID='reward-page' accessibilityLiveRegion='polite' style={{...small,fontFamily:monoFontFamily,textAlign:'center'}}>{pagination.label}</Text>:null}
+   <View style={{flex:1,alignItems:'flex-end'}}>{pagination.next?<Button testID='reward-next' intent='secondary' disabled={pagination.next.disabled} onPress={pagination.next.onSelect}>{pagination.next.label}</Button>:null}</View>
+  </View>:null;
+ const body=<>
   {promo?<Surface testID='reward-promo' style={{gap:12,marginTop:16}}>
    <View style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
     <Text testID='reward-eyebrow' style={{...caps,flexShrink:1,color:colors.muted}}>{promo.eyebrow}</Text>
@@ -132,13 +174,17 @@ export function RewardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,s
   </Surface>:null}
   {tabs?<View testID='reward-tabs' style={{marginTop:16}}><SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/></View>:null}
   {pinned}
-  {entries.length>0||listTitle||scoreTitle?<View testID='reward-list' style={{gap:8,marginTop:16}}>
-   {listTitle||scoreTitle?<View style={{direction,flexDirection:'row',justifyContent:'space-between',gap:12,paddingHorizontal:4}}>
-    <Text testID='reward-list-title' style={{...caps,flexShrink:1,color:colors.muted}}>{listTitle}</Text>
-    <Text testID='reward-score-title' style={{...caps,flexShrink:1,color:colors.muted,textAlign:'right'}}>{scoreTitle}</Text>
-   </View>:null}
-   {entries.length>0?<View testID='reward-rows' style={{gap:2,borderRadius:20,overflow:'hidden'}}>{rows}</View>:null}
-  </View>:null}
+  {status?<Text testID='reward-status' accessibilityLiveRegion='polite' style={{...small,marginTop:16,paddingHorizontal:4}}>{status}</Text>:null}
+  {list}
+  {pages}
   {footnote?<Text testID='reward-footnote' style={{fontSize:14,lineHeight:21,color:colors.muted,marginTop:16,paddingHorizontal:4}}>{footnote}</Text>:null}
+ </>;
+ if(stickyHeader)return <Scroll testID={testID} stickyHeaderIndices={[0]} contentContainerStyle={{paddingBottom:16}}>
+  <View testID='reward-sticky-header' style={{paddingHorizontal:16,paddingTop:16,backgroundColor:stickyHeaderBackground??colors.background}}>{header}</View>
+  <View style={{paddingHorizontal:16}}>{body}</View>
+ </Scroll>;
+ return <View testID={testID} style={{padding:16}}>
+  {header}
+  {body}
  </View>;
 }

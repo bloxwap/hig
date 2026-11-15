@@ -29,6 +29,10 @@ export interface LanguageBlockProps {
  onSelect:(language:LanguageOption)=>void;
  /** Set false to leave out the search field, for a short list. Default `true`. */
  search?:boolean;
+ /** Dims the rows and ignores presses, for example while a change is being applied. */
+ disabled?:boolean;
+ /** A muted line under the header that explains the screen: Choose the language used throughout the app. */
+ description?:string;
  testID?:string;
 }
 const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
@@ -40,7 +44,7 @@ export function filterLanguages(languages:readonly LanguageOption[],query:string
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const avatar=40;
 /** Choose the app's language as one screen: a header, a search field, then each language as a row with its flag, its own name over the reader's name for it, and a check on the one in use. */
-export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,testID}:LanguageBlockProps){
+export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,disabled,description,testID}:LanguageBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
  const [query,setQuery]=useState('');
  const rows=useMemo(()=>filterLanguages(languages,query),[languages,query]);
@@ -53,11 +57,12 @@ export function LanguageBlock({title,onBack,headerAction,languages,value=null,on
    <Text testID={testID?`${testID}-title`:undefined} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{heading}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
   </View>
+  {description?<Text testID={testID?`${testID}-description`:undefined} style={{paddingHorizontal:4,fontSize:14,lineHeight:21,color:colors.muted}}>{description}</Text>:null}
   {search?<SearchInput testID={testID?`${testID}-search`:undefined} accessibilityLabel={t.searchLanguages} placeholder={t.searchLanguages} value={query} onChangeText={setQuery} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>:null}
   {rows.length===0?<Text testID={testID?`${testID}-empty`:undefined} accessibilityLiveRegion='polite' style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{t.noResults}</Text>:
   <View testID={testID?`${testID}-list`:undefined} accessibilityRole='radiogroup' accessibilityLabel={heading} style={{gap:4}}>
    {rows.map(language=>{const selected=language.code===value;
-    return <Pressable key={language.code} testID={testID?`${testID}-${language.code}`:undefined} accessibilityRole='radio' accessibilityState={{checked:selected}} accessibilityLabel={[language.name,language.description].filter(Boolean).join(', ')} accessibilityLanguage={language.code} onPress={()=>onSelect(language)} style={({pressed})=>row(pressed)}>
+    return <Pressable key={language.code} testID={testID?`${testID}-${language.code}`:undefined} accessibilityRole='radio' accessibilityState={disabled?{checked:selected,disabled:true}:{checked:selected}} accessibilityLabel={[language.name,language.description].filter(Boolean).join(', ')} accessibilityLanguage={language.code} disabled={disabled} onPress={()=>onSelect(language)} style={disabled?({pressed})=>({...row(pressed),opacity:0.5}):({pressed})=>row(pressed)}>
      <View {...hidden}>{typeof language.flag==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:language.flag}} style={shape as object}/>:<View style={shape}>{language.flag??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{language.code.slice(0,2).toUpperCase()}</Text>}</View>}</View>
      <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
       <Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{language.name}</Text>

@@ -3,6 +3,7 @@ import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {LanguageBlock,filterLanguages,type LanguageOption} from '../packages/hig/react/src/blocks/language-block';
 afterEach(cleanup);
@@ -42,5 +43,18 @@ describe('LanguageBlock',()=>{
   expect(screen.queryByRole('searchbox')).toBeNull();expect(screen.getByRole('radiogroup',{name:'Idioma'})).toBeTruthy();expect(screen.getByRole('button',{name:'Close'})).toBeTruthy();
   view.rerender(<HIGProvider messages={{language:'Langue',searchLanguages:'Rechercher une langue'}}><LanguageBlock languages={languages} onSelect={()=>{}}/></HIGProvider>);
   expect(screen.getByRole('heading',{name:'Langue'})).toBeTruthy();expect(screen.getByRole('searchbox',{name:'Rechercher une langue'})).toBeTruthy();
+ });
+ it('draws a description under the header, and while disabled dims the rows and ignores presses and Enter',async()=>{
+  const select=vi.fn();
+  const view=render(<LanguageBlock languages={languages} value='en' onSelect={select} description='Choose the language used throughout the app.' disabled/>);
+  const description=document.querySelector('.hig-language-block > .hig-settings-description')!;expect(description.textContent).toBe('Choose the language used throughout the app.');
+  expect(description.previousElementSibling!.className).toBe('hig-screen-header');
+  const group=screen.getByRole('radiogroup',{name:'Language'});expect(group.getAttribute('aria-disabled')).toBe('true');
+  const rows=within(group).getAllByRole('radio') as HTMLButtonElement[];expect(rows.every(row=>row.disabled)).toBe(true);
+  await userEvent.click(rows[1]);expect(select).not.toHaveBeenCalled();
+  await userEvent.type(screen.getByRole('searchbox'),'fran{Enter}');expect(select).not.toHaveBeenCalled();
+  view.rerender(<LanguageBlock languages={languages} value='en' onSelect={select}/>);expect(document.querySelector('.hig-settings-description')).toBeNull();
+  expect(screen.getByRole('radiogroup').hasAttribute('aria-disabled')).toBe(false);
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('.hig-language-row:disabled { opacity:.5;cursor:not-allowed; }');
  });
 });

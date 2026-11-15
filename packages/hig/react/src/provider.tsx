@@ -13,15 +13,22 @@ export interface HIGContext extends Environment { onAccepted?: (id:string)=>void
  /** Host content drawn inside every pressable HIG control, such as a native switch input that gives iOS Safari a haptic. It sits in an absolutely positioned layer over the control that changes no layout and catches no pointer events itself; its children do. Nested providers inherit it. Omitted, nothing is drawn. */
  pressDecoration?:(info:PressDecorationInfo)=>React.ReactNode;
  /** Money presentation merged under every currency format HIG draws: the blocks, BarMark, BarPnl, AssetBalanceRow, the swap pieces and the number readouts. Options a format sets itself win. Nested providers inherit it. */
- numberFormat?:NumberFormatPresentation }
+ numberFormat?:NumberFormatPresentation;
+ /** Market-direction colours: `up` (rising, long, gain) and `down` (falling, short, loss), as CSS colours. They default to `--hig-buy` and `--hig-sell`; the provider sets `--hig-up` and `--hig-down` on its wrapper. Nested providers inherit them. */
+ marketColors?:HIGMarketColors }
+/** Host colours for the market-direction roles. An omitted, empty or non-string role keeps `buy`/`sell`. */
+export interface HIGMarketColors {up?:string;down?:string}
 export interface HIGProviderProps extends Partial<Omit<HIGContext,'messages'>> { /** Translations for HIG's built-in strings; omitted keys fall back to the enclosing provider, then English. */ messages?:Partial<HIGMessages> }
 const Context=createContext<HIGContext>({...defaultEnvironment,messages:{}});
-export function HIGProvider({children,density='comfortable',locale='en-US',direction='ltr',reducedMotion,onAccepted,feedback,primaryColor,messages,pressDecoration,numberFormat}:React.PropsWithChildren<HIGProviderProps>){
+const marketColor=(value:unknown)=>typeof value==='string'&&value!==''?value:undefined;
+export function HIGProvider({children,density='comfortable',locale='en-US',direction='ltr',reducedMotion,onAccepted,feedback,primaryColor,messages,pressDecoration,numberFormat,marketColors}:React.PropsWithChildren<HIGProviderProps>){
  const parent=useContext(Context);const inherited=parent.messages;const resolved=useMemo(()=>resolveMessages(inherited,messages),[inherited,messages]);
- const accent=primaryColor??parent.primaryColor;const theme=useMemo(()=>primaryStyle(accent),[accent]);
+ const market=marketColors??parent.marketColors;const up=marketColor(market?.up),down=marketColor(market?.down);
+ const inheritedMarket=useMemo(()=>up===undefined&&down===undefined?undefined:{up,down},[up,down]);
+ const accent=primaryColor??parent.primaryColor;const theme=useMemo(()=>marketStyle(primaryStyle(accent),up,down),[accent,up,down]);
  const [osReduced,setOSReduced]=useState(false);
  useEffect(()=>{const query=window.matchMedia?.('(prefers-reduced-motion: reduce)');if(!query)return;const update=()=>setOSReduced(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update);},[]);
- return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,primaryColor:accent,messages:resolved,pressDecoration:pressDecoration??parent.pressDecoration,numberFormat:numberFormat??parent.numberFormat}}><div style={theme} data-hig-density={density} data-hig-motion={reducedMotion??osReduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
+ return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,primaryColor:accent,messages:resolved,pressDecoration:pressDecoration??parent.pressDecoration,numberFormat:numberFormat??parent.numberFormat,marketColors:inheritedMarket}}><div style={theme} data-hig-density={density} data-hig-motion={reducedMotion??osReduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
 }
 export const useHIG=()=>useContext(Context);
 /** Number options with the nearest provider's `numberFormat` merged under them; only currency formats change. */
@@ -60,8 +67,13 @@ function primaryStyle(primaryColor?:string):React.CSSProperties|undefined {
  const colors=resolvePrimaryColor(primaryColor);
  return {'--hig-action':colors.action,'--hig-focus':colors.focus,'--hig-onAction':colors.onAction} as React.CSSProperties;
 }
-/** Scoped primary colour variables for host-owned portals outside the provider's DOM. */
-export function useThemeStyle():React.CSSProperties|undefined {const {primaryColor}=useHIG();return useMemo(()=>primaryStyle(primaryColor),[primaryColor]);}
+/** Adds `--hig-up` / `--hig-down` for a market colour override; without one the style is returned unchanged. */
+function marketStyle(style:React.CSSProperties|undefined,up?:string,down?:string):React.CSSProperties|undefined {
+ if(up===undefined&&down===undefined)return style;
+ return {...style,...(up!==undefined?{'--hig-up':up}:{}),...(down!==undefined?{'--hig-down':down}:{})} as React.CSSProperties;
+}
+/** Scoped primary and market colour variables for host-owned portals outside the provider's DOM. */
+export function useThemeStyle():React.CSSProperties|undefined {const {primaryColor,marketColors}=useHIG();return useMemo(()=>marketStyle(primaryStyle(primaryColor),marketColors?.up,marketColors?.down),[primaryColor,marketColors]);}
 /** Resolved sRGB roles for canvas and host-drawn content. CSS retains the default wide-gamut palette. */
 export function useColors():Readonly<Record<keyof typeof nativeSrgb,string>> {const {primaryColor}=useHIG();return useMemo(()=>primaryColor===undefined?nativeSrgb:{...nativeSrgb,...resolvePrimaryColor(primaryColor)},[primaryColor]);}
 /** Complete built-in copy for the nearest HIGProvider: host translations over the English defaults. */

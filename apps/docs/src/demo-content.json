@@ -1169,7 +1169,9 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "sweepstakes"
+        "sweepstakes",
+        "loading",
+        "paged"
       ]
     },
     {
@@ -1179,7 +1181,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "interactive"
+        "interactive",
+        "devices"
       ]
     },
     {
@@ -1188,7 +1191,8 @@
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "locked"
       ]
     },
     {
@@ -1198,7 +1202,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "error"
+        "error",
+        "groups"
       ]
     },
     {
@@ -1209,7 +1214,9 @@
       "states": [
         "default",
         "empty",
-        "static"
+        "static",
+        "loading",
+        "tagged"
       ]
     },
     {
@@ -1219,7 +1226,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "loss"
+        "loss",
+        "demo"
       ]
     },
     {
@@ -1239,7 +1247,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "no-search"
+        "no-search",
+        "disabled"
       ]
     },
     {

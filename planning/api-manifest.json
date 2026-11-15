@@ -116,7 +116,7 @@
       },
       "LanguageBlock": {
         "entry": "blocks/language-block",
-        "signature": "export declare function LanguageBlock({ title, onBack, headerAction, languages, value, onSelect, search, autoFocus, className, ...rest }: LanguageBlockProps): React.JSX.Element;"
+        "signature": "export declare function LanguageBlock({ title, onBack, headerAction, languages, value, onSelect, search, autoFocus, disabled, description, className, ...rest }: LanguageBlockProps): React.JSX.Element;"
       },
       "filterLanguages": {
         "entry": "blocks/language-block",
@@ -124,7 +124,7 @@
       },
       "LanguageBlockProps": {
         "entry": "blocks/language-block",
-        "signature": "export interface LanguageBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
+        "signature": "export interface LanguageBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Dims the rows and ignores presses, for example while a change is being applied. */\n    disabled?: boolean;\n    /** A muted line under the header that explains the screen: Choose the language used throughout the app. */\n    description?: string;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
       },
       "LanguageOption": {
         "entry": "blocks/language-block",
@@ -252,7 +252,7 @@
       },
       "RewardBlock": {
         "entry": "blocks/reward-block",
-        "signature": "export declare function RewardBlock({ title, promo, tabs, you, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, footnote, onBack, headerAction, className, ...rest }: RewardBlockProps): React.JSX.Element;"
+        "signature": "export declare function RewardBlock({ title, promo, tabs, you, youLabel, status, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, verifiedMark, loading, loadingLabel, pagination, footnote, onBack, headerAction, stickyHeader, className, ...rest }: RewardBlockProps): React.JSX.Element;"
       },
       "rewardProgress": {
         "entry": "blocks/reward-block",
@@ -260,19 +260,19 @@
       },
       "RewardBlockProps": {
         "entry": "blocks/reward-block",
-        "signature": "export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: RewardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control and is not drawn. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: RewardEntry;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly RewardEntry[];\n    /** Format of every score. Defaults to a whole number. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Accessible name of the verified mark. The mark is decorative without it. */\n    verifiedLabel?: string;\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that shares. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: RewardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control and is not drawn. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: RewardEntry;\n    /** Names the pinned row for assistive technology: Your rank. */\n    youLabel?: string;\n    /** A muted line between the pinned row and the list, announced when it changes: You're not ranked yet. */\n    status?: string;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly RewardEntry[];\n    /** Format of every score. Defaults to a whole number. An entry's own `scoreOptions` wins. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Accessible name of the verified mark. The mark is decorative without it. */\n    verifiedLabel?: string;\n    /** Host artwork in place of the built-in verified mark. */\n    verifiedMark?: React.ReactNode;\n    /** Draws skeleton rows in place of the entries while the host loads them. */\n    loading?: boolean;\n    /** Host text that names the skeleton rows for assistive technology and announces them: Loading standings. Without it the block is only marked busy. */\n    loadingLabel?: string;\n    /** Paging under the list: Previous and Next as buttons with the host's range between them, such as 1–25. */\n    pagination?: {\n        previous?: RewardPageStep;\n        next?: RewardPageStep;\n        label?: string;\n    };\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that shares. */\n    headerAction?: React.ReactNode;\n    /** Keeps the header pinned to the top of the scrolling container. Its fill is `--hig-screen-background`, `--hig-background` by default; inside a sheet remap it, for example `--hig-screen-background: var(--hig-overlay)`. */\n    stickyHeader?: boolean;\n}"
       },
       "RewardPromo": {
         "entry": "blocks/reward-block",
-        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: {\n        label: string;\n        onSelect: () => void;\n    };\n    /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */\n    amount: number | null;\n    /** Format of `amount` and `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption. */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */\n    caption?: string | ((goal: string) => string);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. */\n    headline?: string;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A quiet row under a hairline at the foot of the card, with a chevron on its trailing edge: Draws and winners. The host opens its own destination. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n    };\n}"
+        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: RewardLink;\n    /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */\n    amount: number | null;\n    /** Format of `amount` and `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption. */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */\n    caption?: string | ((goal: string) => string);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host elements for an accented word. */\n    headline?: React.ReactNode;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A quiet row under a hairline at the foot of the card, with a chevron on its trailing edge: Draws and winners. The host opens its own destination. */\n    action?: RewardLink;\n}"
       },
       "RewardEntry": {
         "entry": "blocks/reward-block",
-        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol`. */\n    detail?: string;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
+        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol` as text, or the same as a live figure. */\n    detail?: string | RewardFigure;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Format of this entry's score, in place of the block's `scoreOptions`, for a prize list where some amounts have cents. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
       },
       "SoundHapticsBlock": {
         "entry": "blocks/sound-haptics-block",
-        "signature": "export declare function SoundHapticsBlock({ title, sections, onBack, headerAction, className, ...rest }: SoundHapticsBlockProps): React.JSX.Element;"
+        "signature": "export declare function SoundHapticsBlock({ title, description, sections, onBack, headerAction, className, ...rest }: SoundHapticsBlockProps): React.JSX.Element;"
       },
       "soundLevel": {
         "entry": "blocks/sound-haptics-block",
@@ -280,11 +280,11 @@
       },
       "SoundHapticsBlockProps": {
         "entry": "blocks/sound-haptics-block",
-        "signature": "export interface SoundHapticsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Sound & Haptics. */\n    title: string;\n    /** One card each, in order. A section's source, meter and volume show only while it is on. */\n    sections: readonly SoundSection[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface SoundHapticsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Sound & Haptics. */\n    title: string;\n    /** A muted line under the header that explains the screen. */\n    description?: string;\n    /** One card each, in order. A section's source, choices and meter show only while it is on; its volume too unless `volumeWhenOff` is `disabled`. */\n    sections: readonly SoundSection[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
       "SoundSection": {
         "entry": "blocks/sound-haptics-block",
-        "signature": "export interface SoundSection {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** The device in use, under the switch: iPhone Microphone. */\n    source?: string;\n    /** A live input level from 0 to 1, drawn as a meter. `null` draws an empty meter. */\n    level?: number | null;\n    volume?: SoundVolume;\n}"
+        "signature": "export interface SoundSection {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** The device in use, under the switch: iPhone Microphone. */\n    source?: string;\n    /** A choice between devices, as radios under the source: Automatic, iPhone Microphone, AirPods. Shown while the channel is on. */\n    choices?: SoundChoices;\n    /** A live input level from 0 to 1, drawn as a meter. `null` draws an empty meter. */\n    level?: number | null;\n    /** Names the meter for assistive technology, which then reads the level as a percentage. Without it the meter is decorative. */\n    levelLabel?: string;\n    volume?: SoundVolume;\n    /** What the volume does while the channel is off: `hidden` (the default) leaves it out, `disabled` keeps it in place and unavailable. */\n    volumeWhenOff?: 'hidden' | 'disabled';\n    /** A secondary action at the foot of the card, shown whether the channel is on or off: Open Settings. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n        disabled?: boolean;\n    };\n}"
       },
       "SoundVolume": {
         "entry": "blocks/sound-haptics-block",
@@ -292,59 +292,59 @@
       },
       "SignalsBlock": {
         "entry": "blocks/signals-block",
-        "signature": "export declare function SignalsBlock({ title, groups, verifiedLabel, onBack, headerAction, className, ...rest }: SignalsBlockProps): React.JSX.Element;"
+        "signature": "export declare function SignalsBlock({ title, description, groups, verifiedLabel, verifiedMark, onBack, headerAction, className, ...rest }: SignalsBlockProps): React.JSX.Element;"
       },
       "SignalsBlockProps": {
         "entry": "blocks/signals-block",
-        "signature": "export interface SignalsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Signals. */\n    title: string;\n    groups: readonly SignalsGroup[];\n    /** Accessible name of the verified mark. The mark is decorative without it. */\n    verifiedLabel?: string;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface SignalsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Signals. */\n    title: string;\n    /** A muted line under the header that explains the screen. */\n    description?: string;\n    groups: readonly SignalsGroup[];\n    /** Accessible name of the verified mark. The mark is decorative without it. */\n    verifiedLabel?: string;\n    /** Host artwork in place of the built-in verified mark. */\n    verifiedMark?: React.ReactNode;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
       "SignalsGroup": {
         "entry": "blocks/signals-block",
-        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A small pill on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
+        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A small pill on the trailing edge of the heading: How it works. The host opens its own explanation. `ref` reaches the pill, so the host can return focus to it when the explanation closes. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n        ref?: React.Ref<HTMLButtonElement>;\n    };\n    items: readonly SignalsItem[];\n}"
       },
       "SignalsItem": {
         "entry": "blocks/signals-block",
-        "signature": "export interface SignalsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
+        "signature": "export interface SignalsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Always on and not changeable: shown on at full strength and read as unavailable. */\n    locked?: boolean;\n    /** Host content after the label, such as a badge. It is part of the switch's name. */\n    labelAccessory?: React.ReactNode;\n    /** A neutral line under the switch, announced when it changes: Needs this browser's permission. */\n    hint?: string;\n    /** A failure under the switch, in the negative role and announced. */\n    error?: string;\n}"
       },
       "NotificationsBlock": {
         "entry": "blocks/notifications-block",
-        "signature": "export declare function NotificationsBlock({ title, items, onBack, headerAction, className, ...rest }: NotificationsBlockProps): React.JSX.Element;"
+        "signature": "export declare function NotificationsBlock({ title, description, items, groups, onBack, headerAction, className, ...rest }: NotificationsBlockProps): React.JSX.Element;"
       },
       "NotificationsBlockProps": {
         "entry": "blocks/notifications-block",
-        "signature": "export interface NotificationsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Notifications. */\n    title: string;\n    /** One card each, in order. */\n    items: readonly NotificationsItem[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface NotificationsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Notifications. */\n    title: string;\n    /** A muted line under the header that explains the screen. */\n    description?: string;\n    /** One card each, in order. */\n    items?: readonly NotificationsItem[];\n    /** More cards under the items, in groups with an optional heading, 24 units apart. */\n    groups?: readonly NotificationsGroup[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
       "NotificationsItem": {
         "entry": "blocks/notifications-block",
-        "signature": "export interface NotificationsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */\n    error?: string;\n}"
+        "signature": "export interface NotificationsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Always on and not changeable: shown on at full strength and read as unavailable. */\n    locked?: boolean;\n    /** Host content after the label, such as a badge. It is part of the switch's name. */\n    labelAccessory?: React.ReactNode;\n    /** A neutral line under the card, announced when it changes, for progress or a hint: Registering this device. */\n    hint?: string;\n    /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */\n    error?: string;\n    /** A secondary action under the card, such as Open Settings after the permission was refused. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n        disabled?: boolean;\n    };\n}"
       },
       "TradeHistoryListBlock": {
         "entry": "blocks/trade-history-list-block",
-        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, className, ...rest }: TradeHistoryListBlockProps): React.JSX.Element;"
+        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, loading, loadingLabel, error, notice, footer, className, ...rest }: TradeHistoryListBlockProps): React.JSX.Element;"
       },
       "tradeHistorySide": {
         "entry": "blocks/trade-history-list-block",
-        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'>, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
+        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'> & {\n    leverageNote?: string;\n}, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
       },
       "TradeHistoryListBlockProps": {
         "entry": "blocks/trade-history-list-block",
-        "signature": "export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. */\n    pnlOptions?: Intl.NumberFormatOptions;\n}"
+        "signature": "export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. The provider's `numberFormat` is merged under it. */\n    pnlOptions?: Intl.NumberFormatOptions;\n    /** Draws rows of skeletons in place of the trades while the host loads them. */\n    loading?: boolean;\n    /** Host text that names the skeleton rows for assistive technology and announces them: Loading history. Without it they are only marked busy. */\n    loadingLabel?: string;\n    /** Why the trades could not load, in place of the rows, in the negative colour and announced. */\n    error?: string;\n    /** Host content under the header, above the rows: a partial-history notice or a mode banner. */\n    notice?: React.ReactNode;\n    /** Host content under the rows: paging, a spinner for the next page, a note. */\n    footer?: React.ReactNode;\n}"
       },
       "TradeHistoryListLabels": {
         "entry": "blocks/trade-history-list-block",
-        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n}"
+        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n    /** A second line under `empty`, in the muted colour: Closed trades appear here. */\n    emptyDescription?: string;\n}"
       },
       "TradeHistoryItem": {
         "entry": "blocks/trade-history-list-block",
-        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n}"
+        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Short ticker for the fallback disc when there is no `icon`: BTC. Without it the disc shows the first letters of the name. */\n    symbol?: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows `symbol` or the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** A short muted qualifier after the leverage, read with it: current. Use it when the leverage was not recorded with the trade. */\n    leverageNote?: string;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n    /** Small muted host text before the age, such as the wallet the trade came from: `0x22…22`. */\n    tag?: string;\n}"
       },
       "TradeHistoryDetailBlock": {
         "entry": "blocks/trade-history-detail-block",
-        "signature": "export declare function TradeHistoryDetailBlock({ labels, name, icon, side, leverage, pnl, pnlPercent, entry, exit, priceOptions, details, actions, onBack, headerAction, className, ...rest }: TradeHistoryDetailBlockProps): React.JSX.Element;"
+        "signature": "export declare function TradeHistoryDetailBlock({ labels, name, icon, symbol, side, leverage, leverageNote, pnl, pnlOptions, pnlPercent, percentOptions, entry, exit, priceOptions, details, note, badge, actions, onBack, headerAction, summaryRef, className, ...rest }: TradeHistoryDetailBlockProps): React.JSX.Element;"
       },
       "TradeHistoryDetailBlockProps": {
         "entry": "blocks/trade-history-detail-block",
-        "signature": "export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** The trade's other figures in the order shown: size, notional, time held, fees, funding. They are drawn as a grid of small labels over values. */\n    details: readonly TradeHistoryDetail[];\n    /** Actions in one row under the details, such as Save image and Share. */\n    actions?: readonly TradeHistoryAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    /** Short ticker for the fallback disc when there is no `icon`: BTC. Without it the disc shows the first letters of the name. */\n    symbol?: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** A short muted qualifier after the leverage, read with it: current. */\n    leverageNote?: string;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Format of the headline result. Defaults to signed US dollars with up to four decimals. The provider's `numberFormat` is merged under it. */\n    pnlOptions?: Intl.NumberFormatOptions;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Format of the return on margin. Defaults to a signed percent with two decimals. */\n    percentOptions?: Intl.NumberFormatOptions;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** The trade's other figures in the order shown: size, notional, time held, fees, funding. They are drawn as a grid of small labels over values. */\n    details: readonly TradeHistoryDetail[];\n    /** One muted sentence under the details, such as that part of the record is missing. */\n    note?: string;\n    /** Short host text in a badge beside the title: Demo. */\n    badge?: string;\n    /** Actions in one row under the details, such as Save image and Share. */\n    actions?: readonly TradeHistoryAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Ref to the summary (the asset line, the headline figure and the return), for a host that captures it as an image. */\n    summaryRef?: React.Ref<HTMLDivElement>;\n}"
       },
       "TradeHistoryDetailLabels": {
         "entry": "blocks/trade-history-detail-block",
@@ -676,7 +676,11 @@
       },
       "HIGContext": {
         "entry": "provider",
-        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink; /** Brand accent as opaque sRGB hex (#RGB or #RRGGBB). Nested providers inherit it; omitted at the root, Bloxwap green applies. */\n    primaryColor?: string; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n    /** Host content drawn inside every pressable HIG control, such as a native switch input that gives iOS Safari a haptic. It sits in an absolutely positioned layer over the control that changes no layout and catches no pointer events itself; its children do. Nested providers inherit it. Omitted, nothing is drawn. */\n    pressDecoration?: (info: PressDecorationInfo) => React.ReactNode;\n    /** Money presentation merged under every currency format HIG draws: the blocks, BarMark, BarPnl, AssetBalanceRow, the swap pieces and the number readouts. Options a format sets itself win. Nested providers inherit it. */\n    numberFormat?: NumberFormatPresentation;\n}"
+        "signature": "export interface HIGContext extends Environment {\n    onAccepted?: (id: string) => void;\n    feedback?: FeedbackSink; /** Brand accent as opaque sRGB hex (#RGB or #RRGGBB). Nested providers inherit it; omitted at the root, Bloxwap green applies. */\n    primaryColor?: string; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */\n    messages: Readonly<Partial<HIGMessages>>;\n    /** Host content drawn inside every pressable HIG control, such as a native switch input that gives iOS Safari a haptic. It sits in an absolutely positioned layer over the control that changes no layout and catches no pointer events itself; its children do. Nested providers inherit it. Omitted, nothing is drawn. */\n    pressDecoration?: (info: PressDecorationInfo) => React.ReactNode;\n    /** Money presentation merged under every currency format HIG draws: the blocks, BarMark, BarPnl, AssetBalanceRow, the swap pieces and the number readouts. Options a format sets itself win. Nested providers inherit it. */\n    numberFormat?: NumberFormatPresentation;\n    /** Market-direction colours: `up` (rising, long, gain) and `down` (falling, short, loss), as CSS colours. They default to `--hig-buy` and `--hig-sell`; the provider sets `--hig-up` and `--hig-down` on its wrapper. Nested providers inherit them. */\n    marketColors?: HIGMarketColors;\n}"
+      },
+      "HIGMarketColors": {
+        "entry": "provider",
+        "signature": "export interface HIGMarketColors {\n    up?: string;\n    down?: string;\n}"
       },
       "HIGProviderProps": {
         "entry": "provider",
@@ -684,7 +688,7 @@
       },
       "HIGProvider": {
         "entry": "provider",
-        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, primaryColor, messages, pressDecoration, numberFormat }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
+        "signature": "export declare function HIGProvider({ children, density, locale, direction, reducedMotion, onAccepted, feedback, primaryColor, messages, pressDecoration, numberFormat, marketColors }: React.PropsWithChildren<HIGProviderProps>): React.JSX.Element;"
       },
       "useHIG": {
         "entry": "provider",
@@ -892,7 +896,7 @@
       },
       "SwapPill": {
         "entry": "blocks/swap-panel-block",
-        "signature": "export declare function SwapPill({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>): React.JSX.Element;"
+        "signature": "export declare function SwapPill({ children, ...props }: React.ComponentPropsWithRef<'button'>): React.JSX.Element;"
       },
       "SwapKeypad": {
         "entry": "blocks/swap-panel-block",
@@ -914,13 +918,33 @@
         "entry": "blocks/swap-sheet",
         "signature": "export declare function SwapSheet({ open, onOpenChange, title, trigger, view: viewProp, onViewChange, ...panel }: SwapSheetProps): React.JSX.Element;"
       },
+      "RewardLink": {
+        "entry": "blocks/reward-block",
+        "signature": "export interface RewardLink {\n    label: string;\n    onSelect?: () => void;\n    href?: string;\n    target?: string;\n}"
+      },
+      "RewardFigure": {
+        "entry": "blocks/reward-block",
+        "signature": "export interface RewardFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
+      "RewardPageStep": {
+        "entry": "blocks/reward-block",
+        "signature": "export interface RewardPageStep {\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      },
+      "SoundChoices": {
+        "entry": "blocks/sound-haptics-block",
+        "signature": "export interface SoundChoices {\n    label: string;\n    options: readonly Choice[];\n    value: string;\n    onValueChange: (value: string) => void;\n}"
+      },
+      "NotificationsGroup": {
+        "entry": "blocks/notifications-block",
+        "signature": "export interface NotificationsGroup {\n    id: string;\n    title?: string;\n    items: readonly NotificationsItem[];\n}"
+      },
       "ScreenHeaderProps": {
         "entry": "blocks/screen-header",
-        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** `id` of the heading, so a dialog or sheet can name itself with `aria-labelledby` instead of repeating the title. */\n    headingId?: string;\n}"
+        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** `id` of the heading, so a dialog or sheet can name itself with `aria-labelledby` instead of repeating the title. */\n    headingId?: string;\n    /** Short host text in a badge beside the title, read as part of the heading: Demo. */\n    badge?: string;\n}"
       },
       "ScreenHeader": {
         "entry": "blocks/screen-header",
-        "signature": "export declare function ScreenHeader({ title, onBack, action, headingId }: ScreenHeaderProps): React.JSX.Element;"
+        "signature": "export declare function ScreenHeader({ title, onBack, action, headingId, badge }: ScreenHeaderProps): React.JSX.Element;"
       },
       "qrIcon": {
         "entry": "blocks/screen-header",
@@ -1074,7 +1098,7 @@
       },
       "LanguageBlock": {
         "entry": "language-block",
-        "signature": "export declare function LanguageBlock({ title, onBack, headerAction, languages, value, onSelect, search, testID }: LanguageBlockProps): React.JSX.Element;"
+        "signature": "export declare function LanguageBlock({ title, onBack, headerAction, languages, value, onSelect, search, disabled, description, testID }: LanguageBlockProps): React.JSX.Element;"
       },
       "filterLanguages": {
         "entry": "language-block",
@@ -1082,7 +1106,7 @@
       },
       "LanguageBlockProps": {
         "entry": "language-block",
-        "signature": "export interface LanguageBlockProps {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    testID?: string;\n}"
+        "signature": "export interface LanguageBlockProps {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    /** Dims the rows and ignores presses, for example while a change is being applied. */\n    disabled?: boolean;\n    /** A muted line under the header that explains the screen: Choose the language used throughout the app. */\n    description?: string;\n    testID?: string;\n}"
       },
       "LanguageOption": {
         "entry": "language-block",
@@ -1134,31 +1158,31 @@
       },
       "TradeHistoryListBlock": {
         "entry": "trade-history-list-block",
-        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, testID }: TradeHistoryListBlockProps): React.JSX.Element;"
+        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, loading, loadingLabel, error, notice, footer, renderList, testID }: TradeHistoryListBlockProps): React.JSX.Element;"
       },
       "tradeHistorySide": {
         "entry": "trade-history-list-block",
-        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'>, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
+        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'> & {\n    leverageNote?: string;\n}, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
       },
       "TradeHistoryListBlockProps": {
         "entry": "trade-history-list-block",
-        "signature": "export interface TradeHistoryListBlockProps {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. */\n    pnlOptions?: Intl.NumberFormatOptions;\n    testID?: string;\n}"
+        "signature": "export interface TradeHistoryListBlockProps {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. The provider's `numberFormat` is merged under it. */\n    pnlOptions?: Intl.NumberFormatOptions;\n    /** Draws rows of skeletons in place of the trades while the host loads them. */\n    loading?: boolean;\n    /** Host text that names the skeleton rows for assistive technology: Loading history. Without it they are only marked busy. */\n    loadingLabel?: string;\n    /** Why the trades could not load, in place of the rows, in the negative colour and announced. */\n    error?: string;\n    /** Host content under the header, above the rows: a partial-history notice or a mode banner. */\n    notice?: React.ReactNode;\n    /** Host content under the rows: paging, a spinner for the next page, a note. */\n    footer?: React.ReactNode;\n    /**\n     * Draws the rows through the host's own list, so a long history does not mount every row at once:\n     * `renderList={list => <FlatList data={list.trades} {...list} initialNumToRender={10}/>}`. The block then fills its parent\n     * (`flex: 1`), so place it in a bounded container such as a sheet body, not inside a ScrollView.\n     */\n    renderList?: (list: TradeHistoryListRender) => React.ReactNode;\n    testID?: string;\n}"
       },
       "TradeHistoryListLabels": {
         "entry": "trade-history-list-block",
-        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n}"
+        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n    /** A second line under `empty`, in the muted colour: Closed trades appear here. */\n    emptyDescription?: string;\n}"
       },
       "TradeHistoryItem": {
         "entry": "trade-history-list-block",
-        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n}"
+        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Short ticker for the fallback disc when there is no `icon`: BTC. Without it the disc shows the first letters of the name. */\n    symbol?: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows `symbol` or the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** A short muted qualifier after the leverage, read with it: current. Use it when the leverage was not recorded with the trade. */\n    leverageNote?: string;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n    /** Small muted host text before the age, such as the wallet the trade came from: `0x22…22`. */\n    tag?: string;\n}"
       },
       "TradeHistoryDetailBlock": {
         "entry": "trade-history-detail-block",
-        "signature": "export declare function TradeHistoryDetailBlock({ labels, name, icon, side, leverage, pnl, pnlPercent, entry, exit, priceOptions, details, actions, onBack, headerAction, testID }: TradeHistoryDetailBlockProps): React.JSX.Element;"
+        "signature": "export declare function TradeHistoryDetailBlock({ labels, name, icon, symbol, side, leverage, leverageNote, pnl, pnlOptions, pnlPercent, percentOptions, entry, exit, priceOptions, details, note, badge, summaryRef, actions, onBack, headerAction, testID }: TradeHistoryDetailBlockProps): React.JSX.Element;"
       },
       "TradeHistoryDetailBlockProps": {
         "entry": "trade-history-detail-block",
-        "signature": "export interface TradeHistoryDetailBlockProps {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    details: readonly TradeHistoryDetail[];\n    actions?: readonly TradeHistoryAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface TradeHistoryDetailBlockProps {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    /** Short ticker for the fallback disc when there is no `icon`: BTC. Without it the disc shows the first letters of the name. */\n    symbol?: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** A short muted qualifier after the leverage, read with it: current. */\n    leverageNote?: string;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Format of the headline result. Defaults to signed US dollars with up to four decimals. The provider's `numberFormat` is merged under it. */\n    pnlOptions?: Intl.NumberFormatOptions;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Format of the return on margin. Defaults to a signed percent with two decimals. */\n    percentOptions?: Intl.NumberFormatOptions;\n    /** One muted sentence under the details, such as that part of the record is missing. */\n    note?: string;\n    /** Short host text in a badge beside the title: Demo. */\n    badge?: string;\n    /** Ref to a View around the summary (the asset line, the headline figure and the return), for a host that captures it as an image. Without it the summary has no wrapper. */\n    summaryRef?: React.Ref<View>;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    details: readonly TradeHistoryDetail[];\n    actions?: readonly TradeHistoryAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "TradeHistoryDetailLabels": {
         "entry": "trade-history-detail-block",
@@ -1250,7 +1274,7 @@
       },
       "RewardBlock": {
         "entry": "reward-block",
-        "signature": "export declare function RewardBlock({ title, promo, tabs, you, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, footnote, onBack, headerAction, testID }: RewardBlockProps): React.JSX.Element;"
+        "signature": "export declare function RewardBlock({ title, promo, tabs, you, youLabel, status, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, verifiedMark, loading, loadingLabel, pagination, footnote, onBack, headerAction, stickyHeader, stickyHeaderBackground, scrollComponent: Scroll, testID }: RewardBlockProps): React.JSX.Element;"
       },
       "rewardProgress": {
         "entry": "reward-block",
@@ -1258,19 +1282,19 @@
       },
       "RewardBlockProps": {
         "entry": "reward-block",
-        "signature": "export interface RewardBlockProps {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: RewardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: RewardEntry;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly RewardEntry[];\n    /** Format of every score. Defaults to a whole number. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Words for the verified mark, read after the name. */\n    verifiedLabel?: string;\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that shares. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface RewardBlockProps {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: RewardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: RewardEntry;\n    /** Names the pinned row for assistive technology, read before its rank: Your rank. */\n    youLabel?: string;\n    /** A muted line between the pinned row and the list, announced when it changes: You're not ranked yet. */\n    status?: string;\n    /** Host artwork in place of the built-in verified mark. */\n    verifiedMark?: React.ReactNode;\n    /** Draws skeleton rows in place of the entries while the host loads them. */\n    loading?: boolean;\n    /** Host text that names the skeleton rows for assistive technology: Loading standings. Without it they are only marked busy. */\n    loadingLabel?: string;\n    /** Paging under the list: Previous and Next as buttons with the host's range between them, such as 1–25. */\n    pagination?: {\n        previous?: RewardPageStep;\n        next?: RewardPageStep;\n        label?: string;\n    };\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view (`scrollComponent`) with the header as a sticky first child. Place it in a bounded container, such as a sheet body. */\n    stickyHeader?: boolean;\n    /** Fill behind the pinned header, so rows do not show through. Defaults to the background role; in a sheet pass the sheet's fill (`useColors().overlay`). */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly RewardEntry[];\n    /** Format of every score. Defaults to a whole number. An entry's own `scoreOptions` wins. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Words for the verified mark, read after the name. */\n    verifiedLabel?: string;\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that shares. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "RewardPromo": {
         "entry": "reward-block",
-        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: {\n        label: string;\n        onSelect: () => void;\n    };\n    /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */\n    amount: number | null;\n    /** Format of `amount` and `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption. */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */\n    caption?: string | ((goal: string) => string);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. */\n    headline?: string;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A full-width action under the description: Draws and winners. The host opens its own destination. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n    };\n}"
+        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: {\n        label: string;\n        onSelect: () => void;\n    };\n    /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */\n    amount: number | null;\n    /** Format of `amount` and `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption. */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */\n    caption?: string | ((goal: string) => string);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host Text elements for an accented word. */\n    headline?: React.ReactNode;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A full-width action under the description: Draws and winners. The host opens its own destination. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n    };\n}"
       },
       "RewardEntry": {
         "entry": "reward-block",
-        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol`. */\n    detail?: string;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
+        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol` as text, or the same as a live figure. */\n    detail?: string | RewardFigure;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Format of this entry's score, in place of the block's `scoreOptions`, for a prize list where some amounts have cents. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
       },
       "SoundHapticsBlock": {
         "entry": "sound-haptics-block",
-        "signature": "export declare function SoundHapticsBlock({ title, sections, onBack, headerAction, testID }: SoundHapticsBlockProps): React.JSX.Element;"
+        "signature": "export declare function SoundHapticsBlock({ title, description, sections, onBack, headerAction, testID }: SoundHapticsBlockProps): React.JSX.Element;"
       },
       "soundLevel": {
         "entry": "sound-haptics-block",
@@ -1278,11 +1302,11 @@
       },
       "SoundHapticsBlockProps": {
         "entry": "sound-haptics-block",
-        "signature": "export interface SoundHapticsBlockProps {\n    /** Heading: Sound & Haptics. */\n    title: string;\n    /** One card each, in order. A section's source, meter and volume show only while it is on. */\n    sections: readonly SoundSection[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface SoundHapticsBlockProps {\n    /** Heading: Sound & Haptics. */\n    title: string;\n    /** A muted line under the header that explains the screen. */\n    description?: string;\n    /** One card each, in order. A section's source, choices and meter show only while it is on; its volume too unless `volumeWhenOff` is `disabled`. */\n    sections: readonly SoundSection[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "SoundSection": {
         "entry": "sound-haptics-block",
-        "signature": "export interface SoundSection {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** The device in use, under the switch: iPhone Microphone. */\n    source?: string;\n    /** A live input level from 0 to 1, drawn as a meter. `null` draws an empty meter. */\n    level?: number | null;\n    volume?: SoundVolume;\n}"
+        "signature": "export interface SoundSection {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** The device in use, under the switch: iPhone Microphone. */\n    source?: string;\n    /** A choice between devices, as radios under the source: Automatic, iPhone Microphone, AirPods. Shown while the channel is on. */\n    choices?: SoundChoices;\n    /** A live input level from 0 to 1, drawn as a meter. `null` draws an empty meter. */\n    level?: number | null;\n    /** Names the meter for assistive technology, which then reads the level as a percentage. Without it the meter is decorative. */\n    levelLabel?: string;\n    volume?: SoundVolume;\n    /** What the volume does while the channel is off: `hidden` (the default) leaves it out, `disabled` keeps it in place and unavailable. */\n    volumeWhenOff?: 'hidden' | 'disabled';\n    /** A secondary action at the foot of the card, shown whether the channel is on or off: Open Settings. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n        disabled?: boolean;\n    };\n}"
       },
       "SoundVolume": {
         "entry": "sound-haptics-block",
@@ -1290,31 +1314,31 @@
       },
       "SignalsBlock": {
         "entry": "signals-block",
-        "signature": "export declare function SignalsBlock({ title, groups, verifiedLabel, onBack, headerAction, testID }: SignalsBlockProps): React.JSX.Element;"
+        "signature": "export declare function SignalsBlock({ title, description, groups, verifiedLabel, verifiedMark, onBack, headerAction, testID }: SignalsBlockProps): React.JSX.Element;"
       },
       "SignalsBlockProps": {
         "entry": "signals-block",
-        "signature": "export interface SignalsBlockProps {\n    /** Heading: Signals. */\n    title: string;\n    groups: readonly SignalsGroup[];\n    /** Words for the verified mark, read after the group title. */\n    verifiedLabel?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface SignalsBlockProps {\n    /** Heading: Signals. */\n    title: string;\n    /** A muted line under the header that explains the screen. */\n    description?: string;\n    groups: readonly SignalsGroup[];\n    /** Words for the verified mark, read after the group title. */\n    verifiedLabel?: string;\n    /** Host artwork in place of the built-in verified mark. */\n    verifiedMark?: React.ReactNode;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "SignalsGroup": {
         "entry": "signals-block",
-        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A small pill on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
+        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A small pill on the trailing edge of the heading: How it works. The host opens its own explanation. `ref` reaches the pill, so the host can move accessibility focus back to it when the explanation closes. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n        ref?: React.Ref<View>;\n    };\n    items: readonly SignalsItem[];\n}"
       },
       "SignalsItem": {
         "entry": "signals-block",
-        "signature": "export interface SignalsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
+        "signature": "export interface SignalsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Always on and not changeable: shown on at full strength and read as unavailable. */\n    locked?: boolean;\n    /** Host content after the label, such as a badge. It is drawn only; the switch is read by `label`. */\n    labelAccessory?: React.ReactNode;\n    /** A neutral line under the switch, announced when it changes: Needs this device's permission. */\n    hint?: string;\n    /** A failure under the switch, in the negative role and announced. */\n    error?: string;\n}"
       },
       "NotificationsBlock": {
         "entry": "notifications-block",
-        "signature": "export declare function NotificationsBlock({ title, items, onBack, headerAction, testID }: NotificationsBlockProps): React.JSX.Element;"
+        "signature": "export declare function NotificationsBlock({ title, description, items, groups, onBack, headerAction, testID }: NotificationsBlockProps): React.JSX.Element;"
       },
       "NotificationsBlockProps": {
         "entry": "notifications-block",
-        "signature": "export interface NotificationsBlockProps {\n    /** Heading: Notifications. */\n    title: string;\n    /** One card each, in order. */\n    items: readonly NotificationsItem[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface NotificationsBlockProps {\n    /** Heading: Notifications. */\n    title: string;\n    /** A muted line under the header that explains the screen. */\n    description?: string;\n    /** One card each, in order. */\n    items?: readonly NotificationsItem[];\n    /** More cards under the items, in groups with an optional heading, 24dp apart. */\n    groups?: readonly NotificationsGroup[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "NotificationsItem": {
         "entry": "notifications-block",
-        "signature": "export interface NotificationsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */\n    error?: string;\n}"
+        "signature": "export interface NotificationsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Always on and not changeable: shown on at full strength and read as unavailable. */\n    locked?: boolean;\n    /** Host content after the label, such as a badge. It is drawn only; the switch is read by `label`. */\n    labelAccessory?: React.ReactNode;\n    /** A neutral line under the card, announced when it changes, for progress or a hint: Registering this device. */\n    hint?: string;\n    /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */\n    error?: string;\n    /** A secondary action under the card, such as Open Settings after the permission was refused. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n        disabled?: boolean;\n    };\n}"
       },
       "FromPickerBlock": {
         "entry": "pickers",
@@ -1358,7 +1382,7 @@
       },
       "SwapCapsule": {
         "entry": "blocks",
-        "signature": "export declare function SwapCapsule({ children, onPress, label, testID, hitSlop }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string; /** Defaults to a 44dp target, as on the swap card. */\n    hitSlop?: Insets;\n}): React.JSX.Element;"
+        "signature": "export declare function SwapCapsule({ children, onPress, label, testID, hitSlop, ref }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string; /** Defaults to a 44dp target, as on the swap card. */\n    hitSlop?: Insets; /** Reaches the capsule, for example to move accessibility focus back to it. */\n    ref?: React.Ref<View>;\n}): React.JSX.Element;"
       },
       "SwapPanelBlock": {
         "entry": "blocks",
@@ -1600,6 +1624,10 @@
         "entry": "navigation",
         "signature": "export declare function BackButton({ onBack }: {\n    onBack: () => void;\n}): React.JSX.Element;"
       },
+      "NotificationsGroup": {
+        "entry": "notifications-block",
+        "signature": "export interface NotificationsGroup {\n    id: string;\n    title?: string;\n    items: readonly NotificationsItem[];\n}"
+      },
       "DialogProps": {
         "entry": "overlay",
         "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    returnFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */ closeLabel?: string;\n    /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */ contentMode?: 'default' | 'custom';\n    /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */ titleRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */ stageComponent?: React.ComponentType<ViewProps>;\n    stageStyle?: StyleProp<ViewStyle>;\n    stageTestID?: string;\n    /** Custom-mode backdrop, including the host's dismissal policy and decoration. */ backdrop?: React.ReactNode;\n    /** Custom-mode surface layout; no implicit padding or scroll view is added. */ contentStyle?: StyleProp<ViewStyle>;\n    /** Identifies the actual modal content surface in either mode. */ testID?: string;\n    /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */ animationType?: ModalProps['animationType'];\n}"
@@ -1720,17 +1748,25 @@
         "entry": "radio-group",
         "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange }: FilterProps): React.JSX.Element;"
       },
+      "RewardFigure": {
+        "entry": "reward-block",
+        "signature": "export interface RewardFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
+      "RewardPageStep": {
+        "entry": "reward-block",
+        "signature": "export interface RewardPageStep {\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      },
       "ChevronIcon": {
         "entry": "screen-header",
         "signature": "export declare function ChevronIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
       "ScreenHeaderProps": {
         "entry": "screen-header",
-        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** Prefix of the test IDs: `<testID>-header`, `<testID>-back` and `<testID>-title`. Omitted, the header sets none. */\n    testID?: string;\n    /** Sets `nativeID` on the title, so a sheet around the pane can name itself with `accessibilityLabelledBy` (Android). Omitted, the title has none. */\n    headingId?: string;\n}"
+        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** Prefix of the test IDs: `<testID>-header`, `<testID>-back` and `<testID>-title`. Omitted, the header sets none. */\n    testID?: string;\n    /** Sets `nativeID` on the title, so a sheet around the pane can name itself with `accessibilityLabelledBy` (Android). Omitted, the title has none. */\n    headingId?: string;\n    /** Short host text in a badge beside the title, read as part of the heading: Demo. */\n    badge?: string;\n}"
       },
       "ScreenHeader": {
         "entry": "screen-header",
-        "signature": "export declare function ScreenHeader({ title, onBack, action, testID, headingId }: ScreenHeaderProps): React.JSX.Element;"
+        "signature": "export declare function ScreenHeader({ title, onBack, action, testID, headingId, badge }: ScreenHeaderProps): React.JSX.Element;"
       },
       "Select": {
         "entry": "select",
@@ -1763,6 +1799,10 @@
       "Slider": {
         "entry": "slider",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (v: number) => void;\n}): React.JSX.Element;"
+      },
+      "SoundChoices": {
+        "entry": "sound-haptics-block",
+        "signature": "export interface SoundChoices {\n    label: string;\n    options: readonly Choice[];\n    value: string;\n    onValueChange: (value: string) => void;\n}"
       },
       "AccentRole": {
         "entry": "status",
@@ -1884,6 +1924,10 @@
         "entry": "switch",
         "signature": "export interface SwitchProps extends CheckedProps {\n    tone?: AccentRole;\n}"
       },
+      "TradeHistoryListRender": {
+        "entry": "trade-history-list-block",
+        "signature": "export interface TradeHistoryListRender {\n    trades: readonly TradeHistoryItem[];\n    /** Draws one row; the signature matches FlatList's `renderItem`. */\n    renderItem: (info: {\n        item: TradeHistoryItem;\n    }) => React.ReactElement;\n    keyExtractor: (trade: TradeHistoryItem) => string;\n    /** The 8dp gap between rows, for `ItemSeparatorComponent`. */\n    ItemSeparatorComponent: React.ComponentType;\n}"
+      },
       "WalletAddressProps": {
         "entry": "wallet-address",
         "signature": "export interface WalletAddressProps {\n    address: string;\n    kind?: AddressKind;\n    /** QR payload when it differs from the address, e.g. an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR. */\n    arena?: string;\n    /** QR edge in dp; default 196. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    testID?: string;\n}"
@@ -1966,15 +2010,15 @@
       },
       "SettingHeader": {
         "entry": "screen-header",
-        "signature": "export declare function ScreenHeader({ title, onBack, action, testID, headingId }: ScreenHeaderProps): React.JSX.Element;"
+        "signature": "export declare function ScreenHeader({ title, onBack, action, testID, headingId, badge }: ScreenHeaderProps): React.JSX.Element;"
       },
       "SettingSwitchProps": {
         "entry": "setting-switch",
-        "signature": "export interface SettingSwitchProps {\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    testID?: string;\n}"
+        "signature": "export interface SettingSwitchProps {\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    testID?: string;\n    /** Always on and not changeable: the switch shows on at full strength and is read as unavailable. Presses do nothing. */\n    locked?: boolean;\n    /** Host content after the label, such as a badge. It is drawn only: the switch is read by `label`, so put any meaning it carries in the label or description. */\n    labelAccessory?: React.ReactNode;\n}"
       },
       "SettingSwitch": {
         "entry": "setting-switch",
-        "signature": "export declare function SettingSwitch({ label, description, checked, onCheckedChange, disabled, testID }: SettingSwitchProps): React.JSX.Element;"
+        "signature": "export declare function SettingSwitch({ label, description, checked: requested, onCheckedChange, disabled, locked, labelAccessory, testID }: SettingSwitchProps): React.JSX.Element;"
       },
       "SettingCard": {
         "entry": "setting-switch",

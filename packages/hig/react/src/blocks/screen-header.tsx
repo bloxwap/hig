@@ -12,13 +12,15 @@ export interface ScreenHeaderProps {
  action?:React.ReactNode;
  /** `id` of the heading, so a dialog or sheet can name itself with `aria-labelledby` instead of repeating the title. */
  headingId?:string;
+ /** Short host text in a badge beside the title, read as part of the heading: Demo. */
+ badge?:string;
 }
 /** Header of a card that is its own screen: Back on the leading edge, the title centred, and an optional control on the trailing edge. The title stays centred with either, both or neither. Every block draws it; import it from `@bloxwap/hig/react/blocks/screen-header` for a host pane that has no block. */
-export function ScreenHeader({title,onBack,action,headingId}:ScreenHeaderProps){
+export function ScreenHeader({title,onBack,action,headingId,badge}:ScreenHeaderProps){
  const {messages}=useHIG();
  return <div className='hig-screen-header'>
   <span className='hig-screen-header-side'>{onBack&&<button type='button' className='hig-swap-back' aria-label={messages.back??en.back} onClick={onBack}><SwapIcon name='back'/><PressDecoration kind='back'/></button>}</span>
-  <h2 id={headingId} className='hig-screen-title'>{title}</h2>
+  <h2 id={headingId} className='hig-screen-title'>{badge?<>{title} <span className='hig-badge hig-screen-badge'>{badge}</span></>:title}</h2>
   <span className='hig-screen-header-side'>{action}</span>
  </div>;
 }
