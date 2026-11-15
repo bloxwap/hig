@@ -3,7 +3,7 @@
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig@0.4.0
+npm install @bloxwap/hig@0.5.1
 ```
 
 | Entry | Use |
@@ -64,9 +64,17 @@ These are the rules that `@bloxwap/hig/react/css` applied to the whole page befo
 
 ### Radix overlay peers and Fumadocs
 
-The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/recipes` or `@bloxwap/hig/react/recipes/trade-entry` (dialog only). Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
+The four Radix packages are optional peers with caret ranges: `@radix-ui/react-dialog ^1.1.15`, `@radix-ui/react-popover ^1.1.15`, `@radix-ui/react-dropdown-menu ^2.1.16` and `@radix-ui/react-tooltip ^1.2.8`. Install them only for `@bloxwap/hig/react/overlay`, `@bloxwap/hig/react/recipes`, or `@bloxwap/hig/react/recipes/trade-entry` (dialog only for the recipes). `@bloxwap/hig/react/recipes/swap-sheet` presents the swap panel in a gesture sheet and needs `vaul`, like `gesture-sheet`; `recipes/swap-panel` itself needs no overlay peer. Hosts that already use Radix, such as Fumadocs, share their copy: `npm run smoke:packed-fumadocs` installs the packed React tarball next to fumadocs-ui 16.17.3 with strict peers and `npm ci`, asserts every `@radix-ui/*` package appears once, and renders the overlays on the resolved current releases. The workspace fixtures keep testing the lower bounds. Do not set `legacy-peer-deps` for HIG.
 
 The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1.1.2`; Vaul brings its Radix Dialog dependency. Ordinary overlay and action entries do not load Vaul. Retain the host's existing input repositioning, handle-only, background scaling and viewport layout flags; see [gesture sheet composition](components/overlays.md#optional-web-gesture-backend). `npm run smoke:packed-boundaries` verifies both absence in core consumers and resolution of the gesture entry after the explicit backend install.
+
+### Sonner toasts
+
+`@bloxwap/hig/react/toast` exports `Toaster`, `toast()` and `dismissToast()`, which raise the HIG toast capsule through [Sonner](https://sonner.emilkowal.ski/). `sonner ^2.0.0` is an optional peer needed only by `@bloxwap/hig/react/toast`; no other entry loads it. Mount `<Toaster/>` once inside `HIGProvider`: while it is mounted, `InstallCommand` raises its copy result as a toast. Without a mounted toaster `InstallCommand` shows the result inline, as before. The controlled `Toast` in `@bloxwap/hig/react/status` needs no backend.
+
+### Wallet address QR codes
+
+`@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address` export `WalletAddress`, which draws its QR code with [Cuer](https://cuer.sh). `cuer` (`>=0.0.3 <0.1.0`) is an optional peer needed only by those two entries; the native entry also needs `react-native-svg`. `VerticalAddress` is in the `data` entries and needs neither.
 
 ## Brand accent
 

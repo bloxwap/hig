@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.1",
   "components": [
     {
       "name": "Button",
@@ -189,6 +189,16 @@
     {
       "name": "SegmentedControl",
       "route": "components/segmented-control",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ]
+    },
+    {
+      "name": "Filter",
+      "route": "components/filter",
       "entry": "selection",
       "nativeSupport": "renderer",
       "states": [
@@ -519,6 +529,24 @@
       ]
     },
     {
+      "name": "WalletAddress",
+      "route": "components/wallet-address",
+      "entry": "wallet-address",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "VerticalAddress",
+      "route": "components/vertical-address",
+      "entry": "data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "BrandMark",
       "route": "components/brand-mark",
       "entry": "brand",
@@ -575,6 +603,48 @@
         "default",
         "busy",
         "error"
+      ]
+    },
+    {
+      "name": "SwapPanel",
+      "route": "components/swap-panel",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "swap",
+        "bridge",
+        "send",
+        "deposit",
+        "withdraw",
+        "withdraw-chain",
+        "stake",
+        "unstake",
+        "busy"
+      ]
+    },
+    {
+      "name": "FromPicker",
+      "route": "components/from-picker",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "connected",
+        "no-logout",
+        "whitelist",
+        "empty"
+      ]
+    },
+    {
+      "name": "ToPicker",
+      "route": "components/to-picker",
+      "entry": "recipes",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "tokens",
+        "no-chain"
       ]
     },
     {

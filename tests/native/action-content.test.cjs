@@ -11,7 +11,7 @@ it('a custom card action preserves direct identity/trailing siblings and one can
  const changed=jest.fn(),feedback={emit:jest.fn()},parts=[React.createElement(RN.Text,{key:'identity',testID:'identity'},'Account'),React.createElement(RN.View,{key:'trailing',testID:'trailing'})];
  const button=mount(Button,{contentMode:'custom',accessibilityLabel:'Open account',style:{flexDirection:'row',justifyContent:'space-between'},onPress:changed},parts,feedback);
  expect(React.Children.toArray(button.props.children).map(node=>node.props.testID)).toEqual(['identity','trailing']);
- expect(RN.StyleSheet.flatten(button.props.style({pressed:false}))).toMatchObject({minHeight:48,flexDirection:'row',justifyContent:'space-between'});
+ expect(RN.StyleSheet.flatten(button.props.style({pressed:false}))).toMatchObject({minHeight:44,flexDirection:'row',justifyContent:'space-between'});
  const press=event();act(()=>button.props.onPress(press));expect(changed).toHaveBeenCalledTimes(1);expect(press.stopPropagation).toHaveBeenCalledTimes(1);expect(feedback.emit).toHaveBeenCalledTimes(1);
 });
 it('custom busy content keeps disabled/busy state and suppresses queued activation without adding visible copy',()=>{

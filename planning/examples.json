@@ -22,8 +22,8 @@
       "slug": "icon-button",
       "entry": "button",
       "family": "actions-surfaces",
-      "web": "<C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>",
-      "native": "<C.IconButton label='Confirm selection' disabled={disabled}><C.CheckIcon/></C.IconButton>",
+      "web": "<C.IconButton label='Confirm selection' busy={busy} disabled={disabled}><C.CheckIcon/></C.IconButton>",
+      "native": "<C.IconButton label='Confirm selection' busy={busy} disabled={disabled}><C.CheckIcon/></C.IconButton>",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -297,6 +297,21 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "Filter",
+      "slug": "filter",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.Filter label='Chain' options={[{value:'',label:'All'},{value:'1',label:'Ethereum'},{value:'8453',label:'Base'},{value:'42161',label:'Arbitrum'}]} defaultValue='' disabled={disabled} onValueChange={chain=>setMessage(chain?`Chain ${chain} selected`:'All chains')}/>",
+      "native": "<C.Filter label='Chain' options={[{value:'',label:'All'},{value:'1',label:'Ethereum'},{value:'8453',label:'Base'},{value:'42161',label:'Arbitrum'}]} defaultValue='' disabled={disabled} onValueChange={chain=>setMessage(chain?`Chain ${chain} selected`:'All chains')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
       "name": "Select",
       "slug": "select",
       "entry": "selection",
@@ -415,7 +430,7 @@
       "slug": "tooltip",
       "entry": "overlay",
       "family": "overlays",
-      "web": "<C.Tooltip content='Copy the install command'><C.Button intent='secondary' onClick={()=>setMessage('Copy selected')}>Copy</C.Button></C.Tooltip>",
+      "web": "<><C.Tooltip content='Copy the install command'><C.Button intent='secondary' onClick={()=>setNotices([{id:'copy',message:'Copied',severity:'success'}])}>Copy</C.Button></C.Tooltip><C.Toast notices={notices.filter(n=>n.id==='copy')} onDismiss={()=>setNotices([])}/></>",
       "native": "<C.HelpText>Copy help is persistent on touch; no hover requirement.</C.HelpText>",
       "nativeSupport": "alternative",
       "states": [
@@ -789,6 +804,34 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "WalletAddress",
+      "slug": "wallet-address",
+      "entry": "wallet-address",
+      "family": "financial-data",
+      "web": "<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>setMessage('Copy requested; the host owns the clipboard')}/>",
+      "native": "<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>setMessage('Copy requested; the host owns the clipboard')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "VerticalAddress",
+      "slug": "vertical-address",
+      "entry": "data",
+      "family": "financial-data",
+      "web": "<C.VerticalAddress address='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ'/>",
+      "native": "<C.VerticalAddress address='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
       "name": "BrandMark",
       "slug": "brand-mark",
       "entry": "brand",
@@ -878,12 +921,135 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "SwapPanel",
+      "slug": "swap-panel",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} hotTokenIds={['1-eth','8453-usdc']} fee={0.27} onSubmit={action=>setMessage(`Demo ${action} accepted; no transaction submitted`)}/>",
+      "native": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} hotTokenIds={['1-eth','8453-usdc']} fee={0.27} onSubmit={action=>setMessage(`Demo ${action} accepted; no transaction submitted`)}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "swap",
+        "bridge",
+        "send",
+        "deposit",
+        "withdraw",
+        "withdraw-chain",
+        "stake",
+        "unstake",
+        "busy"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "swap": {
+          "web": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} defaultFrom={{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12}} defaultTo={{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1}} amount='0.1' fee={0.27} onSubmit={action=>setMessage(`Demo swap (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} defaultFrom={{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12}} defaultTo={{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1}} amount='0.1' fee={0.27} onSubmit={action=>setMessage(`Demo swap (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "bridge": {
+          "web": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} defaultFrom={{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12}} defaultTo={{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1}} amount='0.1' fee={0.41} onSubmit={action=>setMessage(`Demo bridge (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} defaultFrom={{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12}} defaultTo={{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1}} amount='0.1' fee={0.41} onSubmit={action=>setMessage(`Demo bridge (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "send": {
+          "web": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} title='Send' defaultFrom={{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1}} lockFrom amount='250' wallet={{connected:true,address:'0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688'}} destination={{title:'To',subtitle:'Pick a destination',pending:true,onPress:()=>setMessage('The host opens its recipient picker')}} controls={false} onSubmit={action=>setMessage(`Demo send (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} title='Send' defaultFrom={{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1}} lockFrom amount='250' wallet={{connected:true,address:'0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688'}} destination={{title:'To',subtitle:'Pick a destination',pending:true,onPress:()=>setMessage('The host opens its recipient picker')}} controls={false} onSubmit={action=>setMessage(`Demo send (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "deposit": {
+          "web": "<C.SwapPanel tokens={[{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'}]} title='Deposit to Papertrade' defaultFrom={{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'}} lockFrom amount='100' denominationSwitch={false} destination={{title:'Papertrade',subtitle:'$22.72 available'}} actionLabel='Deposit' controls={false} onSubmit={action=>setMessage(`Demo deposit (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'}]} title='Deposit to Papertrade' defaultFrom={{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'}} lockFrom amount='100' denominationSwitch={false} destination={{title:'Papertrade',subtitle:'$22.72 available'}} actionLabel='Deposit' controls={false} onSubmit={action=>setMessage(`Demo deposit (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "withdraw": {
+          "web": "<C.SwapPanel tokens={[{id:'papertrade',symbol:'PT',name:'Papertrade balance',chain:'Papertrade',chainId:'papertrade',balance:22.72,price:1,caption:'$22.72 available'}]} title='Withdraw from Papertrade' defaultFrom={{id:'papertrade',symbol:'PT',name:'Papertrade balance',chain:'Papertrade',chainId:'papertrade',balance:22.72,price:1,caption:'$22.72 available'}} lockFrom amount='15' denominationSwitch={false} destination={{title:'USDC on Hyperliquid',subtitle:'Lands in this account on Hyperliquid'}} note='The minimum withdrawal is $10.00.' actionLabel='Withdraw' controls={false} onSubmit={action=>setMessage(`Demo withdrawal (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'papertrade',symbol:'PT',name:'Papertrade balance',chain:'Papertrade',chainId:'papertrade',balance:22.72,price:1,caption:'$22.72 available'}]} title='Withdraw from Papertrade' defaultFrom={{id:'papertrade',symbol:'PT',name:'Papertrade balance',chain:'Papertrade',chainId:'papertrade',balance:22.72,price:1,caption:'$22.72 available'}} lockFrom amount='15' denominationSwitch={false} destination={{title:'USDC on Hyperliquid',subtitle:'Lands in this account on Hyperliquid'}} note='The minimum withdrawal is $10.00.' actionLabel='Withdraw' controls={false} onSubmit={action=>setMessage(`Demo withdrawal (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "withdraw-chain": {
+          "web": "<C.SwapPanel tokens={[{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'},{id:'arb-usdc',symbol:'USDC',name:'USDC on Arbitrum',chain:'Arbitrum',chainId:42161,balance:80.5,price:1,caption:'$80.50 available'}]} title='Withdraw' defaultFrom={{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'}} amount='50' denominationSwitch={false} destination={{title:'USDC on HyperEVM',subtitle:'Settles in your HyperEVM wallet',onPress:()=>setMessage('The host opens its destination picker')}} fee={null} actionLabel='Withdraw' controls={false} onSubmit={action=>setMessage(`Demo withdrawal (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'},{id:'arb-usdc',symbol:'USDC',name:'USDC on Arbitrum',chain:'Arbitrum',chainId:42161,balance:80.5,price:1,caption:'$80.50 available'}]} title='Withdraw' defaultFrom={{id:'hl-usdc',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hyperliquid',balance:234.68,price:1,caption:'$234.68 available'}} amount='50' denominationSwitch={false} destination={{title:'USDC on HyperEVM',subtitle:'Settles in your HyperEVM wallet',onPress:()=>setMessage('The host opens its destination picker')}} fee={null} actionLabel='Withdraw' controls={false} onSubmit={action=>setMessage(`Demo withdrawal (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "stake": {
+          "web": "<C.SwapPanel tokens={[{id:'hype-spot',symbol:'HYPE',name:'Exchange spot HYPE',chain:'Hyperliquid',chainId:'hyperliquid',balance:4.25,caption:'4.25 available'}]} title='Stake HYPE' defaultFrom={{id:'hype-spot',symbol:'HYPE',name:'Exchange spot HYPE',chain:'Hyperliquid',chainId:'hyperliquid',balance:4.25,caption:'4.25 available'}} lockFrom amount='2' denomination='token' denominationSwitch={false} details={[{label:'Staked',value:'11.0735 HYPE'},{label:'Fee tier',value:'Wood'}]} actionLabel='Stake (2 signatures)' controls={false} onSubmit={action=>setMessage(`Demo stake (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'hype-spot',symbol:'HYPE',name:'Exchange spot HYPE',chain:'Hyperliquid',chainId:'hyperliquid',balance:4.25,caption:'4.25 available'}]} title='Stake HYPE' defaultFrom={{id:'hype-spot',symbol:'HYPE',name:'Exchange spot HYPE',chain:'Hyperliquid',chainId:'hyperliquid',balance:4.25,caption:'4.25 available'}} lockFrom amount='2' denomination='token' denominationSwitch={false} details={[{label:'Staked',value:'11.0735 HYPE'},{label:'Fee tier',value:'Wood'}]} actionLabel='Stake (2 signatures)' controls={false} onSubmit={action=>setMessage(`Demo stake (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "unstake": {
+          "web": "<C.SwapPanel tokens={[{id:'hype-delegated',symbol:'HYPE',name:'Delegated (unlocked)',chain:'Hyperliquid',chainId:'hyperliquid',balance:11.0735,caption:'11.0735 available'}]} title='Unstake HYPE' defaultFrom={{id:'hype-delegated',symbol:'HYPE',name:'Delegated (unlocked)',chain:'Hyperliquid',chainId:'hyperliquid',balance:11.0735,caption:'11.0735 available'}} lockFrom amount='5' denomination='token' denominationSwitch={false} details={[{label:'Staked',value:'11.0735 HYPE'},{label:'Fee tier',value:'Wood'}]} note='Undelegating does not start the exit clock. Transfer to spot afterwards to enter the 7-day queue.' noteTone='negative' actionLabel='Unstake' controls={false} onSubmit={action=>setMessage(`Demo unstake (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'hype-delegated',symbol:'HYPE',name:'Delegated (unlocked)',chain:'Hyperliquid',chainId:'hyperliquid',balance:11.0735,caption:'11.0735 available'}]} title='Unstake HYPE' defaultFrom={{id:'hype-delegated',symbol:'HYPE',name:'Delegated (unlocked)',chain:'Hyperliquid',chainId:'hyperliquid',balance:11.0735,caption:'11.0735 available'}} lockFrom amount='5' denomination='token' denominationSwitch={false} details={[{label:'Staked',value:'11.0735 HYPE'},{label:'Fee tier',value:'Wood'}]} note='Undelegating does not start the exit clock. Transfer to spot afterwards to enter the 7-day queue.' noteTone='negative' actionLabel='Unstake' controls={false} onSubmit={action=>setMessage(`Demo unstake (${action}) accepted; no transaction submitted`)}/>"
+        },
+        "busy": {
+          "web": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} defaultFrom={{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12}} defaultTo={{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1}} amount='0.1' fee={0.27} submitting={busy} onSubmit={action=>setMessage(`Demo swap (${action}) accepted; no transaction submitted`)}/>",
+          "native": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} defaultFrom={{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12}} defaultTo={{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1}} amount='0.1' fee={0.27} submitting={busy} onSubmit={action=>setMessage(`Demo swap (${action}) accepted; no transaction submitted`)}/>"
+        }
+      }
+    },
+    {
+      "name": "FromPicker",
+      "slug": "from-picker",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.FromPicker wallet={{connected:false}} onConnect={()=>setMessage('The host opens its wallet connection')} generateAddress={checked} onGenerateAddressChange={setChecked} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'8453-aero',symbol:'AERO',name:'Aerodrome',chain:'Base',chainId:8453},{id:'8453-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Base',chainId:8453},{id:'42161-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Arbitrum',chainId:42161}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+      "native": "<C.FromPicker wallet={{connected:false}} onConnect={()=>setMessage('The host opens its wallet connection')} generateAddress={checked} onGenerateAddressChange={setChecked} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'8453-aero',symbol:'AERO',name:'Aerodrome',chain:'Base',chainId:8453},{id:'8453-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Base',chainId:8453},{id:'42161-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Arbitrum',chainId:42161}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+      "nativeSupport": "renderer",
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "states": [
+        "default",
+        "connected",
+        "no-logout",
+        "whitelist",
+        "empty"
+      ],
+      "variants": {
+        "connected": {
+          "web": "<C.FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={()=>setMessage('The host disconnects the wallet')} tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,balance:80.5,price:1}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+          "native": "<C.FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={()=>setMessage('The host disconnects the wallet')} tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,balance:80.5,price:1}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        },
+        "no-logout": {
+          "web": "<C.FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,balance:80.5,price:1}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+          "native": "<C.FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,balance:80.5,price:1}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        },
+        "whitelist": {
+          "web": "<C.FromPicker tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'1-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Ethereum',chainId:1}]} chainFilter={false} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+          "native": "<C.FromPicker tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'1-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Ethereum',chainId:1}]} chainFilter={false} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        },
+        "empty": {
+          "web": "<C.FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={()=>setMessage('The host disconnects the wallet')} tokens={[]} chains={[{chainId:1,name:'Ethereum'},{chainId:8453,name:'Base'},{chainId:42161,name:'Arbitrum'}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+          "native": "<C.FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={()=>setMessage('The host disconnects the wallet')} tokens={[]} chains={[{chainId:1,name:'Ethereum'},{chainId:8453,name:'Base'},{chainId:42161,name:'Arbitrum'}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        }
+      }
+    },
+    {
+      "name": "ToPicker",
+      "slug": "to-picker",
+      "entry": "recipes",
+      "family": "recipes",
+      "web": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')}/>",
+      "native": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')}/>",
+      "nativeSupport": "renderer",
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "states": [
+        "default",
+        "tokens",
+        "no-chain"
+      ],
+      "variants": {
+        "tokens": {
+          "web": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'8453-aero',symbol:'AERO',name:'Aerodrome',chain:'Base',chainId:8453},{id:'8453-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Base',chainId:8453},{id:'42161-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Arbitrum',chainId:42161}]} hotTokenIds={['1-apx','8453-aero']} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+          "native": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'8453-aero',symbol:'AERO',name:'Aerodrome',chain:'Base',chainId:8453},{id:'8453-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Base',chainId:8453},{id:'42161-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Arbitrum',chainId:42161}]} hotTokenIds={['1-apx','8453-aero']} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        },
+        "no-chain": {
+          "web": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'1-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Ethereum',chainId:1}]} chainFilter={false} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
+          "native": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'1-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Ethereum',chainId:1}]} chainFilter={false} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        }
+      }
+    },
+    {
       "name": "InstallCommand",
       "slug": "install-command",
       "entry": "recipes",
       "family": "recipes",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.4.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.4.0')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.4.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.1' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.5.1')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.1' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"

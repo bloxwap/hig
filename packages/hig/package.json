@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.4.0",
+  "version": "0.5.1",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",
@@ -9,6 +9,11 @@
       "types": "./tokens/dist/index.d.ts",
       "import": "./tokens/dist/index.js",
       "default": "./tokens/dist/index.js"
+    },
+    "./tokens/brand": {
+      "types": "./tokens/dist/brand.d.ts",
+      "import": "./tokens/dist/brand.js",
+      "default": "./tokens/dist/brand.js"
     },
     "./tokens/css": {
       "types": "./css.d.ts",
@@ -135,6 +140,11 @@
       "import": "./react/dist/status.js",
       "default": "./react/dist/status.js"
     },
+    "./react/toast": {
+      "types": "./react/dist/toast.d.ts",
+      "import": "./react/dist/toast.js",
+      "default": "./react/dist/toast.js"
+    },
     "./react/data": {
       "types": "./react/dist/data.d.ts",
       "import": "./react/dist/data.js",
@@ -164,6 +174,21 @@
       "types": "./react/dist/recipes/trade-entry.d.ts",
       "import": "./react/dist/recipes/trade-entry.js",
       "default": "./react/dist/recipes/trade-entry.js"
+    },
+    "./react/recipes/swap-panel": {
+      "types": "./react/dist/recipes/swap-panel.d.ts",
+      "import": "./react/dist/recipes/swap-panel.js",
+      "default": "./react/dist/recipes/swap-panel.js"
+    },
+    "./react/recipes/pickers": {
+      "types": "./react/dist/recipes/pickers.d.ts",
+      "import": "./react/dist/recipes/pickers.js",
+      "default": "./react/dist/recipes/pickers.js"
+    },
+    "./react/recipes/swap-sheet": {
+      "types": "./react/dist/recipes/swap-sheet.d.ts",
+      "import": "./react/dist/recipes/swap-sheet.js",
+      "default": "./react/dist/recipes/swap-sheet.js"
     },
     "./react/recipes/install-command": {
       "types": "./react/dist/recipes/install-command.d.ts",
@@ -198,6 +223,11 @@
       "import": "./react/dist/animated-number.js",
       "default": "./react/dist/animated-number.js"
     },
+    "./react/wallet-address": {
+      "types": "./react/dist/wallet-address.d.ts",
+      "import": "./react/dist/wallet-address.js",
+      "default": "./react/dist/wallet-address.js"
+    },
     "./react/gesture-sheet": {
       "types": "./react/dist/gesture-sheet.d.ts",
       "import": "./react/dist/gesture-sheet.js",
@@ -207,6 +237,21 @@
       "types": "./chart/dist/index.d.ts",
       "import": "./chart/dist/index.js",
       "default": "./chart/dist/index.js"
+    },
+    "./native/wallet-address": {
+      "types": "./native/dist/wallet-address.d.ts",
+      "import": "./native/dist/wallet-address.js",
+      "default": "./native/dist/wallet-address.js"
+    },
+    "./native/pickers": {
+      "types": "./native/dist/pickers.d.ts",
+      "import": "./native/dist/pickers.js",
+      "default": "./native/dist/pickers.js"
+    },
+    "./native/swap-sheet": {
+      "types": "./native/dist/swap-sheet.d.ts",
+      "import": "./native/dist/swap-sheet.js",
+      "default": "./native/dist/swap-sheet.js"
     },
     "./native/provider": {
       "types": "./native/dist/provider.d.ts",
@@ -338,8 +383,8 @@
   ],
   "peerDependencies": {
     "react": "^19.1.0",
-    "@bloxwap/sfx": "^0.2.0",
-    "@bloxwap/haptic": "^0.2.0 || ^0.3.0",
+    "@bloxwap/sfx": "^0.2.0 || ^0.3.0",
+    "@bloxwap/haptic": "^0.2.0 || ^0.3.0 || ^0.4.0",
     "expo-audio": "~1.1.1 || ~55.0.18 || ~58.0.10",
     "expo-haptics": "~15.0.7 || ~55.0.18 || ~58.0.7",
     "react-dom": "^19.1.0",
@@ -348,7 +393,9 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
     "vaul": "^1.1.2",
-    "@bloxwap/chart": "^0.3.0 || ^0.4.0",
+    "sonner": "^2.0.0",
+    "cuer": ">=0.0.3 <0.1.0",
+    "@bloxwap/chart": "^0.3.0 || ^0.4.0 || ^0.5.0",
     "react-native": "^0.81.5 || ^0.83.10 || ^0.88.0",
     "react-native-svg": "15.12.1 || 15.15.3 || 15.16.0",
     "@react-native-community/slider": "5.0.1 || 5.1.2 || 5.2.1",
@@ -390,6 +437,12 @@
       "optional": true
     },
     "vaul": {
+      "optional": true
+    },
+    "sonner": {
+      "optional": true
+    },
+    "cuer": {
       "optional": true
     },
     "react-native": {

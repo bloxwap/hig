@@ -152,7 +152,7 @@ it('preserves host card geometry, measured handles, backgrounds and imperative m
  expect(node.props.animateOnMount).toBe(false);expect(node.props.animationConfigs).toBe(animationConfigs);expect(node.props.backdropComponent).toBe(Backdrop);expect(node.props.overrideReduceMotion).toBe('always');
  expect(node.props.handleComponent).toBe(Handle);expect(node.props.backgroundComponent).toBe(Background);
  expect(StyleSheet.flatten(node.props.backgroundStyle)).toMatchObject({borderTopLeftRadius:55,borderRadius:require('@bloxwap/hig/tokens').nativeMetrics.radius.xl});
- expect(StyleSheet.flatten(node.props.backgroundStyle).backgroundColor).toBe(require('@bloxwap/hig/tokens').nativeSrgb.surface);
+ expect(StyleSheet.flatten(node.props.backgroundStyle).backgroundColor).toBe(require('@bloxwap/hig/tokens').nativeSrgb.overlay);
  expect(StyleSheet.flatten(node.props.handleStyle)).toEqual({paddingTop:12,paddingBottom:8});
  expect(StyleSheet.flatten(node.props.handleIndicatorStyle)).toMatchObject({height:6,width:100});
  expect(modalRef.current).toBe(backend.methods);

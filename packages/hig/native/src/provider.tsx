@@ -43,9 +43,16 @@ export function HIGProvider({children,density='comfortable',locale='en-US',direc
  return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,fontFamily,fontFamilies,fontFamiliesByScript:fontFamiliesByScript??parent.fontFamiliesByScript,monoFontFamily,maxFontSizeMultiplier,letterSpacingByScript,colorSpace:space,primaryColor:normalized,marketColors:inheritedMarket,messages:resolved}}><ColorsContext.Provider value={colors}>{children}</ColorsContext.Provider></Context.Provider>;
 }
 export const useHIG=()=>useContext(Context);
+const RaisedContext=createContext(false);
+/** Marks content that sits on a Surface, Dialog or sheet. HIG has no resting strokes, so wells inside step up one fill to stay visible. */
+export function Raised({children}:React.PropsWithChildren){return <RaisedContext.Provider value={true}>{children}</RaisedContext.Provider>;}
+/** Fills for the current elevation: `well` for inputs, tracks and neutral chips; `raised` for what sits on a well (a selected segment). On the page they are `surface` and `nested`; inside a Surface, Dialog or sheet, `nested` and `border`. */
+export function useFills():{well:string;raised:string}{const colors=useContext(ColorsContext);return useContext(RaisedContext)?{well:colors.nested,raised:colors.border}:{well:colors.surface,raised:colors.nested};}
 /** The nearest HIGProvider's colour table (sRGB by default). Every HIG native component paints through this; hosts may read it for their own views. */
 export function useColors():HIGColors{return useContext(ColorsContext);}
 /** Approved Bloxwap brand colours in the host's colour space, independent of a product accent. */
+/** The colour space this subtree actually paints in: `display-p3` only when a provider asked for it on iOS, as in `colorTable`; otherwise `srgb`. */
+export function useColorSpace():HIGColorSpace{return useContext(Context).colorSpace==='display-p3'&&Platform.OS==='ios'?'display-p3':'srgb';}
 export function useBrandColors():Readonly<Record<HIGTableColorRole,string>>{return colorTable(useContext(Context).colorSpace);}
 /** Complete built-in copy for the nearest HIGProvider: host translations over the English defaults. */
 export function useMessages():HIGMessages{const overrides=useContext(Context).messages;return useMemo(()=>resolveMessages({...defaultMessages},overrides),[overrides]);}

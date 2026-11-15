@@ -10,14 +10,18 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. The busy suffix (` · Working`) comes from HIGProvider `messages.busy` or `busyLabel`; `''` hides it while busy state stays exposed. Native: the label and suffix render through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](../foundations/localization.md#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. A busy Button shows a spinner on the leading side of its label; a busy IconButton shows the spinner in place of its icon. The busy text (` · Working`) is not drawn: it is appended to the accessible name from HIGProvider `messages.busy` or `busyLabel`; `''` omits it while busy state stays exposed. Native: the label renders through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](../foundations/localization.md#built-in-component-strings)); an explicit `accessibilityLabel` wins. |
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
 
 ## When to use and examples
 
-Use one primary review action. Do: busy protects host requests and displays the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
+Actions that sit side by side are 8 units apart at every density: buttons in an Alert, tabs, Pagination, Filter capsules and the SwapPanel action row. On web that is the `--hig-action-gap` variable (the `sm` space token); set it on a container to change it. Content inside `Stack` and `Inline` keeps the density gap (12 on touch, 8 compact), so put a row of buttons in a container that uses `--hig-action-gap`, not a bare `Inline`.
+
+The primary and secondary call-to-action buttons that close a form sit a double step below the rest of it: 16 units (`--hig-action-offset`, twice the action gap), and 8 units from each other. TradeEntry, the SwapPanel action row, and the buttons that end a Dialog or a default sheet follow this already. In a host form laid out with `Stack`, add `className='hig-form-action'` to each closing button on web, or a 4dp top margin on native, where the `Stack` gap is 12.
+
+Use one primary review action. Do: busy protects host requests, shows the leading spinner and announces the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 
 ## States, interaction and accessibility
 

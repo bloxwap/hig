@@ -22,6 +22,9 @@ export const tokens = {
       "srgb": "#262626",
       "oklch": "oklch(0.269 0 0)"
     },
+    "overlay": {
+      "srgb": "#111111"
+    },
     "text": {
       "srgb": "#fafafa",
       "oklch": "oklch(0.985 0 0)"
@@ -202,6 +205,7 @@ export const nativeSrgb = {
   "background": "#0a0a0a",
   "surface": "#171717",
   "nested": "#262626",
+  "overlay": "#111111",
   "text": "#fafafa",
   "muted": "#a1a1a1",
   "faint": "#858585",
@@ -221,6 +225,7 @@ export const nativeDisplayP3 = {
   "background": "#0a0a0a",
   "surface": "#171717",
   "nested": "#262626",
+  "overlay": "#111111",
   "text": "#fafafa",
   "muted": "#a1a1a1",
   "faint": "#858585",
@@ -377,6 +382,7 @@ export const nativeColors = {
     "background": "#0a0a0a",
     "surface": "#171717",
     "nested": "#262626",
+    "overlay": "#111111",
     "text": "#fafafa",
     "muted": "#a1a1a1",
     "faint": "#858585",
@@ -395,6 +401,7 @@ export const nativeColors = {
     "background": "#0a0a0a",
     "surface": "#171717",
     "nested": "#262626",
+    "overlay": "#111111",
     "text": "#fafafa",
     "muted": "#a1a1a1",
     "faint": "#858585",

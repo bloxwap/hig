@@ -12,7 +12,7 @@ for(const platform of ['react','native']){
  const dependencies={...JSON.parse(readFileSync(`fixtures/${platform==='react'?'web':'native'}/package.json`)).dependencies};
  delete dependencies['@bloxwap/hig'];
  // PriceChart comes from @bloxwap/hig/chart, whose @bloxwap/chart peer is required (#96).
- if(platform==='react')dependencies['@bloxwap/chart']='0.4.0';
+ if(platform==='react')dependencies['@bloxwap/chart']='0.5.0';
  const devDependencies={typescript:'5.9.3','@types/react':'19.1.16','@types/node':'22.18.10',...(platform==='react'?{'@types/react-dom':'19.1.9'}:{})};
  writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module',dependencies,devDependencies}));
  const tarballs=[packedTarball()];

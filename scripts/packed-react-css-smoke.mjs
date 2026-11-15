@@ -105,14 +105,15 @@ try{
    assert.equal(base.plainFocus.outlineOffset,'3px',`${engine}: base offsets the HIG ring on a plain button`);
    assert.notDeepEqual(base.plainFocus,control.plainFocus,`${engine}: base changes the plain focus ring`);
    // 3. Components keep their styling without the base.
-   assert.equal(hig.hig['hig .hig-table th'].paddingTop,'12px',`${engine}: Table header cells keep 12px padding`);
+   assert.equal(hig.hig['hig .hig-table th'].paddingTop,'16px',`${engine}: Table header cells keep 16px top padding`);
    assert.equal(hig.hig['hig .hig-table'].borderCollapse,'separate',`${engine}: Table keeps separated borders (cells draw their own dividers)`);
    assert.equal(hig.hig['hig .hig-table'].borderSpacing,'0px',`${engine}: Table keeps zero border spacing`);
    assert.equal(hig.hig['hig .hig-range'].minHeight,'48px',`${engine}: Slider keeps its 48px target`);
    assert.equal(hig.hig['hig-button'].boxSizing,'border-box',`${engine}: HIG elements keep border-box`);
-   for(const side of ['borderInlineStartWidth','borderTopWidth','borderInlineEndWidth','borderBottomWidth'])assert.equal(hig.hig['hig [data-severity]'][side],'2px',`${engine}: Alert keeps its full severity frame (${side})`);
-   assert.equal(hig.hig['hig [data-severity]'].borderInlineStartStyle,'solid',`${engine}: Alert keeps its severity border`);
-   assert.notEqual(hig.hig['hig [data-severity]'].boxShadow,'none',`${engine}: Alert keeps its severity glow`);
+   // Alerts tint from their severity role with no stroke or glow: the 1px border is the transparent one every surface keeps in its box.
+   for(const side of ['borderInlineStartWidth','borderTopWidth','borderInlineEndWidth','borderBottomWidth'])assert.equal(hig.hig['hig [data-severity]'][side],'1px',`${engine}: Alert keeps the surface's 1px box border (${side})`);
+   assert.equal(hig.hig['hig [data-severity]'].borderInlineStartStyle,'solid',`${engine}: Alert keeps its box border style`);
+   assert.equal(hig.hig['hig [data-severity]'].boxShadow,'none',`${engine}: Alert has no severity glow`);
    assert.equal(hig.higFocus.outlineWidth,'2px',`${engine}: HIG button keeps the focus ring`);
    assert.equal(hig.higFocus.outlineOffset,'3px',`${engine}: HIG button keeps the ring offset`);
    assert.deepEqual(hig.hig,base.hig,`${engine}: HIG components compute differently with and without the base`);

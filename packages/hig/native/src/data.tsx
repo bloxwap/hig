@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList,View,StyleSheet,type StyleProp,type TextStyle} from 'react-native';
+import {FlatList,Platform,View,StyleSheet,type StyleProp,type TextStyle} from 'react-native';
 import {formatNumberReadout} from './animated-number-model.js';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useHIG} from './provider.js';
@@ -28,3 +28,20 @@ export interface ListProps<T> {items:readonly T[];keyFor:(item:T)=>string;render
 export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){const {messages}=useHIG();return <FlatList data={items} accessibilityLabel={label} accessibilityState={{busy:loading}} keyExtractor={keyFor} renderItem={({item})=><View>{render(item)}</View>} ItemSeparatorComponent={Separator}
  ListEmptyComponent={!loading&&!error?<Text>{empty??messages.noItems??en.noItems}</Text>:null}
  ListFooterComponent={<View style={{gap:12,paddingTop:loading||error||onLoadMore?12:0}}>{loading&&<Text accessibilityLiveRegion='polite'>{messages.loadingItems??en.loadingItems}</Text>}{error&&<View style={{gap:12}}><Text accessibilityRole='alert'>{error}</Text>{onRetry&&<Button disabled={loading} onPress={onRetry}>{messages.retry??en.retry}</Button>}</View>}{onLoadMore&&<Button disabled={loading} onPress={onLoadMore}>{messages.loadMore??en.loadMore}</Button>}</View>}/>;}
+export type AddressKind='ethereum'|'solana';
+/** `0x…` is Ethereum-style (EVM); anything else lays out as Solana (base58). */
+export function addressKind(address:string):AddressKind{return address.startsWith('0x')?'ethereum':'solana';}
+/** The address in fixed-width rows: 6 characters for Ethereum (42 characters make 7 rows), 4 for Solana (44 make 11). `anchor` marks the leading row and the trailing 4 characters, the ones people compare. */
+export function addressRows(address:string,kind:AddressKind=addressKind(address)):{character:string;anchor:boolean}[][]{
+ const size=kind==='ethereum'?6:4,tail=address.length-4,rows:{character:string;anchor:boolean}[][]=[];
+ for(let index=0;index<address.length;index+=size)rows.push(Array.from(address.slice(index,index+size)).map((character,offset)=>({character,anchor:index+offset<size||index+offset>=tail})));
+ return rows;
+}
+export interface VerticalAddressProps {address:string;kind?:AddressKind;/** Row height in dp; the font size follows it. */rowHeight?:number;testID?:string}
+/** A wallet address as a monospace column: the anchor characters in `text` at weight 600, the middle in `muted`. One selectable text element named by the whole address, always left to right. */
+export function VerticalAddress({address,kind,rowHeight=22,testID}:VerticalAddressProps){
+ const env=useHIG();const colors=useColors();const mono=env.monoFontFamily??Platform.select({ios:'Menlo',default:'monospace'});const rows=addressRows(address,kind);
+ // HIG Text sets its own body size, so each character carries the row's type size instead of inheriting it.
+ const type={fontFamily:mono,fontSize:Math.round(rowHeight/1.1*10)/10,lineHeight:rowHeight,letterSpacing:1};
+ return <Text selectable accessibilityLabel={address} testID={testID} maxFontSizeMultiplier={1.2} style={{...type,fontVariant:['tabular-nums'],writingDirection:'ltr',textAlign:'left'}}>{rows.map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((cell,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:cell.anchor?colors.text:colors.muted,fontWeight:cell.anchor?'600':'500'}}>{cell.character}</Text>)}</React.Fragment>)}</Text>;
+}

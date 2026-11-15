@@ -19,7 +19,7 @@ try{for(const [engine,launcher] of Object.entries({chromium,webkit})){
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   const control=page.getByRole('button',{name:'Open account',exact:true});await control.waitFor();
   const rootBox=await control.boundingBox(),identity=await page.getByTestId('account-identity').boundingBox(),trailing=await page.getByTestId('account-trailing').boundingBox();
-  assert.ok(rootBox.height>=48);assert.ok(Math.abs(identity.x-(rootBox.x+16))<=1);assert.ok(Math.abs(trailing.x+trailing.width-(rootBox.x+rootBox.width-16))<=1);
+  assert.ok(rootBox.height>=44);assert.ok(Math.abs(identity.x-(rootBox.x+16))<=1);assert.ok(Math.abs(trailing.x+trailing.width-(rootBox.x+rootBox.width-16))<=1);
   await control.click();await page.getByTestId('action-count').filter({hasText:'Actions: 1'}).waitFor();
   await control.focus();await page.keyboard.press('Enter');await page.getByTestId('action-count').filter({hasText:'Actions: 2'}).waitFor();
   const link=page.getByRole('link',{name:'Terms',exact:true}),url=page.url();assert.equal(await link.count(),1);

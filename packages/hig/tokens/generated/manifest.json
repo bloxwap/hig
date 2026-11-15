@@ -20,6 +20,9 @@
       "srgb": "#262626",
       "oklch": "oklch(0.269 0 0)"
     },
+    "overlay": {
+      "srgb": "#111111"
+    },
     "text": {
       "srgb": "#fafafa",
       "oklch": "oklch(0.985 0 0)"

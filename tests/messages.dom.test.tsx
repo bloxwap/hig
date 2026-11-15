@@ -22,10 +22,11 @@ describe('translated built-in strings (web)',()=>{
   expect(within(screen.getByRole('dialog')).getByRole('button',{name:'Close'})).toBeTruthy();
   cleanup();
   render(<><Toast notices={[{id:'1',message:'Copied',severity:'success'}]} onDismiss={()=>{}}/><Button busy>Confirm</Button></>);
-  expect(screen.getByRole('button',{name:'Dismiss Copied'}).textContent).toBe('Dismiss');
+  // The close control draws a symbol; its wording lives in the accessible name only.
+  expect(screen.getByRole('button',{name:'Dismiss Copied'}).textContent).toBe('');
   expect(screen.getByRole('button',{name:'Confirm · Working'})).toBeTruthy();
  });
- it('uses provider messages for Close, Cancel, Dismiss and busy with visible text equal to the accessible name',async()=>{
+ it('uses provider messages for Close, Cancel, Dismiss and busy in visible text and accessible names',async()=>{
   const dismiss=vi.fn();
   render(<HIGProvider locale='fr-FR' messages={fr}><Dialog open onOpenChange={()=>{}} title='Vérifier' description='Montant'><p/></Dialog></HIGProvider>);
   const close=within(screen.getByRole('dialog')).getByRole('button',{name:'Fermer'});
@@ -33,8 +34,8 @@ describe('translated built-in strings (web)',()=>{
   cleanup();
   render(<HIGProvider locale='fr-FR' messages={fr}><Toast notices={notices} onDismiss={dismiss}/><Button busy>Confirmer</Button><Popover label='Aide'><p>Texte</p></Popover></HIGProvider>);
   const ignore=screen.getByRole('button',{name:'Ignorer : Copié'});
-  expect(ignore.textContent).toBe('Ignorer');
-  expect(ignore.getAttribute('aria-label')).toContain(ignore.textContent);
+  expect(ignore.textContent).toBe('');
+  expect(ignore.getAttribute('aria-label')).toContain('Ignorer');
   await userEvent.click(ignore);expect(dismiss).toHaveBeenCalledWith('1');
   const busy=screen.getByRole('button',{name:'Confirmer · En cours'});
   expect(busy.getAttribute('aria-busy')).toBe('true');
@@ -55,7 +56,7 @@ describe('translated built-in strings (web)',()=>{
   cleanup();
   render(<HIGProvider locale='ar-EG' direction='rtl' messages={ar}><Toast notices={[{id:'1',message:'تم النسخ',severity:'success'}]} onDismiss={()=>{}}/><Pagination page={2} total={10} onPageChange={()=>{}}/></HIGProvider>);
   const dismiss=screen.getByRole('button',{name:'تجاهل تم النسخ'});
-  expect(dismiss.textContent).toBe('تجاهل');expect(dismiss.closest('[dir]')?.getAttribute('dir')).toBe('rtl');
+  expect(dismiss.getAttribute('aria-label')).toContain('تجاهل');expect(dismiss.closest('[dir]')?.getAttribute('dir')).toBe('rtl');
   const nav=screen.getByRole('navigation',{name:'ترقيم الصفحات'});
   expect(within(nav).getByText('الصفحة ٢ من ١٠')).toBeTruthy();
   expect(within(nav).getByRole('button',{name:'السابق'})).toBeTruthy();
@@ -70,7 +71,7 @@ describe('translated built-in strings (web)',()=>{
   expect(within(dialog).getByRole('button',{name:'Payer · Envoi'})).toBeTruthy();
   cleanup();
   render(<HIGProvider messages={fr}><Toast notices={notices} onDismiss={()=>{}} dismissLabel='Masquer'/></HIGProvider>);
-  const masked=screen.getByRole('button',{name:'Masquer : Copié'});expect(masked.textContent).toBe('Masquer');
+  const masked=screen.getByRole('button',{name:'Masquer : Copié'});expect(masked.getAttribute('aria-label')).toContain('Masquer');
  });
  it('keeps translations through nested providers and translates markers in visible text and names',()=>{
   function Probe(){return <output>{useMessages().close}</output>;}

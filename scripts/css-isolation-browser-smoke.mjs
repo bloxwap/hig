@@ -14,7 +14,7 @@ try{
  await page.addStyleTag({content:readFileSync('packages/hig/react/dist/styles.css','utf8')});
  assert.deepEqual(await sample(),before,'Importing HIG component CSS must not restyle host elements');
  await page.addStyleTag({content:readFileSync('packages/hig/tokens/generated/tokens.css','utf8')});
- assert.equal(await page.locator('.hig-table > tbody > tr > td').evaluate(element=>getComputedStyle(element).padding),'12px');
+ assert.equal(await page.locator('.hig-table > tbody > tr > td').evaluate(element=>getComputedStyle(element).padding),'14px 20px');
  assert.equal(await page.locator('.hig-button').evaluate(element=>getComputedStyle(element).boxSizing),'border-box');
  await page.addStyleTag({content:readFileSync('packages/hig/react/dist/base.css','utf8')});
  assert.equal(await page.locator('#plain-button').evaluate(element=>getComputedStyle(element).outlineWidth),'2px','Global focus defaults require css/base opt-in');
