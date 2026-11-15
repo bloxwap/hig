@@ -27,7 +27,7 @@ export interface PickerListProps {
  autoFocus?:boolean;
 }
 /** Chains present in a token list, in first-seen order. */
-function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:token.chainIcon});return [...seen.values()];}
+function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}
 function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,side,title}:PickerListProps&{side:'from'|'to';title:string}){
  const {locale,direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();const window=useWindowDimensions();
  // A sheet passes its backend's list through the host context so drags hand off to the sheet.

@@ -6,8 +6,10 @@ export interface SwapToken {
  id:string;symbol:string;name:string;
  /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */
  chain:string;chainId:string|number;
- /** Image URLs. A missing token icon falls back to the symbol's first letters. */
- icon?:string;chainIcon?:string;
+ /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */
+ icon?:SwapArtwork;chainIcon?:SwapArtwork;
+ /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */
+ decimals?:number;
  /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */
  balance?:number|null;
  /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */
@@ -17,6 +19,10 @@ export interface SwapToken {
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
 }
+/** An image URL, or an element the host draws. */
+export type SwapArtwork=string|React.ReactElement;
+/** Artwork in a disc: the URL as an image, the host's element inside a clipped wrapper. */
+export const swapArt=(icon:SwapArtwork,className?:string,lazy?:boolean)=>typeof icon==='string'?<img className={className} src={icon} alt='' loading={lazy?'lazy':undefined}/>:<span className={`hig-swap-art${className?` ${className}`:''}`} aria-hidden='true'>{icon}</span>;
 export interface SwapChain {chainId:string|number;name:string;icon?:string}
 /** Same asset: send. Different asset on one chain: swap. Different asset across chains: bridge. */
 export type SwapAction='send'|'swap'|'bridge';
@@ -39,13 +45,14 @@ export function unitsToEntry(units:number,mode:SwapDenomination,price:number):st
  if(mode==='token')return trimNumber(units);
  return price>0?String(Math.floor(units*price*100)/100):'0';
 }
-/** Applies one keypad or keyboard key (`0`–`9`, `.`, `back`) to an amount string. Dollars stop at two decimals. */
-export function applyAmountKey(current:string,key:string,mode:SwapDenomination):string{
+/** Applies one keypad or keyboard key (`0`–`9`, `.`, `back`) to an amount string. Dollars stop at two decimals, token units at `decimals` when given. */
+export function applyAmountKey(current:string,key:string,mode:SwapDenomination,decimals?:number):string{
  if(key==='back')return current.length<=1?'0':current.slice(0,-1);
  if(key==='.')return current.includes('.')?current:`${current}.`;
  if(!/^[0-9]$/.test(key))return current;
  const next=sanitizeAmount(current==='0'?key:current+key);const dot=next.indexOf('.');
- return mode==='usd'&&dot!==-1&&next.length-dot-1>2?current:next;
+ const limit=mode==='usd'?2:decimals;
+ return limit!==undefined&&dot!==-1&&next.length-dot-1>limit?current:next;
 }
 /** Case-insensitive substring or in-order subsequence match. */
 export function fuzzyMatch(query:string,text:string):boolean{
@@ -90,11 +97,12 @@ const paths={
 export type SwapIconName=keyof typeof paths;
 /** Outline symbol on a 20 unit grid; decorative, so the control that holds it carries the name. */
 export function SwapIcon({name,size=20}:{name:SwapIconName;size?:number}){return <svg className='hig-swap-icon' aria-hidden='true' focusable='false' width={size} height={size} viewBox='0 0 20 20' {...stroke}>{paths[name]}</svg>;}
+const chainBadge='hig-swap-chain-badge';
 /** Token artwork with its chain badge. */
 export function TokenIcon({token,size=44}:{token:SwapToken;size?:number}){
  return <span className='hig-swap-token-icon' style={{width:size,height:size}}>
-  {token.icon?<img src={token.icon} alt='' loading='lazy'/>:<span aria-hidden='true'>{token.symbol.slice(0,3)}</span>}
-  {token.chainIcon&&<img className='hig-swap-chain-badge' src={token.chainIcon} alt='' loading='lazy'/>}
+  {token.icon?swapArt(token.icon,undefined,true):<span aria-hidden='true'>{token.symbol.slice(0,3)}</span>}
+  {token.chainIcon&&swapArt(token.chainIcon,chainBadge,true)}
  </span>;
 }
 /** Small capsule action that sits on a card: Max, Test, the slippage setting and the denomination switch. */
@@ -105,7 +113,7 @@ export function SwapKeypad({onKey,label,deleteLabel}:{onKey:(key:string)=>void;l
  return <div className='hig-swap-keypad' role='group' aria-label={label}>{keys.map(key=><button key={key} type='button' className='hig-swap-key' aria-label={key==='back'?deleteLabel:undefined} onClick={()=>onKey(key)}>{key==='back'?<SwapIcon name='delete' size={24}/>:key}</button>)}</div>;
 }
 /** Chains present in a token list, in first-seen order. */
-export function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:token.chainIcon});return [...seen.values()];}
+export function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}
 export type SwapView='main'|'from'|'to'|'settings'|'slippage'|'fees';
 /** Where Back leads from a pushed view. */
 export const parentView=(view:SwapView):SwapView=>view==='slippage'||view==='fees'?'settings':'main';

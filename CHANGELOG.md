@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+SwapPanel takes the last host rules that kept apps on their own amount sheets (web and native).
+
+- `actionDisabled` holds the action for a host reason and `actionStatus` names it; the panel's own prompts (a token, an amount, the balance) still come first. `actionIntent='destructive'` draws the action as destructive.
+- `SwapToken.decimals` caps the decimal places typed in token units. `limitToBalance` refuses a key that would pass the From balance.
+- `SwapToken.icon`, `SwapToken.chainIcon` and `SwapDestination.icon` take an image URL or a host element (`SwapArtwork`).
+- `banner` renders above the From card and `footer` under the action.
+- Native: `SwapKeypad` and `SwapCapsule` are exported from `@bloxwap/hig/native/recipes`, as the web recipe already exports its keypad and pill.
+
 ## 0.5.1
 
 - The brand mark has its own canonical source (#201). `npm run generate` reads the approved SVG's geometry and fills into the new `@bloxwap/hig/tokens/brand` entry (`brandMark`: view box, radius, stroke, paths, and sRGB and Display P3 fills), and the web and native `BrandMark` draw from it. Rendering is unchanged. The two `copied-palette` drift exceptions are deleted, so nothing expires. Native: `useColorSpace()` from `@bloxwap/hig/native/provider` returns the colour space a subtree paints in.

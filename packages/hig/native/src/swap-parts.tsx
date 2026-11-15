@@ -4,7 +4,7 @@ import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Heading,Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
-import type {SwapToken} from './swap-shared.js';
+import type {SwapArtwork,SwapToken} from './swap-shared.js';
 /** What a host surface supplies to the swap views: a sheet passes its backend's list so drags hand off to the sheet, and turns off the panel's own height animation. */
 export const SwapHostContext=createContext<{listComponent?:React.ComponentType<FlatListProps<SwapToken>>;animateHeight?:boolean}>({});
 // Outline symbols drawn from plain views, like ./icons: decorative, so the control that holds them carries the name.
@@ -30,9 +30,10 @@ export function WalletIcon({color}: {color:string}){return <View {...hidden} sty
 export function LockIcon({color}: {color:string}){return <View {...hidden} style={{width:16,height:16,alignItems:'center',justifyContent:'flex-end'}}><View style={{width:8,height:7,borderTopLeftRadius:4,borderTopRightRadius:4,borderWidth:stroke,borderBottomWidth:0,borderColor:color}}/><View style={{width:12,height:8,borderRadius:2,borderWidth:stroke,borderColor:color}}/></View>;}
 /** A doorway with an arrow leaving it. */
 export function LeaveIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,flexDirection:'row',alignItems:'center'}}><View style={{width:8,height:14,borderWidth:stroke,borderRightWidth:0,borderColor:color,borderTopLeftRadius:3,borderBottomLeftRadius:3}}/><View style={{width:9,height:stroke,borderRadius:stroke,backgroundColor:color,marginStart:-2}}/><View style={{width:5,height:5,borderRightWidth:stroke,borderTopWidth:stroke,borderColor:color,marginStart:-5,transform:[{rotate:'45deg'}]}}/></View>;}
-/** Circular artwork from a URL, or the symbol's first letters when the host has none. */
-export function TokenArt({uri,symbol,size,ring}: {uri?:string;symbol?:string;size:number;ring?:string}){
+/** Circular artwork from a URL or the host's own element, or the symbol's first letters when the host has none. */
+export function TokenArt({uri,symbol,size,ring}: {uri?:SwapArtwork;symbol?:string;size:number;ring?:string}){
  const colors=useColors();const shape:ViewStyle={width:size,height:size,borderRadius:size/2,backgroundColor:colors.nested,...(ring?{borderWidth:2,borderColor:ring}:{})};
+ if(uri&&typeof uri!=='string')return <View style={[shape,centre,{overflow:'hidden'}]}>{uri}</View>;
  return uri?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri}} style={shape as object}/>:<View style={[shape,centre]}>{symbol?<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:size>=40?12:9,lineHeight:size>=40?16:12,fontWeight:'600',color:colors.muted}}>{symbol.slice(0,3)}</Text>:null}</View>;
 }
 /** Token artwork with its chain badge. */

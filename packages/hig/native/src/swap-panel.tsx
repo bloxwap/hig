@@ -10,8 +10,8 @@ import {VerticalAddress,addressKind} from './data.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHeader,SwapHostContext,SwapKeypad,TokenArt} from './swap-parts.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
-import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
-export {swapAction,swapParentView,type SwapAction,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
+import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
+export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 /** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet, and sizes itself, so the panel does not animate its own height. */
 export {SwapHostContext} from './swap-parts.js';
 /** A fixed place the assets go, in place of a token the user picks: a wallet, a staking pool, a trading account. Shown as a compact To card with no amount. */
@@ -19,8 +19,8 @@ export interface SwapDestination {
  title:string;
  /** One muted line under the title, such as the chain or a rate. */
  subtitle?:string;
- /** Image URL. Without one, `address` draws the wallet's colour disc. */
- icon?:string;
+ /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */
+ icon?:SwapArtwork;
  /** A wallet address; shown shortened under the subtitle. */
  address?:string;
  /** Muted trailing text, such as an arrival time or a rate. */
@@ -84,6 +84,18 @@ export interface SwapPanelProps {
  lockFrom?:boolean;lockTo?:boolean;
  /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */
  actionLabel?:string;
+ /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */
+ actionDisabled?:boolean;
+ /** What the held action says, for example “Below minimum”. Without it the action keeps its ready name. */
+ actionStatus?:string;
+ /** `destructive` for an action that cannot be undone, such as a burn. */
+ actionIntent?:'primary'|'destructive';
+ /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */
+ limitToBalance?:boolean;
+ /** Host content above the From card, such as a pending transfer. */
+ banner?:React.ReactNode;
+ /** Host content under the action, such as recent activity. */
+ footer?:React.ReactNode;
  /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */
  oneWay?:boolean;
  keypad?:'auto'|'always'|'never';
@@ -104,7 +116,7 @@ export interface SwapPanelProps {
  * or token units through the keypad, token pickers, settings, and one action that names itself from the chosen pair.
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
-export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelProps){
+export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelProps){
  const env=useHIG();const {locale,direction}=env;const colors=useColors();const t=useMessages();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
@@ -133,12 +145,15 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const insufficient=!!from&&(from.balance??0)>0&&units>(from.balance??0);
  // A destination or a details card stands in for the To token: one way, and ready from the From side alone.
  const fixed=!!destination||(!!details&&!to);const oneWay=oneWayProp||fixed;
- const ready=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;
- const actionText=showReceive?t.swapSendFromWallet:!from||(!to&&!fixed)?t.swapChooseToken:destination?.pending?t.swapChooseDestination:units<=0?t.swapEnterAmount:insufficient?t.swapInsufficient(from.symbol):actionLabel??(action==='swap'&&!fixed?t.swapActionSwap:action==='bridge'&&!fixed?t.swapActionBridge:t.swapActionSend);
+ const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
+ const actionText=showReceive?t.swapSendFromWallet:!from||(!to&&!fixed)?t.swapChooseToken:destination?.pending?t.swapChooseDestination:units<=0?t.swapEnterAmount:insufficient?t.swapInsufficient(from.symbol):actionDisabled&&actionStatus?actionStatus:actionLabel??(action==='swap'&&!fixed?t.swapActionSwap:action==='bridge'&&!fixed?t.swapActionBridge:t.swapActionSend);
  const pristine=(lockFrom||!from)&&(lockTo||!to)&&input===0;
  // Updater form: several keys can land before the next render, and each must build on the last.
  const latest=useRef(fromMode);latest.current=fromMode;
- const press=(key:string)=>setEntry(current=>applyAmountKey(current,key,latest.current));
+ // Read at key time: several keys can land in one render.
+ const limits=useRef({decimals:from?.decimals,balance:from?.balance??0,price:from?.price??0,cap:limitToBalance});limits.current={decimals:from?.decimals,balance:from?.balance??0,price:from?.price??0,cap:limitToBalance};
+ const over=(next:string)=>{const {balance,price,cap}=limits.current;if(!cap||!(balance>0))return false;const value=Number(next)||0;return (latest.current==='token'?value:price>0?value/price:0)>balance;};
+ const press=(key:string)=>setEntry(current=>{const next=applyAmountKey(current,key,latest.current,limits.current.decimals);return key!=='back'&&over(next)?current:next;});
  const switchFromMode=(mode:SwapDenomination)=>{if(mode===fromMode)return;setEntry(mode==='usd'?trimNumber(usd,2):trimNumber(units));setFromMode(mode);};
  const changeDenomination=(mode:SwapDenomination)=>{setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
  // A new default applies to an untouched entry at once; a typed amount keeps its denomination until reset.
@@ -148,7 +163,7 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const submit=()=>{if(submitting)return;if(showReceive){onConnect?.();return;}if(ready)onSubmit(fixed?'send':action);};
  // A copied address shows as a transient toast capsule (about 4s, dismissible), announced the way Toast announces any notice.
  const copyAddress=()=>{if(!receive?.onCopy)return;Promise.resolve().then(receive.onCopy).then(()=>showNotice(t.addressCopied)).catch(()=>{/* The host adapter reports its own failure. */});};
- const chainList=useMemo(()=>{if(chains)return chains;const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:token.chainIcon});return [...seen.values()];},[chains,tokens]);
+ const chainList=useMemo(()=>{if(chains)return chains;const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];},[chains,tokens]);
  const usdText=(value:number)=>formatNumber(value,locale,{style:'currency',currency:'USD'});
  const fraction=entry.includes('.')?Math.min(entry.length-entry.indexOf('.')-1,fromMode==='usd'?2:8):0;
  const small={fontSize:14,lineHeight:19,color:colors.muted} as const;
@@ -239,6 +254,7 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
  const main=<View testID='swap-view-main'>
   {title?<View style={{marginBottom:12}}><SwapHeader title={title} onBack={onBack}/></View>:null}
+  {banner?<View testID='swap-banner' style={{marginBottom:8}}>{banner}</View>:null}
   {fromCard}
   <View style={{height:8,zIndex:1,alignItems:'center'}}>
    {/* A disc in the page colour breaks the seam between the cards; the control sits on it. */}
@@ -252,10 +268,11 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
   <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:16}}>
    {controls?<IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' onPress={()=>show('settings')}><MenuIcon color={colors.text}/></IconButton>:null}
    {/* Button lays its children in a row: the decorative icon rides before the label and adds nothing to the name. */}
-   <Button busy={submitting} disabled={!showReceive&&!ready} testID='swap-action' onPress={submit} style={{flex:1,alignSelf:'auto'}}>{actionIcon?<View key='icon' testID='swap-action-icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{actionIcon}</View>:null}{actionText}</Button>
+   <Button intent={actionIntent} busy={submitting} disabled={!showReceive&&!ready} testID='swap-action' onPress={submit} style={{flex:1,alignSelf:'auto'}}>{actionIcon?<View key='icon' testID='swap-action-icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{actionIcon}</View>:null}{actionText}</Button>
    {controls?<IconButton intent='secondary' label={t.swapReset} disabled={pristine||submitting} testID='swap-reset' onPress={reset}><ResetIcon color={colors.text}/></IconButton>:null}
   </View>
   {notice?<View style={{marginTop:8,alignItems:'center'}}><Toast notices={[notice]} onDismiss={dismissNotice}/></View>:null}
+  {footer?<View testID='swap-footer' style={{marginTop:16}}>{footer}</View>:null}
  </View>;
  const body=view==='main'?main
   :view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={setFrom} wallet={wallet} onConnect={onConnect} onDisconnect={onDisconnect} receiving={isReceiving} onReceivingChange={receive?setReceiving:undefined}/>

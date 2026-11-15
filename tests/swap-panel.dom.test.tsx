@@ -329,3 +329,30 @@ describe('SwapAmountCard',()=>{
   cleanup();render(<SwapAmountCard name='Bitcoin' symbol='BTC' value={12} suffix='%' trailingDot amountLabel='Target'/>);expect(screen.getByRole('textbox',{name:'Target'}).textContent).toContain('12.%');
  });
 });
+describe('SwapPanel host control',()=>{
+ it('lets the host hold the action with its own reason, after the panel\'s own checks',()=>{
+  const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
+  let view=render(<Host initialFrom={account} destination={{title:'Papertrade'}} denomination='token' actionLabel='Deposit' actionDisabled actionStatus='Below minimum'/>);
+  expect(action().textContent).toBe('Enter an amount');type('5');expect(action().textContent).toBe('Below minimum');expect(action()).toHaveProperty('disabled',true);
+  view.unmount();view=render(<Host initialFrom={account} destination={{title:'Papertrade'}} denomination='token' amount='5' actionLabel='Deposit' actionDisabled/>);
+  expect(action().textContent).toBe('Deposit');expect(action()).toHaveProperty('disabled',true);
+  view.unmount();render(<Host initialFrom={account} destination={{title:'Burn'}} amount='5' actionLabel='Burn' actionIntent='destructive'/>);
+  expect(action().getAttribute('data-intent')).toBe('destructive');expect(action()).toHaveProperty('disabled',false);
+ });
+ it('caps typed decimals per token and refuses keys past the balance when asked',()=>{
+  expect(applyAmountKey('1.123456','7','token',6)).toBe('1.123456');expect(applyAmountKey('1.123456','7','token')).toBe('1.1234567');expect(applyAmountKey('1.12','3','usd',6)).toBe('1.12');
+  const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
+  let view=render(<Host initialFrom={{...account,decimals:2}} destination={{title:'Papertrade'}} denomination='token'/>);
+  type('1 . 2 3 4');expect(reading(amount())).toBe('1.23');
+  view.unmount();view=render(<Host initialFrom={account} destination={{title:'Papertrade'}} denomination='token' limitToBalance/>);
+  type('1 0 0 0');expect(reading(amount())).toBe('100');type('Backspace');expect(reading(amount())).toBe('10');
+  view.unmount();render(<Host initialFrom={account} destination={{title:'Papertrade'}} denomination='token'/>);
+  type('1 0 0 0');expect(reading(amount())).toBe('1000');expect(action().textContent).toBe('Insufficient USDC');
+ });
+ it('draws host artwork elements in place of image URLs, and host content above the cards and under the action',()=>{
+  const view=render(<Host initialFrom={{...usdc,balance:100,caption:'$100 available',icon:<svg data-testid='usdc-art'/>}} destination={{title:'Papertrade',icon:<svg data-testid='paper-art'/>}} banner={<p data-testid='pending'>Pending</p>} footer={<p data-testid='recent'>Recent</p>}/>);
+  expect(screen.getByTestId('usdc-art').closest('.hig-swap-art')).not.toBeNull();expect(screen.getByTestId('paper-art').closest('.hig-swap-stack')).not.toBeNull();
+  const order=[...view.container.querySelectorAll('[data-testid=pending],.hig-swap-card,.hig-swap-actions,[data-testid=recent]')].map(node=>node.getAttribute('data-testid')??node.className);
+  expect(order[0]).toBe('pending');expect(order.at(-1)).toBe('recent');expect(order.at(-2)).toBe('hig-swap-actions');
+ });
+});
