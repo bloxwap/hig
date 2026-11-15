@@ -122,7 +122,11 @@ describe('trade history host slots (Unreleased)',()=>{
   const view=render(<TradeHistoryListBlock labels={list} trades={trades} loading/>);
   const busy=document.querySelector<HTMLElement>('.hig-trade-rows')!;expect(busy.getAttribute('aria-busy')).toBe('true');expect(busy.getAttribute('role')).toBeNull();
   expect(busy.querySelectorAll('.hig-skeleton[aria-hidden="true"]')).toHaveLength(4);expect(screen.queryByRole('list')).toBeNull();
-  view.rerender(<TradeHistoryListBlock labels={list} trades={trades} loading loadingLabel='Loading history'/>);expect(screen.getByRole('status',{name:'Loading history'})).toBeTruthy();
+  expect(screen.queryByRole('status')).toBeNull();
+  // The label is text in its own status region, which is not busy, so it is announced; only the skeletons are busy.
+  view.rerender(<TradeHistoryListBlock labels={list} trades={trades} loading loadingLabel='Loading history'/>);
+  const loadingStatus=screen.getByRole('status');expect(loadingStatus.textContent).toBe('Loading history');expect(loadingStatus.className).toBe('hig-sr-only');
+  expect(loadingStatus.closest('[aria-busy="true"]')).toBeNull();expect(document.querySelector('.hig-trade-rows')!.getAttribute('aria-busy')).toBe('true');
   view.rerender(<TradeHistoryListBlock labels={list} trades={trades} error='History is unavailable'/>);expect(screen.getByRole('alert').textContent).toBe('History is unavailable');expect(screen.queryByRole('list')).toBeNull();
   view.rerender(<TradeHistoryListBlock labels={{...list,emptyDescription:'Closed trades appear here.'}} trades={[]}/>);
   const empty=screen.getByRole('status');expect(empty.querySelector('strong')!.textContent).toBe('No closed trades yet');expect(empty.textContent).toBe('No closed trades yetClosed trades appear here.');

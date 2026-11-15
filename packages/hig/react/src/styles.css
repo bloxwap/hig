@@ -561,7 +561,7 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-setting-switch { display:flex;align-items:flex-start;gap:12px;min-height:var(--hig-control);padding:0;line-height:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent; }
 .hig-setting-switch[data-disabled] { opacity:.5;cursor:not-allowed; }
 .hig-setting-switch[data-locked] { cursor:default; }
-.hig-setting-switch-accessory { display:inline-flex;align-items:center;margin-inline-start:6px;vertical-align:middle; }
+.hig-setting-switch-accessory { display:inline-flex;align-items:center;margin-inline-start:8px;vertical-align:middle; }
 .hig-setting-hint { margin:0;padding-inline:20px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-settings-description { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-notifications-group { display:flex;flex-direction:column;gap:8px;margin-block-start:8px; }
@@ -838,7 +838,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-language-text > strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 .hig-language-check { flex:none;color:var(--hig-text); }
 .hig-language-row:disabled { opacity:.5;cursor:not-allowed; }
-@media(hover:hover) and (pointer:fine) { .hig-language-row:hover { background:var(--hig-fill); } }
+@media(hover:hover) and (pointer:fine) { .hig-language-row:not(:disabled):hover { background:var(--hig-fill); } }
 /* Press decoration: the host layer HIGProvider pressDecoration draws inside a pressable control. Out of flow, so it changes no
    layout; it catches no pointer events itself, its children do. Zero specificity keeps a control that is already positioned as it is. */
 :where(:has(> .hig-press-decoration)) { position:relative; }

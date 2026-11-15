@@ -920,7 +920,7 @@
       },
       "RewardLink": {
         "entry": "blocks/reward-block",
-        "signature": "export interface RewardLink {\n    label: string;\n    onSelect?: () => void;\n    href?: string;\n    target?: string;\n}"
+        "signature": "export type RewardLink = {\n    label: string;\n    onSelect: () => void;\n    href?: undefined;\n    target?: undefined;\n} | {\n    label: string;\n    href: string;\n    target?: string;\n    onSelect?: () => void;\n};"
       },
       "RewardFigure": {
         "entry": "blocks/reward-block",

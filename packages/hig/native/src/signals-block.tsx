@@ -60,8 +60,10 @@ export function SignalsBlock({title,description,groups,verifiedLabel,verifiedMar
    </View>
    {group.items.length>0?<View testID={`${id}-items`} style={{gap:2,borderRadius:20,overflow:'hidden'}}>{group.items.map(item=><SettingCard key={item.id} joined testID={`${id}-${item.id}`}>
     <SettingSwitch testID={`${id}-${item.id}-switch`} label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} locked={item.locked} labelAccessory={item.labelAccessory} onCheckedChange={item.onCheckedChange}/>
-    {item.hint?<Text testID={`${id}-${item.id}-hint`} accessibilityLiveRegion='polite' style={{...note,color:colors.muted}}>{item.hint}</Text>:null}
-    {item.error?<Text testID={`${id}-${item.id}-error`} accessibilityRole='alert' accessibilityLiveRegion='polite' style={{...note,color:colors.negative}}>{item.error}</Text>:null}
+    {item.hint||item.error?<View style={{gap:4}}>
+     {item.hint?<Text testID={`${id}-${item.id}-hint`} accessibilityLiveRegion='polite' style={{...note,color:colors.muted}}>{item.hint}</Text>:null}
+     {item.error?<Text testID={`${id}-${item.id}-error`} accessibilityRole='alert' accessibilityLiveRegion='polite' style={{...note,color:colors.negative}}>{item.error}</Text>:null}
+    </View>:null}
    </SettingCard>)}</View>:null}
   </View>;
  });

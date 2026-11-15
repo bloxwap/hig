@@ -17,7 +17,7 @@ export function SettingSwitch({label,description,checked:requested,onCheckedChan
  return <SwitchRow testID={testID} label={label} accessibilityHint={description} checked={checked} disabled={locked?true:disabled} onCheckedChange={onCheckedChange} style={{minHeight:32,opacity:disabled?0.5:1}}>
   <View style={{direction,flex:1,flexDirection:'row',alignItems:'flex-start',gap:12}}>
    <View style={{flex:1,minWidth:0,gap:2}}>
-    {labelAccessory!=null&&labelAccessory!==false?<View testID={testID?`${testID}-label`:undefined} style={{direction,flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:6}}>{name}{labelAccessory}</View>:name}
+    {labelAccessory!=null&&labelAccessory!==false?<View testID={testID?`${testID}-label`:undefined} style={{direction,flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:8}}>{name}{labelAccessory}</View>:name}
     {description?<Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{description}</Text>:null}
    </View>
    <View testID={testID?`${testID}-track`:undefined} style={{width:40,height:24,borderRadius:12,padding:3,backgroundColor:checked?colors.action:fills.raised,alignItems:checked?'flex-end':'flex-start'}}><View style={{width:18,height:18,borderRadius:9,backgroundColor:checked?colors.onAction:colors.text}}/></View>

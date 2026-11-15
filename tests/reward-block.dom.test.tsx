@@ -105,8 +105,10 @@ describe('RewardBlock host slots (Unreleased)',()=>{
  it('shows skeleton rows while loading, pagination under the list, a host verified mark, a host headline and a sticky header',async()=>{
   const previous=vi.fn(),next=vi.fn();
   const view=render(<RewardBlock {...base} loading/>);
-  expect(q('.hig-reward-block')!.getAttribute('aria-busy')).toBe('true');expect(document.querySelectorAll('.hig-reward-skeleton[aria-hidden="true"]')).toHaveLength(5);expect(q('.hig-reward-rows')).toBeNull();
-  view.rerender(<RewardBlock {...base} loading loadingLabel='Loading standings'/>);expect(screen.getByRole('status',{name:'Loading standings'})).toBeTruthy();
+  // Only the skeleton list is busy, not the whole screen.
+  expect(q('.hig-reward-block')!.hasAttribute('aria-busy')).toBe(false);expect(q('.hig-reward-list')!.getAttribute('aria-busy')).toBe('true');expect(document.querySelectorAll('.hig-reward-skeleton[aria-hidden="true"]')).toHaveLength(5);expect(q('.hig-reward-rows')).toBeNull();
+  view.rerender(<RewardBlock {...base} loading loadingLabel='Loading standings'/>);
+  const loadingStatus=screen.getByRole('status');expect(loadingStatus.textContent).toBe('Loading standings');expect(loadingStatus.className).toBe('hig-sr-only');expect(loadingStatus.closest('[aria-busy="true"]')).toBeNull();
   view.rerender(<RewardBlock {...base} stickyHeader verifiedLabel='Genesis' verifiedMark={<svg data-testid='genesis'/>} promo={{...pool,headline:<>Top 100 <em>split</em> the pool.</>}}
    pagination={{previous:{label:'Previous',onSelect:previous,disabled:true},next:{label:'Next',onSelect:next},label:'1–25'}} footnote='Updates every 15 minutes'/>);
   expect(q('.hig-reward-block')!.hasAttribute('aria-busy')).toBe(false);expect(q('.hig-reward-block')!.dataset.stickyHeader).toBe('true');

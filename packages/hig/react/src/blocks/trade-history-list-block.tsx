@@ -78,7 +78,7 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
   </>;
   return <li key={trade.id}>{onSelect?<button type='button' className='hig-trade-row' aria-label={[trade.name,side,formatNumber(trade.pnl,locale,present(pnlOptions)),trade.tag,trade.time].filter(Boolean).join(', ')} onClick={()=>onSelect(trade)}>{content}<PressDecoration kind='row'/></button>:<div className='hig-trade-row'>{content}</div>}</li>;
  };
- const body=loading?<div className='hig-trade-rows' role={loadingLabel?'status':undefined} aria-busy='true' aria-label={loadingLabel}>{skeletons.map(index=><div key={index} className='hig-skeleton hig-trade-skeleton' aria-hidden='true'/>)}</div>
+ const body=loading?<>{loadingLabel&&<p className='hig-sr-only' role='status'>{loadingLabel}</p>}<div className='hig-trade-rows' aria-busy='true'>{skeletons.map(index=><div key={index} className='hig-skeleton hig-trade-skeleton' aria-hidden='true'/>)}</div></>
   :error?<p className='hig-swap-empty hig-trade-error' role='alert'>{error}</p>
   :trades.length===0?<p className='hig-swap-empty' role='status'>{labels.emptyDescription?<><strong className='hig-trade-empty-title'>{labels.empty}</strong><span className='hig-trade-empty-description'>{labels.emptyDescription}</span></>:labels.empty}</p>
   :<ul className='hig-trade-rows' aria-label={labels.title}>{trades.map(row)}</ul>;

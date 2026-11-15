@@ -9,7 +9,7 @@ import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapIcon,SwapNumber} from './swap/shared.js';
 /** A way onward from the promotion. `href` draws a real link (an `<a>`), with `target` such as `_blank`; `onSelect` is still called on the press. */
-export interface RewardLink {label:string;onSelect?:()=>void;href?:string;target?:string}
+export type RewardLink={label:string;onSelect:()=>void;href?:undefined;target?:undefined}|{label:string;href:string;target?:string;onSelect?:()=>void};
 /** The promotion above the standings: a prize pool filling towards a goal, or a draw with a top prize. Every word is host text. */
 export interface RewardPromo {
  /** The small capitals line: Season 01. */
@@ -119,7 +119,7 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
  const money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(promo.amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
  const pinned=you&&<Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark}/>;
- return <section {...rest} aria-busy={loading||undefined} data-sticky-header={stickyHeader||undefined} className={`hig-reward-block${className?` ${className}`:''}`}>
+ return <section {...rest} data-sticky-header={stickyHeader||undefined} className={`hig-reward-block${className?` ${className}`:''}`}>
   <ScreenHeader title={title} onBack={onBack} action={headerAction}/>
   {promo&&<section className='hig-surface hig-reward-promo'>
    <div className='hig-reward-promo-top'><span className='hig-reward-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<Onward link={promo.rules} className='hig-reward-rules'>{promo.rules.label}<SwapIcon name='chevron' size={16}/></Onward>}</div>
@@ -132,9 +132,10 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
   {tabs&&<SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/>}
   {pinned&&(youLabel?<div className='hig-reward-you' role='group' aria-label={youLabel}>{pinned}</div>:<div className='hig-reward-you'>{pinned}</div>)}
   {status&&<p className='hig-reward-status' role='status'>{status}</p>}
-  {loading?<div className='hig-reward-list' role={loadingLabel?'status':undefined} aria-label={loadingLabel}>
-   {skeletons.map(index=><div key={index} className='hig-skeleton hig-reward-skeleton' aria-hidden='true'/>)}
-  </div>:(entries.length>0||listTitle||scoreTitle)&&<div className='hig-reward-list'>
+  {loading?<>
+   {loadingLabel&&<p className='hig-sr-only' role='status'>{loadingLabel}</p>}
+   <div className='hig-reward-list' aria-busy='true'>{skeletons.map(index=><div key={index} className='hig-skeleton hig-reward-skeleton' aria-hidden='true'/>)}</div>
+  </>:(entries.length>0||listTitle||scoreTitle)&&<div className='hig-reward-list'>
    {(listTitle||scoreTitle)&&<div className='hig-reward-columns hig-number'><span>{listTitle}</span><span>{scoreTitle}</span></div>}
    {entries.length>0&&<ol className='hig-reward-rows'>{entries.map(entry=><Standing key={entry.id} entry={entry} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark}/>)}</ol>}
   </div>}
