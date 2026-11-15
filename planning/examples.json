@@ -987,7 +987,7 @@
       "name": "MarketRow",
       "slug": "market-row",
       "entry": "blocks",
-      "family": "blocks",
+      "family": "financial-data",
       "web": "<C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>",
       "native": "<C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>",
       "nativeSupport": "renderer",
@@ -1088,6 +1088,27 @@
       }
     },
     {
+      "name": "ProfileBlock",
+      "slug": "profile-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.ProfileBlock name='5459····6263' address='5459Qk3vJm8Rt2Xw9Ln4Hd7Fz1Bp6Yc6263' status={{label:'Demo'}} onEditName={()=>setMessage('The host edits the name')} onShowAddress={()=>setMessage('The host shows the address')} onClose={()=>setMessage('The host closes the profile')} sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')},{id:'history',label:'History',value:'Demo',onSelect:()=>setMessage('The host opens history')}]},{id:'rewards',title:'Rewards',rows:[{id:'pool',label:'Top 100 split $250,000',onSelect:()=>setMessage('The host opens rewards')}]},{id:'settings',title:'Settings',rows:[{id:'live',label:'Live Mode',checked:false,onCheckedChange:value=>setMessage(value?'Live mode on':'Live mode off')},{id:'signals',label:'Signals',onSelect:()=>setMessage('The host opens signals')},{id:'notifications',label:'Notifications',value:'Off',onSelect:()=>setMessage('The host opens notifications')},{id:'sound',label:'Sound & Haptics',onSelect:()=>setMessage('The host opens sound and haptics')}]}]}/>",
+      "native": "<C.ProfileBlock name='5459····6263' address='5459Qk3vJm8Rt2Xw9Ln4Hd7Fz1Bp6Yc6263' status={{label:'Demo'}} onEditName={()=>setMessage('The host edits the name')} onShowAddress={()=>setMessage('The host shows the address')} onClose={()=>setMessage('The host closes the profile')} sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')},{id:'history',label:'History',value:'Demo',onSelect:()=>setMessage('The host opens history')}]},{id:'rewards',title:'Rewards',rows:[{id:'pool',label:'Top 100 split $250,000',onSelect:()=>setMessage('The host opens rewards')}]},{id:'settings',title:'Settings',rows:[{id:'live',label:'Live Mode',checked:false,onCheckedChange:value=>setMessage(value?'Live mode on':'Live mode off')},{id:'signals',label:'Signals',onSelect:()=>setMessage('The host opens signals')},{id:'notifications',label:'Notifications',value:'Off',onSelect:()=>setMessage('The host opens notifications')},{id:'sound',label:'Sound & Haptics',onSelect:()=>setMessage('The host opens sound and haptics')}]}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "minimal"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "minimal": {
+          "web": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>",
+          "native": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>"
+        }
+      }
+    },
+    {
       "name": "LeaderboardBlock",
       "slug": "leaderboard-block",
       "entry": "blocks",
@@ -1103,8 +1124,8 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
         "sweepstakes": {
-          "web": "<C.LeaderboardBlock title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:'Every $10 you trade earns 1 entry.',description:'More entries, better odds.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>",
-          "native": "<C.LeaderboardBlock title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:'Every $10 you trade earns 1 entry.',description:'More entries, better odds.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>"
+          "web": "<C.LeaderboardBlock title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:'Every $10 you trade earns 1 entry.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.LeaderboardBlock title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:'Every $10 you trade earns 1 entry.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>"
         }
       }
     },
@@ -1257,7 +1278,7 @@
       "name": "TradeEntry",
       "slug": "trade-entry",
       "entry": "blocks",
-      "family": "blocks",
+      "family": "fields",
       "web": "<C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>",
       "native": "<C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>",
       "nativeSupport": "renderer",
@@ -1396,7 +1417,7 @@
       "name": "InstallCommand",
       "slug": "install-command",
       "entry": "blocks",
-      "family": "blocks",
+      "family": "actions-surfaces",
       "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.5.2')}/>",
       "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
@@ -1410,7 +1431,7 @@
       "name": "MarketingHero",
       "slug": "marketing-hero",
       "entry": "blocks",
-      "family": "blocks",
+      "family": "actions-surfaces",
       "web": "<C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>",
       "native": "<C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>",
       "nativeSupport": "renderer",

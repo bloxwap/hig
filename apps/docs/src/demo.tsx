@@ -22,8 +22,6 @@ const Example=lazy(()=>import('./examples').then(m=>({default:m.Example})));
 interface Entry {name:string;route:string;family:string;nativeSupport:string;states:string[]}
 /** Families shown as composed blocks on a canvas, not as a single control with its code. */
 const blockFamilies=new Set(['recipes','blocks']);
-/** Blocks that are page sections, not phone-width cards. */
-const wideBlocks=new Set(['MarketingHero','InstallCommand']);
 const content=generated;
 const base=basePath+'/';
 const sourceRef='main';
@@ -41,7 +39,7 @@ function StateLinks({entry,state,onStateChange}:{entry:Entry;state:string;onStat
 function BlockPreview({entry,state,onStateChange}:{entry:Entry;state:string;onStateChange:(state:string)=>void}){
  return <section className='block-demo not-prose' aria-label={`${entry.name} examples`}>
   {entry.states.length>1&&<StateLinks entry={entry} state={state} onStateChange={onStateChange}/>}
-  <div className='example-frame block-canvas'><div className='example-canvas block-card' data-component={entry.name} data-wide={wideBlocks.has(entry.name)||undefined}><Suspense fallback={<p role='status'>Loading preview…</p>}><Example key={`${entry.name}:${state}`} name={entry.name} state={state}/></Suspense></div></div>
+  <div className='example-frame block-canvas'><div className='example-canvas block-card' data-component={entry.name}><Suspense fallback={<p role='status'>Loading preview…</p>}><Example key={`${entry.name}:${state}`} name={entry.name} state={state}/></Suspense></div></div>
  </section>;
 }
 function ComponentPreview({entry,state,onStateChange,density,codes}: {entry:Entry;state:string;onStateChange:(state:string)=>void;density:string;codes:CodeData|null}) {

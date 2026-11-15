@@ -575,8 +575,8 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 @media(forced-colors:active) { .hig-setting-meter > span { forced-color-adjust:none; } }
 /* PositionBlock: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
 .hig-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
-/* The summary is one quiet container with the list groups' radius and text inset; its values use the interface face. */
-.hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding:16px 20px;border-radius:20px;background:var(--hig-fill); }
+/* The summary sits directly on the screen, with no card, on the list rows' text inset; its values use the interface face. */
+.hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:20px; }
 .hig-position-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
 .hig-position-details dd { margin:0;color:var(--hig-text);font-family:inherit;font-weight:500;text-align:end;overflow-wrap:anywhere; }
 .hig-position-details dd .hig-number { font-family:inherit; }
@@ -596,7 +596,11 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-leaderboard-eyebrow { min-width:0; }
 .hig-leaderboard-rules { appearance:none;flex:none;display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;min-height:var(--hig-button);min-width:var(--hig-button);margin-block:-12px;padding:0;border:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent; }
 .hig-leaderboard-rules:active { color:var(--hig-text); }
-[dir='rtl'] .hig-leaderboard-rules > svg { transform:scaleX(-1); }
+[dir='rtl'] .hig-leaderboard-rules > svg,[dir='rtl'] .hig-leaderboard-action > svg { transform:scaleX(-1); }
+/* The card's action is a quiet row under a hairline, not a filled button. */
+.hig-leaderboard-action { appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:var(--hig-button);margin:4px 0 -8px;padding:12px 0 0;border:0;border-block-start:1px solid var(--hig-fill-raised);border-radius:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-leaderboard-action:active { color:var(--hig-text); }
+.hig-leaderboard-action > svg { flex:none; }
 .hig-leaderboard-amount { color:var(--hig-action);font-size:clamp(2.5rem,13vw,3.5rem);line-height:1.1;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere; }
 .hig-leaderboard-promo > .hig-leaderboard-caption { margin-block-start:-8px;color:var(--hig-muted);font-size:.9375rem;line-height:1.5; }
 .hig-leaderboard-track { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
@@ -606,7 +610,7 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-leaderboard-summary { color:var(--hig-muted);line-height:1.5;overflow-wrap:anywhere; }
 .hig-leaderboard-summary > strong { color:var(--hig-text);font-weight:600; }
 .hig-leaderboard-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-@media(hover:hover) and (pointer:fine) { .hig-leaderboard-rules:hover { color:var(--hig-text); } }
+@media(hover:hover) and (pointer:fine) { .hig-leaderboard-rules:hover,.hig-leaderboard-action:hover { color:var(--hig-text); } }
 .hig-leaderboard-footnote { padding-inline:4px; }
 .hig-leaderboard-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-leaderboard-list { display:flex;flex-direction:column;gap:8px; }
@@ -688,6 +692,20 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-trade-details .hig-number { font-family:inherit; }
 .hig-trade-actions { display:flex;gap:var(--hig-action-gap); }
 .hig-trade-actions > * { flex:1 1 0;min-width:0; }
+/* ProfileBlock: a top bar, the avatar with its status dot, the name, then list groups 24px apart. */
+.hig-profile-block { display:flex;flex-direction:column;gap:24px;min-width:0; }
+.hig-profile-bar { display:flex;align-items:center;justify-content:space-between;min-height:var(--hig-button); }
+.hig-profile-identity { display:flex;flex-direction:column;align-items:center;gap:16px;margin-block-start:-16px; }
+.hig-profile-avatar { position:relative;display:block;width:144px;height:144px;border-radius:50%;background:var(--hig-fill); }
+.hig-profile-artwork { display:grid;place-items:center;width:100%;height:100%;border-radius:50%;overflow:hidden;color:var(--hig-muted);font-size:2.5rem;font-weight:600; }
+.hig-profile-artwork > img { width:100%;height:100%;object-fit:cover; }
+.hig-profile-status { position:absolute;inset-block-start:10px;inset-inline-end:10px;width:20px;height:20px;border-radius:50%;background:var(--hig-warning);box-shadow:0 0 0 3px var(--hig-background); }
+.hig-profile-status[data-tone='positive'] { background:var(--hig-positive); }
+.hig-profile-status[data-tone='negative'] { background:var(--hig-negative); }
+.hig-profile-status[data-tone='info'] { background:var(--hig-info); }
+.hig-profile-name { display:flex;align-items:center;justify-content:center;gap:4px;max-width:100%; }
+.hig-profile-name > h2 { margin:0;min-width:0;font-size:1.75rem;line-height:1.2;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.hig-profile-name > .hig-button { flex:none;color:var(--hig-muted); }
 /* BarMark: one bar divided among its elements. Segments are flex shares of the bar with a 2px gap that shows the card, and the
    remainder of a larger total is an empty track segment. Colours come from tone roles (or a host colour) through one custom property. */
 .hig-bar-mark { display:flex;flex-direction:column;gap:12px; }

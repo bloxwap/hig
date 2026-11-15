@@ -20,7 +20,7 @@ const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const flat=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
-const button=(view,id)=>view.findAllByType(Button).find(node=>node.props.testID===id);
+const button=(view,id)=>view.findAll(node=>node.props.testID===id&&'onPress' in node.props)[0];
 const readings=view=>host(view,'leaderboard-rows').children.map(row=>row.props.accessibilityLabel);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
@@ -71,7 +71,7 @@ it('draws a sweepstakes: a caption under the figure, no bar, and the rules link 
  expect(host(view,'leaderboard-amount').props.accessibilityLabel).toBe('$100,000 top prize');expect(has(view,'leaderboard-track')).toBe(false);
  // The rules control is a text link with a chevron, not a filled button.
  const link=host(view,'leaderboard-rules');expect(link.props.accessibilityRole).toBe('button');expect(text(link.findAll(node=>node.type==='Text')[0])).toBe('Rules');expect(view.findAllByType(Button).some(node=>node.props.testID==='leaderboard-rules')).toBe(false);
- expect(button(view,'leaderboard-action').props).toMatchObject({children:'Draws and winners',fullWidth:true});
+ expect(button(view,'leaderboard-action').props).toMatchObject({accessibilityRole:'button',accessibilityLabel:'Draws and winners'});
  act(()=>{all(view,'leaderboard-rules').find(node=>'onPress' in node.props).props.onPress({});});act(()=>{button(view,'leaderboard-action').props.onPress({});});expect(rules).toHaveBeenCalledTimes(1);expect(action).toHaveBeenCalledTimes(1);
 });
 
