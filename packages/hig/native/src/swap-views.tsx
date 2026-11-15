@@ -6,6 +6,7 @@ import {Text} from './surface.js';
 import {Field,Input} from './field.js';
 import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon} from './icons.js';
+import {AnimatedNumberReadout} from './animated-number.js';
 import {SwapSubview} from './swap-parts.js';
 import {FromPicker,ToPicker} from './pickers.js';
 import {formatPercent,shortAddress,slippagePresets,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapWallet} from './swap-shared.js';
@@ -45,11 +46,13 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
  const title=view==='slippage'?t.swapSlippageTitle:view==='fees'?t.swapFees:t.swapSettings;
  const feeText=quoteLoading?'…':fee!=null?usd(fee):'—';
  const preset=slippagePresets.find(value=>Math.abs(value-slippage)<1e-9);
- const row=(name:string,value:string,target:SwapSettingsView)=><Pressable accessibilityRole='button' accessibilityLabel={`${name}: ${value}`} testID={`swap-setting-${target}`} onPress={()=>onViewChange(target)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingVertical:8,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well})}>
-  <Text style={{fontWeight:'600'}}>{name}</Text><View style={{flexDirection:'row',alignItems:'center',gap:6}}><Text style={{color:colors.muted}}>{value}</Text><View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View></View>
+ const usdOptions={style:'currency',currency:'USD'} as const,feeKnown=!quoteLoading&&fee!=null;
+ // `value` is the accessible reading; `live` is the same value drawn as a number that updates in place.
+ const row=(name:string,value:string,target:SwapSettingsView,live?:React.ReactNode)=><Pressable accessibilityRole='button' accessibilityLabel={`${name}: ${value}`} testID={`swap-setting-${target}`} onPress={()=>onViewChange(target)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingVertical:8,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well})}>
+  <Text style={{fontWeight:'600'}}>{name}</Text><View style={{flexDirection:'row',alignItems:'center',gap:6}}>{live??<Text style={{color:colors.muted}}>{value}</Text>}<View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View></View>
  </Pressable>;
- const feeRow=(name:string,value:string,total?:boolean)=><View key={name} style={{flexDirection:'row',justifyContent:'space-between',gap:12,paddingTop:total?12:0}}><Text style={{color:total?colors.text:colors.muted,fontWeight:total?'600':'400'}}>{name}</Text><Text style={{fontWeight:total?'600':'400'}}>{value}</Text></View>;
- const slippageRow=onSlippageChange?row(t.swapSlippageTitle,formatPercent(slippage),'slippage'):null,feesRow=row(t.swapFees,feeText,'fees');
+ const feeRow=(name:string,amount:number|null,total?:boolean)=><View key={name} style={{flexDirection:'row',justifyContent:'space-between',gap:12,paddingTop:total?12:0}}><Text style={{color:total?colors.text:colors.muted,fontWeight:total?'600':'400'}}>{name}</Text>{amount!=null?<AnimatedNumberReadout testID={total?'swap-fee-total':undefined} value={amount} options={usdOptions} style={{fontWeight:total?'600':'400'}}/>:<Text testID={total?'swap-fee-total':undefined} style={{fontWeight:total?'600':'400'}}>{feeText}</Text>}</View>;
+ const slippageRow=onSlippageChange?row(t.swapSlippageTitle,formatPercent(slippage),'slippage',<AnimatedNumberReadout value={slippage*100} formattedValue={formatPercent(slippage).slice(0,-1)} suffix='%' tone='muted'/>):null,feesRow=row(t.swapFees,feeText,'fees',feeKnown?<AnimatedNumberReadout value={fee} options={usdOptions} tone='muted'/>:undefined);
  return <SwapSubview title={title} onBack={onBack} testID={`swap-view-${view}`}>
   {view==='settings'?<View style={{gap:12}}>
    {onDenominationChange&&<SegmentedControl label={t.swapDenomination} options={[{value:'usd',label:t.swapDollars},{value:'token',label:t.swapUnits}]} value={denomination} onValueChange={value=>onDenominationChange(value as SwapDenomination)}/>}
@@ -61,6 +64,6 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
    <SegmentedControl label={t.swapSlippageTitle} options={slippagePresets.map(value=>({value:String(value),label:formatPercent(value)}))} value={preset===undefined?'':String(preset)} onValueChange={value=>{setCustom(null);onSlippageChange(Number(value));}}/>
    <Field label={t.swapSlippageCustom}><Input keyboardType='decimal-pad' value={custom??String(Number((slippage*100).toFixed(4)))} onChangeText={entered=>{const raw=entered.replace(/[^0-9.]/g,'');setCustom(raw);const percent=Number.parseFloat(raw);if(Number.isFinite(percent)&&percent>=0&&percent<=50)onSlippageChange(percent/100);}}/></Field>
   </View>:null}
-  {view==='fees'?<View style={{gap:12}}>{fees?.map(item=>feeRow(item.label,usd(item.usd)))}{feeRow(t.swapFeeTotal,feeText,true)}</View>:null}
+  {view==='fees'?<View style={{gap:12}}>{fees?.map(item=>feeRow(item.label,item.usd))}{feeRow(t.swapFeeTotal,feeKnown?fee:null,true)}</View>:null}
  </SwapSubview>;
 }

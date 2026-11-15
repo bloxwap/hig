@@ -402,7 +402,7 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-icon { flex:none; }
 .hig-swap-amount-content { position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 16px 20px;pointer-events:none; }
 .hig-swap-amount { max-width:100%;border-radius:var(--hig-radius-lg,10px);font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;overflow:hidden;pointer-events:auto;cursor:text; }
-.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number { font-family:inherit; }
+.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number,.hig-swap-details .hig-number,.hig-swap-setting-value .hig-number,.hig-swap-identity .hig-number { font-family:inherit; }
 .hig-swap-amount[data-muted] { color:var(--hig-muted);pointer-events:none; }
 /* An account reads name over caption beside one 40px disc; a pending destination is a placeholder. */
 .hig-swap-selected[data-account] { align-items:center; }

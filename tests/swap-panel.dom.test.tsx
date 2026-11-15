@@ -8,7 +8,10 @@ import {SwapPanel,swapAction,type SwapPanelProps,type SwapToken} from '../packag
 import {SwapSheet} from '../packages/hig/react/src/recipes/swap-sheet';
 import {readFileSync} from 'node:fs';
 import {applyAmountKey,fuzzyMatch,sanitizeAmount,testAmount,unitsToEntry} from '../packages/hig/react/src/recipes/swap/shared';
-afterEach(cleanup);
+const originalAnimate=HTMLElement.prototype.animate;
+afterEach(()=>{cleanup();if(originalAnimate)Object.defineProperty(HTMLElement.prototype,'animate',{value:originalAnimate,configurable:true});else delete (HTMLElement.prototype as {animate?:unknown}).animate;});
+/** jsdom has no Web Animations: with this stub a rolling place keeps its leaving digits mounted, as it does mid-animation in a browser. */
+const mockAnimate=()=>Object.defineProperty(HTMLElement.prototype,'animate',{value:vi.fn(()=>({cancel:vi.fn()})),configurable:true});
 const eth:SwapToken={id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:2,price:2000};
 const usdc:SwapToken={id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,price:1,keywords:'0xa0b8'};
 const baseUsdc:SwapToken={id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1};
@@ -23,6 +26,9 @@ const action=()=>screen.getAllByRole('button').find(button=>button.matches('.hig
 const amount=()=>screen.getByRole('textbox',{name:'From amount'});
 const type=(keys:string)=>{for(const key of keys.split(' '))fireEvent.keyDown(amount(),{key});};
 const reading=(element:Element)=>element.querySelector('.hig-sr-only')?.textContent;
+/** What is read and what is drawn: the text without the decorative copy of each animated number. */
+const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;for(const visual of copy.querySelectorAll('.hig-animated-number-visual'))visual.remove();return copy.textContent;};
+const flowing=(element:Element)=>element.querySelectorAll('.hig-animated-number-old').length;
 describe('swap helpers',()=>{
  it('names the action from the pair',()=>{
   expect(swapAction(null,eth)).toBe('send');expect(swapAction(eth,eth)).toBe('send');expect(swapAction(usdc,baseUsdc)).toBe('send');
@@ -75,7 +81,7 @@ describe('SwapPanel',()=>{
   // The picker replaces the cards inside the panel; the title takes focus without a hardware pointer to type with.
   expect(document.querySelector('.hig-swap-panel')?.getAttribute('data-view')).toBe('from');expect(screen.queryByRole('textbox',{name:'From amount'})).toBeNull();
   expect(document.activeElement).toBe(screen.getByRole('heading',{name:'From'}));
-  expect(within(sheet).getAllByRole('listitem').map(item=>item.textContent)).toEqual(['ETHEtherBase','USDUSD CoinEthereum','ETHEtherEthereum2$4,000.00','USDUSD CoinBase']);
+  expect(within(sheet).getAllByRole('listitem').map(spoken)).toEqual(['ETHEtherBase','USDUSD CoinEthereum','ETHEtherEthereum2$4,000.00','USDUSD CoinBase']);
   expect(within(sheet).getByText('Hot')).toBeTruthy();expect(within(sheet).getByText('All tokens')).toBeTruthy();
   // Chains are the standalone Filter: one radio group.
   await userEvent.click(within(within(sheet).getByRole('radiogroup',{name:'Chains'})).getByRole('radio',{name:'Base'}));
@@ -110,7 +116,7 @@ describe('SwapPanel',()=>{
  it('shows the host quote, fee and slippage on the To card',()=>{
   render(<Host initialFrom={eth} initialTo={usdc} received={1987.5} fee={0.27} slippage={0.01}/>);type('1');
   const to=screen.getByRole('button',{name:'Select To token'}).closest('.hig-swap-card')!;
-  expect(within(to as HTMLElement).getByText('Fee $0.27')).toBeTruthy();expect(within(to as HTMLElement).getByRole('button',{name:'Slippage 1%'})).toBeTruthy();
+  expect(spoken(to.querySelector('.hig-swap-meta')!)).toBe('Slippage 1%Fee $0.27');expect(within(to as HTMLElement).getByRole('button',{name:'Slippage 1%'})).toBeTruthy();
   expect(to.querySelector('.hig-swap-amount .hig-sr-only')?.textContent).toBe('To amount: $1987.5');
  });
  it('resets the entry and the pair, and tells the host',async()=>{
@@ -199,7 +205,7 @@ describe('SwapPanel',()=>{
   const submit=vi.fn(),press=vi.fn();
   const view=render(<Host initialFrom={eth} fee={0.19} destination={{title:'Ether staking',subtitle:'Ethereum',detail:'3.1% APR'}} actionLabel='Stake' onSubmit={submit}/>);
   const card=document.querySelector(".hig-swap-card[data-side='to']") as HTMLElement;
-  expect(card.getAttribute('data-compact')).toBe('true');expect(card.textContent).toBe('EtEther stakingEthereum3.1% APRFee $0.19');
+  expect(card.getAttribute('data-compact')).toBe('true');expect(spoken(card)).toBe('EtEther stakingEthereum3.1% APRFee $0.19');
   expect(card.querySelector('.hig-swap-amount')).toBeNull();expect(card.querySelector('button')).toBeNull();
   expect(screen.queryByRole('button',{name:'Select To token'})).toBeNull();expect(screen.queryByRole('button',{name:'Swap direction'})).toBeNull();expect(document.querySelector('.hig-swap-flip > span')).toBeTruthy();
   // Before an amount the usual prompt shows; the host label names the action only once it is ready.
@@ -278,6 +284,45 @@ describe('SwapPanel',()=>{
   fireEvent.keyDown(window,{key:'7'});expect(reading(amount())).toBe('$7');
   await userEvent.click(screen.getByRole('button',{name:'Settings'}));fireEvent.keyDown(window,{key:'9'});
   await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(reading(amount())).toBe('$7');
+ });
+});
+describe('SwapPanel live numbers',()=>{
+ const panel=(props:Partial<SwapPanelProps>)=><SwapPanel tokens={tokens} from={eth} to={usdc} onFromChange={()=>{}} onToChange={()=>{}} onSubmit={()=>{}} keypad='never' {...props}/>;
+ const meta=(side:string)=>document.querySelector(`.hig-swap-card[data-side='${side}'] .hig-swap-meta`)!;
+ it('rolls the balance, fee and slippage in place and keeps their sentences',()=>{
+  mockAnimate();const view=render(panel({fee:0.27,slippage:0.005}));
+  expect(spoken(meta('from'))).toBe('TestMax2 ETH');expect(spoken(meta('to'))).toBe('Slippage 0.5%Fee $0.27');expect(flowing(document.body)).toBe(0);
+  view.rerender(panel({from:{...eth,balance:3.5},fee:0.31,slippage:0.01}));
+  expect(spoken(meta('from'))).toBe('TestMax3.5 ETH');expect(flowing(meta('from'))).toBeGreaterThan(0);
+  expect(spoken(meta('to'))).toBe('Slippage 1%Fee $0.31');expect(flowing(meta('to'))).toBeGreaterThan(1);
+  // Loading and unknown fees are plain placeholders, not numbers rolling from zero.
+  view.rerender(panel({fee:0.31,quoteLoading:true}));expect(meta('to').textContent).toContain('Fee …');expect(meta('to').querySelectorAll('.hig-animated-number-visual')).toHaveLength(1);
+  view.rerender(panel({fee:null}));expect(meta('to').textContent).toContain('Fee —');
+ });
+ it('rolls a numeric detail row and draws a string row as given',()=>{
+  mockAnimate();const rows=(staked:number)=>panel({to:null,actionLabel:'Stake',details:[{label:'Staked',value:staked,suffix:' HYPE',options:{maximumFractionDigits:4}},{label:'Fee tier',value:'Wood'}]});
+  const view=render(rows(11.0735));const cells=()=>[...document.querySelectorAll('.hig-swap-details dd')];
+  expect(cells().map(spoken)).toEqual(['11.0735 HYPE','Wood']);expect(cells()[1].querySelector('.hig-animated-number-visual')).toBeNull();
+  view.rerender(rows(12.5));expect(cells().map(spoken)).toEqual(['12.5 HYPE','Wood']);expect(flowing(cells()[0])).toBeGreaterThan(0);
+ });
+ it('rolls an account caption and a destination detail passed as figures; strings stay text',()=>{
+  mockAnimate();const account=(available:number):SwapToken=>({id:'hl',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:'hl',balance:available,price:1,caption:{value:available,options:{style:'currency',currency:'USD'},suffix:' available'}});
+  const screenFor=(available:number,apr:number)=>panel({from:account(available),to:null,destination:{title:'Ether staking',detail:{value:apr,suffix:'% APR'}}});
+  const view=render(screenFor(234.68,3.1));const caption=()=>document.querySelector(".hig-swap-card[data-side='from'] .hig-swap-identity > span")!,detail=()=>document.querySelector(".hig-swap-card[data-side='to'] .hig-swap-meta")!;
+  expect(spoken(caption())).toBe('$234.68 available');expect(spoken(detail())).toBe('3.1% APR');
+  view.rerender(screenFor(250.5,3.4));expect(spoken(caption())).toBe('$250.50 available');expect(flowing(caption())).toBeGreaterThan(0);expect(spoken(detail())).toBe('3.4% APR');expect(flowing(detail())).toBeGreaterThan(0);
+  view.rerender(panel({from:{...account(1),caption:'$1.00 available'},to:null,destination:{title:'Ether staking',detail:'3.1% APR'}}));expect(caption().querySelector('.hig-animated-number-visual')).toBeNull();expect(caption().textContent).toBe('$1.00 available');expect(detail().textContent).toBe('3.1% APR');
+ });
+ it('uses the same readout for the settings rows and the fee breakdown',async()=>{
+  render(panel({onSlippageChange:()=>{},fee:0.27,fees:[{label:'Network',usd:0.19},{label:'Relayer',usd:0.08}]}));
+  await userEvent.click(screen.getByRole('button',{name:'Settings'}));
+  const settings=screen.getByRole('group',{name:'Settings'});expect(settings.querySelectorAll('.hig-swap-setting-value .hig-animated-number-visual')).toHaveLength(2);
+  await userEvent.click(within(settings).getByRole('button',{name:/^Fees/}));
+  expect([...document.querySelectorAll('.hig-swap-fees > div')].map(spoken)).toEqual(['Network$0.19','Relayer$0.08','Total$0.27']);expect(document.querySelectorAll('.hig-swap-fees .hig-animated-number-visual')).toHaveLength(3);
+ });
+ it('reduced motion updates the same numbers without rolling them',()=>{
+  mockAnimate();const view=render(<HIGProvider reducedMotion>{panel({fee:0.27})}</HIGProvider>);view.rerender(<HIGProvider reducedMotion>{panel({from:{...eth,balance:3},fee:0.27})}</HIGProvider>);
+  expect(spoken(meta('from'))).toBe('TestMax3 ETH');expect(flowing(document.body)).toBe(0);
  });
 });
 describe('SwapSheet',()=>{

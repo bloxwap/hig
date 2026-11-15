@@ -69,7 +69,12 @@ describe('FromPicker',()=>{
   expect(document.querySelector('.hig-swap-wallet-id')?.textContent).toBe('DMzeeN…Xb32');expect(screen.queryByRole('button',{name:'Connect wallet'})).toBeNull();expect(screen.queryByRole('switch')).toBeNull();
   await userEvent.click(screen.getByRole('button',{name:'Disconnect wallet'}));expect(disconnect).toHaveBeenCalledTimes(1);
   // Balances show for held tokens.
-  expect(screen.getAllByRole('listitem')[0].textContent).toBe('ETHEtherEthereum2$4,000.00');
+  const drawn=(element:Element)=>{const copy=element.cloneNode(true) as Element;for(const visual of copy.querySelectorAll('.hig-animated-number-visual'))visual.remove();return copy.textContent;};
+  expect(drawn(screen.getAllByRole('listitem')[0])).toBe('ETHEtherEthereum2$4,000.00');
+  // A balance that changes while the list is open rolls its changed places.
+  Object.defineProperty(HTMLElement.prototype,'animate',{value:()=>({cancel(){}}),configurable:true});
+  view.rerender(<FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={disconnect} onConnect={()=>{}} onGenerateAddressChange={()=>{}} tokens={[{...tokens[0],balance:3},...tokens.slice(1)]} onSelect={()=>{}}/>);
+  expect(drawn(screen.getAllByRole('listitem')[0])).toBe('ETHEtherEthereum3$6,000.00');expect(screen.getAllByRole('listitem')[0].querySelectorAll('.hig-animated-number-old').length).toBeGreaterThan(1);delete (HTMLElement.prototype as {animate?:unknown}).animate;
   view.rerender(<FromPicker wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} tokens={tokens} onSelect={()=>{}}/>);
   expect(screen.queryByRole('button',{name:'Disconnect wallet'})).toBeNull();expect(document.querySelector('.hig-swap-wallet-id')).toBeTruthy();
  });

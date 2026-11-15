@@ -15,6 +15,7 @@ const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {SwapPanel,swapAction}=require('../../packages/hig/native/src/recipes');
 const {SwapSheet}=require('../../packages/hig/native/src/swap-sheet');
 const shared=require('../../packages/hig/native/src/swap-shared');
+const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 const eth={id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.5,price:2000};
 const usdc={id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:100,price:1};
@@ -32,7 +33,12 @@ const name=(tree,id)=>all(tree,id).map(hit=>hit.props.accessibilityLabel).find(B
 const press=(tree,id)=>act(()=>{node(tree,id).props.onPress(event);});
 const type=(tree,keys)=>{for(const key of keys)press(tree,`swap-key-${key==='<'?'back':key}`);};
 const amount=(tree,side='from')=>node(tree,`swap-amount-${side}`).props.accessibilityValue.text;
-const conversion=(tree,side='from')=>[].concat(node(tree,`swap-conversion-${side}`).props.children).join('');
+// What an element reads as: its accessible name when it has one (a sentence around a live number), else its own text.
+const read=(tree,id)=>{const hit=all(tree,id).find(found=>found.props.accessibilityLabel||found.props.children!==undefined);if(!hit)throw new Error(`No reading for ${id}`);return hit.props.accessibilityLabel??[].concat(hit.props.children).join('');};
+// Live numbers: the readouts under an element (or the element itself when it is one).
+const flows=(tree,id)=>[...new Set(all(tree,id).flatMap(hit=>hit.type===AnimatedNumberReadout?[hit]:hit.findAllByType(AnimatedNumberReadout)))];
+const update=props=>{act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(SwapPanel,{tokens,onSubmit:jest.fn(),...props})));});return root.root;};
+const conversion=(tree,side='from')=>read(tree,`swap-conversion-${side}`);
 const action=tree=>node(tree,'swap-action');
 const actionText=tree=>[].concat(action(tree).props.children).join('');
 const pick=(tree,side,token)=>{press(tree,`swap-slot-${side}`);press(tree,`swap-token-${token.id}`);};
@@ -122,8 +128,7 @@ it('switching the denomination converts the entry and keeps its value',()=>{
 it('shows the host quote when it arrives and an estimate until then',()=>{
  let tree=mount({defaultFrom:eth,defaultTo:usdc});type(tree,'40');expect(amount(tree,'to')).toBe('$40');
  tree=mount({defaultFrom:eth,defaultTo:usdc,received:39.5,fee:0.27,slippage:0.01});type(tree,'40');expect(amount(tree,'to')).toBe('$39.5');
- const text=tree.findAll(n=>typeof n.type==='string'&&n.type==='Text').map(n=>[].concat(n.props.children).join(''));
- expect(text).toContain('Slippage 1%');expect(text).toContain('Fee $0.27');
+ expect(name(tree,'swap-slippage')).toBe('Slippage 1%');expect(read(tree,'swap-fee')).toBe('Fee $0.27');
 });
 it('pushes slippage and fees from settings, pops back to it, and reports a preset or custom slippage',()=>{
  const onSlippageChange=jest.fn();const tree=mount({defaultFrom:eth,defaultTo:usdc,onSlippageChange,fee:0.27,fees:[{label:'Network',usd:0.19},{label:'Relayer',usd:0.08}]});
@@ -275,7 +280,7 @@ it('a fixed destination is a compact, non-interactive To card and makes the pane
  const tree=mount({defaultFrom:eth,destination:{title:'Savings wallet',subtitle:'Ethereum',address,detail:'Arrives in about 2 min'},fee:0.27});
  const card=node(tree,'swap-destination');expect(card.props.onPress).toBeUndefined();expect(card.props.accessibilityRole).toBeUndefined();
  const copy=texts(card);
- for(const text of ['Savings wallet','Ethereum','0x71C7…976F','Arrives in about 2 min','Fee $0.27'])expect(copy).toContain(text);
+ for(const text of ['Savings wallet','Ethereum','0x71C7…976F','Arrives in about 2 min'])expect(copy).toContain(text);expect(read(tree,'swap-destination-fee')).toBe('Fee $0.27');
  // No To token card: no amount, capsule or picker target for that side.
  for(const id of ['swap-card-to','swap-amount-to','swap-mode-to','swap-slot-to','swap-area-to','swap-flip'])expect(exists(tree,id)).toBe(false);
  expect(exists(tree,'swap-one-way')).toBe(true);
@@ -410,3 +415,60 @@ it('draws host artwork elements in place of image URLs, and host content above t
  expect(has(tree,'usdc-art')).toBe(true);expect(has(tree,'paper-art')).toBe(true);
  expect(has(node(tree,'swap-banner'),'pending')).toBe(true);expect(has(node(tree,'swap-footer'),'recent')).toBe(true);
 });
+// Number flow: every number that can change while the card is on screen is an AnimatedNumberReadout, so a new
+// balance, quote, fee or slippage moves its digits instead of swapping the text.
+it('balance, conversion, fee and slippage are live numbers that follow their props, and read as before',()=>{
+ const base={defaultFrom:eth,defaultTo:usdc,fee:0.27,slippage:0.01,amount:'0.01'};let tree=mount(base);
+ expect(flows(tree,'swap-balance')).toHaveLength(1);expect(read(tree,'swap-balance')).toBe('0.5 ETH');
+ expect(flows(tree,'swap-conversion-from')).toHaveLength(1);expect(flows(tree,'swap-conversion-to')).toHaveLength(1);
+ expect(flows(tree,'swap-fee')).toHaveLength(1);expect(flows(tree,'swap-fee')[0].props.value).toBe(0.27);expect(read(tree,'swap-fee')).toBe('Fee $0.27');
+ // The translated sentence is split around the number: its words stay text, and the whole sentence is the accessible name.
+ expect(node(tree,'swap-fee').findAll(n=>n.type==='Text'&&n.props.children==='Fee ')).not.toHaveLength(0);
+ expect(flows(tree,'swap-slippage')).toHaveLength(1);expect(flows(tree,'swap-slippage')[0].props).toMatchObject({value:1,formattedValue:'1',suffix:'%'});expect(name(tree,'swap-slippage')).toBe('Slippage 1%');
+ const balance=flows(tree,'swap-balance')[0],fee=flows(tree,'swap-fee')[0];
+ tree=update({...base,defaultFrom:undefined,from:{...eth,balance:0.75},to:usdc,fee:0.31,slippage:0.005});
+ // Same readout instances, new values: the digits move in place.
+ expect(flows(tree,'swap-balance')[0]).toBe(balance);expect(read(tree,'swap-balance')).toBe('0.75 ETH');
+ expect(flows(tree,'swap-fee')[0].props.value).toBe(0.31);expect(read(tree,'swap-fee')).toBe('Fee $0.31');
+ expect(flows(tree,'swap-slippage')[0].props.formattedValue).toBe('0.5');expect(name(tree,'swap-slippage')).toBe('Slippage 0.5%');
+ expect(fee).toBeDefined();
+});
+it('a loading or unknown fee is plain text, not a number rolling from zero',()=>{
+ let tree=mount({defaultFrom:eth,defaultTo:usdc,fee:0.27,quoteLoading:true});
+ expect(flows(tree,'swap-fee')).toHaveLength(0);expect(read(tree,'swap-fee')).toBe('Fee …');
+ tree=mount({defaultFrom:eth,defaultTo:usdc,fee:null});expect(flows(tree,'swap-fee')).toHaveLength(0);expect(read(tree,'swap-fee')).toBe('Fee —');
+ tree=mount({defaultFrom:eth,destination:{title:'Savings wallet'},fee:0.27,quoteLoading:true});
+ expect(flows(tree,'swap-destination-fee')).toHaveLength(0);expect(read(tree,'swap-destination-fee')).toBe('Fee …');
+ tree=update({defaultFrom:eth,destination:{title:'Savings wallet'},fee:0.27});
+ expect(flows(tree,'swap-destination-fee')).toHaveLength(1);expect(read(tree,'swap-destination-fee')).toBe('Fee $0.27');
+});
+it('a numeric detail row is a live number with its format and affixes; a text detail stays text',()=>{
+ const details=staked=>[{label:'Staked',value:staked,options:{maximumFractionDigits:4},suffix:' HYPE'},{label:'Fee tier',value:'Wood'}];
+ let tree=mount({defaultFrom:{...eth,balance:5},amount:'0.5',details:details(11.0735)});
+ let live=flows(tree,'swap-details');expect(live).toHaveLength(1);expect(live[0].props).toMatchObject({value:11.0735,suffix:' HYPE'});
+ const rows=()=>node(tree,'swap-details').findAll(n=>n.type==='Text').map(n=>[].concat(n.props.children).join(''));
+ expect(rows()).toEqual(expect.arrayContaining(['Staked','11.0735 HYPE','Fee tier','Wood']));
+ tree=update({defaultFrom:{...eth,balance:5},amount:'0.5',details:details(12.5)});
+ expect(flows(tree,'swap-details')[0]).toBe(live[0]);expect(rows()).toContain('12.5 HYPE');expect(rows()).toContain('Wood');
+});
+it('settings show slippage, the fee total and each fee line as live numbers',()=>{
+ const tree=mount({defaultFrom:eth,defaultTo:usdc,controls:true,fee:0.27,fees:[{label:'Network',usd:0.2},{label:'Provider',usd:0.07}],slippage:0.01,onSlippageChange:jest.fn()});
+ press(tree,'swap-settings-button');
+ expect(flows(tree,'swap-setting-slippage')[0].props).toMatchObject({value:1,suffix:'%'});expect(node(tree,'swap-setting-slippage').props.accessibilityLabel).toBe('Slippage: 1%');
+ expect(flows(tree,'swap-setting-fees')[0].props.value).toBe(0.27);expect(node(tree,'swap-setting-fees').props.accessibilityLabel).toBe('Fees: $0.27');
+ press(tree,'swap-setting-fees');
+ expect(flows(tree,'swap-view-fees').map(flow=>flow.props.value)).toEqual([0.2,0.07,0.27]);expect(read(tree,'swap-fee-total')).toBe('$0.27');
+});
+it('an account caption and a destination detail can be live figures that update in place',()=>{
+ const account=available=>({id:'acct',symbol:'USDC',name:'USDC on Hyperliquid',chain:'Hyperliquid',chainId:999,balance:available,price:1,caption:{value:available,options:{style:'currency',currency:'USD'},suffix:' available'}});
+ const props=(available,minutes)=>({from:account(available),destination:{title:'Savings wallet',detail:{value:minutes,prefix:'About ',suffix:' min'}}});
+ let tree=mount(props(234.68,2));
+ const caption=flows(tree,'swap-caption');expect(caption).toHaveLength(1);expect(read(tree,'swap-caption')).toBe('$234.68 available');
+ expect(flows(tree,'swap-destination-detail')).toHaveLength(1);expect(read(tree,'swap-destination-detail')).toBe('About 2 min');
+ tree=update(props(250.1,3));
+ expect(flows(tree,'swap-caption')[0]).toBe(caption[0]);expect(read(tree,'swap-caption')).toBe('$250.10 available');expect(read(tree,'swap-destination-detail')).toBe('About 3 min');
+ // Text stays text.
+ tree=mount({defaultFrom:{...account(5),caption:'$5.00 available'},destination:{title:'Savings wallet',detail:'Arrives soon'}});
+ expect(flows(tree,'swap-caption')).toHaveLength(0);expect(flows(tree,'swap-destination-detail')).toHaveLength(0);
+});
+

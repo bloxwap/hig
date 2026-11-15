@@ -8,10 +8,10 @@ import {AnimatedNumberReadout} from './animated-number.js';
 import {Toast,useTransientNotice} from './status.js';
 import {VerticalAddress,addressKind} from './data.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
-import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHeader,SwapHostContext,SwapKeypad,TokenArt} from './swap-parts.js';
+import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHeader,SwapHostContext,SwapKeypad,SwapNumberText,TokenArt} from './swap-parts.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
-import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
-export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
+import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
+export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 /** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet, and sizes itself, so the panel does not animate its own height. */
 export {SwapHostContext} from './swap-parts.js';
 /** A fixed place the assets go, in place of a token the user picks: a wallet, a staking pool, a trading account. Shown as a compact To card with no amount. */
@@ -24,14 +24,14 @@ export interface SwapDestination {
  /** A wallet address; shown shortened under the subtitle. */
  address?:string;
  /** Muted trailing text, such as an arrival time or a rate. */
- detail?:string;
+ detail?:string|SwapFigure;
  /** Makes the card a button with a trailing chevron, for example to change the recipient. */
  onPress?:()=>void;
  /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */
  pending?:boolean;
 }
 /** One label and value row of the details card. */
-export interface SwapDetail {label:string;value:string}
+export interface SwapDetail {label:string;/** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
 export interface SwapPanelProps {
@@ -166,14 +166,16 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const chainList=useMemo(()=>{if(chains)return chains;const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];},[chains,tokens]);
  const usdText=(value:number)=>formatNumber(value,locale,{style:'currency',currency:'USD'});
  const fraction=entry.includes('.')?Math.min(entry.length-entry.indexOf('.')-1,fromMode==='usd'?2:8):0;
- const small={fontSize:14,lineHeight:19,color:colors.muted} as const;
+ const smallType={fontSize:14,lineHeight:19} as const,small={...smallType,color:colors.muted} as const;
+ // Live numbers: the fee and slippage sentences keep their translated wording around a number that updates in place.
+ const usdOptions={style:'currency',currency:'USD'} as const,feeKnown=!quoteLoading&&fee!=null,feeAmount=quoteLoading?'…':fee!=null?usdText(fee):'—',slippageText=formatPercent(slippage);
  // An account (a token with a `caption`) reads name over caption beside one disc, and offers Max only.
  const account=(side:'from'|'to',token:SwapToken,locked:boolean)=><>
   <View pointerEvents='none' testID={`swap-account-${side}`} style={{flex:1,minWidth:0,flexDirection:'row',alignItems:'center',gap:12}}>
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><TokenArt uri={token.icon} symbol={token.symbol} size={40}/></View>
    <View style={{flex:1,minWidth:0}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:4}}><Text style={{fontWeight:'600',lineHeight:21,flexShrink:1}}>{token.name}</Text>{locked?null:<View testID={`swap-account-chevron-${side}`}><SmallChevron color={colors.muted}/></View>}</View>
-    <Text style={small}>{token.caption}</Text>
+    {typeof token.caption==='object'?<AnimatedNumberReadout testID='swap-caption' {...token.caption} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
    </View>
   </View>
   {side==='from'&&(token.balance??0)>0?<SwapCapsule testID='swap-max' onPress={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
@@ -190,11 +192,11 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
      <SwapCapsule testID='swap-test' onPress={()=>setEntry(unitsToEntry(testAmount(token),fromMode,fromPrice))}><Text style={small}>{t.swapTest}</Text></SwapCapsule>
      <SwapCapsule testID='swap-max' onPress={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>
     </View>
-    <View pointerEvents='none'><Text style={small}>{formatNumber(token.balance,locale,{maximumFractionDigits:6})} {token.symbol}</Text></View>
+    <View pointerEvents='none'><AnimatedNumberReadout testID='swap-balance' value={token.balance} options={{maximumFractionDigits:6}} suffix={` ${token.symbol}`} tone='muted' style={smallType}/></View>
    </View>:null)
    :<View pointerEvents='box-none' style={{alignItems:'flex-end',gap:8,maxWidth:'60%'}}>
-    <SwapCapsule testID='swap-slippage' onPress={()=>show(onSlippageChange?'slippage':'settings')}><Text style={small}>{t.swapSlippage(formatPercent(slippage))}</Text></SwapCapsule>
-    <View pointerEvents='none'><Text style={small}>{t.swapFee(quoteLoading?'…':fee!=null?usdText(fee):'—')}</Text></View>
+    <SwapCapsule testID='swap-slippage' label={t.swapSlippage(slippageText)} onPress={()=>show(onSlippageChange?'slippage':'settings')}><SwapNumberText template={t.swapSlippage} text={slippageText} value={slippage*100} formattedValue={slippageText.slice(0,-1)} suffix='%'/></SwapCapsule>
+    <View pointerEvents='none'><SwapNumberText testID='swap-fee' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/></View>
    </View>}
  </>;
  const receiveView=(view:{address:string;qr?:React.ReactNode;onCopy?:()=>Promise<void>|void})=>{
@@ -226,7 +228,7 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
      </View>
      {denominationSwitch&&<SwapCapsule label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
       <Text accessible={false} style={[small,{opacity:0.5}]}>=</Text>
-      <Text testID={`swap-conversion-${side}`} style={small}>{mode==='token'?usdText(cardUsd):`${formatNumber(cardUnits,locale,{maximumFractionDigits:8,useGrouping:false})}${token?` ${token.symbol}`:''}`}</Text>
+      {mode==='token'?<AnimatedNumberReadout testID={`swap-conversion-${side}`} value={cardUsd} options={usdOptions} tone='muted' style={smallType}/>:<AnimatedNumberReadout testID={`swap-conversion-${side}`} value={cardUnits} options={{maximumFractionDigits:8,useGrouping:false}} suffix={token?` ${token.symbol}`:''} tone='muted' style={smallType}/>}
       <FlipIcon color={colors.muted} size={14}/>
      </SwapCapsule>}
     </View>
@@ -241,11 +243,11 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{art}</View>
    <View style={{flex:1,minWidth:0}}><Text testID='swap-destination-title' style={{fontWeight:destination.pending?'500':'600',lineHeight:21}}>{destination.title}</Text>{destination.subtitle?<Text style={small}>{destination.subtitle}</Text>:null}{destination.address?<Text style={small}>{shortAddress(destination.address)}</Text>:null}</View>
    {destination.detail||fee!==undefined||destination.onPress?<View style={{flexDirection:'row',alignItems:'center',gap:8,maxWidth:'60%'}}>
-    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<Text testID='swap-destination-fee' style={[small,{textAlign:'right'}]}>{t.swapFee(quoteLoading?'…':fee!=null?usdText(fee):'—')}</Text>:null}</View>
+    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{typeof destination.detail==='object'?<AnimatedNumberReadout testID='swap-destination-detail' {...destination.detail} tone='muted' style={{...smallType,textAlign:'right'}}/>:destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<SwapNumberText testID='swap-destination-fee' align='right' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/>:null}</View>
     {destination.onPress?<View testID='swap-destination-chevron'><SmallChevron color={colors.muted} trailing/></View>:null}
    </View>:null}
   </View>:null;
-  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text><Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text></View>)}</View>:null;
+  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
   const shape:ViewStyle={backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'};
   // With a pressable destination the whole card is the button; the rows inside it are read as part of it.
   return destination?.onPress?<Pressable accessibilityRole='button' accessibilityLabel={destination.title} testID='swap-destination' onPress={destination.onPress} style={({pressed})=>[shape,{opacity:pressed?0.85:1}]}><Raised>{row}{rows}</Raised></Pressable>:<View testID='swap-destination' style={shape}><Raised>{row}{rows}</Raised></View>;

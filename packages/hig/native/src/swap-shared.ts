@@ -1,6 +1,8 @@
 import type React from 'react';
 // Pure helpers for the SwapPanel recipe. Same behaviour as the web recipe's helpers; kept separate so native never imports the react entry.
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
+/** A live figure in place of a line of text: formatted with `options` between `prefix` and `suffix`, and updated through `AnimatedNumberReadout` when `value` changes. For example `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
+export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 export interface SwapToken {
  /** Unique per asset and chain, for example `${chainId}-${address}`. */
  id:string;symbol:string;name:string;
@@ -14,8 +16,8 @@ export interface SwapToken {
  balance?:number|null;
  /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */
  price?:number|null;
- /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */
- caption?:string;
+ /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */
+ caption?:string|SwapFigure;
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
 }

@@ -1,15 +1,15 @@
 import React,{useContext,useMemo,useState} from 'react';
 import {FlatList,Pressable,View,useWindowDimensions,type StyleProp,type ViewStyle} from 'react-native';
-import {formatNumber} from '@bloxwap/hig/contracts';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {Input,SearchInput} from './field.js';
 import {Filter} from './radio-group.js';
+import {AnimatedNumberReadout} from './animated-number.js';
 import {SwitchRow} from './switch-row.js';
 import {LeaveIcon,LockIcon,ScanIcon,SwapHostContext,TokenIcon,WalletIcon} from './swap-parts.js';
 import {addressColor,pickerRows,shortAddress,type SwapChain,type SwapToken,type SwapWallet} from './swap-shared.js';
-export type {SwapChain,SwapToken,SwapWallet} from './swap-shared.js';
+export type {SwapChain,SwapFigure,SwapToken,SwapWallet} from './swap-shared.js';
 /** The searchable token list both pickers share. */
 export interface PickerListProps {
  /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */
@@ -29,7 +29,7 @@ export interface PickerListProps {
 /** Chains present in a token list, in first-seen order. */
 function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}
 function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,side,title}:PickerListProps&{side:'from'|'to';title:string}){
- const {locale,direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();const window=useWindowDimensions();
+ const {direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();const window=useWindowDimensions();
  // A sheet passes its backend's list through the host context so drags hand off to the sheet.
  const List=useContext(SwapHostContext).listComponent??FlatList;
  const [query,setQuery]=useState('');const [chain,pickChain]=useState('');
@@ -50,7 +50,7 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
     <Pressable accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
      <TokenIcon token={token}/>
      <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
-     {balance>0?<View style={{alignItems:'flex-end'}}><Text style={{fontWeight:'600'}}>{formatNumber(balance,locale,{maximumFractionDigits:6})}</Text>{price>0?<Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{formatNumber(balance*price,locale,{style:'currency',currency:'USD'})}</Text>:null}</View>:null}
+     {balance>0?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
     </Pressable>
    </View>;}}/>
  </>;
