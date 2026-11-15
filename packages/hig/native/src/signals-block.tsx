@@ -2,7 +2,7 @@ import React from 'react';
 import {View} from 'react-native';
 import {useColors,useHIG} from './provider.js';
 import {Text} from './surface.js';
-import {Button} from './button.js';
+import {SwapCapsule} from './swap-parts.js';
 import {SeverityIcon} from './icons.js';
 import {SettingCard,SettingHeader,SettingSwitch} from './setting-switch.js';
 /** One signal the viewer can turn on. */
@@ -12,7 +12,7 @@ export interface SignalsGroup {
  id:string;title:string;
  /** Shows the verified mark after the title. */
  verified?:boolean;
- /** A capsule on the trailing edge of the heading: How it works. The host opens its own explanation. */
+ /** A small pill on the trailing edge of the heading: How it works. The host opens its own explanation. */
  help?:{label:string;onSelect:()=>void};
  items:readonly SignalsItem[];
 }
@@ -28,7 +28,7 @@ export interface SignalsBlockProps {
  headerAction?:React.ReactNode;
  testID?:string;
 }
-/** The signals the viewer receives, as a screen, in groups: each group has a heading with an optional verified mark and a help capsule, and its signals as switches with a line of explanation, sharing one rounded container. */
+/** The signals the viewer receives, as a screen, in groups: each group has a heading with an optional verified mark and a small help pill, and its signals as switches with a line of explanation, sharing one rounded container. */
 export function SignalsBlock({title,groups,verifiedLabel,onBack,headerAction,testID}:SignalsBlockProps){
  const colors=useColors(),{direction}=useHIG();
  const sections=groups.map(group=>{
@@ -39,7 +39,7 @@ export function SignalsBlock({title,groups,verifiedLabel,onBack,headerAction,tes
      <Text accessible={false} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:colors.muted}}>{group.title}</Text>
      {group.verified?<View testID={`${id}-verified`} style={{transform:[{scale:0.8}]}}><SeverityIcon kind='success' color={colors.warning}/></View>:null}
     </View>
-    {group.help?<Button testID={`${id}-help`} intent='secondary' onPress={group.help.onSelect} style={{minHeight:44,paddingVertical:8,paddingHorizontal:16}}>{group.help.label}</Button>:null}
+    {group.help?<SwapCapsule testID={`${id}-help`} onPress={group.help.onSelect}><Text style={{fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{group.help.label}</Text></SwapCapsule>:null}
    </View>
    {group.items.length>0?<View testID={`${id}-items`} style={{gap:2,borderRadius:20,overflow:'hidden'}}>{group.items.map(item=><SettingCard key={item.id} joined testID={`${id}-${item.id}`}><SettingSwitch testID={`${id}-${item.id}-switch`} label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} onCheckedChange={item.onCheckedChange}/></SettingCard>)}</View>:null}
   </View>;

@@ -13,7 +13,7 @@ export type TargetKind='take-profit'|'stop-loss';
 /** How the target is expressed: profit or loss in dollars, a price, or a share of the position. */
 export type TargetUnit='dollar'|'price'|'percent';
 /** The three prices on the bar. */
-export type TargetPrice='entry'|'mark'|'trigger';
+export type TargetPrice='entry'|'trigger';
 /** Every trading word of the block. HIG's built-in strings hold no trading terms, so the host supplies them, translated; only Cancel has a built-in default. */
 export interface TargetBlockLabels {
  /** Heading: Take Profit, Stop Loss. */
@@ -22,7 +22,7 @@ export interface TargetBlockLabels {
  submit:string;
  /** Defaults to the built-in Cancel. */
  cancel?:string;
- entry:string;mark:string;
+ entry:string;
  /** The price the order triggers at: If triggered. */
  trigger:string;
  /** Name of the unit control. */
@@ -42,7 +42,7 @@ export interface TargetBlockProps {
  orderType?:string;
  /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */
  note?:string;
- entry:number;mark?:number|null;
+ entry:number;
  /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */
  trigger?:number|null;
  unit:TargetUnit;
@@ -84,32 +84,30 @@ export function targetFormat(unit:TargetUnit,priceOptions:Intl.NumberFormatOptio
 }
 /**
  * Where each known price sits on the bar, as a fraction of its width from the low-price edge, the prices in price order, and
- * the stretch (`from` to `to`) the price still has to travel: from the mark, or from entry while the mark is unknown, to the trigger.
+ * the stretch (`from` to `to`) between them: the whole bar, from entry to the trigger.
  * Without a trigger there is no stretch.
  */
-export function targetLayout({entry,mark,trigger}:{entry:number;mark?:number|null;trigger?:number|null}):{positions:Partial<Record<TargetPrice,number>>;order:TargetPrice[];from:number;to:number}{
+export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}):{positions:Partial<Record<TargetPrice,number>>;order:TargetPrice[];from:number;to:number}{
  const values:Partial<Record<TargetPrice,number>>={};
- if(known(entry))values.entry=entry;if(known(mark))values.mark=mark;if(known(trigger))values.trigger=trigger;
+ if(known(entry))values.entry=entry;if(known(trigger))values.trigger=trigger;
  const kinds=Object.keys(values) as TargetPrice[],prices=kinds.map(kind=>values[kind]!);
  if(!kinds.length)return {positions:{},order:[],from:0.5,to:0.5};
  const low=Math.min(...prices),span=Math.max(...prices)-low;
  const positions:Partial<Record<TargetPrice,number>>={};for(const kind of kinds)positions[kind]=span>0?(values[kind]!-low)/span:0.5;
- const rank:Record<TargetPrice,number>={entry:0,mark:1,trigger:2};
+ const rank:Record<TargetPrice,number>={entry:0,trigger:1};
  const order=[...kinds].sort((a,b)=>values[a]!-values[b]!||rank[a]-rank[b]);
- const start=positions.mark??positions.entry,end=positions.trigger;
+ const start=positions.entry,end=positions.trigger;
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** A take profit or a stop loss on one position as a screen: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. The bar is decorative; each price reads its label and value. */
-export function TargetBlock({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
+export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();const [open,setOpen]=useState(false);
  const info=note&&labels.info&&!headerAction?labels.info:undefined;
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
- const {positions,order,from,to}=targetLayout({entry,mark,trigger:target});
- const prices:Record<TargetPrice,number|null|undefined>={entry,mark,trigger:target};
+ const {positions,order,from,to}=targetLayout({entry,trigger:target});
+ const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
  const stop=kind==='stop-loss',tone=stop?colors.negative:colors.positive,intent=stop?'destructive' as const:'primary' as const;
- const triggerLeads=(positions.trigger??0)<(positions.mark??positions.entry??0);
- // The entry price is a tick of its own only while the mark is the near end of the stretch.
- const tick=positions.mark!==undefined&&positions.trigger!==undefined?positions.entry:undefined;
+ const triggerLeads=(positions.trigger??0)<(positions.entry??0);
  const align=(index:number)=>order.length>1&&index===order.length-1?'flex-end' as const:order.length===3&&index===1?'center' as const:'flex-start' as const;
  const part=(grow:number)=>({flexGrow:grow,flexShrink:1,flexBasis:0,backgroundColor:fills.raised});
  return <View testID={testID} style={{padding:16}}>
@@ -129,7 +127,6 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,mark,trig
     <View style={part(from)}/>
     {to>from?<View testID='target-move' style={{flexGrow:to-from,flexShrink:1,flexBasis:0,minWidth:6,backgroundColor:tone,borderStartWidth:3,borderEndWidth:3,borderStartColor:triggerLeads?tone:colors.text,borderEndColor:triggerLeads?colors.text:tone}}/>:null}
     <View style={part(1-to)}/>
-    {tick===undefined?null:<View testID='target-entry-tick' style={{position:'absolute',top:0,bottom:0,width:3,start:`${tick*100}%`,marginStart:tick<=0?0:tick>=1?-3:-1.5,backgroundColor:colors.background}}/>}
    </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>
     {order.map((price,index)=><View key={price} accessible accessibilityLabel={`${labels[price]}, ${formatNumberReadout(prices[price],locale,priceOptions).text}`} testID={`target-${price}`} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
