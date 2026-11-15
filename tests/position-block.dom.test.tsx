@@ -59,4 +59,8 @@ describe('PositionBlock',()=>{
   const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-groups {'))??'';
   expect(rule).toContain('gap:24px');
  });
+ it('draws the summary directly on the screen, with no card',()=>{
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-details {'))??'';
+  expect(rule).toContain('padding-inline:20px');expect(rule).not.toMatch(/background|border-radius/);
+ });
 });

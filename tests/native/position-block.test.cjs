@@ -37,7 +37,7 @@ it('reads the summary in order: live figures, host text, tones, and an unknown f
  let view=mount();
  expect(lines(view)).toEqual(['Notional, $400','Fee, $0.53','Liquidation, -2.5%']);
  const flows=view.findAllByType(AnimatedNumberReadout);expect(flows.map(flow=>[flow.props.value,flow.props.tone])).toEqual([[400,'text'],[0.53,'negative'],[-0.025,'negative']]);
- expect(flat(host(view,'position-details'))).toMatchObject({gap:12,marginTop:16,paddingHorizontal:20,borderRadius:20,backgroundColor:nativeSrgb.surface});
+ expect(flat(host(view,'position-details'))).toMatchObject({gap:12,marginTop:16,paddingHorizontal:20});expect(flat(host(view,'position-details')).backgroundColor).toBeUndefined();expect(flat(host(view,'position-details')).borderRadius).toBeUndefined();
  view=mount({details:[{id:'fee',label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:null},tone:'positive'},{label:'Size',value:{value:10,prefix:'~',suffix:' USDC'}}],note:'Minimum $10 margin.'});
  expect(lines(view)).toEqual(['Fee, 2% of profit','Bust, —','Size, ~10 USDC']);expect(has(view,'position-detail-fee')).toBe(true);
  const words=host(view,'position-detail-fee').findAll(node=>node.type==='Text'&&node.props.children==='2% of profit')[0];expect(flat(words).color).toBe(nativeSrgb.muted);
