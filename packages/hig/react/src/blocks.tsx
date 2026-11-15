@@ -9,5 +9,7 @@ export {TokenActionCard,tokenActionLabel,type TokenActionCardProps,type TokenAct
 export {ManagePositionCard,positionCorridor,type ManagePositionCardProps,type ManagePositionCardLabels,type ManagePositionCardAction,type ManagePositionCardSummary} from './blocks/manage-position-card.js';
 export {TargetCard,targetLayout,targetFormat,type TargetCardProps,type TargetCardLabels,type TargetKind,type TargetUnit,type TargetPrice} from './blocks/target-card.js';
 export {PositionCard,type PositionCardProps,type PositionCardDetail,type PositionCardFigure,type PositionCardRow,type PositionCardFlag} from './blocks/position-card.js';
+export {TradeHistoryCard,tradeHistoryTitle,type TradeHistoryCardProps,type TradeHistoryLabels} from './blocks/trade-history-card.js';
+export {TradeHistoryDetailCard,type TradeHistoryDetailCardProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './blocks/trade-history-detail-card.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './blocks/pickers.js';
 export {SwapPanel,swapAction,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-panel.js';

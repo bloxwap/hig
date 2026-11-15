@@ -586,6 +586,23 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 @media(prefers-reduced-motion:reduce) { .hig-target-rest,.hig-target-move,.hig-target-entry { transition:none; } }
 [data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-target-entry { transition:none; }
 @media(forced-colors:active) { .hig-target-move,.hig-target-entry { forced-color-adjust:none; } }
+/* TradeHistoryCard: a BarPnl for a closed trade; as a button, the hit area lies over the card.
+   TradeHistoryDetailCard: header, the asset row, the result and the figures 8px apart, then the actions in one row 16px below. */
+.hig-trade-history-card { position:relative;width:100%;min-width:0;border-radius:var(--hig-radius-xl,14px); }
+.hig-trade-history-card:has(> .hig-swap-hit:active) > .hig-surface { background:var(--hig-nested); }
+.hig-trade-pnl[data-tone='up'],.hig-trade-result[data-tone='up'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-positive); }
+.hig-trade-pnl[data-tone='down'],.hig-trade-result[data-tone='down'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-negative); }
+.hig-trade-detail { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-trade-summary { display:flex;flex-direction:column;gap:8px; }
+.hig-trade-side { font-weight:600;text-transform:uppercase; }
+.hig-trade-result { display:flex;flex-direction:column;align-items:center;gap:8px;padding-block:24px;text-align:center; }
+.hig-trade-caption { color:var(--hig-muted);font-size:.75rem;line-height:1.5;font-weight:600;letter-spacing:.04em;text-transform:uppercase; }
+.hig-trade-figure { font-size:clamp(2rem,10vw,2.5rem);line-height:1.2;font-weight:700;overflow-wrap:anywhere; }
+.hig-trade-return { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-trade-result .hig-number,.hig-trade-pnl .hig-number { font-family:inherit; }
+.hig-trade-details { padding:var(--hig-space-xl,20px); }
+.hig-trade-actions { display:flex;gap:var(--hig-action-gap); }
+.hig-trade-actions > * { flex:1 1 0;min-width:0; }
 /* BarMark: one bar divided among its elements. Segments are flex shares of the bar with a 2px gap that shows the card, and the
    remainder of a larger total is an empty track segment. Colours come from tone roles (or a host colour) through one custom property. */
 .hig-bar-mark { display:flex;flex-direction:column;gap:12px; }
@@ -653,7 +670,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-bar-pnl-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
 .hig-bar-pnl-rest,.hig-bar-pnl-move { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
 .hig-bar-pnl-rest { background:var(--hig-fill-raised); }
-.hig-bar-pnl-move { box-sizing:border-box;min-width:6px;background:color-mix(in srgb,var(--hig-bar-pnl-tone) 24%,var(--hig-fill-raised));border-inline:3px solid var(--hig-text); }
+.hig-bar-pnl-move { box-sizing:border-box;min-width:6px;background:var(--hig-bar-pnl-tone);border-inline:3px solid var(--hig-text); }
 .hig-bar-pnl-move[data-lead='mark'] { border-inline-start-color:var(--hig-bar-pnl-tone); }
 .hig-bar-pnl-move[data-lead='entry'] { border-inline-end-color:var(--hig-bar-pnl-tone); }
 .hig-bar-pnl-liquidation { position:absolute;inset-block:0;width:3px;margin-inline-start:-1.5px;background:var(--hig-negative);transition:inset-inline-start var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }

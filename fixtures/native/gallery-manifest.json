@@ -523,10 +523,19 @@
       "support": "renderer"
     },
     {
-      "name": "PositionCard",
+      "name": "TradeHistoryCard",
       "states": [
         "default",
-        "paper-trade"
+        "loss",
+        "no-card"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TradeHistoryDetailCard",
+      "states": [
+        "default",
+        "loss"
       ],
       "support": "renderer"
     },

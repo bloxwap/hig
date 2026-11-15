@@ -154,6 +154,8 @@
         "AccountCard",
         "TokenActionCard",
         "ManagePositionCard",
+        "TradeHistoryCard",
+        "TradeHistoryDetailCard",
         "TargetCard",
         "PositionCard",
         "TradeEntry",

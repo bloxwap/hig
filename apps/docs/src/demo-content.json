@@ -401,8 +401,12 @@
       "title": "TargetCard"
     },
     {
-      "route": "components/position-card",
-      "title": "PositionCard"
+      "route": "components/trade-history-card",
+      "title": "TradeHistoryCard"
+    },
+    {
+      "route": "components/trade-history-detail-card",
+      "title": "TradeHistoryDetailCard"
     },
     {
       "route": "components/token-action-card",
@@ -1096,13 +1100,24 @@
       ]
     },
     {
-      "name": "PositionCard",
-      "route": "components/position-card",
+      "name": "TradeHistoryCard",
+      "route": "components/trade-history-card",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "paper-trade"
+        "loss",
+        "no-card"
+      ]
+    },
+    {
+      "name": "TradeHistoryDetailCard",
+      "route": "components/trade-history-detail-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss"
       ]
     },
     {

@@ -23,6 +23,8 @@ export interface BarPnlProps extends Omit<React.HTMLAttributes<HTMLElement>,'tit
  priceOptions?:Intl.NumberFormatOptions;
  /** Shortens the three prices for narrow screens: `$64,700` for `$64,700.00`, `$142.96`, `$0.4821`. Trailing zeros are dropped. Default `false`. */
  compact?:boolean;
+ /** Scales the bar to the prices themselves, so the stretch from entry to mark fills it. For a finished trade, where the move is the whole story. Default `false`. */
+ fit?:boolean;
  /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and readouts keep their spacing. Default `true`. */
  surface?:boolean;
 }
@@ -38,14 +40,16 @@ export function barPnlCompactOptions(value:number|null|undefined,base:Intl.Numbe
  * whether the position is in profit. With a liquidation price the bar runs from it to the same distance on the other side
  * of entry, so entry sits in the middle; a mark beyond either end stretches the bar. Without one the bar is centred on entry.
  */
-export function barPnlLayout({entry,mark,liquidation,side}:{entry:number;mark?:number|null;liquidation?:number|null;side?:BarPnlSide}):{side:BarPnlSide;result:BarPnlResult;positions:Partial<Record<BarPnlKind,number>>;order:BarPnlKind[]}{
+export function barPnlLayout({entry,mark,liquidation,side,fit}:{entry:number;mark?:number|null;liquidation?:number|null;side?:BarPnlSide;fit?:boolean}):{side:BarPnlSide;result:BarPnlResult;positions:Partial<Record<BarPnlKind,number>>;order:BarPnlKind[]}{
  const liq=finite(liquidation)?liquidation:null;
  const direction=side??(liq!==null&&liq>entry?'short':'long');
  const result:BarPnlResult=!finite(entry)||!finite(mark)||mark===entry?'flat':(mark>entry)===(direction==='long')?'profit':'loss';
  if(!finite(entry))return {side:direction,result,positions:{},order:[]};
  const price=finite(mark)?mark:entry;
  const reach=liq!==null?Math.abs(entry-liq):Math.max(Math.abs(price-entry)*2,Math.abs(entry)*0.01,Number.MIN_VALUE);
- const low=Math.min(entry-reach,price),high=Math.max(entry+reach,price),span=high-low;
+ // `fit` scales the bar to the prices themselves, so the stretch from entry to mark fills it.
+ const points=liq!==null?[entry,price,liq]:[entry,price];
+ const low=fit?Math.min(...points):Math.min(entry-reach,price),high=fit?Math.max(...points):Math.max(entry+reach,price),span=high-low;
  const at=(value:number)=>span>0?Math.min(1,Math.max(0,(value-low)/span)):0.5;
  const positions:Partial<Record<BarPnlKind,number>>={entry:at(entry),mark:at(price)};
  if(liq!==null)positions.liquidation=at(liq);
@@ -56,9 +60,9 @@ export function barPnlLayout({entry,mark,liquidation,side}:{entry:number;mark?:n
  return {side:direction,result,positions,order};
 }
 /** A position's profit or loss as one bar: the stretch between entry and mark is tinted, a tick marks each price, and the liquidation, mark and entry prices read under the bar in price order, so mark and entry trade places as the position moves. */
-export function BarPnl({entry,mark,liquidation,side,labels,title,description,priceOptions=usd,compact=false,surface=true,className,...rest}:BarPnlProps){
+export function BarPnl({entry,mark,liquidation,side,labels,title,description,priceOptions=usd,compact=false,fit=false,surface=true,className,...rest}:BarPnlProps){
  const id=useId();
- const {result,positions,order}=barPnlLayout({entry,mark,liquidation,side});
+ const {result,positions,order}=barPnlLayout({entry,mark,liquidation,side,fit});
  const from=Math.min(positions.entry??0.5,positions.mark??0.5),to=Math.max(positions.entry??0.5,positions.mark??0.5);
  const values:Record<BarPnlKind,number|null|undefined>={liquidation,mark,entry};
  return <section {...rest} className={`${surface?'hig-surface ':''}hig-bar-pnl${className?` ${className}`:''}`} data-surface={surface?undefined:'false'} data-result={result} aria-labelledby={title?id:undefined}>

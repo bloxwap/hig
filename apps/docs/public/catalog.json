@@ -659,13 +659,24 @@
       ]
     },
     {
-      "name": "PositionCard",
-      "route": "components/position-card",
+      "name": "TradeHistoryCard",
+      "route": "components/trade-history-card",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "paper-trade"
+        "loss",
+        "no-card"
+      ]
+    },
+    {
+      "name": "TradeHistoryDetailCard",
+      "route": "components/trade-history-detail-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss"
       ]
     },
     {
