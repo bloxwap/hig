@@ -547,8 +547,8 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
         "static": {
-          "web": "<C.ListGroup><C.ListRow label='Version' value='0.5.2'/></C.ListGroup>",
-          "native": "<C.ListGroup><C.ListRow label='Version' value='0.5.2'/></C.ListGroup>"
+          "web": "<C.ListGroup><C.ListRow label='Version' value='0.6.0'/></C.ListGroup>",
+          "native": "<C.ListGroup><C.ListRow label='Version' value='0.6.0'/></C.ListGroup>"
         }
       }
     },
@@ -1418,8 +1418,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.5.2')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.6.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.6.0')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.6.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
