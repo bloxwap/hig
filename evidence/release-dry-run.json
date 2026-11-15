@@ -4,7 +4,7 @@
   "tagsCreated": false,
   "releasesCreated": false,
   "channel": "stable-simulation",
-  "sourceCommit": "6d24dde7079e3babf1718c1c47891a95a62a1c5c",
+  "sourceCommit": "8a411152269f36659989860cc027be55ccba5ccb",
   "sourceTreeDirty": true,
   "sourceVersion": "0.6.0",
   "artifactVersion": "0.6.0",
@@ -15,9 +15,9 @@
       "package": "@bloxwap/hig",
       "version": "0.6.0",
       "file": "bloxwap-hig-0.6.0.tgz",
-      "bytes": 5535553,
-      "unpackedBytes": 15312957,
-      "sha256": "efc5446b63ca89ae0bbc2efc43acc0c6b6f0f4ad3193c0abf4064076fb458b0e",
+      "bytes": 5535588,
+      "unpackedBytes": 15312982,
+      "sha256": "c64fa82fb2ee219d05b97e2945b609b55ff55195cccef80cb9463d95c8bf20bb",
       "files": [
         "LICENSE",
         "README.md",
@@ -419,7 +419,7 @@
         "native/dist/position-block.d.ts": 2392,
         "native/dist/position-block.js": 4992,
         "native/dist/profile-block.d.ts": 1663,
-        "native/dist/profile-block.js": 5726,
+        "native/dist/profile-block.js": 5759,
         "native/dist/provider.d.ts": 5990,
         "native/dist/provider.js": 7020,
         "native/dist/radio-group.d.ts": 1199,
@@ -520,7 +520,7 @@
         "react/dist/blocks/position-block.d.ts": 2371,
         "react/dist/blocks/position-block.js": 2269,
         "react/dist/blocks/profile-block.d.ts": 2213,
-        "react/dist/blocks/profile-block.js": 2918,
+        "react/dist/blocks/profile-block.js": 2910,
         "react/dist/blocks/reward-block.d.ts": 4140,
         "react/dist/blocks/reward-block.js": 5313,
         "react/dist/blocks/screen-header.d.ts": 487,
@@ -654,8 +654,8 @@
   "packedSizes": {
     "package": {
       "file": "bloxwap-hig-0.6.0.tgz",
-      "bytes": 5535553,
-      "unpackedBytes": 15312957
+      "bytes": 5535588,
+      "unpackedBytes": 15312982
     },
     "webTokens": {
       "entry": "@bloxwap/hig/tokens",
@@ -773,8 +773,8 @@
       ]
     },
     "docsJS": {
-      "raw": 2397148,
-      "gzip": 642168
+      "raw": 2397140,
+      "gzip": 642171
     },
     "docsCSS": {
       "raw": 171228
