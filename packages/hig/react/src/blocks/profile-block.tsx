@@ -55,8 +55,8 @@ export function ProfileBlock({name,address,avatar,status,onEditName,onShowAddres
  const {messages}=useHIG();
  return <section {...rest} className={`hig-profile-block${className?` ${className}`:''}`}>
   <div className='hig-profile-bar'>
-   <span>{onShowAddress&&<IconButton intent='secondary' label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}</IconButton>}</span>
-   <span>{onClose&&<IconButton intent='secondary' label={messages.close??en.close} onClick={onClose}><SwapIcon name='close'/></IconButton>}</span>
+   <span>{onShowAddress&&<IconButton intent='ghost' label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}</IconButton>}</span>
+   <span>{onClose&&<IconButton intent='ghost' label={messages.close??en.close} onClick={onClose}><SwapIcon name='close'/></IconButton>}</span>
   </div>
   <div className='hig-profile-identity'>
    <span className='hig-profile-avatar' style={avatar==null&&address?{background:addressGradient(address)}:undefined}>
