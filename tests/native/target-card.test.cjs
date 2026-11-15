@@ -61,13 +61,13 @@ it('titles the price card with the position and order type and reads the three p
  expect(text(host(view,'target-note'))).toBe('Fills at your target price or better.');
  expect(order(view)).toEqual(['Mark, $64,500.00','Entry, $64,700.00','If triggered, $65,000.00']);
  // The stretch runs from the mark to the trigger, the trigger edge in the positive role, with entry as a tick.
- expect(flat(host(view,'target-move'))).toMatchObject({flexGrow:1,borderStartColor:nativeSrgb.text,borderEndColor:nativeSrgb.buy});expect(flat(host(view,'target-entry-tick')).start).toBe('40%');
+ expect(flat(host(view,'target-move'))).toMatchObject({flexGrow:1,backgroundColor:nativeSrgb.buy,borderStartColor:nativeSrgb.text,borderEndColor:nativeSrgb.buy});expect(flat(host(view,'target-entry-tick')).backgroundColor).toBe(nativeSrgb.background);expect(flat(host(view,'target-entry-tick')).start).toBe('40%');
  expect(host(view,'target-bar').props.importantForAccessibility).toBe('no-hide-descendants');
  const trigger=host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0];expect(trigger.props).toMatchObject({value:65000,tone:'positive'});
  // A stop loss under the mark leads with the trigger in the negative role.
  view=mount({kind:'stop-loss',mark:64800,trigger:64600,value:-0.5});
  expect(order(view)).toEqual(['If triggered, $64,600.00','Entry, $64,700.00','Mark, $64,800.00']);
- expect(flat(host(view,'target-move'))).toMatchObject({borderStartColor:nativeSrgb.sell,borderEndColor:nativeSrgb.text});expect(host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0].props.tone).toBe('negative');
+ expect(flat(host(view,'target-move'))).toMatchObject({backgroundColor:nativeSrgb.sell,borderStartColor:nativeSrgb.sell,borderEndColor:nativeSrgb.text});expect(host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0].props.tone).toBe('negative');
  // Without a mark the stretch starts at entry with no separate tick; without a trigger there is no stretch; without host text there is no title row.
  view=mount({mark:null});expect(prices(view)).toEqual(['target-entry','target-trigger']);expect(has(view,'target-entry-tick')).toBe(false);expect(has(view,'target-move')).toBe(true);
  view=mount({trigger:undefined});expect(has(view,'target-move')).toBe(false);expect(prices(view)).toEqual(['target-entry','target-mark']);expect(has(view,'target-position')).toBe(false);expect(has(view,'target-note')).toBe(false);

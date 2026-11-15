@@ -1,7 +1,6 @@
 import React,{useState} from 'react';
 import {Pressable,View} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Surface,Text} from './surface.js';
 import {Button,IconButton} from './button.js';
@@ -128,9 +127,9 @@ export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigg
    </View>:null}
    <View {...hidden} testID='target-bar' style={{flexDirection:'row',height:24,borderRadius:8,overflow:'hidden'}}>
     <View style={part(from)}/>
-    {to>from?<View testID='target-move' style={{flexGrow:to-from,flexShrink:1,flexBasis:0,minWidth:6,backgroundColor:withAlpha(tone,0.24),borderStartWidth:3,borderEndWidth:3,borderStartColor:triggerLeads?tone:colors.text,borderEndColor:triggerLeads?colors.text:tone}}/>:null}
+    {to>from?<View testID='target-move' style={{flexGrow:to-from,flexShrink:1,flexBasis:0,minWidth:6,backgroundColor:tone,borderStartWidth:3,borderEndWidth:3,borderStartColor:triggerLeads?tone:colors.text,borderEndColor:triggerLeads?colors.text:tone}}/>:null}
     <View style={part(1-to)}/>
-    {tick===undefined?null:<View testID='target-entry-tick' style={{position:'absolute',top:0,bottom:0,width:3,start:`${tick*100}%`,marginStart:tick<=0?0:tick>=1?-3:-1.5,backgroundColor:colors.muted}}/>}
+    {tick===undefined?null:<View testID='target-entry-tick' style={{position:'absolute',top:0,bottom:0,width:3,start:`${tick*100}%`,marginStart:tick<=0?0:tick>=1?-3:-1.5,backgroundColor:colors.background}}/>}
    </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>
     {order.map((price,index)=><View key={price} accessible accessibilityLabel={`${labels[price]}, ${formatNumberReadout(prices[price],locale,priceOptions).text}`} testID={`target-${price}`} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
