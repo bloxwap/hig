@@ -114,6 +114,22 @@
         "entry": "blocks/account-card",
         "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. */\n    price?: number | null;\n    /** Dollar value of the holding. Defaults to `balance × price`. */\n    value?: number | null;\n}"
       },
+      "LanguageCard": {
+        "entry": "blocks/language-card",
+        "signature": "export declare function LanguageCard({ title, onBack, headerAction, languages, value, onSelect, search, autoFocus, className, ...rest }: LanguageCardProps): React.JSX.Element;"
+      },
+      "filterLanguages": {
+        "entry": "blocks/language-card",
+        "signature": "export declare function filterLanguages(languages: readonly LanguageOption[], query: string): LanguageOption[];"
+      },
+      "LanguageCardProps": {
+        "entry": "blocks/language-card",
+        "signature": "export interface LanguageCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
+      },
+      "LanguageOption": {
+        "entry": "blocks/language-card",
+        "signature": "export interface LanguageOption {\n    /** Stable id the host switches on, usually a BCP 47 tag such as `pt-BR`. */\n    code: string;\n    /** The language in its own words: `Français`. */\n    name: string;\n    /** The language in the reader's words, shown under the name: `French`. Omit it where it would repeat the name. */\n    description?: string;\n    /** Round artwork, usually a flag: an image URL or a host element. Without it the row shows the first letters of the code. */\n    flag?: string | React.ReactElement;\n}"
+      },
       "TokenActionCard": {
         "entry": "blocks/token-action-card",
         "signature": "export declare function TokenActionCard({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, className, ...rest }: TokenActionCardProps): React.JSX.Element;"
@@ -887,6 +903,22 @@
       "MarketingHero": {
         "entry": "blocks",
         "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
+      },
+      "LanguageCard": {
+        "entry": "language-card",
+        "signature": "export declare function LanguageCard({ title, onBack, headerAction, languages, value, onSelect, search, testID }: LanguageCardProps): React.JSX.Element;"
+      },
+      "filterLanguages": {
+        "entry": "language-card",
+        "signature": "export declare function filterLanguages(languages: readonly LanguageOption[], query: string): LanguageOption[];"
+      },
+      "LanguageCardProps": {
+        "entry": "language-card",
+        "signature": "export interface LanguageCardProps {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    testID?: string;\n}"
+      },
+      "LanguageOption": {
+        "entry": "language-card",
+        "signature": "export interface LanguageOption {\n    /** Stable id the host switches on, usually a BCP 47 tag such as `pt-BR`. */\n    code: string;\n    /** The language in its own words: `Français`. */\n    name: string;\n    /** The language in the reader's words, shown under the name: `French`. Omit it where it would repeat the name. */\n    description?: string;\n    /** Round artwork, usually a flag: an image URL or a host element. Without it the row shows the first letters of the code. */\n    flag?: string | React.ReactElement;\n}"
       },
       "TokenActionCard": {
         "entry": "token-action-card",

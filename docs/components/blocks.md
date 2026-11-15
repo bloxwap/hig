@@ -2,11 +2,11 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `ManagePositionCard`, `TradeHistoryCard`, `TradeHistoryDetailCard`, `TargetCard`, `PositionCard`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `LanguageCard`, `ManagePositionCard`, `TradeHistoryCard`, `TradeHistoryDetailCard`, `TargetCard`, `PositionCard`, `InstallCommand`, and `MarketingHero`.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
-Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountCard` and `TokenActionCard`, exist only under `blocks`.
+Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountCard` and `TokenActionCard`, `LanguageCard`, exist only under `blocks`.
 
 ## API and anatomy
 
@@ -20,6 +20,7 @@ All data and actions are supplied by the host application.
 | `TokenActionCard` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
 | `TradeHistoryCard` | One closed trade: the asset, side and leverage, the net profit and loss, and a bar from the entry price to the exit price. Details below. |
 | `TradeHistoryDetailCard` | The full record of one closed trade: the asset, the net result as the headline figure, the trade's figures as rows, and the host's actions. Details below. |
+| `LanguageCard` | Choose the app's language: a header, a search field, and each language as a row with its flag and a check on the one in use. Details below. |
 | `ManagePositionCard` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetCard` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry, mark and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionCard` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
@@ -186,6 +187,24 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Intent.** Actions default to `secondary`, because the card offers equal choices. Set `intent: 'primary'` on at most one, or `'destructive'` for something like a burn.
 - **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountCard`.
 - **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanel`.
+
+### LanguageCard
+
+`LanguageCard` is the screen for choosing the app's language: the same header as `AccountCard`, a search field, then each language as a row. It is available from `@bloxwap/hig/react/blocks/language-card`, `@bloxwap/hig/native/language-card` and the `blocks` aggregates.
+
+```tsx
+<LanguageCard value={locale} onSelect={language => setLocale(language.code)} onBack={goBack}
+  languages={[
+    {code: 'en', name: 'English', description: 'English', flag: '/flags/us.svg'},
+    {code: 'fr', name: 'Français', description: 'French', flag: '/flags/fr.svg'},
+  ]}/>
+```
+
+- **Languages.** A `LanguageOption` is `{code, name}` plus optional `description` and `flag`. `name` is the language in its own words and `description` is the reader's name for it, shown muted underneath. `flag` is round artwork: an image URL or a host element; without it the row shows the first two letters of the code. Rows keep the host's order.
+- **Selection.** `value` is the `code` in use; its row shows a check on the trailing edge. `onSelect` reports the language pressed. The host applies it and navigates.
+- **Search.** The field at the top filters by name, description and code, ignoring case and accents, so `francais` finds Français. No match shows the built-in “No results”. On web the arrow keys move through the matches from the field and Enter chooses the highlighted one, or the only one. `search={false}` leaves the field out for a short list. `filterLanguages(languages, query)` returns the same matches.
+- **Header.** `title` defaults to the built-in “Language”. `onBack` shows Back and `headerAction` is the trailing control, as in `AccountCard`.
+- **Accessibility.** The rows are a radio group named by the title; each row is a radio that reads the language's name and description, and carries its `code` as the language of its name.
 
 ### ManagePositionCard
 

@@ -413,6 +413,10 @@
       "title": "TokenActionCard"
     },
     {
+      "route": "components/language-card",
+      "title": "LanguageCard"
+    },
+    {
       "route": "components/trade-entry",
       "title": "TradeEntry"
     },
@@ -1128,6 +1132,16 @@
       "states": [
         "default",
         "single"
+      ]
+    },
+    {
+      "name": "LanguageCard",
+      "route": "components/language-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "no-search"
       ]
     },
     {

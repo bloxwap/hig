@@ -268,6 +268,11 @@
       "import": "./react/dist/blocks/token-action-card.js",
       "default": "./react/dist/blocks/token-action-card.js"
     },
+    "./react/blocks/language-card": {
+      "types": "./react/dist/blocks/language-card.d.ts",
+      "import": "./react/dist/blocks/language-card.js",
+      "default": "./react/dist/blocks/language-card.js"
+    },
     "./react/blocks/manage-position-card": {
       "types": "./react/dist/blocks/manage-position-card.d.ts",
       "import": "./react/dist/blocks/manage-position-card.js",
@@ -337,6 +342,11 @@
       "types": "./native/dist/token-action-card.d.ts",
       "import": "./native/dist/token-action-card.js",
       "default": "./native/dist/token-action-card.js"
+    },
+    "./native/language-card": {
+      "types": "./native/dist/language-card.d.ts",
+      "import": "./native/dist/language-card.js",
+      "default": "./native/dist/language-card.js"
     },
     "./native/manage-position-card": {
       "types": "./native/dist/manage-position-card.d.ts",
