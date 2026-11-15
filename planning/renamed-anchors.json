@@ -9,8 +9,8 @@
       "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings. SwapPanel is now SwapPanelBlock."
     },
     "/docs/guides/components/recipes/#frompicker-and-topicker": {
-      "to": "/docs/guides/components/blocks/#frompicker-and-topicker",
-      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+      "to": "/docs/guides/components/blocks/#frompickerblock-and-topickerblock",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings. FromPicker and ToPicker are now FromPickerBlock and ToPickerBlock."
     },
     "/docs/guides/components/recipes/#when-to-use-and-examples": {
       "to": "/docs/guides/components/blocks/#when-to-use-and-examples",

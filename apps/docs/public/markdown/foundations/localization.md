@@ -206,7 +206,7 @@ Rules:
 | `swapSelected` | Selected | SwapPanelBlock: marks the token picker row that is already selected | — |
 | `swapConnectWallet` | Connect wallet | SwapPanelBlock: token picker button that asks the host to connect a wallet | — |
 | `swapDisconnect` | Disconnect wallet | SwapPanelBlock: accessible name of the token picker disconnect button | — |
-| `swapGenerateAddress` | Generate address | FromPicker and SwapPanelBlock: switch that asks for a deposit address in place of a connected wallet | — |
+| `swapGenerateAddress` | Generate address | FromPickerBlock and SwapPanelBlock: switch that asks for a deposit address in place of a connected wallet | — |
 | `swapRecipient` | Recipient address | SwapPanelBlock: recipient address field placeholder and accessible name | — |
 | `swapScan` | Scan QR code | SwapPanelBlock: accessible name of the recipient QR scan button | — |
 | `copyAddress` | Copy address | WalletAddress and the SwapPanelBlock receive view: accessible name of an address that copies on press; the address follows it | — |

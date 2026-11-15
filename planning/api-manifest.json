@@ -338,21 +338,37 @@
         "entry": "blocks/trade-history-detail-block",
         "signature": "export interface TradeHistoryAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    intent?: 'primary' | 'secondary';\n    disabled?: boolean;\n    busy?: boolean;\n}"
       },
+      "FromPickerBlock": {
+        "entry": "blocks/pickers",
+        "signature": "export declare function FromPickerBlock({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, className, ...list }: FromPickerBlockProps): React.JSX.Element;"
+      },
+      "ToPickerBlock": {
+        "entry": "blocks/pickers",
+        "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, className, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
+      },
       "FromPicker": {
         "entry": "blocks/pickers",
-        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, className, ...list }: FromPickerProps): React.JSX.Element;"
+        "signature": "export declare const FromPicker: typeof FromPickerBlock;"
       },
       "ToPicker": {
         "entry": "blocks/pickers",
-        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, className, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+        "signature": "export declare const ToPicker: typeof ToPickerBlock;"
+      },
+      "FromPickerBlockProps": {
+        "entry": "blocks/pickers",
+        "signature": "export interface FromPickerBlockProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    className?: string;\n}"
+      },
+      "ToPickerBlockProps": {
+        "entry": "blocks/pickers",
+        "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    className?: string;\n}"
       },
       "FromPickerProps": {
         "entry": "blocks/pickers",
-        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    className?: string;\n}"
+        "signature": "export type FromPickerProps = FromPickerBlockProps;"
       },
       "ToPickerProps": {
         "entry": "blocks/pickers",
-        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    className?: string;\n}"
+        "signature": "export type ToPickerProps = ToPickerBlockProps;"
       },
       "PickerListProps": {
         "entry": "blocks/pickers",
@@ -1232,21 +1248,37 @@
         "entry": "notifications-block",
         "signature": "export interface NotificationsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */\n    error?: string;\n}"
       },
+      "FromPickerBlock": {
+        "entry": "pickers",
+        "signature": "export declare function FromPickerBlock({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, style, ...list }: FromPickerBlockProps): React.JSX.Element;"
+      },
+      "ToPickerBlock": {
+        "entry": "pickers",
+        "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, style, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
+      },
       "FromPicker": {
         "entry": "pickers",
-        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, style, ...list }: FromPickerProps): React.JSX.Element;"
+        "signature": "export declare const FromPicker: typeof FromPickerBlock;"
       },
       "ToPicker": {
         "entry": "pickers",
-        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, style, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+        "signature": "export declare const ToPicker: typeof ToPickerBlock;"
+      },
+      "FromPickerBlockProps": {
+        "entry": "pickers",
+        "signature": "export interface FromPickerBlockProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "ToPickerBlockProps": {
+        "entry": "pickers",
+        "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    style?: StyleProp<ViewStyle>;\n}"
       },
       "FromPickerProps": {
         "entry": "pickers",
-        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    style?: StyleProp<ViewStyle>;\n}"
+        "signature": "export type FromPickerProps = FromPickerBlockProps;"
       },
       "ToPickerProps": {
         "entry": "pickers",
-        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    style?: StyleProp<ViewStyle>;\n}"
+        "signature": "export type ToPickerProps = ToPickerBlockProps;"
       },
       "PickerListProps": {
         "entry": "pickers",

@@ -55,7 +55,7 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
    </View>;}}/>
  </>;
 }
-export interface FromPickerProps extends PickerListProps {
+export interface FromPickerBlockProps extends PickerListProps {
  /** The connected wallet. Omit for a list with no wallet row at all. */
  wallet?:SwapWallet;
  /** Shows Connect wallet while no wallet is connected. */
@@ -71,7 +71,7 @@ export interface FromPickerProps extends PickerListProps {
  * the tokens it holds (or a whitelist). With no wallet it offers Connect wallet and a Generate address switch above the list.
  * The host owns the wallet, the token data and the generated address.
  */
-export function FromPicker({wallet,onConnect,onDisconnect,generateAddress=false,onGenerateAddressChange,style,...list}:FromPickerProps){
+export function FromPickerBlock({wallet,onConnect,onDisconnect,generateAddress=false,onGenerateAddressChange,style,...list}:FromPickerBlockProps){
  const colors=useColors();const fills=useFills();const t=useMessages();
  return <View accessibilityLabel={t.swapFrom} testID='from-picker' style={[{gap:16},style]}>
   {wallet?.connected?
@@ -89,7 +89,7 @@ export function FromPicker({wallet,onConnect,onDisconnect,generateAddress=false,
   <TokenList {...list} side='from' title={t.swapFrom}/>
  </View>;
 }
-export interface ToPickerProps extends Partial<PickerListProps> {
+export interface ToPickerBlockProps extends Partial<PickerListProps> {
  /** The destination address field. Omit `onAddressChange` to hide it. */
  address?:string;onAddressChange?:(address:string)=>void;
  /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */
@@ -102,7 +102,7 @@ export interface ToPickerProps extends Partial<PickerListProps> {
  * Where the assets go. On its own it is a destination address field with a scan button. With `tokens` it adds the
  * searchable token list, with the chain filter or, with `chainFilter={false}`, without it.
  */
-export function ToPicker({address,onAddressChange,addressPlaceholder,onScan,style,tokens,onSelect,...list}:ToPickerProps){
+export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan,style,tokens,onSelect,...list}:ToPickerBlockProps){
  const colors=useColors();const t=useMessages();
  return <View accessibilityLabel={t.swapTo} testID='to-picker' style={[{gap:16},style]}>
   {onAddressChange?<View testID='picker-address-row' style={{flexDirection:'row',alignItems:'center',gap:8}}>
@@ -112,3 +112,12 @@ export function ToPicker({address,onAddressChange,addressPlaceholder,onScan,styl
   {tokens&&onSelect?<TokenList {...list} tokens={tokens} onSelect={onSelect} side='to' title={t.swapTo}/>:null}
  </View>;
 }
+
+/** @deprecated Renamed `FromPickerBlock`. The old name keeps working until the next major release. */
+export const FromPicker=FromPickerBlock;
+/** @deprecated Renamed `FromPickerBlockProps`. */
+export type FromPickerProps=FromPickerBlockProps;
+/** @deprecated Renamed `ToPickerBlock`. The old name keeps working until the next major release. */
+export const ToPicker=ToPickerBlock;
+/** @deprecated Renamed `ToPickerBlockProps`. */
+export type ToPickerProps=ToPickerBlockProps;

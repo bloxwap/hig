@@ -165,8 +165,8 @@
         "NotificationsBlock",
         "TradeEntry",
         "SwapPanelBlock",
-        "FromPicker",
-        "ToPicker",
+        "FromPickerBlock",
+        "ToPickerBlock",
         "InstallCommand",
         "MarketingHero"
       ],
