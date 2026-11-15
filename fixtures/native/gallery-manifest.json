@@ -498,7 +498,7 @@
       "support": "renderer"
     },
     {
-      "name": "AccountCard",
+      "name": "AccountBlock",
       "states": [
         "default",
         "empty"
@@ -506,7 +506,7 @@
       "support": "renderer"
     },
     {
-      "name": "ManagePositionCard",
+      "name": "ManagePositionBlock",
       "states": [
         "default",
         "profit",
@@ -515,7 +515,7 @@
       "support": "renderer"
     },
     {
-      "name": "TargetCard",
+      "name": "TargetBlock",
       "states": [
         "default",
         "stop-loss"
@@ -523,7 +523,7 @@
       "support": "renderer"
     },
     {
-      "name": "PositionCard",
+      "name": "PositionBlock",
       "states": [
         "default",
         "paper-trade"
@@ -531,7 +531,7 @@
       "support": "renderer"
     },
     {
-      "name": "LeaderboardCard",
+      "name": "LeaderboardBlock",
       "states": [
         "default",
         "sweepstakes"
@@ -539,16 +539,16 @@
       "support": "renderer"
     },
     {
-      "name": "TradeHistoryCard",
+      "name": "TradeHistoryListBlock",
       "states": [
         "default",
-        "loss",
-        "no-card"
+        "empty",
+        "static"
       ],
       "support": "renderer"
     },
     {
-      "name": "TradeHistoryDetailCard",
+      "name": "TradeHistoryDetailBlock",
       "states": [
         "default",
         "loss"
@@ -556,7 +556,7 @@
       "support": "renderer"
     },
     {
-      "name": "TokenActionCard",
+      "name": "TokenActionBlock",
       "states": [
         "default",
         "single"
@@ -564,7 +564,7 @@
       "support": "renderer"
     },
     {
-      "name": "LanguageCard",
+      "name": "LanguageBlock",
       "states": [
         "default",
         "no-search"

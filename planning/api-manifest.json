@@ -94,200 +94,204 @@
         "entry": "blocks/marketing-hero",
         "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
       },
-      "AccountCard": {
-        "entry": "blocks/account-card",
-        "signature": "export declare function AccountCard({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, className, ...rest }: AccountCardProps): React.JSX.Element;"
+      "AccountBlock": {
+        "entry": "blocks/account-block",
+        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, className, ...rest }: AccountBlockProps): React.JSX.Element;"
       },
       "accountRows": {
-        "entry": "blocks/account-card",
+        "entry": "blocks/account-block",
         "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
       },
       "assetValue": {
-        "entry": "blocks/account-card",
+        "entry": "blocks/account-block",
         "signature": "export declare const assetValue: (asset: AccountAsset) => number | null;"
       },
-      "AccountCardProps": {
-        "entry": "blocks/account-card",
-        "signature": "export interface AccountCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading. Defaults to the built-in “Account”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with `WalletAddress`. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars. Defaults to the sum of the asset values; `null` reads as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset that is always first. Defaults to `USDC`. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    /** Text of the deposit action. Defaults to the built-in “Deposit”. */\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n}"
+      "AccountBlockProps": {
+        "entry": "blocks/account-block",
+        "signature": "export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading. Defaults to the built-in “Account”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with `WalletAddress`. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars. Defaults to the sum of the asset values; `null` reads as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset that is always first. Defaults to `USDC`. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    /** Text of the deposit action. Defaults to the built-in “Deposit”. */\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n}"
       },
       "AccountAsset": {
-        "entry": "blocks/account-card",
+        "entry": "blocks/account-block",
         "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. */\n    price?: number | null;\n    /** Dollar value of the holding. Defaults to `balance × price`. */\n    value?: number | null;\n}"
       },
-      "LanguageCard": {
-        "entry": "blocks/language-card",
-        "signature": "export declare function LanguageCard({ title, onBack, headerAction, languages, value, onSelect, search, autoFocus, className, ...rest }: LanguageCardProps): React.JSX.Element;"
+      "LanguageBlock": {
+        "entry": "blocks/language-block",
+        "signature": "export declare function LanguageBlock({ title, onBack, headerAction, languages, value, onSelect, search, autoFocus, className, ...rest }: LanguageBlockProps): React.JSX.Element;"
       },
       "filterLanguages": {
-        "entry": "blocks/language-card",
+        "entry": "blocks/language-block",
         "signature": "export declare function filterLanguages(languages: readonly LanguageOption[], query: string): LanguageOption[];"
       },
-      "LanguageCardProps": {
-        "entry": "blocks/language-card",
-        "signature": "export interface LanguageCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
+      "LanguageBlockProps": {
+        "entry": "blocks/language-block",
+        "signature": "export interface LanguageBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
       },
       "LanguageOption": {
-        "entry": "blocks/language-card",
+        "entry": "blocks/language-block",
         "signature": "export interface LanguageOption {\n    /** Stable id the host switches on, usually a BCP 47 tag such as `pt-BR`. */\n    code: string;\n    /** The language in its own words: `Français`. */\n    name: string;\n    /** The language in the reader's words, shown under the name: `French`. Omit it where it would repeat the name. */\n    description?: string;\n    /** Round artwork, usually a flag: an image URL or a host element. Without it the row shows the first letters of the code. */\n    flag?: string | React.ReactElement;\n}"
       },
-      "TokenActionCard": {
-        "entry": "blocks/token-action-card",
-        "signature": "export declare function TokenActionCard({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, className, ...rest }: TokenActionCardProps): React.JSX.Element;"
+      "TokenActionBlock": {
+        "entry": "blocks/token-action-block",
+        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, className, ...rest }: TokenActionBlockProps): React.JSX.Element;"
       },
       "tokenActionLabel": {
-        "entry": "blocks/token-action-card",
+        "entry": "blocks/token-action-block",
         "signature": "export declare const tokenActionLabel: (action: TokenAction, messages?: Partial<HIGMessages>) => string;"
       },
-      "TokenActionCardProps": {
-        "entry": "blocks/token-action-card",
-        "signature": "export interface TokenActionCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      "TokenActionBlockProps": {
+        "entry": "blocks/token-action-block",
+        "signature": "export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
       "TokenAction": {
-        "entry": "blocks/token-action-card",
+        "entry": "blocks/token-action-block",
         "signature": "export interface TokenAction {\n    /** `send`, `receive`, `stake` and `unstake` take a built-in label; any other id needs `label`. */\n    id: TokenActionId | (string & {});\n    label?: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    /** Defaults to `secondary`: the card offers equal choices, so no action is the primary one unless the host says so. */\n    intent?: 'primary' | 'secondary' | 'destructive';\n}"
       },
       "TokenActionId": {
-        "entry": "blocks/token-action-card",
+        "entry": "blocks/token-action-block",
         "signature": "export type TokenActionId = 'send' | 'receive' | 'stake' | 'unstake';"
       },
-      "ManagePositionCard": {
-        "entry": "blocks/manage-position-card",
-        "signature": "export declare function ManagePositionCard({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, className, ...rest }: ManagePositionCardProps): React.JSX.Element;"
+      "ManagePositionBlock": {
+        "entry": "blocks/manage-position-block",
+        "signature": "export declare function ManagePositionBlock({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, className, ...rest }: ManagePositionBlockProps): React.JSX.Element;"
       },
       "positionCorridor": {
-        "entry": "blocks/manage-position-card",
+        "entry": "blocks/manage-position-block",
         "signature": "export declare function positionCorridor({ side, entry, mark, liquidation }: {\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n}): {\n    total: number;\n    buffer: number;\n    drawdown: number;\n    share: number | null;\n};"
       },
-      "ManagePositionCardProps": {
-        "entry": "blocks/manage-position-card",
-        "signature": "export interface ManagePositionCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: ManagePositionCardLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the title is the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionCardAction[];\n    position?: ManagePositionCardSummary;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      "ManagePositionBlockProps": {
+        "entry": "blocks/manage-position-block",
+        "signature": "export interface ManagePositionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: ManagePositionBlockLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the title is the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionBlockAction[];\n    position?: ManagePositionBlockSummary;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
-      "ManagePositionCardLabels": {
-        "entry": "blocks/manage-position-card",
-        "signature": "export interface ManagePositionCardLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
+      "ManagePositionBlockLabels": {
+        "entry": "blocks/manage-position-block",
+        "signature": "export interface ManagePositionBlockLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
       },
-      "ManagePositionCardAction": {
-        "entry": "blocks/manage-position-card",
-        "signature": "export interface ManagePositionCardAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      "ManagePositionBlockAction": {
+        "entry": "blocks/manage-position-block",
+        "signature": "export interface ManagePositionBlockAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
       },
-      "ManagePositionCardSummary": {
-        "entry": "blocks/manage-position-card",
-        "signature": "export interface ManagePositionCardSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
+      "ManagePositionBlockSummary": {
+        "entry": "blocks/manage-position-block",
+        "signature": "export interface ManagePositionBlockSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
       },
-      "TargetCard": {
-        "entry": "blocks/target-card",
-        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, surface, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, className, ...rest }: TargetCardProps): React.JSX.Element;"
+      "TargetBlock": {
+        "entry": "blocks/target-block",
+        "signature": "export declare function TargetBlock({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, surface, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, className, ...rest }: TargetBlockProps): React.JSX.Element;"
       },
       "targetLayout": {
-        "entry": "blocks/target-card",
+        "entry": "blocks/target-block",
         "signature": "export declare function targetLayout({ entry, mark, trigger }: {\n    entry: number;\n    mark?: number | null;\n    trigger?: number | null;\n}): {\n    positions: Partial<Record<TargetPrice, number>>;\n    order: TargetPrice[];\n    from: number;\n    to: number;\n};"
       },
       "targetFormat": {
-        "entry": "blocks/target-card",
+        "entry": "blocks/target-block",
         "signature": "export declare function targetFormat(unit: TargetUnit, priceOptions?: Intl.NumberFormatOptions, short?: number): Intl.NumberFormatOptions;"
       },
-      "TargetCardProps": {
-        "entry": "blocks/target-card",
-        "signature": "export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */\n    surface?: boolean;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. It takes the place of the info button, and the note is then always shown. */\n    headerAction?: React.ReactNode;\n}"
+      "TargetBlockProps": {
+        "entry": "blocks/target-block",
+        "signature": "export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    kind: TargetKind;\n    labels: TargetBlockLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */\n    surface?: boolean;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. It takes the place of the info button, and the note is then always shown. */\n    headerAction?: React.ReactNode;\n}"
       },
-      "TargetCardLabels": {
-        "entry": "blocks/target-card",
-        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Accessible name of the unit control; not drawn. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n    /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */\n    info?: string;\n}"
+      "TargetBlockLabels": {
+        "entry": "blocks/target-block",
+        "signature": "export interface TargetBlockLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Accessible name of the unit control; not drawn. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n    /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */\n    info?: string;\n}"
       },
       "TargetKind": {
-        "entry": "blocks/target-card",
+        "entry": "blocks/target-block",
         "signature": "export type TargetKind = 'take-profit' | 'stop-loss';"
       },
       "TargetUnit": {
-        "entry": "blocks/target-card",
+        "entry": "blocks/target-block",
         "signature": "export type TargetUnit = 'dollar' | 'price' | 'percent';"
       },
       "TargetPrice": {
-        "entry": "blocks/target-card",
+        "entry": "blocks/target-block",
         "signature": "export type TargetPrice = 'entry' | 'mark' | 'trigger';"
       },
-      "PositionCard": {
-        "entry": "blocks/position-card",
-        "signature": "export declare function PositionCard({ title, details, note, paperTrade, groups, onClose, onBack, headerAction, className, ...rest }: PositionCardProps): React.JSX.Element;"
+      "PositionBlock": {
+        "entry": "blocks/position-block",
+        "signature": "export declare function PositionBlock({ title, details, note, paperTrade, groups, onClose, onBack, headerAction, className, ...rest }: PositionBlockProps): React.JSX.Element;"
       },
-      "PositionCardProps": {
-        "entry": "blocks/position-card",
-        "signature": "export interface PositionCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Position. */\n    title: string;\n    /** The summary under the header, in order. */\n    details: readonly PositionCardDetail[];\n    /** One sentence under the summary, such as the minimum margin. */\n    note?: string;\n    /** Shows the paper trading switch as a row of its own above the settings. */\n    paperTrade?: PositionCardFlag;\n    /** The settings, as groups of rows. Each group is one rounded container. */\n    groups: readonly (readonly PositionCardRow[])[];\n    /** Shows Close on the trailing edge of the header. */\n    onClose?: () => void;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header in place of Close. */\n    headerAction?: React.ReactNode;\n}"
+      "PositionBlockProps": {
+        "entry": "blocks/position-block",
+        "signature": "export interface PositionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Position. */\n    title: string;\n    /** The summary under the header, in order. */\n    details: readonly PositionBlockDetail[];\n    /** One sentence under the summary, such as the minimum margin. */\n    note?: string;\n    /** Shows the paper trading switch as a row of its own above the settings. */\n    paperTrade?: PositionBlockFlag;\n    /** The settings, as groups of rows. Each group is one rounded container. */\n    groups: readonly (readonly PositionBlockRow[])[];\n    /** Shows Close on the trailing edge of the header. */\n    onClose?: () => void;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header in place of Close. */\n    headerAction?: React.ReactNode;\n}"
       },
-      "PositionCardDetail": {
-        "entry": "blocks/position-card",
-        "signature": "export interface PositionCardDetail {\n    id?: string;\n    label: string;\n    value: string | PositionCardFigure;\n    tone?: 'positive' | 'negative' | 'muted';\n}"
+      "PositionBlockDetail": {
+        "entry": "blocks/position-block",
+        "signature": "export interface PositionBlockDetail {\n    id?: string;\n    label: string;\n    value: string | PositionBlockFigure;\n    tone?: 'positive' | 'negative' | 'muted';\n}"
       },
-      "PositionCardFigure": {
-        "entry": "blocks/position-card",
-        "signature": "export interface PositionCardFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      "PositionBlockFigure": {
+        "entry": "blocks/position-block",
+        "signature": "export interface PositionBlockFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
-      "PositionCardRow": {
-        "entry": "blocks/position-card",
-        "signature": "export interface PositionCardRow {\n    id: string;\n    label: string;\n    value?: string;\n    onSelect?: () => void;\n    disabled?: boolean;\n}"
+      "PositionBlockRow": {
+        "entry": "blocks/position-block",
+        "signature": "export interface PositionBlockRow {\n    id: string;\n    label: string;\n    value?: string;\n    onSelect?: () => void;\n    disabled?: boolean;\n}"
       },
-      "PositionCardFlag": {
-        "entry": "blocks/position-card",
-        "signature": "export interface PositionCardFlag {\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
+      "PositionBlockFlag": {
+        "entry": "blocks/position-block",
+        "signature": "export interface PositionBlockFlag {\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
       },
-      "LeaderboardCard": {
-        "entry": "blocks/leaderboard-card",
-        "signature": "export declare function LeaderboardCard({ title, promo, tabs, you, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, footnote, onBack, headerAction, className, ...rest }: LeaderboardCardProps): React.JSX.Element;"
+      "LeaderboardBlock": {
+        "entry": "blocks/leaderboard-block",
+        "signature": "export declare function LeaderboardBlock({ title, promo, tabs, you, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, footnote, onBack, headerAction, className, ...rest }: LeaderboardBlockProps): React.JSX.Element;"
       },
       "leaderboardProgress": {
-        "entry": "blocks/leaderboard-card",
+        "entry": "blocks/leaderboard-block",
         "signature": "export declare function leaderboardProgress(amount: number | null | undefined, goal: number | null | undefined): number | null;"
       },
-      "LeaderboardCardProps": {
-        "entry": "blocks/leaderboard-card",
-        "signature": "export interface LeaderboardCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: LeaderboardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control and is not drawn. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: LeaderboardEntry;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly LeaderboardEntry[];\n    /** Format of every score. Defaults to a whole number. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Accessible name of the verified mark. The mark is decorative without it. */\n    verifiedLabel?: string;\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that shares. */\n    headerAction?: React.ReactNode;\n}"
+      "LeaderboardBlockProps": {
+        "entry": "blocks/leaderboard-block",
+        "signature": "export interface LeaderboardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: LeaderboardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control and is not drawn. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: LeaderboardEntry;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly LeaderboardEntry[];\n    /** Format of every score. Defaults to a whole number. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Accessible name of the verified mark. The mark is decorative without it. */\n    verifiedLabel?: string;\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton` that shares. */\n    headerAction?: React.ReactNode;\n}"
       },
       "LeaderboardPromo": {
-        "entry": "blocks/leaderboard-card",
+        "entry": "blocks/leaderboard-block",
         "signature": "export interface LeaderboardPromo {\n    /** The small capitals line: Season 01 prize pool. */\n    eyebrow: string;\n    /** The capsule on the trailing edge of the eyebrow: See rules. */\n    rules?: {\n        label: string;\n        onSelect: () => void;\n    };\n    /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */\n    amount: number | null;\n    /** Format of `amount` and `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Shows `/ $250,000` beside the figure and the progress bar under it. */\n    goal?: number;\n    /** Words after the figure when there is no goal: top prize. */\n    caption?: string;\n    /** The line under the leading end of the bar. Receives the share reached as a formatted percent: `percent => percent + ' to goal'`. */\n    progress?: (percent: string) => string;\n    /** The line under the trailing end of the bar: Updates every 15 minutes. */\n    updated?: string;\n    /** The sentence that explains the promotion, as pieces: `['Top ', {highlight: '100'}, ' traders split ', {highlight: '$250,000'}, ' pot']`. */\n    headline?: readonly LeaderboardText[];\n    description?: string;\n    /** A full-width action under the description: Draws and winners. The host opens its own destination. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n    };\n}"
       },
       "LeaderboardEntry": {
-        "entry": "blocks/leaderboard-card",
+        "entry": "blocks/leaderboard-block",
         "signature": "export interface LeaderboardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol`. */\n    detail?: string;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
       },
       "LeaderboardText": {
-        "entry": "blocks/leaderboard-card",
+        "entry": "blocks/leaderboard-block",
         "signature": "export type LeaderboardText = string | {\n    highlight: string;\n};"
       },
-      "TradeHistoryCard": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export declare function TradeHistoryCard({ labels, symbol, side, leverage, entry, exit, pnl, priceOptions, surface, onSelect, className, ...rest }: TradeHistoryCardProps): React.JSX.Element;"
+      "TradeHistoryListBlock": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, className, ...rest }: TradeHistoryListBlockProps): React.JSX.Element;"
       },
-      "tradeHistoryTitle": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export declare const tradeHistoryTitle: ({ symbol, side, leverage, labels }: {\n    symbol: string;\n    side: 'long' | 'short';\n    leverage?: number;\n    labels: Pick<TradeHistoryLabels, 'long' | 'short'>;\n}, locale?: string) => string;"
+      "tradeHistorySide": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'>, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
       },
-      "TradeHistoryCardProps": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export interface TradeHistoryCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    labels: TradeHistoryLabels;\n    /** Ticker: AMZN. */\n    symbol: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    entry: number;\n    exit: number;\n    /** Net profit and loss in dollars, on the trailing edge of the title row. */\n    pnl?: number | null;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set false to draw no card: no surface fill, padding or radius. Default `true`. */\n    surface?: boolean;\n    /** Makes the whole card a button, for example to open the trade's detail. */\n    onSelect?: () => void;\n}"
+      "TradeHistoryListBlockProps": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. */\n    pnlOptions?: Intl.NumberFormatOptions;\n}"
       },
-      "TradeHistoryLabels": {
-        "entry": "blocks/trade-history-card",
-        "signature": "export interface TradeHistoryLabels {\n    entry: string;\n    exit: string;\n    long: string;\n    short: string;\n}"
+      "TradeHistoryListLabels": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n}"
       },
-      "TradeHistoryDetailCard": {
-        "entry": "blocks/trade-history-detail-card",
-        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, details, actions, onBack, headerAction, className, ...rest }: TradeHistoryDetailCardProps): React.JSX.Element;"
+      "TradeHistoryItem": {
+        "entry": "blocks/trade-history-list-block",
+        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n}"
       },
-      "TradeHistoryDetailCardProps": {
-        "entry": "blocks/trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** The trade's figures in the order shown: entry, exit, size, notional, time held, fees, funding. */\n    details: readonly TradeHistoryDetail[];\n    /** Actions in one row under the details, such as Save image and Share. */\n    actions?: readonly TradeHistoryAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      "TradeHistoryDetailBlock": {
+        "entry": "blocks/trade-history-detail-block",
+        "signature": "export declare function TradeHistoryDetailBlock({ labels, name, icon, side, leverage, pnl, pnlPercent, entry, exit, priceOptions, details, actions, onBack, headerAction, className, ...rest }: TradeHistoryDetailBlockProps): React.JSX.Element;"
+      },
+      "TradeHistoryDetailBlockProps": {
+        "entry": "blocks/trade-history-detail-block",
+        "signature": "export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** The trade's other figures in the order shown: size, notional, time held, fees, funding. They are drawn as a grid of small labels over values. */\n    details: readonly TradeHistoryDetail[];\n    /** Actions in one row under the details, such as Save image and Share. */\n    actions?: readonly TradeHistoryAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
       "TradeHistoryDetailLabels": {
-        "entry": "blocks/trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Caption above the figure: NET PNL. */\n    netPnl: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
+        "entry": "blocks/trade-history-detail-block",
+        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Names the figure for assistive technology: Net PnL. It is not drawn; the signed figure and the line under it carry the meaning on screen. */\n    netPnl: string;\n    /** Names of the two prices under the bar. Needed with `entry` and `exit`. */\n    entry?: string;\n    exit?: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
       },
       "TradeHistoryDetail": {
-        "entry": "blocks/trade-history-detail-card",
+        "entry": "blocks/trade-history-detail-block",
         "signature": "export interface TradeHistoryDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "TradeHistoryAction": {
-        "entry": "blocks/trade-history-detail-card",
+        "entry": "blocks/trade-history-detail-block",
         "signature": "export interface TradeHistoryAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    intent?: 'primary' | 'secondary';\n    disabled?: boolean;\n    busy?: boolean;\n}"
       },
       "FromPicker": {
@@ -853,24 +857,24 @@
         "signature": "export interface AssetBalanceRowProps {\n    name: string;\n    symbol: string;\n    /** Without artwork the avatar shows the first three letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. */\n    value?: number | null;\n    /** Holding in token units; omit to show the value alone. */\n    balance?: number | null;\n    /** Format of the units line; default `{maximumFractionDigits:6}`. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** Makes the row a button. */\n    onSelect?: () => void;\n    testID?: string;\n}"
       },
       "AccountAsset": {
-        "entry": "account-card",
+        "entry": "account-block",
         "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit. */\n    price?: number | null;\n    /** USD value; defaults to balance × price. */\n    value?: number | null;\n}"
       },
-      "AccountCardProps": {
-        "entry": "account-card",
-        "signature": "export interface AccountCardProps {\n    /** Defaults to the localized \"Account\". */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with WalletAddress. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars; defaults to the sum of the asset values. `null` shows it as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset pinned first; default 'USDC'. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    depositLabel?: string;\n    /** Makes each row a button. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n    testID?: string;\n}"
+      "AccountBlockProps": {
+        "entry": "account-block",
+        "signature": "export interface AccountBlockProps {\n    /** Defaults to the localized \"Account\". */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with WalletAddress. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars; defaults to the sum of the asset values. `null` shows it as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset pinned first; default 'USDC'. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    depositLabel?: string;\n    /** Makes each row a button. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n    testID?: string;\n}"
       },
       "assetValue": {
-        "entry": "account-card",
+        "entry": "account-block",
         "signature": "export declare const assetValue: (asset: AccountAsset) => number | null;"
       },
       "accountRows": {
-        "entry": "account-card",
+        "entry": "account-block",
         "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
       },
-      "AccountCard": {
-        "entry": "account-card",
-        "signature": "export declare function AccountCard({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, testID }: AccountCardProps): React.JSX.Element;"
+      "AccountBlock": {
+        "entry": "account-block",
+        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, testID }: AccountBlockProps): React.JSX.Element;"
       },
       "AnimatedNumberTrend": {
         "entry": "animated-number",
@@ -952,180 +956,184 @@
         "entry": "blocks",
         "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
       },
-      "LanguageCard": {
-        "entry": "language-card",
-        "signature": "export declare function LanguageCard({ title, onBack, headerAction, languages, value, onSelect, search, testID }: LanguageCardProps): React.JSX.Element;"
+      "LanguageBlock": {
+        "entry": "language-block",
+        "signature": "export declare function LanguageBlock({ title, onBack, headerAction, languages, value, onSelect, search, testID }: LanguageBlockProps): React.JSX.Element;"
       },
       "filterLanguages": {
-        "entry": "language-card",
+        "entry": "language-block",
         "signature": "export declare function filterLanguages(languages: readonly LanguageOption[], query: string): LanguageOption[];"
       },
-      "LanguageCardProps": {
-        "entry": "language-card",
-        "signature": "export interface LanguageCardProps {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    testID?: string;\n}"
+      "LanguageBlockProps": {
+        "entry": "language-block",
+        "signature": "export interface LanguageBlockProps {\n    /** Heading. Defaults to the built-in “Language”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that closes the sheet. */\n    headerAction?: React.ReactNode;\n    languages: readonly LanguageOption[];\n    /** `code` of the language in use. */\n    value?: string | null;\n    onSelect: (language: LanguageOption) => void;\n    /** Set false to leave out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    testID?: string;\n}"
       },
       "LanguageOption": {
-        "entry": "language-card",
+        "entry": "language-block",
         "signature": "export interface LanguageOption {\n    /** Stable id the host switches on, usually a BCP 47 tag such as `pt-BR`. */\n    code: string;\n    /** The language in its own words: `Français`. */\n    name: string;\n    /** The language in the reader's words, shown under the name: `French`. Omit it where it would repeat the name. */\n    description?: string;\n    /** Round artwork, usually a flag: an image URL or a host element. Without it the row shows the first letters of the code. */\n    flag?: string | React.ReactElement;\n}"
       },
-      "TokenActionCard": {
-        "entry": "token-action-card",
-        "signature": "export declare function TokenActionCard({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, testID }: TokenActionCardProps): React.JSX.Element;"
+      "TokenActionBlock": {
+        "entry": "token-action-block",
+        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, testID }: TokenActionBlockProps): React.JSX.Element;"
       },
       "tokenActionLabel": {
-        "entry": "token-action-card",
+        "entry": "token-action-block",
         "signature": "export declare const tokenActionLabel: (action: TokenAction, messages: Partial<HIGMessages>) => string;"
       },
-      "TokenActionCardProps": {
-        "entry": "token-action-card",
-        "signature": "export interface TokenActionCardProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      "TokenActionBlockProps": {
+        "entry": "token-action-block",
+        "signature": "export interface TokenActionBlockProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "TokenAction": {
-        "entry": "token-action-card",
+        "entry": "token-action-block",
         "signature": "export interface TokenAction {\n    /** 'send' | 'receive' | 'stake' | 'unstake' take a built-in label; any other id needs `label`. */\n    id: TokenActionId | (string & {});\n    label?: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    /** Defaults to `secondary`: the actions are equal choices. */\n    intent?: 'primary' | 'secondary' | 'destructive';\n}"
       },
       "TokenActionId": {
-        "entry": "token-action-card",
+        "entry": "token-action-block",
         "signature": "export type TokenActionId = 'send' | 'receive' | 'stake' | 'unstake';"
       },
-      "ManagePositionCard": {
-        "entry": "manage-position-card",
-        "signature": "export declare function ManagePositionCard({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, testID }: ManagePositionCardProps): React.JSX.Element;"
+      "ManagePositionBlock": {
+        "entry": "manage-position-block",
+        "signature": "export declare function ManagePositionBlock({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, testID }: ManagePositionBlockProps): React.JSX.Element;"
       },
       "positionCorridor": {
-        "entry": "manage-position-card",
+        "entry": "manage-position-block",
         "signature": "export declare function positionCorridor({ side, entry, mark, liquidation }: {\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n}): {\n    total: number;\n    buffer: number;\n    drawdown: number;\n    share: number | null;\n};"
       },
-      "ManagePositionCardProps": {
-        "entry": "manage-position-card",
-        "signature": "export interface ManagePositionCardProps {\n    labels: ManagePositionCardLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the card is titled with the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionCardAction[];\n    position?: ManagePositionCardSummary;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      "ManagePositionBlockProps": {
+        "entry": "manage-position-block",
+        "signature": "export interface ManagePositionBlockProps {\n    labels: ManagePositionBlockLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the card is titled with the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionBlockAction[];\n    position?: ManagePositionBlockSummary;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
-      "ManagePositionCardLabels": {
-        "entry": "manage-position-card",
-        "signature": "export interface ManagePositionCardLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
+      "ManagePositionBlockLabels": {
+        "entry": "manage-position-block",
+        "signature": "export interface ManagePositionBlockLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
       },
-      "ManagePositionCardAction": {
-        "entry": "manage-position-card",
-        "signature": "export interface ManagePositionCardAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      "ManagePositionBlockAction": {
+        "entry": "manage-position-block",
+        "signature": "export interface ManagePositionBlockAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
       },
-      "ManagePositionCardSummary": {
-        "entry": "manage-position-card",
-        "signature": "export interface ManagePositionCardSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
+      "ManagePositionBlockSummary": {
+        "entry": "manage-position-block",
+        "signature": "export interface ManagePositionBlockSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
       },
-      "TradeHistoryCard": {
-        "entry": "trade-history-card",
-        "signature": "export declare function TradeHistoryCard({ labels, symbol, side, leverage, entry, exit, pnl, priceOptions, surface, onSelect, testID }: TradeHistoryCardProps): React.JSX.Element;"
+      "TradeHistoryListBlock": {
+        "entry": "trade-history-list-block",
+        "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, testID }: TradeHistoryListBlockProps): React.JSX.Element;"
       },
-      "tradeHistoryTitle": {
-        "entry": "trade-history-card",
-        "signature": "export declare const tradeHistoryTitle: ({ symbol, side, leverage, labels }: {\n    symbol: string;\n    side: 'long' | 'short';\n    leverage?: number;\n    labels: Pick<TradeHistoryLabels, 'long' | 'short'>;\n}, locale?: string) => string;"
+      "tradeHistorySide": {
+        "entry": "trade-history-list-block",
+        "signature": "export declare const tradeHistorySide: (trade: Pick<TradeHistoryItem, 'side' | 'leverage'>, labels: Pick<TradeHistoryListLabels, 'long' | 'short'>, locale?: string) => string;"
       },
-      "TradeHistoryCardProps": {
-        "entry": "trade-history-card",
-        "signature": "export interface TradeHistoryCardProps {\n    labels: TradeHistoryLabels;\n    /** Ticker: AMZN. */\n    symbol: string;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    entry: number;\n    exit: number;\n    /** Net profit and loss in dollars, on the trailing edge of the title row. */\n    pnl?: number | null;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set false to draw no card. Default `true`. */\n    surface?: boolean;\n    /** Makes the whole card a button, for example to open the detail. */\n    onSelect?: () => void;\n    testID?: string;\n}"
+      "TradeHistoryListBlockProps": {
+        "entry": "trade-history-list-block",
+        "signature": "export interface TradeHistoryListBlockProps {\n    labels: TradeHistoryListLabels;\n    /** Closed trades, in the order shown. The host sorts and pages them. */\n    trades: readonly TradeHistoryItem[];\n    /** Makes each row a button that reports its trade, usually to open its detail, and shows the disclosure chevron. */\n    onSelect?: (trade: TradeHistoryItem) => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. */\n    pnlOptions?: Intl.NumberFormatOptions;\n    testID?: string;\n}"
       },
-      "TradeHistoryLabels": {
-        "entry": "trade-history-card",
-        "signature": "export interface TradeHistoryLabels {\n    entry: string;\n    exit: string;\n    long: string;\n    short: string;\n}"
+      "TradeHistoryListLabels": {
+        "entry": "trade-history-list-block",
+        "signature": "export interface TradeHistoryListLabels {\n    /** Heading of the screen: History. */\n    title: string;\n    long: string;\n    short: string;\n    /** Shown in place of the rows when there are no trades. */\n    empty: string;\n}"
       },
-      "TradeHistoryDetailCard": {
-        "entry": "trade-history-detail-card",
-        "signature": "export declare function TradeHistoryDetailCard({ labels, name, icon, side, leverage, pnl, pnlPercent, details, actions, onBack, headerAction, testID }: TradeHistoryDetailCardProps): React.JSX.Element;"
+      "TradeHistoryItem": {
+        "entry": "trade-history-list-block",
+        "signature": "export interface TradeHistoryItem {\n    id: string;\n    /** Asset name: Amazon. */\n    name: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the name. */\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Host-formatted age or time of the close, shown under the result: `2d`. */\n    time?: string;\n}"
       },
-      "TradeHistoryDetailCardProps": {
-        "entry": "trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailCardProps {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    details: readonly TradeHistoryDetail[];\n    actions?: readonly TradeHistoryAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      "TradeHistoryDetailBlock": {
+        "entry": "trade-history-detail-block",
+        "signature": "export declare function TradeHistoryDetailBlock({ labels, name, icon, side, leverage, pnl, pnlPercent, entry, exit, priceOptions, details, actions, onBack, headerAction, testID }: TradeHistoryDetailBlockProps): React.JSX.Element;"
+      },
+      "TradeHistoryDetailBlockProps": {
+        "entry": "trade-history-detail-block",
+        "signature": "export interface TradeHistoryDetailBlockProps {\n    labels: TradeHistoryDetailLabels;\n    /** Asset name: Amazon. */\n    name: string;\n    icon?: AssetArtwork;\n    side: 'long' | 'short';\n    /** 20 reads `20×`. */\n    leverage?: number;\n    /** Net profit and loss in dollars. `null` reads as unknown. */\n    pnl: number | null;\n    /** Return on margin as a fraction: 0.0284 reads +2.84%. */\n    pnlPercent?: number | null;\n    /** Entry and exit prices. With both, one bar runs from entry to exit in the result colour, with the two prices under it, in place of two rows. */\n    entry?: number;\n    exit?: number;\n    /** Format of the two prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    details: readonly TradeHistoryDetail[];\n    actions?: readonly TradeHistoryAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "TradeHistoryDetailLabels": {
-        "entry": "trade-history-detail-card",
-        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Caption above the figure: NET PNL. */\n    netPnl: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
+        "entry": "trade-history-detail-block",
+        "signature": "export interface TradeHistoryDetailLabels {\n    title: string;\n    /** Names the figure for assistive technology: Net PnL. It is not drawn; the signed figure and the line under it carry the meaning on screen. */\n    netPnl: string;\n    /** Names of the two prices under the bar. Needed with `entry` and `exit`. */\n    entry?: string;\n    exit?: string;\n    /** `+2.84% on margin`: receives the formatted percent. */\n    onMargin: (percent: string) => string;\n    long: string;\n    short: string;\n}"
       },
       "TradeHistoryDetail": {
-        "entry": "trade-history-detail-card",
+        "entry": "trade-history-detail-block",
         "signature": "export interface TradeHistoryDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "TradeHistoryAction": {
-        "entry": "trade-history-detail-card",
+        "entry": "trade-history-detail-block",
         "signature": "export interface TradeHistoryAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    intent?: 'primary' | 'secondary';\n    disabled?: boolean;\n    busy?: boolean;\n}"
       },
-      "TargetCard": {
-        "entry": "target-card",
-        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, surface, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, testID }: TargetCardProps): React.JSX.Element;"
+      "TargetBlock": {
+        "entry": "target-block",
+        "signature": "export declare function TargetBlock({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, surface, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, testID }: TargetBlockProps): React.JSX.Element;"
       },
       "targetLayout": {
-        "entry": "target-card",
+        "entry": "target-block",
         "signature": "export declare function targetLayout({ entry, mark, trigger }: {\n    entry: number;\n    mark?: number | null;\n    trigger?: number | null;\n}): {\n    positions: Partial<Record<TargetPrice, number>>;\n    order: TargetPrice[];\n    from: number;\n    to: number;\n};"
       },
       "targetFormat": {
-        "entry": "target-card",
+        "entry": "target-block",
         "signature": "export declare function targetFormat(unit: TargetUnit, priceOptions?: Intl.NumberFormatOptions, short?: number): Intl.NumberFormatOptions;"
       },
-      "TargetCardProps": {
-        "entry": "target-card",
-        "signature": "export interface TargetCardProps {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */\n    surface?: boolean;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. It takes the place of the info button, and the note is then always shown. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      "TargetBlockProps": {
+        "entry": "target-block",
+        "signature": "export interface TargetBlockProps {\n    kind: TargetKind;\n    labels: TargetBlockLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */\n    surface?: boolean;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. It takes the place of the info button, and the note is then always shown. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
-      "TargetCardLabels": {
-        "entry": "target-card",
-        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Name of the unit control. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n    /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */\n    info?: string;\n}"
+      "TargetBlockLabels": {
+        "entry": "target-block",
+        "signature": "export interface TargetBlockLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Name of the unit control. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n    /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */\n    info?: string;\n}"
       },
       "TargetKind": {
-        "entry": "target-card",
+        "entry": "target-block",
         "signature": "export type TargetKind = 'take-profit' | 'stop-loss';"
       },
       "TargetUnit": {
-        "entry": "target-card",
+        "entry": "target-block",
         "signature": "export type TargetUnit = 'dollar' | 'price' | 'percent';"
       },
       "TargetPrice": {
-        "entry": "target-card",
+        "entry": "target-block",
         "signature": "export type TargetPrice = 'entry' | 'mark' | 'trigger';"
       },
-      "PositionCard": {
-        "entry": "position-card",
-        "signature": "export declare function PositionCard({ title, details, note, paperTrade, groups, onClose, onBack, headerAction, testID }: PositionCardProps): React.JSX.Element;"
+      "PositionBlock": {
+        "entry": "position-block",
+        "signature": "export declare function PositionBlock({ title, details, note, paperTrade, groups, onClose, onBack, headerAction, testID }: PositionBlockProps): React.JSX.Element;"
       },
-      "PositionCardProps": {
-        "entry": "position-card",
-        "signature": "export interface PositionCardProps {\n    /** Heading: Position. */\n    title: string;\n    /** The summary under the header, in order. */\n    details: readonly PositionCardDetail[];\n    /** One sentence under the summary, such as the minimum margin. */\n    note?: string;\n    /** Shows the paper trading switch as a row of its own above the settings. */\n    paperTrade?: PositionCardFlag;\n    /** The settings, as groups of rows. Each group is one rounded container. */\n    groups: readonly (readonly PositionCardRow[])[];\n    /** Shows Close on the trailing edge of the header. */\n    onClose?: () => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header in place of Close. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      "PositionBlockProps": {
+        "entry": "position-block",
+        "signature": "export interface PositionBlockProps {\n    /** Heading: Position. */\n    title: string;\n    /** The summary under the header, in order. */\n    details: readonly PositionBlockDetail[];\n    /** One sentence under the summary, such as the minimum margin. */\n    note?: string;\n    /** Shows the paper trading switch as a row of its own above the settings. */\n    paperTrade?: PositionBlockFlag;\n    /** The settings, as groups of rows. Each group is one rounded container. */\n    groups: readonly (readonly PositionBlockRow[])[];\n    /** Shows Close on the trailing edge of the header. */\n    onClose?: () => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header in place of Close. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
-      "PositionCardDetail": {
-        "entry": "position-card",
-        "signature": "export interface PositionCardDetail {\n    id?: string;\n    label: string;\n    value: string | PositionCardFigure;\n    tone?: 'positive' | 'negative' | 'muted';\n}"
+      "PositionBlockDetail": {
+        "entry": "position-block",
+        "signature": "export interface PositionBlockDetail {\n    id?: string;\n    label: string;\n    value: string | PositionBlockFigure;\n    tone?: 'positive' | 'negative' | 'muted';\n}"
       },
-      "PositionCardFigure": {
-        "entry": "position-card",
-        "signature": "export interface PositionCardFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      "PositionBlockFigure": {
+        "entry": "position-block",
+        "signature": "export interface PositionBlockFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
-      "PositionCardRow": {
-        "entry": "position-card",
-        "signature": "export interface PositionCardRow {\n    id: string;\n    label: string;\n    value?: string;\n    onSelect?: () => void;\n    disabled?: boolean;\n}"
+      "PositionBlockRow": {
+        "entry": "position-block",
+        "signature": "export interface PositionBlockRow {\n    id: string;\n    label: string;\n    value?: string;\n    onSelect?: () => void;\n    disabled?: boolean;\n}"
       },
-      "PositionCardFlag": {
-        "entry": "position-card",
-        "signature": "export interface PositionCardFlag {\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
+      "PositionBlockFlag": {
+        "entry": "position-block",
+        "signature": "export interface PositionBlockFlag {\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
       },
-      "LeaderboardCard": {
-        "entry": "leaderboard-card",
-        "signature": "export declare function LeaderboardCard({ title, promo, tabs, you, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, footnote, onBack, headerAction, testID }: LeaderboardCardProps): React.JSX.Element;"
+      "LeaderboardBlock": {
+        "entry": "leaderboard-block",
+        "signature": "export declare function LeaderboardBlock({ title, promo, tabs, you, listTitle, scoreTitle, entries, scoreOptions, verifiedLabel, footnote, onBack, headerAction, testID }: LeaderboardBlockProps): React.JSX.Element;"
       },
       "leaderboardProgress": {
-        "entry": "leaderboard-card",
+        "entry": "leaderboard-block",
         "signature": "export declare function leaderboardProgress(amount: number | null | undefined, goal: number | null | undefined): number | null;"
       },
-      "LeaderboardCardProps": {
-        "entry": "leaderboard-card",
-        "signature": "export interface LeaderboardCardProps {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: LeaderboardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: LeaderboardEntry;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly LeaderboardEntry[];\n    /** Format of every score. Defaults to a whole number. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Words for the verified mark, read after the name. */\n    verifiedLabel?: string;\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that shares. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      "LeaderboardBlockProps": {
+        "entry": "leaderboard-block",
+        "signature": "export interface LeaderboardBlockProps {\n    /** Heading: Leaderboard. */\n    title: string;\n    promo?: LeaderboardPromo;\n    /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control. */\n    tabs?: {\n        label: string;\n        options: readonly {\n            value: string;\n            label: string;\n        }[];\n        value: string;\n        onValueChange: (value: string) => void;\n    };\n    /** The viewer's own standing, pinned above the list on a tinted row. */\n    you?: LeaderboardEntry;\n    /** The column heading over the names: Top 25 by volume. */\n    listTitle?: string;\n    /** The column heading over the scores: Entries. */\n    scoreTitle?: string;\n    entries: readonly LeaderboardEntry[];\n    /** Format of every score. Defaults to a whole number. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Words for the verified mark, read after the name. */\n    verifiedLabel?: string;\n    /** A line under the list: Entries are provisional until audited. */\n    footnote?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton that shares. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "LeaderboardPromo": {
-        "entry": "leaderboard-card",
+        "entry": "leaderboard-block",
         "signature": "export interface LeaderboardPromo {\n    /** The small capitals line: Season 01 prize pool. */\n    eyebrow: string;\n    /** The capsule on the trailing edge of the eyebrow: See rules. */\n    rules?: {\n        label: string;\n        onSelect: () => void;\n    };\n    /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */\n    amount: number | null;\n    /** Format of `amount` and `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Shows `/ $250,000` beside the figure and the progress bar under it. */\n    goal?: number;\n    /** Words after the figure when there is no goal: top prize. */\n    caption?: string;\n    /** The line under the leading end of the bar. Receives the share reached as a formatted percent: `percent => percent + ' to goal'`. */\n    progress?: (percent: string) => string;\n    /** The line under the trailing end of the bar: Updates every 15 minutes. */\n    updated?: string;\n    /** The sentence that explains the promotion, as pieces: `['Top ', {highlight: '100'}, ' traders split ', {highlight: '$250,000'}, ' pot']`. */\n    headline?: readonly LeaderboardText[];\n    description?: string;\n    /** A full-width action under the description: Draws and winners. The host opens its own destination. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n    };\n}"
       },
       "LeaderboardEntry": {
-        "entry": "leaderboard-card",
+        "entry": "leaderboard-block",
         "signature": "export interface LeaderboardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol`. */\n    detail?: string;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
       },
       "LeaderboardText": {
-        "entry": "leaderboard-card",
+        "entry": "leaderboard-block",
         "signature": "export type LeaderboardText = string | {\n    highlight: string;\n};"
       },
       "FromPicker": {

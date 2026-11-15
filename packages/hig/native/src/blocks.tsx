@@ -20,15 +20,15 @@ function useCodeStyle(){const env=useHIG();return {fontFamily:env.monoFontFamily
 export function InstallCommand({command,onCopy}: {command:string;onCopy:()=>Promise<void>|void}){const {messages}=useHIG();const {notice,show,dismiss}=useTransientNotice();const code=useCodeStyle();
  return <Surface style={{gap:12}}><Text selectable style={code}>{command}</Text><Button intent='secondary' onPress={()=>{Promise.resolve().then(onCopy).then(()=>show(messages.copied??en.copied,'success')).catch(()=>show(messages.copyFailed??en.copyFailed,'error'));}}>{messages.copyInstallCommand??en.copyInstallCommand}</Button>{notice&&<Toast notices={[notice]} onDismiss={dismiss}/>}</Surface>;}
 export function MarketingHero({title,description,href,cta}: {title:string;description:string;href:string;cta:string}){return <Stack><Heading>{title}</Heading><Text>{description}</Text><Link href={href}>{cta}</Link></Stack>;}
-export {AccountCard,accountRows,assetValue,AssetBalanceRow,type AccountCardProps,type AccountAsset,type AssetArtwork,type AssetBalanceRowProps} from './account-card.js';
-export {LanguageCard,filterLanguages,type LanguageCardProps,type LanguageOption} from './language-card.js';
-export {TokenActionCard,tokenActionLabel,type TokenActionCardProps,type TokenAction,type TokenActionId} from './token-action-card.js';
-export {ManagePositionCard,positionCorridor,type ManagePositionCardProps,type ManagePositionCardLabels,type ManagePositionCardAction,type ManagePositionCardSummary} from './manage-position-card.js';
-export {TradeHistoryCard,tradeHistoryTitle,type TradeHistoryCardProps,type TradeHistoryLabels} from './trade-history-card.js';
-export {TradeHistoryDetailCard,type TradeHistoryDetailCardProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-card.js';
-export {TargetCard,targetLayout,targetFormat,type TargetCardProps,type TargetCardLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-card.js';
-export {PositionCard,type PositionCardProps,type PositionCardDetail,type PositionCardFigure,type PositionCardRow,type PositionCardFlag} from './position-card.js';
-export {LeaderboardCard,leaderboardProgress,type LeaderboardCardProps,type LeaderboardPromo,type LeaderboardEntry,type LeaderboardText} from './leaderboard-card.js';
+export {AccountBlock,accountRows,assetValue,AssetBalanceRow,type AccountBlockProps,type AccountAsset,type AssetArtwork,type AssetBalanceRowProps} from './account-block.js';
+export {LanguageBlock,filterLanguages,type LanguageBlockProps,type LanguageOption} from './language-block.js';
+export {TokenActionBlock,tokenActionLabel,type TokenActionBlockProps,type TokenAction,type TokenActionId} from './token-action-block.js';
+export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type ManagePositionBlockLabels,type ManagePositionBlockAction,type ManagePositionBlockSummary} from './manage-position-block.js';
+export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './trade-history-list-block.js';
+export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-block.js';
+export {TargetBlock,targetLayout,targetFormat,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-block.js';
+export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag} from './position-block.js';
+export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type LeaderboardPromo,type LeaderboardEntry,type LeaderboardText} from './leaderboard-block.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapPanel,swapAction,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel.js';

@@ -2,14 +2,14 @@
   "react": {
     "PriceChart": "@bloxwap/hig/chart",
     "MarketRow": "blocks",
-    "AccountCard": "blocks",
-    "TokenActionCard": "blocks",
-    "ManagePositionCard": "blocks",
-    "TradeHistoryCard": "blocks",
-    "TradeHistoryDetailCard": "blocks",
-    "TargetCard": "blocks",
-    "PositionCard": "blocks",
-    "LeaderboardCard": "blocks",
+    "AccountBlock": "blocks",
+    "TokenActionBlock": "blocks",
+    "ManagePositionBlock": "blocks",
+    "TradeHistoryListBlock": "blocks",
+    "TradeHistoryDetailBlock": "blocks",
+    "TargetBlock": "blocks",
+    "PositionBlock": "blocks",
+    "LeaderboardBlock": "blocks",
     "TradeEntry": "blocks",
     "SwapPanel": "blocks",
     "FromPicker": "blocks",
@@ -80,18 +80,18 @@
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
     "ListRow": "list-group",
-    "LanguageCard": "blocks"
+    "LanguageBlock": "blocks"
   },
   "native": {
     "MarketRow": "blocks",
-    "AccountCard": "blocks",
-    "TokenActionCard": "blocks",
-    "ManagePositionCard": "blocks",
-    "TradeHistoryCard": "blocks",
-    "TradeHistoryDetailCard": "blocks",
-    "TargetCard": "blocks",
-    "PositionCard": "blocks",
-    "LeaderboardCard": "blocks",
+    "AccountBlock": "blocks",
+    "TokenActionBlock": "blocks",
+    "ManagePositionBlock": "blocks",
+    "TradeHistoryListBlock": "blocks",
+    "TradeHistoryDetailBlock": "blocks",
+    "TargetBlock": "blocks",
+    "PositionBlock": "blocks",
+    "LeaderboardBlock": "blocks",
     "TradeEntry": "blocks",
     "SwapPanel": "blocks",
     "FromPicker": "blocks",
@@ -161,6 +161,6 @@
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
     "ListRow": "list-group",
-    "LanguageCard": "blocks"
+    "LanguageBlock": "blocks"
   }
 }

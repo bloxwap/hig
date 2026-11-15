@@ -2,11 +2,11 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `LanguageCard`, `ManagePositionCard`, `TradeHistoryCard`, `TradeHistoryDetailCard`, `TargetCard`, `PositionCard`, `LeaderboardCard`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `InstallCommand`, and `MarketingHero`.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
-Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountCard` and `TokenActionCard`, `LanguageCard`, exist only under `blocks`.
+Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountBlock` and `TokenActionBlock`, `LanguageBlock`, exist only under `blocks`.
 
 ## API and anatomy
 
@@ -16,15 +16,15 @@ All data and actions are supplied by the host application.
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
 | `SwapPanel` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
-| `AccountCard` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
-| `TokenActionCard` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
-| `TradeHistoryCard` | One closed trade: the asset, side and leverage, the net profit and loss, and a bar from the entry price to the exit price. Details below. |
-| `TradeHistoryDetailCard` | The full record of one closed trade: the asset, the net result as the headline figure, the trade's figures as rows, and the host's actions. Details below. |
-| `LanguageCard` | Choose the app's language: a header, a search field, and each language as a row with its flag and a check on the one in use. Details below. |
-| `ManagePositionCard` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
-| `TargetCard` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry, mark and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
-| `PositionCard` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
-| `LeaderboardCard` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
+| `AccountBlock` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
+| `TokenActionBlock` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
+| `TradeHistoryListBlock` | A history of closed trades: a header, then one row per trade with the asset, its side and leverage, and the net result over its age. Details below. |
+| `TradeHistoryDetailBlock` | The full record of one closed trade: the asset, the net result as the headline figure, the trade's figures as rows, and the host's actions. Details below. |
+| `LanguageBlock` | Choose the app's language: a header, a search field, and each language as a row with its flag and a check on the one in use. Details below. |
+| `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
+| `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry, mark and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
+| `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
+| `LeaderboardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `FromPicker` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
 | `ToPicker` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
 | `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. |
@@ -84,7 +84,8 @@ Stake and unstake are one example each: the asset changes only the token data, n
 - **Fixed destination.** `destination={{title, subtitle, icon, address, detail, onPress}}` replaces the To token with a place the host already knows: a recipient wallet, a staking pool, a trading account. The To card becomes one compact row with no picker and no amount, the panel is one-way, the action is ready from the From side alone, and `onSubmit` receives `'send'`. `address` shows shortened with the wallet's colour disc; `onPress` makes the card a button with a trailing chevron, for example to change the recipient; `fee` shows on the card when the host passes it.
 - **Accounts.** A token with a `caption` (for example `$22.72 available`, or the same as a live figure, `{value:22.72, options:{style:'currency', currency:'USD'}, suffix:' available'}`) is presented as an account: the name over the caption beside one disc, with Max only. A small chevron follows the name while the side can still be changed.
 - **Pending destination.** `destination.pending` shows the destination as a placeholder; the action stays disabled and reads “Pick a destination” until the host supplies a real one.
-- **Details.** `details=[{label, value, options, prefix, suffix}]` adds label and value rows to the bottom card, under a destination or on their own. On their own they stand in for the To side exactly as a destination does. A number `value` is formatted with `options` between `prefix` and `suffix` and updates place by place; a string is drawn as given.
+- **Prices.** `entry` and `exit` draw one `BarPnl` without a card, scaled to the two prices: the stretch between them is filled in the result colour and the two prices read under it. This replaces an Entry row and an Exit row. `priceOptions` formats them; the default is US dollars. Leave either out and there is no bar.
+- **Details.** `details=[{label, value, options, prefix, suffix}]` are the other figures, such as size, notional, time held, fees and funding. They are drawn three to a line as a small label over its value, in the order given. A number is formatted with `options` between `prefix` and `suffix` and updates place by place; a string is drawn as given, which suits a duration the host has already formatted.
 - **Note.** `note` is a line under the cards for a limit or a delay; `noteTone='warning'` or `'negative'` makes it a tinted capsule.
 - **Heading and controls.** `title` puts a heading above the cards and `onBack` a Back control beside it, for a panel that is its own screen or sheet. `controls={false}` leaves the action button alone at full width, and `actionIcon` puts a decoration before its text.
 - **Locked sides.** `lockFrom` / `lockTo` keep that side's token fixed: its card looks the same but does not open the picker, has no shortcut, and reset leaves the token in place.
@@ -149,12 +150,12 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Search** matches the token's name, symbol, chain and `keywords`, so put the contract address in `keywords` to make a pasted address find its token.
 - **Keyboard** on web: with focus in the search field, the arrow keys move through the list and Enter selects.
 
-### AccountCard
+### AccountBlock
 
-`AccountCard` shows one account: a header with Back on the leading edge, the title in the centre and an optional action on the trailing edge; under it the total on the leading edge and the deposit action on the trailing edge; then the holdings as `AssetBalanceRow` capsules 8 units apart. It is available from `@bloxwap/hig/react/blocks/account-card`, `@bloxwap/hig/native/account-card` and the `blocks` aggregates.
+`AccountBlock` shows one account: a header with Back on the leading edge, the title in the centre and an optional action on the trailing edge; under it the total on the leading edge and the deposit action on the trailing edge; then the holdings as `AssetBalanceRow` capsules 8 units apart. It is available from `@bloxwap/hig/react/blocks/account-block`, `@bloxwap/hig/native/account-block` and the `blocks` aggregates.
 
 ```tsx
-<AccountCard assets={holdings} onBack={goBack} onShowAddress={openAddress} onDeposit={openDeposit}
+<AccountBlock assets={holdings} onBack={goBack} onShowAddress={openAddress} onDeposit={openDeposit}
   onAssetSelect={asset => open(asset.id)}/>
 ```
 
@@ -169,12 +170,12 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Live numbers.** The total, every value and every units figure update through `AnimatedNumberReadout`, as in the swap card.
 - **Ownership.** The card never reads a wallet, fetches a price or moves funds.
 
-### TokenActionCard
+### TokenActionBlock
 
-`TokenActionCard` is the screen for one token: the same header as `AccountCard` with the ticker as its title, two `BarMark` bars, then the actions. The bars are read-only, so they are drawn without a card (`surface={false}`) and sit directly on the screen, as in `ManagePositionCard`. The first bar is titled with the token's `name`, shows the total holding in dollars on its trailing edge, and divides among `assets`, the places the token is held (Staked, Core, Paper). The second is the same bar titled Chains that shows how many chains hold a balance and divides among `chains`. It is available from `@bloxwap/hig/react/blocks/token-action-card`, `@bloxwap/hig/native/token-action-card` and the `blocks` aggregates.
+`TokenActionBlock` is the screen for one token: the same header as `AccountBlock` with the ticker as its title, two `BarMark` bars, then the actions. The bars are read-only, so they are drawn without a card (`surface={false}`) and sit directly on the screen, as in `ManagePositionBlock`. The first bar is titled with the token's `name`, shows the total holding in dollars on its trailing edge, and divides among `assets`, the places the token is held (Staked, Core, Paper). The second is the same bar titled Chains that shows how many chains hold a balance and divides among `chains`. It is available from `@bloxwap/hig/react/blocks/token-action-block`, `@bloxwap/hig/native/token-action-block` and the `blocks` aggregates.
 
 ```tsx
-<TokenActionCard symbol="HYPE" name="Hyperliquid" onBack={goBack}
+<TokenActionBlock symbol="HYPE" name="Hyperliquid" onBack={goBack}
   assets={[{label: 'Staked', value: 320}, {label: 'Core', value: 239}, {label: 'Paper', value: 200}]}
   chains={[{label: 'Base', value: 120}, {label: 'Hyperliquid', value: 639}]}
   actions={[{id: 'send', onSelect: send}, {id: 'receive', onSelect: receive},
@@ -186,15 +187,15 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Chain count.** The chains bar shows the number of chains with a balance above zero.
 - **Actions.** Each action is `{id, onSelect}` plus optional `label`, `disabled` and `intent`. The ids `send`, `receive`, `stake` and `unstake` take a built-in translated label; any other id needs `label`. They render in the order given, full width, 8 units apart and 16 below the bars. Leave out the actions a token does not support.
 - **Intent.** Actions default to `secondary`, because the card offers equal choices. Set `intent: 'primary'` on at most one, or `'destructive'` for something like a burn.
-- **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountCard`.
+- **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountBlock`.
 - **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanel`.
 
-### LanguageCard
+### LanguageBlock
 
-`LanguageCard` is the screen for choosing the app's language: the same header as `AccountCard`, a search field, then each language as a row. It is available from `@bloxwap/hig/react/blocks/language-card`, `@bloxwap/hig/native/language-card` and the `blocks` aggregates.
+`LanguageBlock` is the screen for choosing the app's language: the same header as `AccountBlock`, a search field, then each language as a row. It is available from `@bloxwap/hig/react/blocks/language-block`, `@bloxwap/hig/native/language-block` and the `blocks` aggregates.
 
 ```tsx
-<LanguageCard value={locale} onSelect={language => setLocale(language.code)} onBack={goBack}
+<LanguageBlock value={locale} onSelect={language => setLocale(language.code)} onBack={goBack}
   languages={[
     {code: 'en', name: 'English', description: 'English', flag: '/flags/us.svg'},
     {code: 'fr', name: 'Français', description: 'French', flag: '/flags/fr.svg'},
@@ -204,15 +205,15 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Languages.** A `LanguageOption` is `{code, name}` plus optional `description` and `flag`. `name` is the language in its own words and `description` is the reader's name for it, shown muted underneath. `flag` is round artwork: an image URL or a host element; without it the row shows the first two letters of the code. Rows keep the host's order.
 - **Selection.** `value` is the `code` in use; its row shows a check on the trailing edge. `onSelect` reports the language pressed. The host applies it and navigates.
 - **Search.** The field at the top filters by name, description and code, ignoring case and accents, so `francais` finds Français. No match shows the built-in “No results”. On web the arrow keys move through the matches from the field and Enter chooses the highlighted one, or the only one. `search={false}` leaves the field out for a short list. `filterLanguages(languages, query)` returns the same matches.
-- **Header.** `title` defaults to the built-in “Language”. `onBack` shows Back and `headerAction` is the trailing control, as in `AccountCard`.
+- **Header.** `title` defaults to the built-in “Language”. `onBack` shows Back and `headerAction` is the trailing control, as in `AccountBlock`.
 - **Accessibility.** The rows are a radio group named by the title; each row is a radio that reads the language's name and description, and carries its `code` as the language of its name.
 
-### ManagePositionCard
+### ManagePositionBlock
 
-`ManagePositionCard` is the screen for one open position. Under the shared header it draws a `BarMark` and a `BarPnl`, the host's actions as rows, and the position itself. The two bars are read-only, so they are drawn without a card (`surface={false}`) and sit directly on the screen; only the things a person can press look like surfaces. It is available from `@bloxwap/hig/react/blocks/manage-position-card`, `@bloxwap/hig/native/manage-position-card` and the `blocks` aggregates.
+`ManagePositionBlock` is the screen for one open position. Under the shared header it draws a `BarMark` and a `BarPnl`, the host's actions as rows, and the position itself. The two bars are read-only, so they are drawn without a card (`surface={false}`) and sit directly on the screen; only the things a person can press look like surfaces. It is available from `@bloxwap/hig/react/blocks/manage-position-block`, `@bloxwap/hig/native/manage-position-block` and the `blocks` aggregates.
 
 ```tsx
-<ManagePositionCard labels={t.position} mode="Demo" side="long"
+<ManagePositionBlock labels={t.position} mode="Demo" side="long"
   entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98}
   actions={[{id: 'stop-loss', label: t.stopLoss, onSelect: openStopLoss},
             {id: 'take-profit', label: t.takeProfit, onSelect: openTakeProfit},
@@ -230,12 +231,12 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Live numbers.** The share to liquidation, the three prices, the size and the profit and loss update through `AnimatedNumberReadout`.
 - **Ownership.** The block never reads a position, a price feed or an account, and never places an order.
 
-### TargetCard
+### TargetBlock
 
-`TargetCard` sets a take profit or a stop loss on one open position. `kind` chooses which: `take-profit` takes the positive role and `stop-loss` the negative role, for the bar, the trigger price, the selected quick choice and the confirming action. It is available from `@bloxwap/hig/react/blocks/target-card`, `@bloxwap/hig/native/target-card` and the `blocks` aggregates.
+`TargetBlock` sets a take profit or a stop loss on one open position. `kind` chooses which: `take-profit` takes the positive role and `stop-loss` the negative role, for the bar, the trigger price, the selected quick choice and the confirming action. It is available from `@bloxwap/hig/react/blocks/target-block`, `@bloxwap/hig/native/target-block` and the `blocks` aggregates.
 
 ```tsx
-<TargetCard kind="take-profit" labels={t.takeProfit} position="BTC · Long 40×" orderType={t.takeLimit}
+<TargetBlock kind="take-profit" labels={t.takeProfit} position="BTC · Long 40×" orderType={t.takeLimit}
   note={t.takeLimitNote} entry={64699.5} mark={mark} trigger={quote.trigger}
   unit={unit} onUnitChange={setUnit} value={target} onValueChange={setTarget} presets={[1, 2, 5, 10]}
   onCustom={openEntry} onCancel={goBack} onSubmit={placeOrder} onBack={goBack}/>
@@ -248,16 +249,16 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Note.** `note` is one sentence about how the order fills, such as that a take-limit fills only at the target price or better. With `labels.info`, the accessible name of the button, an info button sits on the trailing edge of the header and opens the sentence in a popover under it. Pressing the button again, pressing anywhere else or, on web, Escape closes it. The popover is the block's own, so the web entry needs no Radix peer, and native draws the same popover. Without `labels.info`, or when `headerAction` takes the trailing edge, the sentence is always shown under the headline figure. Leave `note` out and there is no button, as on a stop-market order.
 - **Unit.** `units` lists the units offered, all three by default, as a `SegmentedControl`; `onUnitChange` reports the choice. With one unit the control is hidden. The host converts `value` and `presets` when the unit changes.
 - **Quick choices.** `presets` are values in the current unit, drawn as equal capsules in one row. Whole dollar amounts drop their cents (+$1, -$0.50). The preset equal to `value` is shown selected and exposed as pressed; `onValueChange` reports a press. `onCustom` adds a Custom row with a chevron above them, and the host opens its own entry, for example a keypad sheet.
-- **Actions.** `onSubmit` is the confirming action, labelled by `labels.submit`, with `busy` and `submitDisabled`. `onCancel` adds Cancel beside it. `onBack` and `headerAction` are the header controls, as in `AccountCard`.
+- **Actions.** `onSubmit` is the confirming action, labelled by `labels.submit`, with `busy` and `submitDisabled`. `onCancel` adds Cancel beside it. `onBack` and `headerAction` are the header controls, as in `AccountBlock`.
 - **Live numbers.** The headline figure and the three prices update through `AnimatedNumberReadout`.
 - **Ownership.** The block never reads a position or a price feed and never places an order.
 
-### PositionCard
+### PositionBlock
 
-`PositionCard` is the sheet for the position being opened or edited. Under the shared header, with Close on its trailing edge, it shows a summary, an optional paper trading switch, and the settings as grouped rows. It is available from `@bloxwap/hig/react/blocks/position-card`, `@bloxwap/hig/native/position-card` and the `blocks` aggregates.
+`PositionBlock` is the sheet for the position being opened or edited. Under the shared header, with Close on its trailing edge, it shows a summary, an optional paper trading switch, and the settings as grouped rows. It is available from `@bloxwap/hig/react/blocks/position-block`, `@bloxwap/hig/native/position-block` and the `blocks` aggregates.
 
 ```tsx
-<PositionCard title={t.position} onClose={close}
+<PositionBlock title={t.position} onClose={close}
   details={[{label: t.notional, value: {value: 400, options: wholeDollars}},
             {label: t.fee, value: {value: 0.53, options: dollars}, tone: 'negative'},
             {label: t.liquidation, value: {value: -0.025, options: percent}, tone: 'negative'}]}
@@ -271,53 +272,55 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Summary.** `details` are label and value lines in the order given. A value is host text, such as 2% of profit, or a figure `{value, options, prefix, suffix}` that updates place by place through `AnimatedNumberReadout`; a `null` figure reads as unknown. `tone` colours the value `positive`, `negative` or `muted`, for a fee or a liquidation distance. The label always carries the meaning, so colour is never the only signal.
 - **Note.** `note` is one sentence under the summary, such as the minimum margin.
 - **Paper trading.** `paperTrade={{label, checked, onCheckedChange}}` adds a switch as a row of its own above the settings. The host names it and owns its state, and usually changes `details`, `note` and `groups` with it: a paper position might charge a share of profit and offer no stop loss. `disabled` dims it.
-- **Settings.** `groups` is a list of groups, and each group is one `ListGroup`: rows that share a rounded container, 8 units from the next group. A row is `{id, label}` plus an optional `value` on the trailing edge. With `onSelect` the whole row is a button with a chevron and the host opens its own view, for example a `TargetCard` for Stop Loss; without it the row is static. `disabled` dims a row. An empty group is not drawn.
+- **Settings.** `groups` is a list of groups, and each group is one `ListGroup`: rows that share a rounded container, 8 units from the next group. A row is `{id, label}` plus an optional `value` on the trailing edge. With `onSelect` the whole row is a button with a chevron and the host opens its own view, for example a `TargetBlock` for Stop Loss; without it the row is static. `disabled` dims a row. An empty group is not drawn.
 - **Header.** `onClose` shows Close on the trailing edge; `headerAction` takes its place. `onBack` shows Back.
 - **Ownership.** The card never reads an account, computes a fee or places an order.
 
-### TradeHistoryCard
+### TradeHistoryListBlock
 
-`TradeHistoryCard` is one closed trade in a history list. It is a `BarPnl` for a finished trade: the title reads the ticker, the side and the leverage (`AMZN · Short 20×`), the trailing edge reads the net profit and loss, and the bar is filled from the entry price to the exit price (`BarPnl` with `fit`), in the positive role for a gain and the negative role for a loss, with the two prices under it in price order. It is available from `@bloxwap/hig/react/blocks/trade-history-card`, `@bloxwap/hig/native/trade-history-card` and the `blocks` aggregates.
+`TradeHistoryListBlock` is the history of closed trades as one screen: the same header as `AccountBlock`, then one capsule row per trade, 8 units apart. It is available from `@bloxwap/hig/react/blocks/trade-history-list-block`, `@bloxwap/hig/native/trade-history-list-block` and the `blocks` aggregates.
 
 ```tsx
-<TradeHistoryCard labels={t.history} symbol="AMZN" side="short" leverage={20}
-  entry={267.6} exit={267.18} pnl={1.418} onSelect={() => open(trade.id)}/>
+<TradeHistoryListBlock labels={t.history} trades={closed} onBack={goBack}
+  onSelect={trade => open(trade.id)}/>
 ```
 
-- **Labels.** `labels` supplies `entry`, `exit`, `long` and `short`. They are trading terms, so HIG ships none.
-- **Result.** `pnl` is the net profit and loss in dollars, signed, in the positive role for a gain and the negative role for a loss. Leave it out to show the bar alone; `null` reads as unknown. The bar's colour follows the prices and the side, not `pnl`, so a trade that moved the right way but lost to fees shows a positive bar beside a negative figure.
-- **Prices.** The two prices are US dollars with cents by default. `priceOptions` changes the format, for example more fraction digits for a low-priced asset or another currency.
-- **Selection.** `onSelect` makes the whole card one button, named with the title and the result, for example to open `TradeHistoryDetailCard`. Without it the card is not interactive.
-- **Card.** `surface={false}` draws it without a card, as on `BarMark` and `BarPnl`.
-- **Lists.** Cards in a list sit 8 units apart. The host orders them and pages them.
+- **Labels.** `labels` supplies `title`, `long`, `short` and `empty`. They are trading terms, so HIG ships none.
+- **Trades.** A `TradeHistoryItem` is `{id, name, side, pnl}` plus optional `icon`, `leverage` and `time`. `icon` is round artwork: an image URL or a host element; without it the row shows the first letters of the name. `time` is host-formatted text such as `2d`. Rows keep the host's order; the host sorts and pages them.
+- **Side.** Under the name an arrow points up for a long and down for a short, followed by the leverage (`20×`), in the positive role for a long and the negative role for a short. Assistive technology reads the host's word for the side.
+- **Result.** `pnl` is the net profit and loss in dollars, signed, in the positive role for a gain and the negative role for a loss; `null` reads as unknown. The default format is four significant digits (`+$1.412`, `+$17.90`, `-$0.6878`); `pnlOptions` changes it. The figure updates place by place.
+- **Selection.** `onSelect` makes each row one button that reports its trade, for example to open `TradeHistoryDetailBlock`, and shows a disclosure chevron. Without it the rows are not interactive.
+- **Empty.** With no trades the block shows `labels.empty` under the header.
+- **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountBlock`.
 
-### TradeHistoryDetailCard
+### TradeHistoryDetailBlock
 
-`TradeHistoryDetailCard` is the full record of one closed trade. Under the shared header it shows the asset with its side and leverage, the net result as the headline figure with the return on margin under it, the trade's figures as label and value rows, and the host's actions in one row. It is available from `@bloxwap/hig/react/blocks/trade-history-detail-card`, `@bloxwap/hig/native/trade-history-detail-card` and the `blocks` aggregates.
+`TradeHistoryDetailBlock` is the full record of one closed trade. Under the shared header it shows the asset with its side and leverage on one line, the net result as the headline figure with the return on margin under it, one bar from the entry price to the exit price, the trade's other figures as a compact grid, and the host's actions in one row. Nothing above the actions is pressable, so none of it is drawn as a card: it sits directly on the screen. It is available from `@bloxwap/hig/react/blocks/trade-history-detail-block`, `@bloxwap/hig/native/trade-history-detail-block` and the `blocks` aggregates.
 
 ```tsx
-<TradeHistoryDetailCard labels={t.trade} name="Amazon" icon={amzn} side="short" leverage={20}
+<TradeHistoryDetailBlock labels={t.trade} name="Amazon" icon={amzn} side="short" leverage={20}
   pnl={1.418} pnlPercent={0.0284}
-  details={[{label: t.entry, value: 267.6, options: usd}, {label: t.exit, value: 267.18, options: usd},
-            {label: t.size, value: 3.734, suffix: ' AMZN'}, {label: t.held, value: '38m 20s'}]}
+  entry={267.6} exit={267.18}
+  details={[{label: t.size, value: 3.734, suffix: ' AMZN'}, {label: t.notional, value: 999.23, options: usd},
+            {label: t.held, value: '38m 20s'}]}
   actions={[{id: 'save', label: t.saveImage, onSelect: saveImage},
             {id: 'share', label: t.share, intent: 'primary', onSelect: share}]}
   onBack={goBack}/>
 ```
 
-- **Labels.** `labels` supplies `title`, `netPnl`, `long`, `short` and one sentence that receives a formatted figure, `onMargin(percent)`. The detail rows and the actions carry their own labels. HIG ships no trading terms.
-- **Asset.** The row shows the artwork (`icon` as an image URL or a host element, else the first letters of the name), the `name`, an arrow and the side word in the positive role for long and the negative role for short, and the `leverage` as `20×`.
+- **Labels.** `labels` supplies `title`, `long`, `short`, `entry` and `exit` (the names of the two prices under the bar), one sentence that receives a formatted figure, `onMargin(percent)`, and `netPnl`. `netPnl` names the figure for assistive technology and is not drawn: on screen the signed figure and the sentence under it carry the meaning. The detail figures and the actions carry their own labels. HIG ships no trading terms.
+- **Asset.** One centred line shows a small disc with the artwork (`icon` as an image URL or a host element, else the first letters of the name), the `name`, an arrow and the side word in the positive role for long and the negative role for short, and the `leverage` as `20×`.
 - **Result.** `pnl` is the headline figure, signed, in the positive role for a gain and the negative role for a loss; `null` reads as unknown. `pnlPercent` is the return on margin as a fraction and reads inside the host's sentence, for example +2.84% on margin; leave it out to hide the line.
 - **Details.** `details=[{label, value, options, prefix, suffix}]` draws one row each, in the order given. A number is formatted with `options` between `prefix` and `suffix`; a string is drawn as given, which suits a duration the host has already formatted.
 - **Actions.** `actions=[{id, label, onSelect, intent, disabled, busy}]` draws the buttons in one row with equal widths, 8 units apart and 16 below the details. `intent` defaults to `secondary`; set `primary` on the one that matters, such as Share.
 - **Ownership.** The card never reads trade history, renders an image or opens a share sheet. The host does each of those when an action reports a press.
 
-### LeaderboardCard
+### LeaderboardBlock
 
-`LeaderboardCard` is the screen for a trading competition. Under the shared header it shows an optional promotion, an optional choice between standings, the viewer's own standing pinned on a tinted row, and the ranked list. One block covers both a prize pool that fills towards a goal and a sweepstakes with a top prize; the promotion's fields decide which. It is available from `@bloxwap/hig/react/blocks/leaderboard-card`, `@bloxwap/hig/native/leaderboard-card` and the `blocks` aggregates.
+`LeaderboardBlock` is the screen for a trading competition. Under the shared header it shows an optional promotion, an optional choice between standings, the viewer's own standing pinned on a tinted row, and the ranked list. One block covers both a prize pool that fills towards a goal and a sweepstakes with a top prize; the promotion's fields decide which. It is available from `@bloxwap/hig/react/blocks/leaderboard-block`, `@bloxwap/hig/native/leaderboard-block` and the `blocks` aggregates.
 
 ```tsx
-<LeaderboardCard title={t.leaderboard} onBack={goBack} headerAction={share} verifiedLabel={t.verified}
+<LeaderboardBlock title={t.leaderboard} onBack={goBack} headerAction={share} verifiedLabel={t.verified}
   promo={{eyebrow: t.seasonPool, rules: {label: t.seeRules, onSelect: openRules},
           amount: 4037, goal: 250000, progress: percent => t.toGoal(percent), updated: t.updates,
           headline: ['Top ', {highlight: '100'}, ' traders split ', {highlight: '$250,000'}, ' pot'],

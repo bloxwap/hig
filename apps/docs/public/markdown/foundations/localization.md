@@ -216,15 +216,15 @@ Rules:
 | `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
 | `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
 | `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
-| `account` | Account | AccountCard: default heading | — |
-| `deposit` | Deposit | AccountCard: default label of the deposit action | — |
-| `accountBalance` | Total balance | AccountCard: accessible label of the total balance | — |
-| `showAddress` | Show account address | AccountCard: accessible name of the header button that shows the account address | — |
-| `language` | Language | LanguageCard: default heading | — |
-| `searchLanguages` | Search languages | LanguageCard: search placeholder and accessible name | — |
-| `receive` | Receive | TokenActionCard: built-in label of the `receive` action | — |
-| `stake` | Stake | TokenActionCard: built-in label of the `stake` action | — |
-| `unstake` | Unstake | TokenActionCard: built-in label of the `unstake` action | — |
+| `account` | Account | AccountBlock: default heading | — |
+| `deposit` | Deposit | AccountBlock: default label of the deposit action | — |
+| `accountBalance` | Total balance | AccountBlock: accessible label of the total balance | — |
+| `showAddress` | Show account address | AccountBlock: accessible name of the header button that shows the account address | — |
+| `language` | Language | LanguageBlock: default heading | — |
+| `searchLanguages` | Search languages | LanguageBlock: search placeholder and accessible name | — |
+| `receive` | Receive | TokenActionBlock: built-in label of the `receive` action | — |
+| `stake` | Stake | TokenActionBlock: built-in label of the `stake` action | — |
+| `unstake` | Unstake | TokenActionBlock: built-in label of the `unstake` action | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

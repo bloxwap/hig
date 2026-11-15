@@ -1434,7 +1434,7 @@
         "scope": "Pre-integration snapshot retained for migration evidence; current retirement work is #110.",
         "forksStillUsedFlagOn": {
           "packages/ui-native/src/components/sheet.tsx": "src/profile/profile-sheet.tsx (account sheet, hig#118), size-lev-sheet.tsx, login-drawer.tsx, account/wallet-card-deck.tsx",
-          "packages/ui-native/src/components/number.tsx (NumberFlow)": "live-chart, position-rail, trade-history, market-picker, animated-number-text, trade-detail-card, account/wallet-card-primitives, account/position-card-renderers (hig#117)"
+          "packages/ui-native/src/components/number.tsx (NumberFlow)": "live-chart, position-rail, trade-history, market-picker, animated-number-text, trade-detail-card, account/wallet-card-primitives, account/position-block-renderers (hig#117)"
         },
         "forksWithoutFlagOnConsumers": [
           "packages/ui-native/src/components/button.tsx (rollback-only: apps/mobile/src/hig/app-button.tsx, src/hig/settings-button.tsx, confirm-logout-card.tsx, edit-username-card.tsx)",
