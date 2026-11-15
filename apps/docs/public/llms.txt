@@ -189,7 +189,7 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -212,6 +212,7 @@ All data and actions are supplied by the host application.
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
+| `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
 | `LeaderboardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `SoundHapticsBlock` | Sound, microphone, haptics and flash settings: one card per channel with a switch, and for a channel that is on its device, input meter and volume steps. Details below. |
 | `SignalsBlock` | The signals the viewer receives, in groups with a heading, a small help pill and switches. Details below. |
@@ -446,8 +447,8 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 ```
 
 - **Words.** Every label is host text, because built-in strings carry no trading terms; only Close and Back are built in.
-- **Summary.** `details` are label and value lines in the order given, inside one container with the list groups' radius and text inset. Values use the interface face at one weight, so host text and figures read alike. A value is host text, such as 2% of profit, or a figure `{value, options, prefix, suffix}` that updates place by place through `AnimatedNumberReadout`; a `null` figure reads as unknown. `tone` colours the value `positive`, `negative` or `muted`, for a fee or a liquidation distance. The label always carries the meaning, so colour is never the only signal.
-- **Note.** `note` is one sentence, such as the minimum margin. It is the summary's footnote: small muted text 8 units under the container, on the same inset.
+- **Summary.** `details` are label and value lines in the order given. They sit directly on the screen, with no card, on the same text inset as the list rows below. Values use the interface face at one weight, so host text and figures read alike. A value is host text, such as 2% of profit, or a figure `{value, options, prefix, suffix}` that updates place by place through `AnimatedNumberReadout`; a `null` figure reads as unknown. `tone` colours the value `positive`, `negative` or `muted`, for a fee or a liquidation distance. The label always carries the meaning, so colour is never the only signal.
+- **Note.** `note` is one sentence, such as the minimum margin. It is the summary's footnote: small muted text 8 units under the summary, on the same inset.
 - **Paper trading.** `paperTrade={{label, checked, onCheckedChange}}` adds a switch as a row of its own above the settings. The host names it and owns its state, and usually changes `details`, `note` and `groups` with it: a paper position might charge a share of profit and offer no stop loss. `disabled` dims it.
 - **Settings.** `groups` is a list of groups, and each group is one `ListGroup`: rows that share a rounded container, 24 units from the next group, the standard gap between list groups. A row is `{id, label}` plus an optional `value` on the trailing edge. With `onSelect` the whole row is a button with a chevron and the host opens its own view, for example a `TargetBlock` for Stop Loss; without it the row is static. `disabled` dims a row. An empty group is not drawn.
 - **Header.** `onClose` shows Close on the trailing edge; `headerAction` takes its place. `onBack` shows Back.
@@ -505,7 +506,7 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 ```
 
 - **Words.** Every word is host text; only Back is built in.
-- **Promotion.** `promo` draws one quiet card: the `eyebrow` in muted small capitals, `rules` as a text link with a chevron on its trailing edge, `amount` as the one large figure in the action colour, updating place by place, and `caption` as the line under it. `headline` and `description` read as one paragraph: the headline in the text colour, the description continuing it in the muted colour. `action` is a full-width button, for example to the draws. Leave `promo` out for standings alone.
+- **Promotion.** `promo` draws one quiet card: the `eyebrow` in muted small capitals, `rules` as a text link with a chevron on its trailing edge, `amount` as the one large figure in the action colour, updating place by place, and `caption` as the line under it. `headline` and `description` read as one paragraph: the headline in the text colour, the description continuing it in the muted colour. `action` is a quiet row at the foot of the card, under a hairline, with its label in the muted colour and a chevron on the trailing edge, for example to the draws. It is not a filled button: the card promotes the prize, and the row is a way onward. Leave `promo` out for standings alone.
 - **Prize pool.** With `goal`, a thin progress bar filled to `amount / goal` sits under the caption, and a `caption` function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. The bar carries the progress on its own; there are no lines under it. `leaderboardProgress(amount, goal)` returns the same share.
 - **Sweepstakes.** Without `goal` there is no bar, and `caption` is a string under the figure, such as top prize.
 - **Money.** `amountOptions` formats `amount` and `goal`; the default is whole US dollars.
@@ -542,6 +543,29 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 - **NotificationsBlock.** `items` draws one card per kind of notification. `error` is a line in the negative role under that card, announced when it appears, for a permission request that failed or timed out; the host keeps the switch off in that case.
 - **State.** Every switch is controlled: the host holds `checked` and decides in `onCheckedChange` whether the change takes, for example after the system permission prompt. `disabled` dims a row and blocks it.
 - **Ownership.** The blocks never play a sound, read the microphone, vibrate, request a permission or subscribe to anything.
+
+### ProfileBlock
+
+`ProfileBlock` is a person's profile as one screen, usually in a sheet. A top bar holds the address control on the leading edge and Close on the trailing edge; under it sit the avatar with an optional status dot, the name with an optional edit control, and then the sections as `ListGroup`s 24 units apart. It is available from `@bloxwap/hig/react/blocks/profile-block`, `@bloxwap/hig/native/profile-block` and the `blocks` aggregates.
+
+```tsx
+<ProfileBlock name="5459····6263" address={account.address} status={{label: 'Demo'}}
+  onShowAddress={showAddress} onClose={close} onEditName={editName}
+  sections={[
+    {id: 'money', rows: [{id: 'accounts', label: 'Accounts', value: '$1,042.09', onSelect: openAccounts},
+                         {id: 'history', label: 'History', onSelect: openHistory}]},
+    {id: 'settings', title: 'Settings', rows: [
+      {id: 'live', label: 'Live Mode', checked: live, onCheckedChange: setLive},
+      {id: 'notifications', label: 'Notifications', value: 'Off', onSelect: openNotifications}]},
+  ]}/>
+```
+
+- **Avatar.** `avatar` is an image URL or a host element. Without it, `address` colours the disc the way wallet avatars are coloured elsewhere; with neither, the disc shows the first letters of the name. It is 144 units across and decorative.
+- **Status.** `status={{label, tone}}` draws a dot on the avatar's top trailing edge for an account mode or state, such as Demo. `label` is read out, so the dot is never colour alone. `tone` is `warning` by default, or `positive`, `negative` or `info`.
+- **Name.** `name` is the heading: a display name or an address the host has shortened. `onEditName` adds the edit control after it.
+- **Top bar.** `onShowAddress` shows the address control and `onClose` shows Close. Leave either out to hide it.
+- **Sections.** Each section is `{id, title, rows}`; a section with no rows is not drawn. A row is `{id, label}` plus optional `leading`, `value`, `trailing`, `disabled`, and either `onSelect` (the whole row is a button with a chevron) or `onCheckedChange` with `checked` (the row is a switch, named by its label). The host writes every label and value.
+- **Ownership.** The block never reads an account, a balance or a setting. Each control only reports the press; the host opens its accounts, history, rewards and settings screens.
 
 ## When to use and examples
 
@@ -1737,6 +1761,7 @@ Rules:
 | `deposit` | Deposit | AccountBlock: default label of the deposit action | — |
 | `accountBalance` | Total balance | AccountBlock: accessible label of the total balance | — |
 | `showAddress` | Show account address | AccountBlock: accessible name of the header button that shows the account address | — |
+| `editName` | Edit name | ProfileBlock: accessible name of the control that edits the profile name | — |
 | `language` | Language | LanguageBlock: default heading | — |
 | `searchLanguages` | Search languages | LanguageBlock: search placeholder and accessible name | — |
 | `receive` | Receive | TokenActionBlock: built-in label of the `receive` action | — |
