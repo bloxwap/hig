@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {mkdtempSync,mkdirSync,writeFileSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
@@ -59,4 +59,33 @@ it('scans a consumer root: font binaries, expired and unused exceptions, and the
 it('this repository passes its own scoped configuration',()=>{
   const cli=spawnSync(process.execPath,[resolve('scripts/drift.mjs')],{encoding:'utf8'});
   expect(cli.stderr).toBe('');expect(cli.status).toBe(0);
+});
+
+it('the brand mark reads its fills from the generated tokens/brand source, so HIG keeps no palette exception (#201)',()=>{
+  const config=JSON.parse(readFileSync('planning/drift-exceptions.json','utf8'));
+  expect(config.exceptions).toEqual([]);
+  expect(config.canonical.some((prefix:string)=>'packages/hig/tokens/src/brand.ts'.startsWith(prefix))).toBe(true);
+  const generated=readFileSync('packages/hig/tokens/src/brand.ts','utf8');
+  // The canonical source holds the hexes; the palette rule recognises it there and nowhere else.
+  expect(driftViolations(generated,'packages/hig/tokens/src/brand.ts',[],{now,canonical:config.canonical})).toEqual([]);
+  expect(rulesOf(driftViolations(generated,'packages/hig/react/src/copied-brand.ts',[],{now,canonical:config.canonical}))).toEqual(['copied-palette']);
+  for(const path of ['packages/hig/react/src/brand.tsx','packages/hig/native/src/brand.tsx']){
+    const source=readFileSync(path,'utf8');
+    expect(source).toContain("from '@bloxwap/hig/tokens/brand'");expect(source).not.toMatch(/#[0-9a-f]{6}\b/i);
+    expect(driftViolations(source,path,[],{now,canonical:config.canonical})).toEqual([]);
+  }
+  const report=scan(resolve('.'),config,new Date());
+  expect(report.violations).toEqual([]);expect(report.expired).toEqual([]);expect(report.configErrors).toEqual([]);
+});
+
+it('tokens/brand matches the approved SVG: geometry, sRGB fills and the Display P3 channel hex',async()=>{
+  const {brandMark}=await import('../packages/hig/tokens/src/brand');
+  const svg=readFileSync(brandMark.source,'utf8');const drawn=svg.replace(/<metadata>[\s\S]*?<\/metadata>/,'');
+  expect(drawn).toContain(`viewBox="${brandMark.viewBox}"`);
+  expect(drawn).toContain(`<rect width="${brandMark.size}" height="${brandMark.size}" rx="${brandMark.radius}" fill="${brandMark.fill.srgb}"`);
+  expect(drawn).toContain(`stroke="${brandMark.stroke.srgb}" stroke-width="${brandMark.strokeWidth}" stroke-linecap="${brandMark.strokeLinecap}"`);
+  expect([...drawn.matchAll(/<path d="([^"]+)"/g)].map(m=>m[1])).toEqual([...brandMark.paths]);
+  // Display P3 fills are the SVG's own color(display-p3 …) channels as hex, not a token lookup.
+  const p3=(tag:string)=>'#'+/color\(display-p3 ([\d.]+) ([\d.]+) ([\d.]+)\)/.exec(tag)!.slice(1).map(c=>Math.round(Number(c)*255).toString(16).padStart(2,'0')).join('');
+  expect(brandMark.fill.displayP3).toBe(p3(/<rect[^>]*>/.exec(drawn)![0]));expect(brandMark.stroke.displayP3).toBe(p3(/<g[^>]*>/.exec(drawn)![0]));
 });

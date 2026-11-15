@@ -10,6 +10,11 @@
       "import": "./tokens/dist/index.js",
       "default": "./tokens/dist/index.js"
     },
+    "./tokens/brand": {
+      "types": "./tokens/dist/brand.d.ts",
+      "import": "./tokens/dist/brand.js",
+      "default": "./tokens/dist/brand.js"
+    },
     "./tokens/css": {
       "types": "./css.d.ts",
       "default": "./tokens/dist/tokens.css"

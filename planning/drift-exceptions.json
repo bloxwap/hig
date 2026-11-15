@@ -4,8 +4,5 @@
   "paths": ["packages/hig/react/src", "packages/hig/native/src", "fixtures/web/src", "fixtures/native", "apps/docs/src", "apps/docs/app", "apps/docs/components", "apps/docs/lib", "apps/docs/styles"],
   "obsoleteImports": ["@/components/ui/"],
   "canonical": ["packages/hig/tokens/", "packages/hig/react/src/styles.css", "packages/hig/react/src/base.css"],
-  "exceptions": [
-    {"path": "packages/hig/react/src/brand.tsx", "rule": "copied-palette", "owner": "HIG brand maintainers", "reason": "Approved exact mark geometry and fills from pinned Font SVG; tokenizing would change approved asset", "expires": "2027-05-12", "issue": "https://github.com/bloxwap/hig/issues/201"},
-    {"path": "packages/hig/native/src/brand.tsx", "rule": "copied-palette", "owner": "HIG brand maintainers", "reason": "Same approved exact native mark geometry/fills; SVG provenance retained in tokens assets", "expires": "2027-05-12", "issue": "https://github.com/bloxwap/hig/issues/201"}
-  ]
+  "exceptions": []
 }

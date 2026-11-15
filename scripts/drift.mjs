@@ -22,7 +22,7 @@ export const rules=[
     test:(source,path,{obsoleteImports=[]}={})=>/from\s*['"]@workspace\/(?:tokens|ui(?:-native)?)['"/]/.test(source)
       ||/(?:from\s*|import\s*|@import\s+(?:url\()?)['"][^'"]*(?:vendor\/hig\/|styles\/hig\/)/.test(source)
       ||obsoleteImports.some(pattern=>new RegExp(`(?:from\\s*|import\\s*|@import\\s+(?:url\\()?)['"]${pattern}`).test(source))},
-  {id:'copied-palette',description:'hard-codes a Bloxwap brand colour that belongs to @bloxwap/hig/tokens',
+  {id:'copied-palette',canonical:true,description:'hard-codes a Bloxwap brand colour that belongs to @bloxwap/hig/tokens (the approved mark\'s fills come from @bloxwap/hig/tokens/brand)',
     test:source=>/#(?:00ff3f|ff479c|fffb38|171717|262626)\b/i.test(source)},
   {id:'copied-token-definition',canonical:true,description:'assigns a literal value to a --hig-* token; import @bloxwap/hig/tokens/css (remapping one role to another with var() is allowed)',
     test:(source,path)=>/\.(?:css|scss)$/.test(path)&&/(?:^|[;{\s])--hig-[a-z0-9-]+\s*:\s*(?!var\()[^;}\s]/im.test(source)},
