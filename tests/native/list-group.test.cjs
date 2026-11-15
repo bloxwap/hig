@@ -43,3 +43,10 @@ it('aligns the label, value, trailing control and chevron to the first line, so 
  const band=host(tree,'row').findAll(node=>typeof node.type==='string'&&node.props.testID!=='row'&&flat(node).minHeight===40&&node.findAll(child=>child.props.testID==='control').length>0);
  expect(band.length).toBeGreaterThan(0);expect(flat(band[0])).toMatchObject({minHeight:40,alignItems:'center',flexDirection:'row'});
 });
+it('reads an element value as valueLabel on a selectable row and tones a text value, as web does',()=>{
+ let tree=mount(h(ListRow,{label:'Balance',value:h(View,{testID:'live'}),valueLabel:'$1,042.09',testID:'row',onSelect(){}}));
+ expect(host(tree,'row').props.accessibilityLabel).toBe('Balance, $1,042.09');
+ tree=mount(h(ListRow,{label:'PnL',value:'+$12.50',valueTone:'positive',testID:'row'}));
+ expect(flat(host(tree,'row-value')).color).toBe(colors.positive);expect(text(host(tree,'row-value'))).toBe('+$12.50');
+ tree=mount(h(ListRow,{label:'PnL',value:'+$12.50',testID:'row'}));expect(flat(host(tree,'row-value')).color).toBe(colors.muted);
+});

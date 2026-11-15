@@ -81,3 +81,40 @@ describe('ManagePositionBlock',()=>{
   for(const key of ['margin','notional','liquidation','mark','entry','stopLoss','takeProfit','managePosition'])expect(key in en,key).toBe(false);
  });
 });
+describe('ManagePositionBlock host slots',()=>{
+ it('puts a trailing value with an optional tone on an action row, as host text or a live figure',async()=>{
+  const cancel=vi.fn();
+  render(<ManagePositionBlock {...base} actions={[{id:'tp',label:'Take Profit',value:{value:66000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}},tone:'positive',onSelect:cancel},{id:'sl',label:'Stop Loss',value:'$63,500',tone:'negative',onSelect:()=>{}},{id:'close',label:'Close',onSelect:()=>{}}]}/>);
+  const rows=[...document.querySelectorAll<HTMLButtonElement>('.hig-manage-actions .hig-list-row')];
+  expect(rows.map(row=>[spoken(row.querySelector('.hig-list-row-label')!),row.querySelector('.hig-list-row-value')?spoken(row.querySelector('.hig-list-row-value')!):null,row.querySelector('.hig-manage-action-value')?.getAttribute('data-tone')??null])).toEqual([['Take Profit','$66,000','positive'],['Stop Loss','$63,500','negative'],['Close',null,null]]);
+  expect(rows[0].querySelector('.hig-animated-number-visual')).not.toBeNull();
+  // The value sits before the chevron, and the whole row stays the one button.
+  const order=[...rows[0].children].map(child=>child.getAttribute('class')?.split(' ')[0]);expect(order.indexOf('hig-list-row-value')).toBeLessThan(order.indexOf('hig-list-row-chevron'));
+  await userEvent.click(rows[0]);expect(cancel).toHaveBeenCalledTimes(1);
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain(".hig-manage-action-value[data-tone='positive'] { color:var(--hig-positive); }");
+ });
+ it('adds a badge after the name and a caption under the row, and keeps the row static without onSelect',()=>{
+  render(<ManagePositionBlock {...base} position={{name:'Bitcoin',badge:'Papertrade',caption:'Estimated, funding unavailable',pnl:1.5}}/>);
+  const row=document.querySelector('.hig-position-row')!;expect(row.tagName).toBe('DIV');
+  const badge=row.querySelector('.hig-position-name > .hig-badge.hig-position-badge')!;expect(badge.textContent).toBe('Papertrade');expect(badge.previousElementSibling!.textContent).toBe('Bitcoin');
+  const caption=document.querySelector('.hig-position-caption')!;expect(caption.textContent).toBe('Estimated, funding unavailable');expect(caption.previousElementSibling).toBe(row);expect(caption.id).toBe('');
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-caption {'))??'';expect(rule).toContain('margin:-8px 0 0');
+ });
+ it('makes the position row one button named by the host label and described by its figures and caption',async()=>{
+  const open=vi.fn();
+  render(<ManagePositionBlock {...base} position={{name:'Bitcoin',leverage:40,pnl:-0.0247,pnlPercent:-0.0025,caption:'Stale',label:'View Bitcoin',onSelect:open}}/>);
+  const button=screen.getByRole('button',{name:'View Bitcoin'});expect(button.classList.contains('hig-position-row')).toBe(true);
+  const described=button.getAttribute('aria-describedby')!.split(' ').map(id=>document.getElementById(id)!);
+  expect(described.map(node=>node.className)).toEqual(['hig-asset-row-identity','hig-asset-row-amounts','hig-position-caption']);expect(spoken(described[1])).toBe('-$0.0247-0.25%');expect(described[2].textContent).toBe('Stale');
+  await userEvent.click(button);expect(open).toHaveBeenCalledTimes(1);
+ });
+ it('formats the profit and loss with pnlOptions merged over the default',()=>{
+  const view=render(<ManagePositionBlock {...base} position={{name:'Bitcoin',pnl:5.1234}} pnlOptions={{maximumFractionDigits:3}}/>);
+  expect(spoken(document.querySelector('.hig-asset-row-amounts strong')!)).toBe('+$5.123');
+  view.rerender(<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><ManagePositionBlock {...base} position={{name:'Bitcoin',pnl:-2}} pnlOptions={{minimumFractionDigits:2}}/></HIGProvider>);
+  expect(spoken(document.querySelector('.hig-asset-row-amounts strong')!)).toMatch(/^-2,00\s\$$/);
+ });
+ it('names the heading for a dialog with headingId',()=>{
+  render(<ManagePositionBlock {...base} headingId='manage-title'/>);expect(screen.getByRole('heading',{name:'Manage Position'}).id).toBe('manage-title');
+ });
+});

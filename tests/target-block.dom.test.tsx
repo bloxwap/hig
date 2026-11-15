@@ -138,3 +138,39 @@ describe('TargetBlock price card surface',()=>{
   expect(rule('.hig-target-amount .hig-number')).toContain('font-family:inherit');
  });
 });
+describe('TargetBlock host slots',()=>{
+ it('dims a preset or a unit the host cannot offer now, and leaves the rest working',async()=>{
+  const change=vi.fn(),unit=vi.fn();
+  render(<TargetBlock {...base} value={2} presets={[1,{value:2},{value:5,disabled:true}]} units={['dollar',{unit:'price',disabled:true},{unit:'percent'}]} onValueChange={change} onUnitChange={unit}/>);
+  expect(presets().map(button=>[button.textContent,button.disabled,button.getAttribute('aria-pressed')])).toEqual([['+$1',false,'false'],['+$2',false,'true'],['+$5',true,'false']]);
+  await userEvent.click(presets()[2]);expect(change).not.toHaveBeenCalled();await userEvent.click(presets()[0]);expect(change).toHaveBeenCalledWith(1);
+  const radios=screen.getAllByRole('radio') as HTMLInputElement[];expect(radios.map(radio=>[radio.value,radio.disabled])).toEqual([['dollar',false],['price',true],['percent',false]]);
+  await userEvent.click(radios[1]);expect(unit).not.toHaveBeenCalled();await userEvent.click(radios[2]);expect(unit).toHaveBeenCalledWith('percent');
+ });
+ it('shows the custom value on the Custom row, which then reads as selected in place of any preset',async()=>{
+  const custom=vi.fn();const view=render(<TargetBlock {...base} value={2} presets={[1,2]} onCustom={custom}/>);
+  const row=()=>screen.getByRole('button',{name:/^Custom/});
+  expect(row().getAttribute('aria-pressed')).toBeNull();expect(row().querySelector('.hig-swap-setting-value')).toBeNull();expect(presets()[1].getAttribute('aria-pressed')).toBe('true');
+  view.rerender(<TargetBlock {...base} value={2} presets={[1,2]} onCustom={custom} customValue={2}/>);
+  expect(row().getAttribute('aria-pressed')).toBe('true');expect(row().querySelector('.hig-swap-setting-value')!.textContent).toBe('+$2.00');expect(screen.getByRole('button',{name:'Custom +$2.00'})).toBe(row());
+  expect(presets().map(button=>button.getAttribute('aria-pressed'))).toEqual(['false','false']);
+  await userEvent.click(row());expect(custom).toHaveBeenCalledTimes(1);
+  view.rerender(<TargetBlock {...base} unit='percent' value={0.035} onCustom={custom} customValue={0.035}/>);expect(row().querySelector('.hig-swap-setting-value')!.textContent).toBe('+3.5%');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain(".hig-target-block .hig-swap-setting[aria-pressed='true'] { box-shadow:inset 0 0 0 2px var(--hig-target-tone); }");
+ });
+ it('formats dollar presets, the custom value and the headline with the provider money presentation',()=>{
+  render(<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><TargetBlock {...base} value={2} presets={[1,2]} onCustom={()=>{}} customValue={2.5}/></HIGProvider>);
+  expect(presets().map(button=>button.textContent)).toEqual([expect.stringMatching(/^\+1\s\$$/),expect.stringMatching(/^\+2\s\$$/)]);
+  expect(document.querySelector('.hig-swap-setting-value')!.textContent).toMatch(/^\+2,50\s\$$/);expect(spoken(document.querySelector('.hig-target-amount')!)).toMatch(/^\+2,00\s\$$/);
+ });
+ it('keeps the info button beside a host header control with headerActionBesideInfo',async()=>{
+  const view=render(<TargetBlock {...base} labels={{...labels,info:'How this order fills'}} note='Fills at your price or better.' headerAction={<button type='button'>Receive</button>}/>);
+  expect(screen.queryByRole('button',{name:'How this order fills'})).toBeNull();expect(document.querySelector('.hig-target-note')).not.toBeNull();
+  view.rerender(<TargetBlock {...base} labels={{...labels,info:'How this order fills'}} note='Fills at your price or better.' headerAction={<button type='button'>Receive</button>} headerActionBesideInfo headingId='target-title'/>);
+  const pair=document.querySelector('.hig-screen-header-side:last-child > .hig-target-header-actions')!;
+  expect([...pair.querySelectorAll('button')].map(button=>button.getAttribute('aria-label')??button.textContent)).toEqual(['How this order fills','Receive']);
+  expect(document.querySelector('.hig-target-note')).toBeNull();await userEvent.click(screen.getByRole('button',{name:'How this order fills'}));expect(screen.getByRole('status').textContent).toBe('Fills at your price or better.');
+  expect(screen.getByRole('heading',{name:'Take Profit'}).id).toBe('target-title');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain('.hig-target-block > .hig-screen-header:has(.hig-target-header-actions) { grid-template-columns:92px minmax(0,1fr) 92px; }');
+ });
+});

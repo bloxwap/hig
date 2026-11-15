@@ -1122,7 +1122,8 @@
       "states": [
         "default",
         "profit",
-        "at-risk"
+        "at-risk",
+        "triggers"
       ]
     },
     {
@@ -1132,7 +1133,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "stop-loss"
+        "stop-loss",
+        "custom"
       ]
     },
     {
@@ -1142,7 +1144,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "paper-trade"
+        "paper-trade",
+        "farming"
       ]
     },
     {

@@ -514,7 +514,8 @@
       "states": [
         "default",
         "profit",
-        "at-risk"
+        "at-risk",
+        "triggers"
       ],
       "support": "renderer"
     },
@@ -522,7 +523,8 @@
       "name": "TargetBlock",
       "states": [
         "default",
-        "stop-loss"
+        "stop-loss",
+        "custom"
       ],
       "support": "renderer"
     },
@@ -530,7 +532,8 @@
       "name": "PositionBlock",
       "states": [
         "default",
-        "paper-trade"
+        "paper-trade",
+        "farming"
       ],
       "support": "renderer"
     },

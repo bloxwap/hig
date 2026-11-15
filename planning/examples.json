@@ -1050,7 +1050,8 @@
       "states": [
         "default",
         "profit",
-        "at-risk"
+        "at-risk",
+        "triggers"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1062,6 +1063,10 @@
         "at-risk": {
           "web": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='short' entry={3500} mark={3710} liquidation={3780} margin={250} notional={2500} priceOptions={{style:'currency',currency:'USD'}} actions={[{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens take profit')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Ether',leverage:10,size:0.7143,pnl:-150,pnlPercent:-0.06}}/>",
           "native": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='short' entry={3500} mark={3710} liquidation={3780} margin={250} notional={2500} priceOptions={{style:'currency',currency:'USD'}} actions={[{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens take profit')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Ether',leverage:10,size:0.7143,pnl:-150,pnlPercent:-0.06}}/>"
+        },
+        "triggers": {
+          "web": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'take-profit-order',label:'Take Profit',value:{value:66000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}},tone:'positive',onSelect:()=>setMessage('The host cancels the take profit')},{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',badge:'Papertrade',caption:'Estimated, funding unavailable',label:'View Bitcoin',onSelect:()=>setMessage('The host opens the market'),leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} pnlOptions={{maximumFractionDigits:3}} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'take-profit-order',label:'Take Profit',value:{value:66000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}},tone:'positive',onSelect:()=>setMessage('The host cancels the take profit')},{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',badge:'Papertrade',caption:'Estimated, funding unavailable',label:'View Bitcoin',onSelect:()=>setMessage('The host opens the market'),leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} pnlOptions={{maximumFractionDigits:3}} onBack={()=>setMessage('The host goes back')}/>"
         }
       }
     },
@@ -1075,7 +1080,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "stop-loss"
+        "stop-loss",
+        "custom"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1083,6 +1089,10 @@
         "stop-loss": {
           "web": "<C.TargetBlock kind='stop-loss' labels={{title:'Stop Loss',submit:'Set Stop Loss',entry:'Entry',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom',info:'How this order fills'}} position='BTC · Long 40×' orderType='Stop-market' entry={64699.5} trigger={64618.26} unit='dollar' value={-0.5} presets={[-0.5,-1,-2,-5]} onSubmit={()=>setMessage('The host places the stop loss')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>",
           "native": "<C.TargetBlock kind='stop-loss' labels={{title:'Stop Loss',submit:'Set Stop Loss',entry:'Entry',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom',info:'How this order fills'}} position='BTC · Long 40×' orderType='Stop-market' entry={64699.5} trigger={64618.26} unit='dollar' value={-0.5} presets={[-0.5,-1,-2,-5]} onSubmit={()=>setMessage('The host places the stop loss')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>"
+        },
+        "custom": {
+          "web": "<C.TargetBlock kind='stop-loss' labels={{title:'Stop Loss',submit:'Set Stop Loss',entry:'Entry',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom',info:'How this order fills'}} position='BTC · Long 40×' orderType='Stop-market' entry={64699.5} trigger={64553.1} unit='dollar' units={['dollar',{unit:'price',disabled:true},'percent']} value={-0.9} customValue={-0.9} presets={[{value:-0.5,disabled:true},-1,-2,-5]} onSubmit={()=>setMessage('The host places the stop loss')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.TargetBlock kind='stop-loss' labels={{title:'Stop Loss',submit:'Set Stop Loss',entry:'Entry',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom',info:'How this order fills'}} position='BTC · Long 40×' orderType='Stop-market' entry={64699.5} trigger={64553.1} unit='dollar' units={['dollar',{unit:'price',disabled:true},'percent']} value={-0.9} customValue={-0.9} presets={[{value:-0.5,disabled:true},-1,-2,-5]} onSubmit={()=>setMessage('The host places the stop loss')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>"
         }
       }
     },
@@ -1096,7 +1106,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "paper-trade"
+        "paper-trade",
+        "farming"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1104,6 +1115,10 @@
         "paper-trade": {
           "web": "<C.PositionBlock title='Position' details={[{label:'Notional',value:{value:1000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:-0.0095,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} note='Minimum $10 margin and $500 position (margin × leverage).' paperTrade={{label:'Paper trade',checked,onCheckedChange:setChecked}} groups={[[{id:'size',label:'Size',value:'$10',onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:'100×',onSelect:()=>setMessage('The host opens Leverage')}],[{id:'positions',label:'Positions',value:'2',onSelect:()=>setMessage('The host opens Positions')}]]} onClose={()=>setMessage('The host closes the card')}/>",
           "native": "<C.PositionBlock title='Position' details={[{label:'Notional',value:{value:1000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:-0.0095,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} note='Minimum $10 margin and $500 position (margin × leverage).' paperTrade={{label:'Paper trade',checked,onCheckedChange:setChecked}} groups={[[{id:'size',label:'Size',value:'$10',onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:'100×',onSelect:()=>setMessage('The host opens Leverage')}],[{id:'positions',label:'Positions',value:'2',onSelect:()=>setMessage('The host opens Positions')}]]} onClose={()=>setMessage('The host closes the card')}/>"
+        },
+        "farming": {
+          "web": "<C.PositionBlock title='Position' stickyHeader details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{id:'fee',label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'muted',struck:'Waived'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} paperTrade={{label:'Farming',checked:true,onCheckedChange:setChecked,action:{label:'Harvest',onSelect:()=>setMessage('The host harvests')}}} groups={[[{id:'size',label:'Size',value:{value:10,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens Size')},{id:'reduce',label:'Reduce only',checked,onCheckedChange:setChecked}]]} onClose={()=>setMessage('The host closes the card')}/>",
+          "native": "<C.PositionBlock title='Position' details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{id:'fee',label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'muted',struck:'Waived'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} paperTrade={{label:'Farming',checked:true,onCheckedChange:setChecked,action:{label:'Harvest',onSelect:()=>setMessage('The host harvests')}}} groups={[[{id:'size',label:'Size',value:{value:10,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens Size')},{id:'reduce',label:'Reduce only',checked,onCheckedChange:setChecked}]]} onClose={()=>setMessage('The host closes the card')}/>"
         }
       }
     },
