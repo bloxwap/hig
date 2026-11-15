@@ -2,7 +2,7 @@
 
 Readable numbers, metrics, lists, tables, and wallet addresses for host-provided financial data.
 
-Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `BarMark`, `BarPnl`, and `AssetBalanceRow`. `Table` is web-only; native uses labeled lists.
+Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data` or `@bloxwap/hig/native/data` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -15,6 +15,7 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data`
 | `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`. |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
 | `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
+| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
 
 `WalletAddress` needs the optional `cuer` peer (`>=0.0.3 <0.1.0`), and on native also `react-native-svg`; `VerticalAddress` needs neither and lives in the `data` entry. HIG never reads or writes the clipboard itself.
 
@@ -50,6 +51,22 @@ Web tables keep a visible caption and ordinary headers by default. Set `captionH
 ```
 
 The `state` slot is content for one cell spanning all columns; it can contain an empty explanation, loading skeleton, or error and retry UI. Pass content rather than `tr`/`td` elements. Existing data rows remain visible. Without a custom state, `loading` exposes the provider's `loading` message and `aria-busy`; an empty, idle table shows `noRows`. `state={null}` suppresses that fallback. Give custom errors an alert role and custom loading content a status role when an announcement is appropriate. `rowProps` cannot replace the row's native role or HIG's cells with `children`/HTML. Row callbacks do not add a selection keyboard model; use native controls inside cells for actions.
+
+### MarketRow
+
+Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
+
+```tsx
+<CommandItem onSelect={()=>openMarket(market.symbol)}>
+  <MarketRow mode='presentation' symbol={market.symbol} name={market.name}
+    price={market.price} priceOptions={{style:'decimal',maximumFractionDigits:8}}
+    change={market.change} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2}}
+    identity={<><strong>{market.symbol}</strong> {market.name}</>} icon={<MarketIcon symbol={market.symbol}/>}
+    favorite={<FavoriteIndicator selected={market.favorite}/>}
+    volume={<NumberReadout value={market.volume} options={{notation:'compact'}}/>}
+    style={{gridTemplateColumns:'minmax(0,1fr) 12ch 8ch 10ch'}}/>
+</CommandItem>
+```
 
 ### AssetBalanceRow
 

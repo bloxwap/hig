@@ -2,7 +2,7 @@
 
 Buttons, typography, and layout primitives for clear actions and related content.
 
-Includes `Button`, `IconButton`, `Link`, `Text`, `Heading`, `Stack`, `Inline`, `Surface`, `Card`, and `Separator`.
+Includes `Button`, `IconButton`, `Link`, `Text`, `Heading`, `Stack`, `Inline`, `Surface`, `Card`, `Separator`, `InstallCommand`, and `MarketingHero`.
 
 Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig/react/button` or `@bloxwap/hig/native/button` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -14,6 +14,8 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. Native renders the command in the provider's `monoFontFamily` and keeps it left-to-right inside RTL roots; a copy failure leaves a manual-selection recovery message. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
+| `MarketingHero` | `title`, `description`, `href`, and `cta`: a heading, one sentence and a link for a landing section. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
 
 ## When to use and examples
 

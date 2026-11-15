@@ -1089,7 +1089,7 @@
     {
       "name": "MarketRow",
       "route": "components/market-row",
-      "family": "blocks",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -1230,7 +1230,7 @@
     {
       "name": "TradeEntry",
       "route": "components/trade-entry",
-      "family": "blocks",
+      "family": "fields",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -1283,7 +1283,7 @@
     {
       "name": "InstallCommand",
       "route": "components/install-command",
-      "family": "blocks",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -1292,7 +1292,7 @@
     {
       "name": "MarketingHero",
       "route": "components/marketing-hero",
-      "family": "blocks",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"

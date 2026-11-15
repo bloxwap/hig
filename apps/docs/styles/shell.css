@@ -185,7 +185,6 @@ button[data-search-full] kbd {
   background: var(--hig-background);
 }
 .block-card:has(> .hig-stack > .hig-surface:first-child) { padding: 0; border: 0; border-radius: 0; }
-.block-card[data-wide] { max-width: 44rem; }
 .example-canvas > .hig-stack { align-items: flex-start; }
 .example-canvas > .hig-stack > :is(.hig-stack, .hig-inline, .hig-surface, .hig-row, .hig-table-scroll, .hig-list, section, nav) { width: 100%; }
 .example-canvas .hig-field { width: 100%; max-width: 28rem; }

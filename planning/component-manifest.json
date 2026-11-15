@@ -14,7 +14,9 @@
         "Stack",
         "Inline",
         "Surface/Card",
-        "Separator"
+        "Separator",
+        "InstallCommand",
+        "MarketingHero"
       ],
       "docs": "docs/components/actions-surfaces.md",
       "web": "implemented",
@@ -30,7 +32,8 @@
         "Label",
         "Input",
         "TextArea",
-        "SearchInput"
+        "SearchInput",
+        "TradeEntry"
       ],
       "docs": "docs/components/fields.md",
       "web": "implemented",
@@ -125,7 +128,8 @@
         "BarMark",
         "BarPnl",
         "AssetBalanceRow",
-        "List; DOM Table"
+        "List; DOM Table",
+        "MarketRow"
       ],
       "docs": "docs/components/financial-data.md",
       "web": "implemented",
@@ -150,7 +154,6 @@
       "issue": 26,
       "module": "blocks",
       "components": [
-        "MarketRow",
         "AccountBlock",
         "TokenActionBlock",
         "LanguageBlock",
@@ -164,12 +167,9 @@
         "SoundHapticsBlock",
         "SignalsBlock",
         "NotificationsBlock",
-        "TradeEntry",
         "SwapPanelBlock",
         "FromPickerBlock",
-        "ToPickerBlock",
-        "InstallCommand",
-        "MarketingHero"
+        "ToPickerBlock"
       ],
       "docs": "docs/components/blocks.md",
       "web": "implemented",

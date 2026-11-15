@@ -2,7 +2,9 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, `NotificationsBlock`, `InstallCommand`, and `MarketingHero`.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`.
+
+`MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/market-row` and `blocks/marketing-hero`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel-block` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -14,7 +16,6 @@ All data and actions are supplied by the host application.
 
 | Block | Key props and behavior |
 | --- | --- |
-| `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
 | `SwapPanelBlock` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
 | `AccountBlock` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
 | `TokenActionBlock` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
@@ -24,29 +25,12 @@ All data and actions are supplied by the host application.
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
-| `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
 | `LeaderboardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `SoundHapticsBlock` | Sound, microphone, haptics and flash settings: one card per channel with a switch, and for a channel that is on its device, input meter and volume steps. Details below. |
 | `SignalsBlock` | The signals the viewer receives, in groups with a heading, a small help pill and switches. Details below. |
 | `NotificationsBlock` | The notifications the viewer receives: one card per kind with a switch, and a failure under its card. Details below. |
 | `FromPickerBlock` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
 | `ToPickerBlock` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
-| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. |
-| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
-
-Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
-
-```tsx
-<CommandItem onSelect={()=>openMarket(market.symbol)}>
-  <MarketRow mode='presentation' symbol={market.symbol} name={market.name}
-    price={market.price} priceOptions={{style:'decimal',maximumFractionDigits:8}}
-    change={market.change} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2}}
-    identity={<><strong>{market.symbol}</strong> {market.name}</>} icon={<MarketIcon symbol={market.symbol}/>}
-    favorite={<FavoriteIndicator selected={market.favorite}/>}
-    volume={<NumberReadout value={market.volume} options={{notation:'compact'}}/>}
-    style={{gridTemplateColumns:'minmax(0,1fr) 12ch 8ch 10ch'}}/>
-</CommandItem>
-```
 
 Presentation mode uses a grid with logical numeric alignment and no block padding. The host can set matching column widths on each row through `style`/`className`, its compact height and the surrounding keyboard/option semantics. The number face inherits from that row. Slots render host content; keep decorative icons/indicators hidden from assistive technology, or give interactive controls their own names and deliberate keyboard behavior. Presentation rows accept no `onSelect` and emit no action feedback. Tiny prices keep the requested precision; unknown values remain —. Volume formatting and units stay host-owned. The optional `identity` slot belongs to presentation mode; action mode keeps its named HIG button. Hosts that use `toFixed` rounding should pass their already-rounded percent-point value plus explicit `changeOptions` to preserve binary rounding, trailing digits, signs and negative zero. Options use the same contract as `Percent`: the input is percent points, and the rendered style remains percent.
 
@@ -275,8 +259,8 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 ```
 
 - **Words.** Every label is host text, because built-in strings carry no trading terms; only Close and Back are built in.
-- **Summary.** `details` are label and value lines in the order given. They sit directly on the screen, with no card, on the same text inset as the list rows below. Values use the interface face at one weight, so host text and figures read alike. A value is host text, such as 2% of profit, or a figure `{value, options, prefix, suffix}` that updates place by place through `AnimatedNumberReadout`; a `null` figure reads as unknown. `tone` colours the value `positive`, `negative` or `muted`, for a fee or a liquidation distance. The label always carries the meaning, so colour is never the only signal.
-- **Note.** `note` is one sentence, such as the minimum margin. It is the summary's footnote: small muted text 8 units under the summary, on the same inset.
+- **Summary.** `details` are label and value lines in the order given, inside one container with the list groups' radius and text inset. Values use the interface face at one weight, so host text and figures read alike. A value is host text, such as 2% of profit, or a figure `{value, options, prefix, suffix}` that updates place by place through `AnimatedNumberReadout`; a `null` figure reads as unknown. `tone` colours the value `positive`, `negative` or `muted`, for a fee or a liquidation distance. The label always carries the meaning, so colour is never the only signal.
+- **Note.** `note` is one sentence, such as the minimum margin. It is the summary's footnote: small muted text 8 units under the container, on the same inset.
 - **Paper trading.** `paperTrade={{label, checked, onCheckedChange}}` adds a switch as a row of its own above the settings. The host names it and owns its state, and usually changes `details`, `note` and `groups` with it: a paper position might charge a share of profit and offer no stop loss. `disabled` dims it.
 - **Settings.** `groups` is a list of groups, and each group is one `ListGroup`: rows that share a rounded container, 24 units from the next group, the standard gap between list groups. A row is `{id, label}` plus an optional `value` on the trailing edge. With `onSelect` the whole row is a button with a chevron and the host opens its own view, for example a `TargetBlock` for Stop Loss; without it the row is static. `disabled` dims a row. An empty group is not drawn.
 - **Header.** `onClose` shows Close on the trailing edge; `headerAction` takes its place. `onBack` shows Back.
@@ -334,7 +318,7 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 ```
 
 - **Words.** Every word is host text; only Back is built in.
-- **Promotion.** `promo` draws one quiet card: the `eyebrow` in muted small capitals, `rules` as a text link with a chevron on its trailing edge, `amount` as the one large figure in the action colour, updating place by place, and `caption` as the line under it. `headline` and `description` read as one paragraph: the headline in the text colour, the description continuing it in the muted colour. `action` is a quiet row at the foot of the card, under a hairline, with its label in the muted colour and a chevron on the trailing edge, for example to the draws. It is not a filled button: the card promotes the prize, and the row is a way onward. Leave `promo` out for standings alone.
+- **Promotion.** `promo` draws one quiet card: the `eyebrow` in muted small capitals, `rules` as a text link with a chevron on its trailing edge, `amount` as the one large figure in the action colour, updating place by place, and `caption` as the line under it. `headline` and `description` read as one paragraph: the headline in the text colour, the description continuing it in the muted colour. `action` is a full-width button, for example to the draws. Leave `promo` out for standings alone.
 - **Prize pool.** With `goal`, a thin progress bar filled to `amount / goal` sits under the caption, and a `caption` function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. The bar carries the progress on its own; there are no lines under it. `leaderboardProgress(amount, goal)` returns the same share.
 - **Sweepstakes.** Without `goal` there is no bar, and `caption` is a string under the figure, such as top prize.
 - **Money.** `amountOptions` formats `amount` and `goal`; the default is whole US dollars.
@@ -372,36 +356,13 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 - **State.** Every switch is controlled: the host holds `checked` and decides in `onCheckedChange` whether the change takes, for example after the system permission prompt. `disabled` dims a row and blocks it.
 - **Ownership.** The blocks never play a sound, read the microphone, vibrate, request a permission or subscribe to anything.
 
-### ProfileBlock
-
-`ProfileBlock` is a person's profile as one screen, usually in a sheet. A top bar holds the address control on the leading edge and Close on the trailing edge; under it sit the avatar with an optional status dot, the name with an optional edit control, and then the sections as `ListGroup`s 24 units apart. It is available from `@bloxwap/hig/react/blocks/profile-block`, `@bloxwap/hig/native/profile-block` and the `blocks` aggregates.
-
-```tsx
-<ProfileBlock name="5459····6263" address={account.address} status={{label: 'Demo'}}
-  onShowAddress={showAddress} onClose={close} onEditName={editName}
-  sections={[
-    {id: 'money', rows: [{id: 'accounts', label: 'Accounts', value: '$1,042.09', onSelect: openAccounts},
-                         {id: 'history', label: 'History', onSelect: openHistory}]},
-    {id: 'settings', title: 'Settings', rows: [
-      {id: 'live', label: 'Live Mode', checked: live, onCheckedChange: setLive},
-      {id: 'notifications', label: 'Notifications', value: 'Off', onSelect: openNotifications}]},
-  ]}/>
-```
-
-- **Avatar.** `avatar` is an image URL or a host element. Without it, `address` colours the disc the way wallet avatars are coloured elsewhere; with neither, the disc shows the first letters of the name. It is 144 units across and decorative.
-- **Status.** `status={{label, tone}}` draws a dot on the avatar's top trailing edge for an account mode or state, such as Demo. `label` is read out, so the dot is never colour alone. `tone` is `warning` by default, or `positive`, `negative` or `info`.
-- **Name.** `name` is the heading: a display name or an address the host has shortened. `onEditName` adds the edit control after it.
-- **Top bar.** `onShowAddress` shows the address control and `onClose` shows Close. Leave either out to hide it.
-- **Sections.** Each section is `{id, title, rows}`; a section with no rows is not drawn. A row is `{id, label}` plus optional `leading`, `value`, `trailing`, `disabled`, and either `onSelect` (the whole row is a button with a chevron) or `onCheckedChange` with `checked` (the row is a switch, named by its label). The host writes every label and value.
-- **Ownership.** The block never reads an account, a balance or a setting. Each control only reports the press; the host opens its accounts, history, rewards and settings screens.
-
 ## When to use and examples
 
 Do: compose primitives and explicit outcomes in comfortable app or compact Pro context. Don’t: put wallet/network/SDK services in core packages.
 
 ## States, interaction and accessibility
 
-Native InstallCommand renders code in the provider's `monoFontFamily` (for example the registered `BloxwapMonoRegular`; platform monospace otherwise) and keeps code left-to-right inside RTL roots. Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show market, entry and feedback preference previews.
+Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show market, entry and feedback preference previews.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
