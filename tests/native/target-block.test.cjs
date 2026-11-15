@@ -134,3 +134,7 @@ it('draws the prices without a card by default and inside one with surface, keep
  expect(plain.backgroundColor).toBeUndefined();expect(plain.padding).toBeUndefined();expect(plain.borderRadius).toBeUndefined();expect(plain).toMatchObject({gap:12,marginTop:16});
  expect(prices(view)).toEqual(['target-entry','target-mark','target-trigger']);
 });
+it('sizes the headline figure like the SwapPanel amount',()=>{
+ const view=mount({});
+ expect(view.findAll(node=>node.props.testID==='target-amount')[0].props.style).toMatchObject({fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9});
+});
