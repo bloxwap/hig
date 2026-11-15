@@ -638,9 +638,6 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-target-move { box-sizing:border-box;min-width:6px;background:var(--hig-target-tone);border-inline:3px solid var(--hig-text); }
 .hig-target-move[data-lead='trigger'] { border-inline-start-color:var(--hig-target-tone); }
 .hig-target-move[data-lead='start'] { border-inline-end-color:var(--hig-target-tone); }
-.hig-target-entry { position:absolute;inset-block:0;width:3px;margin-inline-start:-1.5px;background:var(--hig-background);transition:inset-inline-start var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
-.hig-target-entry[style*='start: 0%'] { margin-inline-start:0; }
-.hig-target-entry[style*='start: 100%'] { margin-inline-start:-3px; }
 .hig-target-prices [data-price='trigger'] dd { color:var(--hig-target-tone); }
 .hig-target-info { position:relative;display:inline-flex; }
 .hig-target-popover { position:absolute;inset-block-start:calc(100% + 4px);inset-inline-end:0;width:max-content;max-width:min(280px,calc(100vw - 48px));font-size:.875rem;font-weight:400;text-align:start; }
@@ -648,9 +645,9 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-target-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-target-presets,.hig-target-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 .hig-target-presets > .hig-button { padding-inline:8px; }
-@media(prefers-reduced-motion:reduce) { .hig-target-rest,.hig-target-move,.hig-target-entry { transition:none; } }
-[data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-target-entry { transition:none; }
-@media(forced-colors:active) { .hig-target-move,.hig-target-entry { forced-color-adjust:none; } }
+@media(prefers-reduced-motion:reduce) { .hig-target-rest,.hig-target-move { transition:none; } }
+[data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move { transition:none; }
+@media(forced-colors:active) { .hig-target-move { forced-color-adjust:none; } }
 /* TradeHistoryListBlock: a header, then one capsule row per closed trade, 8px apart.
    TradeHistoryDetailBlock: header, the asset row, the result and the figures 8px apart, then the actions in one row 16px below. */
 .hig-trade-history-list { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }

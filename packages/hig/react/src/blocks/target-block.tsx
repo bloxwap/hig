@@ -13,7 +13,7 @@ export type TargetKind='take-profit'|'stop-loss';
 /** How the target is expressed: profit or loss in dollars, a price, or a share of the position. */
 export type TargetUnit='dollar'|'price'|'percent';
 /** The three prices on the bar. */
-export type TargetPrice='entry'|'mark'|'trigger';
+export type TargetPrice='entry'|'trigger';
 /** The words of the block. They are trading terms, so the host supplies them in its own vocabulary and language; only Cancel has a built-in default. */
 export interface TargetBlockLabels {
  /** Heading: Take Profit, Stop Loss. */
@@ -22,7 +22,7 @@ export interface TargetBlockLabels {
  submit:string;
  /** Defaults to the built-in Cancel. */
  cancel?:string;
- entry:string;mark:string;
+ entry:string;
  /** The price the order triggers at: If triggered. */
  trigger:string;
  /** Accessible name of the unit control; not drawn. */
@@ -42,7 +42,7 @@ export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  orderType?:string;
  /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */
  note?:string;
- entry:number;mark?:number|null;
+ entry:number;
  /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */
  trigger?:number|null;
  unit:TargetUnit;
@@ -80,33 +80,31 @@ export function targetFormat(unit:TargetUnit,priceOptions:Intl.NumberFormatOptio
 }
 /**
  * Where each known price sits on the bar, as a fraction of its width from the low-price edge, the prices in price order, and
- * the stretch (`from` to `to`) the price still has to travel: from the mark, or from entry while the mark is unknown, to the trigger.
+ * the stretch (`from` to `to`) between them: the whole bar, from entry to the trigger.
  * Without a trigger there is no stretch.
  */
-export function targetLayout({entry,mark,trigger}:{entry:number;mark?:number|null;trigger?:number|null}):{positions:Partial<Record<TargetPrice,number>>;order:TargetPrice[];from:number;to:number}{
+export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}):{positions:Partial<Record<TargetPrice,number>>;order:TargetPrice[];from:number;to:number}{
  const values:Partial<Record<TargetPrice,number>>={};
- if(known(entry))values.entry=entry;if(known(mark))values.mark=mark;if(known(trigger))values.trigger=trigger;
+ if(known(entry))values.entry=entry;if(known(trigger))values.trigger=trigger;
  const kinds=Object.keys(values) as TargetPrice[],prices=kinds.map(kind=>values[kind]!);
  if(!kinds.length)return {positions:{},order:[],from:0.5,to:0.5};
  const low=Math.min(...prices),span=Math.max(...prices)-low;
  const positions:Partial<Record<TargetPrice,number>>={};for(const kind of kinds)positions[kind]=span>0?(values[kind]!-low)/span:0.5;
- const rank:Record<TargetPrice,number>={entry:0,mark:1,trigger:2};
+ const rank:Record<TargetPrice,number>={entry:0,trigger:1};
  const order=[...kinds].sort((a,b)=>values[a]!-values[b]!||rank[a]-rank[b]);
- const start=positions.mark??positions.entry,end=positions.trigger;
+ const start=positions.entry,end=positions.trigger;
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** Set a take profit or a stop loss on one position: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. */
-export function TargetBlock({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetBlockProps){
+export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetBlockProps){
  const {messages,locale}=useHIG();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
  // The popover closes on a press outside it, on Escape, and when focus leaves it.
  useEffect(()=>{if(!open)return;const outside=(event:Event)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
  const info=note&&labels.info&&!headerAction?labels.info:undefined;
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
- const {positions,order,from,to}=targetLayout({entry,mark,trigger:target});
- const prices:Record<TargetPrice,number|null|undefined>={entry,mark,trigger:target};
+ const {positions,order,from,to}=targetLayout({entry,trigger:target});
+ const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
  const intent=kind==='stop-loss'?'destructive':'primary';
- // The entry price is a tick of its own only while the mark is the near end of the stretch.
- const tick=positions.mark!==undefined&&positions.trigger!==undefined?positions.entry:undefined;
  return <section {...rest} className={`hig-target-block${className?` ${className}`:''}`} data-kind={kind}>
   <ScreenHeader title={labels.title} onBack={onBack} action={info?<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>:headerAction}/>
   <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={targetFormat(unit,priceOptions)}/></p>
@@ -115,9 +113,8 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,mark,trig
    {(position||orderType)&&<div className='hig-bar-mark-header'>{position&&<strong id={id} className='hig-bar-mark-title'>{position}</strong>}{orderType&&<span className='hig-bar-mark-description'>{orderType}</span>}</div>}
    <div className='hig-target-bar' aria-hidden='true'>
     <span className='hig-target-rest' style={{flexGrow:from}}/>
-    {to>from&&<span className='hig-target-move' data-lead={(positions.trigger??0)<(positions.mark??positions.entry??0)?'trigger':'start'} style={{flexGrow:to-from}}/>}
+    {to>from&&<span className='hig-target-move' data-lead={(positions.trigger??0)<(positions.entry??0)?'trigger':'start'} style={{flexGrow:to-from}}/>}
     <span className='hig-target-rest' style={{flexGrow:1-to}}/>
-    {tick!==undefined&&<span className='hig-target-entry' style={{insetInlineStart:`${tick*100}%`}}/>}
    </div>
    <dl className='hig-bar-pnl-readouts'>{order.map(price=><div key={price} data-price={price}><dt>{labels[price]}</dt><dd><AnimatedNumberReadout value={prices[price]} options={priceOptions}/></dd></div>)}</dl>
   </section>
