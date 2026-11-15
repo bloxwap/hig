@@ -268,10 +268,10 @@
       "import": "./react/dist/blocks/token-action-card.js",
       "default": "./react/dist/blocks/token-action-card.js"
     },
-    "./react/blocks/manage-position": {
-      "types": "./react/dist/blocks/manage-position.d.ts",
-      "import": "./react/dist/blocks/manage-position.js",
-      "default": "./react/dist/blocks/manage-position.js"
+    "./react/blocks/manage-position-card": {
+      "types": "./react/dist/blocks/manage-position-card.d.ts",
+      "import": "./react/dist/blocks/manage-position-card.js",
+      "default": "./react/dist/blocks/manage-position-card.js"
     },
     "./react/blocks/target-card": {
       "types": "./react/dist/blocks/target-card.d.ts",
@@ -323,10 +323,10 @@
       "import": "./native/dist/token-action-card.js",
       "default": "./native/dist/token-action-card.js"
     },
-    "./native/manage-position": {
-      "types": "./native/dist/manage-position.d.ts",
-      "import": "./native/dist/manage-position.js",
-      "default": "./native/dist/manage-position.js"
+    "./native/manage-position-card": {
+      "types": "./native/dist/manage-position-card.d.ts",
+      "import": "./native/dist/manage-position-card.js",
+      "default": "./native/dist/manage-position-card.js"
     },
     "./native/target-card": {
       "types": "./native/dist/target-card.d.ts",

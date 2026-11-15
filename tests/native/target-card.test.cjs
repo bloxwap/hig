@@ -109,3 +109,28 @@ it('confirms in the role of its kind, with Cancel beside it only when the host h
  view=mount({onCancel:cancel},{messages:{cancel:'Annuler'}});expect(button(view,'target-cancel').props.children).toBe('Annuler');
  view=mount({onCancel:cancel,labels:{...labels,cancel:'Not now'}});expect(button(view,'target-cancel').props.children).toBe('Not now');
 });
+it('opens the note in a popover from an info button on the trailing edge of the header when the host names it',()=>{
+ const named={...labels,info:'How this order fills'},note='Fills at your target price or better.';
+ let view=mount({labels:named,note});
+ const info=()=>all(view,'target-info')[0],press=()=>act(()=>{all(view,'target-info').find(node=>node.props.onPress).props.onPress({});});
+ expect(info().props.label).toBe('How this order fills');expect(info().props.accessibilityState).toEqual({expanded:false});expect(has(view,'target-note')).toBe(false);
+ press();expect(text(host(view,'target-popover'))).toBe(note);expect(info().props.accessibilityState).toEqual({expanded:true});
+ expect(flat(host(view,'target-popover'))).toMatchObject({position:'absolute',top:64,right:16,maxWidth:280,zIndex:2});
+ press();expect(has(view,'target-popover')).toBe(false);
+ // A press anywhere else closes it; in a right-to-left layout it hangs from the other edge.
+ press();act(()=>{all(view,'target-popover-dismiss').find(node=>node.props.onPress).props.onPress({});});expect(has(view,'target-popover')).toBe(false);
+ view=mount({labels:named,note},{direction:'rtl'});press();expect(flat(host(view,'target-popover'))).toMatchObject({left:16});expect(flat(host(view,'target-popover')).right).toBeUndefined();
+ view=mount({labels:named,note});
+ // No note, no button; without a name for the button, or with a host header control, the note is always shown.
+ view=mount({labels:named});expect(has(view,'target-info')).toBe(false);
+ view=mount({note});expect(has(view,'target-info')).toBe(false);expect(text(host(view,'target-note'))).toBe(note);
+ view=mount({labels:named,note,headerAction:h(View,{testID:'share'})});expect(has(view,'target-info')).toBe(false);expect(has(view,'share')).toBe(true);expect(text(host(view,'target-note'))).toBe(note);
+});
+
+it('draws the prices without a card by default and inside one with surface, keeping the bar and prices',()=>{
+ const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
+ let view=mount({surface:true});expect(flat(host(view,'target-prices')).backgroundColor).toBe(nativeSrgb.surface);
+ view=mount();const plain=flat(host(view,'target-prices'));
+ expect(plain.backgroundColor).toBeUndefined();expect(plain.padding).toBeUndefined();expect(plain.borderRadius).toBeUndefined();expect(plain).toMatchObject({gap:12,marginTop:16});
+ expect(prices(view)).toEqual(['target-entry','target-mark','target-trigger']);
+});

@@ -19,6 +19,8 @@ export interface BarMarkProps extends Omit<React.HTMLAttributes<HTMLElement>,'ti
  legend?:boolean;
  /** `small` draws a 12-unit bar for a secondary breakdown under a main one. */
  size?:'default'|'small';
+ /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and legend keep their spacing. Default `true`. */
+ surface?:boolean;
 }
 const amount=(value:number)=>Number.isFinite(value)&&value>0?value:0;
 /** Shares of the whole for each element, and the empty remainder, as fractions of 1. Negative and non-finite values count as nothing. */
@@ -27,10 +29,10 @@ export function barMarkShares(elements:readonly BarMarkElement[],total?:number):
  return whole>0?{shares:values.map(value=>value/whole),rest:(whole-sum)/whole}:{shares:values.map(()=>0),rest:1};
 }
 /** A one-dimensional stacked bar: a titled card whose single bar is divided among its elements, with a legend naming each part. */
-export function BarMark({title,description,elements,total,legend=true,size='default',className,...rest}:BarMarkProps){
+export function BarMark({title,description,elements,total,legend=true,size='default',surface=true,className,...rest}:BarMarkProps){
  const {locale}=useHIG();const id=useId();const {shares,rest:remainder}=barMarkShares(elements,total);
  const paint=(element:BarMarkElement,index:number)=>element.color?{style:{'--hig-bar-mark-color':element.color} as React.CSSProperties}:{'data-tone':element.tone??barMarkTones[index%barMarkTones.length]};
- return <section {...rest} className={`hig-surface hig-bar-mark${className?` ${className}`:''}`} data-size={size==='small'?size:undefined} aria-labelledby={id}>
+ return <section {...rest} className={`${surface?'hig-surface ':''}hig-bar-mark${className?` ${className}`:''}`} data-surface={surface?undefined:'false'} data-size={size==='small'?size:undefined} aria-labelledby={id}>
   <div className='hig-bar-mark-header'><strong id={id} className='hig-bar-mark-title'>{title}</strong>{description!=null&&<span className='hig-bar-mark-description'>{description}</span>}</div>
   <div className='hig-bar-mark-bar' aria-hidden='true'>{elements.map((element,index)=>shares[index]>0&&<span key={element.id??index} className='hig-bar-mark-segment' {...paint(element,index)} style={{...paint(element,index).style,flexGrow:shares[index]}}/>)}{remainder>0&&<span className='hig-bar-mark-rest' style={{flexGrow:remainder}}/>}</div>
   <ul className={legend?'hig-bar-mark-legend':'hig-sr-only'}>{elements.map((element,index)=><li key={element.id??index}><span className='hig-bar-mark-dot' aria-hidden='true' {...paint(element,index)}/><span>{element.label}</span>{element.detail&&<span className='hig-bar-mark-detail'>{element.detail}</span>}<span className='hig-sr-only'>{formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})}</span></li>)}</ul>

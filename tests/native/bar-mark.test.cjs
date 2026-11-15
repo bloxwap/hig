@@ -77,3 +77,15 @@ it('draws a 12 unit bar when small, and 24 by default',()=>{
  tree=mount({elements:storage,size:'default'});expect(flat(host(tree,'storage-bar'))).toMatchObject({height:24,borderRadius:8});
  tree=mount({elements:storage});expect(flat(host(tree,'storage-bar'))).toMatchObject({height:24,borderRadius:8});
 });
+
+it('draws no card with surface={false}: a plain view with the same gap, and a track one step above the page',()=>{
+ let tree=mount({elements:storage,total:64});
+ expect(flat(host(tree,'storage'))).toMatchObject({backgroundColor:colors.surface,gap:12});expect(flat(host(tree,'storage-track')).backgroundColor).toBe(colors.border);
+ tree=mount({elements:storage,total:64,surface:false});
+ const bare=flat(host(tree,'storage'));expect(bare.gap).toBe(12);expect(bare.minWidth).toBe(0);expect(bare.backgroundColor).toBeUndefined();expect(bare.padding).toBeUndefined();expect(bare.borderRadius).toBeUndefined();
+ // Outside the Surface the track reads the page's raised fill, so it stays visible on the page.
+ expect(flat(host(tree,'storage-track')).backgroundColor).toBe(colors.nested);
+ expect(storage.map(element=>flat(host(tree,`storage-segment-${element.id}`)).flexGrow)).toEqual([20,12,8]);expect(host(tree,'storage-legend-apps').props.accessibilityLabel).toBe('Apps, 31.3%');
+ // Without a legend the bare view is still the one accessible element.
+ tree=mount({elements:storage,legend:false,surface:false});expect(host(tree,'storage').props.accessible).toBe(true);expect(host(tree,'storage').props.accessibilityLabel).toBe('iPhone, Apps, 50%, Photos, 30%, iOS, 20%');
+});

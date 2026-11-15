@@ -40,7 +40,7 @@
       },
       "BarMarkProps": {
         "entry": "bar-mark",
-        "signature": "export interface BarMarkProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    title: string;\n    /** A line on the trailing edge of the title row, such as `59.2 GB of 64 GB used`. */\n    description?: React.ReactNode;\n    elements: readonly BarMarkElement[];\n    /** The whole the elements are parts of. When it is larger than their sum the remainder stays empty track. Defaults to the sum. */\n    total?: number;\n    /** Set false to hide the legend; the labels and shares stay available to assistive technology. */\n    legend?: boolean;\n    /** `small` draws a 12-unit bar for a secondary breakdown under a main one. */\n    size?: 'default' | 'small';\n}"
+        "signature": "export interface BarMarkProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    title: string;\n    /** A line on the trailing edge of the title row, such as `59.2 GB of 64 GB used`. */\n    description?: React.ReactNode;\n    elements: readonly BarMarkElement[];\n    /** The whole the elements are parts of. When it is larger than their sum the remainder stays empty track. Defaults to the sum. */\n    total?: number;\n    /** Set false to hide the legend; the labels and shares stay available to assistive technology. */\n    legend?: boolean;\n    /** `small` draws a 12-unit bar for a secondary breakdown under a main one. */\n    size?: 'default' | 'small';\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and legend keep their spacing. Default `true`. */\n    surface?: boolean;\n}"
       },
       "barMarkShares": {
         "entry": "bar-mark",
@@ -48,7 +48,7 @@
       },
       "BarMark": {
         "entry": "bar-mark",
-        "signature": "export declare function BarMark({ title, description, elements, total, legend, size, className, ...rest }: BarMarkProps): React.JSX.Element;"
+        "signature": "export declare function BarMark({ title, description, elements, total, legend, size, surface, className, ...rest }: BarMarkProps): React.JSX.Element;"
       },
       "BarPnlSide": {
         "entry": "bar-pnl",
@@ -134,33 +134,33 @@
         "entry": "blocks/token-action-card",
         "signature": "export type TokenActionId = 'send' | 'receive' | 'stake' | 'unstake';"
       },
-      "ManagePosition": {
-        "entry": "blocks/manage-position",
-        "signature": "export declare function ManagePosition({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, className, ...rest }: ManagePositionProps): React.JSX.Element;"
+      "ManagePositionCard": {
+        "entry": "blocks/manage-position-card",
+        "signature": "export declare function ManagePositionCard({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, className, ...rest }: ManagePositionCardProps): React.JSX.Element;"
       },
       "positionCorridor": {
-        "entry": "blocks/manage-position",
+        "entry": "blocks/manage-position-card",
         "signature": "export declare function positionCorridor({ side, entry, mark, liquidation }: {\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n}): {\n    total: number;\n    buffer: number;\n    drawdown: number;\n    share: number | null;\n};"
       },
-      "ManagePositionProps": {
-        "entry": "blocks/manage-position",
-        "signature": "export interface ManagePositionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: ManagePositionLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the title is the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices. Defaults to whole dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionAction[];\n    position?: ManagePositionSummary;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      "ManagePositionCardProps": {
+        "entry": "blocks/manage-position-card",
+        "signature": "export interface ManagePositionCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: ManagePositionCardLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the title is the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionCardAction[];\n    position?: ManagePositionCardSummary;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
       },
-      "ManagePositionLabels": {
-        "entry": "blocks/manage-position",
-        "signature": "export interface ManagePositionLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
+      "ManagePositionCardLabels": {
+        "entry": "blocks/manage-position-card",
+        "signature": "export interface ManagePositionCardLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
       },
-      "ManagePositionAction": {
-        "entry": "blocks/manage-position",
-        "signature": "export interface ManagePositionAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      "ManagePositionCardAction": {
+        "entry": "blocks/manage-position-card",
+        "signature": "export interface ManagePositionCardAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
       },
-      "ManagePositionSummary": {
-        "entry": "blocks/manage-position",
-        "signature": "export interface ManagePositionSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
+      "ManagePositionCardSummary": {
+        "entry": "blocks/manage-position-card",
+        "signature": "export interface ManagePositionCardSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
       },
       "TargetCard": {
         "entry": "blocks/target-card",
-        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, className, ...rest }: TargetCardProps): React.JSX.Element;"
+        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, surface, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, className, ...rest }: TargetCardProps): React.JSX.Element;"
       },
       "targetLayout": {
         "entry": "blocks/target-card",
@@ -172,11 +172,11 @@
       },
       "TargetCardProps": {
         "entry": "blocks/target-card",
-        "signature": "export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence under the price card about how the order fills. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */\n    surface?: boolean;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. It takes the place of the info button, and the note is then always shown. */\n    headerAction?: React.ReactNode;\n}"
       },
       "TargetCardLabels": {
         "entry": "blocks/target-card",
-        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Accessible name of the unit control; not drawn. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n}"
+        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Accessible name of the unit control; not drawn. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n    /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */\n    info?: string;\n}"
       },
       "TargetKind": {
         "entry": "blocks/target-card",
@@ -794,7 +794,7 @@
       },
       "BarMarkProps": {
         "entry": "bar-mark",
-        "signature": "export interface BarMarkProps {\n    title: string;\n    /** Trailing text on the title row, such as `59.2 GB of 64 GB`. A string is drawn muted; an element is rendered as given. */\n    description?: React.ReactNode;\n    elements: readonly BarMarkElement[];\n    /** The whole the bar measures against. When it is larger than the sum of the values the rest is the empty track. */\n    total?: number;\n    /** `false` hides the legend; the card then reads the elements as one label. */\n    legend?: boolean;\n    /** `small` draws a 12 unit bar for a secondary breakdown; the default is 24. */\n    size?: 'default' | 'small';\n    testID?: string;\n}"
+        "signature": "export interface BarMarkProps {\n    title: string;\n    /** Trailing text on the title row, such as `59.2 GB of 64 GB`. A string is drawn muted; an element is rendered as given. */\n    description?: React.ReactNode;\n    elements: readonly BarMarkElement[];\n    /** The whole the bar measures against. When it is larger than the sum of the values the rest is the empty track. */\n    total?: number;\n    /** `false` hides the legend; the card then reads the elements as one label. */\n    legend?: boolean;\n    /** `small` draws a 12 unit bar for a secondary breakdown; the default is 24. */\n    size?: 'default' | 'small';\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and legend keep their spacing. Default `true`. */\n    surface?: boolean;\n    testID?: string;\n}"
       },
       "barMarkTones": {
         "entry": "bar-mark",
@@ -806,7 +806,7 @@
       },
       "BarMark": {
         "entry": "bar-mark",
-        "signature": "export declare function BarMark({ title, description, elements, total, legend, size, testID }: BarMarkProps): React.JSX.Element;"
+        "signature": "export declare function BarMark({ title, description, elements, total, legend, size, surface, testID }: BarMarkProps): React.JSX.Element;"
       },
       "BarPnlSide": {
         "entry": "bar-pnl",
@@ -872,33 +872,33 @@
         "entry": "token-action-card",
         "signature": "export type TokenActionId = 'send' | 'receive' | 'stake' | 'unstake';"
       },
-      "ManagePosition": {
-        "entry": "manage-position",
-        "signature": "export declare function ManagePosition({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, testID }: ManagePositionProps): React.JSX.Element;"
+      "ManagePositionCard": {
+        "entry": "manage-position-card",
+        "signature": "export declare function ManagePositionCard({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, testID }: ManagePositionCardProps): React.JSX.Element;"
       },
       "positionCorridor": {
-        "entry": "manage-position",
+        "entry": "manage-position-card",
         "signature": "export declare function positionCorridor({ side, entry, mark, liquidation }: {\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n}): {\n    total: number;\n    buffer: number;\n    drawdown: number;\n    share: number | null;\n};"
       },
-      "ManagePositionProps": {
-        "entry": "manage-position",
-        "signature": "export interface ManagePositionProps {\n    labels: ManagePositionLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the card is titled with the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices. Default `{style:'currency',currency:'USD',maximumFractionDigits:0}`. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionAction[];\n    position?: ManagePositionSummary;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      "ManagePositionCardProps": {
+        "entry": "manage-position-card",
+        "signature": "export interface ManagePositionCardProps {\n    labels: ManagePositionCardLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the card is titled with the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionCardAction[];\n    position?: ManagePositionCardSummary;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
-      "ManagePositionLabels": {
-        "entry": "manage-position",
-        "signature": "export interface ManagePositionLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
+      "ManagePositionCardLabels": {
+        "entry": "manage-position-card",
+        "signature": "export interface ManagePositionCardLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
       },
-      "ManagePositionAction": {
-        "entry": "manage-position",
-        "signature": "export interface ManagePositionAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      "ManagePositionCardAction": {
+        "entry": "manage-position-card",
+        "signature": "export interface ManagePositionCardAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
       },
-      "ManagePositionSummary": {
-        "entry": "manage-position",
-        "signature": "export interface ManagePositionSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
+      "ManagePositionCardSummary": {
+        "entry": "manage-position-card",
+        "signature": "export interface ManagePositionCardSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
       },
       "TargetCard": {
         "entry": "target-card",
-        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, testID }: TargetCardProps): React.JSX.Element;"
+        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, surface, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, testID }: TargetCardProps): React.JSX.Element;"
       },
       "targetLayout": {
         "entry": "target-card",
@@ -910,11 +910,11 @@
       },
       "TargetCardProps": {
         "entry": "target-card",
-        "signature": "export interface TargetCardProps {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence under the price card about how the order fills. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface TargetCardProps {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */\n    surface?: boolean;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. It takes the place of the info button, and the note is then always shown. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
       },
       "TargetCardLabels": {
         "entry": "target-card",
-        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Name of the unit control. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n}"
+        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Name of the unit control. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n    /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */\n    info?: string;\n}"
       },
       "TargetKind": {
         "entry": "target-card",

@@ -506,9 +506,10 @@
       "support": "renderer"
     },
     {
-      "name": "ManagePosition",
+      "name": "ManagePositionCard",
       "states": [
         "default",
+        "profit",
         "at-risk"
       ],
       "support": "renderer"

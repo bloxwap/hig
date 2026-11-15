@@ -7,10 +7,11 @@ import {ChevronIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import {BarMark,type BarMarkElement} from './bar-mark.js';
+import {BarPnl} from './bar-pnl.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 export type {AssetArtwork} from './asset-balance-row.js';
 /** Every trading word of the block. HIG's built-in strings hold no trading terms, so the host supplies them, translated. */
-export interface ManagePositionLabels {
+export interface ManagePositionCardLabels {
  title:string;margin:string;
  notional:string;
  liquidation:string;
@@ -20,8 +21,8 @@ export interface ManagePositionLabels {
  /** Accessible words for the direction arrow. */
  long:string;short:string;
 }
-export interface ManagePositionAction {id:string;label:string;onSelect:()=>void;disabled?:boolean}
-export interface ManagePositionSummary {
+export interface ManagePositionCardAction {id:string;label:string;onSelect:()=>void;disabled?:boolean}
+export interface ManagePositionCardSummary {
  name:string;icon?:AssetArtwork;
  /** 40 reads `40×`. */
  leverage?:number;
@@ -32,15 +33,15 @@ export interface ManagePositionSummary {
  /** Profit and loss as a fraction: -0.0025 reads -0.25%. */
  pnlPercent?:number|null;
 }
-export interface ManagePositionProps {
- labels:ManagePositionLabels;
+export interface ManagePositionCardProps {
+ labels:ManagePositionCardLabels;
  /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the card is titled with the margin label. */
  mode?:string;
  side:'long'|'short';entry:number;mark?:number|null;liquidation?:number|null;margin:number;notional:number;
- /** Format of the three prices. Default `{style:'currency',currency:'USD',maximumFractionDigits:0}`. */
+ /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */
  priceOptions?:Intl.NumberFormatOptions;
- actions:readonly ManagePositionAction[];
- position?:ManagePositionSummary;
+ actions:readonly ManagePositionCardAction[];
+ position?:ManagePositionCardSummary;
  /** Shows Back on the leading edge of the header. */
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. */
@@ -48,7 +49,6 @@ export interface ManagePositionProps {
  testID?:string;
 }
 const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
-const wholeUsd:Intl.NumberFormatOptions={style:'currency',currency:'USD',maximumFractionDigits:0};
 const pnlUsd:Intl.NumberFormatOptions={style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:4};
 const pnlShare:Intl.NumberFormatOptions={style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'};
 const units:Intl.NumberFormatOptions={maximumFractionDigits:6};
@@ -75,17 +75,12 @@ function Sentence({template,text,value,options,suffix,testID}:{template:(amount:
   {parts[1]?<Text accessible={false} style={words}>{parts[1]}</Text>:null}
  </View>;
 }
-/** One open position as a screen: margin and notional under the share left before liquidation, the price corridor, what can be done, and the position itself. */
-export function ManagePosition({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions=wholeUsd,actions,position,onBack,headerAction,testID}:ManagePositionProps){
+/** One open position as a screen: margin and notional under the share left before liquidation, then the liquidation, mark and entry prices as a `BarPnl`, what can be done, and the position itself. Both bars are drawn without a card, because nothing in them can be pressed. */
+export function ManagePositionCard({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,testID}:ManagePositionCardProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
  const read=(value:number|null|undefined,options:Intl.NumberFormatOptions)=>known(value)?formatNumberReadout(value,locale,options).text:unknown;
  const corridor=positionCorridor({side,entry,mark,liquidation}),long=side==='long';
  const marginBar:BarMarkElement[]=[{id:'margin',label:labels.margin,value:margin,detail:read(margin,usd),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:read(notional,usd),tone:'positive'}];
- const corridorBar:BarMarkElement[]=[
-  {id:'liquidation',label:labels.liquidation,value:0,detail:read(liquidation,priceOptions),tone:'negative'},
-  {id:'mark',label:labels.mark,value:corridor.buffer,detail:read(mark,priceOptions),tone:corridor.share!==null&&corridor.share>=0.25?'positive':'negative'},
-  {id:'entry',label:labels.entry,value:corridor.drawdown,detail:read(entry,priceOptions),tone:'muted'},
- ];
  const left=corridor.share===null?null:corridor.share*100;
  const capsule=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well});
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
@@ -118,9 +113,9 @@ export function ManagePosition({labels,mode,side,entry,mark,liquidation,margin,n
    <Text testID='manage-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
   </View>
-  <View style={{gap:8,marginTop:16}}>
-   <BarMark testID='manage-margin' title={mode??labels.margin} elements={marginBar} description={<Sentence testID='manage-to-liquidation' template={labels.toLiquidation} text={left===null?unknown:formatNumberReadout(left,locale,tenth).text+percent} value={left} options={tenth} suffix={percent}/>}/>
-   <BarMark testID='manage-liquidation' title={labels.liquidation} total={corridor.total||undefined} elements={corridorBar}/>
+  <View style={{gap:20,marginTop:16,paddingHorizontal:4}}>
+   <BarMark testID='manage-margin' surface={false} title={mode??labels.margin} elements={marginBar} description={<Sentence testID='manage-to-liquidation' template={labels.toLiquidation} text={left===null?unknown:formatNumberReadout(left,locale,tenth).text+percent} value={left} options={tenth} suffix={percent}/>}/>
+   <BarPnl testID='manage-liquidation' surface={false} compact side={side} entry={entry} mark={mark} liquidation={liquidation} labels={{liquidation:labels.liquidation,mark:labels.mark,entry:labels.entry}} priceOptions={priceOptions}/>
   </View>
   {actions.length>0?<View testID='manage-actions' style={{gap:8,marginTop:16}}>
    {actions.map(action=><Pressable key={action.id} testID={`manage-action-${action.id}`} accessibilityRole='button' accessibilityState={{disabled:!!action.disabled}} disabled={action.disabled} onPress={action.onSelect} style={({pressed})=>({...capsule(pressed),opacity:action.disabled?0.5:1})}>

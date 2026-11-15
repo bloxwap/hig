@@ -28,6 +28,8 @@ export interface BarMarkProps {
  legend?:boolean;
  /** `small` draws a 12 unit bar for a secondary breakdown; the default is 24. */
  size?:'default'|'small';
+ /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and legend keep their spacing. Default `true`. */
+ surface?:boolean;
  testID?:string;
 }
 /** The order segments take their colour in when an element names neither `tone` nor `color`. */
@@ -39,7 +41,7 @@ export function barMarkShares(elements:readonly BarMarkElement[],total?:number):
  const whole=Math.max(typeof total==='number'&&Number.isFinite(total)?total:sum,sum);
  return {values,shares:values.map(value=>whole>0?value/whole:0),rest:whole>0?whole-sum:1};
 }
-// Inside the Surface, so the track takes the fill that sits one step above the card.
+// A component of its own so the track reads the raised fill of whatever it sits on: one step above the card inside the Surface, one step above the page without it.
 function Bar({elements,values,rest,colors,small,testID}: {elements:readonly BarMarkElement[];values:readonly number[];rest:number;colors:readonly string[];small:boolean;testID?:string}){
  const track=useFills().raised;
  return <View {...hidden} testID={testID?`${testID}-bar`:undefined} style={{flexDirection:'row',height:small?12:24,borderRadius:small?6:8,overflow:'hidden',gap:2}}>
@@ -52,12 +54,13 @@ function Bar({elements,values,rest,colors,small,testID}: {elements:readonly BarM
  * element in proportion to its value, and a legend names each colour. The bar is decorative; each legend item reads its
  * label, detail and share. Layout follows the provider's direction.
  */
-export function BarMark({title,description,elements,total,legend=true,size='default',testID}:BarMarkProps){
- const {locale}=useHIG();const palette=useColors();
+export function BarMark({title,description,elements,total,legend=true,size='default',surface=true,testID}:BarMarkProps){
+ const {locale,direction}=useHIG();const palette=useColors();
  const {values,shares,rest}=barMarkShares(elements,total);
  const colors=elements.map((element,index)=>element.color??palette[element.tone??barMarkTones[index%barMarkTones.length]]);
  const reading=(element:BarMarkElement,index:number)=>[element.label,element.detail,formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})].filter(Boolean).join(', ');
- return <Surface testID={testID} style={{gap:12}} {...(legend?{}:{accessible:true,accessibilityLabel:[title,...elements.map(reading)].join(', ')})}>
+ const group=legend?{}:{accessible:true,accessibilityLabel:[title,...elements.map(reading)].join(', ')};
+ const content=<>
   <View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
    <Text style={{fontSize:16,lineHeight:24,fontWeight:'600',flexShrink:1}}>{title}</Text>
    {description==null||description===false?null:typeof description==='string'||typeof description==='number'?<Text style={{color:palette.muted,fontSize:14,lineHeight:21,flexShrink:1}}>{description}</Text>:description}
@@ -70,5 +73,6 @@ export function BarMark({title,description,elements,total,legend=true,size='defa
     {element.detail?<Text style={{color:palette.faint,fontSize:14,lineHeight:21}}>{element.detail}</Text>:null}
    </View>)}
   </View>:null}
- </Surface>;
+ </>;
+ return surface?<Surface testID={testID} style={{gap:12}} {...group}>{content}</Surface>:<View testID={testID} style={{direction,gap:12,minWidth:0}} {...group}>{content}</View>;
 }

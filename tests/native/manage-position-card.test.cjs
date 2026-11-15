@@ -1,11 +1,12 @@
-/** Native ManagePosition: header, margin and notional under the share left before liquidation, the price corridor, the actions, then the position row. */
+/** Native ManagePositionCard: header, margin and notional under the share left before liquidation, the price corridor, the actions, then the position row. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {ManagePosition,positionCorridor}=require('../../packages/hig/native/src/manage-position');
+const {ManagePositionCard,positionCorridor}=require('../../packages/hig/native/src/manage-position-card');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {BarMark}=require('../../packages/hig/native/src/bar-mark');
+const {BarPnl}=require('../../packages/hig/native/src/bar-pnl');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
 const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
@@ -13,7 +14,7 @@ let root;
 // The host owns every trading word.
 const labels={title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>`${percent} to liquidation`,mark:'Mark',entry:'Entry',long:'Long',short:'Short'};
 const base={labels,side:'long',entry:64700,mark:64696,liquidation:63082,margin:10,notional:399.98,actions:[]};
-function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(ManagePosition,{...base,...props})));});return root.root;}
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(ManagePositionCard,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
@@ -46,12 +47,12 @@ it('shows the host title as the heading, Back only with onBack, and the host act
  const back=jest.fn();view=mount({onBack:back,headerAction:h(View,{testID:'share'})});
  expect(has(view,'share')).toBe(true);const button=all(view,'manage-back')[0];expect(button.props.label??button.props.accessibilityLabel).toBe('Back');
  act(()=>{all(view,'manage-back').find(node=>node.props.onPress).props.onPress({});});expect(back).toHaveBeenCalledTimes(1);
- expect(blocks.ManagePosition).toBe(ManagePosition);expect(blocks.positionCorridor).toBe(positionCorridor);
+ expect(blocks.ManagePositionCard).toBe(ManagePositionCard);expect(blocks.positionCorridor).toBe(positionCorridor);
 });
 
 it('titles the first card with the mode, splits its bar between margin and notional, and reads the share left before liquidation',()=>{
  let view=mount({mode:'Demo'});
- expect(bars(view).map(bar=>bar.props.testID)).toEqual(['manage-margin','manage-liquidation']);
+ expect(bars(view).map(bar=>bar.props.testID)).toEqual(['manage-margin']);expect(bars(view)[0].props.surface).toBe(false);
  expect(bars(view)[0].props.title).toBe('Demo');expect(bars(view)[0].props.total).toBeUndefined();
  expect(bars(view)[0].props.elements).toEqual([{id:'margin',label:'Margin',value:10,detail:'$10.00',tone:'info'},{id:'notional',label:'Notional',value:expect.closeTo(389.98,6),detail:'$399.98',tone:'positive'}]);
  expect(has(view,'manage-margin-segment-margin')).toBe(true);expect(has(view,'manage-margin-segment-notional')).toBe(true);
@@ -68,29 +69,27 @@ it('titles the first card with the mode, splits its bar between margin and notio
  view=mount({notional:Number.NaN});expect(bars(view)[0].props.elements[1]).toMatchObject({value:0,detail:'—'});
 });
 
-it('draws the corridor from liquidation to entry with the three prices, and turns negative under a quarter left',()=>{
+it('draws the prices as a BarPnl without a card, compact, with the host labels and the position it was given',()=>{
  let view=mount();
- expect(bars(view)[1].props).toMatchObject({title:'Liquidation',total:1618,elements:[
-  {id:'liquidation',label:'Liquidation',value:0,detail:'$63,082',tone:'negative'},
-  {id:'mark',label:'Mark',value:1614,detail:'$64,696',tone:'positive'},
-  {id:'entry',label:'Entry',value:4,detail:'$64,700',tone:'muted'},
- ]});
- expect(bars(view)[1].props.description).toBeUndefined();expect(host(view,'manage-to-liquidation').props.accessibilityLabel).toBe('99.8% to liquidation');
- // Exactly a quarter left is still positive; below it the remaining distance is negative.
- view=mount({entry:100,mark:85,liquidation:80});expect(bars(view)[1].props.elements[1]).toMatchObject({value:5,tone:'positive'});expect(host(view,'manage-to-liquidation').props.accessibilityLabel).toBe('25% to liquidation');
- view=mount({entry:100,mark:84,liquidation:80});expect(bars(view)[1].props.elements[1]).toMatchObject({value:4,tone:'negative'});expect(bars(view)[1].props.elements[2]).toMatchObject({value:16});
- // A short reads the same way from the other side, and the host can format prices.
- view=mount({side:'short',entry:0.5,mark:0.55,liquidation:0.7,priceOptions:{style:'currency',currency:'USD',maximumFractionDigits:4}});
- expect(bars(view)[1].props.elements.map(element=>element.detail)).toEqual(['$0.70','$0.55','$0.50']);expect(bars(view)[1].props.elements[1].value).toBeCloseTo(0.15,10);
- // Unknown prices: no corridor, a dash for the price and for the sentence, and no number rolling in from zero.
- view=mount({mark:null,liquidation:null});
- expect(bars(view)[1].props.total).toBeUndefined();expect(bars(view)[1].props.elements.map(element=>[element.value,element.detail])).toEqual([[0,'—'],[0,'—'],[0,'$64,700']]);
- expect(flows(view,'manage-to-liquidation')).toHaveLength(0);expect(text(host(view,'manage-to-liquidation'))).toBe('— to liquidation');
+ // One BarMark (margin) and one BarPnl (prices); neither sits in a card.
+ expect(bars(view).map(bar=>bar.props.testID)).toEqual(['manage-margin']);expect(bars(view)[0].props.surface).toBe(false);
+ expect(view.findAllByType(BarPnl)).toHaveLength(1);const pnl=view.findByType(BarPnl);
+ expect(pnl.props).toEqual({testID:'manage-liquidation',surface:false,compact:true,side:'long',entry:64700,mark:64696,liquidation:63082,labels:{liquidation:'Liquidation',mark:'Mark',entry:'Entry'},priceOptions:undefined});
+ expect(pnl.props.title).toBeUndefined();expect(pnl.props.description).toBeUndefined();
+ expect(flat(host(view,'manage-margin')).backgroundColor).toBeUndefined();expect(flat(host(view,'manage-liquidation')).backgroundColor).toBeUndefined();
+ expect(host(view,'manage-to-liquidation').props.accessibilityLabel).toBe('99.8% to liquidation');
+ // The share on the first bar still follows the corridor.
+ view=mount({entry:100,mark:85,liquidation:80});expect(host(view,'manage-to-liquidation').props.accessibilityLabel).toBe('25% to liquidation');
+ // A host price format and a short position pass straight through.
+ const priceOptions={style:'currency',currency:'EUR'};
+ view=mount({side:'short',entry:0.5,mark:0.55,liquidation:0.7,priceOptions});
+ expect(view.findByType(BarPnl).props).toMatchObject({side:'short',entry:0.5,mark:0.55,liquidation:0.7,priceOptions,compact:true,surface:false});
+ // Unknown prices: the share reads as unknown and the BarPnl receives the nulls.
+ view=mount({mark:null,liquidation:null});expect(view.findByType(BarPnl).props).toMatchObject({mark:null,liquidation:null});expect(text(host(view,'manage-to-liquidation'))).toBe('— to liquidation');
 });
-
 it('keeps the same live numbers when the figures change',()=>{
  mount();const view=root.root,left=flows(view,'manage-to-liquidation')[0];
- act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(ManagePosition,{...base,mark:64000,notional:410})));});
+ act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(ManagePositionCard,{...base,mark:64000,notional:410})));});
  expect(flows(root.root,'manage-to-liquidation')[0]).toBe(left);expect(bars(root.root)[0].props.elements[1]).toMatchObject({value:400,detail:'$410.00'});
  expect(host(root.root,'manage-to-liquidation').props.accessibilityLabel).toBe('56.7% to liquidation');
 });

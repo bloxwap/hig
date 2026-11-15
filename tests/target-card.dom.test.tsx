@@ -43,7 +43,7 @@ describe('TargetCard',()=>{
   const back=vi.fn();render(<TargetCard {...base} position='BTC · Long 40×' orderType='Take-limit' note='Fills at your target price or better.' onBack={back}/>);
   expect(screen.getByRole('heading',{name:'Take Profit'})).toBeTruthy();await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(back).toHaveBeenCalledTimes(1);
   expect(spoken(document.querySelector('.hig-target-amount')!)).toBe('+$2.00');
-  const card=screen.getByRole('region',{name:'BTC · Long 40×'});expect(card.classList.contains('hig-surface')).toBe(true);
+  const card=screen.getByRole('region',{name:'BTC · Long 40×'});expect(card.classList.contains('hig-surface')).toBe(false);
   expect(card.querySelector('.hig-bar-mark-description')!.textContent).toBe('Take-limit');expect(document.querySelector('.hig-target-note')!.textContent).toBe('Fills at your target price or better.');
   expect(blocks.TargetCard).toBe(TargetCard);expect(blocks.targetLayout).toBe(targetLayout);
  });
@@ -101,5 +101,37 @@ describe('TargetCard',()=>{
   expect(readouts()[2].slice(0,2)).toEqual(['trigger','Si déclenché']);expect(presets()[0].textContent).toMatch(/^\+1,50\s\$US$/);
   const source=readFileSync('packages/hig/react/src/blocks/target-card.tsx','utf8');expect(source.match(/messages\.\w+/g)).toEqual(['messages.cancel']);
   for(const key of ['takeProfit','stopLoss','trigger','entry','mark','custom'])expect(key in en,key).toBe(false);
+ });
+});
+
+describe('TargetCard note',()=>{
+ it('opens the note in a popover from an info button on the trailing edge of the header when the host names it',async()=>{
+  const view=render(<TargetCard {...base} labels={{...labels,info:'How this order fills'}} note='Fills at your target price or better.'/>);
+  const button=screen.getByRole('button',{name:'How this order fills'});
+  expect(button.closest('.hig-screen-header-side')).toBe(document.querySelectorAll('.hig-screen-header-side')[1]);expect(button.querySelector('svg')).toBeTruthy();
+  expect(button.getAttribute('aria-expanded')).toBe('false');expect(document.querySelector('.hig-target-popover')).toBeNull();
+  await userEvent.click(button);
+  const note=document.querySelector('.hig-target-popover')!;expect(note.textContent).toBe('Fills at your target price or better.');expect(note.classList.contains('hig-popover')).toBe(true);expect(note.parentElement).toBe(button.parentElement);expect(document.querySelector('.hig-target-note')).toBeNull();
+  expect(button.getAttribute('aria-expanded')).toBe('true');expect(button.getAttribute('aria-controls')).toBe(note.id);
+  await userEvent.click(button);expect(document.querySelector('.hig-target-popover')).toBeNull();
+  // Escape, a press outside, and focus leaving all close it.
+  await userEvent.click(button);await userEvent.keyboard('{Escape}');expect(document.querySelector('.hig-target-popover')).toBeNull();expect(button.getAttribute('aria-expanded')).toBe('false');
+  await userEvent.click(button);expect(document.querySelector('.hig-target-popover')).toBeTruthy();await userEvent.click(document.querySelector('.hig-target-amount')!);expect(document.querySelector('.hig-target-popover')).toBeNull();
+  await userEvent.click(button);await userEvent.tab();expect(document.querySelector('.hig-target-popover')).toBeNull();
+  // No note, no button; no name for the button, or a host header control, and the note is always shown.
+  view.rerender(<TargetCard {...base} labels={{...labels,info:'How this order fills'}}/>);expect(screen.queryByRole('button',{name:'How this order fills'})).toBeNull();
+  view.rerender(<TargetCard {...base} note='Always shown.'/>);expect(document.querySelector('.hig-target-note')!.textContent).toBe('Always shown.');
+  view.rerender(<TargetCard {...base} labels={{...labels,info:'How this order fills'}} note='Always shown.' headerAction={<button type='button'>Share</button>}/>);
+  expect(screen.queryByRole('button',{name:'How this order fills'})).toBeNull();expect(screen.getByRole('button',{name:'Share'})).toBeTruthy();expect(document.querySelector('.hig-target-note')!.textContent).toBe('Always shown.');
+ });
+});
+describe('TargetCard price card surface',()=>{
+ it('draws the prices without a card by default and inside one with surface, keeping the title row, bar and prices',()=>{
+  const view=render(<TargetCard {...base} position='BTC Long 10×'/>);const card=()=>document.querySelector<HTMLElement>('.hig-target-prices')!;
+  expect(card().className).toBe('hig-target-prices');expect(card().dataset.surface).toBe('false');
+  expect(card().querySelector('.hig-target-bar')).toBeTruthy();expect(readouts().map(([price])=>price)).toEqual(['mark','entry','trigger']);
+  view.rerender(<TargetCard {...base} position='BTC Long 10×' surface/>);
+  expect(card().classList.contains('hig-surface')).toBe(true);expect(card().dataset.surface).toBeUndefined();
+  expect(card().querySelector('.hig-target-bar')).toBeTruthy();expect(readouts().map(([price])=>price)).toEqual(['mark','entry','trigger']);
  });
 });

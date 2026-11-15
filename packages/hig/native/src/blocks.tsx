@@ -22,7 +22,7 @@ export function InstallCommand({command,onCopy}: {command:string;onCopy:()=>Prom
 export function MarketingHero({title,description,href,cta}: {title:string;description:string;href:string;cta:string}){return <Stack><Heading>{title}</Heading><Text>{description}</Text><Link href={href}>{cta}</Link></Stack>;}
 export {AccountCard,accountRows,assetValue,AssetBalanceRow,type AccountCardProps,type AccountAsset,type AssetArtwork,type AssetBalanceRowProps} from './account-card.js';
 export {TokenActionCard,tokenActionLabel,type TokenActionCardProps,type TokenAction,type TokenActionId} from './token-action-card.js';
-export {ManagePosition,positionCorridor,type ManagePositionProps,type ManagePositionLabels,type ManagePositionAction,type ManagePositionSummary} from './manage-position.js';
+export {ManagePositionCard,positionCorridor,type ManagePositionCardProps,type ManagePositionCardLabels,type ManagePositionCardAction,type ManagePositionCardSummary} from './manage-position-card.js';
 export {TargetCard,targetLayout,targetFormat,type TargetCardProps,type TargetCardLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-card.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';

@@ -1,5 +1,5 @@
 "use client";
-import React,{useId} from 'react';
+import React,{useEffect,useId,useRef,useState} from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from '../provider.js';
@@ -30,6 +30,8 @@ export interface TargetCardLabels {
  units:Record<TargetUnit,string>;
  /** The row that opens the host's own entry: Custom. */
  custom:string;
+ /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */
+ info?:string;
 }
 export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  kind:TargetKind;
@@ -38,7 +40,7 @@ export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>,
  position?:string;
  /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */
  orderType?:string;
- /** One sentence under the price card about how the order fills. */
+ /** One sentence about how the order fills. With `labels.info` it opens in a popover from an info button on the trailing edge of the header; otherwise it is always shown under the headline figure. */
  note?:string;
  entry:number;mark?:number|null;
  /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */
@@ -56,6 +58,8 @@ export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>,
  onCustom?:()=>void;
  /** Format of prices. Defaults to US dollars. */
  priceOptions?:Intl.NumberFormatOptions;
+ /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */
+ surface?:boolean;
  onSubmit:()=>void;
  /** Defaults to disabled while `value` is unknown. */
  submitDisabled?:boolean;
@@ -63,7 +67,7 @@ export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>,
  /** Shows Cancel beside the confirming action. */
  onCancel?:()=>void;
  onBack?:()=>void;
- /** A control on the trailing edge of the header, usually an `IconButton`. */
+ /** A control on the trailing edge of the header, usually an `IconButton`. It takes the place of the info button, and the note is then always shown. */
  headerAction?:React.ReactNode;
 }
 const usd={style:'currency',currency:'USD'} as const,allUnits:readonly TargetUnit[]=['dollar','price','percent'];
@@ -92,8 +96,11 @@ export function targetLayout({entry,mark,trigger}:{entry:number;mark?:number|nul
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** Set a take profit or a stop loss on one position: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. */
-export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetCardProps){
- const {messages,locale}=useHIG();const id=useId();
+export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetCardProps){
+ const {messages,locale}=useHIG();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
+ // The popover closes on a press outside it, on Escape, and when focus leaves it.
+ useEffect(()=>{if(!open)return;const outside=(event:Event)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
+ const info=note&&labels.info&&!headerAction?labels.info:undefined;
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,mark,trigger:target});
  const prices:Record<TargetPrice,number|null|undefined>={entry,mark,trigger:target};
@@ -101,9 +108,10 @@ export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigg
  // The entry price is a tick of its own only while the mark is the near end of the stretch.
  const tick=positions.mark!==undefined&&positions.trigger!==undefined?positions.entry:undefined;
  return <section {...rest} className={`hig-target-card${className?` ${className}`:''}`} data-kind={kind}>
-  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction}/>
+  <ScreenHeader title={labels.title} onBack={onBack} action={info?<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>:headerAction}/>
   <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={targetFormat(unit,priceOptions)}/></p>
-  <section className='hig-surface hig-target-prices' aria-labelledby={position?id:undefined}>
+  {note&&!info&&<p className='hig-target-note'>{note}</p>}
+  <section className={surface?'hig-surface hig-target-prices':'hig-target-prices'} data-surface={surface?undefined:'false'} aria-labelledby={position?id:undefined}>
    {(position||orderType)&&<div className='hig-bar-mark-header'>{position&&<strong id={id} className='hig-bar-mark-title'>{position}</strong>}{orderType&&<span className='hig-bar-mark-description'>{orderType}</span>}</div>}
    <div className='hig-target-bar' aria-hidden='true'>
     <span className='hig-target-rest' style={{flexGrow:from}}/>
@@ -113,7 +121,6 @@ export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigg
    </div>
    <dl className='hig-bar-pnl-readouts'>{order.map(price=><div key={price} data-price={price}><dt>{labels[price]}</dt><dd><AnimatedNumberReadout value={prices[price]} options={priceOptions}/></dd></div>)}</dl>
   </section>
-  {note&&<p className='hig-target-note'>{note}</p>}
   {units.length>1&&<SegmentedControl label={labels.unit} options={units.map(option=>({value:option,label:labels.units[option]}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
   {onCustom&&<button type='button' className='hig-swap-setting' onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/></button>}
   {presets.length>0&&<div className='hig-target-presets'>{presets.map(preset=><Button key={preset} fullWidth intent={preset===value?intent:'secondary'} aria-pressed={preset===value} onClick={()=>onValueChange?.(preset)}>{formatNumber(preset,locale,targetFormat(unit,priceOptions,preset))}</Button>)}</div>}

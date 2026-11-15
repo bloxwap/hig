@@ -544,9 +544,11 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 /* TokenActionCard: header, the assets and chains bars 8px apart, then equal full-width actions 16px below. */
 .hig-token-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-token-bars,.hig-token-actions { display:flex;flex-direction:column;gap:8px; }
-/* ManagePosition: header, two bars 8px apart, action rows and the position row 16px below each other. */
-.hig-manage-position { display:flex;flex-direction:column;gap:16px;min-width:0; }
-.hig-manage-position .hig-swap-setting:disabled { color:var(--hig-muted);cursor:default; }
+/* ManagePositionCard: header, two bars 8px apart, action rows and the position row 16px below each other. */
+.hig-manage-position-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
+/* The two bars are read-only, so they sit on the page without a card, further apart than cards would be. */
+.hig-manage-position-card > .hig-token-bars { gap:20px;padding-inline:4px; }
+.hig-manage-position-card .hig-swap-setting:disabled { color:var(--hig-muted);cursor:default; }
 .hig-position-side[data-side='long'],.hig-position-row [data-tone='up'] { color:var(--hig-positive); }
 .hig-position-side[data-side='short'],.hig-position-row [data-tone='down'] { color:var(--hig-negative); }
 /* TargetCard: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
@@ -565,7 +567,9 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-target-entry[style*='start: 0%'] { margin-inline-start:0; }
 .hig-target-entry[style*='start: 100%'] { margin-inline-start:-3px; }
 .hig-target-prices [data-price='trigger'] dd { color:var(--hig-target-tone); }
-.hig-target-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-target-info { position:relative;display:inline-flex; }
+.hig-target-popover { position:absolute;inset-block-start:calc(100% + 4px);inset-inline-end:0;width:max-content;max-width:min(280px,calc(100vw - 48px));font-size:.875rem;font-weight:400;text-align:start; }
+.hig-target-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5;text-align:center; }
 .hig-target-card .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-target-presets,.hig-target-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 .hig-target-presets > .hig-button { padding-inline:8px; }

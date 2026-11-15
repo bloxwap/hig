@@ -41,6 +41,13 @@ describe('BarMark',()=>{
   expect(document.querySelector('.hig-bar-mark-legend')).toBeNull();expect(screen.getByRole('list').className).toBe('hig-sr-only');
   expect(screen.getAllByRole('listitem').map(item=>item.textContent)).toEqual(['A33,3 %','B66,7 %']);
  });
+ it('draws no card with surface={false}, keeping the title row, bar and legend',()=>{
+  const view=render(<BarMark title='Portfolio' description='$10,000.00' elements={parts}/>);const card=()=>document.querySelector<HTMLElement>('.hig-bar-mark')!;
+  expect(card().classList.contains('hig-surface')).toBe(true);expect(card().dataset.surface).toBeUndefined();
+  view.rerender(<BarMark surface={false} title='Portfolio' description='$10,000.00' elements={parts} className='wide'/>);
+  expect(card().className).toBe('hig-bar-mark wide');expect(card().dataset.surface).toBe('false');expect(screen.getByRole('region',{name:'Portfolio'})).toBe(card());
+  expect(card().querySelector('.hig-bar-mark-header')).toBeTruthy();expect(segments()).toHaveLength(3);expect(screen.getAllByRole('listitem')).toHaveLength(3);
+ });
  it('passes host attributes to the card and keeps its own classes',()=>{
   render(<BarMark title='Portfolio' elements={parts} className='wide' data-testid='mix'/>);
   expect(screen.getByTestId('mix').className).toBe('hig-surface hig-bar-mark wide');

@@ -393,8 +393,8 @@
       "title": "AccountCard"
     },
     {
-      "route": "components/manage-position",
-      "title": "ManagePosition"
+      "route": "components/manage-position-card",
+      "title": "ManagePositionCard"
     },
     {
       "route": "components/target-card",
@@ -1071,12 +1071,13 @@
       ]
     },
     {
-      "name": "ManagePosition",
-      "route": "components/manage-position",
+      "name": "ManagePositionCard",
+      "route": "components/manage-position-card",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
+        "profit",
         "at-risk"
       ]
     },
