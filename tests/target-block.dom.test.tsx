@@ -134,4 +134,10 @@ describe('TargetBlock price card surface',()=>{
   expect(card().classList.contains('hig-surface')).toBe(true);expect(card().dataset.surface).toBeUndefined();
   expect(card().querySelector('.hig-target-bar')).toBeTruthy();expect(readouts().map(([price])=>price)).toEqual(['mark','entry','trigger']);
  });
+ it('sizes the headline figure like the SwapPanel amount, in the interface face',()=>{
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');const rule=(selector:string)=>css.split('\n').find(line=>line.startsWith(selector+' {'))??'';
+  const size=(line:string)=>line.match(/font-size:[^;]+;line-height:[^;]+;font-weight:[^;]+;letter-spacing:[^;]+/)?.[0];
+  expect(size(rule('.hig-target-amount'))).toBe(size(rule('.hig-swap-amount')));expect(size(rule('.hig-target-amount'))).toBeTruthy();
+  expect(rule('.hig-target-amount .hig-number')).toContain('font-family:inherit');
+ });
 });

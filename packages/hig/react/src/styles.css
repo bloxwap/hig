@@ -602,7 +602,9 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
 .hig-target-block { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }
 .hig-target-block[data-kind='stop-loss'] { --hig-target-tone:var(--hig-negative); }
+/* The headline figure matches the SwapPanel amount: the same size and the interface face, not the mono face. */
 .hig-target-amount { margin:0;font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere; }
+.hig-target-amount .hig-number { font-family:inherit; }
 .hig-target-prices { display:flex;flex-direction:column;gap:12px; }
 .hig-target-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
 .hig-target-rest,.hig-target-move { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }

@@ -118,7 +118,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,mark,trig
    <Text testID='target-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{info?<IconButton intent='ghost' label={info} suppressFeedback testID='target-info' accessibilityState={{expanded:open}} onPress={()=>setOpen(!open)}><SeverityIcon kind='info' color={colors.text}/></IconButton>:headerAction}</View>
   </View>
-  <View style={{alignItems:'center',marginTop:16}}><AnimatedNumberReadout testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:40,lineHeight:48,fontWeight:'700'}}/></View>
+  <View style={{alignItems:'center',marginTop:16}}><AnimatedNumberReadout testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {note&&!info?<Text testID='target-note' style={{color:colors.muted,fontSize:14,lineHeight:21,textAlign:'center',marginTop:16}}>{note}</Text>:null}
   <PriceCard testID='target-prices' style={{gap:12,marginTop:16,minWidth:0}}>
    {position||orderType?<View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
