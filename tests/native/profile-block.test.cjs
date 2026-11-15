@@ -102,6 +102,9 @@ it('makes the avatar a named button with onAvatarPress, the status dot outside i
  const avatar=button(view,'profile-avatar-button');expect(avatar.props.accessibilityLabel).toBe('Change profile picture');expect(has(avatar,'profile-avatar')).toBe(true);expect(has(avatar,'profile-status')).toBe(false);
  act(()=>{avatar.props.onPress({});});expect(choose).toHaveBeenCalledTimes(1);
  view=mount({onAvatarPress:choose});expect(button(view,'profile-avatar-button').props.accessibilityLabel).toBe('5459····6263');
+ // Signed out with no name and no avatarLabel, the button still has a name: the built-in one, which the host can translate.
+ view=mount({name:undefined,action:{label:'Log in',onSelect:()=>{}},onAvatarPress:choose});expect(button(view,'profile-avatar-button').props.accessibilityLabel).toBe('Change profile picture');
+ view=mount({name:undefined,action:{label:'Log in',onSelect:()=>{}},onAvatarPress:choose},{messages:{changeProfilePicture:'Changer la photo'}});expect(button(view,'profile-avatar-button').props.accessibilityLabel).toBe('Changer la photo');
  view=mount();expect(has(view,'profile-avatar-button')).toBe(false);
 });
 it('draws a live figure value and a toned value, read with the label',()=>{
@@ -116,6 +119,9 @@ it('draws a live figure value and a toned value, read with the label',()=>{
  expect(button(view,'profile-row-history').props.accessibilityLabel).toBe('History, Live');expect(flat(host(view,'profile-row-history-value')).color).toBe(colors.positive);
  expect(flat(host(view,'profile-row-demo-value')).color).toBe(colors.warning);
  expect(view.findAllByType(ListRow).find(row=>row.props.testID==='profile-row-plain').props.value).toBe('1.0');
+ // A toned value keeps the plain value's layout: it shrinks and truncates at half the row instead of squeezing the label.
+ for(const id of ['history','demo','plain'])expect(flat(host(view,`profile-row-${id}-value`))).toMatchObject({flexShrink:1,maxWidth:'50%'});
+ expect(host(view,'profile-row-demo-value').props.numberOfLines).toBe(1);expect(flat(host(view,'profile-row-plain-value')).color).toBe(colors.muted);
  const toned=mount({sections:[{id:'s',rows:[{id:'pnl',label:'PnL',value:{value:-4.2},tone:'negative'}]}]});
  expect(toned.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='profile-row-pnl-value').props.tone).toBe('negative');
 });

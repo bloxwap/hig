@@ -54,7 +54,7 @@ export interface ProfileBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  avatar?:AssetArtwork;
  /** Makes the avatar a button, for example to choose a picture. `avatarLabel` names it. */
  onAvatarPress?:()=>void;
- /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`. */
+ /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`, then the built-in “Change profile picture”. */
  avatarLabel?:string;
  status?:ProfileStatus;
  /** Shows the edit control after the name. */
@@ -105,7 +105,7 @@ export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,av
   </div>
   <div className='hig-profile-identity'>
    <span className='hig-profile-avatar' style={avatar==null&&address?{background:addressGradient(address)}:undefined}>
-    {onAvatarPress?<button type='button' className='hig-profile-artwork' aria-label={avatarLabel??name} onClick={onAvatarPress}>{artwork}<PressDecoration kind='icon-button'/></button>:<span className='hig-profile-artwork' aria-hidden='true'>{artwork}</span>}
+    {onAvatarPress?<button type='button' className='hig-profile-artwork' aria-label={avatarLabel??name??messages.changeProfilePicture??en.changeProfilePicture} onClick={onAvatarPress}>{artwork}<PressDecoration kind='icon-button'/></button>:<span className='hig-profile-artwork' aria-hidden='true'>{artwork}</span>}
     {status&&<span className='hig-profile-status' data-tone={status.tone??'warning'}><span className='hig-sr-only'>{status.label}</span></span>}
    </span>
    {name!=null&&<div className='hig-profile-name'><h2>{name}</h2>{nameAccessory!=null&&<span className='hig-profile-name-accessory'>{nameAccessory}</span>}{onEditName&&<IconButton intent='ghost' label={messages.editName??en.editName} onClick={onEditName}>{editIcon}</IconButton>}</div>}

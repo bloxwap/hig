@@ -86,6 +86,9 @@ describe('ProfileBlock host slots',()=>{
   expect(avatar.querySelector('.hig-profile-status')).toBeNull();expect(document.querySelector('.hig-profile-status')!.textContent).toBe('Demo');
   await userEvent.click(avatar);expect(choose).toHaveBeenCalledTimes(1);
   view.rerender(<ProfileBlock name='Joe' onAvatarPress={choose} sections={[]}/>);expect(screen.getByRole('button',{name:'Joe'}).textContent).toBe('Jo');
+  // Signed out with no name and no avatarLabel, the button still has a name: the built-in one, which the host can translate.
+  view.rerender(<ProfileBlock action={{label:'Log in',onSelect:()=>{}}} onAvatarPress={choose} sections={[]}/>);expect(screen.getByRole('button',{name:'Change profile picture'}).classList.contains('hig-profile-artwork')).toBe(true);
+  view.rerender(<HIGProvider messages={{changeProfilePicture:'Changer la photo'}}><ProfileBlock action={{label:'Log in',onSelect:()=>{}}} onAvatarPress={choose} sections={[]}/></HIGProvider>);expect(screen.getByRole('button',{name:'Changer la photo'})).toBeTruthy();
  });
  it('draws a live figure value place by place and colours a value by tone, leaving plain values unchanged',()=>{
   const view=render(<ProfileBlock name='Joe' sections={[{id:'money',rows:[

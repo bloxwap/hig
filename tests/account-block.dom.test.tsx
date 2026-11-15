@@ -118,6 +118,13 @@ describe('AccountBlock host options',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
   expect(rule('.hig-account-sections {')).toContain('gap:24px');expect(rule('.hig-account-section {')).toContain('gap:8px');
  });
+ it('totals only the sections it draws, and the total is unknown when a drawn section total is unknown',()=>{
+  const balance=()=>spoken(document.querySelector('.hig-account-balance')!);
+  const view=render(<AccountBlock sections={[{id:'stake',title:'Staking',total:500,assets:[]},{id:'wallet',title:'Wallet',assets:[usdc]}]}/>);
+  expect(screen.queryByRole('region',{name:'Staking'})).toBeNull();expect(balance()).toBe('Total balance: $100.33');
+  view.rerender(<AccountBlock sections={[{id:'perps',title:'Perps',total:null,assets:[perp]},{id:'wallet',title:'Wallet',assets:[usdc]}]}/>);expect(balance()).toBe('Total balance: —');
+  view.rerender(<AccountBlock sections={[{id:'perps',title:'Perps',total:null,assets:[]},{id:'wallet',title:'Wallet',assets:[usdc]}]}/>);expect(balance()).toBe('Total balance: $100.33');
+ });
  it('hides a units line, makes a row plain, formats units, and headlines units when the value is unknown',async()=>{
   const select=vi.fn();
   render(<AccountBlock assets={[usdc,{...sol,selectable:false},perp,{...eth,unitsOptions:{minimumFractionDigits:4,maximumFractionDigits:4}},bloxwap]} onAssetSelect={select}/>);

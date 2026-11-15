@@ -41,7 +41,7 @@ export interface AccountBlockProps {
  onShowAddress?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */
  headerAction?:React.ReactNode;
- /** Total in dollars; defaults to the sum of the asset values (with `sections`, the sum of the section totals). `null` shows it as unknown. */
+ /** Total in dollars; defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is). `null` shows it as unknown. */
  balance?:number|null;
  /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */
  assets?:readonly AccountAsset[];
@@ -70,6 +70,8 @@ export function accountRows(assets:readonly AccountAsset[],pinnedSymbol:string=u
 const sum=(assets:readonly AccountAsset[])=>assets.reduce((total,asset)=>total+(assetValue(asset)??0),0);
 /** A section's total: its own `total`, or the sum of its asset values. */
 export const accountSectionTotal=(section:AccountSection):number|null=>section.total!==undefined?section.total:sum(section.assets);
+/** The block total for `sections`: the sum of the section totals, or unknown (`null`) when any of them is unknown. Pass only the sections that are drawn. */
+const accountSectionsTotal=(sections:readonly AccountSection[]):number|null=>{let all=0;for(const section of sections){const total=accountSectionTotal(section);if(total===null)return null;all+=total;}return all;};
 /** A section's rows in display order: the pinned asset first when the section holds it (no placeholder), then the rest by value as in `accountRows`. */
 export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol:string=usdc):{pinned:AccountAsset|null;rest:AccountAsset[]}{
  const {pinned,rest}=accountRows(assets,pinnedSymbol);return {pinned:assets.includes(pinned)?pinned:null,rest};
@@ -77,14 +79,15 @@ export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol:s
 /** The account as one screen: a header, the total with the deposit action, the pinned asset, then every other holding by value. */
 export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol=usdc,onDeposit,depositLabel,onAssetSelect,testID}:AccountBlockProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
- const total=balance!==undefined?balance:sections?sections.reduce((all,section)=>all+(accountSectionTotal(section)??0),0):sum(assets);
+ const shown=sections?.filter(section=>section.assets.length>0);
+ const total=balance!==undefined?balance:shown?accountSectionsTotal(shown):sum(assets);
  const row=(asset:AccountAsset,pin:boolean,section?:AccountSection,prefix='account-asset')=>{
   const value=assetValue(asset),units=!pin&&asset.units!==false;
   const select=onAssetSelect&&asset.selectable!==false?(section?()=>onAssetSelect(asset,section):()=>onAssetSelect(asset)):undefined;
   return <AssetBalanceRow key={asset.id} testID={`${prefix}-${asset.id}`} name={asset.name} symbol={asset.symbol} icon={asset.icon} value={value} balance={units?asset.balance??null:undefined} balanceOptions={asset.unitsOptions} headline={units&&value===null&&asset.balance!=null?'units':undefined} onSelect={select}/>;
  };
  let list:React.ReactNode;
- if(sections)list=<View testID='account-sections' style={{gap:24,marginTop:16}}>{sections.filter(section=>section.assets.length>0).map(section=>{
+ if(shown)list=<View testID='account-sections' style={{gap:24,marginTop:16}}>{shown.map(section=>{
   const {pinned,rest}=accountSectionRows(section.assets,pinnedSymbol),prefix=`account-section-${section.id}`,rowPrefix=`${prefix}-asset`;
   return <View key={section.id} testID={prefix} style={{gap:8}}>
    <View testID={`${prefix}-header`} style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12,paddingHorizontal:4}}>

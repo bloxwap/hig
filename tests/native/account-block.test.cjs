@@ -91,6 +91,12 @@ it('draws titled sections with their own totals, 24 apart, in place of the flat 
  act(()=>{rows(view)[3].props.onSelect();});expect(select).toHaveBeenCalledWith(sol,sections[2]);
  expect(blocks.accountSectionRows).toBeDefined();expect(blocks.accountSectionTotal(sections[0])).toBe(1259);
 });
+it('totals only the sections it draws, and the total is unknown when a drawn section total is unknown',()=>{
+ let view=mount({sections:[{id:'stake',title:'Staking',total:500,assets:[]},{id:'wallet',title:'Wallet',assets:[usdc]}]});
+ expect(has(view,'account-section-stake')).toBe(false);expect(total(view).props.value).toBeCloseTo(100.33);
+ view=mount({sections:[{id:'perps',title:'Perps',total:null,assets:[perp]},{id:'wallet',title:'Wallet',assets:[usdc]}]});expect(total(view).props.value).toBeNull();
+ view=mount({sections:[{id:'perps',title:'Perps',total:null,assets:[]},{id:'wallet',title:'Wallet',assets:[usdc]}]});expect(total(view).props.value).toBeCloseTo(100.33);
+});
 it('hides units per asset, makes a row plain, passes the units format, and headlines units when the value is unknown',()=>{
  const select=jest.fn();
  const view=mount({assets:[usdc,{...sol,selectable:false,unitsOptions:{minimumFractionDigits:4}},perp,blox],onAssetSelect:select});

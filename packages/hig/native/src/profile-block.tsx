@@ -50,7 +50,7 @@ export interface ProfileBlockProps {
  avatar?:AssetArtwork;
  /** Makes the avatar a button, for example to choose a picture. `avatarLabel` names it. */
  onAvatarPress?:()=>void;
- /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`. */
+ /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`, then the built-in “Change profile picture”. */
  avatarLabel?:string;
  status?:ProfileStatus;
  onEditName?:()=>void;onShowAddress?:()=>void;onClose?:()=>void;
@@ -85,15 +85,14 @@ function ProfileSwitchRow({row}:{row:ProfileRow}){
 }
 /** A row that opens something or shows a value. A live figure or a toned value is drawn here and read through `valueLabel`. */
 function ProfileListRow({row}:{row:ProfileRow}){
- const colors=useColors(),{locale}=useHIG(),present=usePresentNumber();
+ const {locale}=useHIG(),present=usePresentNumber();
  const {value,tone}=row,testID=`profile-row-${row.id}`;
  const style={fontSize:16,lineHeight:24,textAlign:'right' as const};
  if(isProfileFigure(value)){
   const reading=formatNumberReadout(value.value,locale,present(value.options),undefined,value.prefix,value.suffix).text;
   return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<AnimatedNumberReadout value={value.value} options={value.options} prefix={value.prefix} suffix={value.suffix} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
  }
- if(tone&&(typeof value==='string'||typeof value==='number'))return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={String(value)} value={<Text testID={`${testID}-value`} numberOfLines={1} style={{...style,color:colors[tone]}}>{value}</Text>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
- return <ListRow testID={testID} label={row.label} leading={row.leading} value={value as React.ReactNode} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
+ return <ListRow testID={testID} label={row.label} leading={row.leading} value={value as React.ReactNode} valueTone={tone} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
 }
 /** A person's profile as one screen: the address and close controls, the avatar with its status, the name, then the host's sections of rows. */
 export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,avatarLabel,status,onEditName,onShowAddress,onClose,action,sections,footer,testID}:ProfileBlockProps){
@@ -107,7 +106,7 @@ export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,av
    <View style={{minWidth:44,alignItems:'flex-end'}}>{onClose?<RoundButton label={t.close} testID='profile-close' onPress={onClose}><CloseIcon color={colors.text}/></RoundButton>:null}</View>
   </View>
   <View style={{alignSelf:'center',width:144,height:144,marginTop:8}}>
-   {onAvatarPress?<Pressable testID='profile-avatar-button' accessibilityRole='button' accessibilityLabel={avatarLabel??name} onPress={onAvatarPress} style={({pressed})=>({borderRadius:72,opacity:pressed?0.85:1})}>{disc}</Pressable>:disc}
+   {onAvatarPress?<Pressable testID='profile-avatar-button' accessibilityRole='button' accessibilityLabel={avatarLabel??name??t.changeProfilePicture} onPress={onAvatarPress} style={({pressed})=>({borderRadius:72,opacity:pressed?0.85:1})}>{disc}</Pressable>:disc}
    {status?<View testID='profile-status' accessible accessibilityLabel={status.label} style={{position:'absolute',top:10,end:10,width:20,height:20,borderRadius:10,borderWidth:3,borderColor:colors.background,backgroundColor:colors[status.tone??'warning']}}/>:null}
   </View>
   {name!=null?<View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:4,marginTop:16}}>
