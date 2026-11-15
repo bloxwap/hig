@@ -659,6 +659,16 @@
       ]
     },
     {
+      "name": "PositionCard",
+      "route": "components/position-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "paper-trade"
+      ]
+    },
+    {
       "name": "TradeHistoryCard",
       "route": "components/trade-history-card",
       "entry": "blocks",

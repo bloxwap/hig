@@ -401,6 +401,10 @@
       "title": "TargetCard"
     },
     {
+      "route": "components/position-card",
+      "title": "PositionCard"
+    },
+    {
       "route": "components/trade-history-card",
       "title": "TradeHistoryCard"
     },
@@ -1101,6 +1105,16 @@
       "states": [
         "default",
         "stop-loss"
+      ]
+    },
+    {
+      "name": "PositionCard",
+      "route": "components/position-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "paper-trade"
       ]
     },
     {
