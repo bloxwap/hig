@@ -25,7 +25,7 @@ it('shows the address and close controls only with their handlers, named by buil
  let view=mount();expect(has(view,'profile-address')).toBe(false);expect(has(view,'profile-close')).toBe(false);
  const show=jest.fn(),close=jest.fn();view=mount({onShowAddress:show,onClose:close});
  expect(button(view,'profile-address').props.accessibilityLabel).toBe('Show account address');expect(button(view,'profile-close').props.accessibilityLabel).toBe('Close');
- expect(flat(host(view,'profile-address'))).toMatchObject({width:44,height:44,borderRadius:22,backgroundColor:colors.surface});
+ expect(flat(host(view,'profile-address'))).toMatchObject({width:44,height:44,borderRadius:22,backgroundColor:'transparent'});
  act(()=>{button(view,'profile-address').props.onPress({});button(view,'profile-close').props.onPress({});});expect(show).toHaveBeenCalledTimes(1);expect(close).toHaveBeenCalledTimes(1);
  view=mount({onShowAddress:show,onClose:close,onEditName:()=>{}},{messages:{showAddress:'Afficher l’adresse',close:'Fermer',editName:'Modifier le nom'}});
  expect(button(view,'profile-address').props.accessibilityLabel).toBe('Afficher l’adresse');expect(button(view,'profile-close').props.accessibilityLabel).toBe('Fermer');expect(button(view,'profile-edit').props.accessibilityLabel).toBe('Modifier le nom');

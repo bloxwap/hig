@@ -35,10 +35,10 @@ export interface ProfileBlockProps {
  testID?:string;
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
-/** A round 44 control on the well fill, stepping to the raised fill while pressed. */
+/** A round 44 control with no fill of its own, like the other block headers; it takes the well fill while pressed. */
 function RoundButton({label,testID,onPress,children}:{label:string;testID:string;onPress:()=>void;children:React.ReactNode}){
  const fills=useFills();
- return <Pressable testID={testID} accessibilityRole='button' accessibilityLabel={label} onPress={onPress} hitSlop={{top:2,bottom:2}} style={({pressed})=>({width:44,height:44,borderRadius:22,alignItems:'center',justifyContent:'center',backgroundColor:pressed?fills.raised:fills.well})}>{children}</Pressable>;
+ return <Pressable testID={testID} accessibilityRole='button' accessibilityLabel={label} onPress={onPress} hitSlop={{top:2,bottom:2}} style={({pressed})=>({width:44,height:44,borderRadius:22,alignItems:'center',justifyContent:'center',backgroundColor:pressed?fills.well:'transparent'})}>{children}</Pressable>;
 }
 /** A list row that is one switch: the same anatomy as ListRow, with the track on the trailing edge, level with the first line of the label. */
 function ProfileSwitchRow({row}:{row:ProfileRow}){

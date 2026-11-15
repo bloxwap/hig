@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 0.6.0
+
+Blocks for web and React Native (iOS and Android). Recipes are now called blocks, and this release adds the screens the apps are built from: `AccountBlock`, `TokenActionBlock`, `ManagePositionBlock`, `PositionBlock`, `TargetBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `ProfileBlock`, `RewardBlock`, `LanguageBlock`, `SoundHapticsBlock`, `SignalsBlock` and `NotificationsBlock`, beside `SwapPanelBlock`, `FromPickerBlock` and `ToPickerBlock`. New components `BarMark`, `BarPnl`, `AssetBalanceRow`, `ListGroup` and `ListRow` carry them.
+
+Upgrading from 0.5.x:
+
+- Removed with no replacement in HIG: `ActivityList`, `BalanceCard` and `CodeWindow` (and their `recipes/<name>` import paths, the `noActivity` message key and the `.hig-balance-card` styles), and `AmountInput` from the `field` entries. Draw these in the host, or use `Input` with a decimal keyboard in place of `AmountInput`. They were removed without the usual deprecation window, which is why this is a minor release with breaking changes.
+- Renamed, with the old names still working as deprecated aliases until the next major release: `recipes` import paths are now `blocks`; `SwapPanel` is `SwapPanelBlock`; `FromPicker` and `ToPicker` are `FromPickerBlock` and `ToPickerBlock`. Move imports when convenient.
+- Nothing else that shipped in 0.5.2 changed name or stopped resolving.
 
 - New block `ProfileBlock` (`@bloxwap/hig/react/blocks/profile-block`, `@bloxwap/hig/native/profile-block`, and the `blocks` aggregates): a person's profile as one screen. A top bar with the address control and Close, the avatar (artwork, an address colour or initials) with an optional status dot, the name with an optional edit control, then sections of rows that open something, show a value or hold a switch. New message key `editName`.
 - Docs: the Blocks section lists only blocks. `MarketRow` moves to Financial data, `TradeEntry` to Fields & inputs, and `InstallCommand` and `MarketingHero` to Actions & surfaces, with their documentation. Import paths are unchanged: all four still come from the blocks entry.

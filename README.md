@@ -1,8 +1,8 @@
 # Bloxwap Human Interface Guidelines
 
-HIG **0.5.2** (`@bloxwap/hig`): a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
+HIG **0.6.0** (`@bloxwap/hig`): a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
 
-The current release is [v0.5.2](https://github.com/bloxwap/hig/releases/tag/v0.5.2), published to npm as `@bloxwap/hig@0.5.2`. Published docs: [bloxwap.github.io/hig](https://bloxwap.github.io/hig/).
+The current release is [v0.6.0](https://github.com/bloxwap/hig/releases/tag/v0.6.0), published to npm as `@bloxwap/hig@0.6.0`. Published docs: [bloxwap.github.io/hig](https://bloxwap.github.io/hig/).
 
 ## Install
 
