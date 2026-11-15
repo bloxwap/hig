@@ -68,7 +68,8 @@ describe('SignalsBlock',()=>{
   const first=within(trend).getByRole('switch',{name:'Trend'}) as HTMLInputElement;expect(first.checked).toBe(true);
   expect(document.getElementById(first.getAttribute('aria-describedby')!)!.textContent).toBe('Direction marks on markets that just moved hard.');
   await userEvent.click(first);expect(flip).toHaveBeenCalledWith(false);
-  await userEvent.click(within(trend).getByRole('button',{name:'How it works'}));expect(help).toHaveBeenCalledTimes(1);expect(within(trend).getByRole('button',{name:'How it works'}).dataset.intent).toBe('secondary');
+  await userEvent.click(within(trend).getByRole('button',{name:'How it works'}));expect(help).toHaveBeenCalledTimes(1);// It is the small pill, not a full-size button.
+  expect(within(trend).getByRole('button',{name:'How it works'}).className).toBe('hig-swap-pill');expect(trend.querySelector('.hig-button')).toBeNull();
   // Only the verified group carries the mark and it has no help capsule; its switch is off, blocked and has no description.
   expect(within(swing).getByRole('img',{name:'Verified'})).toBeTruthy();expect(within(trend).queryByRole('img')).toBeNull();expect(within(swing).queryByRole('button')).toBeNull();
   const last=within(swing).getByRole('switch',{name:'Swing'}) as HTMLInputElement;expect([last.checked,last.disabled,last.hasAttribute('aria-describedby')]).toEqual([false,true,false]);
@@ -100,4 +101,16 @@ describe('settings blocks',()=>{
   // The row is the label the target size gate measures (scripts/target-size.mjs), not the 40x24 track inside it.
   expect(readFileSync('packages/hig/react/src/blocks/setting-switch.tsx','utf8')).toContain("<label className='hig-choice hig-setting-switch'");
  });
+});
+
+it('switch rows keep the track flush with the trailing edge and level with the first line of the label',()=>{
+ const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
+ // Top-aligned row; the text is padded so its first line is centred on the control height, where the track is centred too.
+ expect(rule('.hig-setting-switch {')).toContain('align-items:flex-start');
+ expect(rule('.hig-setting-switch-text {')).toContain('padding-block:calc((var(--hig-control) - 1.5em)/2)');
+ const track=rule('.hig-setting-switch > .hig-switch {');expect(track).toContain('justify-content:flex-end');expect(track).toContain('height:var(--hig-control)');expect(track).not.toMatch(/min-width/);
+ // A list row that holds a switch aligns to the first line as well.
+ expect(rule('.hig-list-row:has(> .hig-list-row-trailing .hig-switch) {')).toContain('align-items:flex-start');
+ // The switch keeps its 44-unit target; the track is flush right inside it.
+ const inRow=rule('.hig-list-row-trailing .hig-switch {');expect(inRow).toMatch(/padding-inline:0;justify-content:flex-end/);expect(inRow).not.toMatch(/min-width/);
 });

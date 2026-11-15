@@ -35,3 +35,11 @@ it('leaves a row without onSelect static so a trailing control is its only targe
  tree=mount(h(ListRow,{label:'Signals',testID:'row',disabled:true,onSelect(){}}));
  const button=all(tree,'row').find(node=>node.props.onPress);expect(button.props.disabled).toBe(true);expect(button.props.accessibilityState).toEqual({disabled:true});expect(flat(host(tree,'row')).opacity).toBe(0.5);
 });
+it('aligns the label, value, trailing control and chevron to the first line, so a switch stays at the top when the label wraps',()=>{
+ const tree=mount(h(ListRow,{label:'Notifications',value:'Off',testID:'row',trailing:h(View,{testID:'control'})}));
+ expect(flat(host(tree,'row'))).toMatchObject({alignItems:'flex-start',minHeight:56,paddingVertical:8});
+ // The label's first line is centred on the same 40-unit band the trailing control is centred in.
+ const texts=host(tree,'row').findAll(node=>node.type==='Text');expect(texts.map(node=>flat(node).paddingVertical)).toEqual([8,8]);
+ const band=host(tree,'row').findAll(node=>typeof node.type==='string'&&node.props.testID!=='row'&&flat(node).minHeight===40&&node.findAll(child=>child.props.testID==='control').length>0);
+ expect(band.length).toBeGreaterThan(0);expect(flat(band[0])).toMatchObject({minHeight:40,alignItems:'center',flexDirection:'row'});
+});

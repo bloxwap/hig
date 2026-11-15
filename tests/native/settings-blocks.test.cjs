@@ -73,7 +73,9 @@ it('SignalsBlock: each group has a heading, an optional verified mark and help c
  // The description is the switch's hint.
  const row=host(view,'signals-trend-trend-switch');expect(row.props).toMatchObject({accessibilityRole:'switch',accessibilityLabel:'Trend',accessibilityHint:'Direction marks on markets that just moved hard.'});
  press(view,'signals-trend-trend-switch');expect(flip).toHaveBeenCalledWith(false);
- expect(button(view,'signals-trend-help').props).toMatchObject({children:'How it works',intent:'secondary'});act(()=>{button(view,'signals-trend-help').props.onPress({});});expect(help).toHaveBeenCalledTimes(1);expect(button(view,'signals-swing-help')).toBeUndefined();
+ // The help control is the small capsule, not a full-size button.
+ const {SwapCapsule}=require('../../packages/hig/native/src/swap-parts');const pills=view.findAllByType(SwapCapsule);expect(pills.map(pill=>pill.props.testID)).toEqual(['signals-trend-help']);expect(text(pills[0])).toBe('How it works');expect(button(view,'signals-trend-help')).toBeUndefined();
+ act(()=>{pills[0].props.onPress();});expect(help).toHaveBeenCalledTimes(1);
  expect(host(view,'signals-swing-swing-switch').props.accessibilityState).toMatchObject({checked:false,disabled:true});
  // Without a name the mark is not read; a group without items is a heading alone.
  view=mount(SignalsBlock,{title:'Signals',groups:[{id:'swing',title:'Swing',verified:true,items:[]}]});expect(host(view,'signals-swing-title').props.accessibilityLabel).toBe('Swing');expect(has(view,'signals-swing-items')).toBe(false);
