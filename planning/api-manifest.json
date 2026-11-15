@@ -852,6 +852,10 @@
         "entry": "provider",
         "signature": "export declare function useColors(): HIGColors;"
       },
+      "useColorSpace": {
+        "entry": "provider",
+        "signature": "export declare function useColorSpace(): HIGColorSpace;"
+      },
       "useBrandColors": {
         "entry": "provider",
         "signature": "export declare function useBrandColors(): Readonly<Record<HIGTableColorRole, string>>;"

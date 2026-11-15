@@ -51,6 +51,8 @@ export function useFills():{well:string;raised:string}{const colors=useContext(C
 /** The nearest HIGProvider's colour table (sRGB by default). Every HIG native component paints through this; hosts may read it for their own views. */
 export function useColors():HIGColors{return useContext(ColorsContext);}
 /** Approved Bloxwap brand colours in the host's colour space, independent of a product accent. */
+/** The colour space this subtree actually paints in: `display-p3` only when a provider asked for it on iOS, as in `colorTable`; otherwise `srgb`. */
+export function useColorSpace():HIGColorSpace{return useContext(Context).colorSpace==='display-p3'&&Platform.OS==='ios'?'display-p3':'srgb';}
 export function useBrandColors():Readonly<Record<HIGTableColorRole,string>>{return colorTable(useContext(Context).colorSpace);}
 /** Complete built-in copy for the nearest HIGProvider: host translations over the English defaults. */
 export function useMessages():HIGMessages{const overrides=useContext(Context).messages;return useMemo(()=>resolveMessages({...defaultMessages},overrides),[overrides]);}

@@ -13,7 +13,7 @@ Issue #36. This chapter sets out how HIG stays the one maintained design system 
 | Haptic presets and the web engine | `bloxwap/haptic` | HIG owns the RN adapter and the capability matrix. |
 | Chart engine | `bloxwap/chart` | HIG owns chart theming and the accessible non-canvas alternative. |
 | Product business logic, routing and data | The owning product repository | HIG components never import wallet, network or trading code. |
-| Brand marks | `bloxwap/hig` brand component (pinned from the Font SVG) | Use the component. Exact mark fills need a dated exception. |
+| Brand marks | `bloxwap/hig` brand component (pinned from the Font SVG) | Use the component. Its fills and geometry are generated from the approved SVG into `@bloxwap/hig/tokens/brand` (`brandMark`), the mark's canonical source; import that for a host-drawn mark, never the hexes. |
 
 The organization adoption matrix (`planning/adoption.json`) records the owner, applicability, HIG version, merged PRs, status and dated exceptions for each repository and product surface.
 
@@ -76,7 +76,7 @@ Intentional density differences, such as compact Pro versus the comfortable touc
 | Rule | Fails when |
 | --- | --- |
 | `obsolete-import` | Code imports a retired fork (`@workspace/tokens`, `@workspace/ui`, `@workspace/ui-native`, plus repository-specific `obsoleteImports`) or a copied `vendor/hig/` or `styles/hig/` folder |
-| `copied-palette` | Code hard-codes the Bloxwap brand hexes owned by `@bloxwap/hig/tokens` |
+| `copied-palette` | Code outside a canonical owner hard-codes the Bloxwap brand hexes owned by `@bloxwap/hig/tokens`. The approved mark's fills are owned by `@bloxwap/hig/tokens/brand`, generated from the pinned SVG |
 | `copied-token-definition` | A stylesheet assigns a literal value to a `--hig-*` token. Remapping one role to another with `var()` is allowed |
 | `copied-primitive-css` | A bare `.hig-*` selector sets the primitive's paint or geometry (background, border, radius or min-height). Contextual layout overrides are allowed |
 | `copied-font-binary` | A `.ttf`, `.otf` or `.woff*` file is committed outside a canonical font owner |
