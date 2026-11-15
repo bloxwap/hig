@@ -4,8 +4,8 @@ import {readFileSync} from 'node:fs';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {FromPicker,ToPicker} from '../packages/hig/react/src/recipes/pickers';
-import type {SwapToken} from '../packages/hig/react/src/recipes/swap-panel';
+import {FromPicker,ToPicker} from '../packages/hig/react/src/blocks/pickers';
+import type {SwapToken} from '../packages/hig/react/src/blocks/swap-panel';
 afterEach(cleanup);
 const eth:SwapToken={id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:2,price:2000};
 const usdc:SwapToken={id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,keywords:'0xa0b8'};
@@ -86,6 +86,6 @@ describe('FromPicker',()=>{
   view.rerender(<FromPicker wallet={{connected:true,address:'0xabc'}} tokens={[]} loading onSelect={()=>{}}/>);expect(screen.getByRole('status').textContent).toBe('Loading…');
  });
  it('is free of overlay and sheet backends, so a host can place it in any container',()=>{
-  expect(readFileSync('packages/hig/react/src/recipes/pickers.tsx','utf8')).not.toMatch(/dialog|gesture-sheet|radix|vaul/);
+  expect(readFileSync('packages/hig/react/src/blocks/pickers.tsx','utf8')).not.toMatch(/dialog|gesture-sheet|radix|vaul/);
  });
 });

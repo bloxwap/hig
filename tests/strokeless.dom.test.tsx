@@ -9,7 +9,7 @@ import {SearchInput} from '../packages/hig/react/src/field';
 import {Accordion} from '../packages/hig/react/src/navigation';
 import {EmptyState} from '../packages/hig/react/src/status';
 import {Filter} from '../packages/hig/react/src/selection';
-import {InstallCommand} from '../packages/hig/react/src/recipes';
+import {InstallCommand} from '../packages/hig/react/src/blocks';
 import {Toaster,toast,dismissToast} from '../packages/hig/react/src/toast';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 afterEach(()=>{dismissToast();cleanup();});
@@ -133,8 +133,8 @@ describe('reviewed component changes',()=>{
   const inline=await screen.findByText('Copy failed. Select the command and copy manually.');
   expect(inline.className).toBe('');expect(document.querySelector('[data-sonner-toast]')).toBeNull();
  });
- it('keeps Sonner out of the recipes: only the toast entry imports it',()=>{
-  for(const file of ['recipes/install-command.tsx','recipes.tsx','notify.ts','status.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/sonner|toast\.js/);
+ it('keeps Sonner out of the blocks: only the toast entry imports it',()=>{
+  for(const file of ['blocks/install-command.tsx','blocks.tsx','notify.ts','status.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/sonner|toast\.js/);
   expect(readFileSync('packages/hig/react/src/toast.tsx','utf8')).toContain("from 'sonner'");
  });
 });

@@ -1,22 +1,28 @@
-# Recipes
+# Blocks
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `BalanceCard`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `ActivityList`, `InstallCommand`, `CodeWindow`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `ManagePosition`, `TargetCard`, `InstallCommand`, and `MarketingHero`.
 
-Issue #26. Entry: `recipes`. Import platform entries from `@bloxwap/hig/react/recipes` or `@bloxwap/hig/native/recipes` according to applicability below. On web, each recipe also has its own entry, for example `@bloxwap/hig/react/recipes/install-command`, `recipes/code-window`, `recipes/market-row`, `recipes/balance-card`, `recipes/marketing-hero` and `recipes/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `recipes/swap-panel` needs none either. `recipes/trade-entry` and the aggregate `recipes` entry need `@radix-ui/react-dialog` for the confirm step. `recipes/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+
+Blocks were called recipes through 0.5.x. The old import paths, `@bloxwap/hig/react/recipes`, `@bloxwap/hig/react/recipes/<name>` and `@bloxwap/hig/native/recipes`, still resolve to the same modules and are deprecated: move imports to `blocks`. They stay for at least one minor release and 30 days and are removed in the next major release, as the deprecation policy in the release guide requires. Blocks added after 0.5.2, such as `AccountCard` and `TokenActionCard`, exist only under `blocks`.
 
 ## API and anatomy
 
 All data and actions are supplied by the host application.
 
-| Recipe | Key props and behavior |
+| Block | Key props and behavior |
 | --- | --- |
 | `TradeEntry` | Raw `amount`, `onAmountChange`, `onConfirm`, `available`, `busy`, and `error`; opens review before submission. |
 | `SwapPanel` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
+| `AccountCard` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
+| `TokenActionCard` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
+| `ManagePosition` | One open position: margin against notional and the distance to liquidation as two bars, the host's actions as rows, and the position underneath. Details below. |
+| `TargetCard` | A take profit or a stop loss on one position: the target as the headline figure, a price card with the entry, mark and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `FromPicker` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
 | `ToPicker` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
-| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The recipe itself does not load Sonner. |
+| `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. |
 | `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. |
 
 Web `MarketRow` keeps its name button and USD formatting by default. A command palette that already owns option selection uses presentation mode to avoid a second action and tab stop:
@@ -96,7 +102,7 @@ Stake and unstake are one example each: the asset changes only the token data, n
   actions={<SwapPill onClick={useMax}>Max</SwapPill>} meta="1,000 USDC" />
 ```
 
-`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/recipes/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
+`SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/blocks/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanel` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
 
 ```tsx
 <SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<Button>Swap</Button>} tokens={catalog} onSubmit={execute}/>
@@ -104,12 +110,12 @@ Stake and unstake are one example each: the asset changes only the token data, n
 
 ### FromPicker and ToPicker
 
-The two pickers are the swap panel's token views as standalone recipes, for a host that picks a source or a destination outside the panel: in its own sheet, a page, or a step of a flow. They carry no sheet or overlay of their own; place them in a `Dialog`, a `GestureSheet` or any container. `SwapPanel` uses the same two recipes for its pushed views.
+The two pickers are the swap panel's token views as standalone blocks, for a host that picks a source or a destination outside the panel: in its own sheet, a page, or a step of a flow. They carry no sheet or overlay of their own; place them in a `Dialog`, a `GestureSheet` or any container. `SwapPanel` uses the same two blocks for its pushed views.
 
 Both share one token list: `tokens` (a wallet's holdings, a whitelist or a whole catalog), `selected`, `onSelect`, optional `chains`, `hotTokenIds` and `loading`. The search and address fields are the standard rounded HIG inputs. `chainFilter={false}` leaves out the chain filter, for a single chain or a list that should not be narrowed by chain; it is also left out when the tokens are all on one chain.
 
 ```tsx
-import {FromPicker, ToPicker} from '@bloxwap/hig/react/recipes/pickers';
+import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 
 // Destination address only
 <ToPicker address={address} onAddressChange={setAddress} addressPlaceholder={shortWallet} onScan={openScanner}/>
@@ -138,19 +144,104 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/recipes/pickers';
 - **Search** matches the token's name, symbol, chain and `keywords`, so put the contract address in `keywords` to make a pasted address find its token.
 - **Keyboard** on web: with focus in the search field, the arrow keys move through the list and Enter selects.
 
+### AccountCard
+
+`AccountCard` shows one account: a header with Back on the leading edge, the title in the centre and an optional action on the trailing edge; under it the total on the leading edge and the deposit action on the trailing edge; then the holdings as `AssetBalanceRow` capsules 8 units apart. It is available from `@bloxwap/hig/react/blocks/account-card`, `@bloxwap/hig/native/account-card` and the `blocks` aggregates.
+
+```tsx
+<AccountCard assets={holdings} onBack={goBack} onShowAddress={openAddress} onDeposit={openDeposit}
+  onAssetSelect={asset => open(asset.id)}/>
+```
+
+- **Account address.** `onShowAddress` puts a QR button on the trailing edge of the header, above the deposit action. The host shows the address when it is pressed, for example in a `Dialog` or `Sheet` with `WalletAddress`; the card never holds the address. `headerAction` replaces the QR button with a host control.
+- **Assets.** An `AccountAsset` is `{id, name, symbol}` plus optional `icon` (an image URL or a host element), `balance` (token units), `price` (USD per unit) and `value` (dollars). The value shown is `value`, or `balance × price` when both are known, or the unknown dash.
+- **Pinned dollar balance.** The asset whose symbol is `pinnedSymbol` (default `USDC`) is always the first row and is always shown: when the account does not hold it, the row reads $0.00. It shows its dollar value alone, because its units are the same figure.
+- **Order.** Every other asset follows by dollar value, largest first. Unknown values come last and ties sort by name. The host does not sort. `accountRows(assets, pinnedSymbol)` returns the same order for a host-drawn list.
+- **Total.** `balance` is the total in dollars. Without it the card sums the asset values; `null` reads as unknown.
+- **Deposit.** `onDeposit` shows the primary action beside the total. `depositLabel` replaces the built-in text, for example with Add funds.
+- **Header.** `title` replaces the built-in “Account”. `onBack` shows Back; `headerAction` is the trailing control. The title stays centred with either, both or neither.
+- **Rows.** `onAssetSelect` makes each row a button that reports its asset. Without it the rows are plain.
+- **Live numbers.** The total, every value and every units figure update through `AnimatedNumberReadout`, as in the swap card.
+- **Ownership.** The card never reads a wallet, fetches a price or moves funds.
+
+### TokenActionCard
+
+`TokenActionCard` is the screen for one token: the same header as `AccountCard` with the ticker as its title, two `BarMark` cards, then the actions. The first bar is titled with the token's `name`, shows the total holding in dollars on its trailing edge, and divides among `assets`, the places the token is held (Staked, Core, Paper). The second is the same bar titled Chains that shows how many chains hold a balance and divides among `chains`. It is available from `@bloxwap/hig/react/blocks/token-action-card`, `@bloxwap/hig/native/token-action-card` and the `blocks` aggregates.
+
+```tsx
+<TokenActionCard symbol="HYPE" name="Hyperliquid" onBack={goBack}
+  assets={[{label: 'Staked', value: 320}, {label: 'Core', value: 239}, {label: 'Paper', value: 200}]}
+  chains={[{label: 'Base', value: 120}, {label: 'Hyperliquid', value: 639}]}
+  actions={[{id: 'send', onSelect: send}, {id: 'receive', onSelect: receive},
+            {id: 'stake', onSelect: stake}, {id: 'unstake', onSelect: unstake}]}/>
+```
+
+- **Bars.** `assets` and `chains` are `BarMark` elements: `{label, value}` plus optional `tone`, `color`, `detail` and `id`. Use one unit for both, usually dollars. `chainsTitle` replaces the built-in “Chains”.
+- **Total.** `value` is the holding in dollars. Without it the card sums the asset values; `null` reads as unknown. It updates place by place.
+- **Chain count.** The chains bar shows the number of chains with a balance above zero.
+- **Actions.** Each action is `{id, onSelect}` plus optional `label`, `disabled` and `intent`. The ids `send`, `receive`, `stake` and `unstake` take a built-in translated label; any other id needs `label`. They render in the order given, full width, 8 units apart and 16 below the bars. Leave out the actions a token does not support.
+- **Intent.** Actions default to `secondary`, because the card offers equal choices. Set `intent: 'primary'` on at most one, or `'destructive'` for something like a burn.
+- **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountCard`.
+- **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanel`.
+
+### ManagePosition
+
+`ManagePosition` is the screen for one open position. Under the shared header it draws two `BarMark` cards, the host's actions as rows, and the position itself. It is available from `@bloxwap/hig/react/blocks/manage-position`, `@bloxwap/hig/native/manage-position` and the `blocks` aggregates.
+
+```tsx
+<ManagePosition labels={t.position} mode="Demo" side="long"
+  entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98}
+  actions={[{id: 'stop-loss', label: t.stopLoss, onSelect: openStopLoss},
+            {id: 'take-profit', label: t.takeProfit, onSelect: openTakeProfit},
+            {id: 'close', label: t.close, onSelect: openClose}]}
+  position={{name: 'Bitcoin', icon: btc, leverage: 40, size: 0.006182, pnl: -0.0247, pnlPercent: -0.0025}}
+  onBack={goBack}/>
+```
+
+- **Labels.** Every word in this block is a trading term, so the host supplies all of them through `labels`: `title`, `margin`, `notional`, `liquidation`, `mark`, `entry`, `long`, `short`, and one sentence that receives a formatted figure, `toLiquidation(percent)`. HIG ships no default text here, in keeping with the rule that built-in strings contain no glossary term.
+- **Margin bar.** The first card is titled with the margin mode from `mode` (Demo, Cross, Isolated), or the margin label without one, and reads the share left before liquidation on its trailing edge, for example 99.8% to liquidation. Its bar is the margin in the info role against the rest of the notional in the positive role, so a 40× position shows a one-fortieth sliver of margin. The legend names both with their dollar amounts.
+- **Liquidation bar.** The second card is titled with the liquidation label. Its bar spans from the liquidation price on the leading edge to the entry price on the trailing edge. The filled part is what remains between the mark and liquidation, and the rest is the drawdown from entry. It is the positive role while a quarter or more remains and the negative role below that. The legend shows the liquidation, mark and entry prices. A position in profit shows a full bar. With no mark or liquidation price the bar is empty and the share on the first card reads as unknown. `positionCorridor({side, entry, mark, liquidation})` returns the same numbers for a host-drawn view.
+- **Prices.** `priceOptions` formats the three prices; the default is whole dollars. Pass more fraction digits for a low-priced asset.
+- **Actions.** Each action is `{id, label, onSelect}` plus optional `disabled`, drawn as a full-width row with a chevron, 8 units apart: Stop Loss, Take Profit, Close. The host supplies the labels and opens its own flow.
+- **Position.** `position={{name, icon, leverage, size, pnl, pnlPercent}}` draws the row under the actions: artwork, the name over an arrow for the side with the leverage and size, and profit and loss in dollars over its percent. The arrow and the profit and loss take the positive role for long and gain, and the negative role for short and loss; the arrow's meaning is also read out from `labels.long` or `labels.short`, so colour is never the only signal.
+- **Live numbers.** The share to liquidation, the size and the profit and loss update through `AnimatedNumberReadout`.
+- **Ownership.** The block never reads a position, a price feed or an account, and never places an order.
+
+### TargetCard
+
+`TargetCard` sets a take profit or a stop loss on one open position. `kind` chooses which: `take-profit` takes the positive role and `stop-loss` the negative role, for the bar, the trigger price, the selected quick choice and the confirming action. It is available from `@bloxwap/hig/react/blocks/target-card`, `@bloxwap/hig/native/target-card` and the `blocks` aggregates.
+
+```tsx
+<TargetCard kind="take-profit" labels={t.takeProfit} position="BTC · Long 40×" orderType={t.takeLimit}
+  note={t.takeLimitNote} entry={64699.5} mark={mark} trigger={quote.trigger}
+  unit={unit} onUnitChange={setUnit} value={target} onValueChange={setTarget} presets={[1, 2, 5, 10]}
+  onCustom={openEntry} onCancel={goBack} onSubmit={placeOrder} onBack={goBack}/>
+```
+
+- **Labels.** The host supplies the trading words through `labels`: `title`, `submit`, `entry`, `mark`, `trigger`, `custom`, `unit` (the name of the unit control) and `units` (`dollar`, `price`, `percent`). `cancel` defaults to the built-in Cancel.
+- **Target.** `value` is the target in the current `unit` and is the headline figure: signed dollars of profit or loss (`2` reads +$2.00, `-0.5` reads -$0.50), a price, or a signed fraction (`0.05` reads +5%). `null` reads as unknown and disables the confirming action.
+- **Price card.** One card replaces a list of label and value rows. Its title is `position`, host text such as BTC · Long 40×, and its trailing text is `orderType`, such as Take-limit. The bar under them is a price axis from the lowest to the highest of the entry, mark and trigger prices. The tinted stretch is what the price still has to travel, from the mark to the trigger; its trigger edge takes the role colour and the entry price is a tick. The three prices read under the bar in price order, with the trigger in the role colour. While the mark is unknown the stretch runs from entry to the trigger. `targetLayout({entry, mark, trigger})` returns the same positions for a host-drawn view.
+- **Trigger.** `trigger` is the price the order triggers at. The host derives it from the target, because that needs the position size and the fee model. In the `price` unit it defaults to `value`. Until it is known the bar has no stretch and the trigger reads as the unknown dash.
+- **Note.** `note` is one sentence under the card about how the order fills.
+- **Unit.** `units` lists the units offered, all three by default, as a `SegmentedControl`; `onUnitChange` reports the choice. With one unit the control is hidden. The host converts `value` and `presets` when the unit changes.
+- **Quick choices.** `presets` are values in the current unit, drawn as equal capsules in one row. Whole dollar amounts drop their cents (+$1, -$0.50). The preset equal to `value` is shown selected and exposed as pressed; `onValueChange` reports a press. `onCustom` adds a Custom row with a chevron above them, and the host opens its own entry, for example a keypad sheet.
+- **Actions.** `onSubmit` is the confirming action, labelled by `labels.submit`, with `busy` and `submitDisabled`. `onCancel` adds Cancel beside it. `onBack` and `headerAction` are the header controls, as in `AccountCard`.
+- **Live numbers.** The headline figure and the three prices update through `AnimatedNumberReadout`.
+- **Ownership.** The block never reads a position or a price feed and never places an order.
+
 ## When to use and examples
 
 Do: compose primitives and explicit outcomes in comfortable app or compact Pro context. Don’t: put wallet/network/SDK services in core packages.
 
 ## States, interaction and accessibility
 
-Native CodeWindow and InstallCommand render code in the provider's `monoFontFamily` (for example the registered `BloxwapMonoRegular`; platform monospace otherwise) and keep code left-to-right inside RTL roots. Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show balance, market, entry and feedback preference previews.
+Native InstallCommand renders code in the provider's `monoFontFamily` (for example the registered `BloxwapMonoRegular`; platform monospace otherwise) and keeps code left-to-right inside RTL roots. Copy failures leave a manual-selection recovery message. Trade confirm remains host-controlled; no demo sends a transaction. Web/native fixtures show market, entry and feedback preference previews.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
 ## Platform mapping and limits
 
-M2 supplies visual recipes; M3 adds semantic feedback composition because #26 depends on #25. Product visual fidelity is provisional until inaccessible monorepo audit. Account/positions variants can compose these primitives without service coupling.
+M2 supplies visual blocks; M3 adds semantic feedback composition because #26 depends on #25. Product visual fidelity is provisional until inaccessible monorepo audit. Account/positions variants can compose these primitives without service coupling.
 
 ## Validation and citation
 

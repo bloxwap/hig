@@ -4,10 +4,10 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {SwapPanel,swapAction,type SwapPanelProps,type SwapToken} from '../packages/hig/react/src/recipes/swap-panel';
-import {SwapSheet} from '../packages/hig/react/src/recipes/swap-sheet';
+import {SwapPanel,swapAction,type SwapPanelProps,type SwapToken} from '../packages/hig/react/src/blocks/swap-panel';
+import {SwapSheet} from '../packages/hig/react/src/blocks/swap-sheet';
 import {readFileSync} from 'node:fs';
-import {applyAmountKey,fuzzyMatch,sanitizeAmount,testAmount,unitsToEntry} from '../packages/hig/react/src/recipes/swap/shared';
+import {applyAmountKey,fuzzyMatch,sanitizeAmount,testAmount,unitsToEntry} from '../packages/hig/react/src/blocks/swap/shared';
 const originalAnimate=HTMLElement.prototype.animate;
 afterEach(()=>{cleanup();if(originalAnimate)Object.defineProperty(HTMLElement.prototype,'animate',{value:originalAnimate,configurable:true});else delete (HTMLElement.prototype as {animate?:unknown}).animate;});
 /** jsdom has no Web Animations: with this stub a rolling place keeps its leaving digits mounted, as it does mid-animation in a browser. */
@@ -348,15 +348,15 @@ describe('SwapSheet',()=>{
   view.rerender(<SwapSheet title='Swap' open onOpenChange={()=>{}} tokens={tokens} onSubmit={()=>{}} keypad='never'/>);
   expect(screen.queryByRole('group',{name:'Settings'})).toBeNull();expect(screen.getByRole('button',{name:'Select From token'})).toBeTruthy();
  });
- it('keeps the gesture backend and overlays out of the panel and the recipes aggregate',()=>{
-  for(const file of ['recipes/swap-panel.tsx','recipes/swap/picker.tsx','recipes/swap/settings.tsx','recipes/swap/shared.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/gesture-sheet|dialog\.js|radix|vaul/);
-  expect(readFileSync('packages/hig/react/src/recipes.tsx','utf8')).not.toMatch(/from '\.\/recipes\/swap-sheet/);
+ it('keeps the gesture backend and overlays out of the panel and the blocks aggregate',()=>{
+  for(const file of ['blocks/swap-panel.tsx','blocks/swap/picker.tsx','blocks/swap/settings.tsx','blocks/swap/shared.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/gesture-sheet|dialog\.js|radix|vaul/);
+  expect(readFileSync('packages/hig/react/src/blocks.tsx','utf8')).not.toMatch(/from '\.\/blocks\/swap-sheet/);
  });
 });
 
 describe('SwapAmountCard',()=>{
  it('draws the From card anatomy on its own: asset, actions, balance and the entered amount',async()=>{
-  const {SwapAmountCard,SwapPill}=await import('../packages/hig/react/src/recipes/swap-panel');const onMax=vi.fn();
+  const {SwapAmountCard,SwapPill}=await import('../packages/hig/react/src/blocks/swap-panel');const onMax=vi.fn();
   const {container}=render(<SwapAmountCard name='USD Coin' symbol='USDC' context='Demo' actions={<SwapPill onClick={onMax}>Max</SwapPill>} meta='1,000 USDC' value={12.5} prefix='$' fractionDigits={2} amountLabel='Size'/>);
   const card=container.querySelector('.hig-swap-card')!;expect(card.getAttribute('data-side')).toBe('from');
   expect(card.querySelector('.hig-swap-identity')?.textContent).toBe('DemoUSD Coin');expect(card.querySelector('.hig-swap-initials')?.textContent).toBe('USD');
@@ -366,7 +366,7 @@ describe('SwapAmountCard',()=>{
   expect(card.querySelector('.hig-swap-hit')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Max'}));expect(onMax).toHaveBeenCalledTimes(1);
  });
  it('takes host-drawn artwork, keeps a typed trailing point and can choose the asset',async()=>{
-  const {SwapAmountCard}=await import('../packages/hig/react/src/recipes/swap-panel');const onSelect=vi.fn();
+  const {SwapAmountCard}=await import('../packages/hig/react/src/blocks/swap-panel');const onSelect=vi.fn();
   const {container}=render(<SwapAmountCard name='USD Coin' symbol='USDC' icon={<svg data-testid='art'/>} value={3} trailingDot amountLabel='Size' onSelect={onSelect} selectLabel='Choose asset'/>);
   expect(screen.getByTestId('art')).toBeTruthy();expect(container.querySelector('.hig-swap-initials')).toBeNull();expect(container.querySelector('.hig-swap-meta')).toBeNull();
   expect(screen.getByRole('textbox',{name:'Size'}).textContent).toContain('3.');
@@ -399,5 +399,19 @@ describe('SwapPanel host control',()=>{
   expect(screen.getByTestId('usdc-art').closest('.hig-swap-art')).not.toBeNull();expect(screen.getByTestId('paper-art').closest('.hig-swap-stack')).not.toBeNull();
   const order=[...view.container.querySelectorAll('[data-testid=pending],.hig-swap-card,.hig-swap-actions,[data-testid=recent]')].map(node=>node.getAttribute('data-testid')??node.className);
   expect(order[0]).toBe('pending');expect(order.at(-1)).toBe('recent');expect(order.at(-2)).toBe('hig-swap-actions');
+ });
+});
+
+describe('SwapPanel note contrast',()=>{
+ it('keeps a tinted note readable on the page, a surface and an overlay',()=>{
+  // The grounds a panel sits on: the page, a Surface, and a Dialog or sheet. It is never placed on a control well (`nested`).
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');const share=Number(/\.hig-swap-note:not\(\[data-tone='muted'\]\) \{[^}]*var\(--hig-swap-tone\) (\d+)%/.exec(css)![1])/100;
+  const tokens=JSON.parse(readFileSync('packages/hig/tokens/generated/manifest.json','utf8')).colors as Record<string,{srgb:string}>;
+  const rgb=(hex:string)=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+  const luminance=(channels:number[])=>{const [r,g,b]=channels.map(value=>{const c=value/255;return c<=0.03928?c/12.92:((c+0.055)/1.055)**2.4;});return 0.2126*r+0.7152*g+0.0722*b;};
+  for(const tone of ['negative','warning'])for(const ground of ['background','surface','overlay']){
+   const text=rgb(tokens[tone].srgb),under=rgb(tokens[ground].srgb),tint=text.map((value,i)=>under[i]+share*(value-under[i]));
+   const ratio=(luminance(text)+0.05)/(luminance(tint)+0.05);expect(ratio,`${tone} note on ${ground}: ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
+  }
  });
 });

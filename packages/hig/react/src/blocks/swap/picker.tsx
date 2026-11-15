@@ -15,7 +15,7 @@ export interface SwapPickerProps {
  /** To side: where the assets are sent. Omit `onRecipientChange` to hide the field. */
  recipient?:string;onRecipientChange?:(address:string)=>void;onScanRecipient?:()=>void;
 }
-/** The panel's pushed picker view: a header with Back above the From or To picker recipe. */
+/** The panel's pushed picker view: a header with Back above the From or To picker block. */
 export function SwapPicker({side,onBack,selected,onSelect,wallet,onConnect,onDisconnect,receiving,onReceivingChange,recipient,onRecipientChange,onScanRecipient,...list}:SwapPickerProps){
  const {messages}=useHIG();const title=side==='from'?messages.swapFrom??en.swapFrom:messages.swapTo??en.swapTo;
  // On touch the header takes focus, so no keyboard opens over the list; with a hardware pointer the picker focuses its search.

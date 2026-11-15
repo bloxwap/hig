@@ -265,7 +265,7 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    </View>
   </View>
   {toCard}
-  {note?<View testID='swap-note' style={tone?{marginTop:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.14)}:{marginTop:8,paddingHorizontal:4}}><Text style={{fontSize:14,lineHeight:21,color:tone??colors.muted}}>{note}</Text></View>:null}
+  {note?<View testID='swap-note' style={tone?{marginTop:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{marginTop:8,paddingHorizontal:4}}><Text style={{fontSize:14,lineHeight:21,color:tone??colors.muted}}>{note}</Text></View>:null}
   {!showReceive&&keypad!=='never'?<SwapKeypad onKey={press} label={t.swapKeypad} deleteLabel={t.swapDelete}/>:null}
   <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:16}}>
    {controls?<IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' onPress={()=>show('settings')}><MenuIcon color={colors.text}/></IconButton>:null}

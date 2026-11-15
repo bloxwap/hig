@@ -20,7 +20,7 @@ export interface SwapPickerProps {
  /** To side: where the assets are sent. Omit `onRecipientChange` to hide the field. */
  recipient?:string;onRecipientChange?:(address:string)=>void;onScanRecipient?:()=>void;
 }
-/** The panel's pushed picker view: the sub-view header over the From or To picker recipe. Choosing a token pops back; the Generate address switch does not. */
+/** The panel's pushed picker view: the sub-view header over the From or To picker block. Choosing a token pops back; the Generate address switch does not. */
 export function SwapPicker({side,onBack,selected,onSelect,wallet,onConnect,onDisconnect,receiving,onReceivingChange,recipient,onRecipientChange,onScanRecipient,...list}:SwapPickerProps){
  const t=useMessages();const choose=(token:SwapToken)=>{onSelect(token);onBack();};
  return <SwapSubview title={side==='from'?t.swapFrom:t.swapTo} onBack={onBack} testID={`swap-picker-${side}`}>

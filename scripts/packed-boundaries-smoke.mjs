@@ -20,17 +20,17 @@ execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','react
 for(const peer of ['@radix-ui/react-dialog','@radix-ui/react-dropdown-menu','vaul','react-native','@bloxwap/sfx','@bloxwap/haptic'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`button unexpectedly installs ${peer}`);
 writeFileSync(join(directory,'button.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {Button} from '@bloxwap/hig/react/button';if(!renderToString(React.createElement(Button,null,'Review')).includes('Review'))throw Error('SSR failed');");
 execFileSync(process.execPath,[join(directory,'button.mjs')],{cwd:directory,stdio:'inherit'});
-// Recipes without overlays must resolve, render and bundle with no Radix peer installed (#63).
-const overlayFree={'install-command':['InstallCommand',{command:'npm i @bloxwap/hig',onCopy:()=>{}}],'code-window':['CodeWindow',{language:'bash',children:'npm ci'}],'market-row':['MarketRow',{symbol:'BTC',name:'Bitcoin',price:1,change:1,onSelect:()=>{}}],'balance-card':['BalanceCard',{label:'Balance',balance:1}],'marketing-hero':['MarketingHero',{title:'Trade',description:'Markets',href:'/',cta:'Start'}],'activity-list':['ActivityList',{items:[]}],'swap-panel':['SwapPanel',{tokens:[]}]};
+// Blocks without overlays must resolve, render and bundle with no Radix peer installed (#63).
+const overlayFree={'install-command':['InstallCommand',{command:'npm i @bloxwap/hig',onCopy:()=>{}}],'market-row':['MarketRow',{symbol:'BTC',name:'Bitcoin',price:1,change:1,onSelect:()=>{}}],'marketing-hero':['MarketingHero',{title:'Trade',description:'Markets',href:'/',cta:'Start'}],'swap-panel':['SwapPanel',{tokens:[]}]};
 const bundle=contents=>build({stdin:{contents,resolveDir:directory,sourcefile:'entry.js'},absWorkingDir:directory,bundle:true,write:false,metafile:true,format:'esm',platform:'browser',logLevel:'silent'});
 for(const [entry,[name,props]] of Object.entries(overlayFree)){
- writeFileSync(join(directory,`${entry}.mjs`),`import React from 'react';import {renderToString} from 'react-dom/server';import {${name}} from '@bloxwap/hig/react/recipes/${entry}';if(!renderToString(React.createElement(${name},${JSON.stringify(props)})))throw Error('${name} SSR failed');`);
+ writeFileSync(join(directory,`${entry}.mjs`),`import React from 'react';import {renderToString} from 'react-dom/server';import {${name}} from '@bloxwap/hig/react/blocks/${entry}';if(!renderToString(React.createElement(${name},${JSON.stringify(props)})))throw Error('${name} SSR failed');`);
  execFileSync(process.execPath,[join(directory,`${entry}.mjs`)],{cwd:directory,stdio:'inherit'});
- const result=await bundle(`export {${name}} from '@bloxwap/hig/react/recipes/${entry}';`);
+ const result=await bundle(`export {${name}} from '@bloxwap/hig/react/blocks/${entry}';`);
  const inputs=Object.keys(result.metafile.inputs);
  assert.ok(result.outputFiles[0].contents.length>0);
- assert.equal(inputs.some(p=>/radix|overlay|dialog/.test(p)),false,`recipes/${entry} pulls overlay code: ${inputs.filter(p=>/radix|overlay|dialog/.test(p))}`);
- assert.equal(inputs.some(p=>/[/\\]vaul[/\\]/.test(p)),false,`recipes/${entry} pulls the optional gesture backend`);
+ assert.equal(inputs.some(p=>/radix|overlay|dialog/.test(p)),false,`blocks/${entry} pulls overlay code: ${inputs.filter(p=>/radix|overlay|dialog/.test(p))}`);
+ assert.equal(inputs.some(p=>/[/\\]vaul[/\\]/.test(p)),false,`blocks/${entry} pulls the optional gesture backend`);
 }
 // #95: the component CSS is scoped to HIG classes; page-wide element defaults are the opt-in ./css/base entry.
 // Both resolve through package exports in a bundler, and the scoped file carries no bare element rule.
@@ -41,8 +41,8 @@ assert.ok(scoped.includes('.hig-button'),'@bloxwap/hig/react/css bundles the com
 const unscoped=rulesOf(scoped).filter(selector=>!/hig-|^(?:from|to|\d+%)$|^:root$/.test(selector));
 assert.deepEqual(unscoped,[],`@bloxwap/hig/react/css has selectors outside HIG classes: ${unscoped.join(' | ')}`);
 for(const selector of ['*',':focus-visible','table','th','td','input[type=range]'])assert.ok(rulesOf(base).some(s=>s.replace(/["']/g,'')===selector),`@bloxwap/hig/react/css/base keeps ${selector}`);
-// Guard the guard: the overlay recipe still needs its Dialog peer, so the bundle must fail here.
-await assert.rejects(bundle("export {TradeEntry} from '@bloxwap/hig/react/recipes/trade-entry';"),/@radix-ui\/react-dialog/,'trade-entry bundled without its dialog peer');
+// Guard the guard: the overlay block still needs its Dialog peer, so the bundle must fail here.
+await assert.rejects(bundle("export {TradeEntry} from '@bloxwap/hig/react/blocks/trade-entry';"),/@radix-ui\/react-dialog/,'trade-entry bundled without its dialog peer');
 // #96: @bloxwap/hig names @bloxwap/chart only as a required peer, and only the ./chart entry imports it. The adapter
 // renders its text summary and loading fallback on the server.
 const manifest=JSON.parse(readFileSync(join(directory,'node_modules/@bloxwap/hig/package.json'),'utf8'));
@@ -51,7 +51,7 @@ await assert.rejects(bundle("export {GestureSheet} from '@bloxwap/hig/react/gest
 execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','vaul@1.1.2'],{cwd:directory,stdio:'pipe'});
 const gesture=await bundle("export {GestureSheet} from '@bloxwap/hig/react/gesture-sheet';");
 assert.ok(Object.keys(gesture.metafile.inputs).some(p=>/[/\\]vaul[/\\]/.test(p)),'gesture entry does not contain the real backend');
-const ordinary=await bundle("export {TradeEntry} from '@bloxwap/hig/react/recipes/trade-entry';");
+const ordinary=await bundle("export {TradeEntry} from '@bloxwap/hig/react/blocks/trade-entry';");
 assert.equal(Object.keys(ordinary.metafile.inputs).some(p=>/[/\\]vaul[/\\]/.test(p)),false,'ordinary Dialog pulls the optional gesture backend');
 const button=await bundle("export {Button} from '@bloxwap/hig/react/button';");
 assert.equal(Object.keys(button.metafile.inputs).some(p=>/@bloxwap[/\\]chart[/\\]/.test(p)),false,'@bloxwap/hig/react/button pulls @bloxwap/chart');
@@ -61,4 +61,4 @@ assert.equal(manifest.peerDependencies['@bloxwap/chart'],'^0.3.0 || ^0.4.0 || ^0
 assert.equal(existsSync(join(directory,'node_modules/@bloxwap/hig/node_modules')),false,'@bloxwap/hig nests its own chart or React copy');
 writeFileSync(join(directory,'chart.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {PriceChart,chartTheme} from '@bloxwap/hig/chart';import {tokens} from '@bloxwap/hig/tokens';const html=renderToString(React.createElement(PriceChart,{summary:'BTC up 1% today',data:[]}));for(const text of ['<figcaption>BTC up 1% today</figcaption>','role=\"status\"','Loading chart'])if(!html.includes(text))throw Error('PriceChart SSR missing '+text+': '+html);if(chartTheme.series.downColor!==tokens.colors.sell.srgb)throw Error('chartTheme lost its token colors');");
 execFileSync(process.execPath,[join(directory,'chart.mjs')],{cwd:directory,stdio:'inherit'});
-console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free recipe SSR/bundles without Radix, Vaul, native, chart or feedback engines; optional gesture entry resolves only after explicit Vaul install while ordinary Dialog excludes it; scoped ./css and opt-in ./css/base resolve through exports; only @bloxwap/hig/chart imports @bloxwap/chart, a required peer, and its SSR renders');
+console.log('Clean packed boundaries: tokens/feedback root without React or device engines; Button SSR and overlay-free block SSR/bundles without Radix, Vaul, native, chart or feedback engines; optional gesture entry resolves only after explicit Vaul install while ordinary Dialog excludes it; scoped ./css and opt-in ./css/base resolve through exports; only @bloxwap/hig/chart imports @bloxwap/chart, a required peer, and its SSR renders');

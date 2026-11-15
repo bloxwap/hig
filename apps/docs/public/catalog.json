@@ -346,6 +346,27 @@
       ]
     },
     {
+      "name": "ListGroup",
+      "route": "components/list-group",
+      "entry": "list-group",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "untitled"
+      ]
+    },
+    {
+      "name": "ListRow",
+      "route": "components/list-row",
+      "entry": "list-group",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "static"
+      ]
+    },
+    {
       "name": "Badge",
       "route": "components/badge",
       "entry": "status",
@@ -538,6 +559,40 @@
       ]
     },
     {
+      "name": "BarMark",
+      "route": "components/bar-mark",
+      "entry": "bar-mark",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "remaining",
+        "no-legend"
+      ]
+    },
+    {
+      "name": "BarPnl",
+      "route": "components/bar-pnl",
+      "entry": "bar-pnl",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss",
+        "short",
+        "no-liquidation",
+        "compact"
+      ]
+    },
+    {
+      "name": "AssetBalanceRow",
+      "route": "components/asset-balance-row",
+      "entry": "asset-balance-row",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "value-only"
+      ]
+    },
+    {
       "name": "VerticalAddress",
       "route": "components/vertical-address",
       "entry": "data",
@@ -576,7 +631,7 @@
     {
       "name": "MarketRow",
       "route": "components/market-row",
-      "entry": "recipes",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -584,20 +639,49 @@
       ]
     },
     {
-      "name": "BalanceCard",
-      "route": "components/balance-card",
-      "entry": "recipes",
+      "name": "AccountCard",
+      "route": "components/account-card",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "error",
         "empty"
+      ]
+    },
+    {
+      "name": "ManagePosition",
+      "route": "components/manage-position",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "at-risk"
+      ]
+    },
+    {
+      "name": "TargetCard",
+      "route": "components/target-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "stop-loss"
+      ]
+    },
+    {
+      "name": "TokenActionCard",
+      "route": "components/token-action-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "single"
       ]
     },
     {
       "name": "TradeEntry",
       "route": "components/trade-entry",
-      "entry": "recipes",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -608,7 +692,7 @@
     {
       "name": "SwapPanel",
       "route": "components/swap-panel",
-      "entry": "recipes",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -626,7 +710,7 @@
     {
       "name": "FromPicker",
       "route": "components/from-picker",
-      "entry": "recipes",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -639,7 +723,7 @@
     {
       "name": "ToPicker",
       "route": "components/to-picker",
-      "entry": "recipes",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -650,16 +734,7 @@
     {
       "name": "InstallCommand",
       "route": "components/install-command",
-      "entry": "recipes",
-      "nativeSupport": "renderer",
-      "states": [
-        "default"
-      ]
-    },
-    {
-      "name": "CodeWindow",
-      "route": "components/code-window",
-      "entry": "recipes",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -668,20 +743,10 @@
     {
       "name": "MarketingHero",
       "route": "components/marketing-hero",
-      "entry": "recipes",
+      "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default"
-      ]
-    },
-    {
-      "name": "ActivityList",
-      "route": "components/activity-list",
-      "entry": "recipes",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "empty"
       ]
     },
     {

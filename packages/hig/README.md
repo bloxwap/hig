@@ -21,7 +21,7 @@ import {Button} from '@bloxwap/hig/react/button';
 | --- | --- |
 | `@bloxwap/hig/tokens` | Tokens, `resolvePrimaryColor`, `./tokens/css`, `./tokens/manifest` ([README](tokens/README.md)) |
 | `@bloxwap/hig/contracts` | Types, formatting, feedback, announcements and messages ([README](contracts/README.md)) |
-| `@bloxwap/hig/react/*` | Web components, recipes, `./react/css` and `./react/css/base` ([README](react/README.md)) |
+| `@bloxwap/hig/react/*` | Web components, blocks, `./react/css` and `./react/css/base` ([README](react/README.md)) |
 | `@bloxwap/hig/native/*` | React Native components ([README](native/README.md)) |
 | `@bloxwap/hig/chart` | `PriceChart` and `chartTheme` for `@bloxwap/chart` ([README](chart/README.md)) |
 | `@bloxwap/hig/feedback/*` | Opt-in web and native sound/haptic adapters ([README](feedback/README.md)) |

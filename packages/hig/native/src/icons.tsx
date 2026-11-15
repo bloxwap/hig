@@ -8,6 +8,8 @@ function Bar({length,color,angle}: {length:number;color:string;angle:string}){re
 export function SearchIcon({color}: {color:string}){return <View {...hidden} style={{width:18,height:18}}><View style={{width:13,height:13,borderRadius:7,borderWidth:stroke,borderColor:color}}/><View style={{position:'absolute',right:1,bottom:3,width:6,height:stroke,borderRadius:stroke,backgroundColor:color,transform:[{rotate:'45deg'}]}}/></View>;}
 /** Points down; the caller rotates it. */
 export function ChevronIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><View style={{width:9,height:9,borderRightWidth:stroke,borderBottomWidth:stroke,borderColor:color,transform:[{translateY:-2},{rotate:'45deg'}]}}/></View>;}
+/** A QR glyph: three finder squares and two cells. */
+export function QrIcon({color}: {color:string}){const finder=(position:object)=><View style={{position:'absolute',width:7,height:7,borderRadius:1.5,borderWidth:stroke,borderColor:color,...position}}/>;const cell=(position:object)=><View style={{position:'absolute',width:3,height:3,backgroundColor:color,...position}}/>;return <View {...hidden} style={{width:20,height:20}}>{finder({left:2,top:2})}{finder({right:2,top:2})}{finder({left:2,bottom:2})}{cell({right:6,bottom:6})}{cell({right:2,bottom:2})}</View>;}
 export function CloseIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><Bar length={14} color={color} angle='45deg'/><Bar length={14} color={color} angle='-45deg'/></View>;}
 export type SeverityIconKind='info'|'success'|'warning'|'error';
 /** Shape as well as colour tells the severities apart: warning is a diamond, the others a circle with their own mark. */

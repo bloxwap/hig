@@ -1,6 +1,6 @@
 import React from 'react';
 import {Table,type Column,type TableRowProps} from '../packages/hig/react/src/data.js';
-import {MarketRow,type MarketRowProps} from '../packages/hig/react/src/recipes/market-row.js';
+import {MarketRow,type MarketRowProps} from '../packages/hig/react/src/blocks/market-row.js';
 
 interface Position {id:string;value:number}
 const columns:readonly Column<Position>[]=[{key:'value',label:'Value',align:'end',render:row=>row.value}];

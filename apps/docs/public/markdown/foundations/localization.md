@@ -90,7 +90,7 @@ Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/
 
 ## Built-in component strings
 
-Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/hig/react/src` or `packages/hig/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig/contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
+Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the block labels. None of it is hard-coded in `packages/hig/react/src` or `packages/hig/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig/contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
 
 HIG ships the English (`en-US`) defaults only (`defaultMessages`). It does not ship or guess translations. The host's message catalog owns French, Korean and other copy, under the same rule as the [glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/): an unapproved locale is never filled by guessing.
 
@@ -120,7 +120,7 @@ Rules:
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
 - **RTL is a direction, not a translation.** Messages render inside the provider's `dir` (web) or `writingDirection` (native). The Unicode bidi algorithm places the ` · ` busy separator and parentheses. Do not add direction marks to messages.
-- **Trading words stay with the host.** Default messages contain no glossary term. The TradeEntry recipe copy (`reviewAssetOrder`, `confirmOrder`, …) is generic order-review copy. The host supplies the asset ticker, which stays untranslated.
+- **Trading words stay with the host.** Default messages contain no glossary term. The TradeEntry block copy (`reviewAssetOrder`, `confirmOrder`, …) is generic order-review copy. The host supplies the asset ticker, which stays untranslated.
 
 | Key | English default | Where | Prop override |
 | --- | --- | --- | --- |
@@ -165,7 +165,6 @@ Rules:
 | `confirmOrder` | Confirm order | TradeEntry dialog title and confirm button | — |
 | `confirmOrderDescription` `(amount, asset)` | Amount: {amount} {asset}. Verify the host-provided terms before submission. | TradeEntry dialog description | — |
 | `orderUnavailable` | Order unavailable | TradeEntry error title (web) | — |
-| `noActivity` | No activity yet | ActivityList empty text | — |
 | `statusOnline` | online | StatusIndicator `online` | — |
 | `statusOffline` | offline | StatusIndicator `offline` | — |
 | `statusStale` | stale | StatusIndicator `stale` | — |
@@ -217,6 +216,13 @@ Rules:
 | `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
 | `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
 | `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
+| `account` | Account | AccountCard: default heading | — |
+| `deposit` | Deposit | AccountCard: default label of the deposit action | — |
+| `accountBalance` | Total balance | AccountCard: accessible label of the total balance | — |
+| `showAddress` | Show account address | AccountCard: accessible name of the header button that shows the account address | — |
+| `receive` | Receive | TokenActionCard: built-in label of the `receive` action | — |
+| `stake` | Stake | TokenActionCard: built-in label of the `stake` action | — |
+| `unstake` | Unstake | TokenActionCard: built-in label of the `unstake` action | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

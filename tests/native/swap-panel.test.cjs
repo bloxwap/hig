@@ -1,4 +1,4 @@
-// SwapPanel recipe: one panel for send, swap and bridge. The host owns tokens, prices, quote and wallet; the panel owns the entry.
+// SwapPanel block: one panel for send, swap and bridge. The host owns tokens, prices, quote and wallet; the panel owns the entry.
 // Pickers and settings are views pushed inside the panel, never a dialog; SwapSheet presents the panel in the gesture sheet.
 jest.mock('@gorhom/bottom-sheet',()=>{
  const React=require('react'),{View,ScrollView,FlatList}=require('react-native');
@@ -12,7 +12,7 @@ const {create,act}=require('react-test-renderer');
 const {StyleSheet,View,Modal,BackHandler,Animated}=require('react-native');
 const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {SwapPanel,swapAction}=require('../../packages/hig/native/src/recipes');
+const {SwapPanel,swapAction}=require('../../packages/hig/native/src/blocks');
 const {SwapSheet}=require('../../packages/hig/native/src/swap-sheet');
 const shared=require('../../packages/hig/native/src/swap-shared');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
@@ -250,9 +250,9 @@ it('SwapSheet presents the panel in the gesture sheet, pushes views inside it, a
  press(tree,'swap-settings-button');expect(has(tree,'swap-view-settings')).toBe(true);
  act(()=>root.update(render(false)));act(()=>root.update(render(true)));expect(has(tree,'swap-view-main')).toBe(true);
 });
-it('keeps the sheet backend and Dialog out of the recipe: only swap-sheet imports them',()=>{
+it('keeps the sheet backend and Dialog out of the block: only swap-sheet imports them',()=>{
  const {readFileSync}=require('fs');
- for(const file of ['swap-panel.tsx','swap-views.tsx','swap-parts.tsx','swap-shared.ts','recipes.tsx']){const source=readFileSync(`packages/hig/native/src/${file}`,'utf8');expect(source).not.toMatch(/gesture-sheet|bottom-sheet|swap-sheet/);if(file!=='recipes.tsx')expect(source).not.toMatch(/overlay\.js/);}
+ for(const file of ['swap-panel.tsx','swap-views.tsx','swap-parts.tsx','swap-shared.ts','blocks.tsx']){const source=readFileSync(`packages/hig/native/src/${file}`,'utf8');expect(source).not.toMatch(/gesture-sheet|bottom-sheet|swap-sheet/);if(file!=='blocks.tsx')expect(source).not.toMatch(/overlay\.js/);}
  expect(readFileSync('packages/hig/native/src/swap-sheet.tsx','utf8')).toContain("from './gesture-sheet.js'");
 });
 it('one-way mode shows a down arrow between the cards and offers no flip',()=>{
@@ -366,9 +366,9 @@ it('shows a note under the cards: plain when muted, a tinted capsule for warning
  expect(texts(node(tree,'swap-note'))).toContain('The minimum withdrawal is $10.00.');expect(flat(node(tree,'swap-note')).backgroundColor).toBeUndefined();
  expect(flat(node(tree,'swap-note').findAll(n=>n.type==='Text')[0]).color).toBe(colors.muted);
  tree=mount({note:'Transfer to spot afterwards.',noteTone:'negative'});
- expect(flat(node(tree,'swap-note'))).toMatchObject({borderRadius:16,paddingVertical:12,paddingHorizontal:16,backgroundColor:`${colors.negative}24`});
+ expect(flat(node(tree,'swap-note'))).toMatchObject({borderRadius:16,paddingVertical:12,paddingHorizontal:16,backgroundColor:`${colors.negative}1a`});
  expect(flat(node(tree,'swap-note').findAll(n=>n.type==='Text')[0]).color).toBe(colors.negative);
- tree=mount({note:'Rates change.',noteTone:'warning'});expect(flat(node(tree,'swap-note')).backgroundColor).toBe(`${colors.warning}24`);
+ tree=mount({note:'Rates change.',noteTone:'warning'});expect(flat(node(tree,'swap-note')).backgroundColor).toBe(`${colors.warning}1a`);
  expect(exists(mount({}),'swap-note')).toBe(false);
 });
 it('a title heads the main view, with Back only when the host can go back',()=>{

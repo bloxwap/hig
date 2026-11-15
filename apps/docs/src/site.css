@@ -37,7 +37,7 @@
 @media(max-width:1100px) { .hero-note { display:none; }.portfolio-grid,.preview-bottom { grid-template-columns:1fr; }.decision-note { display:none; }.playground { grid-template-columns:260px minmax(0,1fr); } }
 @media(max-width:760px) { .hero { padding-top:48px;margin-inline:24px; }.hero h1 { font-size:3rem; }.hero-description { font-size:1rem; }.hero-actions { gap:20px; }.playground { margin-inline:24px;grid-template-columns:1fr;border-radius:20px; }.configuration { border-inline-end:0;border-bottom:1px solid var(--hig-nested);gap:16px; }.configuration .small { margin-bottom:0; }.preview-toolbar { padding:20px 24px;flex-wrap:wrap; }.product-preview,.component-stage,.get-code { padding:24px; }.portfolio-grid { margin-bottom:16px;gap:16px; }.portfolio-grid .hig-surface>span { font-size:1.5rem; }.market-panel .hig-row { flex-wrap:wrap; }.principle-grid { margin-inline:24px;grid-template-columns:1fr;gap:28px; }.native-panel h2 { font-size:1.6rem; } }
 
-.docs-recipe-preview { display:flex;flex-direction:column;gap:20px; }.docs-recipe-preview h2 { margin-bottom:0; }.docs-recipe-preview .hig-surface { background:var(--hig-surface); }.docs-recipe-preview p { line-height:1.7; }
+.docs-block-preview { display:flex;flex-direction:column;gap:20px; }.docs-block-preview h2 { margin-bottom:0; }.docs-block-preview .hig-surface { background:var(--hig-surface); }.docs-block-preview p { line-height:1.7; }
 /* Enlarged text keeps prose and interactive preview controls within their containers. */
 .component-demo [role='tablist'] { display:flex;flex-wrap:wrap;gap:8px; }
 .component-demo .hig-button { max-width:100%;white-space:normal;overflow-wrap:anywhere; }
@@ -48,3 +48,4 @@
 .configuration .hig-segmented-control { display:block; }
 .configuration .hig-segment span { min-height:36px; font-size:.8125rem; }
 .configuration .hig-switch { flex-direction:row-reverse; justify-content:space-between; gap:1rem; }
+.sample-balance { display:flex;flex-direction:column;gap:8px; }.sample-balance > .hig-text { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }.sample-balance > .hig-number { font-size:1.5rem;line-height:1.25;font-weight:600; }

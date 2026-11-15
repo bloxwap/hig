@@ -148,7 +148,7 @@
     },
     {
       "issue": 26,
-      "family": "recipes",
+      "family": "blocks",
       "web": "planned",
       "native": "host-owned actions",
       "owner": "HIG maintainers",

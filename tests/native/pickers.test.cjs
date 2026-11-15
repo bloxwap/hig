@@ -1,10 +1,10 @@
-// FromPicker and ToPicker recipes: where assets come from and where they go. The host owns the wallet, the token data,
+// FromPicker and ToPicker blocks: where assets come from and where they go. The host owns the wallet, the token data,
 // the scanner and any generated address; the pickers own search, the chain filter and the list.
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {FlatList,TextInput}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {FromPicker,ToPicker}=require('../../packages/hig/native/src/recipes');
+const {FromPicker,ToPicker}=require('../../packages/hig/native/src/blocks');
 const pickers=require('../../packages/hig/native/src/pickers');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
 const {SwapHostContext}=require('../../packages/hig/native/src/swap-parts');
@@ -31,7 +31,7 @@ const chain=(tree,label)=>tree.findAll(n=>n.props.accessibilityRole==='radio'&&n
 // Composite and host layers both carry the role, so count distinct group names.
 const groups=tree=>[...new Set(tree.findAll(n=>n.props.accessibilityRole==='radiogroup').map(n=>n.props.accessibilityLabel))];
 const search=(tree,side)=>tree.findAll(n=>n.props.testID===`swap-search-${side}`&&n.props.onChangeText)[0];
-it('exports both recipes from recipes and from their own module',()=>{
+it('exports both blocks from blocks and from their own module',()=>{
  expect(pickers.FromPicker).toBe(FromPicker);expect(pickers.ToPicker).toBe(ToPicker);
 });
 it('ToPicker on its own is the destination address field, with a scan button only when the host can scan',()=>{

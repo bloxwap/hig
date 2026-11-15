@@ -169,6 +169,32 @@ button[data-search-full] kbd {
 .example-links a[aria-current] { background: var(--hig-text); color: var(--hig-background); }
 @media (hover: hover) and (pointer: fine) { .example-links a:not([aria-current]):hover { color: var(--hig-text); } }
 .example-canvas { min-width: 0; min-height: 12rem; padding: 2rem 1.5rem; }
+
+/* Blocks sit alone on a clean canvas, in the card they would occupy in a product. The card takes the page
+   background, which blocks are drawn for, so their own fills never stack on a second surface; a hairline
+   marks its edge. A block that brings its own Surface needs no card. */
+.block-demo { min-width: 0; margin-block: 1.5rem 2.5rem; font-size: .875rem; line-height: 1.5; }
+.block-demo .example-links { padding: 0 0 .75rem; }
+.block-canvas {
+  display: grid;
+  place-items: center;
+  min-height: 36rem;
+  padding: 3rem 1.5rem;
+  border: 1px solid var(--hig-nested);
+  border-radius: 1rem;
+  background: var(--hig-background);
+}
+.block-card {
+  width: 100%;
+  max-width: 26rem;
+  min-height: 0;
+  padding: 1rem;
+  border: 1px solid var(--hig-nested);
+  border-radius: 1.75rem;
+  background: var(--hig-background);
+}
+.block-card:has(> .hig-stack > .hig-surface:first-child) { padding: 0; border: 0; border-radius: 0; }
+.block-card[data-wide] { max-width: 44rem; }
 .example-canvas > .hig-stack { align-items: flex-start; }
 .example-canvas > .hig-stack > :is(.hig-stack, .hig-inline, .hig-surface, .hig-row, .hig-table-scroll, .hig-list, section, nav) { width: 100%; }
 .example-canvas .hig-field { width: 100%; max-width: 28rem; }
@@ -194,6 +220,7 @@ button[data-search-full] kbd {
   .example-platforms > div > [role='tablist'],
   .example-frame > div > [role='tablist'] { padding-inline: 1rem; }
   .example-canvas { padding: 1.5rem 1rem; }
+  .block-canvas { min-height: 0; padding: 1.5rem .75rem; }
   .example-note { padding-inline: 1rem; }
 }
 

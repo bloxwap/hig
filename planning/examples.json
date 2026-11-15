@@ -53,7 +53,7 @@
       "entry": "surface",
       "family": "actions-surfaces",
       "web": "<C.Text>Review the amount and asset before confirming.</C.Text>",
-      "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>\ud55c\uad6d\uc5b4 \u00b7 \u4e2d\u6587</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
+      "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>한국어 · 中文</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -346,8 +346,8 @@
       "slug": "dialog",
       "entry": "overlay",
       "family": "overlays",
-      "web": "<C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided amount and terms.' trigger={<C.Button>Open review</C.Button>}><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Dialog></C.Stack>",
+      "web": "<C.Dialog open={open} onOpenChange={setOpen} title='Review order' description='Verify host-provided amount and terms.' trigger={<C.Button>Open review</C.Button>}><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open review order</C.Button><C.Dialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Review order' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Dialog></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -361,7 +361,7 @@
       "entry": "overlay",
       "family": "overlays",
       "web": "<C.AlertDialog open={open} onOpenChange={setOpen} title='Confirm cancellation' description='The host defines the actual consequence.' trigger={<C.Button intent='destructive'>Review cancellation</C.Button>}><C.Button intent='destructive' onClick={()=>{setMessage('Demo cancellation accepted');setOpen(false);}}>Confirm cancellation</C.Button></C.AlertDialog>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.AlertDialog></C.Stack>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open confirm cancellation</C.Button><C.AlertDialog open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Confirm cancellation' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.AlertDialog></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -375,7 +375,7 @@
       "entry": "overlay",
       "family": "overlays",
       "web": "<C.Sheet open={open} onOpenChange={setOpen} title='Order details' description='Scrollable, explicit close action.' trigger={<C.Button>Open details</C.Button>}><C.Text>Terms supplied by host.</C.Text></C.Sheet>",
-      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC \u00b7 Demo only</C.Text></C.Sheet></C.Stack>",
+      "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open order details</C.Button><C.Sheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Order details' description='Verify host-provided terms; demo only.'><C.Text>0.01 BTC · Demo only</C.Text></C.Sheet></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -524,6 +524,49 @@
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "ListGroup",
+      "slug": "list-group",
+      "entry": "list-group",
+      "family": "navigation",
+      "web": "<C.ListGroup title='Settings'><C.ListRow label='Live Mode' trailing={<C.Switch label='Live Mode' defaultChecked/>}/><C.ListRow label='Signals' onSelect={()=>setMessage('The host opens Signals')}/><C.ListRow label='Notifications' value='Off' onSelect={()=>setMessage('The host opens Notifications')}/><C.ListRow label='Language' value='English' onSelect={()=>setMessage('The host opens Language')}/></C.ListGroup>",
+      "native": "<C.ListGroup title='Settings'><C.ListRow label='Live Mode' trailing={<C.Switch label='Live Mode' defaultChecked/>}/><C.ListRow label='Signals' onSelect={()=>setMessage('The host opens Signals')}/><C.ListRow label='Notifications' value='Off' onSelect={()=>setMessage('The host opens Notifications')}/><C.ListRow label='Language' value='English' onSelect={()=>setMessage('The host opens Language')}/></C.ListGroup>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "untitled"
+      ],
+      "a11y": "Titled group of rows; a selectable row is one button named by its label and value; a static row leaves its control as the only target; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "untitled": {
+          "web": "<C.ListGroup><C.ListRow label='Accounts' value='$0.00' onSelect={()=>setMessage('The host opens Accounts')}/><C.ListRow label='History' trailing={<C.Badge>Live</C.Badge>} onSelect={()=>setMessage('The host opens History')}/></C.ListGroup>",
+          "native": "<C.ListGroup><C.ListRow label='Accounts' value='$0.00' onSelect={()=>setMessage('The host opens Accounts')}/><C.ListRow label='History' trailing={<C.Badge>Live</C.Badge>} onSelect={()=>setMessage('The host opens History')}/></C.ListGroup>"
+        }
+      }
+    },
+    {
+      "name": "ListRow",
+      "slug": "list-row",
+      "entry": "list-group",
+      "family": "navigation",
+      "web": "<C.ListGroup><C.ListRow label='Notifications' value='Off' disabled={disabled} onSelect={()=>setMessage('The host opens Notifications')}/></C.ListGroup>",
+      "native": "<C.ListGroup><C.ListRow label='Notifications' value='Off' disabled={disabled} onSelect={()=>setMessage('The host opens Notifications')}/></C.ListGroup>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "static"
+      ],
+      "a11y": "A selectable row is one button named by its label and value, with a decorative disclosure chevron; a static row is plain content; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "static": {
+          "web": "<C.ListGroup><C.ListRow label='Version' value='0.5.2'/></C.ListGroup>",
+          "native": "<C.ListGroup><C.ListRow label='Version' value='0.5.2'/></C.ListGroup>"
+        }
+      }
     },
     {
       "name": "Badge",
@@ -818,6 +861,89 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "BarMark",
+      "slug": "bar-mark",
+      "entry": "bar-mark",
+      "family": "financial-data",
+      "web": "<C.BarMark title='Portfolio' description='$12,480.00' elements={[{label:'Bitcoin',value:6200,detail:'$6,200'},{label:'Ether',value:3400,detail:'$3,400'},{label:'Solana',value:1630,detail:'$1,630'},{label:'USD Coin',value:1250,detail:'$1,250'}]}/>",
+      "native": "<C.BarMark title='Portfolio' description='$12,480.00' elements={[{label:'Bitcoin',value:6200,detail:'$6,200'},{label:'Ether',value:3400,detail:'$3,400'},{label:'Solana',value:1630,detail:'$1,630'},{label:'USD Coin',value:1250,detail:'$1,250'}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "remaining",
+        "no-legend"
+      ],
+      "a11y": "Titled group; the bar is decorative and each legend item reads its label, detail and share; device observations pending",
+      "feedback": "none; display only",
+      "variants": {
+        "remaining": {
+          "web": "<C.BarMark title='Margin' description='$7,400 of $10,000 used' total={10000} elements={[{label:'Positions',value:5200,tone:'info'},{label:'Open orders',value:1400,tone:'warning'},{label:'Fees',value:800,tone:'negative'}]}/>",
+          "native": "<C.BarMark title='Margin' description='$7,400 of $10,000 used' total={10000} elements={[{label:'Positions',value:5200,tone:'info'},{label:'Open orders',value:1400,tone:'warning'},{label:'Fees',value:800,tone:'negative'}]}/>"
+        },
+        "no-legend": {
+          "web": "<C.BarMark title='Allocation' description='3 assets' legend={false} elements={[{label:'Bitcoin',value:50},{label:'Ether',value:30},{label:'Solana',value:20}]}/>",
+          "native": "<C.BarMark title='Allocation' description='3 assets' legend={false} elements={[{label:'Bitcoin',value:50},{label:'Ether',value:30},{label:'Solana',value:20}]}/>"
+        }
+      }
+    },
+    {
+      "name": "BarPnl",
+      "slug": "bar-pnl",
+      "entry": "bar-pnl",
+      "family": "financial-data",
+      "web": "<C.BarPnl title='BTC Long 10×' description='+$1,300.00' entry={64700} mark={66000} liquidation={58800} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>",
+      "native": "<C.BarPnl title='BTC Long 10×' description='+$1,300.00' entry={64700} mark={66000} liquidation={58800} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss",
+        "short",
+        "no-liquidation",
+        "compact"
+      ],
+      "a11y": "The bar is decorative; each readout reads its host label and price, in price order; device observations pending",
+      "feedback": "none; display only",
+      "variants": {
+        "loss": {
+          "web": "<C.BarPnl title='BTC Long 10×' description='−$250.00' entry={64700} mark={64450} liquidation={63000} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>",
+          "native": "<C.BarPnl title='BTC Long 10×' description='−$250.00' entry={64700} mark={64450} liquidation={63000} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>"
+        },
+        "short": {
+          "web": "<C.BarPnl title='ETH Short 5×' description='+$84.20' entry={3520} mark={3436} liquidation={4190} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>",
+          "native": "<C.BarPnl title='ETH Short 5×' description='+$84.20' entry={3520} mark={3436} liquidation={4190} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>"
+        },
+        "no-liquidation": {
+          "web": "<C.BarPnl entry={142.96} mark={149.1} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>",
+          "native": "<C.BarPnl entry={142.96} mark={149.1} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>"
+        },
+        "compact": {
+          "web": "<C.BarPnl compact surface={false} entry={64700} mark={64450} liquidation={63000} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>",
+          "native": "<C.BarPnl compact surface={false} entry={64700} mark={64450} liquidation={63000} labels={{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}}/>"
+        }
+      }
+    },
+    {
+      "name": "AssetBalanceRow",
+      "slug": "asset-balance-row",
+      "entry": "asset-balance-row",
+      "family": "financial-data",
+      "web": "<C.AssetBalanceRow name='Hyperliquid' symbol='HYPE' value={759} balance={13.2} onSelect={()=>setMessage('Hyperliquid selected')}/>",
+      "native": "<C.AssetBalanceRow name='Hyperliquid' symbol='HYPE' value={759} balance={13.2} onSelect={()=>setMessage('Hyperliquid selected')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "value-only"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "value-only": {
+          "web": "<C.AssetBalanceRow name='USD Coin' symbol='USDC' value={100.33}/>",
+          "native": "<C.AssetBalanceRow name='USD Coin' symbol='USDC' value={100.33}/>"
+        }
+      }
+    },
+    {
       "name": "VerticalAddress",
       "slug": "vertical-address",
       "entry": "data",
@@ -876,8 +1002,8 @@
     {
       "name": "MarketRow",
       "slug": "market-row",
-      "entry": "recipes",
-      "family": "recipes",
+      "entry": "blocks",
+      "family": "blocks",
       "web": "<C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>",
       "native": "<C.MarketRow symbol='BTC' name='Bitcoin' price={empty?null:67234.56} change={2.5} onSelect={()=>setMessage('Bitcoin selected')}/>",
       "nativeSupport": "renderer",
@@ -889,26 +1015,94 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
-      "name": "BalanceCard",
-      "slug": "balance-card",
-      "entry": "recipes",
-      "family": "recipes",
-      "web": "<C.BalanceCard label='Sample balance' balance={empty?null:1250.45} stale={!!error}/>",
-      "native": "<C.BalanceCard label='Sample balance' balance={empty?null:1250.45} stale={!!error}/>",
+      "name": "AccountCard",
+      "slug": "account-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.AccountCard assets={[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'sol',name:'Solana',symbol:'SOL',balance:1.42,price:142.96},{id:'hype',name:'Hyperliquid',symbol:'HYPE',balance:13.2,price:57.5},{id:'eth',name:'Ether',symbol:'ETH',balance:0.05,price:3521.12}]} onBack={()=>setMessage('The host goes back')} onShowAddress={()=>setMessage('The host shows the account address')} onDeposit={()=>setMessage('The host opens its deposit flow')} onAssetSelect={asset=>setMessage(asset.name+' selected')}/>",
+      "native": "<C.AccountCard assets={[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'sol',name:'Solana',symbol:'SOL',balance:1.42,price:142.96},{id:'hype',name:'Hyperliquid',symbol:'HYPE',balance:13.2,price:57.5},{id:'eth',name:'Ether',symbol:'ETH',balance:0.05,price:3521.12}]} onBack={()=>setMessage('The host goes back')} onShowAddress={()=>setMessage('The host shows the account address')} onDeposit={()=>setMessage('The host opens its deposit flow')} onAssetSelect={asset=>setMessage(asset.name+' selected')}/>",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "error",
         "empty"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "empty": {
+          "web": "<C.AccountCard assets={[]} onDeposit={()=>setMessage('The host opens its deposit flow')}/>",
+          "native": "<C.AccountCard assets={[]} onDeposit={()=>setMessage('The host opens its deposit flow')}/>"
+        }
+      }
+    },
+    {
+      "name": "ManagePosition",
+      "slug": "manage-position",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.ManagePosition labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Demo' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens take profit')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.ManagePosition labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Demo' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens take profit')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "at-risk"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "at-risk": {
+          "web": "<C.ManagePosition labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='short' entry={3500} mark={3710} liquidation={3780} margin={250} notional={2500} priceOptions={{style:'currency',currency:'USD'}} actions={[{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens take profit')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Ether',leverage:10,size:0.7143,pnl:-150,pnlPercent:-0.06}}/>",
+          "native": "<C.ManagePosition labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='short' entry={3500} mark={3710} liquidation={3780} margin={250} notional={2500} priceOptions={{style:'currency',currency:'USD'}} actions={[{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens take profit')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Ether',leverage:10,size:0.7143,pnl:-150,pnlPercent:-0.06}}/>"
+        }
+      }
+    },
+    {
+      "name": "TargetCard",
+      "slug": "target-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.TargetCard kind='take-profit' labels={{title:'Take Profit',submit:'Set Take Profit',entry:'Entry',mark:'Mark',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'}} position='BTC · Long 40×' orderType='Take-limit' note='After triggering, it fills only at your target price or better.' entry={64699.5} mark={64522.5} trigger={65024.48} unit='dollar' value={2} presets={[1,2,5,10]} onSubmit={()=>setMessage('The host places the take profit')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.TargetCard kind='take-profit' labels={{title:'Take Profit',submit:'Set Take Profit',entry:'Entry',mark:'Mark',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'}} position='BTC · Long 40×' orderType='Take-limit' note='After triggering, it fills only at your target price or better.' entry={64699.5} mark={64522.5} trigger={65024.48} unit='dollar' value={2} presets={[1,2,5,10]} onSubmit={()=>setMessage('The host places the take profit')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "stop-loss"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "stop-loss": {
+          "web": "<C.TargetCard kind='stop-loss' labels={{title:'Stop Loss',submit:'Set Stop Loss',entry:'Entry',mark:'Mark',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'}} position='BTC · Long 40×' orderType='Stop-market' entry={64699.5} mark={64669.5} trigger={64618.26} unit='dollar' value={-0.5} presets={[-0.5,-1,-2,-5]} onSubmit={()=>setMessage('The host places the stop loss')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.TargetCard kind='stop-loss' labels={{title:'Stop Loss',submit:'Set Stop Loss',entry:'Entry',mark:'Mark',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'}} position='BTC · Long 40×' orderType='Stop-market' entry={64699.5} mark={64669.5} trigger={64618.26} unit='dollar' value={-0.5} presets={[-0.5,-1,-2,-5]} onSubmit={()=>setMessage('The host places the stop loss')} onValueChange={value=>setMessage('The host sets the target to '+value)} onUnitChange={unit=>setMessage('The host switches to '+unit)} onCustom={()=>setMessage('The host opens its own entry')} onCancel={()=>setMessage('The host cancels')} onBack={()=>setMessage('The host goes back')}/>"
+        }
+      }
+    },
+    {
+      "name": "TokenActionCard",
+      "slug": "token-action-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.TokenActionCard symbol='HYPE' name='Hyperliquid' assets={[{label:'Staked',value:320,tone:'negative'},{label:'Core',value:239,tone:'positive'},{label:'Paper',value:200,tone:'info'}]} chains={[{label:'Base',value:120},{label:'Hyperliquid',value:639}]} onBack={()=>setMessage('The host goes back')} actions={[{id:'send',onSelect:()=>setMessage('The host opens send')},{id:'receive',onSelect:()=>setMessage('The host opens receive')},{id:'stake',onSelect:()=>setMessage('The host opens stake')},{id:'unstake',onSelect:()=>setMessage('The host opens unstake')}]}/>",
+      "native": "<C.TokenActionCard symbol='HYPE' name='Hyperliquid' assets={[{label:'Staked',value:320,tone:'negative'},{label:'Core',value:239,tone:'positive'},{label:'Paper',value:200,tone:'info'}]} chains={[{label:'Base',value:120},{label:'Hyperliquid',value:639}]} onBack={()=>setMessage('The host goes back')} actions={[{id:'send',onSelect:()=>setMessage('The host opens send')},{id:'receive',onSelect:()=>setMessage('The host opens receive')},{id:'stake',onSelect:()=>setMessage('The host opens stake')},{id:'unstake',onSelect:()=>setMessage('The host opens unstake')}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "single"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "single": {
+          "web": "<C.TokenActionCard symbol='USDC' name='USD Coin' value={100.33} assets={[{label:'Core',value:100.33}]} chains={[{label:'Hyperliquid',value:100.33}]} actions={[{id:'send',onSelect:()=>setMessage('The host opens send'),intent:'primary'},{id:'receive',onSelect:()=>setMessage('The host opens receive')},{id:'stake',onSelect:()=>{},disabled:true}]}/>",
+          "native": "<C.TokenActionCard symbol='USDC' name='USD Coin' value={100.33} assets={[{label:'Core',value:100.33}]} chains={[{label:'Hyperliquid',value:100.33}]} actions={[{id:'send',onSelect:()=>setMessage('The host opens send'),intent:'primary'},{id:'receive',onSelect:()=>setMessage('The host opens receive')},{id:'stake',onSelect:()=>{},disabled:true}]}/>"
+        }
+      }
     },
     {
       "name": "TradeEntry",
       "slug": "trade-entry",
-      "entry": "recipes",
-      "family": "recipes",
+      "entry": "blocks",
+      "family": "blocks",
       "web": "<C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>",
       "native": "<C.TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' busy={busy} error={error} onConfirm={()=>setMessage('Demo confirmation accepted; no transaction submitted')}/>",
       "nativeSupport": "renderer",
@@ -923,8 +1117,8 @@
     {
       "name": "SwapPanel",
       "slug": "swap-panel",
-      "entry": "recipes",
-      "family": "recipes",
+      "entry": "blocks",
+      "family": "blocks",
       "web": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} hotTokenIds={['1-eth','8453-usdc']} fee={0.27} onSubmit={action=>setMessage(`Demo ${action} accepted; no transaction submitted`)}/>",
       "native": "<C.SwapPanel tokens={[{id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.42,price:3521.12},{id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:1250.45,price:1},{id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Base',chainId:8453,price:1},{id:'42161-wbtc',symbol:'WBTC',name:'Wrapped Bitcoin',chain:'Arbitrum',chainId:42161,price:67234.56}]} hotTokenIds={['1-eth','8453-usdc']} fee={0.27} onSubmit={action=>setMessage(`Demo ${action} accepted; no transaction submitted`)}/>",
       "nativeSupport": "renderer",
@@ -984,8 +1178,8 @@
     {
       "name": "FromPicker",
       "slug": "from-picker",
-      "entry": "recipes",
-      "family": "recipes",
+      "entry": "blocks",
+      "family": "blocks",
       "web": "<C.FromPicker wallet={{connected:false}} onConnect={()=>setMessage('The host opens its wallet connection')} generateAddress={checked} onGenerateAddressChange={setChecked} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'8453-aero',symbol:'AERO',name:'Aerodrome',chain:'Base',chainId:8453},{id:'8453-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Base',chainId:8453},{id:'42161-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Arbitrum',chainId:42161}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
       "native": "<C.FromPicker wallet={{connected:false}} onConnect={()=>setMessage('The host opens its wallet connection')} generateAddress={checked} onGenerateAddressChange={setChecked} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'8453-aero',symbol:'AERO',name:'Aerodrome',chain:'Base',chainId:8453},{id:'8453-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Base',chainId:8453},{id:'42161-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Arbitrum',chainId:42161}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
       "nativeSupport": "renderer",
@@ -1020,8 +1214,8 @@
     {
       "name": "ToPicker",
       "slug": "to-picker",
-      "entry": "recipes",
-      "family": "recipes",
+      "entry": "blocks",
+      "family": "blocks",
       "web": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')}/>",
       "native": "<C.ToPicker address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')}/>",
       "nativeSupport": "renderer",
@@ -1046,8 +1240,8 @@
     {
       "name": "InstallCommand",
       "slug": "install-command",
-      "entry": "recipes",
-      "family": "recipes",
+      "entry": "blocks",
+      "family": "blocks",
       "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.5.2')}/>",
       "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.5.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
@@ -1058,44 +1252,15 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
-      "name": "CodeWindow",
-      "slug": "code-window",
-      "entry": "recipes",
-      "family": "recipes",
-      "web": "<C.CodeWindow language='TypeScript'>{'const rawAmount = decimalString;'}</C.CodeWindow>",
-      "native": "<C.CodeWindow language='TypeScript'>{'const rawAmount = decimalString;'}</C.CodeWindow>",
-      "nativeSupport": "renderer",
-      "states": [
-        "default"
-      ],
-      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
-    },
-    {
       "name": "MarketingHero",
       "slug": "marketing-hero",
-      "entry": "recipes",
-      "family": "recipes",
+      "entry": "blocks",
+      "family": "blocks",
       "web": "<C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>",
       "native": "<C.MarketingHero title='Clear decisions, every screen.' description='Compose Bloxwap primitives with host-owned product behavior.' href='https://github.com/bloxwap/hig' cta='Read the guidelines'/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
-      ],
-      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
-    },
-    {
-      "name": "ActivityList",
-      "slug": "activity-list",
-      "entry": "recipes",
-      "family": "recipes",
-      "web": "<C.ActivityList items={empty?[]:[{id:'1',label:'Demo review',status:'Awaiting host confirmation'}]}/>",
-      "native": "<C.ActivityList items={empty?[]:[{id:'1',label:'Demo review',status:'Awaiting host confirmation'}]}/>",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "empty"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"

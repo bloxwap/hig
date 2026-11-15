@@ -7,7 +7,7 @@ Issue #36. This chapter sets out how HIG stays the one maintained design system 
 | Area | Canonical owner | Others may |
 | --- | --- | --- |
 | Semantic tokens (colour roles, space, radius, type, motion, density), native colour spaces, contrast pairs | `bloxwap/hig` → `@bloxwap/hig/tokens` | Map roles to host variables with `var()`. They may not redefine literal values. |
-| Component contracts, DOM and React Native renderers, recipes, the semantic feedback contract | `bloxwap/hig` → `@bloxwap/hig/contracts`, `-react`, `-native`, `-feedback` | Compose components and override layout in context. They may not fork a primitive's paint or geometry. |
+| Component contracts, DOM and React Native renderers, blocks, the semantic feedback contract | `bloxwap/hig` → `@bloxwap/hig/contracts`, `-react`, `-native`, `-feedback` | Compose components and override layout in context. They may not fork a primitive's paint or geometry. |
 | Font sources, families and web loaders | `bloxwap/font` → `@bloxwap/font` | HIG generates pinned native faces from Font releases. Consumers install fonts and never commit binaries. |
 | Sound recipes and the Web Audio engine | `bloxwap/sfx` | HIG owns the cue mapping and preferences, and exports approved WAV cues for native. |
 | Haptic presets and the web engine | `bloxwap/haptic` | HIG owns the RN adapter and the capability matrix. |
@@ -32,7 +32,7 @@ A maintainer reviews against the same list. A PR that only updates screenshots o
 
 ## Component admission
 
-A component or recipe enters the catalog only when all of the following hold:
+A component or block enters the catalog only when all of the following hold:
 
 - It is used repeatedly in at least two Bloxwap surfaces, or one product surface plus an SDK docs site, and the inventory (`planning/catalog.json`) cites that usage.
 - It has a minimal API that composes existing primitives, with no wallet, network or trading dependencies and no unrelated imports. The per-entry export and boundary smokes enforce this.

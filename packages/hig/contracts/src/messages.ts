@@ -90,8 +90,6 @@ export interface HIGMessages {
  confirmOrderDescription: (amount: string, asset: string) => string;
  /** TradeEntry error alert title (web). */
  orderUnavailable: string;
- /** ActivityList empty text. */
- noActivity: string;
  /** StatusIndicator `online` state. */
  statusOnline: string;
  /** StatusIndicator `offline` state. */
@@ -194,6 +192,20 @@ export interface HIGMessages {
  swapKeypad: string;
  /** Accessible name of the keypad delete key. */
  swapDelete: string;
+ /** AccountCard: the default heading. */
+ account: string;
+ /** AccountCard: the default label of the deposit action. */
+ deposit: string;
+ /** AccountCard: accessible label of the total balance. */
+ accountBalance: string;
+ /** AccountCard: accessible name of the header button that shows the account address. */
+ showAddress: string;
+ /** TokenActionCard: built-in label of the `receive` action. */
+ receive: string;
+ /** TokenActionCard: built-in label of the `stake` action. */
+ stake: string;
+ /** TokenActionCard: built-in label of the `unstake` action. */
+ unstake: string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.
 export const close = 'Close';
@@ -237,7 +249,6 @@ export const reviewOrder = 'Review order';
 export const confirmOrder = 'Confirm order';
 export const confirmOrderDescription = (amount: string, asset: string) => `Amount: ${amount} ${asset}. Verify the host-provided terms before submission.`;
 export const orderUnavailable = 'Order unavailable';
-export const noActivity = 'No activity yet';
 export const statusOnline = 'online';
 export const statusOffline = 'offline';
 export const statusStale = 'stale';
@@ -289,8 +300,15 @@ export const qrCode = 'QR code';
 export const swapControlKey = 'Ctrl';
 export const swapKeypad = 'Keypad';
 export const swapDelete = 'Delete';
+export const account = 'Account';
+export const deposit = 'Deposit';
+export const accountBalance = 'Total balance';
+export const showAddress = 'Show account address';
+export const receive = 'Receive';
+export const stake = 'Stake';
+export const unstake = 'Unstake';
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, noActivity, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete, account, deposit, accountBalance, showAddress, receive, stake, unstake};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**

@@ -21,6 +21,10 @@
       "title": "Actions & surfaces"
     },
     {
+      "route": "guides/components/blocks",
+      "title": "Blocks"
+    },
+    {
       "route": "guides/components/chart",
       "title": "Charts"
     },
@@ -39,10 +43,6 @@
     {
       "route": "guides/components/overlays",
       "title": "Overlays"
-    },
-    {
-      "route": "guides/components/recipes",
-      "title": "Recipes"
     },
     {
       "route": "guides/components/selection",
@@ -273,6 +273,14 @@
       "title": "Search"
     },
     {
+      "route": "components/list-group",
+      "title": "ListGroup"
+    },
+    {
+      "route": "components/list-row",
+      "title": "ListRow"
+    },
+    {
       "route": "components/badge",
       "title": "Badge"
     },
@@ -353,6 +361,18 @@
       "title": "WalletAddress"
     },
     {
+      "route": "components/bar-mark",
+      "title": "BarMark"
+    },
+    {
+      "route": "components/bar-pnl",
+      "title": "BarPnl"
+    },
+    {
+      "route": "components/asset-balance-row",
+      "title": "AssetBalanceRow"
+    },
+    {
       "route": "components/vertical-address",
       "title": "VerticalAddress"
     },
@@ -373,8 +393,20 @@
       "title": "MarketRow"
     },
     {
-      "route": "components/balance-card",
-      "title": "BalanceCard"
+      "route": "components/account-card",
+      "title": "AccountCard"
+    },
+    {
+      "route": "components/manage-position",
+      "title": "ManagePosition"
+    },
+    {
+      "route": "components/target-card",
+      "title": "TargetCard"
+    },
+    {
+      "route": "components/token-action-card",
+      "title": "TokenActionCard"
     },
     {
       "route": "components/trade-entry",
@@ -397,16 +429,8 @@
       "title": "InstallCommand"
     },
     {
-      "route": "components/code-window",
-      "title": "CodeWindow"
-    },
-    {
       "route": "components/marketing-hero",
       "title": "MarketingHero"
-    },
-    {
-      "route": "components/activity-list",
-      "title": "ActivityList"
     },
     {
       "route": "components/price-chart",
@@ -417,6 +441,7 @@
     {
       "name": "Button",
       "route": "components/button",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -427,6 +452,7 @@
     {
       "name": "IconButton",
       "route": "components/icon-button",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -437,6 +463,7 @@
     {
       "name": "Link",
       "route": "components/link",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -445,6 +472,7 @@
     {
       "name": "Text",
       "route": "components/text",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -453,6 +481,7 @@
     {
       "name": "Heading",
       "route": "components/heading",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -461,6 +490,7 @@
     {
       "name": "Stack",
       "route": "components/stack",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -469,6 +499,7 @@
     {
       "name": "Inline",
       "route": "components/inline",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -477,6 +508,7 @@
     {
       "name": "Surface",
       "route": "components/surface",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -485,6 +517,7 @@
     {
       "name": "Card",
       "route": "components/card",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -493,6 +526,7 @@
     {
       "name": "Separator",
       "route": "components/separator",
+      "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -501,6 +535,7 @@
     {
       "name": "Field",
       "route": "components/field",
+      "family": "fields",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -510,6 +545,7 @@
     {
       "name": "Label",
       "route": "components/label",
+      "family": "fields",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -518,6 +554,7 @@
     {
       "name": "Input",
       "route": "components/input",
+      "family": "fields",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -528,6 +565,7 @@
     {
       "name": "TextArea",
       "route": "components/text-area",
+      "family": "fields",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -537,6 +575,7 @@
     {
       "name": "AmountInput",
       "route": "components/amount-input",
+      "family": "fields",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -547,6 +586,7 @@
     {
       "name": "SearchInput",
       "route": "components/search-input",
+      "family": "fields",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -556,6 +596,7 @@
     {
       "name": "Checkbox",
       "route": "components/checkbox",
+      "family": "selection",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -565,6 +606,7 @@
     {
       "name": "Switch",
       "route": "components/switch",
+      "family": "selection",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -574,6 +616,7 @@
     {
       "name": "RadioGroup",
       "route": "components/radio-group",
+      "family": "selection",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -583,6 +626,7 @@
     {
       "name": "SegmentedControl",
       "route": "components/segmented-control",
+      "family": "selection",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -592,6 +636,7 @@
     {
       "name": "Filter",
       "route": "components/filter",
+      "family": "selection",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -601,6 +646,7 @@
     {
       "name": "Select",
       "route": "components/select",
+      "family": "selection",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -610,6 +656,7 @@
     {
       "name": "Slider",
       "route": "components/slider",
+      "family": "selection",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -619,6 +666,7 @@
     {
       "name": "Dialog",
       "route": "components/dialog",
+      "family": "overlays",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -627,6 +675,7 @@
     {
       "name": "AlertDialog",
       "route": "components/alert-dialog",
+      "family": "overlays",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -635,6 +684,7 @@
     {
       "name": "Sheet",
       "route": "components/sheet",
+      "family": "overlays",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -643,6 +693,7 @@
     {
       "name": "GestureSheet",
       "route": "components/gesture-sheet",
+      "family": "overlays",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -651,6 +702,7 @@
     {
       "name": "Menu",
       "route": "components/menu",
+      "family": "overlays",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -659,6 +711,7 @@
     {
       "name": "Popover",
       "route": "components/popover",
+      "family": "overlays",
       "nativeSupport": "alternative",
       "states": [
         "default"
@@ -667,6 +720,7 @@
     {
       "name": "Tooltip",
       "route": "components/tooltip",
+      "family": "overlays",
       "nativeSupport": "alternative",
       "states": [
         "default"
@@ -675,6 +729,7 @@
     {
       "name": "Tabs",
       "route": "components/tabs",
+      "family": "navigation",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -683,6 +738,7 @@
     {
       "name": "Accordion",
       "route": "components/accordion",
+      "family": "navigation",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -691,6 +747,7 @@
     {
       "name": "Breadcrumb",
       "route": "components/breadcrumb",
+      "family": "navigation",
       "nativeSupport": "alternative",
       "states": [
         "default"
@@ -699,6 +756,7 @@
     {
       "name": "Navigation",
       "route": "components/navigation",
+      "family": "navigation",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -707,6 +765,7 @@
     {
       "name": "Pagination",
       "route": "components/pagination",
+      "family": "navigation",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -715,6 +774,7 @@
     {
       "name": "Search",
       "route": "components/search",
+      "family": "navigation",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -723,8 +783,30 @@
       ]
     },
     {
+      "name": "ListGroup",
+      "route": "components/list-group",
+      "family": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "untitled"
+      ]
+    },
+    {
+      "name": "ListRow",
+      "route": "components/list-row",
+      "family": "navigation",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "static"
+      ]
+    },
+    {
       "name": "Badge",
       "route": "components/badge",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -733,6 +815,7 @@
     {
       "name": "Alert",
       "route": "components/alert",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -742,6 +825,7 @@
     {
       "name": "Callout",
       "route": "components/callout",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -750,6 +834,7 @@
     {
       "name": "Toast",
       "route": "components/toast",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -758,6 +843,7 @@
     {
       "name": "Progress",
       "route": "components/progress",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -767,6 +853,7 @@
     {
       "name": "Spinner",
       "route": "components/spinner",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -775,6 +862,7 @@
     {
       "name": "Skeleton",
       "route": "components/skeleton",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -783,6 +871,7 @@
     {
       "name": "EmptyState",
       "route": "components/empty-state",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -791,6 +880,7 @@
     {
       "name": "Avatar",
       "route": "components/avatar",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -799,6 +889,7 @@
     {
       "name": "StatusIndicator",
       "route": "components/status-indicator",
+      "family": "status",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -808,6 +899,7 @@
     {
       "name": "NumberReadout",
       "route": "components/number-readout",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -818,6 +910,7 @@
     {
       "name": "AnimatedNumberReadout",
       "route": "components/animated-number-readout",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -828,6 +921,7 @@
     {
       "name": "Usd",
       "route": "components/usd",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -838,6 +932,7 @@
     {
       "name": "Percent",
       "route": "components/percent",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -847,6 +942,7 @@
     {
       "name": "Metric",
       "route": "components/metric",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -855,6 +951,7 @@
     {
       "name": "Stat",
       "route": "components/stat",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -863,6 +960,7 @@
     {
       "name": "List",
       "route": "components/list",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -872,6 +970,7 @@
     {
       "name": "Row",
       "route": "components/row",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -880,6 +979,7 @@
     {
       "name": "Table",
       "route": "components/table",
+      "family": "financial-data",
       "nativeSupport": "alternative",
       "states": [
         "default",
@@ -889,14 +989,50 @@
     {
       "name": "WalletAddress",
       "route": "components/wallet-address",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default"
       ]
     },
     {
+      "name": "BarMark",
+      "route": "components/bar-mark",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "remaining",
+        "no-legend"
+      ]
+    },
+    {
+      "name": "BarPnl",
+      "route": "components/bar-pnl",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "loss",
+        "short",
+        "no-liquidation",
+        "compact"
+      ]
+    },
+    {
+      "name": "AssetBalanceRow",
+      "route": "components/asset-balance-row",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "value-only"
+      ]
+    },
+    {
       "name": "VerticalAddress",
       "route": "components/vertical-address",
+      "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -905,6 +1041,7 @@
     {
       "name": "BrandMark",
       "route": "components/brand-mark",
+      "family": "brand",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -913,6 +1050,7 @@
     {
       "name": "CheckIcon",
       "route": "components/check-icon",
+      "family": "brand",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -921,6 +1059,7 @@
     {
       "name": "HIGProvider",
       "route": "components/h-i-g-provider",
+      "family": "provider",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -929,6 +1068,7 @@
     {
       "name": "MarketRow",
       "route": "components/market-row",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -936,18 +1076,49 @@
       ]
     },
     {
-      "name": "BalanceCard",
-      "route": "components/balance-card",
+      "name": "AccountCard",
+      "route": "components/account-card",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "error",
         "empty"
+      ]
+    },
+    {
+      "name": "ManagePosition",
+      "route": "components/manage-position",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "at-risk"
+      ]
+    },
+    {
+      "name": "TargetCard",
+      "route": "components/target-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "stop-loss"
+      ]
+    },
+    {
+      "name": "TokenActionCard",
+      "route": "components/token-action-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "single"
       ]
     },
     {
       "name": "TradeEntry",
       "route": "components/trade-entry",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -958,6 +1129,7 @@
     {
       "name": "SwapPanel",
       "route": "components/swap-panel",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -975,6 +1147,7 @@
     {
       "name": "FromPicker",
       "route": "components/from-picker",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -987,6 +1160,7 @@
     {
       "name": "ToPicker",
       "route": "components/to-picker",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -997,14 +1171,7 @@
     {
       "name": "InstallCommand",
       "route": "components/install-command",
-      "nativeSupport": "renderer",
-      "states": [
-        "default"
-      ]
-    },
-    {
-      "name": "CodeWindow",
-      "route": "components/code-window",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -1013,23 +1180,16 @@
     {
       "name": "MarketingHero",
       "route": "components/marketing-hero",
+      "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default"
       ]
     },
     {
-      "name": "ActivityList",
-      "route": "components/activity-list",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "empty"
-      ]
-    },
-    {
       "name": "PriceChart",
       "route": "components/price-chart",
+      "family": "chart",
       "nativeSupport": "alternative",
       "states": [
         "default",

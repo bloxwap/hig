@@ -11,7 +11,7 @@ export interface SwapSheetProps extends SwapPanelProps {
 /**
  * SwapPanel presented in the gesture sheet. Pickers and settings push inside the same sheet, which resizes to the view
  * on show. A back press or a dismiss gesture pops a pushed view first and closes the sheet only from the main form;
- * closing always returns to the main form. Needs the optional gesture-sheet backend, which `recipes` does not load.
+ * closing always returns to the main form. Needs the optional gesture-sheet backend, which `blocks` does not load.
  */
 export function SwapSheet({open,onOpenChange,title,view:viewProp,onViewChange,style,...panel}:SwapSheetProps){
  const [ownView,keepView]=useState<SwapView>('main');const view=viewProp??ownView;

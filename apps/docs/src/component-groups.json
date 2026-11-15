@@ -40,8 +40,8 @@
     "description": "Web price charts with text summaries and native readout alternatives."
   },
   {
-    "family": "recipes",
-    "title": "Recipes",
+    "family": "blocks",
+    "title": "Blocks",
     "description": "Composed patterns for balances, markets, trade review, and documentation."
   },
   {

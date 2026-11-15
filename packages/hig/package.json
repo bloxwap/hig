@@ -155,60 +155,85 @@
       "import": "./react/dist/brand.js",
       "default": "./react/dist/brand.js"
     },
+    "./react/blocks": {
+      "types": "./react/dist/blocks.d.ts",
+      "import": "./react/dist/blocks.js",
+      "default": "./react/dist/blocks.js"
+    },
     "./react/recipes": {
-      "types": "./react/dist/recipes.d.ts",
-      "import": "./react/dist/recipes.js",
-      "default": "./react/dist/recipes.js"
+      "types": "./react/dist/blocks.d.ts",
+      "import": "./react/dist/blocks.js",
+      "default": "./react/dist/blocks.js"
+    },
+    "./react/blocks/market-row": {
+      "types": "./react/dist/blocks/market-row.d.ts",
+      "import": "./react/dist/blocks/market-row.js",
+      "default": "./react/dist/blocks/market-row.js"
     },
     "./react/recipes/market-row": {
-      "types": "./react/dist/recipes/market-row.d.ts",
-      "import": "./react/dist/recipes/market-row.js",
-      "default": "./react/dist/recipes/market-row.js"
+      "types": "./react/dist/blocks/market-row.d.ts",
+      "import": "./react/dist/blocks/market-row.js",
+      "default": "./react/dist/blocks/market-row.js"
     },
-    "./react/recipes/balance-card": {
-      "types": "./react/dist/recipes/balance-card.d.ts",
-      "import": "./react/dist/recipes/balance-card.js",
-      "default": "./react/dist/recipes/balance-card.js"
+    "./react/blocks/trade-entry": {
+      "types": "./react/dist/blocks/trade-entry.d.ts",
+      "import": "./react/dist/blocks/trade-entry.js",
+      "default": "./react/dist/blocks/trade-entry.js"
     },
     "./react/recipes/trade-entry": {
-      "types": "./react/dist/recipes/trade-entry.d.ts",
-      "import": "./react/dist/recipes/trade-entry.js",
-      "default": "./react/dist/recipes/trade-entry.js"
+      "types": "./react/dist/blocks/trade-entry.d.ts",
+      "import": "./react/dist/blocks/trade-entry.js",
+      "default": "./react/dist/blocks/trade-entry.js"
+    },
+    "./react/blocks/swap-panel": {
+      "types": "./react/dist/blocks/swap-panel.d.ts",
+      "import": "./react/dist/blocks/swap-panel.js",
+      "default": "./react/dist/blocks/swap-panel.js"
     },
     "./react/recipes/swap-panel": {
-      "types": "./react/dist/recipes/swap-panel.d.ts",
-      "import": "./react/dist/recipes/swap-panel.js",
-      "default": "./react/dist/recipes/swap-panel.js"
+      "types": "./react/dist/blocks/swap-panel.d.ts",
+      "import": "./react/dist/blocks/swap-panel.js",
+      "default": "./react/dist/blocks/swap-panel.js"
+    },
+    "./react/blocks/pickers": {
+      "types": "./react/dist/blocks/pickers.d.ts",
+      "import": "./react/dist/blocks/pickers.js",
+      "default": "./react/dist/blocks/pickers.js"
     },
     "./react/recipes/pickers": {
-      "types": "./react/dist/recipes/pickers.d.ts",
-      "import": "./react/dist/recipes/pickers.js",
-      "default": "./react/dist/recipes/pickers.js"
+      "types": "./react/dist/blocks/pickers.d.ts",
+      "import": "./react/dist/blocks/pickers.js",
+      "default": "./react/dist/blocks/pickers.js"
+    },
+    "./react/blocks/swap-sheet": {
+      "types": "./react/dist/blocks/swap-sheet.d.ts",
+      "import": "./react/dist/blocks/swap-sheet.js",
+      "default": "./react/dist/blocks/swap-sheet.js"
     },
     "./react/recipes/swap-sheet": {
-      "types": "./react/dist/recipes/swap-sheet.d.ts",
-      "import": "./react/dist/recipes/swap-sheet.js",
-      "default": "./react/dist/recipes/swap-sheet.js"
+      "types": "./react/dist/blocks/swap-sheet.d.ts",
+      "import": "./react/dist/blocks/swap-sheet.js",
+      "default": "./react/dist/blocks/swap-sheet.js"
+    },
+    "./react/blocks/install-command": {
+      "types": "./react/dist/blocks/install-command.d.ts",
+      "import": "./react/dist/blocks/install-command.js",
+      "default": "./react/dist/blocks/install-command.js"
     },
     "./react/recipes/install-command": {
-      "types": "./react/dist/recipes/install-command.d.ts",
-      "import": "./react/dist/recipes/install-command.js",
-      "default": "./react/dist/recipes/install-command.js"
+      "types": "./react/dist/blocks/install-command.d.ts",
+      "import": "./react/dist/blocks/install-command.js",
+      "default": "./react/dist/blocks/install-command.js"
     },
-    "./react/recipes/code-window": {
-      "types": "./react/dist/recipes/code-window.d.ts",
-      "import": "./react/dist/recipes/code-window.js",
-      "default": "./react/dist/recipes/code-window.js"
+    "./react/blocks/marketing-hero": {
+      "types": "./react/dist/blocks/marketing-hero.d.ts",
+      "import": "./react/dist/blocks/marketing-hero.js",
+      "default": "./react/dist/blocks/marketing-hero.js"
     },
     "./react/recipes/marketing-hero": {
-      "types": "./react/dist/recipes/marketing-hero.d.ts",
-      "import": "./react/dist/recipes/marketing-hero.js",
-      "default": "./react/dist/recipes/marketing-hero.js"
-    },
-    "./react/recipes/activity-list": {
-      "types": "./react/dist/recipes/activity-list.d.ts",
-      "import": "./react/dist/recipes/activity-list.js",
-      "default": "./react/dist/recipes/activity-list.js"
+      "types": "./react/dist/blocks/marketing-hero.d.ts",
+      "import": "./react/dist/blocks/marketing-hero.js",
+      "default": "./react/dist/blocks/marketing-hero.js"
     },
     "./react/css": {
       "types": "./css.d.ts",
@@ -228,6 +253,46 @@
       "import": "./react/dist/wallet-address.js",
       "default": "./react/dist/wallet-address.js"
     },
+    "./react/asset-balance-row": {
+      "types": "./react/dist/asset-balance-row.d.ts",
+      "import": "./react/dist/asset-balance-row.js",
+      "default": "./react/dist/asset-balance-row.js"
+    },
+    "./react/blocks/account-card": {
+      "types": "./react/dist/blocks/account-card.d.ts",
+      "import": "./react/dist/blocks/account-card.js",
+      "default": "./react/dist/blocks/account-card.js"
+    },
+    "./react/blocks/token-action-card": {
+      "types": "./react/dist/blocks/token-action-card.d.ts",
+      "import": "./react/dist/blocks/token-action-card.js",
+      "default": "./react/dist/blocks/token-action-card.js"
+    },
+    "./react/blocks/manage-position": {
+      "types": "./react/dist/blocks/manage-position.d.ts",
+      "import": "./react/dist/blocks/manage-position.js",
+      "default": "./react/dist/blocks/manage-position.js"
+    },
+    "./react/blocks/target-card": {
+      "types": "./react/dist/blocks/target-card.d.ts",
+      "import": "./react/dist/blocks/target-card.js",
+      "default": "./react/dist/blocks/target-card.js"
+    },
+    "./react/bar-mark": {
+      "types": "./react/dist/bar-mark.d.ts",
+      "import": "./react/dist/bar-mark.js",
+      "default": "./react/dist/bar-mark.js"
+    },
+    "./react/bar-pnl": {
+      "types": "./react/dist/bar-pnl.d.ts",
+      "import": "./react/dist/bar-pnl.js",
+      "default": "./react/dist/bar-pnl.js"
+    },
+    "./react/list-group": {
+      "types": "./react/dist/list-group.d.ts",
+      "import": "./react/dist/list-group.js",
+      "default": "./react/dist/list-group.js"
+    },
     "./react/gesture-sheet": {
       "types": "./react/dist/gesture-sheet.d.ts",
       "import": "./react/dist/gesture-sheet.js",
@@ -242,6 +307,46 @@
       "types": "./native/dist/wallet-address.d.ts",
       "import": "./native/dist/wallet-address.js",
       "default": "./native/dist/wallet-address.js"
+    },
+    "./native/asset-balance-row": {
+      "types": "./native/dist/asset-balance-row.d.ts",
+      "import": "./native/dist/asset-balance-row.js",
+      "default": "./native/dist/asset-balance-row.js"
+    },
+    "./native/account-card": {
+      "types": "./native/dist/account-card.d.ts",
+      "import": "./native/dist/account-card.js",
+      "default": "./native/dist/account-card.js"
+    },
+    "./native/token-action-card": {
+      "types": "./native/dist/token-action-card.d.ts",
+      "import": "./native/dist/token-action-card.js",
+      "default": "./native/dist/token-action-card.js"
+    },
+    "./native/manage-position": {
+      "types": "./native/dist/manage-position.d.ts",
+      "import": "./native/dist/manage-position.js",
+      "default": "./native/dist/manage-position.js"
+    },
+    "./native/target-card": {
+      "types": "./native/dist/target-card.d.ts",
+      "import": "./native/dist/target-card.js",
+      "default": "./native/dist/target-card.js"
+    },
+    "./native/bar-mark": {
+      "types": "./native/dist/bar-mark.d.ts",
+      "import": "./native/dist/bar-mark.js",
+      "default": "./native/dist/bar-mark.js"
+    },
+    "./native/bar-pnl": {
+      "types": "./native/dist/bar-pnl.d.ts",
+      "import": "./native/dist/bar-pnl.js",
+      "default": "./native/dist/bar-pnl.js"
+    },
+    "./native/list-group": {
+      "types": "./native/dist/list-group.d.ts",
+      "import": "./native/dist/list-group.js",
+      "default": "./native/dist/list-group.js"
     },
     "./native/pickers": {
       "types": "./native/dist/pickers.d.ts",
@@ -303,10 +408,15 @@
       "import": "./native/dist/brand.js",
       "default": "./native/dist/brand.js"
     },
+    "./native/blocks": {
+      "types": "./native/dist/blocks.d.ts",
+      "import": "./native/dist/blocks.js",
+      "default": "./native/dist/blocks.js"
+    },
     "./native/recipes": {
-      "types": "./native/dist/recipes.d.ts",
-      "import": "./native/dist/recipes.js",
-      "default": "./native/dist/recipes.js"
+      "types": "./native/dist/blocks.d.ts",
+      "import": "./native/dist/blocks.js",
+      "default": "./native/dist/blocks.js"
     },
     "./native/switch": {
       "types": "./native/dist/switch.d.ts",

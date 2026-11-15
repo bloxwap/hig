@@ -14,6 +14,250 @@
         "entry": "animated-number",
         "signature": "export declare function AnimatedNumberReadout({ duration, trend, ...props }: AnimatedNumberProps): React.JSX.Element;"
       },
+      "AssetArtwork": {
+        "entry": "asset-balance-row",
+        "signature": "export type AssetArtwork = string | React.ReactElement;"
+      },
+      "AssetBalanceRowProps": {
+        "entry": "asset-balance-row",
+        "signature": "export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {\n    name: string;\n    symbol: string;\n    /** A missing icon falls back to the first letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, shown under the value. Omit it to show the value alone, as for a dollar stablecoin. */\n    balance?: number | null;\n    /** Format of the units line. Defaults to at most six fraction digits. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** Makes the whole row a button. */\n    onSelect?: () => void;\n}"
+      },
+      "AssetBalanceRow": {
+        "entry": "asset-balance-row",
+        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, onSelect, className, ...rest }: AssetBalanceRowProps): React.JSX.Element;"
+      },
+      "BarMarkTone": {
+        "entry": "bar-mark",
+        "signature": "export type BarMarkTone = 'positive' | 'info' | 'warning' | 'negative' | 'muted' | 'faint';"
+      },
+      "barMarkTones": {
+        "entry": "bar-mark",
+        "signature": "export declare const barMarkTones: readonly BarMarkTone[];"
+      },
+      "BarMarkElement": {
+        "entry": "bar-mark",
+        "signature": "export interface BarMarkElement {\n    id?: string;\n    label: string;\n    value: number;\n    tone?: BarMarkTone;\n    color?: string;\n    detail?: string;\n}"
+      },
+      "BarMarkProps": {
+        "entry": "bar-mark",
+        "signature": "export interface BarMarkProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    title: string;\n    /** A line on the trailing edge of the title row, such as `59.2 GB of 64 GB used`. */\n    description?: React.ReactNode;\n    elements: readonly BarMarkElement[];\n    /** The whole the elements are parts of. When it is larger than their sum the remainder stays empty track. Defaults to the sum. */\n    total?: number;\n    /** Set false to hide the legend; the labels and shares stay available to assistive technology. */\n    legend?: boolean;\n    /** `small` draws a 12-unit bar for a secondary breakdown under a main one. */\n    size?: 'default' | 'small';\n}"
+      },
+      "barMarkShares": {
+        "entry": "bar-mark",
+        "signature": "export declare function barMarkShares(elements: readonly BarMarkElement[], total?: number): {\n    shares: number[];\n    rest: number;\n};"
+      },
+      "BarMark": {
+        "entry": "bar-mark",
+        "signature": "export declare function BarMark({ title, description, elements, total, legend, size, className, ...rest }: BarMarkProps): React.JSX.Element;"
+      },
+      "BarPnlSide": {
+        "entry": "bar-pnl",
+        "signature": "export type BarPnlSide = 'long' | 'short';"
+      },
+      "BarPnlResult": {
+        "entry": "bar-pnl",
+        "signature": "export type BarPnlResult = 'profit' | 'loss' | 'flat';"
+      },
+      "BarPnlKind": {
+        "entry": "bar-pnl",
+        "signature": "export type BarPnlKind = 'liquidation' | 'mark' | 'entry';"
+      },
+      "BarPnlProps": {
+        "entry": "bar-pnl",
+        "signature": "export interface BarPnlProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Price the position was opened at. */\n    entry: number;\n    /** Current mark price. `null` or omitted reads as unknown and draws no profit or loss. */\n    mark?: number | null;\n    /** Liquidation price. Omit it, or pass `null`, for a position that cannot be liquidated. */\n    liquidation?: number | null;\n    /** Direction of the position. Defaults to `long` when the liquidation price is below entry (or unknown) and `short` when it is above. */\n    side?: BarPnlSide;\n    /** Host text for the three prices, for example `{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}`. HIG ships no trading terms of its own. */\n    labels: Record<BarPnlKind, string>;\n    /** Heading on the leading edge above the bar, such as `BTC Long 10×`. */\n    title?: string;\n    /** A line on the trailing edge of the title row, such as the profit or loss in dollars. */\n    description?: React.ReactNode;\n    /** Format of the three prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Shortens the three prices for narrow screens: `$64,700` for `$64,700.00`, `$142.96`, `$0.4821`. Trailing zeros are dropped. Default `false`. */\n    compact?: boolean;\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and readouts keep their spacing. Default `true`. */\n    surface?: boolean;\n}"
+      },
+      "barPnlCompactOptions": {
+        "entry": "bar-pnl",
+        "signature": "export declare function barPnlCompactOptions(value: number | null | undefined, base?: Intl.NumberFormatOptions): Intl.NumberFormatOptions;"
+      },
+      "barPnlLayout": {
+        "entry": "bar-pnl",
+        "signature": "export declare function barPnlLayout({ entry, mark, liquidation, side }: {\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    side?: BarPnlSide;\n}): {\n    side: BarPnlSide;\n    result: BarPnlResult;\n    positions: Partial<Record<BarPnlKind, number>>;\n    order: BarPnlKind[];\n};"
+      },
+      "BarPnl": {
+        "entry": "bar-pnl",
+        "signature": "export declare function BarPnl({ entry, mark, liquidation, side, labels, title, description, priceOptions, compact, surface, className, ...rest }: BarPnlProps): React.JSX.Element;"
+      },
+      "MarketRow": {
+        "entry": "blocks/market-row",
+        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect, priceOptions, changeOptions, mode, identity, icon, favorite, volume, className, style }: MarketRowProps): React.JSX.Element;"
+      },
+      "TradeEntry": {
+        "entry": "blocks/trade-entry",
+        "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): React.JSX.Element;"
+      },
+      "InstallCommand": {
+        "entry": "blocks/install-command",
+        "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): React.JSX.Element;"
+      },
+      "MarketingHero": {
+        "entry": "blocks/marketing-hero",
+        "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
+      },
+      "AccountCard": {
+        "entry": "blocks/account-card",
+        "signature": "export declare function AccountCard({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, className, ...rest }: AccountCardProps): React.JSX.Element;"
+      },
+      "accountRows": {
+        "entry": "blocks/account-card",
+        "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
+      },
+      "assetValue": {
+        "entry": "blocks/account-card",
+        "signature": "export declare const assetValue: (asset: AccountAsset) => number | null;"
+      },
+      "AccountCardProps": {
+        "entry": "blocks/account-card",
+        "signature": "export interface AccountCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading. Defaults to the built-in “Account”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with `WalletAddress`. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars. Defaults to the sum of the asset values; `null` reads as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset that is always first. Defaults to `USDC`. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    /** Text of the deposit action. Defaults to the built-in “Deposit”. */\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n}"
+      },
+      "AccountAsset": {
+        "entry": "blocks/account-card",
+        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. */\n    price?: number | null;\n    /** Dollar value of the holding. Defaults to `balance × price`. */\n    value?: number | null;\n}"
+      },
+      "TokenActionCard": {
+        "entry": "blocks/token-action-card",
+        "signature": "export declare function TokenActionCard({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, className, ...rest }: TokenActionCardProps): React.JSX.Element;"
+      },
+      "tokenActionLabel": {
+        "entry": "blocks/token-action-card",
+        "signature": "export declare const tokenActionLabel: (action: TokenAction, messages?: Partial<HIGMessages>) => string;"
+      },
+      "TokenActionCardProps": {
+        "entry": "blocks/token-action-card",
+        "signature": "export interface TokenActionCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      },
+      "TokenAction": {
+        "entry": "blocks/token-action-card",
+        "signature": "export interface TokenAction {\n    /** `send`, `receive`, `stake` and `unstake` take a built-in label; any other id needs `label`. */\n    id: TokenActionId | (string & {});\n    label?: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    /** Defaults to `secondary`: the card offers equal choices, so no action is the primary one unless the host says so. */\n    intent?: 'primary' | 'secondary' | 'destructive';\n}"
+      },
+      "TokenActionId": {
+        "entry": "blocks/token-action-card",
+        "signature": "export type TokenActionId = 'send' | 'receive' | 'stake' | 'unstake';"
+      },
+      "ManagePosition": {
+        "entry": "blocks/manage-position",
+        "signature": "export declare function ManagePosition({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, className, ...rest }: ManagePositionProps): React.JSX.Element;"
+      },
+      "positionCorridor": {
+        "entry": "blocks/manage-position",
+        "signature": "export declare function positionCorridor({ side, entry, mark, liquidation }: {\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n}): {\n    total: number;\n    buffer: number;\n    drawdown: number;\n    share: number | null;\n};"
+      },
+      "ManagePositionProps": {
+        "entry": "blocks/manage-position",
+        "signature": "export interface ManagePositionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    labels: ManagePositionLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the title is the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices. Defaults to whole dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionAction[];\n    position?: ManagePositionSummary;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      },
+      "ManagePositionLabels": {
+        "entry": "blocks/manage-position",
+        "signature": "export interface ManagePositionLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
+      },
+      "ManagePositionAction": {
+        "entry": "blocks/manage-position",
+        "signature": "export interface ManagePositionAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      },
+      "ManagePositionSummary": {
+        "entry": "blocks/manage-position",
+        "signature": "export interface ManagePositionSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
+      },
+      "TargetCard": {
+        "entry": "blocks/target-card",
+        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, className, ...rest }: TargetCardProps): React.JSX.Element;"
+      },
+      "targetLayout": {
+        "entry": "blocks/target-card",
+        "signature": "export declare function targetLayout({ entry, mark, trigger }: {\n    entry: number;\n    mark?: number | null;\n    trigger?: number | null;\n}): {\n    positions: Partial<Record<TargetPrice, number>>;\n    order: TargetPrice[];\n    from: number;\n    to: number;\n};"
+      },
+      "targetFormat": {
+        "entry": "blocks/target-card",
+        "signature": "export declare function targetFormat(unit: TargetUnit, priceOptions?: Intl.NumberFormatOptions, short?: number): Intl.NumberFormatOptions;"
+      },
+      "TargetCardProps": {
+        "entry": "blocks/target-card",
+        "signature": "export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence under the price card about how the order fills. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      },
+      "TargetCardLabels": {
+        "entry": "blocks/target-card",
+        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Accessible name of the unit control; not drawn. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n}"
+      },
+      "TargetKind": {
+        "entry": "blocks/target-card",
+        "signature": "export type TargetKind = 'take-profit' | 'stop-loss';"
+      },
+      "TargetUnit": {
+        "entry": "blocks/target-card",
+        "signature": "export type TargetUnit = 'dollar' | 'price' | 'percent';"
+      },
+      "TargetPrice": {
+        "entry": "blocks/target-card",
+        "signature": "export type TargetPrice = 'entry' | 'mark' | 'trigger';"
+      },
+      "FromPicker": {
+        "entry": "blocks/pickers",
+        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, className, ...list }: FromPickerProps): React.JSX.Element;"
+      },
+      "ToPicker": {
+        "entry": "blocks/pickers",
+        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, className, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+      },
+      "FromPickerProps": {
+        "entry": "blocks/pickers",
+        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    className?: string;\n}"
+      },
+      "ToPickerProps": {
+        "entry": "blocks/pickers",
+        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    className?: string;\n}"
+      },
+      "PickerListProps": {
+        "entry": "blocks/pickers",
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
+      },
+      "SwapPanel": {
+        "entry": "blocks/swap-panel",
+        "signature": "export declare function SwapPanel({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, onReset, destination, details, note, noteTone, title, onBack, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, keypad, shortcuts, captureKeyboard, view: viewProp, onViewChange, settings, className, style }: SwapPanelProps): React.JSX.Element;"
+      },
+      "swapAction": {
+        "entry": "blocks",
+        "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
+      },
+      "SwapPanelProps": {
+        "entry": "blocks/swap-panel",
+        "signature": "export interface SwapPanelProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    submitting?: boolean;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet (“Withdraw from Papertrade”). `onBack` adds a Back control beside it. */\n    title?: string;\n    onBack?: () => void;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum”. Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    /** `auto` shows the keypad for a coarse pointer (touch), where there is no hardware keyboard. */\n    keypad?: 'auto' | 'always' | 'never';\n    /** ⌘F / Ctrl+F opens the From picker and ⌘K / Ctrl+K the To picker while the panel is mounted. */\n    shortcuts?: boolean;\n    /** Digits typed anywhere on the page (outside a text field) drive the amount, not only inside the panel. */\n    captureKeyboard?: boolean;\n    /** The view on show. The panel pushes its token pickers and settings as views inside its own bounds; `main` is the cards. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+      },
+      "SwapToken": {
+        "entry": "blocks",
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+      },
+      "SwapChain": {
+        "entry": "blocks",
+        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
+      },
+      "SwapAction": {
+        "entry": "blocks",
+        "signature": "export type SwapAction = 'send' | 'swap' | 'bridge';"
+      },
+      "SwapDenomination": {
+        "entry": "blocks",
+        "signature": "export type SwapDenomination = 'usd' | 'token';"
+      },
+      "SwapWallet": {
+        "entry": "blocks/pickers",
+        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
+      },
+      "SwapFee": {
+        "entry": "blocks",
+        "signature": "export interface SwapFee {\n    label: string;\n    usd: number;\n}"
+      },
+      "SwapReceive": {
+        "entry": "blocks/swap-panel",
+        "signature": "export interface SwapReceive {\n    address: string;\n    qr?: React.ReactNode; /** Host clipboard adapter. When set, the whole view copies the address. */\n    onCopy?: () => Promise<void> | void;\n}"
+      },
+      "SwapDestination": {
+        "entry": "blocks/swap-panel",
+        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line above the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string | SwapFigure;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
+      },
+      "SwapDetail": {
+        "entry": "blocks/swap-panel",
+        "signature": "export interface SwapDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -158,6 +402,22 @@
         "entry": "gesture-sheet",
         "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps, enableDynamicSizing, maxDynamicContentSize }: GestureSheetProps): React.JSX.Element;"
       },
+      "ListGroupProps": {
+        "entry": "list-group",
+        "signature": "export interface ListGroupProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading above the group, such as “Settings”. Omit it for an untitled group. */\n    title?: string;\n    /** `ListRow` elements. */\n    children?: React.ReactNode;\n}"
+      },
+      "ListGroup": {
+        "entry": "list-group",
+        "signature": "export declare function ListGroup({ title, children, className, ...rest }: ListGroupProps): React.JSX.Element;"
+      },
+      "ListRowProps": {
+        "entry": "list-group",
+        "signature": "export interface ListRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {\n    label: string;\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. */\n    value?: React.ReactNode;\n    /** Anything richer on the trailing edge: icons, a `Badge`, or a control such as a `Switch`. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Makes the whole row a link and shows the disclosure chevron. */\n    href?: string;\n    /** Dims the row and blocks `onSelect` and `href`. */\n    disabled?: boolean;\n}"
+      },
+      "ListRow": {
+        "entry": "list-group",
+        "signature": "export declare function ListRow({ label, leading, value, trailing, onSelect, href, disabled, className, ...rest }: ListRowProps): React.JSX.Element;"
+      },
       "Tabs": {
         "entry": "navigation",
         "signature": "export declare function Tabs({ label, items, value, defaultValue, onValueChange }: {\n    label: string;\n    items: readonly {\n        value: string;\n        label: string;\n        content: React.ReactNode;\n        disabled?: boolean;\n    }[];\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (v: string) => void;\n}): React.JSX.Element;"
@@ -249,102 +509,6 @@
       "useControllable": {
         "entry": "provider",
         "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent): [T, (next: T) => void];"
-      },
-      "MarketRow": {
-        "entry": "recipes/market-row",
-        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect, priceOptions, changeOptions, mode, identity, icon, favorite, volume, className, style }: MarketRowProps): React.JSX.Element;"
-      },
-      "BalanceCard": {
-        "entry": "recipes/balance-card",
-        "signature": "export declare function BalanceCard({ label, balance, stale }: {\n    label: string;\n    balance: number | null;\n    stale?: boolean;\n}): React.JSX.Element;"
-      },
-      "TradeEntry": {
-        "entry": "recipes/trade-entry",
-        "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): React.JSX.Element;"
-      },
-      "InstallCommand": {
-        "entry": "recipes/install-command",
-        "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): React.JSX.Element;"
-      },
-      "CodeWindow": {
-        "entry": "recipes/code-window",
-        "signature": "export declare function CodeWindow({ language, children }: React.PropsWithChildren<{\n    language: string;\n}>): React.JSX.Element;"
-      },
-      "MarketingHero": {
-        "entry": "recipes/marketing-hero",
-        "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
-      },
-      "ActivityList": {
-        "entry": "recipes/activity-list",
-        "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): React.JSX.Element;"
-      },
-      "FromPicker": {
-        "entry": "recipes/pickers",
-        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, className, ...list }: FromPickerProps): React.JSX.Element;"
-      },
-      "ToPicker": {
-        "entry": "recipes/pickers",
-        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, className, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
-      },
-      "FromPickerProps": {
-        "entry": "recipes/pickers",
-        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    className?: string;\n}"
-      },
-      "ToPickerProps": {
-        "entry": "recipes/pickers",
-        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    className?: string;\n}"
-      },
-      "PickerListProps": {
-        "entry": "recipes/pickers",
-        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
-      },
-      "SwapPanel": {
-        "entry": "recipes/swap-panel",
-        "signature": "export declare function SwapPanel({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, onReset, destination, details, note, noteTone, title, onBack, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, keypad, shortcuts, captureKeyboard, view: viewProp, onViewChange, settings, className, style }: SwapPanelProps): React.JSX.Element;"
-      },
-      "swapAction": {
-        "entry": "recipes",
-        "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
-      },
-      "SwapPanelProps": {
-        "entry": "recipes/swap-panel",
-        "signature": "export interface SwapPanelProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    submitting?: boolean;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet (“Withdraw from Papertrade”). `onBack` adds a Back control beside it. */\n    title?: string;\n    onBack?: () => void;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum”. Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    /** `auto` shows the keypad for a coarse pointer (touch), where there is no hardware keyboard. */\n    keypad?: 'auto' | 'always' | 'never';\n    /** ⌘F / Ctrl+F opens the From picker and ⌘K / Ctrl+K the To picker while the panel is mounted. */\n    shortcuts?: boolean;\n    /** Digits typed anywhere on the page (outside a text field) drive the amount, not only inside the panel. */\n    captureKeyboard?: boolean;\n    /** The view on show. The panel pushes its token pickers and settings as views inside its own bounds; `main` is the cards. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    className?: string;\n    style?: React.CSSProperties;\n}"
-      },
-      "SwapToken": {
-        "entry": "recipes",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
-      },
-      "SwapChain": {
-        "entry": "recipes",
-        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
-      },
-      "SwapAction": {
-        "entry": "recipes",
-        "signature": "export type SwapAction = 'send' | 'swap' | 'bridge';"
-      },
-      "SwapDenomination": {
-        "entry": "recipes",
-        "signature": "export type SwapDenomination = 'usd' | 'token';"
-      },
-      "SwapWallet": {
-        "entry": "recipes/pickers",
-        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
-      },
-      "SwapFee": {
-        "entry": "recipes",
-        "signature": "export interface SwapFee {\n    label: string;\n    usd: number;\n}"
-      },
-      "SwapReceive": {
-        "entry": "recipes/swap-panel",
-        "signature": "export interface SwapReceive {\n    address: string;\n    qr?: React.ReactNode; /** Host clipboard adapter. When set, the whole view copies the address. */\n    onCopy?: () => Promise<void> | void;\n}"
-      },
-      "SwapDestination": {
-        "entry": "recipes/swap-panel",
-        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line above the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string | SwapFigure;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
-      },
-      "SwapDetail": {
-        "entry": "recipes/swap-panel",
-        "signature": "export interface SwapDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "Choice": {
         "entry": "selection",
@@ -503,47 +667,47 @@
         "signature": "export declare function WalletAddress({ address, kind, qrValue, arena, size, onCopy, className, style }: WalletAddressProps): React.JSX.Element;"
       },
       "MarketRowProps": {
-        "entry": "recipes/market-row",
+        "entry": "blocks/market-row",
         "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity, such as symbol/name with its existing compact layout. */\n    identity?: React.ReactNode;\n});"
       },
       "SwapArtwork": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export type SwapArtwork = string | React.ReactElement;"
       },
       "SwapView": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export type SwapView = 'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees';"
       },
       "SwapAmountCard": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export declare function SwapAmountCard({ name, symbol, icon, chainIcon, context, actions, meta, value, amountLabel, prefix, suffix, fractionDigits, trailingDot, maximumFractionDigits, conversion, onSelect, selectLabel, className, style }: SwapAmountCardProps): React.JSX.Element;"
       },
       "SwapAmountCardProps": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export interface SwapAmountCardProps {\n    /** Asset name, drawn in the slot. */\n    name: string;\n    /** Asset symbol; its first letters stand in when there is no `icon`. */\n    symbol: string;\n    /** Asset artwork: an image URL, or a node the host draws. */\n    icon?: string | React.ReactNode;\n    /** Chain or venue artwork, stacked above the asset. */\n    chainIcon?: string;\n    /** Line above the name: the chain, venue or account the amount comes from. */\n    context?: React.ReactNode;\n    /** Capsule actions on the trailing edge, such as Max. Use `SwapPill`. */\n    actions?: React.ReactNode;\n    /** Supporting line under the actions, such as the available balance. */\n    meta?: React.ReactNode;\n    /** The entered amount. */\n    value: number;\n    /** Accessible name of the amount. */\n    amountLabel: string;\n    /** Text before the amount, such as a currency sign. */\n    prefix?: string;\n    /** Text after the amount, such as a percent sign. */\n    suffix?: string;\n    /** Decimal places typed so far, so `1.50` keeps its zero. */\n    fractionDigits?: number;\n    /** Set while the entry ends with a decimal point that has no digits after it yet. */\n    trailingDot?: boolean;\n    /** Most decimal places the amount can show. */\n    maximumFractionDigits?: number;\n    /** Capsule under the amount, such as the converted value. Use `SwapPill`. */\n    conversion?: React.ReactNode;\n    /** Makes the slot a button that chooses the asset. Requires `selectLabel`. */\n    onSelect?: () => void;\n    selectLabel?: string;\n    className?: string;\n    style?: React.CSSProperties;\n}"
       },
       "SwapPill": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export declare function SwapPill({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>): React.JSX.Element;"
       },
       "SwapKeypad": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export declare function SwapKeypad({ onKey, label, deleteLabel }: {\n    onKey: (key: string) => void;\n    label: string;\n    deleteLabel: string;\n}): React.JSX.Element;"
       },
       "SwapNumber": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export declare function SwapNumber({ template, ...number }: AnimatedNumberProps & {\n    template?: (value: string) => string;\n}): React.JSX.Element;"
       },
       "SwapFigure": {
-        "entry": "recipes/swap-panel",
+        "entry": "blocks/swap-panel",
         "signature": "export interface SwapFigure {\n    value: number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "SwapSheetProps": {
-        "entry": "recipes/swap-sheet",
+        "entry": "blocks/swap-sheet",
         "signature": "export interface SwapSheetProps extends SwapPanelProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    /** Accessible name of the sheet; not drawn. */\n    title: string;\n    /** One element that opens the sheet and accepts a ref. */\n    trigger?: React.ReactNode;\n}"
       },
       "SwapSheet": {
-        "entry": "recipes/swap-sheet",
+        "entry": "blocks/swap-sheet",
         "signature": "export declare function SwapSheet({ open, onOpenChange, title, trigger, view: viewProp, onViewChange, ...panel }: SwapSheetProps): React.JSX.Element;"
       },
       "AnimatedNumberToken": {
@@ -580,6 +744,38 @@
       }
     },
     "native": {
+      "AssetBalanceRow": {
+        "entry": "asset-balance-row",
+        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, onSelect, testID }: AssetBalanceRowProps): React.JSX.Element;"
+      },
+      "AssetArtwork": {
+        "entry": "asset-balance-row",
+        "signature": "export type AssetArtwork = string | React.ReactElement;"
+      },
+      "AssetBalanceRowProps": {
+        "entry": "asset-balance-row",
+        "signature": "export interface AssetBalanceRowProps {\n    name: string;\n    symbol: string;\n    /** Without artwork the avatar shows the first three letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. */\n    value?: number | null;\n    /** Holding in token units; omit to show the value alone. */\n    balance?: number | null;\n    /** Format of the units line; default `{maximumFractionDigits:6}`. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** Makes the row a button. */\n    onSelect?: () => void;\n    testID?: string;\n}"
+      },
+      "AccountAsset": {
+        "entry": "account-card",
+        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit. */\n    price?: number | null;\n    /** USD value; defaults to balance × price. */\n    value?: number | null;\n}"
+      },
+      "AccountCardProps": {
+        "entry": "account-card",
+        "signature": "export interface AccountCardProps {\n    /** Defaults to the localized \"Account\". */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with WalletAddress. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars; defaults to the sum of the asset values. `null` shows it as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset pinned first; default 'USDC'. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    depositLabel?: string;\n    /** Makes each row a button. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n    testID?: string;\n}"
+      },
+      "assetValue": {
+        "entry": "account-card",
+        "signature": "export declare const assetValue: (asset: AccountAsset) => number | null;"
+      },
+      "accountRows": {
+        "entry": "account-card",
+        "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
+      },
+      "AccountCard": {
+        "entry": "account-card",
+        "signature": "export declare function AccountCard({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, testID }: AccountCardProps): React.JSX.Element;"
+      },
       "AnimatedNumberTrend": {
         "entry": "animated-number",
         "signature": "export type AnimatedNumberTrend = NumberTrend;"
@@ -591,6 +787,238 @@
       "AnimatedNumberReadout": {
         "entry": "animated-number",
         "signature": "export declare function AnimatedNumberReadout({ value, options, formattedValue, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "BarMarkTone": {
+        "entry": "bar-mark",
+        "signature": "export type BarMarkTone = 'positive' | 'info' | 'warning' | 'negative' | 'muted' | 'faint';"
+      },
+      "BarMarkElement": {
+        "entry": "bar-mark",
+        "signature": "export interface BarMarkElement {\n    /** Stable key and testID suffix; the index is used when omitted. */\n    id?: string;\n    label: string;\n    /** Any unit, as long as every element uses the same one. Negative and non-finite values count as 0. */\n    value: number;\n    /** Defaults to `barMarkTones[index % 6]`. */\n    tone?: BarMarkTone;\n    /** A host colour for this segment; wins over `tone`. */\n    color?: string;\n    /** Host-formatted amount shown after the label in the legend, such as `12.4 GB`. */\n    detail?: string;\n}"
+      },
+      "BarMarkProps": {
+        "entry": "bar-mark",
+        "signature": "export interface BarMarkProps {\n    title: string;\n    /** Trailing text on the title row, such as `59.2 GB of 64 GB`. A string is drawn muted; an element is rendered as given. */\n    description?: React.ReactNode;\n    elements: readonly BarMarkElement[];\n    /** The whole the bar measures against. When it is larger than the sum of the values the rest is the empty track. */\n    total?: number;\n    /** `false` hides the legend; the card then reads the elements as one label. */\n    legend?: boolean;\n    /** `small` draws a 12 unit bar for a secondary breakdown; the default is 24. */\n    size?: 'default' | 'small';\n    testID?: string;\n}"
+      },
+      "barMarkTones": {
+        "entry": "bar-mark",
+        "signature": "export declare const barMarkTones: readonly BarMarkTone[];"
+      },
+      "barMarkShares": {
+        "entry": "bar-mark",
+        "signature": "export declare function barMarkShares(elements: readonly BarMarkElement[], total?: number): {\n    values: number[];\n    shares: number[];\n    rest: number;\n};"
+      },
+      "BarMark": {
+        "entry": "bar-mark",
+        "signature": "export declare function BarMark({ title, description, elements, total, legend, size, testID }: BarMarkProps): React.JSX.Element;"
+      },
+      "BarPnlSide": {
+        "entry": "bar-pnl",
+        "signature": "export type BarPnlSide = 'long' | 'short';"
+      },
+      "BarPnlResult": {
+        "entry": "bar-pnl",
+        "signature": "export type BarPnlResult = 'profit' | 'loss' | 'flat';"
+      },
+      "BarPnlKind": {
+        "entry": "bar-pnl",
+        "signature": "export type BarPnlKind = 'liquidation' | 'mark' | 'entry';"
+      },
+      "BarPnlProps": {
+        "entry": "bar-pnl",
+        "signature": "export interface BarPnlProps {\n    /** Price the position was opened at. */\n    entry: number;\n    /** Current mark price. `null` or omitted reads as unknown and draws no profit or loss. */\n    mark?: number | null;\n    /** Liquidation price. Omit it, or pass `null`, for a position that cannot be liquidated. */\n    liquidation?: number | null;\n    /** Direction of the position. Defaults to `long` when the liquidation price is below entry (or unknown) and `short` when it is above. */\n    side?: BarPnlSide;\n    /** Host text for the three prices, for example `{liquidation:'Liquidation',mark:'Mark',entry:'Entry'}`. HIG ships no trading terms of its own. */\n    labels: Record<BarPnlKind, string>;\n    /** Heading on the leading edge above the bar, such as `BTC Long 10×`. */\n    title?: string;\n    /** Trailing text on the title row, such as the profit or loss in dollars. A string is drawn muted; an element is rendered as given. */\n    description?: React.ReactNode;\n    /** Format of the three prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Shortens the three prices for narrow screens: `$64,700` for `$64,700.00`, `$142.96`, `$0.4821`. Trailing zeros are dropped. Default `false`. */\n    compact?: boolean;\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and readouts keep their spacing. Default `true`. */\n    surface?: boolean;\n    testID?: string;\n}"
+      },
+      "barPnlCompactOptions": {
+        "entry": "bar-pnl",
+        "signature": "export declare function barPnlCompactOptions(value: number | null | undefined, base?: Intl.NumberFormatOptions): Intl.NumberFormatOptions;"
+      },
+      "barPnlLayout": {
+        "entry": "bar-pnl",
+        "signature": "export declare function barPnlLayout({ entry, mark, liquidation, side }: {\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    side?: BarPnlSide;\n}): {\n    side: BarPnlSide;\n    result: BarPnlResult;\n    positions: Partial<Record<BarPnlKind, number>>;\n    order: BarPnlKind[];\n};"
+      },
+      "BarPnl": {
+        "entry": "bar-pnl",
+        "signature": "export declare function BarPnl({ entry, mark, liquidation, side, labels, title, description, priceOptions, compact, surface, testID }: BarPnlProps): React.JSX.Element;"
+      },
+      "MarketRow": {
+        "entry": "blocks",
+        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): React.JSX.Element;"
+      },
+      "TradeEntry": {
+        "entry": "blocks",
+        "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): React.JSX.Element;"
+      },
+      "InstallCommand": {
+        "entry": "blocks",
+        "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): React.JSX.Element;"
+      },
+      "MarketingHero": {
+        "entry": "blocks",
+        "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
+      },
+      "TokenActionCard": {
+        "entry": "token-action-card",
+        "signature": "export declare function TokenActionCard({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, testID }: TokenActionCardProps): React.JSX.Element;"
+      },
+      "tokenActionLabel": {
+        "entry": "token-action-card",
+        "signature": "export declare const tokenActionLabel: (action: TokenAction, messages: Partial<HIGMessages>) => string;"
+      },
+      "TokenActionCardProps": {
+        "entry": "token-action-card",
+        "signature": "export interface TokenActionCardProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "TokenAction": {
+        "entry": "token-action-card",
+        "signature": "export interface TokenAction {\n    /** 'send' | 'receive' | 'stake' | 'unstake' take a built-in label; any other id needs `label`. */\n    id: TokenActionId | (string & {});\n    label?: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    /** Defaults to `secondary`: the actions are equal choices. */\n    intent?: 'primary' | 'secondary' | 'destructive';\n}"
+      },
+      "TokenActionId": {
+        "entry": "token-action-card",
+        "signature": "export type TokenActionId = 'send' | 'receive' | 'stake' | 'unstake';"
+      },
+      "ManagePosition": {
+        "entry": "manage-position",
+        "signature": "export declare function ManagePosition({ labels, mode, side, entry, mark, liquidation, margin, notional, priceOptions, actions, position, onBack, headerAction, testID }: ManagePositionProps): React.JSX.Element;"
+      },
+      "positionCorridor": {
+        "entry": "manage-position",
+        "signature": "export declare function positionCorridor({ side, entry, mark, liquidation }: {\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n}): {\n    total: number;\n    buffer: number;\n    drawdown: number;\n    share: number | null;\n};"
+      },
+      "ManagePositionProps": {
+        "entry": "manage-position",
+        "signature": "export interface ManagePositionProps {\n    labels: ManagePositionLabels;\n    /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the card is titled with the margin label. */\n    mode?: string;\n    side: 'long' | 'short';\n    entry: number;\n    mark?: number | null;\n    liquidation?: number | null;\n    margin: number;\n    notional: number;\n    /** Format of the three prices. Default `{style:'currency',currency:'USD',maximumFractionDigits:0}`. */\n    priceOptions?: Intl.NumberFormatOptions;\n    actions: readonly ManagePositionAction[];\n    position?: ManagePositionSummary;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "ManagePositionLabels": {
+        "entry": "manage-position",
+        "signature": "export interface ManagePositionLabels {\n    title: string;\n    margin: string;\n    notional: string;\n    liquidation: string;\n    /** `99.8% to liquidation`: receives the formatted percent. */\n    toLiquidation: (percent: string) => string;\n    mark: string;\n    entry: string;\n    /** Accessible words for the direction arrow. */\n    long: string;\n    short: string;\n}"
+      },
+      "ManagePositionAction": {
+        "entry": "manage-position",
+        "signature": "export interface ManagePositionAction {\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      },
+      "ManagePositionSummary": {
+        "entry": "manage-position",
+        "signature": "export interface ManagePositionSummary {\n    name: string;\n    icon?: AssetArtwork;\n    /** 40 reads `40×`. */\n    leverage?: number;\n    /** Size in asset units. */\n    size?: number | null;\n    /** Profit and loss in dollars. */\n    pnl?: number | null;\n    /** Profit and loss as a fraction: -0.0025 reads -0.25%. */\n    pnlPercent?: number | null;\n}"
+      },
+      "TargetCard": {
+        "entry": "target-card",
+        "signature": "export declare function TargetCard({ kind, labels, position, orderType, note, entry, mark, trigger, unit, units, onUnitChange, value, onValueChange, presets, onCustom, priceOptions, onSubmit, submitDisabled, busy, onCancel, onBack, headerAction, testID }: TargetCardProps): React.JSX.Element;"
+      },
+      "targetLayout": {
+        "entry": "target-card",
+        "signature": "export declare function targetLayout({ entry, mark, trigger }: {\n    entry: number;\n    mark?: number | null;\n    trigger?: number | null;\n}): {\n    positions: Partial<Record<TargetPrice, number>>;\n    order: TargetPrice[];\n    from: number;\n    to: number;\n};"
+      },
+      "targetFormat": {
+        "entry": "target-card",
+        "signature": "export declare function targetFormat(unit: TargetUnit, priceOptions?: Intl.NumberFormatOptions, short?: number): Intl.NumberFormatOptions;"
+      },
+      "TargetCardProps": {
+        "entry": "target-card",
+        "signature": "export interface TargetCardProps {\n    kind: TargetKind;\n    labels: TargetCardLabels;\n    /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */\n    position?: string;\n    /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */\n    orderType?: string;\n    /** One sentence under the price card about how the order fills. */\n    note?: string;\n    entry: number;\n    mark?: number | null;\n    /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */\n    trigger?: number | null;\n    unit: TargetUnit;\n    /** Units offered, in order. Defaults to all three; one unit hides the control. */\n    units?: readonly TargetUnit[];\n    onUnitChange?: (unit: TargetUnit) => void;\n    /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */\n    value: number | null;\n    onValueChange?: (value: number) => void;\n    /** Quick choices in the current unit. The one equal to `value` is shown selected. */\n    presets?: readonly number[];\n    /** Shows the Custom row; the host opens its own entry. */\n    onCustom?: () => void;\n    /** Format of prices. Defaults to US dollars. */\n    priceOptions?: Intl.NumberFormatOptions;\n    onSubmit: () => void;\n    /** Defaults to disabled while `value` is unknown. */\n    submitDisabled?: boolean;\n    busy?: boolean;\n    /** Shows Cancel beside the confirming action. */\n    onCancel?: () => void;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "TargetCardLabels": {
+        "entry": "target-card",
+        "signature": "export interface TargetCardLabels {\n    /** Heading: Take Profit, Stop Loss. */\n    title: string;\n    /** The confirming action: Set Take Profit. */\n    submit: string;\n    /** Defaults to the built-in Cancel. */\n    cancel?: string;\n    entry: string;\n    mark: string;\n    /** The price the order triggers at: If triggered. */\n    trigger: string;\n    /** Name of the unit control. */\n    unit: string;\n    units: Record<TargetUnit, string>;\n    /** The row that opens the host's own entry: Custom. */\n    custom: string;\n}"
+      },
+      "TargetKind": {
+        "entry": "target-card",
+        "signature": "export type TargetKind = 'take-profit' | 'stop-loss';"
+      },
+      "TargetUnit": {
+        "entry": "target-card",
+        "signature": "export type TargetUnit = 'dollar' | 'price' | 'percent';"
+      },
+      "TargetPrice": {
+        "entry": "target-card",
+        "signature": "export type TargetPrice = 'entry' | 'mark' | 'trigger';"
+      },
+      "FromPicker": {
+        "entry": "pickers",
+        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, style, ...list }: FromPickerProps): React.JSX.Element;"
+      },
+      "ToPicker": {
+        "entry": "pickers",
+        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, style, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
+      },
+      "FromPickerProps": {
+        "entry": "pickers",
+        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "ToPickerProps": {
+        "entry": "pickers",
+        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "PickerListProps": {
+        "entry": "pickers",
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** Web only: focuses the search with a hardware pointer. Native never raises the keyboard on mount. */\n    autoFocus?: boolean;\n}"
+      },
+      "SwapKeypad": {
+        "entry": "blocks",
+        "signature": "export declare function SwapKeypad({ onKey, label, deleteLabel }: {\n    onKey: (key: string) => void;\n    label: string;\n    deleteLabel: string;\n}): React.JSX.Element;"
+      },
+      "SwapCapsule": {
+        "entry": "blocks",
+        "signature": "export declare function SwapCapsule({ children, onPress, label, testID }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string;\n}): React.JSX.Element;"
+      },
+      "SwapPanel": {
+        "entry": "blocks",
+        "signature": "export declare function SwapPanel({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, onReset, keypad, destination, details, note, noteTone, title, onBack, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, settings, view: viewProp, onViewChange, style }: SwapPanelProps): React.JSX.Element;"
+      },
+      "swapAction": {
+        "entry": "blocks",
+        "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
+      },
+      "SwapPanelProps": {
+        "entry": "blocks",
+        "signature": "export interface SwapPanelProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    submitting?: boolean;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet. `onBack` adds a Back control before it. */\n    title?: string;\n    onBack?: () => void;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum”. Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    keypad?: 'auto' | 'always' | 'never';\n    /** Web only (⌘F / ⌘K picker shortcuts); accepted and ignored so one example serves both platforms. */\n    shortcuts?: boolean;\n    /** Web only (page-wide digit capture); accepted and ignored. */\n    captureKeyboard?: boolean;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    /** The view on show. Pickers and settings push inside the panel's own bounds; Back pops. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Web only; accepted and ignored. */\n    className?: string;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "SwapToken": {
+        "entry": "blocks",
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+      },
+      "SwapArtwork": {
+        "entry": "blocks",
+        "signature": "export type SwapArtwork = string | React.ReactElement;"
+      },
+      "SwapChain": {
+        "entry": "blocks",
+        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
+      },
+      "SwapAction": {
+        "entry": "blocks",
+        "signature": "export type SwapAction = 'send' | 'swap' | 'bridge';"
+      },
+      "SwapDenomination": {
+        "entry": "blocks",
+        "signature": "export type SwapDenomination = 'usd' | 'token';"
+      },
+      "SwapWallet": {
+        "entry": "blocks",
+        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
+      },
+      "SwapFee": {
+        "entry": "blocks",
+        "signature": "export interface SwapFee {\n    label: string;\n    usd: number;\n}"
+      },
+      "SwapFigure": {
+        "entry": "blocks",
+        "signature": "export interface SwapFigure {\n    value: number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
+      "SwapReceive": {
+        "entry": "blocks",
+        "signature": "export interface SwapReceive {\n    address: string;\n    qr?: React.ReactNode; /** Host clipboard adapter. When set, the whole view copies the address. */\n    onCopy?: () => Promise<void> | void;\n}"
+      },
+      "SwapDestination": {
+        "entry": "blocks",
+        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line under the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string | SwapFigure;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
+      },
+      "SwapDetail": {
+        "entry": "blocks",
+        "signature": "export interface SwapDetail {\n    label: string; /** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
+      "SwapView": {
+        "entry": "blocks",
+        "signature": "export type SwapView = 'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees';"
       },
       "BrandMark": {
         "entry": "brand",
@@ -724,6 +1152,22 @@
         "entry": "gesture-sheet",
         "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, contentMode, titleRef, presentation, sheetRef, snapPoints, enableDynamicSizing, maxDynamicContentSize, enableContentPanningGesture, keyboardBehavior, keyboardBlurBehavior, android_keyboardInputMode, initialIndex, dismissible, returnFocusRef, closeLabel, onDismiss, onChange, onHardwareBackPress, topInset, bottomInset, modalRef, handleComponent, handleStyle, handleIndicatorStyle, backgroundComponent, backgroundStyle, containerStyle, animateOnMount, animationConfigs, backdropComponent }: GestureSheetProps): React.JSX.Element;"
       },
+      "ListGroupProps": {
+        "entry": "list-group",
+        "signature": "export interface ListGroupProps {\n    /** Heading above the group, such as “Settings”. Omit it for an untitled group. */\n    title?: string;\n    /** `ListRow` elements. */\n    children?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "ListGroup": {
+        "entry": "list-group",
+        "signature": "export declare function ListGroup({ title, children, testID }: ListGroupProps): React.JSX.Element;"
+      },
+      "ListRowProps": {
+        "entry": "list-group",
+        "signature": "export interface ListRowProps {\n    label: string;\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string is drawn muted and read with the label. */\n    value?: React.ReactNode;\n    /** Anything richer on the trailing edge: icons, a Badge, or a control such as a Switch. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Dims the row and blocks `onSelect`. */\n    disabled?: boolean;\n    testID?: string;\n}"
+      },
+      "ListRow": {
+        "entry": "list-group",
+        "signature": "export declare function ListRow({ label, leading, value, trailing, onSelect, disabled, testID }: ListRowProps): React.JSX.Element;"
+      },
       "Tabs": {
         "entry": "navigation",
         "signature": "export declare function Tabs({ label, items, value, defaultValue, onValueChange }: {\n    label: string;\n    items: readonly {\n        value: string;\n        label: string;\n        content: React.ReactNode;\n        disabled?: boolean;\n    }[];\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (v: string) => void;\n}): React.JSX.Element;"
@@ -775,42 +1219,6 @@
       "HelpText": {
         "entry": "overlay",
         "signature": "export declare function HelpText({ children }: React.PropsWithChildren): React.JSX.Element;"
-      },
-      "SwapChain": {
-        "entry": "pickers",
-        "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
-      },
-      "SwapFigure": {
-        "entry": "pickers",
-        "signature": "export interface SwapFigure {\n    value: number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
-      },
-      "SwapToken": {
-        "entry": "pickers",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
-      },
-      "SwapWallet": {
-        "entry": "pickers",
-        "signature": "export interface SwapWallet {\n    connected: boolean;\n    address?: string | null;\n}"
-      },
-      "PickerListProps": {
-        "entry": "pickers",
-        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** Web only: focuses the search with a hardware pointer. Native never raises the keyboard on mount. */\n    autoFocus?: boolean;\n}"
-      },
-      "FromPickerProps": {
-        "entry": "pickers",
-        "signature": "export interface FromPickerProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    style?: StyleProp<ViewStyle>;\n}"
-      },
-      "FromPicker": {
-        "entry": "pickers",
-        "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, style, ...list }: FromPickerProps): React.JSX.Element;"
-      },
-      "ToPickerProps": {
-        "entry": "pickers",
-        "signature": "export interface ToPickerProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    style?: StyleProp<ViewStyle>;\n}"
-      },
-      "ToPicker": {
-        "entry": "pickers",
-        "signature": "export declare function ToPicker({ address, onAddressChange, addressPlaceholder, onScan, style, tokens, onSelect, ...list }: ToPickerProps): React.JSX.Element;"
       },
       "HIGColorSpace": {
         "entry": "provider",
@@ -903,86 +1311,6 @@
       "Filter": {
         "entry": "radio-group",
         "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange }: FilterProps): React.JSX.Element;"
-      },
-      "MarketRow": {
-        "entry": "recipes",
-        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): React.JSX.Element;"
-      },
-      "BalanceCard": {
-        "entry": "recipes",
-        "signature": "export declare function BalanceCard({ label, balance, stale }: {\n    label: string;\n    balance: number | null;\n    stale?: boolean;\n}): React.JSX.Element;"
-      },
-      "TradeEntry": {
-        "entry": "recipes",
-        "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: {\n    asset: string;\n    amount: string;\n    onAmountChange: (v: string) => void;\n    onConfirm: () => void;\n    busy?: boolean;\n    error?: string;\n    available: string;\n}): React.JSX.Element;"
-      },
-      "InstallCommand": {
-        "entry": "recipes",
-        "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): React.JSX.Element;"
-      },
-      "CodeWindow": {
-        "entry": "recipes",
-        "signature": "export declare function CodeWindow({ language, children }: React.PropsWithChildren<{\n    language: string;\n}>): React.JSX.Element;"
-      },
-      "MarketingHero": {
-        "entry": "recipes",
-        "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
-      },
-      "ActivityList": {
-        "entry": "recipes",
-        "signature": "export declare function ActivityList({ items }: {\n    items: readonly {\n        id: string;\n        label: string;\n        status: string;\n    }[];\n}): React.JSX.Element;"
-      },
-      "SwapKeypad": {
-        "entry": "recipes",
-        "signature": "export declare function SwapKeypad({ onKey, label, deleteLabel }: {\n    onKey: (key: string) => void;\n    label: string;\n    deleteLabel: string;\n}): React.JSX.Element;"
-      },
-      "SwapCapsule": {
-        "entry": "recipes",
-        "signature": "export declare function SwapCapsule({ children, onPress, label, testID }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string;\n}): React.JSX.Element;"
-      },
-      "SwapPanel": {
-        "entry": "recipes",
-        "signature": "export declare function SwapPanel({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, onReset, keypad, destination, details, note, noteTone, title, onBack, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, settings, view: viewProp, onViewChange, style }: SwapPanelProps): React.JSX.Element;"
-      },
-      "swapAction": {
-        "entry": "recipes",
-        "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
-      },
-      "SwapPanelProps": {
-        "entry": "recipes",
-        "signature": "export interface SwapPanelProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    submitting?: boolean;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet. `onBack` adds a Back control before it. */\n    title?: string;\n    onBack?: () => void;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum”. Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    keypad?: 'auto' | 'always' | 'never';\n    /** Web only (⌘F / ⌘K picker shortcuts); accepted and ignored so one example serves both platforms. */\n    shortcuts?: boolean;\n    /** Web only (page-wide digit capture); accepted and ignored. */\n    captureKeyboard?: boolean;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    /** The view on show. Pickers and settings push inside the panel's own bounds; Back pops. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Web only; accepted and ignored. */\n    className?: string;\n    style?: StyleProp<ViewStyle>;\n}"
-      },
-      "SwapArtwork": {
-        "entry": "recipes",
-        "signature": "export type SwapArtwork = string | React.ReactElement;"
-      },
-      "SwapAction": {
-        "entry": "recipes",
-        "signature": "export type SwapAction = 'send' | 'swap' | 'bridge';"
-      },
-      "SwapDenomination": {
-        "entry": "recipes",
-        "signature": "export type SwapDenomination = 'usd' | 'token';"
-      },
-      "SwapFee": {
-        "entry": "recipes",
-        "signature": "export interface SwapFee {\n    label: string;\n    usd: number;\n}"
-      },
-      "SwapReceive": {
-        "entry": "recipes",
-        "signature": "export interface SwapReceive {\n    address: string;\n    qr?: React.ReactNode; /** Host clipboard adapter. When set, the whole view copies the address. */\n    onCopy?: () => Promise<void> | void;\n}"
-      },
-      "SwapDestination": {
-        "entry": "recipes",
-        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line under the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string | SwapFigure;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
-      },
-      "SwapDetail": {
-        "entry": "recipes",
-        "signature": "export interface SwapDetail {\n    label: string; /** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
-      },
-      "SwapView": {
-        "entry": "recipes",
-        "signature": "export type SwapView = 'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees';"
       },
       "Select": {
         "entry": "select",
@@ -1187,6 +1515,10 @@
       "ChevronIcon": {
         "entry": "icons",
         "signature": "export declare function ChevronIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "QrIcon": {
+        "entry": "icons",
+        "signature": "export declare function QrIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
       "CloseIcon": {
         "entry": "icons",

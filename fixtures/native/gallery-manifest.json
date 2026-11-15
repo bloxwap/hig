@@ -274,6 +274,23 @@
       "support": "renderer"
     },
     {
+      "name": "ListGroup",
+      "states": [
+        "default",
+        "untitled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ListRow",
+      "states": [
+        "default",
+        "disabled",
+        "static"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Badge",
       "states": [
         "default"
@@ -426,6 +443,34 @@
       "support": "renderer"
     },
     {
+      "name": "BarMark",
+      "states": [
+        "default",
+        "remaining",
+        "no-legend"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "BarPnl",
+      "states": [
+        "default",
+        "loss",
+        "short",
+        "no-liquidation",
+        "compact"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "AssetBalanceRow",
+      "states": [
+        "default",
+        "value-only"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "VerticalAddress",
       "states": [
         "default"
@@ -462,11 +507,34 @@
       "support": "renderer"
     },
     {
-      "name": "BalanceCard",
+      "name": "AccountCard",
       "states": [
         "default",
-        "error",
         "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ManagePosition",
+      "states": [
+        "default",
+        "at-risk"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TargetCard",
+      "states": [
+        "default",
+        "stop-loss"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TokenActionCard",
+      "states": [
+        "default",
+        "single"
       ],
       "support": "renderer"
     },
@@ -523,24 +591,9 @@
       "support": "renderer"
     },
     {
-      "name": "CodeWindow",
-      "states": [
-        "default"
-      ],
-      "support": "renderer"
-    },
-    {
       "name": "MarketingHero",
       "states": [
         "default"
-      ],
-      "support": "renderer"
-    },
-    {
-      "name": "ActivityList",
-      "states": [
-        "default",
-        "empty"
       ],
       "support": "renderer"
     },

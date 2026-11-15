@@ -14,7 +14,7 @@ export interface SwapSheetProps extends SwapPanelProps {
 /**
  * SwapPanel presented in a gesture sheet (Vaul). Token pickers and settings push inside the same sheet, which resizes to
  * each view. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet.
- * Lives in its own entry so the recipes aggregate stays free of the optional Vaul peer.
+ * Lives in its own entry so the blocks aggregate stays free of the optional Vaul peer.
  */
 export function SwapSheet({open,onOpenChange,title,trigger,view:viewProp,onViewChange,...panel}:SwapSheetProps){
  const [view,show]=useControllable<SwapView>(viewProp,'main',onViewChange);
