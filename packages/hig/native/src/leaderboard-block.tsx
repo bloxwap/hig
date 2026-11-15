@@ -52,7 +52,7 @@ export interface LeaderboardEntry {
  /** Marks the viewer's own row: the name and score take the action colour. */
  you?:boolean;
 }
-export interface LeaderboardCardProps {
+export interface LeaderboardBlockProps {
  /** Heading: Leaderboard. */
  title:string;
  promo?:LeaderboardPromo;
@@ -87,7 +87,7 @@ export function leaderboardProgress(amount:number|null|undefined,goal:number|nul
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function LeaderboardCard({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,testID}:LeaderboardCardProps){
+export function LeaderboardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,testID}:LeaderboardBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale,monoFontFamily}=useHIG();
  const money=promo?.amountOptions??wholeDollars,reached=promo?leaderboardProgress(promo.amount,promo.goal):null;
  const caps={fontFamily:monoFontFamily,fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase'} as const;

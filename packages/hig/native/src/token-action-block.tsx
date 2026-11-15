@@ -19,7 +19,7 @@ export interface TokenAction {
  /** Defaults to `secondary`: the actions are equal choices. */
  intent?:'primary'|'secondary'|'destructive';
 }
-export interface TokenActionCardProps {
+export interface TokenActionBlockProps {
  /** Heading, usually the ticker: HYPE. */
  symbol:string;
  /** Title of the assets bar: Hyperliquid. */
@@ -44,7 +44,7 @@ const held=(value:number)=>Number.isFinite(value)&&value>0;
 /** An action's text: its own `label`, else the built-in name of its id, else the id. */
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token as a screen: a header, where it is held, which chains it sits on, then what the user can do with it. */
-export function TokenActionCard({symbol,name,value,assets,chains,chainsTitle,actions,onBack,headerAction,testID}:TokenActionCardProps){
+export function TokenActionBlock({symbol,name,value,assets,chains,chainsTitle,actions,onBack,headerAction,testID}:TokenActionBlockProps){
  const colors=useColors(),t=useMessages(),{direction,locale}=useHIG();
  const total=value!==undefined?value:assets.reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  return <View testID={testID} style={{padding:16}}>

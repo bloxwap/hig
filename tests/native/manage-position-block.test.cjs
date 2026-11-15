@@ -1,9 +1,9 @@
-/** Native ManagePositionCard: header, margin and notional under the share left before liquidation, the price corridor, the actions, then the position row. */
+/** Native ManagePositionBlock: header, margin and notional under the share left before liquidation, the price corridor, the actions, then the position row. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {ManagePositionCard,positionCorridor}=require('../../packages/hig/native/src/manage-position-card');
+const {ManagePositionBlock,positionCorridor}=require('../../packages/hig/native/src/manage-position-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {BarMark}=require('../../packages/hig/native/src/bar-mark');
 const {BarPnl}=require('../../packages/hig/native/src/bar-pnl');
@@ -14,7 +14,7 @@ let root;
 // The host owns every trading word.
 const labels={title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>`${percent} to liquidation`,mark:'Mark',entry:'Entry',long:'Long',short:'Short'};
 const base={labels,side:'long',entry:64700,mark:64696,liquidation:63082,margin:10,notional:399.98,actions:[]};
-function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(ManagePositionCard,{...base,...props})));});return root.root;}
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(ManagePositionBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
@@ -47,7 +47,7 @@ it('shows the host title as the heading, Back only with onBack, and the host act
  const back=jest.fn();view=mount({onBack:back,headerAction:h(View,{testID:'share'})});
  expect(has(view,'share')).toBe(true);const button=all(view,'manage-back')[0];expect(button.props.label??button.props.accessibilityLabel).toBe('Back');
  act(()=>{all(view,'manage-back').find(node=>node.props.onPress).props.onPress({});});expect(back).toHaveBeenCalledTimes(1);
- expect(blocks.ManagePositionCard).toBe(ManagePositionCard);expect(blocks.positionCorridor).toBe(positionCorridor);
+ expect(blocks.ManagePositionBlock).toBe(ManagePositionBlock);expect(blocks.positionCorridor).toBe(positionCorridor);
 });
 
 it('titles the first card with the mode, splits its bar between margin and notional, and reads the share left before liquidation',()=>{
@@ -89,7 +89,7 @@ it('draws the prices as a BarPnl without a card, compact, with the host labels a
 });
 it('keeps the same live numbers when the figures change',()=>{
  mount();const view=root.root,left=flows(view,'manage-to-liquidation')[0];
- act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(ManagePositionCard,{...base,mark:64000,notional:410})));});
+ act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(ManagePositionBlock,{...base,mark:64000,notional:410})));});
  expect(flows(root.root,'manage-to-liquidation')[0]).toBe(left);expect(bars(root.root)[0].props.elements[1]).toMatchObject({value:400,detail:'$410.00'});
  expect(host(root.root,'manage-to-liquidation').props.accessibilityLabel).toBe('56.7% to liquidation');
 });

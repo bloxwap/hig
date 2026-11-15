@@ -53,7 +53,7 @@ The `state` slot is content for one cell spanning all columns; it can contain an
 
 ### AssetBalanceRow
 
-`AssetBalanceRow` is one holding in a list: round artwork, the asset's `name` over its `symbol`, and on the trailing edge its dollar `value` over its `balance` in token units. It is the row `AccountCard` is made of, and lives in its own entry: `@bloxwap/hig/react/asset-balance-row` and `@bloxwap/hig/native/asset-balance-row`.
+`AssetBalanceRow` is one holding in a list: round artwork, the asset's `name` over its `symbol`, and on the trailing edge its dollar `value` over its `balance` in token units. It is the row `AccountBlock` is made of, and lives in its own entry: `@bloxwap/hig/react/asset-balance-row` and `@bloxwap/hig/native/asset-balance-row`.
 
 ```tsx
 <AssetBalanceRow name="Hyperliquid" symbol="HYPE" value={759} balance={13.2} onSelect={open}/>
@@ -84,7 +84,7 @@ import {BarMark} from '@bloxwap/hig/react/bar-mark';
 - **Colour.** An element takes a `tone` role: `positive`, `info`, `warning`, `negative`, `muted` or `faint`. Without one, elements take those tones in that order and repeat. `color` is a host hex for a category outside the roles and wins over `tone`. Do not rely on colour alone: the legend always names each part.
 - **Whole.** `total` is the whole the elements are parts of. When it is larger than their sum, the remainder stays empty track, as in margin used out of a limit. Without it the elements fill the bar.
 - **Anatomy.** The bar is 24 units high with an 8-unit radius; segments are separated by a 2-unit gap and a non-zero segment is never thinner than 3 units. The layout follows the writing direction: the first element starts on the leading edge.
-- **Card.** `surface={false}` draws no card: no surface fill, padding or radius, with the title row, bar and legend keeping their spacing. Use it for read-only data that sits directly on a screen, as `ManagePositionCard` does; `BarPnl` has the same setting.
+- **Card.** `surface={false}` draws no card: no surface fill, padding or radius, with the title row, bar and legend keeping their spacing. Use it for read-only data that sits directly on a screen, as `ManagePositionBlock` does; `BarPnl` has the same setting.
 - **Size.** `size='small'` draws a 12-unit bar with a 6-unit radius for a secondary breakdown under a main one.
 - **Legend.** A wrapping row of colour dots and labels under the bar. `legend={false}` hides it visually; the labels and shares stay available to assistive technology.
 - **Accessibility.** The card is a group named by its title. The bar is decorative. Each legend item reads its label, its `detail`, and its share as a percent in the provider locale.

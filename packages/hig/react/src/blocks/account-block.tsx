@@ -17,7 +17,7 @@ export interface AccountAsset {
  /** Dollar value of the holding. Defaults to `balance × price`. */
  value?:number|null;
 }
-export interface AccountCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
+export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  /** Heading. Defaults to the built-in “Account”. */
  title?:string;
  /** Shows Back on the leading edge of the header. */
@@ -50,11 +50,11 @@ export function accountRows(assets:readonly AccountAsset[],pinnedSymbol='USDC'):
 }
 /** An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. */
 const qrIcon=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinejoin='round'><rect x='3' y='3' width='5.5' height='5.5' rx='1'/><rect x='11.5' y='3' width='5.5' height='5.5' rx='1'/><rect x='3' y='11.5' width='5.5' height='5.5' rx='1'/><path d='M11.5 11.5h2v2h-2zM15 15h2v2h-2z' fill='currentColor' stroke='none'/></svg>;
-export function AccountCard({title,onBack,onShowAddress,headerAction,balance,assets,pinnedSymbol='USDC',onDeposit,depositLabel,onAssetSelect,className,...rest}:AccountCardProps){
+export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets,pinnedSymbol='USDC',onDeposit,depositLabel,onAssetSelect,className,...rest}:AccountBlockProps){
  const {messages}=useHIG();const {pinned,rest:others}=accountRows(assets,pinnedSymbol);
  const total=balance!==undefined?balance:assets.reduce((sum,asset)=>sum+(assetValue(asset)??0),0);
  const row=(asset:AccountAsset,pin:boolean)=><li key={asset.id} data-pinned={pin||undefined}><AssetBalanceRow name={asset.name} symbol={asset.symbol} icon={asset.icon} value={assetValue(asset)} balance={pin?undefined:asset.balance??null} onSelect={onAssetSelect&&(()=>onAssetSelect(asset))}/></li>;
- return <section {...rest} className={`hig-account-card${className?` ${className}`:''}`}>
+ return <section {...rest} className={`hig-account-block${className?` ${className}`:''}`}>
   <ScreenHeader title={title??messages.account??en.account} onBack={onBack} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}</button>)}/>
   <div className='hig-account-summary'>
    <div className='hig-account-balance'><AnimatedNumberReadout value={total} label={messages.accountBalance??en.accountBalance} options={usd}/></div>

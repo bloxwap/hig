@@ -9,7 +9,7 @@ import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapIcon,SwapNumber} from './swap/shared.js';
 /** The words of the block. They are trading terms, so the host supplies them in its own vocabulary and language; HIG ships none. */
-export interface ManagePositionCardLabels {
+export interface ManagePositionBlockLabels {
  title:string;margin:string;
  notional:string;
  liquidation:string;
@@ -19,9 +19,9 @@ export interface ManagePositionCardLabels {
  /** Accessible words for the direction arrow. */
  long:string;short:string;
 }
-export interface ManagePositionCardAction {id:string;label:string;onSelect:()=>void;disabled?:boolean}
+export interface ManagePositionBlockAction {id:string;label:string;onSelect:()=>void;disabled?:boolean}
 /** The position being managed, shown as the row under the actions. */
-export interface ManagePositionCardSummary {
+export interface ManagePositionBlockSummary {
  name:string;icon?:AssetArtwork;
  /** 40 reads `40×`. */
  leverage?:number;
@@ -32,15 +32,15 @@ export interface ManagePositionCardSummary {
  /** Profit and loss as a fraction: -0.0025 reads -0.25%. */
  pnlPercent?:number|null;
 }
-export interface ManagePositionCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
- labels:ManagePositionCardLabels;
+export interface ManagePositionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
+ labels:ManagePositionBlockLabels;
  /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the title is the margin label. */
  mode?:string;
  side:'long'|'short';entry:number;mark?:number|null;liquidation?:number|null;margin:number;notional:number;
  /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */
  priceOptions?:Intl.NumberFormatOptions;
- actions:readonly ManagePositionCardAction[];
- position?:ManagePositionCardSummary;
+ actions:readonly ManagePositionBlockAction[];
+ position?:ManagePositionBlockSummary;
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
@@ -54,10 +54,10 @@ export function positionCorridor({side,entry,mark,liquidation}:{side:'long'|'sho
  return {total:span,buffer,drawdown:span-buffer,share:buffer/span};
 }
 /** Manage one open position: margin against notional (with the share left before liquidation) as a `BarMark` and the liquidation, mark and entry prices as a `BarPnl`, both drawn without a card because they are read-only, the host's actions as rows, and the position itself underneath. */
-export function ManagePositionCard({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,className,...rest}:ManagePositionCardProps){
+export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,className,...rest}:ManagePositionBlockProps){
  const {locale}=useHIG();const corridor=positionCorridor({side,entry,mark,liquidation});
  const pnlTone=!known(position?.pnl)||position.pnl===0?undefined:position.pnl>0?'up':'down';
- return <section {...rest} className={`hig-manage-position-card${className?` ${className}`:''}`}>
+ return <section {...rest} className={`hig-manage-position-block${className?` ${className}`:''}`}>
   <ScreenHeader title={labels.title} onBack={onBack} action={headerAction}/>
   <div className='hig-token-bars'>
    <BarMark surface={false} title={mode??labels.margin} description={corridor.share===null?labels.toLiquidation('—'):<SwapNumber template={labels.toLiquidation} value={Number((corridor.share*100).toFixed(1))} suffix='%' options={{maximumFractionDigits:1}}/>} elements={[{id:'margin',label:labels.margin,value:margin,detail:formatNumber(margin,locale,usd),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:known(notional)?formatNumber(notional,locale,usd):'—',tone:'positive'}]}/>

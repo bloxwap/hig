@@ -4,7 +4,7 @@ import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {LanguageCard,filterLanguages,type LanguageOption} from '../packages/hig/react/src/blocks/language-card';
+import {LanguageBlock,filterLanguages,type LanguageOption} from '../packages/hig/react/src/blocks/language-block';
 afterEach(cleanup);
 const languages:LanguageOption[]=[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'fr',name:'Français',description:'French',flag:'/fr.svg'}];
 describe('filterLanguages',()=>{
@@ -16,9 +16,9 @@ describe('filterLanguages',()=>{
   expect(filterLanguages(languages,'klingon')).toEqual([]);
  });
 });
-describe('LanguageCard',()=>{
+describe('LanguageBlock',()=>{
  it('shows the header, a search field and each language as a radio with a check on the one in use',async()=>{
-  const select=vi.fn(),back=vi.fn();render(<LanguageCard languages={languages} value='en' onSelect={select} onBack={back}/>);
+  const select=vi.fn(),back=vi.fn();render(<LanguageBlock languages={languages} value='en' onSelect={select} onBack={back}/>);
   expect(screen.getByRole('heading',{name:'Language'})).toBeTruthy();await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(back).toHaveBeenCalledTimes(1);
   expect(screen.getByRole('searchbox',{name:'Search languages'}).getAttribute('placeholder')).toBe('Search languages');
   const group=screen.getByRole('radiogroup',{name:'Language'});const radios=within(group).getAllByRole('radio');
@@ -29,7 +29,7 @@ describe('LanguageCard',()=>{
   await userEvent.click(radios[1]);expect(select).toHaveBeenCalledWith(languages[1]);
  });
  it('filters as the user types, announces no results, and chooses with the keyboard from the field',async()=>{
-  const select=vi.fn();render(<LanguageCard languages={languages} onSelect={select}/>);
+  const select=vi.fn();render(<LanguageBlock languages={languages} onSelect={select}/>);
   const field=screen.getByRole('searchbox');
   await userEvent.type(field,'sh');expect(screen.getAllByRole('radio').map(radio=>radio.getAttribute('lang'))).toEqual(['en','es']);
   await userEvent.keyboard('{Enter}');expect(select).not.toHaveBeenCalled();
@@ -38,9 +38,9 @@ describe('LanguageCard',()=>{
   await userEvent.clear(field);await userEvent.type(field,'klingon');expect(screen.queryByRole('radiogroup')).toBeNull();expect(screen.getByRole('status').textContent).toBe('No results');
  });
  it('leaves out the search field with search={false}, takes a title and a header action, and localizes its built-in text',()=>{
-  const view=render(<LanguageCard search={false} title='Idioma' headerAction={<button type='button'>Close</button>} languages={languages} onSelect={()=>{}}/>);
+  const view=render(<LanguageBlock search={false} title='Idioma' headerAction={<button type='button'>Close</button>} languages={languages} onSelect={()=>{}}/>);
   expect(screen.queryByRole('searchbox')).toBeNull();expect(screen.getByRole('radiogroup',{name:'Idioma'})).toBeTruthy();expect(screen.getByRole('button',{name:'Close'})).toBeTruthy();
-  view.rerender(<HIGProvider messages={{language:'Langue',searchLanguages:'Rechercher une langue'}}><LanguageCard languages={languages} onSelect={()=>{}}/></HIGProvider>);
+  view.rerender(<HIGProvider messages={{language:'Langue',searchLanguages:'Rechercher une langue'}}><LanguageBlock languages={languages} onSelect={()=>{}}/></HIGProvider>);
   expect(screen.getByRole('heading',{name:'Langue'})).toBeTruthy();expect(screen.getByRole('searchbox',{name:'Rechercher une langue'})).toBeTruthy();
  });
 });

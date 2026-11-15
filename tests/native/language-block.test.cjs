@@ -1,13 +1,13 @@
-/** Native LanguageCard: a header, a search field and each language as a radio row. */
+/** Native LanguageBlock: a header, a search field and each language as a radio row. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {TextInput,View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {LanguageCard,filterLanguages}=require('../../packages/hig/native/src/language-card');
+const {LanguageBlock,filterLanguages}=require('../../packages/hig/native/src/language-block');
 const h=React.createElement;
 let root;
 const languages=[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'fr',name:'Français',description:'French'}];
-function mount(props,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,provider,h(LanguageCard,{languages,testID:'lang',onSelect(){},...props})));});return root.root;}
+function mount(props,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,provider,h(LanguageBlock,{languages,testID:'lang',onSelect(){},...props})));});return root.root;}
 const all=(tree,testID)=>tree.findAll(node=>node.props.testID===testID);
 const has=(tree,testID)=>all(tree,testID).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');

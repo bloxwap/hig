@@ -22,7 +22,7 @@ export interface TradeHistoryDetailLabels {
 /** One label and value row. A number is formatted with `options` between `prefix` and `suffix`; a string is drawn as given, for example a duration the host has already formatted. */
 export interface TradeHistoryDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 export interface TradeHistoryAction {id:string;label:string;onSelect:()=>void;intent?:'primary'|'secondary';disabled?:boolean;busy?:boolean}
-export interface TradeHistoryDetailCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
+export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  labels:TradeHistoryDetailLabels;
  /** Asset name: Amazon. */
  name:string;icon?:AssetArtwork;
@@ -47,7 +47,7 @@ export interface TradeHistoryDetailCardProps extends Omit<React.HTMLAttributes<H
 }
 const pnlFormat={style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:4} as const,percentFormat={style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'} as const;
 /** The full record of one closed trade, drawn on the screen without cards because none of it is pressable: the asset with its side and leverage on one line, the net result as the headline figure, a bar from the entry price to the exit price, the other figures as a compact grid, and the host's actions. */
-export function TradeHistoryDetailCard({labels,name,icon,side,leverage,pnl,pnlPercent,entry,exit,priceOptions,details,actions=[],onBack,headerAction,className,...rest}:TradeHistoryDetailCardProps){
+export function TradeHistoryDetailBlock({labels,name,icon,side,leverage,pnl,pnlPercent,entry,exit,priceOptions,details,actions=[],onBack,headerAction,className,...rest}:TradeHistoryDetailBlockProps){
  const {locale}=useHIG();const tone=pnl==null||pnl===0?undefined:pnl>0?'up':'down';
  return <section {...rest} className={`hig-trade-detail${className?` ${className}`:''}`}>
   <ScreenHeader title={labels.title} onBack={onBack} action={headerAction}/>

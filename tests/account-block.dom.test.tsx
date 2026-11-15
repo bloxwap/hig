@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {AssetBalanceRow} from '../packages/hig/react/src/asset-balance-row';
-import {AccountCard,accountRows,assetValue,type AccountAsset} from '../packages/hig/react/src/blocks/account-card';
+import {AccountBlock,accountRows,assetValue,type AccountAsset} from '../packages/hig/react/src/blocks/account-block';
 afterEach(cleanup);
 /** What is read and drawn once: the text without the decorative copy of each animated number. */
 const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;for(const visual of copy.querySelectorAll('.hig-animated-number-visual'))visual.remove();return copy.textContent;};
@@ -52,21 +52,21 @@ describe('AssetBalanceRow',()=>{
   delete (HTMLElement.prototype as {animate?:unknown}).animate;
  });
 });
-describe('AccountCard',()=>{
+describe('AccountBlock',()=>{
  it('shows a QR button on the trailing edge of the header that asks the host for the account address; headerAction replaces it',async()=>{
-  const show=vi.fn();const view=render(<AccountCard assets={[usdc]} onShowAddress={show} onDeposit={()=>{}}/>);
+  const show=vi.fn();const view=render(<AccountBlock assets={[usdc]} onShowAddress={show} onDeposit={()=>{}}/>);
   const side=()=>document.querySelectorAll('.hig-screen-header-side')[1] as HTMLElement;
   const button=within(side()).getByRole('button',{name:'Show account address'});expect(button.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
   expect(button.compareDocumentPosition(screen.getByRole('button',{name:'Deposit'}))&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   await userEvent.click(button);expect(show).toHaveBeenCalledTimes(1);
-  view.rerender(<AccountCard assets={[usdc]} onShowAddress={show} headerAction={<button type='button'>Scan</button>}/>);
+  view.rerender(<AccountBlock assets={[usdc]} onShowAddress={show} headerAction={<button type='button'>Scan</button>}/>);
   expect(within(side()).queryByRole('button',{name:'Show account address'})).toBeNull();expect(within(side()).getByRole('button',{name:'Scan'})).toBeTruthy();
-  view.rerender(<AccountCard assets={[usdc]}/>);expect(side().children).toHaveLength(0);
-  view.rerender(<HIGProvider messages={{showAddress:'Afficher l’adresse'}}><AccountCard assets={[usdc]} onShowAddress={show}/></HIGProvider>);expect(screen.getByRole('button',{name:'Afficher l’adresse'})).toBeTruthy();
+  view.rerender(<AccountBlock assets={[usdc]}/>);expect(side().children).toHaveLength(0);
+  view.rerender(<HIGProvider messages={{showAddress:'Afficher l’adresse'}}><AccountBlock assets={[usdc]} onShowAddress={show}/></HIGProvider>);expect(screen.getByRole('button',{name:'Afficher l’adresse'})).toBeTruthy();
  });
  it('lays out the header, the total with Deposit, the pinned dollar row, then the holdings by value',async()=>{
   const back=vi.fn(),deposit=vi.fn(),select=vi.fn();
-  render(<AccountCard assets={[sol,eth,usdc,hype]} onBack={back} onDeposit={deposit} onAssetSelect={select} headerAction={<button type='button'>Scan</button>}/>);
+  render(<AccountBlock assets={[sol,eth,usdc,hype]} onBack={back} onDeposit={deposit} onAssetSelect={select} headerAction={<button type='button'>Scan</button>}/>);
   expect(screen.getByRole('heading',{name:'Account'})).toBeTruthy();
   const sides=document.querySelectorAll('.hig-screen-header-side');expect(within(sides[0] as HTMLElement).getByRole('button',{name:'Back'})).toBeTruthy();expect(within(sides[1] as HTMLElement).getByRole('button',{name:'Scan'})).toBeTruthy();
   // 100.33 + 1.42 × 142.96 + 13.2 × 57.5 + 0.05 × 3521.12
@@ -77,16 +77,16 @@ describe('AccountCard',()=>{
   expect(back).toHaveBeenCalledTimes(1);expect(deposit).toHaveBeenCalledTimes(1);expect(select).toHaveBeenCalledWith(hype);
  });
  it('always shows the pinned row, and leaves out Back, Deposit and row buttons the host did not ask for',()=>{
-  render(<AccountCard assets={[]}/>);
+  render(<AccountBlock assets={[]}/>);
   expect(screen.getAllByRole('listitem').map(spoken)).toEqual(['USDUSD CoinUSDC$0.00']);expect(spoken(document.querySelector('.hig-account-balance')!)).toBe('Total balance: $0.00');
   expect(screen.queryByRole('button')).toBeNull();expect(document.querySelectorAll('.hig-screen-header-side')).toHaveLength(2);
  });
  it('takes a host total, title, deposit text, pinned symbol and translations',()=>{
-  const view=render(<AccountCard assets={[usdc,sol]} balance={5000} title='Trading' depositLabel='Add funds' onDeposit={()=>{}} pinnedSymbol='SOL'/>);
+  const view=render(<AccountBlock assets={[usdc,sol]} balance={5000} title='Trading' depositLabel='Add funds' onDeposit={()=>{}} pinnedSymbol='SOL'/>);
   expect(screen.getByRole('heading',{name:'Trading'})).toBeTruthy();expect(screen.getByRole('button',{name:'Add funds'})).toBeTruthy();expect(spoken(document.querySelector('.hig-account-balance')!)).toBe('Total balance: $5,000.00');
   expect(screen.getAllByRole('listitem').map(spoken)).toEqual(['SOLSolanaSOL$203.00','USDUSD CoinUSDC$100.33100.33']);
-  view.rerender(<AccountCard assets={[usdc]} balance={null}/>);expect(spoken(document.querySelector('.hig-account-balance')!)).toBe('Total balance: —');
-  view.rerender(<HIGProvider messages={{account:'Compte',deposit:'Déposer',accountBalance:'Solde total',back:'Retour'}}><AccountCard assets={[usdc]} onBack={()=>{}} onDeposit={()=>{}}/></HIGProvider>);
+  view.rerender(<AccountBlock assets={[usdc]} balance={null}/>);expect(spoken(document.querySelector('.hig-account-balance')!)).toBe('Total balance: —');
+  view.rerender(<HIGProvider messages={{account:'Compte',deposit:'Déposer',accountBalance:'Solde total',back:'Retour'}}><AccountBlock assets={[usdc]} onBack={()=>{}} onDeposit={()=>{}}/></HIGProvider>);
   expect(screen.getByRole('heading',{name:'Compte'})).toBeTruthy();expect(screen.getByRole('button',{name:'Déposer'})).toBeTruthy();expect(screen.getByRole('button',{name:'Retour'})).toBeTruthy();expect(spoken(document.querySelector('.hig-account-balance')!)).toBe('Solde total: $100.33');
  });
  it('rows are concentric capsules 8 apart and the layout follows the writing direction',()=>{

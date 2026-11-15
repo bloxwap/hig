@@ -1,9 +1,9 @@
-/** Native TradeHistoryDetailCard: header, the asset with its side, the net result, the host's rows, then the host's actions side by side. */
+/** Native TradeHistoryDetailBlock: header, the asset with its side, the net result, the host's rows, then the host's actions side by side. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {TradeHistoryDetailCard}=require('../../packages/hig/native/src/trade-history-detail-card');
+const {TradeHistoryDetailBlock}=require('../../packages/hig/native/src/trade-history-detail-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
@@ -14,7 +14,7 @@ let root;
 const labels={title:'Trade',netPnl:'Net PnL',onMargin:percent=>`${percent} on margin`,long:'Long',short:'Short'};
 const details=[{label:'Entry',value:267.6,options:{style:'currency',currency:'USD'}},{label:'Size',value:3.734,suffix:' AMZN',options:{maximumFractionDigits:6}},{label:'Held',value:'38m 20s'}];
 const base={labels,name:'Amazon',side:'short',leverage:20,pnl:1.418,pnlPercent:0.0284,details};
-function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(TradeHistoryDetailCard,{...base,...props})));});return root.root;}
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(TradeHistoryDetailBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
@@ -30,7 +30,7 @@ it('shows the host title as the heading, Back only with onBack, and the host act
  const back=jest.fn();view=mount({onBack:back,headerAction:h(View,{testID:'share'})});
  const control=view.findAll(node=>node.props.testID==='trade-back'&&typeof node.props.onPress==='function')[0];expect(control.props.label??control.props.accessibilityLabel).toBe('Back');
  act(()=>control.props.onPress());expect(back).toHaveBeenCalledTimes(1);expect(has(host(view,'trade-header'),'share')).toBe(true);
- expect(blocks.TradeHistoryDetailCard).toBe(TradeHistoryDetailCard);
+ expect(blocks.TradeHistoryDetailBlock).toBe(TradeHistoryDetailBlock);
 });
 it('shows the asset with an arrow and the host side word in the direction colour, then the leverage',()=>{
  let view=mount();const row=host(view,'trade-asset');

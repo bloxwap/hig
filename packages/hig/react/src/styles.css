@@ -532,8 +532,8 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-asset-row strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 .hig-asset-row .hig-number { font-family:inherit; }
 /* ScreenHeader: Back, a centred title and a trailing control, shared by the cards that are their own screen.
-   AccountCard: that header, the total with the deposit action, then the holdings 8px apart. */
-.hig-account-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
+   AccountBlock: that header, the total with the deposit action, then the holdings 8px apart. */
+.hig-account-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-screen-header { display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;min-height:44px; }
 .hig-screen-header-side { display:grid;place-items:center;min-width:0; }
 .hig-screen-title { margin:0;font-size:1.0625rem;line-height:1.4;font-weight:600;text-align:center;overflow-wrap:anywhere; }
@@ -541,18 +541,18 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-account-balance { min-width:0;font-size:2rem;line-height:1.25;font-weight:600; }
 .hig-account-balance .hig-number { font-family:inherit; }
 .hig-account-assets { display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none; }
-/* TokenActionCard: header, the assets and chains bars 8px apart, then equal full-width actions 16px below. */
+/* TokenActionBlock: header, the assets and chains bars 8px apart, then equal full-width actions 16px below. */
 .hig-token-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-token-bars,.hig-token-actions { display:flex;flex-direction:column;gap:8px; }
-/* ManagePositionCard: header, two bars 8px apart, action rows and the position row 16px below each other. */
-.hig-manage-position-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
+/* ManagePositionBlock: header, two bars 8px apart, action rows and the position row 16px below each other. */
+.hig-manage-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 /* The two bars are read-only, so they sit on the page without a card, further apart than cards would be. */
-.hig-token-card > .hig-token-bars,.hig-manage-position-card > .hig-token-bars { gap:20px;padding-inline:4px; }
-.hig-manage-position-card .hig-swap-setting:disabled { color:var(--hig-muted);cursor:default; }
+.hig-token-card > .hig-token-bars,.hig-manage-position-block > .hig-token-bars { gap:20px;padding-inline:4px; }
+.hig-manage-position-block .hig-swap-setting:disabled { color:var(--hig-muted);cursor:default; }
 .hig-position-side[data-side='long'],.hig-position-row [data-tone='up'] { color:var(--hig-positive); }
 .hig-position-side[data-side='short'],.hig-position-row [data-tone='down'] { color:var(--hig-negative); }
-/* PositionCard: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
-.hig-position-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
+/* PositionBlock: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
+.hig-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:4px; }
 .hig-position-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
 .hig-position-details dd { margin:0;color:var(--hig-text);font-weight:600;text-align:end;overflow-wrap:anywhere; }
@@ -561,8 +561,8 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-position-details [data-tone='muted'] dd { color:var(--hig-muted); }
 .hig-position-note { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-position-groups { display:flex;flex-direction:column;gap:8px; }
-/* LeaderboardCard: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
-.hig-leaderboard-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
+/* LeaderboardBlock: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
+.hig-leaderboard-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-leaderboard-promo { display:flex;flex-direction:column;gap:12px; }
 .hig-leaderboard-promo > p,.hig-leaderboard-footnote { margin:0; }
 .hig-leaderboard-promo-top,.hig-leaderboard-progress-meta,.hig-leaderboard-columns { display:flex;align-items:center;justify-content:space-between;gap:12px; }
@@ -582,7 +582,7 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-leaderboard-headline > mark { background:none;color:var(--hig-action); }
 .hig-leaderboard-description,.hig-leaderboard-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-leaderboard-footnote { padding-inline:4px; }
-.hig-leaderboard-card .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+.hig-leaderboard-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-leaderboard-list { display:flex;flex-direction:column;gap:8px; }
 .hig-leaderboard-rows { display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;border-radius:20px;overflow:hidden; }
 .hig-leaderboard-row { display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 20px;background:var(--hig-fill); }
@@ -599,10 +599,10 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 @media(prefers-reduced-motion:reduce) { .hig-leaderboard-track > span { transition:none; } }
 [data-hig-motion='reduced'] .hig-leaderboard-track > span { transition:none; }
 @media(forced-colors:active) { .hig-leaderboard-track > span { forced-color-adjust:none; } }
-/* TargetCard: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
+/* TargetBlock: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
-.hig-target-card { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }
-.hig-target-card[data-kind='stop-loss'] { --hig-target-tone:var(--hig-negative); }
+.hig-target-block { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }
+.hig-target-block[data-kind='stop-loss'] { --hig-target-tone:var(--hig-negative); }
 .hig-target-amount { margin:0;font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere; }
 .hig-target-prices { display:flex;flex-direction:column;gap:12px; }
 .hig-target-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
@@ -618,14 +618,14 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-target-info { position:relative;display:inline-flex; }
 .hig-target-popover { position:absolute;inset-block-start:calc(100% + 4px);inset-inline-end:0;width:max-content;max-width:min(280px,calc(100vw - 48px));font-size:.875rem;font-weight:400;text-align:start; }
 .hig-target-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5;text-align:center; }
-.hig-target-card .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+.hig-target-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-target-presets,.hig-target-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 .hig-target-presets > .hig-button { padding-inline:8px; }
 @media(prefers-reduced-motion:reduce) { .hig-target-rest,.hig-target-move,.hig-target-entry { transition:none; } }
 [data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-target-entry { transition:none; }
 @media(forced-colors:active) { .hig-target-move,.hig-target-entry { forced-color-adjust:none; } }
 /* TradeHistoryListBlock: a header, then one capsule row per closed trade, 8px apart.
-   TradeHistoryDetailCard: header, the asset row, the result and the figures 8px apart, then the actions in one row 16px below. */
+   TradeHistoryDetailBlock: header, the asset row, the result and the figures 8px apart, then the actions in one row 16px below. */
 .hig-trade-history-list { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
 .hig-trade-rows { display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none; }
 .hig-trade-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px;padding-inline-end:16px;border:0;border-radius:28px;background:var(--hig-fill);color:var(--hig-text);font:inherit;text-align:start; }
@@ -749,7 +749,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 @media(prefers-reduced-motion:reduce) { .hig-bar-pnl-rest,.hig-bar-pnl-move,.hig-bar-pnl-liquidation { transition:none; } }
 [data-hig-motion='reduced'] .hig-bar-pnl-rest,[data-hig-motion='reduced'] .hig-bar-pnl-move,[data-hig-motion='reduced'] .hig-bar-pnl-liquidation { transition:none; }
 @media(forced-colors:active) { .hig-bar-pnl-move,.hig-bar-pnl-liquidation { forced-color-adjust:none; } }
-.hig-language-card { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
+.hig-language-block { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
 .hig-language-list { display:flex;flex-direction:column;gap:4px;min-width:0; }
 .hig-language-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px 16px 8px 8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 .hig-language-row:active,.hig-language-row[data-active='true'] { background:var(--hig-fill); }

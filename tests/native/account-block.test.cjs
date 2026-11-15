@@ -1,15 +1,15 @@
-/** Native AccountCard: header, total with deposit, the pinned asset, then holdings by value. */
+/** Native AccountBlock: header, total with deposit, the pinned asset, then holdings by value. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {AccountCard,accountRows,assetValue}=require('../../packages/hig/native/src/account-card');
+const {AccountBlock,accountRows,assetValue}=require('../../packages/hig/native/src/account-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {AssetBalanceRow}=require('../../packages/hig/native/src/asset-balance-row');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
-function mount(props,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(AccountCard,props)));});return root.root;}
+function mount(props,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(AccountBlock,props)));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
@@ -74,5 +74,5 @@ it('lists the pinned asset first with its value alone, then the rest by value wi
 it('reports the asset when a row is selected, and the blocks entry exports the card',()=>{
  const select=jest.fn(),view=mount({assets,onAssetSelect:select});
  act(()=>{rows(view)[1].props.onSelect();});expect(select).toHaveBeenCalledWith(hype);act(()=>{rows(view)[0].props.onSelect();});expect(select).toHaveBeenLastCalledWith(usdc);
- expect(blocks.AccountCard).toBe(AccountCard);expect(blocks.accountRows).toBe(accountRows);expect(blocks.AssetBalanceRow).toBe(AssetBalanceRow);
+ expect(blocks.AccountBlock).toBe(AccountBlock);expect(blocks.accountRows).toBe(accountRows);expect(blocks.AssetBalanceRow).toBe(AssetBalanceRow);
 });

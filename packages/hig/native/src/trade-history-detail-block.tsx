@@ -23,7 +23,7 @@ export interface TradeHistoryDetailLabels {
 /** One label and value row. A number is formatted with `options` between `prefix` and `suffix` and updates place by place; a string is drawn as given. */
 export interface TradeHistoryDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 export interface TradeHistoryAction {id:string;label:string;onSelect:()=>void;intent?:'primary'|'secondary';disabled?:boolean;busy?:boolean}
-export interface TradeHistoryDetailCardProps {
+export interface TradeHistoryDetailBlockProps {
  labels:TradeHistoryDetailLabels;
  /** Asset name: Amazon. */
  name:string;icon?:AssetArtwork;
@@ -66,7 +66,7 @@ function Sentence({template,text,value,options,tone,testID}:{template:(amount:st
  </View>;
 }
 /** The full record of one closed trade, drawn on the screen without cards because none of it is pressable: the asset with its side and leverage on one line, the net profit and loss with its return on margin, a bar from the entry price to the exit price, the host's other figures as a compact grid, and the host's actions side by side. */
-export function TradeHistoryDetailCard({labels,name,icon,side,leverage,pnl,pnlPercent,entry,exit,priceOptions,details,actions=[],onBack,headerAction,testID}:TradeHistoryDetailCardProps){
+export function TradeHistoryDetailBlock({labels,name,icon,side,leverage,pnl,pnlPercent,entry,exit,priceOptions,details,actions=[],onBack,headerAction,testID}:TradeHistoryDetailBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
  const long=side==='long',word=long?labels.long:labels.short,tint=long?colors.up:colors.down;
  const tone:Tone=known(pnl)&&pnl>0?'up':known(pnl)&&pnl<0?'down':'text';

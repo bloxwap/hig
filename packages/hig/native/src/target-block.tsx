@@ -16,7 +16,7 @@ export type TargetUnit='dollar'|'price'|'percent';
 /** The three prices on the bar. */
 export type TargetPrice='entry'|'mark'|'trigger';
 /** Every trading word of the block. HIG's built-in strings hold no trading terms, so the host supplies them, translated; only Cancel has a built-in default. */
-export interface TargetCardLabels {
+export interface TargetBlockLabels {
  /** Heading: Take Profit, Stop Loss. */
  title:string;
  /** The confirming action: Set Take Profit. */
@@ -34,9 +34,9 @@ export interface TargetCardLabels {
  /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */
  info?:string;
 }
-export interface TargetCardProps {
+export interface TargetBlockProps {
  kind:TargetKind;
- labels:TargetCardLabels;
+ labels:TargetBlockLabels;
  /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */
  position?:string;
  /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */
@@ -101,7 +101,7 @@ export function targetLayout({entry,mark,trigger}:{entry:number;mark?:number|nul
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** A take profit or a stop loss on one position as a screen: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. The bar is decorative; each price reads its label and value. */
-export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,testID}:TargetCardProps){const PriceCard=surface?Surface:View;
+export function TargetBlock({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();const [open,setOpen]=useState(false);
  const info=note&&labels.info&&!headerAction?labels.info:undefined;
  const target=trigger!==undefined?trigger:unit==='price'?value:null;

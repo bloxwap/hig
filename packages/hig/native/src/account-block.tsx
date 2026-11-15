@@ -17,7 +17,7 @@ export interface AccountAsset {
  /** USD value; defaults to balance × price. */
  value?:number|null;
 }
-export interface AccountCardProps {
+export interface AccountBlockProps {
  /** Defaults to the localized "Account". */
  title?:string;
  /** Shows Back on the leading edge of the header. */
@@ -50,7 +50,7 @@ export function accountRows(assets:readonly AccountAsset[],pinnedSymbol:string=u
  return {pinned,rest};
 }
 /** The account as one screen: a header, the total with the deposit action, the pinned asset, then every other holding by value. */
-export function AccountCard({title,onBack,onShowAddress,headerAction,balance,assets,pinnedSymbol=usdc,onDeposit,depositLabel,onAssetSelect,testID}:AccountCardProps){
+export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets,pinnedSymbol=usdc,onDeposit,depositLabel,onAssetSelect,testID}:AccountBlockProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const {pinned,rest}=accountRows(assets,pinnedSymbol);
  const total=balance!==undefined?balance:assets.reduce((sum,asset)=>sum+(assetValue(asset)??0),0);

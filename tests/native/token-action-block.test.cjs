@@ -1,9 +1,9 @@
-/** Native TokenActionCard: header, the assets and chains bars, then the token's actions. */
+/** Native TokenActionBlock: header, the assets and chains bars, then the token's actions. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {TokenActionCard,tokenActionLabel}=require('../../packages/hig/native/src/token-action-card');
+const {TokenActionBlock,tokenActionLabel}=require('../../packages/hig/native/src/token-action-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {BarMark}=require('../../packages/hig/native/src/bar-mark');
 const {Button}=require('../../packages/hig/native/src/button');
@@ -13,7 +13,7 @@ let root;
 const assets=[{id:'staked',label:'Staked',value:300,tone:'negative'},{id:'core',label:'Core',value:259,tone:'positive'},{id:'paper',label:'Paper',value:200}];
 const chains=[{id:'base',label:'Base',value:120},{id:'hl',label:'Hyperliquid',value:639},{id:'sol',label:'Solana',value:0}];
 const base={symbol:'HYPE',name:'Hyperliquid',assets,chains,actions:[]};
-function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(TokenActionCard,{...base,...props})));});return root.root;}
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(TokenActionBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
@@ -65,7 +65,7 @@ it('stacks full-width secondary actions that call the host, honours intent and d
  const disabled=view.findAll(node=>node.props.testID==='token-action-stake'&&typeof node.type==='string')[0];
  expect(disabled.props.accessibilityState?.disabled??disabled.props.disabled).toBe(true);if(disabled.props.onPress)act(()=>{disabled.props.onPress({});});if(disabled.props.onClick)act(()=>{disabled.props.onClick({});});expect(stake).not.toHaveBeenCalled();
  expect(has(view,'token-actions')).toBe(true);view=mount();expect(has(view,'token-actions')).toBe(false);
- expect(blocks.TokenActionCard).toBe(TokenActionCard);expect(blocks.tokenActionLabel).toBe(tokenActionLabel);
+ expect(blocks.TokenActionBlock).toBe(TokenActionBlock);expect(blocks.tokenActionLabel).toBe(tokenActionLabel);
 });
 
 it('draws both bars without a card, further apart than cards would be',()=>{

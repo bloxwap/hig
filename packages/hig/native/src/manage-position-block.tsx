@@ -11,7 +11,7 @@ import {BarPnl} from './bar-pnl.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 export type {AssetArtwork} from './asset-balance-row.js';
 /** Every trading word of the block. HIG's built-in strings hold no trading terms, so the host supplies them, translated. */
-export interface ManagePositionCardLabels {
+export interface ManagePositionBlockLabels {
  title:string;margin:string;
  notional:string;
  liquidation:string;
@@ -21,8 +21,8 @@ export interface ManagePositionCardLabels {
  /** Accessible words for the direction arrow. */
  long:string;short:string;
 }
-export interface ManagePositionCardAction {id:string;label:string;onSelect:()=>void;disabled?:boolean}
-export interface ManagePositionCardSummary {
+export interface ManagePositionBlockAction {id:string;label:string;onSelect:()=>void;disabled?:boolean}
+export interface ManagePositionBlockSummary {
  name:string;icon?:AssetArtwork;
  /** 40 reads `40×`. */
  leverage?:number;
@@ -33,15 +33,15 @@ export interface ManagePositionCardSummary {
  /** Profit and loss as a fraction: -0.0025 reads -0.25%. */
  pnlPercent?:number|null;
 }
-export interface ManagePositionCardProps {
- labels:ManagePositionCardLabels;
+export interface ManagePositionBlockProps {
+ labels:ManagePositionBlockLabels;
  /** Margin mode, the title of the first card: Demo, Cross, Isolated. Without it the card is titled with the margin label. */
  mode?:string;
  side:'long'|'short';entry:number;mark?:number|null;liquidation?:number|null;margin:number;notional:number;
  /** Format of the three prices, such as another currency. They are drawn compact: no extra zeros. */
  priceOptions?:Intl.NumberFormatOptions;
- actions:readonly ManagePositionCardAction[];
- position?:ManagePositionCardSummary;
+ actions:readonly ManagePositionBlockAction[];
+ position?:ManagePositionBlockSummary;
  /** Shows Back on the leading edge of the header. */
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. */
@@ -76,7 +76,7 @@ function Sentence({template,text,value,options,suffix,testID}:{template:(amount:
  </View>;
 }
 /** One open position as a screen: margin and notional under the share left before liquidation, then the liquidation, mark and entry prices as a `BarPnl`, what can be done, and the position itself. Both bars are drawn without a card, because nothing in them can be pressed. */
-export function ManagePositionCard({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,testID}:ManagePositionCardProps){
+export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,onBack,headerAction,testID}:ManagePositionBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
  const read=(value:number|null|undefined,options:Intl.NumberFormatOptions)=>known(value)?formatNumberReadout(value,locale,options).text:unknown;
  const corridor=positionCorridor({side,entry,mark,liquidation}),long=side==='long';

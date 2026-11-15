@@ -1,9 +1,9 @@
-/** Native PositionCard: header with Close, the summary lines, a note, the paper trading switch, then the setting groups. */
+/** Native PositionBlock: header with Close, the summary lines, a note, the paper trading switch, then the setting groups. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {PositionCard}=require('../../packages/hig/native/src/position-card');
+const {PositionBlock}=require('../../packages/hig/native/src/position-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {ListGroup,ListRow}=require('../../packages/hig/native/src/list-group');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
@@ -13,7 +13,7 @@ let root;
 const usd={style:'currency',currency:'USD'};
 // The host owns every trading word.
 const base={title:'Position',details:[{label:'Notional',value:{value:400,options:{...usd,maximumFractionDigits:0}}},{label:'Fee',value:{value:0.53,options:usd},tone:'negative'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}],groups:[]};
-function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(PositionCard,{...base,...props})));});return root.root;}
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(PositionBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
@@ -30,7 +30,7 @@ it('shows the host title as the heading, Close and Back only with their handlers
  act(()=>{all(view,'position-close').find(node=>node.props.onPress).props.onPress({});});act(()=>{all(view,'position-back').find(node=>node.props.onPress).props.onPress({});});expect(close).toHaveBeenCalledTimes(1);expect(back).toHaveBeenCalledTimes(1);
  view=mount({onClose:close,headerAction:h(View,{testID:'share'})});expect(has(view,'share')).toBe(true);expect(has(view,'position-close')).toBe(false);
  view=mount({onClose:close},{messages:{close:'Fermer'}});expect(all(view,'position-close')[0].props.label).toBe('Fermer');
- expect(blocks.PositionCard).toBe(PositionCard);
+ expect(blocks.PositionBlock).toBe(PositionBlock);
 });
 
 it('reads the summary in order: live figures, host text, tones, and an unknown figure as a dash',()=>{

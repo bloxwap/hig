@@ -1,9 +1,9 @@
-/** Native LeaderboardCard: header, the promotion (prize pool or sweepstakes), the standings choice, the viewer's row, then the ranked rows. */
+/** Native LeaderboardBlock: header, the promotion (prize pool or sweepstakes), the standings choice, the viewer's row, then the ranked rows. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {LeaderboardCard,leaderboardProgress}=require('../../packages/hig/native/src/leaderboard-card');
+const {LeaderboardBlock,leaderboardProgress}=require('../../packages/hig/native/src/leaderboard-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
@@ -14,7 +14,7 @@ let root;
 const entries=[{id:'a',rank:1,name:'0x4e79…949f',verified:true,detail:'$1,789,061 vol',score:795407},{id:'me',rank:2,name:'you',detail:'$1,090,779 vol',score:418450,you:true},{id:'c',rank:3,name:'Zed',score:null}];
 const pool={eyebrow:'Season 01 prize pool',amount:4037,goal:250000,progress:percent=>`${percent} to goal`,updated:'Updates every 15 minutes',headline:['Top ',{highlight:'100'},' traders split ',{highlight:'$250,000'},' pot'],description:'Funded by fees.'};
 const base={title:'Leaderboard',entries};
-function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(LeaderboardCard,{...base,...props})));});return root.root;}
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(LeaderboardBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
@@ -43,7 +43,7 @@ it('shows the host title as the heading, Back only with onBack, and the ranked r
  for(const id of ['leaderboard-promo','leaderboard-you','leaderboard-tabs','leaderboard-list-title','leaderboard-footnote'])expect(has(view,id)).toBe(false);
  const back=jest.fn();view=mount({onBack:back,headerAction:h(View,{testID:'share'})});expect(has(view,'share')).toBe(true);
  act(()=>{all(view,'leaderboard-back').find(node=>node.props.onPress).props.onPress({});});expect(back).toHaveBeenCalledTimes(1);
- expect(blocks.LeaderboardCard).toBe(LeaderboardCard);expect(blocks.leaderboardProgress).toBe(leaderboardProgress);
+ expect(blocks.LeaderboardBlock).toBe(LeaderboardBlock);expect(blocks.leaderboardProgress).toBe(leaderboardProgress);
 });
 
 it('draws a prize pool: the figure against its goal, the bar at the share reached, and the lines under it',()=>{

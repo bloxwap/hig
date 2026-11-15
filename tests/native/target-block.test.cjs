@@ -1,9 +1,9 @@
-/** Native TargetCard: header, the target as the headline figure, the price card, the unit, the custom row, the quick choices, then the actions. */
+/** Native TargetBlock: header, the target as the headline figure, the price card, the unit, the custom row, the quick choices, then the actions. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {View}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {TargetCard,targetLayout,targetFormat}=require('../../packages/hig/native/src/target-card');
+const {TargetBlock,targetLayout,targetFormat}=require('../../packages/hig/native/src/target-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
@@ -14,7 +14,7 @@ let root;
 // The host owns every trading word.
 const labels={title:'Take Profit',submit:'Set Take Profit',entry:'Entry',mark:'Mark',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'};
 const base={kind:'take-profit',labels,entry:64700,mark:64500,trigger:65000,unit:'dollar',value:2,onSubmit:()=>{}};
-function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(TargetCard,{...base,...props})));});return root.root;}
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(TargetBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
@@ -44,7 +44,7 @@ it('shows the host title as the heading, Back only with onBack, and the host act
  const back=jest.fn();view=mount({onBack:back,headerAction:h(View,{testID:'share'})});
  expect(has(view,'share')).toBe(true);
  act(()=>{all(view,'target-back').find(node=>node.props.onPress).props.onPress({});});expect(back).toHaveBeenCalledTimes(1);
- expect(blocks.TargetCard).toBe(TargetCard);expect(blocks.targetLayout).toBe(targetLayout);
+ expect(blocks.TargetBlock).toBe(TargetBlock);expect(blocks.targetLayout).toBe(targetLayout);
 });
 
 it('reads the target as the headline figure in the current unit',()=>{

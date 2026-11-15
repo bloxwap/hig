@@ -15,7 +15,7 @@ export interface LanguageOption {
  /** Round artwork, usually a flag: an image URL or a host element. Without it the row shows the first letters of the code. */
  flag?:string|React.ReactElement;
 }
-export interface LanguageCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'|'onSelect'> {
+export interface LanguageBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'|'onSelect'> {
  /** Heading. Defaults to the built-in “Language”. */
  title?:string;
  /** Shows Back on the leading edge of the header. */
@@ -39,7 +39,7 @@ export function filterLanguages(languages:readonly LanguageOption[],query:string
 }
 const check=<svg className='hig-language-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
 /** Choose the app's language: a header, a search field, then each language as a row with its flag, its own name over the reader's name for it, and a check on the one in use. */
-export function LanguageCard({title,onBack,headerAction,languages,value=null,onSelect,search=true,autoFocus,className,...rest}:LanguageCardProps){
+export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,autoFocus,className,...rest}:LanguageBlockProps){
  const {messages}=useHIG();const heading=title??messages.language??en.language;
  const [query,setQuery]=useState('');const [active,setActive]=useState(-1);
  const field=useRef<HTMLInputElement>(null),list=useRef<HTMLDivElement>(null);
@@ -54,7 +54,7 @@ export function LanguageCard({title,onBack,headerAction,languages,value=null,onS
   else if(event.key==='Enter'){const choice=rows[active]??(rows.length===1?rows[0]:undefined);if(choice){event.preventDefault();onSelect(choice);}}
  };
  const label=messages.searchLanguages??en.searchLanguages;
- return <section {...rest} className={`hig-language-card${className?` ${className}`:''}`}>
+ return <section {...rest} className={`hig-language-block${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} onBack={onBack} action={headerAction}/>
   {search&&<SearchInput ref={field} aria-label={label} placeholder={label} value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>}
   {rows.length===0&&<p className='hig-swap-empty' role='status'>{messages.noResults??en.noResults}</p>}

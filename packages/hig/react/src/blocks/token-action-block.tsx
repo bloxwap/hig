@@ -18,7 +18,7 @@ export interface TokenAction {
  /** Defaults to `secondary`: the card offers equal choices, so no action is the primary one unless the host says so. */
  intent?:'primary'|'secondary'|'destructive';
 }
-export interface TokenActionCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
+export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  /** Heading, usually the ticker: HYPE. */
  symbol:string;
  /** Title of the assets bar: Hyperliquid. */
@@ -40,7 +40,7 @@ const usd={style:'currency',currency:'USD'} as const,held=(value:number)=>Number
 /** The text of an action: its `label`, the built-in label for a known id, or the id itself. */
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>={}):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token and what can be done with it: where it is held, which chains it sits on, and the actions as equal full-width buttons. */
-export function TokenActionCard({symbol,name,value,assets,chains,chainsTitle,actions,onBack,headerAction,className,...rest}:TokenActionCardProps){
+export function TokenActionBlock({symbol,name,value,assets,chains,chainsTitle,actions,onBack,headerAction,className,...rest}:TokenActionBlockProps){
  const {messages,locale}=useHIG();
  const total=value!==undefined?value:assets.reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  return <section {...rest} className={`hig-token-card${className?` ${className}`:''}`}>

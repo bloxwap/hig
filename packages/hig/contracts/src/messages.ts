@@ -192,23 +192,23 @@ export interface HIGMessages {
  swapKeypad: string;
  /** Accessible name of the keypad delete key. */
  swapDelete: string;
- /** AccountCard: the default heading. */
+ /** AccountBlock: the default heading. */
  account: string;
- /** AccountCard: the default label of the deposit action. */
+ /** AccountBlock: the default label of the deposit action. */
  deposit: string;
- /** AccountCard: accessible label of the total balance. */
+ /** AccountBlock: accessible label of the total balance. */
  accountBalance: string;
- /** LanguageCard: the default heading. */
+ /** LanguageBlock: the default heading. */
  language: string;
- /** LanguageCard: search placeholder and accessible name. */
+ /** LanguageBlock: search placeholder and accessible name. */
  searchLanguages: string;
- /** AccountCard: accessible name of the header button that shows the account address. */
+ /** AccountBlock: accessible name of the header button that shows the account address. */
  showAddress: string;
- /** TokenActionCard: built-in label of the `receive` action. */
+ /** TokenActionBlock: built-in label of the `receive` action. */
  receive: string;
- /** TokenActionCard: built-in label of the `stake` action. */
+ /** TokenActionBlock: built-in label of the `stake` action. */
  stake: string;
- /** TokenActionCard: built-in label of the `unstake` action. */
+ /** TokenActionBlock: built-in label of the `unstake` action. */
  unstake: string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.

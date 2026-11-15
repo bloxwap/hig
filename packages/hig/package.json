@@ -258,50 +258,50 @@
       "import": "./react/dist/asset-balance-row.js",
       "default": "./react/dist/asset-balance-row.js"
     },
-    "./react/blocks/account-card": {
-      "types": "./react/dist/blocks/account-card.d.ts",
-      "import": "./react/dist/blocks/account-card.js",
-      "default": "./react/dist/blocks/account-card.js"
+    "./react/blocks/account-block": {
+      "types": "./react/dist/blocks/account-block.d.ts",
+      "import": "./react/dist/blocks/account-block.js",
+      "default": "./react/dist/blocks/account-block.js"
     },
-    "./react/blocks/token-action-card": {
-      "types": "./react/dist/blocks/token-action-card.d.ts",
-      "import": "./react/dist/blocks/token-action-card.js",
-      "default": "./react/dist/blocks/token-action-card.js"
+    "./react/blocks/token-action-block": {
+      "types": "./react/dist/blocks/token-action-block.d.ts",
+      "import": "./react/dist/blocks/token-action-block.js",
+      "default": "./react/dist/blocks/token-action-block.js"
     },
-    "./react/blocks/language-card": {
-      "types": "./react/dist/blocks/language-card.d.ts",
-      "import": "./react/dist/blocks/language-card.js",
-      "default": "./react/dist/blocks/language-card.js"
+    "./react/blocks/language-block": {
+      "types": "./react/dist/blocks/language-block.d.ts",
+      "import": "./react/dist/blocks/language-block.js",
+      "default": "./react/dist/blocks/language-block.js"
     },
-    "./react/blocks/manage-position-card": {
-      "types": "./react/dist/blocks/manage-position-card.d.ts",
-      "import": "./react/dist/blocks/manage-position-card.js",
-      "default": "./react/dist/blocks/manage-position-card.js"
+    "./react/blocks/manage-position-block": {
+      "types": "./react/dist/blocks/manage-position-block.d.ts",
+      "import": "./react/dist/blocks/manage-position-block.js",
+      "default": "./react/dist/blocks/manage-position-block.js"
     },
-    "./react/blocks/target-card": {
-      "types": "./react/dist/blocks/target-card.d.ts",
-      "import": "./react/dist/blocks/target-card.js",
-      "default": "./react/dist/blocks/target-card.js"
+    "./react/blocks/target-block": {
+      "types": "./react/dist/blocks/target-block.d.ts",
+      "import": "./react/dist/blocks/target-block.js",
+      "default": "./react/dist/blocks/target-block.js"
     },
-    "./react/blocks/position-card": {
-      "types": "./react/dist/blocks/position-card.d.ts",
-      "import": "./react/dist/blocks/position-card.js",
-      "default": "./react/dist/blocks/position-card.js"
+    "./react/blocks/position-block": {
+      "types": "./react/dist/blocks/position-block.d.ts",
+      "import": "./react/dist/blocks/position-block.js",
+      "default": "./react/dist/blocks/position-block.js"
     },
-    "./react/blocks/leaderboard-card": {
-      "types": "./react/dist/blocks/leaderboard-card.d.ts",
-      "import": "./react/dist/blocks/leaderboard-card.js",
-      "default": "./react/dist/blocks/leaderboard-card.js"
+    "./react/blocks/leaderboard-block": {
+      "types": "./react/dist/blocks/leaderboard-block.d.ts",
+      "import": "./react/dist/blocks/leaderboard-block.js",
+      "default": "./react/dist/blocks/leaderboard-block.js"
     },
     "./react/blocks/trade-history-list-block": {
       "types": "./react/dist/blocks/trade-history-list-block.d.ts",
       "import": "./react/dist/blocks/trade-history-list-block.js",
       "default": "./react/dist/blocks/trade-history-list-block.js"
     },
-    "./react/blocks/trade-history-detail-card": {
-      "types": "./react/dist/blocks/trade-history-detail-card.d.ts",
-      "import": "./react/dist/blocks/trade-history-detail-card.js",
-      "default": "./react/dist/blocks/trade-history-detail-card.js"
+    "./react/blocks/trade-history-detail-block": {
+      "types": "./react/dist/blocks/trade-history-detail-block.d.ts",
+      "import": "./react/dist/blocks/trade-history-detail-block.js",
+      "default": "./react/dist/blocks/trade-history-detail-block.js"
     },
     "./react/bar-mark": {
       "types": "./react/dist/bar-mark.d.ts",
@@ -338,50 +338,50 @@
       "import": "./native/dist/asset-balance-row.js",
       "default": "./native/dist/asset-balance-row.js"
     },
-    "./native/account-card": {
-      "types": "./native/dist/account-card.d.ts",
-      "import": "./native/dist/account-card.js",
-      "default": "./native/dist/account-card.js"
+    "./native/account-block": {
+      "types": "./native/dist/account-block.d.ts",
+      "import": "./native/dist/account-block.js",
+      "default": "./native/dist/account-block.js"
     },
-    "./native/token-action-card": {
-      "types": "./native/dist/token-action-card.d.ts",
-      "import": "./native/dist/token-action-card.js",
-      "default": "./native/dist/token-action-card.js"
+    "./native/token-action-block": {
+      "types": "./native/dist/token-action-block.d.ts",
+      "import": "./native/dist/token-action-block.js",
+      "default": "./native/dist/token-action-block.js"
     },
-    "./native/language-card": {
-      "types": "./native/dist/language-card.d.ts",
-      "import": "./native/dist/language-card.js",
-      "default": "./native/dist/language-card.js"
+    "./native/language-block": {
+      "types": "./native/dist/language-block.d.ts",
+      "import": "./native/dist/language-block.js",
+      "default": "./native/dist/language-block.js"
     },
-    "./native/manage-position-card": {
-      "types": "./native/dist/manage-position-card.d.ts",
-      "import": "./native/dist/manage-position-card.js",
-      "default": "./native/dist/manage-position-card.js"
+    "./native/manage-position-block": {
+      "types": "./native/dist/manage-position-block.d.ts",
+      "import": "./native/dist/manage-position-block.js",
+      "default": "./native/dist/manage-position-block.js"
     },
-    "./native/target-card": {
-      "types": "./native/dist/target-card.d.ts",
-      "import": "./native/dist/target-card.js",
-      "default": "./native/dist/target-card.js"
+    "./native/target-block": {
+      "types": "./native/dist/target-block.d.ts",
+      "import": "./native/dist/target-block.js",
+      "default": "./native/dist/target-block.js"
     },
-    "./native/position-card": {
-      "types": "./native/dist/position-card.d.ts",
-      "import": "./native/dist/position-card.js",
-      "default": "./native/dist/position-card.js"
+    "./native/position-block": {
+      "types": "./native/dist/position-block.d.ts",
+      "import": "./native/dist/position-block.js",
+      "default": "./native/dist/position-block.js"
     },
-    "./native/leaderboard-card": {
-      "types": "./native/dist/leaderboard-card.d.ts",
-      "import": "./native/dist/leaderboard-card.js",
-      "default": "./native/dist/leaderboard-card.js"
+    "./native/leaderboard-block": {
+      "types": "./native/dist/leaderboard-block.d.ts",
+      "import": "./native/dist/leaderboard-block.js",
+      "default": "./native/dist/leaderboard-block.js"
     },
     "./native/trade-history-list-block": {
       "types": "./native/dist/trade-history-list-block.d.ts",
       "import": "./native/dist/trade-history-list-block.js",
       "default": "./native/dist/trade-history-list-block.js"
     },
-    "./native/trade-history-detail-card": {
-      "types": "./native/dist/trade-history-detail-card.d.ts",
-      "import": "./native/dist/trade-history-detail-card.js",
-      "default": "./native/dist/trade-history-detail-card.js"
+    "./native/trade-history-detail-block": {
+      "types": "./native/dist/trade-history-detail-block.d.ts",
+      "import": "./native/dist/trade-history-detail-block.js",
+      "default": "./native/dist/trade-history-detail-block.js"
     },
     "./native/bar-mark": {
       "types": "./native/dist/bar-mark.d.ts",

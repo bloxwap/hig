@@ -628,8 +628,8 @@
       ]
     },
     {
-      "name": "AccountCard",
-      "route": "components/account-card",
+      "name": "AccountBlock",
+      "route": "components/account-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -638,8 +638,8 @@
       ]
     },
     {
-      "name": "ManagePositionCard",
-      "route": "components/manage-position-card",
+      "name": "ManagePositionBlock",
+      "route": "components/manage-position-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -649,8 +649,8 @@
       ]
     },
     {
-      "name": "TargetCard",
-      "route": "components/target-card",
+      "name": "TargetBlock",
+      "route": "components/target-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -659,8 +659,8 @@
       ]
     },
     {
-      "name": "PositionCard",
-      "route": "components/position-card",
+      "name": "PositionBlock",
+      "route": "components/position-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -669,8 +669,8 @@
       ]
     },
     {
-      "name": "LeaderboardCard",
-      "route": "components/leaderboard-card",
+      "name": "LeaderboardBlock",
+      "route": "components/leaderboard-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -690,8 +690,8 @@
       ]
     },
     {
-      "name": "TradeHistoryDetailCard",
-      "route": "components/trade-history-detail-card",
+      "name": "TradeHistoryDetailBlock",
+      "route": "components/trade-history-detail-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -700,8 +700,8 @@
       ]
     },
     {
-      "name": "TokenActionCard",
-      "route": "components/token-action-card",
+      "name": "TokenActionBlock",
+      "route": "components/token-action-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
@@ -710,8 +710,8 @@
       ]
     },
     {
-      "name": "LanguageCard",
-      "route": "components/language-card",
+      "name": "LanguageBlock",
+      "route": "components/language-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [

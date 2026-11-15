@@ -16,7 +16,7 @@ export interface LanguageOption {
  /** Round artwork, usually a flag: an image URL or a host element. Without it the row shows the first letters of the code. */
  flag?:string|React.ReactElement;
 }
-export interface LanguageCardProps {
+export interface LanguageBlockProps {
  /** Heading. Defaults to the built-in “Language”. */
  title?:string;
  /** Shows Back on the leading edge of the header. */
@@ -40,7 +40,7 @@ export function filterLanguages(languages:readonly LanguageOption[],query:string
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const avatar=40;
 /** Choose the app's language as one screen: a header, a search field, then each language as a row with its flag, its own name over the reader's name for it, and a check on the one in use. */
-export function LanguageCard({title,onBack,headerAction,languages,value=null,onSelect,search=true,testID}:LanguageCardProps){
+export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,testID}:LanguageBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
  const [query,setQuery]=useState('');
  const rows=useMemo(()=>filterLanguages(languages,query),[languages,query]);

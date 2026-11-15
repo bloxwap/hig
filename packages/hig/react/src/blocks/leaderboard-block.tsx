@@ -49,7 +49,7 @@ export interface LeaderboardEntry {
  /** Marks the viewer's own row: the name and score take the action colour. */
  you?:boolean;
 }
-export interface LeaderboardCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
+export interface LeaderboardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  /** Heading: Leaderboard. */
  title:string;
  promo?:LeaderboardPromo;
@@ -90,10 +90,10 @@ function Standing({entry,scoreOptions,verifiedLabel,as:Tag='li'}:{entry:Leaderbo
  </Tag>;
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function LeaderboardCard({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,className,...rest}:LeaderboardCardProps){
+export function LeaderboardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,className,...rest}:LeaderboardBlockProps){
  const {locale}=useHIG();
  const money=promo?.amountOptions??wholeDollars,share=promo?leaderboardProgress(promo.amount,promo.goal):null;
- return <section {...rest} className={`hig-leaderboard-card${className?` ${className}`:''}`}>
+ return <section {...rest} className={`hig-leaderboard-block${className?` ${className}`:''}`}>
   <ScreenHeader title={title} onBack={onBack} action={headerAction}/>
   {promo&&<section className='hig-surface hig-leaderboard-promo'>
    <div className='hig-leaderboard-promo-top'><span className='hig-leaderboard-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<Button className='hig-leaderboard-rules' onClick={promo.rules.onSelect}>{promo.rules.label}</Button>}</div>

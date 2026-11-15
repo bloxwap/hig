@@ -15,7 +15,7 @@ export type TargetUnit='dollar'|'price'|'percent';
 /** The three prices on the bar. */
 export type TargetPrice='entry'|'mark'|'trigger';
 /** The words of the block. They are trading terms, so the host supplies them in its own vocabulary and language; only Cancel has a built-in default. */
-export interface TargetCardLabels {
+export interface TargetBlockLabels {
  /** Heading: Take Profit, Stop Loss. */
  title:string;
  /** The confirming action: Set Take Profit. */
@@ -33,9 +33,9 @@ export interface TargetCardLabels {
  /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */
  info?:string;
 }
-export interface TargetCardProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
+export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  kind:TargetKind;
- labels:TargetCardLabels;
+ labels:TargetBlockLabels;
  /** Title of the price card, the position the target belongs to: `BTC · Long 40×`. */
  position?:string;
  /** Trailing text of the price card, the order the target places: Take-limit, Stop-market. */
@@ -96,7 +96,7 @@ export function targetLayout({entry,mark,trigger}:{entry:number;mark?:number|nul
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** Set a take profit or a stop loss on one position: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. */
-export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetCardProps){
+export function TargetBlock({kind,labels,position,orderType,note,entry,mark,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetBlockProps){
  const {messages,locale}=useHIG();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
  // The popover closes on a press outside it, on Escape, and when focus leaves it.
  useEffect(()=>{if(!open)return;const outside=(event:Event)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
@@ -107,7 +107,7 @@ export function TargetCard({kind,labels,position,orderType,note,entry,mark,trigg
  const intent=kind==='stop-loss'?'destructive':'primary';
  // The entry price is a tick of its own only while the mark is the near end of the stretch.
  const tick=positions.mark!==undefined&&positions.trigger!==undefined?positions.entry:undefined;
- return <section {...rest} className={`hig-target-card${className?` ${className}`:''}`} data-kind={kind}>
+ return <section {...rest} className={`hig-target-block${className?` ${className}`:''}`} data-kind={kind}>
   <ScreenHeader title={labels.title} onBack={onBack} action={info?<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>:headerAction}/>
   <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={targetFormat(unit,priceOptions)}/></p>
   {note&&!info&&<p className='hig-target-note'>{note}</p>}
