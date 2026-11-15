@@ -531,11 +531,11 @@
       "support": "renderer"
     },
     {
-      "name": "TradeHistoryCard",
+      "name": "TradeHistoryListBlock",
       "states": [
         "default",
-        "loss",
-        "no-card"
+        "empty",
+        "static"
       ],
       "support": "renderer"
     },

@@ -1088,28 +1088,28 @@
       }
     },
     {
-      "name": "TradeHistoryCard",
-      "slug": "trade-history-card",
+      "name": "TradeHistoryListBlock",
+      "slug": "trade-history-list-block",
       "entry": "blocks",
       "family": "blocks",
-      "web": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} onSelect={()=>setMessage('The host opens the trade')}/>",
-      "native": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} onSelect={()=>setMessage('The host opens the trade')}/>",
+      "web": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[{id:'1',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'2d'},{id:'2',name:'Tesla',side:'short',leverage:20,pnl:4.675,time:'2d'},{id:'3',name:'NVIDIA',side:'long',leverage:20,pnl:17.9,time:'3d'},{id:'4',name:'Hyperliquid',side:'long',leverage:10,pnl:0.5741,time:'3d'},{id:'5',name:'Robinhood',side:'long',leverage:10,pnl:-7.762,time:'4d'}]} onBack={()=>setMessage('The host goes back')} onSelect={trade=>setMessage(trade.name+' opened')}/>",
+      "native": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[{id:'1',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'2d'},{id:'2',name:'Tesla',side:'short',leverage:20,pnl:4.675,time:'2d'},{id:'3',name:'NVIDIA',side:'long',leverage:20,pnl:17.9,time:'3d'},{id:'4',name:'Hyperliquid',side:'long',leverage:10,pnl:0.5741,time:'3d'},{id:'5',name:'Robinhood',side:'long',leverage:10,pnl:-7.762,time:'4d'}]} onBack={()=>setMessage('The host goes back')} onSelect={trade=>setMessage(trade.name+' opened')}/>",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "loss",
-        "no-card"
+        "empty",
+        "static"
       ],
-      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "a11y": "List named by the title; a selectable row is one button that reads the asset, side and leverage, result and age; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
-        "loss": {
-          "web": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='BTC' side='long' leverage={40} entry={64700} exit={64522.5} pnl={-1.12} onSelect={()=>setMessage('The host opens the trade')}/>",
-          "native": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='BTC' side='long' leverage={40} entry={64700} exit={64522.5} pnl={-1.12} onSelect={()=>setMessage('The host opens the trade')}/>"
+        "empty": {
+          "web": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[]} onBack={()=>setMessage('The host goes back')}/>"
         },
-        "no-card": {
-          "web": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} surface={false}/>",
-          "native": "<C.TradeHistoryCard labels={{entry:'Entry',exit:'Exit',long:'Long',short:'Short'}} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} surface={false}/>"
+        "static": {
+          "web": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[{id:'1',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'2d'},{id:'5',name:'Robinhood',side:'long',leverage:10,pnl:-7.762,time:'4d'}]}/>",
+          "native": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[{id:'1',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'2d'},{id:'5',name:'Robinhood',side:'long',leverage:10,pnl:-7.762,time:'4d'}]}/>"
         }
       }
     },

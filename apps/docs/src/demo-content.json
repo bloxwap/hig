@@ -405,8 +405,8 @@
       "title": "PositionCard"
     },
     {
-      "route": "components/trade-history-card",
-      "title": "TradeHistoryCard"
+      "route": "components/trade-history-list-block",
+      "title": "TradeHistoryListBlock"
     },
     {
       "route": "components/trade-history-detail-card",
@@ -1118,14 +1118,14 @@
       ]
     },
     {
-      "name": "TradeHistoryCard",
-      "route": "components/trade-history-card",
+      "name": "TradeHistoryListBlock",
+      "route": "components/trade-history-list-block",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "loss",
-        "no-card"
+        "empty",
+        "static"
       ]
     },
     {

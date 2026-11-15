@@ -1,45 +1,43 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen} from '@testing-library/react';
+import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {TradeHistoryCard,tradeHistoryTitle} from '../packages/hig/react/src/blocks/trade-history-card';
+import {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryItem} from '../packages/hig/react/src/blocks/trade-history-list-block';
 import {TradeHistoryDetailCard,type TradeHistoryDetailCardProps} from '../packages/hig/react/src/blocks/trade-history-detail-card';
 import * as blocks from '../packages/hig/react/src/blocks';
 afterEach(cleanup);
 const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;for(const visual of copy.querySelectorAll('.hig-animated-number-visual'))visual.remove();return copy.textContent;};
 const labels={entry:'Entry',exit:'Exit',long:'Long',short:'Short'};
-const prices=()=>[...document.querySelectorAll('.hig-bar-pnl-readouts > div')].map(item=>[item.querySelector('dt')!.textContent,spoken(item.querySelector('dd')!)]);
-describe('TradeHistoryCard',()=>{
- it('titles the trade with the ticker, side and leverage in the provider locale',()=>{
-  expect(tradeHistoryTitle({symbol:'AMZN',side:'short',leverage:20,labels})).toBe('AMZN · Short 20×');expect(tradeHistoryTitle({symbol:'BTC',side:'long',labels})).toBe('BTC · Long');
-  expect(tradeHistoryTitle({symbol:'BTC',side:'long',leverage:1000,labels},'de-DE')).toBe('BTC · Long 1.000×');
+const list={title:'History',long:'Long',short:'Short',empty:'No closed trades yet'};
+const trades:TradeHistoryItem[]=[{id:'1',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'2d'},{id:'2',name:'NVIDIA',side:'long',leverage:20,pnl:17.9,time:'3d'},{id:'3',name:'Robinhood',side:'long',leverage:10,pnl:-7.762,time:'4d'},{id:'4',name:'Solana',side:'short',pnl:null}];
+describe('TradeHistoryListBlock',()=>{
+ it('reads a side with the host word and the leverage in the provider locale',()=>{
+  expect(tradeHistorySide({side:'short',leverage:20},labels)).toBe('Short 20×');expect(tradeHistorySide({side:'long'},labels)).toBe('Long');
+  expect(tradeHistorySide({side:'long',leverage:1000},labels,'de-DE')).toBe('Long 1.000×');
  });
- it('draws a closed trade as a bar from entry to exit with the net result, tinted by how the price moved',()=>{
-  const view=render(<TradeHistoryCard labels={labels} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418}/>);
-  const card=()=>screen.getByRole('region',{name:'AMZN · Short 20×'});
-  expect(card().classList.contains('hig-surface')).toBe(true);expect(card().dataset.result).toBe('profit');
-  expect(spoken(card().querySelector('.hig-trade-pnl')!)).toBe('+$1.418');expect(card().querySelector('.hig-trade-pnl')!.getAttribute('data-tone')).toBe('up');
-  // Two prices in price order; no liquidation readout for a finished trade.
-  expect(prices()).toEqual([['Exit','$267.18'],['Entry','$267.60']]);
-  // The move fills the bar: no empty track on either side of it.
-  expect([...card().querySelectorAll<HTMLElement>('.hig-bar-pnl-bar > span')].filter(part=>Number(part.style.flexGrow)>0).map(part=>[part.className.replace('hig-bar-pnl-',''),Number(part.style.flexGrow)])).toEqual([['move',1]]);expect(document.querySelector('.hig-bar-pnl-liquidation')).toBeNull();expect(screen.queryByRole('button')).toBeNull();
-  view.rerender(<TradeHistoryCard labels={labels} symbol='BTC' side='long' leverage={40} entry={64700} exit={64522.5} pnl={-1.12}/>);
-  expect(screen.getByRole('region',{name:'BTC · Long 40×'}).dataset.result).toBe('loss');expect(prices()).toEqual([['Exit','$64,522.50'],['Entry','$64,700.00']]);expect(document.querySelector('.hig-trade-pnl')!.getAttribute('data-tone')).toBe('down');
-  // The bar follows the prices and the side; the figure follows the net result.
-  view.rerender(<TradeHistoryCard labels={labels} symbol='BTC' side='long' entry={100} exit={101} pnl={-0.2}/>);
-  expect(screen.getByRole('region',{name:'BTC · Long'}).dataset.result).toBe('profit');expect(document.querySelector('.hig-trade-pnl')!.getAttribute('data-tone')).toBe('down');
-  view.rerender(<TradeHistoryCard labels={labels} symbol='BTC' side='long' entry={100} exit={101}/>);expect(document.querySelector('.hig-trade-pnl')).toBeNull();expect(document.querySelector('.hig-bar-pnl-description,.hig-bar-pnl .hig-trade-pnl')).toBeNull();
+ it('shows the header and one row per trade: name, side and leverage in the direction colour, the result in the result colour, and its age',async()=>{
+  const back=vi.fn();render(<TradeHistoryListBlock labels={list} trades={trades} onBack={back}/>);
+  expect(screen.getByRole('heading',{name:'History'})).toBeTruthy();await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(back).toHaveBeenCalledTimes(1);
+  const rows=within(screen.getByRole('list',{name:'History'})).getAllByRole('listitem');
+  expect(rows.map(spoken)).toEqual(['AmaAmazonShort 20×+$1.4122d','NVINVIDIALong 20×+$17.903d','RobRobinhoodLong 10×-$7.7624d','SolSolanaShort —']);
+  expect(rows.map(row=>row.querySelector<HTMLElement>('.hig-trade-row-side')!.dataset.side)).toEqual(['short','long','long','short']);
+  expect(rows.map(row=>row.querySelector<HTMLElement>('.hig-trade-pnl')!.dataset.tone)).toEqual(['up','up','down',undefined]);
+  expect(rows[0].querySelector('.hig-asset-row-icon')?.getAttribute('aria-hidden')).toBe('true');expect(rows[0].querySelector('.hig-trade-row')?.tagName).toBe('DIV');expect(document.querySelector('.hig-trade-row-chevron')).toBeNull();
  });
- it('is one button named with the trade and its result only when it can be selected, and can drop its card',async()=>{
-  const select=vi.fn();const view=render(<TradeHistoryCard labels={labels} symbol='AMZN' side='short' leverage={20} entry={267.6} exit={267.18} pnl={1.418} onSelect={select} className='wide' data-testid='trade'/>);
-  const wrapper=screen.getByTestId('trade');expect(wrapper.className).toBe('hig-trade-history-card wide');
-  await userEvent.click(screen.getByRole('button',{name:'AMZN · Short 20×, +$1.418'}));expect(select).toHaveBeenCalledTimes(1);
-  view.rerender(<TradeHistoryCard labels={labels} symbol='AMZN' side='short' entry={267.6} exit={267.18} pnl={null} onSelect={select}/>);expect(screen.getByRole('button',{name:'AMZN · Short'})).toBeTruthy();
-  view.rerender(<TradeHistoryCard labels={labels} symbol='AMZN' side='short' entry={267.6} exit={267.18} surface={false} className='wide' data-testid='plain'/>);
-  const plain=screen.getByTestId('plain');expect(plain.classList.contains('hig-surface')).toBe(false);expect(plain.dataset.surface).toBe('false');expect(plain.classList.contains('wide')).toBe(true);
+ it('makes each row a button named with the trade when it can be selected, with a decorative chevron',async()=>{
+  const select=vi.fn();render(<TradeHistoryListBlock labels={list} trades={trades} onSelect={select}/>);
+  const row=screen.getByRole('button',{name:'Amazon, Short 20×, +$1.412, 2d'});expect(row.querySelector('.hig-trade-row-chevron')?.getAttribute('aria-hidden')).toBe('true');
+  await userEvent.click(row);expect(select).toHaveBeenCalledWith(trades[0]);
+  expect(screen.getByRole('button',{name:'Solana, Short, —'})).toBeTruthy();
+ });
+ it('shows the host empty text without trades, draws host artwork, and takes a result format',()=>{
+  const view=render(<TradeHistoryListBlock labels={list} trades={[]}/>);
+  expect(screen.getByRole('status').textContent).toBe('No closed trades yet');expect(screen.queryByRole('list')).toBeNull();
+  view.rerender(<TradeHistoryListBlock labels={list} trades={[{id:'a',name:'Tesla',icon:'/tsla.png',side:'long',pnl:4.675}]} pnlOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}}/>);
+  expect(document.querySelector('.hig-asset-row-icon img')?.getAttribute('src')).toBe('/tsla.png');expect(spoken(document.querySelector('.hig-trade-pnl')!)).toBe('$5');
  });
 });
 const detailLabels={title:'Trade',netPnl:'Net PnL',onMargin:(percent:string)=>`${percent} on margin`,long:'Long',short:'Short'};
@@ -76,8 +74,8 @@ describe('TradeHistoryDetailCard',()=>{
   const fr={title:'Transaction',netPnl:'Résultat net',onMargin:(percent:string)=>`${percent} sur la marge`,long:'Achat',short:'Vente'};
   render(<HIGProvider locale='fr-FR'><TradeHistoryDetailCard {...base} labels={fr}/></HIGProvider>);
   expect(screen.getByRole('heading',{name:'Transaction'})).toBeTruthy();expect(spoken(document.querySelector('.hig-trade-return')!)).toBe('+2,84 % sur la marge');expect(document.querySelector('.hig-trade-side')!.textContent).toBe('↓ Vente');
-  for(const file of ['trade-history-card','trade-history-detail-card'])expect(readFileSync(`packages/hig/react/src/blocks/${file}.tsx`,'utf8')).not.toMatch(/messages\./);
-  expect(blocks.TradeHistoryCard).toBe(TradeHistoryCard);expect(blocks.TradeHistoryDetailCard).toBe(TradeHistoryDetailCard);
+  for(const file of ['trade-history-list-block','trade-history-detail-card'])expect(readFileSync(`packages/hig/react/src/blocks/${file}.tsx`,'utf8')).not.toMatch(/messages\./);
+  expect(blocks.TradeHistoryListBlock).toBe(TradeHistoryListBlock);expect(blocks.TradeHistoryDetailCard).toBe(TradeHistoryDetailCard);
   const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').filter(line=>line.startsWith('.hig-trade'));
   expect(css.join('\n')).not.toMatch(/\b(left|right)\b/);expect(css.find(line=>line.startsWith('.hig-trade-actions {'))).toContain('gap:var(--hig-action-gap)');
  });

@@ -288,10 +288,10 @@
       "import": "./react/dist/blocks/position-card.js",
       "default": "./react/dist/blocks/position-card.js"
     },
-    "./react/blocks/trade-history-card": {
-      "types": "./react/dist/blocks/trade-history-card.d.ts",
-      "import": "./react/dist/blocks/trade-history-card.js",
-      "default": "./react/dist/blocks/trade-history-card.js"
+    "./react/blocks/trade-history-list-block": {
+      "types": "./react/dist/blocks/trade-history-list-block.d.ts",
+      "import": "./react/dist/blocks/trade-history-list-block.js",
+      "default": "./react/dist/blocks/trade-history-list-block.js"
     },
     "./react/blocks/trade-history-detail-card": {
       "types": "./react/dist/blocks/trade-history-detail-card.d.ts",
@@ -363,10 +363,10 @@
       "import": "./native/dist/position-card.js",
       "default": "./native/dist/position-card.js"
     },
-    "./native/trade-history-card": {
-      "types": "./native/dist/trade-history-card.d.ts",
-      "import": "./native/dist/trade-history-card.js",
-      "default": "./native/dist/trade-history-card.js"
+    "./native/trade-history-list-block": {
+      "types": "./native/dist/trade-history-list-block.d.ts",
+      "import": "./native/dist/trade-history-list-block.js",
+      "default": "./native/dist/trade-history-list-block.js"
     },
     "./native/trade-history-detail-card": {
       "types": "./native/dist/trade-history-detail-card.d.ts",
