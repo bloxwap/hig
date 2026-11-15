@@ -401,6 +401,10 @@
       "title": "TargetCard"
     },
     {
+      "route": "components/position-card",
+      "title": "PositionCard"
+    },
+    {
       "route": "components/token-action-card",
       "title": "TokenActionCard"
     },
@@ -1089,6 +1093,16 @@
       "states": [
         "default",
         "stop-loss"
+      ]
+    },
+    {
+      "name": "PositionCard",
+      "route": "components/position-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "paper-trade"
       ]
     },
     {

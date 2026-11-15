@@ -523,6 +523,14 @@
       "support": "renderer"
     },
     {
+      "name": "PositionCard",
+      "states": [
+        "default",
+        "paper-trade"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "TokenActionCard",
       "states": [
         "default",

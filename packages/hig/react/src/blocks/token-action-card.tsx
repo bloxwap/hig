@@ -46,8 +46,8 @@ export function TokenActionCard({symbol,name,value,assets,chains,chainsTitle,act
  return <section {...rest} className={`hig-token-card${className?` ${className}`:''}`}>
   <ScreenHeader title={symbol} onBack={onBack} action={headerAction}/>
   <div className='hig-token-bars'>
-   <BarMark title={name} description={<AnimatedNumberReadout value={total} options={usd}/>} elements={assets}/>
-   <BarMark title={chainsTitle??messages.swapChains??en.swapChains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)} elements={chains}/>
+   <BarMark surface={false} title={name} description={<AnimatedNumberReadout value={total} options={usd}/>} elements={assets}/>
+   <BarMark surface={false} title={chainsTitle??messages.swapChains??en.swapChains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)} elements={chains}/>
   </div>
   {actions.length>0&&<div className='hig-token-actions'>{actions.map(action=><Button key={action.id} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onClick={action.onSelect}>{tokenActionLabel(action,messages)}</Button>)}</div>}
  </section>;

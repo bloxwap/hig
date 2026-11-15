@@ -547,10 +547,20 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 /* ManagePositionCard: header, two bars 8px apart, action rows and the position row 16px below each other. */
 .hig-manage-position-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
 /* The two bars are read-only, so they sit on the page without a card, further apart than cards would be. */
-.hig-manage-position-card > .hig-token-bars { gap:20px;padding-inline:4px; }
+.hig-token-card > .hig-token-bars,.hig-manage-position-card > .hig-token-bars { gap:20px;padding-inline:4px; }
 .hig-manage-position-card .hig-swap-setting:disabled { color:var(--hig-muted);cursor:default; }
 .hig-position-side[data-side='long'],.hig-position-row [data-tone='up'] { color:var(--hig-positive); }
 .hig-position-side[data-side='short'],.hig-position-row [data-tone='down'] { color:var(--hig-negative); }
+/* PositionCard: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
+.hig-position-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:4px; }
+.hig-position-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
+.hig-position-details dd { margin:0;color:var(--hig-text);font-weight:600;text-align:end;overflow-wrap:anywhere; }
+.hig-position-details [data-tone='positive'] dd { color:var(--hig-positive); }
+.hig-position-details [data-tone='negative'] dd { color:var(--hig-negative); }
+.hig-position-details [data-tone='muted'] dd { color:var(--hig-muted); }
+.hig-position-note { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-position-groups { display:flex;flex-direction:column;gap:8px; }
 /* TargetCard: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
 .hig-target-card { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }

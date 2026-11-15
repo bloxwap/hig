@@ -24,6 +24,7 @@ export {AccountCard,accountRows,assetValue,AssetBalanceRow,type AccountCardProps
 export {TokenActionCard,tokenActionLabel,type TokenActionCardProps,type TokenAction,type TokenActionId} from './token-action-card.js';
 export {ManagePositionCard,positionCorridor,type ManagePositionCardProps,type ManagePositionCardLabels,type ManagePositionCardAction,type ManagePositionCardSummary} from './manage-position-card.js';
 export {TargetCard,targetLayout,targetFormat,type TargetCardProps,type TargetCardLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-card.js';
+export {PositionCard,type PositionCardProps,type PositionCardDetail,type PositionCardFigure,type PositionCardRow,type PositionCardFlag} from './position-card.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapPanel,swapAction,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel.js';

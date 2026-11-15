@@ -67,3 +67,9 @@ it('stacks full-width secondary actions that call the host, honours intent and d
  expect(has(view,'token-actions')).toBe(true);view=mount();expect(has(view,'token-actions')).toBe(false);
  expect(blocks.TokenActionCard).toBe(TokenActionCard);expect(blocks.tokenActionLabel).toBe(tokenActionLabel);
 });
+
+it('draws both bars without a card, further apart than cards would be',()=>{
+ const view=mount();
+ expect(bars(view).map(bar=>[bar.props.testID,bar.props.surface])).toEqual([['token-assets',false],['token-chains',false]]);
+ const group=all(view,'token-bars').find(node=>typeof node.type==='string');expect(Object.assign({},...[].concat(group.props.style).flat(Infinity).filter(Boolean))).toMatchObject({gap:20,marginTop:16,paddingHorizontal:4});
+});

@@ -18,6 +18,8 @@ describe('TokenActionCard',()=>{
   expect(screen.getByRole('heading',{name:'HYPE'})).toBeTruthy();await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(back).toHaveBeenCalledTimes(1);
   const held=screen.getByRole('region',{name:'Hyperliquid'}),on=screen.getByRole('region',{name:'Chains'});
   expect(description(held)).toBe('$759.00');expect(within(held).getAllByRole('listitem').map(item=>item.textContent)).toEqual(['Staked42.2%','Core31.5%','Paper26.4%']);expect(held.hasAttribute('data-size')).toBe(false);
+  // Both bars sit on the screen without a card.
+  expect(held.classList.contains('hig-surface')).toBe(false);expect(on.classList.contains('hig-surface')).toBe(false);
   // Two of the three chains hold a balance.
   expect(description(on)).toBe('2');expect(on.hasAttribute('data-size')).toBe(false);expect(within(on).getAllByRole('listitem').map(item=>item.textContent)).toEqual(['Base15.8%','Hyperliquid84.2%','Arbitrum0%']);
   expect([...document.querySelectorAll('.hig-token-actions > button')].map(button=>button.textContent)).toEqual(['Send','Receive','Stake','Unstake']);

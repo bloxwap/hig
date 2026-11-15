@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `ManagePositionCard`, `TargetCard`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `ManagePositionCard`, `TargetCard`, `PositionCard`, `InstallCommand`, and `MarketingHero`.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -20,6 +20,7 @@ All data and actions are supplied by the host application.
 | `TokenActionCard` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
 | `ManagePositionCard` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetCard` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry, mark and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
+| `PositionCard` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
 | `FromPicker` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
 | `ToPicker` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
 | `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. |
@@ -166,7 +167,7 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 
 ### TokenActionCard
 
-`TokenActionCard` is the screen for one token: the same header as `AccountCard` with the ticker as its title, two `BarMark` cards, then the actions. The first bar is titled with the token's `name`, shows the total holding in dollars on its trailing edge, and divides among `assets`, the places the token is held (Staked, Core, Paper). The second is the same bar titled Chains that shows how many chains hold a balance and divides among `chains`. It is available from `@bloxwap/hig/react/blocks/token-action-card`, `@bloxwap/hig/native/token-action-card` and the `blocks` aggregates.
+`TokenActionCard` is the screen for one token: the same header as `AccountCard` with the ticker as its title, two `BarMark` bars, then the actions. The bars are read-only, so they are drawn without a card (`surface={false}`) and sit directly on the screen, as in `ManagePositionCard`. The first bar is titled with the token's `name`, shows the total holding in dollars on its trailing edge, and divides among `assets`, the places the token is held (Staked, Core, Paper). The second is the same bar titled Chains that shows how many chains hold a balance and divides among `chains`. It is available from `@bloxwap/hig/react/blocks/token-action-card`, `@bloxwap/hig/native/token-action-card` and the `blocks` aggregates.
 
 ```tsx
 <TokenActionCard symbol="HYPE" name="Hyperliquid" onBack={goBack}
@@ -228,6 +229,29 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Actions.** `onSubmit` is the confirming action, labelled by `labels.submit`, with `busy` and `submitDisabled`. `onCancel` adds Cancel beside it. `onBack` and `headerAction` are the header controls, as in `AccountCard`.
 - **Live numbers.** The headline figure and the three prices update through `AnimatedNumberReadout`.
 - **Ownership.** The block never reads a position or a price feed and never places an order.
+
+### PositionCard
+
+`PositionCard` is the sheet for the position being opened or edited. Under the shared header, with Close on its trailing edge, it shows a summary, an optional paper trading switch, and the settings as grouped rows. It is available from `@bloxwap/hig/react/blocks/position-card`, `@bloxwap/hig/native/position-card` and the `blocks` aggregates.
+
+```tsx
+<PositionCard title={t.position} onClose={close}
+  details={[{label: t.notional, value: {value: 400, options: wholeDollars}},
+            {label: t.fee, value: {value: 0.53, options: dollars}, tone: 'negative'},
+            {label: t.liquidation, value: {value: -0.025, options: percent}, tone: 'negative'}]}
+  paperTrade={{label: t.paperTrade, checked: paper, onCheckedChange: setPaper}}
+  groups={[[{id: 'size', label: t.size, value: '$10', onSelect: openSize},
+            {id: 'leverage', label: t.leverage, value: '40×', onSelect: openLeverage}],
+           [{id: 'positions', label: t.positions, value: '2', onSelect: openPositions}]]}/>
+```
+
+- **Words.** Every label is host text, because built-in strings carry no trading terms; only Close and Back are built in.
+- **Summary.** `details` are label and value lines in the order given. A value is host text, such as 2% of profit, or a figure `{value, options, prefix, suffix}` that updates place by place through `AnimatedNumberReadout`; a `null` figure reads as unknown. `tone` colours the value `positive`, `negative` or `muted`, for a fee or a liquidation distance. The label always carries the meaning, so colour is never the only signal.
+- **Note.** `note` is one sentence under the summary, such as the minimum margin.
+- **Paper trading.** `paperTrade={{label, checked, onCheckedChange}}` adds a switch as a row of its own above the settings. The host names it and owns its state, and usually changes `details`, `note` and `groups` with it: a paper position might charge a share of profit and offer no stop loss. `disabled` dims it.
+- **Settings.** `groups` is a list of groups, and each group is one `ListGroup`: rows that share a rounded container, 8 units from the next group. A row is `{id, label}` plus an optional `value` on the trailing edge. With `onSelect` the whole row is a button with a chevron and the host opens its own view, for example a `TargetCard` for Stop Loss; without it the row is static. `disabled` dims a row. An empty group is not drawn.
+- **Header.** `onClose` shows Close on the trailing edge; `headerAction` takes its place. `onBack` shows Back.
+- **Ownership.** The card never reads an account, computes a fee or places an order.
 
 ## When to use and examples
 

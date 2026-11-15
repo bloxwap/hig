@@ -53,9 +53,9 @@ export function TokenActionCard({symbol,name,value,assets,chains,chainsTitle,act
    <Text testID='token-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{symbol}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
   </View>
-  <View style={{gap:8,marginTop:16}}>
-   <BarMark testID='token-assets' title={name} elements={assets} description={<AnimatedNumberReadout value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>}/>
-   <BarMark testID='token-chains' title={chainsTitle??t.swapChains} elements={chains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)}/>
+  <View testID='token-bars' style={{gap:20,marginTop:16,paddingHorizontal:4}}>
+   <BarMark testID='token-assets' surface={false} title={name} elements={assets} description={<AnimatedNumberReadout value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>}/>
+   <BarMark testID='token-chains' surface={false} title={chainsTitle??t.swapChains} elements={chains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)}/>
   </View>
   {actions.length>0?<View testID='token-actions' style={{gap:8,marginTop:16}}>
    {actions.map(action=><Button key={action.id} testID={`token-action-${action.id}`} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onPress={action.onSelect}>{tokenActionLabel(action,t)}</Button>)}

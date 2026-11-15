@@ -1067,6 +1067,27 @@
       }
     },
     {
+      "name": "PositionCard",
+      "slug": "position-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.PositionCard title='Position' details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'negative'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} groups={[[{id:'size',label:'Size',value:'$10',onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:'40×',onSelect:()=>setMessage('The host opens Leverage')},{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens Stop Loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens Take Profit')}],[{id:'positions',label:'Positions',value:'2',onSelect:()=>setMessage('The host opens Positions')}]]} onClose={()=>setMessage('The host closes the card')}/>",
+      "native": "<C.PositionCard title='Position' details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'negative'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} groups={[[{id:'size',label:'Size',value:'$10',onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:'40×',onSelect:()=>setMessage('The host opens Leverage')},{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens Stop Loss')},{id:'take-profit',label:'Take Profit',onSelect:()=>setMessage('The host opens Take Profit')}],[{id:'positions',label:'Positions',value:'2',onSelect:()=>setMessage('The host opens Positions')}]]} onClose={()=>setMessage('The host closes the card')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "paper-trade"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "paper-trade": {
+          "web": "<C.PositionCard title='Position' details={[{label:'Notional',value:{value:1000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:-0.0095,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} note='Minimum $10 margin and $500 position (margin × leverage).' paperTrade={{label:'Paper trade',checked,onCheckedChange:setChecked}} groups={[[{id:'size',label:'Size',value:'$10',onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:'100×',onSelect:()=>setMessage('The host opens Leverage')}],[{id:'positions',label:'Positions',value:'2',onSelect:()=>setMessage('The host opens Positions')}]]} onClose={()=>setMessage('The host closes the card')}/>",
+          "native": "<C.PositionCard title='Position' details={[{label:'Notional',value:{value:1000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:-0.0095,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} note='Minimum $10 margin and $500 position (margin × leverage).' paperTrade={{label:'Paper trade',checked,onCheckedChange:setChecked}} groups={[[{id:'size',label:'Size',value:'$10',onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:'100×',onSelect:()=>setMessage('The host opens Leverage')}],[{id:'positions',label:'Positions',value:'2',onSelect:()=>setMessage('The host opens Positions')}]]} onClose={()=>setMessage('The host closes the card')}/>"
+        }
+      }
+    },
+    {
       "name": "TokenActionCard",
       "slug": "token-action-card",
       "entry": "blocks",

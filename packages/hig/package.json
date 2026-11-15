@@ -278,6 +278,11 @@
       "import": "./react/dist/blocks/target-card.js",
       "default": "./react/dist/blocks/target-card.js"
     },
+    "./react/blocks/position-card": {
+      "types": "./react/dist/blocks/position-card.d.ts",
+      "import": "./react/dist/blocks/position-card.js",
+      "default": "./react/dist/blocks/position-card.js"
+    },
     "./react/bar-mark": {
       "types": "./react/dist/bar-mark.d.ts",
       "import": "./react/dist/bar-mark.js",
@@ -332,6 +337,11 @@
       "types": "./native/dist/target-card.d.ts",
       "import": "./native/dist/target-card.js",
       "default": "./native/dist/target-card.js"
+    },
+    "./native/position-card": {
+      "types": "./native/dist/position-card.d.ts",
+      "import": "./native/dist/position-card.js",
+      "default": "./native/dist/position-card.js"
     },
     "./native/bar-mark": {
       "types": "./native/dist/bar-mark.d.ts",
