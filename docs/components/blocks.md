@@ -157,8 +157,18 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Total.** `balance` is the total in dollars. Without it the card sums the asset values; `null` reads as unknown.
 - **Deposit.** `onDeposit` shows the primary action beside the total. `depositLabel` replaces the built-in text, for example with Add funds.
 - **Header.** `title` replaces the built-in “Account”. `onBack` shows Back; `headerAction` is the trailing control. The title stays centred with either, both or neither.
-- **Rows.** `onAssetSelect` makes each row a button that reports its asset. Without it the rows are plain.
-- **Live numbers.** The total, every value and every units figure update through `AnimatedNumberReadout`, as in the swap card.
+- **Rows.** `onAssetSelect` makes each row a button that reports its asset. Without it the rows are plain. `selectable: false` on an asset keeps that one row plain.
+- **Units.** `units: false` on an asset draws no units line, for a ledger whose units are the same figure as its value. `unitsOptions` formats an asset's units (at most six fraction digits by default). An asset whose value is unknown but whose `balance` is known shows its units as the headline figure, with no second line, in place of the unknown dash.
+- **Sections.** `sections=[{id, title, total, assets}]` replaces the flat list with titled groups in the order given, 24 units apart, each a region named by its title with its rows 8 apart under a heading line that carries the group's `total` on the trailing edge (the sum of its asset values when left out; `null` reads as unknown). Within a group the pinned asset leads only when the group holds it (no $0.00 placeholder), then the rest by value. Without `balance` the block total is the sum of the group totals. A group with no assets is not drawn. `onAssetSelect` then also receives the group: `onAssetSelect(asset, section)`. `accountSectionRows` and `accountSectionTotal` return the same order and total for a host-drawn list.
+
+```tsx
+<AccountBlock onDeposit={openDeposit} onAssetSelect={(asset, section) => open(section?.id, asset.id)} sections={[
+  {id: 'exchange', title: t.exchange, assets: [{id: 'perp', name: t.perp, symbol: 'USDC', value: 500, units: false}]},
+  {id: 'wallet', title: t.wallet, assets: walletAssets},
+]}/>
+```
+
+- **Live numbers.** The total, every section total, every value and every units figure update through `AnimatedNumberReadout`, as in the swap card.
 - **Ownership.** The card never reads a wallet, fetches a price or moves funds.
 
 ### TokenActionBlock
@@ -173,7 +183,9 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
             {id: 'stake', onSelect: stake}, {id: 'unstake', onSelect: unstake}]}/>
 ```
 
-- **Bars.** `assets` and `chains` are `BarMark` elements: `{label, value}` plus optional `tone`, `color`, `detail` and `id`. Use one unit for both, usually dollars. `chainsTitle` replaces the built-in “Chains”.
+- **Bars.** `assets` and `chains` are `BarMark` elements: `{label, value}` plus optional `tone`, `color`, `detail` and `id`. Use one unit for both, usually dollars. `chainsTitle` replaces the built-in “Chains”. A `detail` can be a live figure (`{value, options, prefix, suffix}`), which moves place by place on both platforms, like the total.
+- **Actions only.** Both bars are optional: leave out `chains` to draw the assets bar alone, `assets` to draw the chains bar alone, or both for a card of commands with no breakdown. `name` is needed only with `assets`; the ticker stands in without it.
+- **Note.** `note` is a line under the actions, for example why some are missing on a view-only account; `noteTone='warning'` or `'negative'` makes it a tinted capsule, as in `SwapPanelBlock`. It sits 8 units under the actions, or 16 under the bars when there are no actions.
 - **Total.** `value` is the holding in dollars. Without it the card sums the asset values; `null` reads as unknown. It updates place by place.
 - **Chain count.** The chains bar shows the number of chains with a balance above zero.
 - **Actions.** Each action is `{id, onSelect}` plus optional `label`, `disabled` and `intent`. The ids `send`, `receive`, `stake` and `unstake` take a built-in translated label; any other id needs `label`. They render in the order given, full width, 8 units apart and 16 below the bars. Leave out the actions a token does not support.
@@ -374,10 +386,24 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 ```
 
 - **Avatar.** `avatar` is an image URL or a host element. Without it, `address` colours the disc the way wallet avatars are coloured elsewhere; with neither, the disc shows the first letters of the name. It is 144 units across and decorative.
+- **Avatar press.** `onAvatarPress` makes the avatar a button, for example to choose a picture, named by `avatarLabel` (the name when left out). The status dot stays outside the button and is still read on its own. On web it takes the host's press decoration as an `'icon-button'`.
 - **Status.** `status={{label, tone}}` draws a dot on the avatar's top trailing edge for an account mode or state, such as Demo. `label` is read out, so the dot is never colour alone. `tone` is `warning` by default, or `positive`, `negative` or `info`.
-- **Name.** `name` is the heading: a display name or an address the host has shortened. `onEditName` adds the edit control after it.
+- **Name.** `name` is the heading: a display name or an address the host has shortened. `onEditName` adds the edit control after it. `nameAccessory` puts host content between the name and the edit control, such as a membership badge; it stays in the accessibility tree, so an interactive badge needs its own name.
+- **Action.** `action={{label, onSelect}}` draws a full-width button 16 units under the name, such as Log in for a signed-out viewer. It is `primary` by default (`intent: 'secondary'` for a quieter one) and takes `disabled`. With an action, `name` may be left out: the heading is then not drawn.
 - **Top bar.** `onShowAddress` shows the address control and `onClose` shows Close. Leave either out to hide it.
-- **Sections.** Each section is `{id, title, rows}`; a section with no rows is not drawn. A row is `{id, label}` plus optional `leading`, `value`, `trailing`, `disabled`, and either `onSelect` (the whole row is a button with a chevron) or `onCheckedChange` with `checked` (the row is a switch, named by its label). The host writes every label and value.
+- **Sections.** Each section is `{id, title, rows}`; a section with no rows is not drawn. A row is `{id, label}` plus optional `leading`, `value`, `tone`, `trailing`, `disabled`, and either `onSelect` (the whole row is a button with a chevron) or `onCheckedChange` with `checked` (the row is a switch, named by its label). The host writes every label and value.
+- **Switch rows.** The whole row is the target, as in the settings blocks: a press anywhere on it toggles the switch, and the switch is still the one named control for the keyboard and assistive technology. On web the row's markup is unchanged and the host's press decoration covers the whole row; native switch rows were already whole-row targets.
+- **Row values.** `value` is short text, or a live figure `{value, options, prefix, suffix}`, such as a balance, that updates place by place (`null` reads as unknown). `tone` colours the value `positive`, `warning`, `negative` or `muted`, for a mode or state such as Live or Demo; without it the value keeps the muted value style. A selectable row is still named by its label and value.
+- **Footer.** `footer` is host content under the sections, 24 units below them on the block's inset, such as the Terms and Privacy links.
+
+```tsx
+<ProfileBlock action={{label: t.logIn, onSelect: openLogin}} onClose={close} sections={sections}
+  footer={<nav aria-label={t.legal}><Link href='/terms'>{t.terms}</Link> <Link href='/privacy'>{t.privacy}</Link></nav>}/>
+<ProfileBlock name={name} nameAccessory={<GenesisBadge/>} avatar={photo} onAvatarPress={chooseAvatar} avatarLabel={t.chooseAvatar}
+  sections={[{id: 'money', rows: [{id: 'accounts', label: t.accounts, value: {value: balance, options: usd}, onSelect: openAccounts},
+                                 {id: 'history', label: t.history, value: t.live, tone: 'positive', onSelect: openHistory}]}]}/>
+```
+
 - **Ownership.** The block never reads an account, a balance or a setting. Each control only reports the press; the host opens its accounts, history, rewards and settings screens.
 
 ### ScreenHeader

@@ -76,3 +76,29 @@ it('reports the asset when a row is selected, and the blocks entry exports the c
  act(()=>{rows(view)[1].props.onSelect();});expect(select).toHaveBeenCalledWith(hype);act(()=>{rows(view)[0].props.onSelect();});expect(select).toHaveBeenLastCalledWith(usdc);
  expect(blocks.AccountBlock).toBe(AccountBlock);expect(blocks.accountRows).toBe(accountRows);expect(blocks.AssetBalanceRow).toBe(AssetBalanceRow);
 });
+const perp={id:'perp-usdc',name:'USD Coin',symbol:'USDC',value:500,units:false};
+const blox={id:'blox',name:'Bloxwap',symbol:'BLOX',balance:1234.5,value:null};
+it('draws titled sections with their own totals, 24 apart, in place of the flat list, and reports the section with a row',()=>{
+ const select=jest.fn();
+ const sections=[{id:'exchange',title:'Exchange',assets:[perp,{...hype,id:'perp-hype'}]},{id:'empty',title:'Nothing',assets:[]},{id:'wallet',title:'Wallet',total:999,assets:[sol,usdc,blox]}];
+ const view=mount({sections,onAssetSelect:select});
+ expect(has(view,'account-assets')).toBe(false);expect(has(view,'account-section-empty')).toBe(false);
+ const group=all(view,'account-sections').find(node=>typeof node.type==='string');expect(Object.assign({},...[].concat(group.props.style))).toMatchObject({gap:24,marginTop:16});
+ const title=id=>all(view,`account-section-${id}-title`).find(node=>node.props.accessibilityRole==='header');expect(text(title('exchange'))).toBe('Exchange');expect(text(title('wallet'))).toBe('Wallet');
+ const sectionTotal=id=>all(view,`account-section-${id}-total`).find(node=>node.type===AnimatedNumberReadout);
+ expect(sectionTotal('exchange').props.value).toBe(1259);expect(sectionTotal('wallet').props.value).toBe(999);expect(total(view).props.value).toBe(2258);
+ expect(rows(view).map(row=>row.props.testID)).toEqual(['account-section-exchange-asset-perp-usdc','account-section-exchange-asset-perp-hype','account-section-wallet-asset-usdc','account-section-wallet-asset-sol','account-section-wallet-asset-blox']);
+ act(()=>{rows(view)[3].props.onSelect();});expect(select).toHaveBeenCalledWith(sol,sections[2]);
+ expect(blocks.accountSectionRows).toBeDefined();expect(blocks.accountSectionTotal(sections[0])).toBe(1259);
+});
+it('hides units per asset, makes a row plain, passes the units format, and headlines units when the value is unknown',()=>{
+ const select=jest.fn();
+ const view=mount({assets:[usdc,{...sol,selectable:false,unitsOptions:{minimumFractionDigits:4}},perp,blox],onAssetSelect:select});
+ const byId=id=>rows(view).find(row=>row.props.testID===`account-asset-${id}`);
+ expect(byId('perp-usdc').props.balance).toBeUndefined();
+ expect(byId('sol').props.onSelect).toBeUndefined();expect(byId('sol').props.balanceOptions).toEqual({minimumFractionDigits:4});
+ expect(byId('blox').props).toMatchObject({headline:'units',balance:1234.5,value:null});expect(byId('hype')).toBeUndefined();
+ act(()=>{byId('blox').props.onSelect();});expect(select).toHaveBeenCalledWith(blox);
+ // Without the new fields the rows take the same props as before.
+ expect(byId('usdc').props.headline).toBeUndefined();
+});

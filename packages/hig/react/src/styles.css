@@ -541,9 +541,17 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-account-balance { min-width:0;font-size:2rem;line-height:1.25;font-weight:600; }
 .hig-account-balance .hig-number { font-family:inherit; }
 .hig-account-assets { display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none; }
+.hig-account-sections { display:flex;flex-direction:column;gap:24px;min-width:0; }
+.hig-account-section { display:flex;flex-direction:column;gap:8px;min-width:0; }
+.hig-account-section-header { display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500; }
+.hig-account-section-header > h3 { margin:0;min-width:0;font:inherit;overflow-wrap:anywhere; }
+.hig-account-section-total { flex:none; }
+.hig-account-section-total .hig-number { font-family:inherit; }
 /* TokenActionBlock: header, the assets and chains bars 8px apart, then equal full-width actions 16px below. */
 .hig-token-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-token-bars,.hig-token-actions { display:flex;flex-direction:column;gap:8px; }
+.hig-token-card > .hig-token-note { margin:0; }
+.hig-token-card > .hig-token-actions + .hig-token-note { margin-block-start:-8px; }
 /* ManagePositionBlock: header, two bars 8px apart, action rows and the position row 16px below each other. */
 .hig-manage-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 /* The two bars are read-only, so they sit on the page without a card, further apart than cards would be. */
@@ -706,6 +714,17 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-profile-name { display:flex;align-items:center;justify-content:center;gap:4px;max-width:100%; }
 .hig-profile-name > h2 { margin:0;min-width:0;font-size:1.75rem;line-height:1.2;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .hig-profile-name > .hig-button { flex:none;color:var(--hig-muted); }
+.hig-profile-name-accessory { flex:none;display:inline-flex;align-items:center; }
+button.hig-profile-artwork { appearance:none;margin:0;padding:0;border:0;background:none;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+button.hig-profile-artwork:active { opacity:.85; }
+.hig-profile-identity > .hig-profile-action { align-self:stretch; }
+.hig-profile-value[data-tone='positive'] { color:var(--hig-positive); }
+.hig-profile-value[data-tone='warning'] { color:var(--hig-warning); }
+.hig-profile-value[data-tone='negative'] { color:var(--hig-negative); }
+.hig-profile-value[data-tone='muted'] { color:var(--hig-muted); }
+.hig-profile-value .hig-number { font-family:inherit; }
+.hig-profile-block .hig-list-row:has(> .hig-list-row-trailing .hig-switch):not([aria-disabled='true']) { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-profile-footer { min-width:0; }
 /* BarMark: one bar divided among its elements. Segments are flex shares of the bar with a 2px gap that shows the card, and the
    remainder of a larger total is an empty track segment. Colours come from tone roles (or a host colour) through one custom property. */
 .hig-bar-mark { display:flex;flex-direction:column;gap:12px; }
@@ -722,6 +741,7 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-bar-mark-legend > li { display:inline-flex;align-items:center;gap:6px;min-width:0; }
 .hig-bar-mark-dot { flex:none;width:8px;height:8px;border-radius:9999px;background:var(--hig-bar-mark-color,var(--hig-muted)); }
 .hig-bar-mark-detail { color:var(--hig-faint); }
+.hig-bar-mark-detail .hig-number { font-family:inherit; }
 .hig-bar-mark [data-tone='positive'] { --hig-bar-mark-color:var(--hig-positive); }
 .hig-bar-mark [data-tone='info'] { --hig-bar-mark-color:var(--hig-info); }
 .hig-bar-mark [data-tone='warning'] { --hig-bar-mark-color:var(--hig-warning); }

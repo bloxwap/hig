@@ -24,6 +24,8 @@ export interface ListRowProps {
  leading?:React.ReactNode;
  /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string is drawn muted and read with the label. */
  value?:React.ReactNode;
+ /** How a `value` that is not text is read with the label on a pressable row, such as a live figure's formatted amount. */
+ valueLabel?:string;
  /** Anything richer on the trailing edge: icons, a Badge, or a control such as a Switch. */
  trailing?:React.ReactNode;
  /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */
@@ -34,11 +36,11 @@ export interface ListRowProps {
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** One row of a ListGroup: the label leads; a value, icons, a badge or a control trail. With `onSelect` the whole row is one button and shows a disclosure chevron; without it the row is static, so a control in `trailing` is its only target. */
-export function ListRow({label,leading,value,trailing,onSelect,disabled,testID}:ListRowProps){
+export function ListRow({label,leading,value,valueLabel,trailing,onSelect,disabled,testID}:ListRowProps){
  const colors=useColors(),fills=useFills(),{direction}=useHIG();
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'flex-start',gap:12,minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:pressed?fills.raised:fills.well,opacity:disabled?0.5:1});
  const text=typeof value==='string'||typeof value==='number';
- const reading=[label,text?String(value):null].filter(Boolean).join(', ');
+ const reading=[label,text?String(value):valueLabel??null].filter(Boolean).join(', ');
  // Everything aligns to the first line of the label, so a trailing switch stays at the top when the label wraps.
  const first:ViewStyle={minHeight:40,justifyContent:'center'};
  const lead=leading==null?null:<View {...hidden} style={first}>{leading}</View>;

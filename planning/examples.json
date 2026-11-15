@@ -855,7 +855,8 @@
       "states": [
         "default",
         "remaining",
-        "no-legend"
+        "no-legend",
+        "live-detail"
       ],
       "a11y": "Titled group; the bar is decorative and each legend item reads its label, detail and share; device observations pending",
       "feedback": "none; display only",
@@ -867,6 +868,10 @@
         "no-legend": {
           "web": "<C.BarMark title='Allocation' description='3 assets' legend={false} elements={[{label:'Bitcoin',value:50},{label:'Ether',value:30},{label:'Solana',value:20}]}/>",
           "native": "<C.BarMark title='Allocation' description='3 assets' legend={false} elements={[{label:'Bitcoin',value:50},{label:'Ether',value:30},{label:'Solana',value:20}]}/>"
+        },
+        "live-detail": {
+          "web": "<C.BarMark title='Hyperliquid' surface={false} elements={[{label:'Staked',value:320,detail:{value:320,options:{style:'currency',currency:'USD'}}},{label:'Core',value:239,detail:{value:239,options:{style:'currency',currency:'USD'}}}]}/>",
+          "native": "<C.BarMark title='Hyperliquid' surface={false} elements={[{label:'Staked',value:320,detail:{value:320,options:{style:'currency',currency:'USD'}}},{label:'Core',value:239,detail:{value:239,options:{style:'currency',currency:'USD'}}}]}/>"
         }
       }
     },
@@ -916,7 +921,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "value-only"
+        "value-only",
+        "units-headline"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -924,6 +930,10 @@
         "value-only": {
           "web": "<C.AssetBalanceRow name='USD Coin' symbol='USDC' value={100.33}/>",
           "native": "<C.AssetBalanceRow name='USD Coin' symbol='USDC' value={100.33}/>"
+        },
+        "units-headline": {
+          "web": "<C.AssetBalanceRow name='Bloxwap' symbol='BLOX' value={null} balance={1234.5} headline='units'/>",
+          "native": "<C.AssetBalanceRow name='Bloxwap' symbol='BLOX' value={null} balance={1234.5} headline='units'/>"
         }
       }
     },
@@ -1009,7 +1019,8 @@
       "states": [
         "default",
         "empty",
-        "local-money"
+        "local-money",
+        "sections"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1021,6 +1032,10 @@
         "local-money": {
           "web": "<C.HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><C.AccountBlock assets={[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:1042.09,price:1},{id:'sol',name:'Solana',symbol:'SOL',balance:1.42,price:142.96}]} onDeposit={()=>setMessage('The host opens its deposit flow')}/></C.HIGProvider>",
           "native": "<C.HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><C.AccountBlock assets={[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:1042.09,price:1},{id:'sol',name:'Solana',symbol:'SOL',balance:1.42,price:142.96}]} onDeposit={()=>setMessage('The host opens its deposit flow')}/></C.HIGProvider>"
+        },
+        "sections": {
+          "web": "<C.AccountBlock onDeposit={()=>setMessage('The host opens its deposit flow')} onAssetSelect={(asset,section)=>setMessage(asset.name+' in '+(section?.title??''))} sections={[{id:'exchange',title:'Exchange',assets:[{id:'perp',name:'USD Coin',symbol:'USDC',value:500,units:false},{id:'held',name:'Hyperliquid',symbol:'HYPE',balance:13.2,price:57.5,unitsOptions:{minimumFractionDigits:2,maximumFractionDigits:2}}]},{id:'wallet',title:'Wallet',assets:[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'blox',name:'Bloxwap',symbol:'BLOX',balance:1234.5,value:null},{id:'paper',name:'Paper',symbol:'PAPER',balance:50,value:null,selectable:false}]}]}/>",
+          "native": "<C.AccountBlock onDeposit={()=>setMessage('The host opens its deposit flow')} onAssetSelect={(asset,section)=>setMessage(asset.name+' in '+(section?.title??''))} sections={[{id:'exchange',title:'Exchange',assets:[{id:'perp',name:'USD Coin',symbol:'USDC',value:500,units:false},{id:'held',name:'Hyperliquid',symbol:'HYPE',balance:13.2,price:57.5,unitsOptions:{minimumFractionDigits:2,maximumFractionDigits:2}}]},{id:'wallet',title:'Wallet',assets:[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'blox',name:'Bloxwap',symbol:'BLOX',balance:1234.5,value:null},{id:'paper',name:'Paper',symbol:'PAPER',balance:50,value:null,selectable:false}]}]}/>"
         }
       }
     },
@@ -1102,7 +1117,9 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "signed-out",
+        "host-slots"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1110,6 +1127,14 @@
         "minimal": {
           "web": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>",
           "native": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>"
+        },
+        "signed-out": {
+          "web": "<C.ProfileBlock action={{label:'Log in',onSelect:()=>setMessage('The host opens log in')}} onClose={()=>setMessage('The host closes the profile')} sections={[{id:'settings',title:'Settings',rows:[{id:'sound',label:'Sound & Haptics',onSelect:()=>setMessage('The host opens sound and haptics')}]}]} footer={<C.Link href='https://github.com/bloxwap/hig'>Terms</C.Link>}/>",
+          "native": "<C.ProfileBlock action={{label:'Log in',onSelect:()=>setMessage('The host opens log in')}} onClose={()=>setMessage('The host closes the profile')} sections={[{id:'settings',title:'Settings',rows:[{id:'sound',label:'Sound & Haptics',onSelect:()=>setMessage('The host opens sound and haptics')}]}]} footer={<C.Link href='https://github.com/bloxwap/hig'>Terms</C.Link>}/>"
+        },
+        "host-slots": {
+          "web": "<C.ProfileBlock name='Joe' nameAccessory={<C.Badge>Genesis</C.Badge>} status={{label:'Live',tone:'positive'}} onAvatarPress={()=>setMessage('The host picks a picture')} avatarLabel='Change profile picture' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:{value:1042.09,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens accounts')},{id:'history',label:'History',value:'Live',tone:'positive',onSelect:()=>setMessage('The host opens history')}]},{id:'settings',title:'Settings',rows:[{id:'live',label:'Live Mode',checked:true,onCheckedChange:value=>setMessage(value?'Live mode on':'Live mode off')}]}]}/>",
+          "native": "<C.ProfileBlock name='Joe' nameAccessory={<C.Badge>Genesis</C.Badge>} status={{label:'Live',tone:'positive'}} onAvatarPress={()=>setMessage('The host picks a picture')} avatarLabel='Change profile picture' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:{value:1042.09,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens accounts')},{id:'history',label:'History',value:'Live',tone:'positive',onSelect:()=>setMessage('The host opens history')}]},{id:'settings',title:'Settings',rows:[{id:'live',label:'Live Mode',checked:true,onCheckedChange:value=>setMessage(value?'Live mode on':'Live mode off')}]}]}/>"
         }
       }
     },
@@ -1268,7 +1293,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "single"
+        "single",
+        "actions-only"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1276,6 +1302,10 @@
         "single": {
           "web": "<C.TokenActionBlock symbol='USDC' name='USD Coin' value={100.33} assets={[{label:'Core',value:100.33}]} chains={[{label:'Hyperliquid',value:100.33}]} actions={[{id:'send',onSelect:()=>setMessage('The host opens send'),intent:'primary'},{id:'receive',onSelect:()=>setMessage('The host opens receive')},{id:'stake',onSelect:()=>{},disabled:true}]}/>",
           "native": "<C.TokenActionBlock symbol='USDC' name='USD Coin' value={100.33} assets={[{label:'Core',value:100.33}]} chains={[{label:'Hyperliquid',value:100.33}]} actions={[{id:'send',onSelect:()=>setMessage('The host opens send'),intent:'primary'},{id:'receive',onSelect:()=>setMessage('The host opens receive')},{id:'stake',onSelect:()=>{},disabled:true}]}/>"
+        },
+        "actions-only": {
+          "web": "<C.TokenActionBlock symbol='SOL' onBack={()=>setMessage('The host goes back')} actions={[{id:'receive',onSelect:()=>setMessage('The host opens receive')}]} note='View-only account: send from the wallet that holds it.' noteTone='warning'/>",
+          "native": "<C.TokenActionBlock symbol='SOL' onBack={()=>setMessage('The host goes back')} actions={[{id:'receive',onSelect:()=>setMessage('The host opens receive')}]} note='View-only account: send from the wallet that holds it.' noteTone='warning'/>"
         }
       }
     },

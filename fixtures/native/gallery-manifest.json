@@ -438,7 +438,8 @@
       "states": [
         "default",
         "remaining",
-        "no-legend"
+        "no-legend",
+        "live-detail"
       ],
       "support": "renderer"
     },
@@ -457,7 +458,8 @@
       "name": "AssetBalanceRow",
       "states": [
         "default",
-        "value-only"
+        "value-only",
+        "units-headline"
       ],
       "support": "renderer"
     },
@@ -502,7 +504,8 @@
       "states": [
         "default",
         "empty",
-        "local-money"
+        "local-money",
+        "sections"
       ],
       "support": "renderer"
     },
@@ -535,7 +538,9 @@
       "name": "ProfileBlock",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "signed-out",
+        "host-slots"
       ],
       "support": "renderer"
     },
@@ -599,7 +604,8 @@
       "name": "TokenActionBlock",
       "states": [
         "default",
-        "single"
+        "single",
+        "actions-only"
       ],
       "support": "renderer"
     },

@@ -7,6 +7,8 @@ import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {ProfileBlock,type ProfileSection} from '../packages/hig/react/src/blocks/profile-block';
 import * as blocks from '../packages/hig/react/src/blocks';
+import {ListRow} from '../packages/hig/react/src/list-group';
+import {Switch} from '../packages/hig/react/src/selection';
 afterEach(cleanup);
 const sections=(handlers:{accounts?:()=>void;live?:(value:boolean)=>void}={}):ProfileSection[]=>[
  {id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:handlers.accounts??(()=>{})},{id:'history',label:'History',value:'Demo',onSelect:()=>{}}]},
@@ -59,5 +61,75 @@ describe('ProfileBlock',()=>{
   expect(blocks.ProfileBlock).toBe(ProfileBlock);
   const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').filter(line=>line.startsWith('.hig-profile'));
   expect(css.join('\n')).not.toMatch(/\b(left|right)\b/);expect(css.find(line=>line.startsWith('.hig-profile-status {'))).toMatch(/inset-inline-end:10px/);expect(css.find(line=>line.startsWith('.hig-profile-block {'))).toContain('gap:24px');
+ });
+});
+describe('ProfileBlock host slots',()=>{
+ it('draws an optional full-width primary action under the name, and the name may be left out for it',async()=>{
+  const login=vi.fn();const view=render(<ProfileBlock sections={[]} action={{label:'Log in',onSelect:login}}/>);
+  expect(screen.queryByRole('heading')).toBeNull();expect(document.querySelector('.hig-profile-name')).toBeNull();expect(document.querySelector('.hig-profile-artwork')!.textContent).toBe('');
+  const button=screen.getByRole('button',{name:'Log in'});expect(button.dataset.intent).toBe('primary');expect(button.dataset.full).toBe('true');expect(button.parentElement!.className).toBe('hig-profile-identity');
+  await userEvent.click(button);expect(login).toHaveBeenCalledTimes(1);
+  view.rerender(<ProfileBlock name='Joe' sections={[]} action={{label:'Log in',onSelect:login,intent:'secondary',disabled:true}}/>);
+  const after=screen.getByRole('button',{name:'Log in'}) as HTMLButtonElement;expect(after.dataset.intent).toBe('secondary');expect(after.disabled).toBe(true);
+  // Under the name, 16 below it (the identity column's gap).
+  expect(document.querySelector('.hig-profile-name')!.compareDocumentPosition(after)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');expect(css.find(line=>line.startsWith('.hig-profile-identity {'))).toContain('gap:16px');
+ });
+ it('puts a name accessory beside the name, in the accessibility tree',()=>{
+  render(<ProfileBlock name='Joe' onEditName={()=>{}} nameAccessory={<button type='button'>Genesis member</button>} sections={[]}/>);
+  const accessory=document.querySelector('.hig-profile-name-accessory')!;expect(accessory.getAttribute('aria-hidden')).toBeNull();expect(screen.getByRole('button',{name:'Genesis member'}).parentElement).toBe(accessory);
+  expect([...document.querySelector('.hig-profile-name')!.children].map(child=>child.tagName+(child.className?`.${child.className.trim().split(' ')[0]}`:''))).toEqual(['H2','SPAN.hig-profile-name-accessory','BUTTON.hig-button']);
+ });
+ it('makes the avatar a named button with onAvatarPress, keeping the status dot outside it',async()=>{
+  const choose=vi.fn();const view=render(<ProfileBlock name='Joe' avatar='/joe.png' status={{label:'Demo'}} onAvatarPress={choose} avatarLabel='Change profile picture' sections={[]}/>);
+  const avatar=screen.getByRole('button',{name:'Change profile picture'});expect(avatar.classList.contains('hig-profile-artwork')).toBe(true);expect(avatar.querySelector('img')?.getAttribute('alt')).toBe('');
+  expect(avatar.querySelector('.hig-profile-status')).toBeNull();expect(document.querySelector('.hig-profile-status')!.textContent).toBe('Demo');
+  await userEvent.click(avatar);expect(choose).toHaveBeenCalledTimes(1);
+  view.rerender(<ProfileBlock name='Joe' onAvatarPress={choose} sections={[]}/>);expect(screen.getByRole('button',{name:'Joe'}).textContent).toBe('Jo');
+ });
+ it('draws a live figure value place by place and colours a value by tone, leaving plain values unchanged',()=>{
+  const view=render(<ProfileBlock name='Joe' sections={[{id:'money',rows:[
+   {id:'accounts',label:'Accounts',value:{value:1042.09,options:{style:'currency',currency:'USD'}},onSelect:()=>{}},
+   {id:'history',label:'History',value:'Live',tone:'positive',onSelect:()=>{}},
+   {id:'demo',label:'Mode',value:'Demo',tone:'warning'},
+   {id:'plain',label:'Version',value:'1.0'}]}]}/>);
+  const values=[...document.querySelectorAll('.hig-list-row-value')];
+  expect(values[0].querySelector('.hig-profile-value .hig-animated-number-visual')).toBeTruthy();expect(values[0].querySelector('.hig-sr-only')!.textContent).toBe('$1,042.09');
+  expect(screen.getByRole('button',{name:/Accounts.*\$1,042\.09/})).toBeTruthy();
+  expect(values[1].querySelector<HTMLElement>('.hig-profile-value')!.dataset.tone).toBe('positive');expect(values[2].querySelector<HTMLElement>('.hig-profile-value')!.dataset.tone).toBe('warning');
+  expect(values[3].innerHTML).toBe('1.0');
+  Object.defineProperty(HTMLElement.prototype,'animate',{value:()=>({cancel(){}}),configurable:true});
+  view.rerender(<ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:{value:1043.5,options:{style:'currency',currency:'USD'}},onSelect:()=>{}}]}]}/>);
+  expect(document.querySelectorAll('.hig-profile-value .hig-animated-number-old').length).toBeGreaterThan(0);
+  delete (HTMLElement.prototype as {animate?:unknown}).animate;
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');for(const tone of ['positive','warning','negative','muted'])expect(css).toContain(`.hig-profile-value[data-tone='${tone}'] { color:var(--hig-${tone}); }`);
+ });
+ it('makes the whole switch row the target while drawing the same markup as a static row with a Switch',async()=>{
+  const live=vi.fn();
+  const {container}=render(<ProfileBlock name='Joe' sections={[{id:'settings',rows:[{id:'live',label:'Live Mode',value:'Off',checked:false,onCheckedChange:live}]}]}/>);
+  const row=container.querySelector('.hig-list-group-rows > li > .hig-list-row')!;
+  const reference=render(<ListRow label='Live Mode' value='Off' trailing={<Switch label='Live Mode' checked={false} onCheckedChange={()=>{}}/>}/>).container.firstElementChild!;
+  expect(row.outerHTML).toBe(reference.outerHTML);
+  await userEvent.click(row.querySelector('.hig-list-row-label')!);expect(live).toHaveBeenCalledWith(true);
+  await userEvent.click(screen.getAllByRole('switch',{name:'Live Mode'})[0]);expect(live).toHaveBeenCalledTimes(2);
+ });
+ it('does not toggle a disabled switch row from the row, and the press decoration covers the whole row',async()=>{
+  const live=vi.fn();
+  const view=render(<ProfileBlock name='Joe' sections={[{id:'settings',rows:[{id:'live',label:'Live Mode',checked:false,disabled:true,onCheckedChange:live}]}]}/>);
+  await userEvent.click(document.querySelector('.hig-list-row-label')!);expect(live).not.toHaveBeenCalled();
+  view.rerender(<HIGProvider pressDecoration={()=><i className='host-layer'/>}><ProfileBlock name='Joe' sections={[{id:'settings',rows:[{id:'live',label:'Live Mode',checked:false,onCheckedChange:live}]}]}/></HIGProvider>);
+  const layer=document.querySelector<HTMLElement>('.hig-press-decoration')!;expect(layer.dataset.kind).toBe('switch');expect(layer.parentElement!.classList.contains('hig-list-row')).toBe(true);
+  expect(document.querySelectorAll('.hig-press-decoration')).toHaveLength(1);
+  await userEvent.click(layer.querySelector('.host-layer')!);expect(live).toHaveBeenCalledTimes(1);expect(live).toHaveBeenCalledWith(true);
+ });
+ it('draws a footer under the sections',()=>{
+  render(<ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'a',label:'Accounts',onSelect:()=>{}}]}]} footer={<nav aria-label='Legal'><a href='/terms'>Terms</a></nav>}/>);
+  const footer=document.querySelector('.hig-profile-footer')!;expect(footer.parentElement!.lastElementChild).toBe(footer);expect(within(footer as HTMLElement).getByRole('link',{name:'Terms'})).toBeTruthy();
+  expect(document.querySelector('.hig-list-group')!.compareDocumentPosition(footer)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ });
+ it('renders exactly as before without the new props',()=>{
+  render(<ProfileBlock name='Joe' sections={[]}/>);
+  expect(document.querySelector('.hig-profile-identity')!.innerHTML).toBe('<span class="hig-profile-avatar"><span class="hig-profile-artwork" aria-hidden="true">Jo</span></span><div class="hig-profile-name"><h2>Joe</h2></div>');
+  expect(document.querySelector('.hig-profile-footer')).toBeNull();
  });
 });

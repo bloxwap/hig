@@ -16,6 +16,8 @@ export interface AssetBalanceRowProps {
  balance?:number|null;
  /** Format of the units line; default `{maximumFractionDigits:6}`. */
  balanceOptions?:Intl.NumberFormatOptions;
+ /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Default `value`. */
+ headline?:'value'|'units';
  /** Makes the row a button. */
  onSelect?:()=>void;
  testID?:string;
@@ -25,10 +27,10 @@ const units:Intl.NumberFormatOptions={maximumFractionDigits:6};
 const avatar=40;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** One holding as a capsule row: a round avatar, the asset's name over its symbol, and its dollar value over its units. The avatar is padded equally on every side, so the capsule end is concentric with it, and both numbers update place by place. */
-export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,onSelect,testID}:AssetBalanceRowProps){
+export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,headline='value',onSelect,testID}:AssetBalanceRowProps){
  const colors=useColors(),fills=useFills(),{locale}=useHIG(),present=usePresentNumber();
- const hasUnits=balance!==undefined;
- const label=[name,symbol,formatNumberReadout(value,locale,present(usd)).text,hasUnits?formatNumberReadout(balance,locale,balanceOptions).text:null].filter(Boolean).join(', ');
+ const unitsFirst=headline==='units',hasUnits=!unitsFirst&&balance!==undefined;
+ const label=[name,symbol,unitsFirst?formatNumberReadout(balance,locale,balanceOptions).text:formatNumberReadout(value,locale,present(usd)).text,hasUnits?formatNumberReadout(balance,locale,balanceOptions).text:null].filter(Boolean).join(', ');
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const art=typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} style={shape as object}/>:<View style={shape}>{icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{symbol.slice(0,3)}</Text>}</View>;
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well});
@@ -36,7 +38,7 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
   <View {...hidden}>{art}</View>
   <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}><Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{name}</Text><Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{symbol}</Text></View>
   <View {...hidden} style={{alignItems:'flex-end',justifyContent:'center'}}>
-   <AnimatedNumberReadout value={value} options={usd} testID={testID?`${testID}-value`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>
+   {unitsFirst?<AnimatedNumberReadout value={balance} options={balanceOptions} testID={testID?`${testID}-balance`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:<AnimatedNumberReadout value={value} options={usd} testID={testID?`${testID}-value`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>}
    {hasUnits?<AnimatedNumberReadout value={balance} options={balanceOptions} tone='muted' testID={testID?`${testID}-balance`:undefined} style={{fontSize:14,lineHeight:20}}/>:null}
   </View>
  </>;

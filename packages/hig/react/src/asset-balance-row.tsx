@@ -14,16 +14,19 @@ export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElem
  balance?:number|null;
  /** Format of the units line. Defaults to at most six fraction digits. */
  balanceOptions?:Intl.NumberFormatOptions;
+ /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Defaults to `value`. */
+ headline?:'value'|'units';
  /** Makes the whole row a button. */
  onSelect?:()=>void;
 }
 const usd={style:'currency',currency:'USD'} as const,units={maximumFractionDigits:6} as const;
 /** One holding in a list: round artwork, the asset's name over its symbol, and its dollar value over its units. Both numbers update place by place. */
-export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,onSelect,className,...rest}:AssetBalanceRowProps){
+export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,headline='value',onSelect,className,...rest}:AssetBalanceRowProps){
+ const unitsFirst=headline==='units';
  const content=<>
   <span className='hig-asset-row-icon' aria-hidden='true'>{typeof icon==='string'?<img src={icon} alt=''/>:icon??symbol.slice(0,3)}</span>
   <span className='hig-asset-row-identity'><strong>{name}</strong><span>{symbol}</span></span>
-  <span className='hig-asset-row-amounts'><strong><AnimatedNumberReadout value={value} options={usd}/></strong>{balance!==undefined&&<span><AnimatedNumberReadout value={balance} options={balanceOptions}/></span>}</span>
+  <span className='hig-asset-row-amounts'><strong>{unitsFirst?<AnimatedNumberReadout value={balance} options={balanceOptions}/>:<AnimatedNumberReadout value={value} options={usd}/>}</strong>{!unitsFirst&&balance!==undefined&&<span><AnimatedNumberReadout value={balance} options={balanceOptions}/></span>}</span>
  </>;
  const classes=`hig-asset-row${className?` ${className}`:''}`;
  return onSelect?<button type='button' {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)} className={classes} onClick={onSelect}>{content}<PressDecoration kind='row'/></button>:<div {...rest} className={classes}>{content}</div>;

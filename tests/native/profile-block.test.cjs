@@ -81,3 +81,52 @@ it('makes a row with onCheckedChange one switch named by its label, with the tra
  act(()=>{button(view,'profile-row-live').props.onPress?.({});});expect(change).toHaveBeenCalledTimes(1);
 });
 it('is exported from the blocks aggregate',()=>{expect(blocks.ProfileBlock).toBe(ProfileBlock);});
+it('draws an optional full-width primary action 16 under the name, and the name may be left out for it',()=>{
+ const login=jest.fn();let view=mount({name:undefined,action:{label:'Log in',onSelect:login}});
+ expect(has(view,'profile-name')).toBe(false);expect(text(host(view,'profile-avatar'))).toBe('');
+ const {Button}=require('../../packages/hig/native/src/button');
+ const action=view.findAllByType(Button).find(node=>node.props.testID==='profile-action');expect(action.props.fullWidth).toBe(true);expect(action.props.intent).toBe('primary');expect(text(action)).toContain('Log in');
+ expect(flat(host(view,'profile-action-row'))).toMatchObject({marginTop:16});
+ act(()=>{button(view,'profile-action').props.onPress({stopPropagation(){},isDefaultPrevented:()=>false});});expect(login).toHaveBeenCalledTimes(1);
+ view=mount({action:{label:'Log in',onSelect:login,intent:'secondary',disabled:true}});expect(view.findAllByType(Button).find(node=>node.props.testID==='profile-action').props).toMatchObject({intent:'secondary',disabled:true});
+ view=mount();expect(has(view,'profile-action')).toBe(false);
+});
+it('puts a name accessory beside the name and keeps it accessible',()=>{
+ const view=mount({nameAccessory:h(View,{testID:'badge',accessible:true,accessibilityLabel:'Genesis member'}),onEditName:()=>{}});
+ const accessory=host(view,'profile-name-accessory');expect(has(accessory,'badge')).toBe(true);expect(accessory.props.accessible).not.toBe(false);expect(accessory.props.importantForAccessibility).toBeUndefined();
+ const order=view.findAll(node=>typeof node.type==='string'&&['profile-name','profile-name-accessory','profile-edit'].includes(node.props.testID)).map(node=>node.props.testID);
+ expect(order.filter((id,index)=>order.indexOf(id)===index)).toEqual(['profile-name','profile-name-accessory','profile-edit']);
+});
+it('makes the avatar a named button with onAvatarPress, the status dot outside it',()=>{
+ const choose=jest.fn();let view=mount({onAvatarPress:choose,avatarLabel:'Change profile picture',status:{label:'Demo'}});
+ const avatar=button(view,'profile-avatar-button');expect(avatar.props.accessibilityLabel).toBe('Change profile picture');expect(has(avatar,'profile-avatar')).toBe(true);expect(has(avatar,'profile-status')).toBe(false);
+ act(()=>{avatar.props.onPress({});});expect(choose).toHaveBeenCalledTimes(1);
+ view=mount({onAvatarPress:choose});expect(button(view,'profile-avatar-button').props.accessibilityLabel).toBe('5459····6263');
+ view=mount();expect(has(view,'profile-avatar-button')).toBe(false);
+});
+it('draws a live figure value and a toned value, read with the label',()=>{
+ const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+ const view=mount({sections:[{id:'s',rows:[
+  {id:'accounts',label:'Accounts',value:{value:1042.09,options:{style:'currency',currency:'USD'}},onSelect:()=>{}},
+  {id:'history',label:'History',value:'Live',tone:'positive',onSelect:()=>{}},
+  {id:'demo',label:'Mode',value:'Demo',tone:'warning'},
+  {id:'plain',label:'Version',value:'1.0'}]}]});
+ expect(button(view,'profile-row-accounts').props.accessibilityLabel).toBe('Accounts, $1,042.09');
+ const figure=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='profile-row-accounts-value');expect(figure.props).toMatchObject({value:1042.09,tone:'muted'});
+ expect(button(view,'profile-row-history').props.accessibilityLabel).toBe('History, Live');expect(flat(host(view,'profile-row-history-value')).color).toBe(colors.positive);
+ expect(flat(host(view,'profile-row-demo-value')).color).toBe(colors.warning);
+ expect(view.findAllByType(ListRow).find(row=>row.props.testID==='profile-row-plain').props.value).toBe('1.0');
+ const toned=mount({sections:[{id:'s',rows:[{id:'pnl',label:'PnL',value:{value:-4.2},tone:'negative'}]}]});
+ expect(toned.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='profile-row-pnl-value').props.tone).toBe('negative');
+});
+it('draws a footer under the sections on the block inset, 24 below',()=>{
+ let view=mount({footer:h(View,{testID:'legal'})});
+ const footer=host(view,'profile-footer');expect(has(footer,'legal')).toBe(true);expect(flat(footer)).toMatchObject({marginTop:24});
+ const blockChildren=footer.parent.children.map(child=>child.props.testID);expect(blockChildren[blockChildren.length-1]).toBe('profile-footer');expect(blockChildren.indexOf('profile-sections')).toBeLessThan(blockChildren.indexOf('profile-footer'));
+ view=mount();expect(has(view,'profile-footer')).toBe(false);
+});
+it('switch rows are already whole-row targets on native',()=>{
+ const change=jest.fn();const view=mount({sections:[{id:'s',rows:[{id:'live',label:'Live Mode',checked:false,onCheckedChange:change}]}]});
+ const row=button(view,'profile-row-live');expect(row.props.accessibilityRole).toBe('switch');expect(flat(host(view,'profile-row-live'))).toMatchObject({minHeight:56});
+ act(()=>{row.props.onPress({});});expect(change).toHaveBeenCalledWith(true);
+});

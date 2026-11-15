@@ -555,7 +555,8 @@
       "states": [
         "default",
         "remaining",
-        "no-legend"
+        "no-legend",
+        "live-detail"
       ]
     },
     {
@@ -578,7 +579,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "value-only"
+        "value-only",
+        "units-headline"
       ]
     },
     {
@@ -635,7 +637,8 @@
       "states": [
         "default",
         "empty",
-        "local-money"
+        "local-money",
+        "sections"
       ]
     },
     {
@@ -676,7 +679,9 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "signed-out",
+        "host-slots"
       ]
     },
     {
@@ -756,7 +761,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "single"
+        "single",
+        "actions-only"
       ]
     },
     {
