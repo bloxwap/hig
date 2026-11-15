@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../animated-number.js';
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
 export interface SwapToken {
  /** Unique per asset and chain, for example `${chainId}-${address}`. */
@@ -15,7 +16,8 @@ export interface SwapToken {
  /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */
  price?:number|null;
  /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */
- caption?:string;
+ /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */
+ caption?:string|SwapFigure;
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
 }
@@ -61,6 +63,21 @@ export function fuzzyMatch(query:string,text:string):boolean{
  let matched=0;for(let index=0;index<haystack.length&&matched<needle.length;index++)if(haystack[index]===needle[matched])matched++;
  return matched===needle.length;
 }
+const numberMark='\uE000';
+/** A number in the swap card that can change while it is on screen. It always updates place by place (never by swapping the text), and `template` keeps it inside its localized sentence: `template={messages.swapFee}` renders "Fee " around the moving amount. */
+export function SwapNumber({template,...number}:AnimatedNumberProps&{template?:(value:string)=>string}){
+ if(!template)return <AnimatedNumberReadout {...number}/>;
+ const [before,after='']=template(numberMark).split(numberMark);
+ // One element, so a flex parent spaces the sentence as a single item.
+ return <span>{before}<AnimatedNumberReadout {...number}/>{after}</span>;
+}
+/** A figure the host supplies as a number so it can update place by place: `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
+export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+/** Host text that is either a fixed string or a live figure. */
+export const swapFigure=(text:string|SwapFigure)=>typeof text==='string'?text:<SwapNumber value={text.value} options={text.options} prefix={text.prefix} suffix={text.suffix}/>;
+/** `SwapNumber` props for a dollar amount and for a slippage fraction (0.005 reads `0.5%`). */
+export const usdNumber=(value:number|null|undefined)=>({value,options:{style:'currency',currency:'USD'}} as const);
+export const percentNumber=(fraction:number)=>({value:Number((fraction*100).toFixed(4)),suffix:'%',options:{maximumFractionDigits:4,useGrouping:false}} as const);
 /** A slippage fraction as a percent string: 0.005 is `0.5%`. */
 export const formatPercent=(fraction:number)=>`${Number((fraction*100).toFixed(4))}%`;
 /** A small trial amount: 1% of holdings, capped at about one dollar's worth. */

@@ -1,12 +1,11 @@
 "use client";
 import React,{useEffect,useId,useMemo,useRef,useState} from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from '../provider.js';
 import {Button,IconButton} from '../button.js';
 import {Input,SearchInput} from '../field.js';
 import {Filter} from '../selection.js';
-import {SwapIcon,TokenIcon,addressGradient,chainsOf,fuzzyMatch,shortAddress,type SwapChain,type SwapToken} from './swap/shared.js';
+import {SwapIcon,SwapNumber,TokenIcon,usdNumber,addressGradient,chainsOf,fuzzyMatch,shortAddress,type SwapChain,type SwapToken} from './swap/shared.js';
 export type {SwapChain,SwapToken} from './swap/shared.js';
 export interface SwapWallet {connected:boolean;address?:string|null}
 /** The searchable token list both pickers share. */
@@ -26,7 +25,7 @@ export interface PickerListProps {
  autoFocus?:boolean;
 }
 function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,autoFocus,label}:PickerListProps&{label:string}){
- const {messages,locale}=useHIG();const id=useId();
+ const {messages}=useHIG();const id=useId();
  const [query,setQuery]=useState('');const [chainId,setChainId]=useState<string|number|null>(null);const [active,setActive]=useState(0);
  const list=useRef<HTMLDivElement>(null);const search=useRef<HTMLInputElement>(null);
  useEffect(()=>{if(autoFocus&&window.matchMedia?.('(pointer: fine)').matches)search.current?.focus();},[]);
@@ -52,7 +51,7 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
  const row=(token:SwapToken,index:number)=>{const isSelected=selected?.id===token.id;return <div role='listitem' key={token.id}><button type='button' className='hig-swap-row' data-active={index===active} data-selected={isSelected||undefined} onClick={()=>onSelect(token)} onPointerMove={()=>setActive(index)}>
   <TokenIcon token={token}/>
   <span className='hig-swap-row-text'><strong>{token.name}</strong><span>{token.chain}{isSelected?' · '+(messages.swapSelected??en.swapSelected):''}</span></span>
-  {(token.balance??0)>0&&<span className='hig-swap-row-balance'><strong className='hig-number'>{formatNumber(token.balance,locale,{maximumFractionDigits:6})}</strong>{(token.price??0)>0&&<span className='hig-number'>{formatNumber((token.balance??0)*(token.price??0),locale,{style:'currency',currency:'USD'})}</span>}</span>}
+  {(token.balance??0)>0&&<span className='hig-swap-row-balance'><strong><SwapNumber value={token.balance} options={{maximumFractionDigits:6}}/></strong>{(token.price??0)>0&&<SwapNumber {...usdNumber((token.balance??0)*(token.price??0))}/>}</span>}
  </button></div>;};
  return <>
   <SearchInput ref={search} aria-label={messages.swapSearchTokens??en.swapSearchTokens} placeholder={messages.swapSearchTokens??en.swapSearchTokens} value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>

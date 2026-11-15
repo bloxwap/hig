@@ -1,6 +1,5 @@
 "use client";
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useControllable,useHIG} from '../provider.js';
 import {Button,IconButton} from '../button.js';
@@ -9,12 +8,12 @@ import {notify} from '../notify.js';
 import {VerticalAddress} from '../data.js';
 import {SwapPicker,type SwapWallet} from './swap/picker.js';
 import {SwapSettings,type SwapFee} from './swap/settings.js';
-import {SwapIcon,SwapKeypad,SwapPill,swapArt,addressGradient,applyAmountKey,chainsOf,formatPercent,parentView,sanitizeAmount,shortAddress,swapAction,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
+import {SwapIcon,SwapKeypad,SwapNumber,SwapPill,percentNumber,swapArt,swapFigure,usdNumber,type SwapFigure,addressGradient,applyAmountKey,chainsOf,parentView,sanitizeAmount,shortAddress,swapAction,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
 export {swapAction,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
 export type {SwapWallet} from './swap/picker.js';
 export type {SwapFee} from './swap/settings.js';
 export {SwapAmountCard,type SwapAmountCardProps} from './swap/amount-card.js';
-export {SwapPill,SwapKeypad} from './swap/shared.js';
+export {SwapPill,SwapKeypad,SwapNumber,type SwapFigure} from './swap/shared.js';
 /** A fixed place the assets go, in place of a token the user picks: a wallet, a staking pool, a trading account. Shown as a compact To card with no amount. */
 export interface SwapDestination {
  title:string;
@@ -25,14 +24,15 @@ export interface SwapDestination {
  /** A wallet address; shown shortened under the subtitle. */
  address?:string;
  /** Muted trailing text, such as an arrival time or a rate. */
- detail?:string;
+ detail?:string|SwapFigure;
  /** Makes the card a button with a trailing chevron, for example to change the recipient. */
  onPress?:()=>void;
  /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */
  pending?:boolean;
 }
 /** One label and value row of the details card. */
-export interface SwapDetail {label:string;value:string}
+/** One label and value row. A number `value` is formatted with `options` (plus `prefix` and `suffix`) and updates place by place; pass numbers for anything that can change while the card is shown. A string is drawn as given. */
+export interface SwapDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
 export interface SwapPanelProps {
@@ -118,7 +118,7 @@ const amountKey=(event:{key:string;metaKey:boolean;ctrlKey:boolean;altKey:boolea
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
 export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,keypad='auto',shortcuts=true,captureKeyboard=false,view:viewProp,onViewChange,settings,className,style}:SwapPanelProps){
- const {messages,locale}=useHIG();
+ const {messages}=useHIG();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
  const [isReceiving,setReceiving]=useControllable(receiving,false,onReceivingChange);
@@ -184,19 +184,20 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const onKeyDown=(event:React.KeyboardEvent)=>{if(view!=='main'&&event.key==='Escape'){event.preventDefault();event.stopPropagation();back();return;}if(captureKeyboard||!inPanel(event))return;const pressed=amountKey(event);if(pressed){event.preventDefault();press(pressed);}};
  const onPaste=(event:React.ClipboardEvent)=>{if(!captureKeyboard&&inPanel(event)&&paste(event.clipboardData.getData('text')))event.preventDefault();};
  const chainList=useMemo(()=>chains??chainsOf(tokens),[chains,tokens]);
- const usdText=(value:number)=>formatNumber(value,locale,{style:'currency',currency:'USD'});
+ // The fee keeps its sentence; only a known amount moves. Loading and unknown are plain placeholders.
+ const feeLine=quoteLoading||fee==null?(messages.swapFee??en.swapFee)(quoteLoading?'…':'—'):<SwapNumber template={messages.swapFee??en.swapFee} {...usdNumber(fee)}/>;
  const fraction=entry.includes('.')?Math.min(entry.length-entry.indexOf('.')-1,fromMode==='usd'?2:8):0;
  // An account (a token with a `caption`) reads name over caption beside one disc, and offers Max only.
  const account=(side:'from'|'to',token:SwapToken,locked:boolean)=><div className='hig-swap-selected' data-account='true'>
   <span className='hig-swap-stack' aria-hidden='true'>{token.icon?swapArt(token.icon):<span className='hig-swap-initials'>{token.symbol.slice(0,3)}</span>}</span>
-  <span className='hig-swap-identity'><strong>{token.name}{!locked&&<SwapIcon name='expand' size={16}/>}</strong><span>{token.caption}</span></span>
+  <span className='hig-swap-identity'><strong>{token.name}{!locked&&<SwapIcon name='expand' size={16}/>}</strong><span>{swapFigure(token.caption??'')}</span></span>
   {side==='from'&&(token.balance??0)>0&&<span className='hig-swap-meta'><SwapPill onClick={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span>}
  </div>;
  const header=(side:'from'|'to',token:SwapToken)=><div className='hig-swap-selected'>
   <span className='hig-swap-stack' aria-hidden='true'>{wallet?.address&&<span className='hig-swap-avatar' style={{background:addressGradient(wallet.address)}}/>}{token.chainIcon&&swapArt(token.chainIcon)}{token.icon?swapArt(token.icon):<span className='hig-swap-initials'>{token.symbol.slice(0,3)}</span>}</span>
   <span className='hig-swap-identity'>{wallet?.address&&<span>{shortAddress(wallet.address)}</span>}<span>{token.chain}</span><strong>{token.name}</strong></span>
-  {side==='from'?(token.balance??0)>0&&<span className='hig-swap-meta'><span className='hig-swap-pills'><SwapPill onClick={()=>setEntry(unitsToEntry(testAmount(token),fromMode,fromPrice))}><SwapIcon name='flask' size={14}/>{(messages.swapTest??en.swapTest)}</SwapPill><SwapPill onClick={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span><span className='hig-number'>{formatNumber(token.balance,locale,{maximumFractionDigits:6})} {token.symbol}</span></span>
-   :<span className='hig-swap-meta'><SwapPill onClick={()=>show(onSlippageChange?'slippage':'settings')}><SwapIcon name='sliders' size={14}/>{(messages.swapSlippage??en.swapSlippage)(formatPercent(slippage))}</SwapPill><span>{(messages.swapFee??en.swapFee)(quoteLoading?'…':fee!=null?usdText(fee):'—')}</span></span>}
+  {side==='from'?(token.balance??0)>0&&<span className='hig-swap-meta'><span className='hig-swap-pills'><SwapPill onClick={()=>setEntry(unitsToEntry(testAmount(token),fromMode,fromPrice))}><SwapIcon name='flask' size={14}/>{(messages.swapTest??en.swapTest)}</SwapPill><SwapPill onClick={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span><SwapNumber value={token.balance} suffix={' '+token.symbol} options={{maximumFractionDigits:6}}/></span>
+   :<span className='hig-swap-meta'><SwapPill onClick={()=>show(onSlippageChange?'slippage':'settings')}><SwapIcon name='sliders' size={14}/><SwapNumber template={messages.swapSlippage??en.swapSlippage} {...percentNumber(slippage)}/></SwapPill><span>{feeLine}</span></span>}
  </div>;
  const receiveView=(view:SwapReceive)=>{const content=<>{view.qr&&<span className='hig-swap-qr'>{view.qr}</span>}<VerticalAddress address={view.address}/></>;return view.onCopy?<button type='button' className='hig-swap-receive' aria-label={(messages.copyAddress??en.copyAddress)+': '+view.address} onClick={copyAddress}>{content}</button>:<div className='hig-swap-receive'>{content}</div>;};
  const card=(side:'from'|'to')=>{
@@ -231,10 +232,10 @@ export function SwapPanel({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    <div className='hig-swap-slot-content'><div className='hig-swap-selected'>
     <span className='hig-swap-stack' aria-hidden='true'>{destination.icon?swapArt(destination.icon):destination.address?<span className='hig-swap-avatar' style={{background:addressGradient(destination.address)}}/>:<span className='hig-swap-initials'>{destination.title.slice(0,2)}</span>}</span>
     <span className='hig-swap-identity'><strong>{destination.title}</strong>{destination.subtitle&&<span>{destination.subtitle}</span>}{destination.address&&<span>{shortAddress(destination.address)}</span>}</span>
-    {(destination.detail||fee!==undefined||destination.onPress)&&<span className='hig-swap-meta' data-row={destination.onPress?'true':undefined}><span>{destination.detail&&<span>{destination.detail}</span>}{fee!==undefined&&<span>{(messages.swapFee??en.swapFee)(quoteLoading?'…':fee!=null?usdText(fee):'—')}</span>}</span>{destination.onPress&&<SwapIcon name='chevron' size={16}/>}</span>}
+    {(destination.detail||fee!==undefined||destination.onPress)&&<span className='hig-swap-meta' data-row={destination.onPress?'true':undefined}><span>{destination.detail&&<span>{swapFigure(destination.detail)}</span>}{fee!==undefined&&<span>{feeLine}</span>}</span>{destination.onPress&&<SwapIcon name='chevron' size={16}/>}</span>}
    </div></div>
   </div>}
-  {details&&details.length>0&&<dl className='hig-swap-details'>{details.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>}
+  {details&&details.length>0&&<dl className='hig-swap-details'>{details.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{typeof row.value==='number'?<SwapNumber value={row.value} options={row.options} prefix={row.prefix} suffix={row.suffix}/>:row.value}</dd></div>)}</dl>}
  </div>;
  const fromCard=card('from'),toCard=fixedCard||card('to');
  const body=view==='main'?<>

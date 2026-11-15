@@ -9,6 +9,7 @@ SwapPanel takes the last host rules that kept apps on their own amount sheets (w
 - `SwapToken.icon`, `SwapToken.chainIcon` and `SwapDestination.icon` take an image URL or a host element (`SwapArtwork`).
 - `banner` renders above the From card and `footer` under the action.
 - Native: `SwapKeypad` and `SwapCapsule` are exported from `@bloxwap/hig/native/recipes`, as the web recipe already exports its keypad and pill.
+- Swap card live numbers (web and native). New requirement in the recipes chapter: every number in the swap card that can change while it is on screen updates through `AnimatedNumberReadout`, moving only the changed places. `SwapPanel` now does this for the From balance, the fee and slippage on the To card, the settings rows and fee breakdown, and the picker balances (`FromPicker`, `ToPicker`), as it already did for the amounts and the conversion capsule. Hosts can pass live figures for their own text: `SwapDetail.value` accepts a number with `options`, `prefix` and `suffix`, and `SwapToken.caption` and `SwapDestination.detail` accept a `SwapFigure` (`{value, options, prefix, suffix}`). Strings still work and stay static. Web exports `SwapNumber` from the swap panel entry for host-drawn parts. Loading and unknown fees stay plain `…` and `—`; reduced motion updates without movement. Native: the conversion capsule now animates too, and `@bloxwap/hig/native/pickers` imports the animated readout, so it needs the optional Reanimated and Worklets peers as the swap panel already did.
 
 ## 0.5.1
 

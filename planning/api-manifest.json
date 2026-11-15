@@ -312,7 +312,7 @@
       },
       "SwapToken": {
         "entry": "recipes",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
       },
       "SwapChain": {
         "entry": "recipes",
@@ -340,11 +340,11 @@
       },
       "SwapDestination": {
         "entry": "recipes/swap-panel",
-        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line above the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
+        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line above the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string | SwapFigure;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
       },
       "SwapDetail": {
         "entry": "recipes/swap-panel",
-        "signature": "export interface SwapDetail {\n    label: string;\n    value: string;\n}"
+        "signature": "export interface SwapDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "Choice": {
         "entry": "selection",
@@ -529,6 +529,14 @@
       "SwapKeypad": {
         "entry": "recipes/swap-panel",
         "signature": "export declare function SwapKeypad({ onKey, label, deleteLabel }: {\n    onKey: (key: string) => void;\n    label: string;\n    deleteLabel: string;\n}): React.JSX.Element;"
+      },
+      "SwapNumber": {
+        "entry": "recipes/swap-panel",
+        "signature": "export declare function SwapNumber({ template, ...number }: AnimatedNumberProps & {\n    template?: (value: string) => string;\n}): React.JSX.Element;"
+      },
+      "SwapFigure": {
+        "entry": "recipes/swap-panel",
+        "signature": "export interface SwapFigure {\n    value: number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "SwapSheetProps": {
         "entry": "recipes/swap-sheet",
@@ -772,9 +780,13 @@
         "entry": "pickers",
         "signature": "export interface SwapChain {\n    chainId: string | number;\n    name: string;\n    icon?: string;\n}"
       },
+      "SwapFigure": {
+        "entry": "pickers",
+        "signature": "export interface SwapFigure {\n    value: number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
       "SwapToken": {
         "entry": "pickers",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
       },
       "SwapWallet": {
         "entry": "pickers",
@@ -962,11 +974,11 @@
       },
       "SwapDestination": {
         "entry": "recipes",
-        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line under the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
+        "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line under the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string | SwapFigure;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
       },
       "SwapDetail": {
         "entry": "recipes",
-        "signature": "export interface SwapDetail {\n    label: string;\n    value: string;\n}"
+        "signature": "export interface SwapDetail {\n    label: string; /** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "SwapView": {
         "entry": "recipes",
@@ -1263,6 +1275,10 @@
       "SwapSubview": {
         "entry": "swap-parts",
         "signature": "export declare function SwapSubview({ title, onBack, testID, children }: React.PropsWithChildren<{\n    title: string;\n    onBack: () => void;\n    testID?: string;\n}>): React.JSX.Element;"
+      },
+      "SwapNumberText": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapNumberText({ template, text, value, options, formattedValue, suffix, align, testID }: {\n    template: (amount: string) => string;\n    text: string;\n    value?: number | null;\n    options?: Intl.NumberFormatOptions;\n    formattedValue?: string;\n    suffix?: string;\n    align?: 'right';\n    testID?: string;\n}): React.JSX.Element;"
       },
       "slippagePresets": {
         "entry": "swap-shared",
