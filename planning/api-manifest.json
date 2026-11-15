@@ -250,6 +250,54 @@
         "entry": "blocks/leaderboard-block",
         "signature": "export interface LeaderboardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol`. */\n    detail?: string;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
       },
+      "SoundHapticsBlock": {
+        "entry": "blocks/sound-haptics-block",
+        "signature": "export declare function SoundHapticsBlock({ title, sections, onBack, headerAction, className, ...rest }: SoundHapticsBlockProps): React.JSX.Element;"
+      },
+      "soundLevel": {
+        "entry": "blocks/sound-haptics-block",
+        "signature": "export declare const soundLevel: (level: number | null | undefined) => number;"
+      },
+      "SoundHapticsBlockProps": {
+        "entry": "blocks/sound-haptics-block",
+        "signature": "export interface SoundHapticsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Sound & Haptics. */\n    title: string;\n    /** One card each, in order. A section's source, meter and volume show only while it is on. */\n    sections: readonly SoundSection[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      },
+      "SoundSection": {
+        "entry": "blocks/sound-haptics-block",
+        "signature": "export interface SoundSection {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** The device in use, under the switch: iPhone Microphone. */\n    source?: string;\n    /** A live input level from 0 to 1, drawn as a meter. `null` draws an empty meter. */\n    level?: number | null;\n    volume?: SoundVolume;\n}"
+      },
+      "SoundVolume": {
+        "entry": "blocks/sound-haptics-block",
+        "signature": "export interface SoundVolume {\n    /** Names the steps and is drawn above them: Volume. */\n    label: string;\n    /** Defaults to 25%, 50%, 75% and 100%. */\n    options?: readonly number[];\n    value: number;\n    onValueChange: (value: number) => void;\n}"
+      },
+      "SignalsBlock": {
+        "entry": "blocks/signals-block",
+        "signature": "export declare function SignalsBlock({ title, groups, verifiedLabel, onBack, headerAction, className, ...rest }: SignalsBlockProps): React.JSX.Element;"
+      },
+      "SignalsBlockProps": {
+        "entry": "blocks/signals-block",
+        "signature": "export interface SignalsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Signals. */\n    title: string;\n    groups: readonly SignalsGroup[];\n    /** Accessible name of the verified mark. The mark is decorative without it. */\n    verifiedLabel?: string;\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      },
+      "SignalsGroup": {
+        "entry": "blocks/signals-block",
+        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A capsule on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
+      },
+      "SignalsItem": {
+        "entry": "blocks/signals-block",
+        "signature": "export interface SignalsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
+      },
+      "NotificationsBlock": {
+        "entry": "blocks/notifications-block",
+        "signature": "export declare function NotificationsBlock({ title, items, onBack, headerAction, className, ...rest }: NotificationsBlockProps): React.JSX.Element;"
+      },
+      "NotificationsBlockProps": {
+        "entry": "blocks/notifications-block",
+        "signature": "export interface NotificationsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading: Notifications. */\n    title: string;\n    /** One card each, in order. */\n    items: readonly NotificationsItem[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+      },
+      "NotificationsItem": {
+        "entry": "blocks/notifications-block",
+        "signature": "export interface NotificationsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */\n    error?: string;\n}"
+      },
       "TradeHistoryListBlock": {
         "entry": "blocks/trade-history-list-block",
         "signature": "export declare function TradeHistoryListBlock({ labels, trades, onSelect, onBack, headerAction, pnlOptions, className, ...rest }: TradeHistoryListBlockProps): React.JSX.Element;"
@@ -1136,6 +1184,54 @@
         "entry": "leaderboard-block",
         "signature": "export interface LeaderboardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol`. */\n    detail?: string;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
       },
+      "SoundHapticsBlock": {
+        "entry": "sound-haptics-block",
+        "signature": "export declare function SoundHapticsBlock({ title, sections, onBack, headerAction, testID }: SoundHapticsBlockProps): React.JSX.Element;"
+      },
+      "soundLevel": {
+        "entry": "sound-haptics-block",
+        "signature": "export declare const soundLevel: (level: number | null | undefined) => number;"
+      },
+      "SoundHapticsBlockProps": {
+        "entry": "sound-haptics-block",
+        "signature": "export interface SoundHapticsBlockProps {\n    /** Heading: Sound & Haptics. */\n    title: string;\n    /** One card each, in order. A section's source, meter and volume show only while it is on. */\n    sections: readonly SoundSection[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "SoundSection": {
+        "entry": "sound-haptics-block",
+        "signature": "export interface SoundSection {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** The device in use, under the switch: iPhone Microphone. */\n    source?: string;\n    /** A live input level from 0 to 1, drawn as a meter. `null` draws an empty meter. */\n    level?: number | null;\n    volume?: SoundVolume;\n}"
+      },
+      "SoundVolume": {
+        "entry": "sound-haptics-block",
+        "signature": "export interface SoundVolume {\n    /** Names the steps and is drawn above them: Volume. */\n    label: string;\n    /** Defaults to 25%, 50%, 75% and 100%. */\n    options?: readonly number[];\n    value: number;\n    onValueChange: (value: number) => void;\n}"
+      },
+      "SignalsBlock": {
+        "entry": "signals-block",
+        "signature": "export declare function SignalsBlock({ title, groups, verifiedLabel, onBack, headerAction, testID }: SignalsBlockProps): React.JSX.Element;"
+      },
+      "SignalsBlockProps": {
+        "entry": "signals-block",
+        "signature": "export interface SignalsBlockProps {\n    /** Heading: Signals. */\n    title: string;\n    groups: readonly SignalsGroup[];\n    /** Words for the verified mark, read after the group title. */\n    verifiedLabel?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "SignalsGroup": {
+        "entry": "signals-block",
+        "signature": "export interface SignalsGroup {\n    id: string;\n    title: string;\n    /** Shows the verified mark after the title. */\n    verified?: boolean;\n    /** A capsule on the trailing edge of the heading: How it works. The host opens its own explanation. */\n    help?: {\n        label: string;\n        onSelect: () => void;\n    };\n    items: readonly SignalsItem[];\n}"
+      },
+      "SignalsItem": {
+        "entry": "signals-block",
+        "signature": "export interface SignalsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n}"
+      },
+      "NotificationsBlock": {
+        "entry": "notifications-block",
+        "signature": "export declare function NotificationsBlock({ title, items, onBack, headerAction, testID }: NotificationsBlockProps): React.JSX.Element;"
+      },
+      "NotificationsBlockProps": {
+        "entry": "notifications-block",
+        "signature": "export interface NotificationsBlockProps {\n    /** Heading: Notifications. */\n    title: string;\n    /** One card each, in order. */\n    items: readonly NotificationsItem[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+      },
+      "NotificationsItem": {
+        "entry": "notifications-block",
+        "signature": "export interface NotificationsItem {\n    id: string;\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */\n    error?: string;\n}"
+      },
       "FromPicker": {
         "entry": "pickers",
         "signature": "export declare function FromPicker({ wallet, onConnect, onDisconnect, generateAddress, onGenerateAddressChange, style, ...list }: FromPickerProps): React.JSX.Element;"
@@ -1751,6 +1847,22 @@
       "roleColor": {
         "entry": "roles",
         "signature": "export declare function roleColor(role: unknown, fallback: AccentRole, colors: HIGColors): string;"
+      },
+      "SettingHeader": {
+        "entry": "setting-header",
+        "signature": "export declare function SettingHeader({ title, onBack, action, testID }: {\n    title: string;\n    onBack?: () => void;\n    action?: React.ReactNode;\n    testID: string;\n}): React.JSX.Element;"
+      },
+      "SettingSwitchProps": {
+        "entry": "setting-switch",
+        "signature": "export interface SettingSwitchProps {\n    label: string;\n    description?: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n    testID?: string;\n}"
+      },
+      "SettingSwitch": {
+        "entry": "setting-switch",
+        "signature": "export declare function SettingSwitch({ label, description, checked, onCheckedChange, disabled, testID }: SettingSwitchProps): React.JSX.Element;"
+      },
+      "SettingCard": {
+        "entry": "setting-switch",
+        "signature": "export declare function SettingCard({ children, joined, testID }: React.PropsWithChildren<{\n    joined?: boolean;\n    testID?: string;\n}>): React.JSX.Element;"
       },
       "swapParentView": {
         "entry": "swap-panel-block",

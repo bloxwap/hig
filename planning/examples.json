@@ -1109,6 +1109,62 @@
       }
     },
     {
+      "name": "SoundHapticsBlock",
+      "slug": "sound-haptics-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.SoundHapticsBlock title='Sound & Haptics' sections={[{id:'effects',label:'Effects',checked:true,onCheckedChange:setChecked,volume:{label:'Volume',value:0.25,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:true,onCheckedChange:setChecked,source:'iPhone Microphone',level:0.17,volume:{label:'Mic volume',value:1,onValueChange:next=>setMessage('The host sets the mic volume to '+next)}},{id:'haptics',label:'Haptics',checked:true,onCheckedChange:setChecked},{id:'flash',label:'Flash',checked:true,onCheckedChange:setChecked}]} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.SoundHapticsBlock title='Sound & Haptics' sections={[{id:'effects',label:'Effects',checked:true,onCheckedChange:setChecked,volume:{label:'Volume',value:0.25,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:true,onCheckedChange:setChecked,source:'iPhone Microphone',level:0.17,volume:{label:'Mic volume',value:1,onValueChange:next=>setMessage('The host sets the mic volume to '+next)}},{id:'haptics',label:'Haptics',checked:true,onCheckedChange:setChecked},{id:'flash',label:'Flash',checked:true,onCheckedChange:setChecked}]} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "interactive"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "interactive": {
+          "web": "<C.SoundHapticsBlock title='Sound & Haptics' sections={[{id:'effects',label:'Effects',checked:checked,onCheckedChange:setChecked,volume:{label:'Volume',value:0.25,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:checked,onCheckedChange:setChecked,source:'iPhone Microphone',level:0.17,volume:{label:'Mic volume',value:1,onValueChange:next=>setMessage('The host sets the mic volume to '+next)}},{id:'haptics',label:'Haptics',checked:checked,onCheckedChange:setChecked},{id:'flash',label:'Flash',checked:checked,onCheckedChange:setChecked}]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.SoundHapticsBlock title='Sound & Haptics' sections={[{id:'effects',label:'Effects',checked:checked,onCheckedChange:setChecked,volume:{label:'Volume',value:0.25,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:checked,onCheckedChange:setChecked,source:'iPhone Microphone',level:0.17,volume:{label:'Mic volume',value:1,onValueChange:next=>setMessage('The host sets the mic volume to '+next)}},{id:'haptics',label:'Haptics',checked:checked,onCheckedChange:setChecked},{id:'flash',label:'Flash',checked:checked,onCheckedChange:setChecked}]} onBack={()=>setMessage('The host goes back')}/>"
+        }
+      }
+    },
+    {
+      "name": "SignalsBlock",
+      "slug": "signals-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.SignalsBlock title='Signals' verifiedLabel='Verified' groups={[{id:'trend',title:'Trend',help:{label:'How it works',onSelect:()=>setMessage('The host explains trend signals')},items:[{id:'trend',label:'Trend',description:'Direction marks on markets that just moved hard.',checked:true,onCheckedChange:()=>setMessage('The host toggles trend')},{id:'feed',label:'Live Activity Feed',description:'A rolling feed of signal fires as they happen.',checked:true,onCheckedChange:()=>setMessage('The host toggles the feed')}]},{id:'swing',title:'Swing',verified:true,help:{label:'How it works',onSelect:()=>setMessage('The host explains swing signals')},items:[{id:'swing',label:'Swing',description:'Swing signals with entry, stop loss, and take profit levels.',checked,onCheckedChange:setChecked}]}]} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.SignalsBlock title='Signals' verifiedLabel='Verified' groups={[{id:'trend',title:'Trend',help:{label:'How it works',onSelect:()=>setMessage('The host explains trend signals')},items:[{id:'trend',label:'Trend',description:'Direction marks on markets that just moved hard.',checked:true,onCheckedChange:()=>setMessage('The host toggles trend')},{id:'feed',label:'Live Activity Feed',description:'A rolling feed of signal fires as they happen.',checked:true,onCheckedChange:()=>setMessage('The host toggles the feed')}]},{id:'swing',title:'Swing',verified:true,help:{label:'How it works',onSelect:()=>setMessage('The host explains swing signals')},items:[{id:'swing',label:'Swing',description:'Swing signals with entry, stop loss, and take profit levels.',checked,onCheckedChange:setChecked}]}]} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "NotificationsBlock",
+      "slug": "notifications-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.NotificationsBlock title='Notifications' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked,onCheckedChange:setChecked},{id:'swing',label:'Swing notifications',description:'Choose Open on a signal to place the trade with your wallet, or Dismiss to skip.',checked:true,onCheckedChange:()=>setMessage('The host toggles swing notifications')}]} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.NotificationsBlock title='Notifications' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked,onCheckedChange:setChecked},{id:'swing',label:'Swing notifications',description:'Choose Open on a signal to place the trade with your wallet, or Dismiss to skip.',checked:true,onCheckedChange:()=>setMessage('The host toggles swing notifications')}]} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "error": {
+          "web": "<C.NotificationsBlock title='Notifications' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked,onCheckedChange:setChecked,error:'Push request timed out'},{id:'swing',label:'Swing notifications',description:'Choose Open on a signal to place the trade with your wallet, or Dismiss to skip.',checked:true,onCheckedChange:()=>setMessage('The host toggles swing notifications')}]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.NotificationsBlock title='Notifications' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked,onCheckedChange:setChecked,error:'Push request timed out'},{id:'swing',label:'Swing notifications',description:'Choose Open on a signal to place the trade with your wallet, or Dismiss to skip.',checked:true,onCheckedChange:()=>setMessage('The host toggles swing notifications')}]} onBack={()=>setMessage('The host goes back')}/>"
+        }
+      }
+    },
+    {
       "name": "TradeHistoryListBlock",
       "slug": "trade-history-list-block",
       "entry": "blocks",

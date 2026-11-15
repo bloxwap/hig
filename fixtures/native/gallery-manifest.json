@@ -539,6 +539,29 @@
       "support": "renderer"
     },
     {
+      "name": "SoundHapticsBlock",
+      "states": [
+        "default",
+        "interactive"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "SignalsBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "NotificationsBlock",
+      "states": [
+        "default",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "TradeHistoryListBlock",
       "states": [
         "default",

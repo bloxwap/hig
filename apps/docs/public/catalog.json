@@ -679,6 +679,35 @@
       ]
     },
     {
+      "name": "SoundHapticsBlock",
+      "route": "components/sound-haptics-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "interactive"
+      ]
+    },
+    {
+      "name": "SignalsBlock",
+      "route": "components/signals-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "NotificationsBlock",
+      "route": "components/notifications-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
+      ]
+    },
+    {
       "name": "TradeHistoryListBlock",
       "route": "components/trade-history-list-block",
       "entry": "blocks",

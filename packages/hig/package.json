@@ -298,6 +298,21 @@
       "import": "./react/dist/blocks/leaderboard-block.js",
       "default": "./react/dist/blocks/leaderboard-block.js"
     },
+    "./react/blocks/sound-haptics-block": {
+      "types": "./react/dist/blocks/sound-haptics-block.d.ts",
+      "import": "./react/dist/blocks/sound-haptics-block.js",
+      "default": "./react/dist/blocks/sound-haptics-block.js"
+    },
+    "./react/blocks/signals-block": {
+      "types": "./react/dist/blocks/signals-block.d.ts",
+      "import": "./react/dist/blocks/signals-block.js",
+      "default": "./react/dist/blocks/signals-block.js"
+    },
+    "./react/blocks/notifications-block": {
+      "types": "./react/dist/blocks/notifications-block.d.ts",
+      "import": "./react/dist/blocks/notifications-block.js",
+      "default": "./react/dist/blocks/notifications-block.js"
+    },
     "./react/blocks/trade-history-list-block": {
       "types": "./react/dist/blocks/trade-history-list-block.d.ts",
       "import": "./react/dist/blocks/trade-history-list-block.js",
@@ -377,6 +392,21 @@
       "types": "./native/dist/leaderboard-block.d.ts",
       "import": "./native/dist/leaderboard-block.js",
       "default": "./native/dist/leaderboard-block.js"
+    },
+    "./native/sound-haptics-block": {
+      "types": "./native/dist/sound-haptics-block.d.ts",
+      "import": "./native/dist/sound-haptics-block.js",
+      "default": "./native/dist/sound-haptics-block.js"
+    },
+    "./native/signals-block": {
+      "types": "./native/dist/signals-block.d.ts",
+      "import": "./native/dist/signals-block.js",
+      "default": "./native/dist/signals-block.js"
+    },
+    "./native/notifications-block": {
+      "types": "./native/dist/notifications-block.d.ts",
+      "import": "./native/dist/notifications-block.js",
+      "default": "./native/dist/notifications-block.js"
     },
     "./native/trade-history-list-block": {
       "types": "./native/dist/trade-history-list-block.d.ts",

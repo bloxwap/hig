@@ -409,6 +409,18 @@
       "title": "LeaderboardBlock"
     },
     {
+      "route": "components/sound-haptics-block",
+      "title": "SoundHapticsBlock"
+    },
+    {
+      "route": "components/signals-block",
+      "title": "SignalsBlock"
+    },
+    {
+      "route": "components/notifications-block",
+      "title": "NotificationsBlock"
+    },
+    {
       "route": "components/trade-history-list-block",
       "title": "TradeHistoryListBlock"
     },
@@ -1129,6 +1141,35 @@
       "states": [
         "default",
         "sweepstakes"
+      ]
+    },
+    {
+      "name": "SoundHapticsBlock",
+      "route": "components/sound-haptics-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "interactive"
+      ]
+    },
+    {
+      "name": "SignalsBlock",
+      "route": "components/signals-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "NotificationsBlock",
+      "route": "components/notifications-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error"
       ]
     },
     {
