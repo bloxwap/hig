@@ -28,7 +28,7 @@ import {WalletAddress} from '@bloxwap/hig/react/wallet-address';
 
 Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
 
-Native readouts, including `Usd`, `Percent`, and `AnimatedNumberReadout`, accept `tone="text" | "positive" | "negative" | "muted" | "up" | "down"`, `testID`, and a constrained typography `style`. The style accepts `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, and `textAlign`, including registered styles and arrays. The tone resolves through the provider palette; it is explicit rather than inferred from the sign. Colour and tabular numeric glyphs stay controlled by the readout. Font scale follows HIG Text and the provider; `maxFontSizeMultiplier` can override its cap.
+Native readouts, including `Usd`, `Percent`, and `AnimatedNumberReadout`, accept `tone="text" | "positive" | "negative" | "warning" | "muted" | "faint" | "up" | "down"`, `testID`, and a constrained typography `style`. The style accepts `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, and `textAlign`, including registered styles and arrays. The tone resolves through the provider palette; it is explicit rather than inferred from the sign. Colour and tabular numeric glyphs stay controlled by the readout. Font scale follows HIG Text and the provider; `maxFontSizeMultiplier` can override its cap.
 
 For a branded 20 px equity pill, use `<NumberReadout value={equity} label="Equity" testID="equity" style={{fontFamily:'BloxwapMonoSemiBold',fontSize:20,lineHeight:28}} />` with a registered host font. For signed PnL, add `tone={pnl < 0 ? 'negative' : 'positive'}` and `options={{signDisplay:'always'}}`. The same props on `AnimatedNumberReadout` style and identify its single final accessible reading; per-place motion is decorative.
 
@@ -79,6 +79,7 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 
 - **Artwork.** `icon` is an image URL or a host element; without one the row shows the first letters of the symbol.
 - **Amounts.** `value` is in dollars; `null` reads as unknown. `balance` is in token units, formatted with `balanceOptions` (at most six fraction digits by default). Omit `balance` to show the value alone, as for a dollar stablecoin.
+- **Units headline.** `headline='units'` puts the units on the headline line in place of the value and draws no second line, for a holding the host has no dollar price for. It is read the same way: name, symbol, units. The default, `'value'`, is the value over the units.
 - **Anatomy.** A capsule concentric with its 40-unit avatar: 8 units of padding, 56 units high, a 28-unit end radius, on the well fill. Rows in a list sit 8 units apart.
 - **Interaction.** `onSelect` makes the whole row a button; without it the row is not interactive.
 - **Live numbers.** Both figures update through `AnimatedNumberReadout`, so the native entry needs the optional Reanimated and Worklets peers.
@@ -97,7 +98,8 @@ import {BarMark} from '@bloxwap/hig/react/bar-mark';
 ]}/>
 ```
 
-- **Elements.** Each element is `{label, value}` plus optional `id`, `tone`, `color` and `detail`. `value` is in the host's own unit and only its share of the whole is drawn; negative and non-finite values count as nothing. `detail` is host-formatted text shown after the label in the legend.
+- **Elements.** Each element is `{label, value}` plus optional `id`, `tone`, `color` and `detail`. `value` is in the host's own unit and only its share of the whole is drawn; negative and non-finite values count as nothing. `detail` is shown after the label in the legend: host-formatted text, or a live figure `{value, options, prefix, suffix}` for an amount that changes while the bar is shown, formatted with `options` (the provider's `numberFormat` applies) between `prefix` and `suffix`, with `null` read as unknown.
+- **Live details.** On web a figure detail updates place by place through `AnimatedNumberReadout`. The native bar-mark entry still needs no peers, so on its own it draws a figure formatted, without movement; `TokenActionBlock` supplies a renderer that moves it place by place, and a host with the animated-number peers can do the same by wrapping its `BarMark` in `BarMarkFigureContext.Provider` with a function `(figure, {testID}) => <AnimatedNumberReadout …/>`. Either way the legend item reads the formatted amount.
 - **Colour.** An element takes a `tone` role: `positive`, `info`, `warning`, `negative`, `muted` or `faint`. Without one, elements take those tones in that order and repeat. `color` is a host hex for a category outside the roles and wins over `tone`. Do not rely on colour alone: the legend always names each part.
 - **Whole.** `total` is the whole the elements are parts of. When it is larger than their sum, the remainder stays empty track, as in margin used out of a limit. Without it the elements fill the bar.
 - **Anatomy.** The bar is 24 units high with an 8-unit radius; segments are separated by a 2-unit gap and a non-zero segment is never thinner than 3 units. The layout follows the writing direction: the first element starts on the leading edge.

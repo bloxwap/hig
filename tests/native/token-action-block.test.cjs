@@ -73,3 +73,25 @@ it('draws both bars without a card, further apart than cards would be',()=>{
  expect(bars(view).map(bar=>[bar.props.testID,bar.props.surface])).toEqual([['token-assets',false],['token-chains',false]]);
  const group=all(view,'token-bars').find(node=>typeof node.type==='string');expect(Object.assign({},...[].concat(group.props.style).flat(Infinity).filter(Boolean))).toMatchObject({gap:20,marginTop:16,paddingHorizontal:4});
 });
+const styleOf=node=>Object.assign({},...[].concat(node.props.style).flat(Infinity).filter(Boolean));
+it('draws a note under the actions, 8 below them, tinted by noteTone',()=>{
+ const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
+ const actions=[{id:'send',onSelect(){}}];
+ let view=mount({actions,note:'View-only account'});
+ const note=()=>all(view,'token-note').find(node=>typeof node.type==='string');
+ expect(text(note())).toBe('View-only account');expect(styleOf(note())).toMatchObject({marginTop:8,paddingHorizontal:4});
+ const children=note().parent.children.map(child=>child.props?.testID);expect(children.indexOf('token-note')).toBe(children.indexOf('token-actions')+1);
+ view=mount({note:'View-only account',noteTone:'warning'});expect(styleOf(note())).toMatchObject({marginTop:16,borderRadius:16});expect(styleOf(note().findAll(node=>node.type==='Text')[0]).color).toBe(colors.warning);
+ view=mount({actions});expect(has(view,'token-note')).toBe(false);
+});
+it('draws actions only without bars, or one bar without the other',()=>{
+ let view=mount({assets:undefined,chains:undefined,name:undefined,actions:[{id:'send',onSelect(){}}]});
+ expect(has(view,'token-bars')).toBe(false);expect(bars(view)).toHaveLength(0);expect(buttons(view)).toHaveLength(1);
+ view=mount({assets:undefined});expect(bars(view).map(bar=>bar.props.testID)).toEqual(['token-chains']);
+ view=mount({chains:undefined,name:undefined});expect(bars(view).map(bar=>[bar.props.testID,bar.props.title])).toEqual([['token-assets','HYPE']]);
+});
+it('moves live legend figures place by place inside the block',()=>{
+ const view=mount({assets:[{id:'staked',label:'Staked',value:320,detail:{value:320,options:{style:'currency',currency:'USD'}}},{id:'core',label:'Core',value:239,detail:'$239'}]});
+ const figure=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='token-assets-detail-staked');expect(figure.props).toMatchObject({value:320,tone:'faint'});
+ expect(all(view,'token-assets-legend-staked').find(node=>typeof node.type==='string').props.accessibilityLabel).toBe('Staked, $320.00, 57.2%');
+});

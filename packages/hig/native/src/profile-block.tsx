@@ -1,17 +1,27 @@
 import React from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
+import {Button} from './button.js';
 import {CloseIcon,EditIcon,QrIcon} from './icons.js';
 import {ListGroup,ListRow} from './list-group.js';
 import {SwitchRow} from './switch-row.js';
+import {AnimatedNumberReadout} from './animated-number.js';
+import {formatNumberReadout} from './animated-number-model.js';
 import {addressColor} from './swap-shared.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 export type {AssetArtwork} from './asset-balance-row.js';
+/** A row value that can change while the profile is shown, such as a balance: formatted with `options` between `prefix` and `suffix`, and updated place by place. `null` reads as unknown. */
+export interface ProfileFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 /** One row of a profile section. The host supplies every label and value. */
 export interface ProfileRow {
- id:string;label:string;leading?:React.ReactNode;value?:React.ReactNode;trailing?:React.ReactNode;onSelect?:()=>void;disabled?:boolean;
- /** With `onCheckedChange`, the row is a switch: the track trails and the label names it. */
+ id:string;label:string;leading?:React.ReactNode;
+ /** Short text on the trailing edge, or a live figure that updates place by place. */
+ value?:React.ReactNode|ProfileFigure;
+ /** Colours the value. Without it the value keeps the row's muted value style. */
+ tone?:'positive'|'warning'|'negative'|'muted';
+ trailing?:React.ReactNode;onSelect?:()=>void;disabled?:boolean;
+ /** With `onCheckedChange`, the row is a switch: the whole row is the target, the track trails and the label names it. */
  checked?:boolean;onCheckedChange?:(checked:boolean)=>void;
 }
 export interface ProfileSection {
@@ -24,19 +34,38 @@ export interface ProfileStatus {
  /** Read out for the dot, for example Demo. */
  label:string;tone?:'positive'|'warning'|'negative'|'info';
 }
+/** The primary action under the name, such as Log in for a signed-out viewer. The host writes the label. */
+export interface ProfileAction {
+ label:string;onSelect:()=>void;disabled?:boolean;
+ /** Defaults to `primary`. */
+ intent?:'primary'|'secondary';
+}
 export interface ProfileBlockProps {
- /** The name under the avatar: a display name or a shortened address. */
- name:string;
+ /** The name under the avatar: a display name or a shortened address. It may be left out when `action` is set, for a signed-out viewer. */
+ name?:string;
+ /** Host content beside the name, such as a badge. It stays in the accessibility tree, so give an interactive badge its own label. */
+ nameAccessory?:React.ReactNode;
  /** Colours the avatar when there is no artwork. */
  address?:string;
- avatar?:AssetArtwork;status?:ProfileStatus;
+ avatar?:AssetArtwork;
+ /** Makes the avatar a button, for example to choose a picture. `avatarLabel` names it. */
+ onAvatarPress?:()=>void;
+ /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`, then the built-in “Change profile picture”. */
+ avatarLabel?:string;
+ status?:ProfileStatus;
  onEditName?:()=>void;onShowAddress?:()=>void;onClose?:()=>void;
+ /** A full-width button under the name, such as Log in. */
+ action?:ProfileAction;
  sections:readonly ProfileSection[];
+ /** Host content under the sections on the block's inset, such as legal links. */
+ footer?:React.ReactNode;
  testID?:string;
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** A 44dp control keeps a 48dp touch target on every side. */
 const targetSlop={top:2,bottom:2,left:2,right:2};
+/** True for a `ProfileFigure`: a plain object with a `value`, not an element, array or other node. */
+const isProfileFigure=(value:unknown):value is ProfileFigure=>value!=null&&typeof value==='object'&&!React.isValidElement(value)&&!Array.isArray(value)&&!(Symbol.iterator in value)&&'value' in value;
 /** A round 44 control with no fill of its own, like the other block headers; it takes the well fill while pressed. */
 function RoundButton({label,testID,onPress,children}:{label:string;testID:string;onPress:()=>void;children:React.ReactNode}){
  const fills=useFills();
@@ -54,28 +83,43 @@ function ProfileSwitchRow({row}:{row:ProfileRow}){
   </View>
  </SwitchRow>;
 }
+/** A row that opens something or shows a value. A live figure or a toned value is drawn here and read through `valueLabel`. */
+function ProfileListRow({row}:{row:ProfileRow}){
+ const {locale}=useHIG(),present=usePresentNumber();
+ const {value,tone}=row,testID=`profile-row-${row.id}`;
+ const style={fontSize:16,lineHeight:24,textAlign:'right' as const};
+ if(isProfileFigure(value)){
+  const reading=formatNumberReadout(value.value,locale,present(value.options),undefined,value.prefix,value.suffix).text;
+  return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<AnimatedNumberReadout value={value.value} options={value.options} prefix={value.prefix} suffix={value.suffix} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
+ }
+ return <ListRow testID={testID} label={row.label} leading={row.leading} value={value as React.ReactNode} valueTone={tone} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
+}
 /** A person's profile as one screen: the address and close controls, the avatar with its status, the name, then the host's sections of rows. */
-export function ProfileBlock({name,address,avatar,status,onEditName,onShowAddress,onClose,sections,testID}:ProfileBlockProps){
+export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,avatarLabel,status,onEditName,onShowAddress,onClose,action,sections,footer,testID}:ProfileBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
- const art=typeof avatar==='string'?<Image source={{uri:avatar}} style={{width:144,height:144}}/>:avatar??(address?null:<Text style={{fontSize:40,lineHeight:48,fontWeight:'600',color:colors.muted}}>{name.slice(0,2)}</Text>);
+ const art=typeof avatar==='string'?<Image source={{uri:avatar}} style={{width:144,height:144}}/>:avatar??(address?null:<Text style={{fontSize:40,lineHeight:48,fontWeight:'600',color:colors.muted}}>{name?.slice(0,2)}</Text>);
  const shown=sections.filter(section=>section.rows.length>0);
+ const disc=<View {...hidden} testID='profile-avatar' style={{width:144,height:144,borderRadius:72,overflow:'hidden',alignItems:'center',justifyContent:'center',backgroundColor:avatar==null&&address?addressColor(address):fills.well}}>{art}</View>;
  return <View testID={testID} style={{direction,padding:16}}>
   <View testID='profile-bar' style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:44}}>
    <View style={{minWidth:44,alignItems:'flex-start'}}>{onShowAddress?<RoundButton label={t.showAddress} testID='profile-address' onPress={onShowAddress}><QrIcon color={colors.text}/></RoundButton>:null}</View>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{onClose?<RoundButton label={t.close} testID='profile-close' onPress={onClose}><CloseIcon color={colors.text}/></RoundButton>:null}</View>
   </View>
   <View style={{alignSelf:'center',width:144,height:144,marginTop:8}}>
-   <View {...hidden} testID='profile-avatar' style={{width:144,height:144,borderRadius:72,overflow:'hidden',alignItems:'center',justifyContent:'center',backgroundColor:avatar==null&&address?addressColor(address):fills.well}}>{art}</View>
+   {onAvatarPress?<Pressable testID='profile-avatar-button' accessibilityRole='button' accessibilityLabel={avatarLabel??name??t.changeProfilePicture} onPress={onAvatarPress} style={({pressed})=>({borderRadius:72,opacity:pressed?0.85:1})}>{disc}</Pressable>:disc}
    {status?<View testID='profile-status' accessible accessibilityLabel={status.label} style={{position:'absolute',top:10,end:10,width:20,height:20,borderRadius:10,borderWidth:3,borderColor:colors.background,backgroundColor:colors[status.tone??'warning']}}/>:null}
   </View>
-  <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:4,marginTop:16}}>
+  {name!=null?<View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:4,marginTop:16}}>
    <Text testID='profile-name' accessibilityRole='header' numberOfLines={1} style={{flexShrink:1,fontSize:28,lineHeight:34,fontWeight:'700',color:colors.text}}>{name}</Text>
+   {nameAccessory!=null?<View testID='profile-name-accessory' style={{flexShrink:0}}>{nameAccessory}</View>:null}
    {onEditName?<Pressable testID='profile-edit' accessibilityRole='button' accessibilityLabel={t.editName} onPress={onEditName} hitSlop={targetSlop} style={({pressed})=>({width:44,height:44,alignItems:'center',justifyContent:'center',opacity:pressed?0.6:1})}><EditIcon color={colors.muted}/></Pressable>:null}
-  </View>
+  </View>:null}
+  {action?<View testID='profile-action-row' style={{marginTop:16}}><Button testID='profile-action' fullWidth intent={action.intent??'primary'} disabled={action.disabled} onPress={action.onSelect}>{action.label}</Button></View>:null}
   {shown.length>0?<View testID='profile-sections' style={{gap:24,marginTop:24}}>
    {shown.map(section=><ListGroup key={section.id} testID={`profile-section-${section.id}`} title={section.title}>
-    {section.rows.map(row=>row.onCheckedChange?<ProfileSwitchRow key={row.id} row={row}/>:<ListRow key={row.id} testID={`profile-row-${row.id}`} label={row.label} leading={row.leading} value={row.value} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>)}
+    {section.rows.map(row=>row.onCheckedChange?<ProfileSwitchRow key={row.id} row={row}/>:<ProfileListRow key={row.id} row={row}/>)}
    </ListGroup>)}
   </View>:null}
+  {footer!=null?<View testID='profile-footer' style={{marginTop:24}}>{footer}</View>:null}
  </View>;
 }

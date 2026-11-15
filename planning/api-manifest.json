@@ -20,11 +20,11 @@
       },
       "AssetBalanceRowProps": {
         "entry": "asset-balance-row",
-        "signature": "export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {\n    name: string;\n    symbol: string;\n    /** A missing icon falls back to the first letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, shown under the value. Omit it to show the value alone, as for a dollar stablecoin. */\n    balance?: number | null;\n    /** Format of the units line. Defaults to at most six fraction digits. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** Makes the whole row a button. */\n    onSelect?: () => void;\n}"
+        "signature": "export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {\n    name: string;\n    symbol: string;\n    /** A missing icon falls back to the first letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, shown under the value. Omit it to show the value alone, as for a dollar stablecoin. */\n    balance?: number | null;\n    /** Format of the units line. Defaults to at most six fraction digits. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Defaults to `value`. */\n    headline?: 'value' | 'units';\n    /** Makes the whole row a button. */\n    onSelect?: () => void;\n}"
       },
       "AssetBalanceRow": {
         "entry": "asset-balance-row",
-        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, onSelect, className, ...rest }: AssetBalanceRowProps): React.JSX.Element;"
+        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, headline, onSelect, className, ...rest }: AssetBalanceRowProps): React.JSX.Element;"
       },
       "BarMarkTone": {
         "entry": "bar-mark",
@@ -34,9 +34,13 @@
         "entry": "bar-mark",
         "signature": "export declare const barMarkTones: readonly BarMarkTone[];"
       },
+      "BarMarkFigure": {
+        "entry": "bar-mark",
+        "signature": "export interface BarMarkFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
       "BarMarkElement": {
         "entry": "bar-mark",
-        "signature": "export interface BarMarkElement {\n    id?: string;\n    label: string;\n    value: number;\n    tone?: BarMarkTone;\n    color?: string;\n    detail?: string;\n}"
+        "signature": "export interface BarMarkElement {\n    id?: string;\n    label: string;\n    value: number;\n    tone?: BarMarkTone;\n    color?: string;\n    detail?: string | BarMarkFigure;\n}"
       },
       "BarMarkProps": {
         "entry": "bar-mark",
@@ -96,11 +100,19 @@
       },
       "AccountBlock": {
         "entry": "blocks/account-block",
-        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, className, ...rest }: AccountBlockProps): React.JSX.Element;"
+        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, sections, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, className, ...rest }: AccountBlockProps): React.JSX.Element;"
       },
       "accountRows": {
         "entry": "blocks/account-block",
         "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
+      },
+      "accountSectionRows": {
+        "entry": "blocks/account-block",
+        "signature": "export declare function accountSectionRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset | null;\n    rest: AccountAsset[];\n};"
+      },
+      "accountSectionTotal": {
+        "entry": "blocks/account-block",
+        "signature": "export declare const accountSectionTotal: (section: AccountSection) => number | null;"
       },
       "assetValue": {
         "entry": "blocks/account-block",
@@ -108,11 +120,15 @@
       },
       "AccountBlockProps": {
         "entry": "blocks/account-block",
-        "signature": "export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading. Defaults to the built-in “Account”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with `WalletAddress`. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars. Defaults to the sum of the asset values; `null` reads as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset that is always first. Defaults to `USDC`. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    /** Text of the deposit action. Defaults to the built-in “Deposit”. */\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n}"
+        "signature": "export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading. Defaults to the built-in “Account”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with `WalletAddress`. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars. Defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is); `null` reads as unknown. */\n    balance?: number | null;\n    /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */\n    assets?: readonly AccountAsset[];\n    /** Titled groups, each with its own total, drawn in the order given in place of the flat `assets` list. */\n    sections?: readonly AccountSection[];\n    /** Symbol of the asset that is always first. Defaults to `USDC`. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    /** Text of the deposit action. Defaults to the built-in “Deposit”. */\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset, and with `sections` the section it is in. */\n    onAssetSelect?: (asset: AccountAsset, section?: AccountSection) => void;\n}"
       },
       "AccountAsset": {
         "entry": "blocks/account-block",
-        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. */\n    price?: number | null;\n    /** Dollar value of the holding. Defaults to `balance × price`. */\n    value?: number | null;\n}"
+        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. */\n    price?: number | null;\n    /** Dollar value of the holding. Defaults to `balance × price`. */\n    value?: number | null;\n    /** Set false to draw no units line, for a holding whose units are the same figure as its value. */\n    units?: boolean;\n    /** Set false to draw this row plain even when the block has `onAssetSelect`. */\n    selectable?: boolean;\n    /** Format of the units figure. Defaults to at most six fraction digits. */\n    unitsOptions?: Intl.NumberFormatOptions;\n}"
+      },
+      "AccountSection": {
+        "entry": "blocks/account-block",
+        "signature": "export interface AccountSection {\n    id: string;\n    /** Heading over the group. */\n    title: string;\n    /** The group's total in dollars, on the trailing edge of its heading. Defaults to the sum of its asset values; `null` reads as unknown. */\n    total?: number | null;\n    assets: readonly AccountAsset[];\n}"
       },
       "LanguageBlock": {
         "entry": "blocks/language-block",
@@ -132,7 +148,7 @@
       },
       "TokenActionBlock": {
         "entry": "blocks/token-action-block",
-        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, className, ...rest }: TokenActionBlockProps): React.JSX.Element;"
+        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, className, ...rest }: TokenActionBlockProps): React.JSX.Element;"
       },
       "tokenActionLabel": {
         "entry": "blocks/token-action-block",
@@ -140,7 +156,7 @@
       },
       "TokenActionBlockProps": {
         "entry": "blocks/token-action-block",
-        "signature": "export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n}"
+        "signature": "export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapPanelBlock`. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n}"
       },
       "TokenAction": {
         "entry": "blocks/token-action-block",
@@ -232,11 +248,11 @@
       },
       "ProfileBlock": {
         "entry": "blocks/profile-block",
-        "signature": "export declare function ProfileBlock({ name, address, avatar, status, onEditName, onShowAddress, onClose, sections, className, ...rest }: ProfileBlockProps): React.JSX.Element;"
+        "signature": "export declare function ProfileBlock({ name, nameAccessory, address, avatar, onAvatarPress, avatarLabel, status, onEditName, onShowAddress, onClose, action, sections, footer, className, ...rest }: ProfileBlockProps): React.JSX.Element;"
       },
       "ProfileBlockProps": {
         "entry": "blocks/profile-block",
-        "signature": "export interface ProfileBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** The name under the avatar: a display name or a shortened address. */\n    name: string;\n    /** Colours the avatar when there is no artwork. */\n    address?: string;\n    /** An image URL or an element the host draws. */\n    avatar?: AssetArtwork;\n    status?: ProfileStatus;\n    /** Shows the edit control after the name. */\n    onEditName?: () => void;\n    /** Shows the address control on the leading edge of the top bar. */\n    onShowAddress?: () => void;\n    /** Shows Close on the trailing edge of the top bar. */\n    onClose?: () => void;\n    sections: readonly ProfileSection[];\n}"
+        "signature": "export interface ProfileBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** The name under the avatar: a display name or a shortened address. It may be left out when `action` is set, for a signed-out viewer. */\n    name?: string;\n    /** Host content beside the name, such as a badge. It stays in the accessibility tree, so give an interactive badge its own name. */\n    nameAccessory?: React.ReactNode;\n    /** Colours the avatar when there is no artwork. */\n    address?: string;\n    /** An image URL or an element the host draws. */\n    avatar?: AssetArtwork;\n    /** Makes the avatar a button, for example to choose a picture. `avatarLabel` names it. */\n    onAvatarPress?: () => void;\n    /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`, then the built-in “Change profile picture”. */\n    avatarLabel?: string;\n    status?: ProfileStatus;\n    /** Shows the edit control after the name. */\n    onEditName?: () => void;\n    /** Shows the address control on the leading edge of the top bar. */\n    onShowAddress?: () => void;\n    /** Shows Close on the trailing edge of the top bar. */\n    onClose?: () => void;\n    /** A full-width button under the name, such as Log in. */\n    action?: ProfileAction;\n    sections: readonly ProfileSection[];\n    /** Host content under the sections, such as legal links. */\n    footer?: React.ReactNode;\n}"
       },
       "ProfileSection": {
         "entry": "blocks/profile-block",
@@ -244,11 +260,19 @@
       },
       "ProfileRow": {
         "entry": "blocks/profile-block",
-        "signature": "export interface ProfileRow {\n    id: string;\n    label: string;\n    /** Artwork before the label, such as an icon. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as a balance or `Off`. */\n    value?: React.ReactNode;\n    /** Anything richer on the trailing edge: icons or a `Badge`. */\n    trailing?: React.ReactNode;\n    onSelect?: () => void;\n    disabled?: boolean;\n    /** With `onCheckedChange`, the row is a switch: the track trails and the label names it. */\n    checked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n}"
+        "signature": "export interface ProfileRow {\n    id: string;\n    label: string;\n    /** Artwork before the label, such as an icon. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as a balance or `Off`, or a live figure that updates place by place. */\n    value?: React.ReactNode | ProfileFigure;\n    /** Colours the value. Without it the value keeps the row's muted value style. */\n    tone?: 'positive' | 'warning' | 'negative' | 'muted';\n    /** Anything richer on the trailing edge: icons or a `Badge`. */\n    trailing?: React.ReactNode;\n    onSelect?: () => void;\n    disabled?: boolean;\n    /** With `onCheckedChange`, the row is a switch: the track trails, the label names it, and a press anywhere on the row toggles it. */\n    checked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n}"
       },
       "ProfileStatus": {
         "entry": "blocks/profile-block",
         "signature": "export interface ProfileStatus {\n    /** Read out for the dot. */\n    label: string;\n    tone?: 'positive' | 'warning' | 'negative' | 'info';\n}"
+      },
+      "ProfileAction": {
+        "entry": "blocks/profile-block",
+        "signature": "export interface ProfileAction {\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    /** Defaults to `primary`. */\n    intent?: 'primary' | 'secondary';\n}"
+      },
+      "ProfileFigure": {
+        "entry": "blocks/profile-block",
+        "signature": "export interface ProfileFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "RewardBlock": {
         "entry": "blocks/reward-block",
@@ -962,7 +986,7 @@
     "native": {
       "AssetBalanceRow": {
         "entry": "asset-balance-row",
-        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, onSelect, testID }: AssetBalanceRowProps): React.JSX.Element;"
+        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, headline, onSelect, testID }: AssetBalanceRowProps): React.JSX.Element;"
       },
       "AssetArtwork": {
         "entry": "asset-balance-row",
@@ -970,15 +994,19 @@
       },
       "AssetBalanceRowProps": {
         "entry": "asset-balance-row",
-        "signature": "export interface AssetBalanceRowProps {\n    name: string;\n    symbol: string;\n    /** Without artwork the avatar shows the first three letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. */\n    value?: number | null;\n    /** Holding in token units; omit to show the value alone. */\n    balance?: number | null;\n    /** Format of the units line; default `{maximumFractionDigits:6}`. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** Makes the row a button. */\n    onSelect?: () => void;\n    testID?: string;\n}"
+        "signature": "export interface AssetBalanceRowProps {\n    name: string;\n    symbol: string;\n    /** Without artwork the avatar shows the first three letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. */\n    value?: number | null;\n    /** Holding in token units; omit to show the value alone. */\n    balance?: number | null;\n    /** Format of the units line; default `{maximumFractionDigits:6}`. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Default `value`. */\n    headline?: 'value' | 'units';\n    /** Makes the row a button. */\n    onSelect?: () => void;\n    testID?: string;\n}"
       },
       "AccountAsset": {
         "entry": "account-block",
-        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit. */\n    price?: number | null;\n    /** USD value; defaults to balance × price. */\n    value?: number | null;\n}"
+        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit. */\n    price?: number | null;\n    /** USD value; defaults to balance × price. */\n    value?: number | null;\n    /** Set false to draw no units line, for a holding whose units are the same figure as its value. */\n    units?: boolean;\n    /** Set false to draw this row plain even when the block has `onAssetSelect`. */\n    selectable?: boolean;\n    /** Format of the units figure; default `{maximumFractionDigits:6}`. */\n    unitsOptions?: Intl.NumberFormatOptions;\n}"
+      },
+      "AccountSection": {
+        "entry": "account-block",
+        "signature": "export interface AccountSection {\n    id: string;\n    /** Heading over the group. */\n    title: string;\n    /** The group's total in dollars, on the trailing edge of its heading; defaults to the sum of its asset values. `null` shows it as unknown. */\n    total?: number | null;\n    assets: readonly AccountAsset[];\n}"
       },
       "AccountBlockProps": {
         "entry": "account-block",
-        "signature": "export interface AccountBlockProps {\n    /** Defaults to the localized \"Account\". */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with WalletAddress. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars; defaults to the sum of the asset values. `null` shows it as unknown. */\n    balance?: number | null;\n    assets: readonly AccountAsset[];\n    /** Symbol of the asset pinned first; default 'USDC'. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    depositLabel?: string;\n    /** Makes each row a button. */\n    onAssetSelect?: (asset: AccountAsset) => void;\n    testID?: string;\n}"
+        "signature": "export interface AccountBlockProps {\n    /** Defaults to the localized \"Account\". */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with WalletAddress. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars; defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is). `null` shows it as unknown. */\n    balance?: number | null;\n    /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */\n    assets?: readonly AccountAsset[];\n    /** Titled groups, each with its own total, drawn in the order given in place of the flat `assets` list. */\n    sections?: readonly AccountSection[];\n    /** Symbol of the asset pinned first; default 'USDC'. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset, and with `sections` the section it is in. */\n    onAssetSelect?: (asset: AccountAsset, section?: AccountSection) => void;\n    testID?: string;\n}"
       },
       "assetValue": {
         "entry": "account-block",
@@ -988,9 +1016,17 @@
         "entry": "account-block",
         "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
       },
+      "accountSectionTotal": {
+        "entry": "account-block",
+        "signature": "export declare const accountSectionTotal: (section: AccountSection) => number | null;"
+      },
+      "accountSectionRows": {
+        "entry": "account-block",
+        "signature": "export declare function accountSectionRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset | null;\n    rest: AccountAsset[];\n};"
+      },
       "AccountBlock": {
         "entry": "account-block",
-        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, testID }: AccountBlockProps): React.JSX.Element;"
+        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, sections, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, testID }: AccountBlockProps): React.JSX.Element;"
       },
       "AnimatedNumberTrend": {
         "entry": "animated-number",
@@ -1010,7 +1046,19 @@
       },
       "BarMarkElement": {
         "entry": "bar-mark",
-        "signature": "export interface BarMarkElement {\n    /** Stable key and testID suffix; the index is used when omitted. */\n    id?: string;\n    label: string;\n    /** Any unit, as long as every element uses the same one. Negative and non-finite values count as 0. */\n    value: number;\n    /** Defaults to `barMarkTones[index % 6]`. */\n    tone?: BarMarkTone;\n    /** A host colour for this segment; wins over `tone`. */\n    color?: string;\n    /** Host-formatted amount shown after the label in the legend, such as `12.4 GB`. */\n    detail?: string;\n}"
+        "signature": "export interface BarMarkElement {\n    /** Stable key and testID suffix; the index is used when omitted. */\n    id?: string;\n    label: string;\n    /** Any unit, as long as every element uses the same one. Negative and non-finite values count as 0. */\n    value: number;\n    /** Defaults to `barMarkTones[index % 6]`. */\n    tone?: BarMarkTone;\n    /** A host colour for this segment; wins over `tone`. */\n    color?: string;\n    /** Amount shown after the label in the legend: host-formatted text, such as `12.4 GB`, or a live figure. */\n    detail?: string | BarMarkFigure;\n}"
+      },
+      "BarMarkFigure": {
+        "entry": "bar-mark",
+        "signature": "export interface BarMarkFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
+      },
+      "BarMarkFigureRenderer": {
+        "entry": "bar-mark",
+        "signature": "export type BarMarkFigureRenderer = (figure: BarMarkFigure, props: {\n    testID?: string;\n}) => React.ReactNode;"
+      },
+      "BarMarkFigureContext": {
+        "entry": "bar-mark",
+        "signature": "export declare const BarMarkFigureContext: React.Context<BarMarkFigureRenderer | null>;"
       },
       "BarMarkProps": {
         "entry": "bar-mark",
@@ -1090,7 +1138,7 @@
       },
       "TokenActionBlock": {
         "entry": "token-action-block",
-        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, testID }: TokenActionBlockProps): React.JSX.Element;"
+        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, testID }: TokenActionBlockProps): React.JSX.Element;"
       },
       "tokenActionLabel": {
         "entry": "token-action-block",
@@ -1098,7 +1146,7 @@
       },
       "TokenActionBlockProps": {
         "entry": "token-action-block",
-        "signature": "export interface TokenActionBlockProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. */\n    name: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. */\n    assets: readonly BarMarkElement[];\n    /** The chains the token sits on. */\n    chains: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface TokenActionBlockProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapPanelBlock. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    testID?: string;\n}"
       },
       "TokenAction": {
         "entry": "token-action-block",
@@ -1206,15 +1254,15 @@
       },
       "ProfileBlock": {
         "entry": "profile-block",
-        "signature": "export declare function ProfileBlock({ name, address, avatar, status, onEditName, onShowAddress, onClose, sections, testID }: ProfileBlockProps): React.JSX.Element;"
+        "signature": "export declare function ProfileBlock({ name, nameAccessory, address, avatar, onAvatarPress, avatarLabel, status, onEditName, onShowAddress, onClose, action, sections, footer, testID }: ProfileBlockProps): React.JSX.Element;"
       },
       "ProfileBlockProps": {
         "entry": "profile-block",
-        "signature": "export interface ProfileBlockProps {\n    /** The name under the avatar: a display name or a shortened address. */\n    name: string;\n    /** Colours the avatar when there is no artwork. */\n    address?: string;\n    avatar?: AssetArtwork;\n    status?: ProfileStatus;\n    onEditName?: () => void;\n    onShowAddress?: () => void;\n    onClose?: () => void;\n    sections: readonly ProfileSection[];\n    testID?: string;\n}"
+        "signature": "export interface ProfileBlockProps {\n    /** The name under the avatar: a display name or a shortened address. It may be left out when `action` is set, for a signed-out viewer. */\n    name?: string;\n    /** Host content beside the name, such as a badge. It stays in the accessibility tree, so give an interactive badge its own label. */\n    nameAccessory?: React.ReactNode;\n    /** Colours the avatar when there is no artwork. */\n    address?: string;\n    avatar?: AssetArtwork;\n    /** Makes the avatar a button, for example to choose a picture. `avatarLabel` names it. */\n    onAvatarPress?: () => void;\n    /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`, then the built-in “Change profile picture”. */\n    avatarLabel?: string;\n    status?: ProfileStatus;\n    onEditName?: () => void;\n    onShowAddress?: () => void;\n    onClose?: () => void;\n    /** A full-width button under the name, such as Log in. */\n    action?: ProfileAction;\n    sections: readonly ProfileSection[];\n    /** Host content under the sections on the block's inset, such as legal links. */\n    footer?: React.ReactNode;\n    testID?: string;\n}"
       },
       "ProfileRow": {
         "entry": "profile-block",
-        "signature": "export interface ProfileRow {\n    id: string;\n    label: string;\n    leading?: React.ReactNode;\n    value?: React.ReactNode;\n    trailing?: React.ReactNode;\n    onSelect?: () => void;\n    disabled?: boolean;\n    /** With `onCheckedChange`, the row is a switch: the track trails and the label names it. */\n    checked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n}"
+        "signature": "export interface ProfileRow {\n    id: string;\n    label: string;\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, or a live figure that updates place by place. */\n    value?: React.ReactNode | ProfileFigure;\n    /** Colours the value. Without it the value keeps the row's muted value style. */\n    tone?: 'positive' | 'warning' | 'negative' | 'muted';\n    trailing?: React.ReactNode;\n    onSelect?: () => void;\n    disabled?: boolean;\n    /** With `onCheckedChange`, the row is a switch: the whole row is the target, the track trails and the label names it. */\n    checked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n}"
       },
       "ProfileSection": {
         "entry": "profile-block",
@@ -1223,6 +1271,14 @@
       "ProfileStatus": {
         "entry": "profile-block",
         "signature": "export interface ProfileStatus {\n    /** Read out for the dot, for example Demo. */\n    label: string;\n    tone?: 'positive' | 'warning' | 'negative' | 'info';\n}"
+      },
+      "ProfileAction": {
+        "entry": "profile-block",
+        "signature": "export interface ProfileAction {\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    /** Defaults to `primary`. */\n    intent?: 'primary' | 'secondary';\n}"
+      },
+      "ProfileFigure": {
+        "entry": "profile-block",
+        "signature": "export interface ProfileFigure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n}"
       },
       "PositionBlock": {
         "entry": "position-block",
@@ -1466,7 +1522,7 @@
       },
       "NumberTone": {
         "entry": "data",
-        "signature": "export type NumberTone = 'text' | 'positive' | 'negative' | 'muted' | 'up' | 'down';"
+        "signature": "export type NumberTone = 'text' | 'positive' | 'negative' | 'warning' | 'muted' | 'faint' | 'up' | 'down';"
       },
       "NumberReadoutStyle": {
         "entry": "data",
@@ -1566,11 +1622,11 @@
       },
       "ListRowProps": {
         "entry": "list-group",
-        "signature": "export interface ListRowProps {\n    label: string;\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string is drawn muted and read with the label. */\n    value?: React.ReactNode;\n    /** Anything richer on the trailing edge: icons, a Badge, or a control such as a Switch. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Dims the row and blocks `onSelect`. */\n    disabled?: boolean;\n    testID?: string;\n}"
+        "signature": "export interface ListRowProps {\n    label: string;\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string is drawn muted and read with the label. */\n    value?: React.ReactNode;\n    /** How a `value` that is not text is read with the label on a pressable row, such as a live figure's formatted amount. */\n    valueLabel?: string;\n    /** Colours a string or number `value` instead of the muted default, keeping its layout and reading. */\n    valueTone?: 'positive' | 'warning' | 'negative' | 'muted';\n    /** Anything richer on the trailing edge: icons, a Badge, or a control such as a Switch. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Dims the row and blocks `onSelect`. */\n    disabled?: boolean;\n    testID?: string;\n}"
       },
       "ListRow": {
         "entry": "list-group",
-        "signature": "export declare function ListRow({ label, leading, value, trailing, onSelect, disabled, testID }: ListRowProps): React.JSX.Element;"
+        "signature": "export declare function ListRow({ label, leading, value, valueLabel, valueTone, trailing, onSelect, disabled, testID }: ListRowProps): React.JSX.Element;"
       },
       "Tabs": {
         "entry": "navigation",

@@ -1,24 +1,28 @@
 "use client";
-import React from 'react';
+import React,{useRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
-import {IconButton} from '../button.js';
-import {Switch} from '../selection.js';
+import {PressDecoration,useControllable,useHIG} from '../provider.js';
+import {Button,IconButton} from '../button.js';
 import {ListGroup,ListRow} from '../list-group.js';
+import {AnimatedNumberReadout} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {qrIcon} from './screen-header.js';
 import {SwapIcon,addressGradient} from './swap/shared.js';
+/** A row value that can change while the profile is shown, such as a balance: formatted with `options` between `prefix` and `suffix`, and updated place by place. `null` reads as unknown. */
+export interface ProfileFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
 /** One row of a profile section. With `onSelect` it opens something and shows a chevron; with `onCheckedChange` it is a switch. */
 export interface ProfileRow {
  id:string;label:string;
  /** Artwork before the label, such as an icon. */
  leading?:React.ReactNode;
- /** Short text on the trailing edge, such as a balance or `Off`. */
- value?:React.ReactNode;
+ /** Short text on the trailing edge, such as a balance or `Off`, or a live figure that updates place by place. */
+ value?:React.ReactNode|ProfileFigure;
+ /** Colours the value. Without it the value keeps the row's muted value style. */
+ tone?:'positive'|'warning'|'negative'|'muted';
  /** Anything richer on the trailing edge: icons or a `Badge`. */
  trailing?:React.ReactNode;
  onSelect?:()=>void;disabled?:boolean;
- /** With `onCheckedChange`, the row is a switch: the track trails and the label names it. */
+ /** With `onCheckedChange`, the row is a switch: the track trails, the label names it, and a press anywhere on the row toggles it. */
  checked?:boolean;onCheckedChange?:(checked:boolean)=>void;
 }
 export interface ProfileSection {
@@ -33,13 +37,25 @@ export interface ProfileStatus {
  label:string;
  tone?:'positive'|'warning'|'negative'|'info';
 }
+/** The primary action under the name, such as Log in for a signed-out viewer. The host writes the label. */
+export interface ProfileAction {
+ label:string;onSelect:()=>void;disabled?:boolean;
+ /** Defaults to `primary`. */
+ intent?:'primary'|'secondary';
+}
 export interface ProfileBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
- /** The name under the avatar: a display name or a shortened address. */
- name:string;
+ /** The name under the avatar: a display name or a shortened address. It may be left out when `action` is set, for a signed-out viewer. */
+ name?:string;
+ /** Host content beside the name, such as a badge. It stays in the accessibility tree, so give an interactive badge its own name. */
+ nameAccessory?:React.ReactNode;
  /** Colours the avatar when there is no artwork. */
  address?:string;
  /** An image URL or an element the host draws. */
  avatar?:AssetArtwork;
+ /** Makes the avatar a button, for example to choose a picture. `avatarLabel` names it. */
+ onAvatarPress?:()=>void;
+ /** The accessible name of the avatar button, such as Change profile picture. Defaults to `name`, then the built-in “Change profile picture”. */
+ avatarLabel?:string;
  status?:ProfileStatus;
  /** Shows the edit control after the name. */
  onEditName?:()=>void;
@@ -47,12 +63,41 @@ export interface ProfileBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  onShowAddress?:()=>void;
  /** Shows Close on the trailing edge of the top bar. */
  onClose?:()=>void;
+ /** A full-width button under the name, such as Log in. */
+ action?:ProfileAction;
  sections:readonly ProfileSection[];
+ /** Host content under the sections, such as legal links. */
+ footer?:React.ReactNode;
 }
 const editIcon=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinecap='round' strokeLinejoin='round'><path d='M12.5 4.5 15.5 7.5 7.5 15.5H4.5V12.5ZM10.5 15.5H16'/></svg>;
+/** True for a `ProfileFigure`: a plain object with a `value`, not an element, array or other node. */
+const isProfileFigure=(value:unknown):value is ProfileFigure=>value!=null&&typeof value==='object'&&!React.isValidElement(value)&&!Array.isArray(value)&&!(Symbol.iterator in value)&&'value' in value;
+function rowValue(row:ProfileRow):React.ReactNode{
+ const {value,tone}=row;if(value==null)return value;
+ if(isProfileFigure(value))return <span className='hig-profile-value' data-tone={tone}><AnimatedNumberReadout value={value.value} options={value.options} prefix={value.prefix} suffix={value.suffix}/></span>;
+ return tone?<span className='hig-profile-value' data-tone={tone}>{value}</span>:value;
+}
+/**
+ * A switch row whose whole row is the target. The markup is a static `ListRow` with a `Switch` in `trailing`, so the row
+ * draws exactly as before; a press anywhere outside the switch toggles it, the switch input stays the one named control
+ * for keyboard and assistive technology, and the host's press decoration covers the whole row instead of the track.
+ */
+function ProfileSwitchRow({row}:{row:ProfileRow}){
+ const [checked,set]=useControllable(!!row.checked,false,row.onCheckedChange);const input=useRef<HTMLInputElement>(null);
+ const toggle=(event:React.MouseEvent<HTMLDivElement>)=>{if(row.disabled||(event.target as Element).closest('.hig-switch'))return;input.current?.click();};
+ const value=rowValue(row);
+ return <div className='hig-list-row' aria-disabled={row.disabled||undefined} onClick={toggle}>
+  {row.leading!=null&&<span className='hig-list-row-leading' aria-hidden='true'>{row.leading}</span>}
+  <span className='hig-list-row-label'>{row.label}</span>
+  {value!=null&&<span className='hig-list-row-value'>{value}</span>}
+  <span className='hig-list-row-trailing'><label className='hig-choice hig-switch'><input ref={input} role='switch' type='checkbox' checked={!!checked} disabled={row.disabled} onChange={event=>set(event.target.checked)}/><span>{row.label}</span></label></span>
+  <PressDecoration kind='switch' disabled={!!row.disabled} input={input}/>
+ </div>;
+}
 /** A person's profile as one screen: who they are (avatar, status, name), then grouped rows that open their accounts, history, rewards and settings. */
-export function ProfileBlock({name,address,avatar,status,onEditName,onShowAddress,onClose,sections,className,...rest}:ProfileBlockProps){
+export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,avatarLabel,status,onEditName,onShowAddress,onClose,action,sections,footer,className,...rest}:ProfileBlockProps){
  const {messages}=useHIG();
+ const artwork=typeof avatar==='string'?<img src={avatar} alt=''/>:avatar??(address?null:name?.slice(0,2));
  return <section {...rest} className={`hig-profile-block${className?` ${className}`:''}`}>
   <div className='hig-profile-bar'>
    <span>{onShowAddress&&<IconButton intent='ghost' label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}</IconButton>}</span>
@@ -60,11 +105,13 @@ export function ProfileBlock({name,address,avatar,status,onEditName,onShowAddres
   </div>
   <div className='hig-profile-identity'>
    <span className='hig-profile-avatar' style={avatar==null&&address?{background:addressGradient(address)}:undefined}>
-    <span className='hig-profile-artwork' aria-hidden='true'>{typeof avatar==='string'?<img src={avatar} alt=''/>:avatar??(address?null:name.slice(0,2))}</span>
+    {onAvatarPress?<button type='button' className='hig-profile-artwork' aria-label={avatarLabel??name??messages.changeProfilePicture??en.changeProfilePicture} onClick={onAvatarPress}>{artwork}<PressDecoration kind='icon-button'/></button>:<span className='hig-profile-artwork' aria-hidden='true'>{artwork}</span>}
     {status&&<span className='hig-profile-status' data-tone={status.tone??'warning'}><span className='hig-sr-only'>{status.label}</span></span>}
    </span>
-   <div className='hig-profile-name'><h2>{name}</h2>{onEditName&&<IconButton intent='ghost' label={messages.editName??en.editName} onClick={onEditName}>{editIcon}</IconButton>}</div>
+   {name!=null&&<div className='hig-profile-name'><h2>{name}</h2>{nameAccessory!=null&&<span className='hig-profile-name-accessory'>{nameAccessory}</span>}{onEditName&&<IconButton intent='ghost' label={messages.editName??en.editName} onClick={onEditName}>{editIcon}</IconButton>}</div>}
+   {action&&<Button className='hig-profile-action' fullWidth intent={action.intent??'primary'} disabled={action.disabled} onClick={action.onSelect}>{action.label}</Button>}
   </div>
-  {sections.filter(section=>section.rows.length>0).map(section=><ListGroup key={section.id} title={section.title}>{section.rows.map(row=><ListRow key={row.id} label={row.label} leading={row.leading} value={row.value} disabled={row.disabled} onSelect={row.onCheckedChange?undefined:row.onSelect} trailing={row.onCheckedChange?<Switch label={row.label} checked={!!row.checked} disabled={row.disabled} onCheckedChange={row.onCheckedChange}/>:row.trailing}/>)}</ListGroup>)}
+  {sections.filter(section=>section.rows.length>0).map(section=><ListGroup key={section.id} title={section.title}>{section.rows.map(row=>row.onCheckedChange?<ProfileSwitchRow key={row.id} row={row}/>:<ListRow key={row.id} label={row.label} leading={row.leading} value={rowValue(row)} disabled={row.disabled} onSelect={row.onSelect} trailing={row.trailing}/>)}</ListGroup>)}
+  {footer!=null&&<div className='hig-profile-footer'>{footer}</div>}
  </section>;
 }

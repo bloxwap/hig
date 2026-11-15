@@ -44,3 +44,10 @@ it('is a button that reads the whole holding when it can be selected, and a labe
  view=mount({value:100.33});const group=outer(view,'row');
  expect(group.props.accessibilityRole).toBeUndefined();expect(group.props.accessible).toBe(true);expect(group.props.accessibilityLabel).toBe('Solana, SOL, $100.33');expect(group.props.onPress).toBeUndefined();
 });
+it('headline units puts the units on the headline line and reads them in place of the value',()=>{
+ let view=mount({name:'Bloxwap',symbol:'BLOX',value:null,balance:1234.5,headline:'units',balanceOptions:{maximumFractionDigits:2}});
+ expect(flows(view)).toHaveLength(1);expect(flows(view)[0].props).toMatchObject({value:1234.5,options:{maximumFractionDigits:2}});expect(flows(view)[0].props.tone).toBeUndefined();
+ expect(StyleSheet.flatten(flows(view)[0].props.style)).toMatchObject({fontSize:16,fontWeight:'600'});
+ expect(outer(view,'row').props.accessibilityLabel).toBe('Bloxwap, BLOX, 1,234.5');
+ view=mount({name:'Bloxwap',symbol:'BLOX',value:null,balance:1234.5});expect(flows(view)).toHaveLength(2);expect(outer(view,'row').props.accessibilityLabel).toBe('Bloxwap, BLOX, —, 1,234.5');
+});

@@ -1,7 +1,8 @@
-import React from 'react';
+import React,{useContext} from 'react';
 import {View} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG} from './provider.js';
+import {useColors,useFills,useHIG,usePresentNumber} from './provider.js';
+import {formatNumberReadout} from './animated-number-model.js';
 import {Surface,Text} from './surface.js';
 /** Colour roles a segment can take. They follow the provider's colour space and market colours as those roles do. */
 export type BarMarkTone='positive'|'info'|'warning'|'negative'|'muted'|'faint';
@@ -14,9 +15,18 @@ export interface BarMarkElement {
  tone?:BarMarkTone;
  /** A host colour for this segment; wins over `tone`. */
  color?:string;
- /** Host-formatted amount shown after the label in the legend, such as `12.4 GB`. */
- detail?:string;
+ /** Amount shown after the label in the legend: host-formatted text, such as `12.4 GB`, or a live figure. */
+ detail?:string|BarMarkFigure;
 }
+/** A legend amount that can change while the bar is shown: formatted with `options` between `prefix` and `suffix`. `null` reads as unknown. */
+export interface BarMarkFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+/**
+ * Draws a live legend figure. The bar-mark entry imports no animation engine, so without a renderer a figure is drawn
+ * formatted, without movement. `TokenActionBlock` supplies one that moves place by place through `AnimatedNumberReadout`,
+ * and a host that installs the animated-number peers can do the same around its own `BarMark`.
+ */
+export type BarMarkFigureRenderer=(figure:BarMarkFigure,props:{testID?:string})=>React.ReactNode;
+export const BarMarkFigureContext=React.createContext<BarMarkFigureRenderer|null>(null);
 export interface BarMarkProps {
  title:string;
  /** Trailing text on the title row, such as `59.2 GB of 64 GB`. A string is drawn muted; an element is rendered as given. */
@@ -55,10 +65,18 @@ function Bar({elements,values,rest,colors,small,testID}: {elements:readonly BarM
  * label, detail and share. Layout follows the provider's direction.
  */
 export function BarMark({title,description,elements,total,legend=true,size='default',surface=true,testID}:BarMarkProps){
- const {locale,direction}=useHIG();const palette=useColors();
+ const {locale,direction}=useHIG();const palette=useColors(),present=usePresentNumber(),renderFigure=useContext(BarMarkFigureContext);
  const {values,shares,rest}=barMarkShares(elements,total);
  const colors=elements.map((element,index)=>element.color??palette[element.tone??barMarkTones[index%barMarkTones.length]]);
- const reading=(element:BarMarkElement,index:number)=>[element.label,element.detail,formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})].filter(Boolean).join(', ');
+ const detailText=(detail:string|BarMarkFigure|undefined)=>detail==null||typeof detail==='string'?detail:formatNumberReadout(detail.value,locale,present(detail.options),undefined,detail.prefix,detail.suffix).text;
+ const reading=(element:BarMarkElement,index:number)=>[element.label,detailText(element.detail),formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})].filter(Boolean).join(', ');
+ const detailStyle={color:palette.faint,fontSize:14,lineHeight:21};
+ const detail=(element:BarMarkElement,index:number)=>{
+  const value=element.detail;if(!value)return null;
+  const id=testID?`${testID}-detail-${element.id??index}`:undefined;
+  if(typeof value==='string')return <Text style={detailStyle}>{value}</Text>;
+  return renderFigure?renderFigure(value,{testID:id}):<Text testID={id} style={detailStyle}>{detailText(value)}</Text>;
+ };
  const group=legend?{}:{accessible:true,accessibilityLabel:[title,...elements.map(reading)].join(', ')};
  const content=<>
   <View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
@@ -70,7 +88,7 @@ export function BarMark({title,description,elements,total,legend=true,size='defa
    {elements.map((element,index)=><View key={element.id??index} accessible accessibilityLabel={reading(element,index)} testID={testID?`${testID}-legend-${element.id??index}`:undefined} style={{flexDirection:'row',alignItems:'center',gap:6}}>
     <View style={{width:8,height:8,borderRadius:4,backgroundColor:colors[index]}}/>
     <Text style={{color:palette.muted,fontSize:14,lineHeight:21}}>{element.label}</Text>
-    {element.detail?<Text style={{color:palette.faint,fontSize:14,lineHeight:21}}>{element.detail}</Text>:null}
+    {detail(element,index)}
    </View>)}
   </View>:null}
  </>;

@@ -20,14 +20,14 @@ function useCodeStyle(){const env=useHIG();return {fontFamily:env.monoFontFamily
 export function InstallCommand({command,onCopy}: {command:string;onCopy:()=>Promise<void>|void}){const {messages}=useHIG();const {notice,show,dismiss}=useTransientNotice();const code=useCodeStyle();
  return <Surface style={{gap:12}}><Text selectable style={code}>{command}</Text><Button intent='secondary' onPress={()=>{Promise.resolve().then(onCopy).then(()=>show(messages.copied??en.copied,'success')).catch(()=>show(messages.copyFailed??en.copyFailed,'error'));}}>{messages.copyInstallCommand??en.copyInstallCommand}</Button>{notice&&<Toast notices={[notice]} onDismiss={dismiss}/>}</Surface>;}
 export function MarketingHero({title,description,href,cta}: {title:string;description:string;href:string;cta:string}){return <Stack><Heading>{title}</Heading><Text>{description}</Text><Link href={href}>{cta}</Link></Stack>;}
-export {AccountBlock,accountRows,assetValue,AssetBalanceRow,type AccountBlockProps,type AccountAsset,type AssetArtwork,type AssetBalanceRowProps} from './account-block.js';
+export {AccountBlock,accountRows,accountSectionRows,accountSectionTotal,assetValue,AssetBalanceRow,type AccountBlockProps,type AccountAsset,type AccountSection,type AssetArtwork,type AssetBalanceRowProps} from './account-block.js';
 export {LanguageBlock,filterLanguages,type LanguageBlockProps,type LanguageOption} from './language-block.js';
 export {TokenActionBlock,tokenActionLabel,type TokenActionBlockProps,type TokenAction,type TokenActionId} from './token-action-block.js';
 export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type ManagePositionBlockLabels,type ManagePositionBlockAction,type ManagePositionBlockSummary} from './manage-position-block.js';
 export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './trade-history-list-block.js';
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-block.js';
 export {TargetBlock,targetLayout,targetFormat,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-block.js';
-export {ProfileBlock,type ProfileBlockProps,type ProfileRow,type ProfileSection,type ProfileStatus} from './profile-block.js';
+export {ProfileBlock,type ProfileBlockProps,type ProfileRow,type ProfileSection,type ProfileStatus,type ProfileAction,type ProfileFigure} from './profile-block.js';
 export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag} from './position-block.js';
 export {RewardBlock,rewardProgress,type RewardBlockProps,type RewardPromo,type RewardEntry} from './reward-block.js';
 export {SoundHapticsBlock,soundLevel,type SoundHapticsBlockProps,type SoundSection,type SoundVolume} from './sound-haptics-block.js';

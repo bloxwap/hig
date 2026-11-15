@@ -56,7 +56,7 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,st
  const previousValue=useRef(value),directionTrend=numberTrendDirection(trend,previousValue.current,value);
  useEffect(()=>{previousValue.current=value;},[value]);
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
- const color=colors[tone==='positive'||tone==='negative'||tone==='muted'||tone==='up'||tone==='down'?tone:'text'];
+ const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
  const textStyle:StyleProp<TextStyle>=[typography,{color,fontVariant:['tabular-nums']}];
  const script=detectScript(`${reading.text}${staleSuffix}`,locale);
  const model=createNumberReelModel(value,locale,options,formattedValue,direction);

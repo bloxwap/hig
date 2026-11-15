@@ -89,3 +89,14 @@ it('draws no card with surface={false}: a plain view with the same gap, and a tr
  // Without a legend the bare view is still the one accessible element.
  tree=mount({elements:storage,legend:false,surface:false});expect(host(tree,'storage').props.accessible).toBe(true);expect(host(tree,'storage').props.accessibilityLabel).toBe('iPhone, Apps, 50%, Photos, 30%, iOS, 20%');
 });
+it('takes a live figure as a detail: formatted without an animation engine, or drawn by a renderer from the context',()=>{
+ const {BarMarkFigureContext}=require('../../packages/hig/native/src/bar-mark');
+ const elements=[{id:'apps',label:'Apps',value:20,detail:{value:12.5,options:{style:'currency',currency:'USD'},suffix:' net'}},{id:'photos',label:'Photos',value:12,detail:'12 GB'},{id:'ios',label:'iOS',value:8,detail:{value:null}}];
+ let tree=mount({elements});
+ expect(text(host(tree,'storage-detail-apps'))).toBe('$12.50 net');expect(flat(host(tree,'storage-detail-apps')).color).toBe(colors.faint);
+ expect(host(tree,'storage-legend-apps').props.accessibilityLabel).toBe('Apps, $12.50 net, 50%');expect(host(tree,'storage-legend-photos').props.accessibilityLabel).toBe('Photos, 12 GB, 30%');expect(host(tree,'storage-legend-ios').props.accessibilityLabel).toBe('iOS, —, 20%');
+ tree=mount({elements},{locale:'fr-FR',numberFormat:{currencyDisplay:'narrowSymbol'}});expect(host(tree,'storage-legend-apps').props.accessibilityLabel).toBe('Apps, 12,50 $ net, 50 %');
+ const seen=[];const renderer=(figure,props)=>{seen.push([figure.value,props.testID]);return h(View,{testID:'custom'});};
+ if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{},h(BarMarkFigureContext.Provider,{value:renderer},h(BarMark,{title:'iPhone',testID:'storage',elements}))));});
+ expect(seen).toEqual([[12.5,'storage-detail-apps'],[null,'storage-detail-ios']]);expect(root.root.findAll(node=>node.props.testID==='custom'&&typeof node.type==='string')).toHaveLength(2);
+});
