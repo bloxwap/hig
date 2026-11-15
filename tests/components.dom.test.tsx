@@ -9,7 +9,7 @@ import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/hig/react/s
 import {Tabs,Accordion} from '../packages/hig/react/src/navigation';
 import {Dialog} from '../packages/hig/react/src/overlay';
 import {Toast,Callout} from '../packages/hig/react/src/status';
-import {InstallCommand,CodeWindow} from '../packages/hig/react/src/recipes';
+import {InstallCommand} from '../packages/hig/react/src/blocks';
 import {readFileSync} from 'node:fs';
 import {Percent,Table} from '../packages/hig/react/src/data';
 afterEach(cleanup);
@@ -90,7 +90,7 @@ describe('DOM behavior contracts',()=>{
   for(const rule of ['* { box-sizing: border-box; }',':focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }','table { border-collapse:collapse;width:100%; }',"input[type='range']"])expect(base).toContain(rule);
   expect(JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports['./react/css/base'].default).toBe('./react/dist/base.css');
   const ring=/(:where\([^{]*\)):focus-visible\s*\{[^}]*outline:2px solid var\(--hig-focus\)/.exec(css)?.[1];expect(ring).toBeTruthy();
-  render(<><Table caption='Prices' rows={[{id:'a'}]} keyFor={r=>r.id} columns={[{key:'id',label:'Market',onSort:()=>{},sort:'ascending',render:r=>r.id}]}/><Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/><Accordion title='More'>Body</Accordion><CodeWindow language='bash'>npm ci</CodeWindow><InstallCommand command='npm i' onCopy={()=>{}}/><Slider label='Amount'/><Switch label='Alerts'/><RadioGroup label='Side' options={[{value:'buy',label:'Buy'}]}/><SegmentedControl label='Mode' options={[{value:'a',label:'A'}]}/></>);
+  render(<><Table caption='Prices' rows={[{id:'a'}]} keyFor={r=>r.id} columns={[{key:'id',label:'Market',onSort:()=>{},sort:'ascending',render:r=>r.id}]}/><Tabs label='Examples' items={[{value:'a',label:'Preview',content:'Preview body'},{value:'b',label:'Code',content:'Code body'}]}/><Accordion title='More'>Body</Accordion><InstallCommand command='npm i' onCopy={()=>{}}/><Slider label='Amount'/><Switch label='Alerts'/><RadioGroup label='Side' options={[{value:'buy',label:'Buy'}]}/><SegmentedControl label='Mode' options={[{value:'a',label:'A'}]}/></>);
   expect(document.querySelector('table')?.classList.contains('hig-table')).toBe(true);
   const focusable=[...document.querySelectorAll<HTMLElement>('button,input,select,textarea,summary,a[href],[tabindex]')].filter(el=>el.tabIndex>=0||el.getAttribute('tabindex')!==null);
   expect(focusable.length).toBeGreaterThan(8);

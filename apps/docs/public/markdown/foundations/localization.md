@@ -90,7 +90,7 @@ Upstream: [react/react-native#53417](https://github.com/react/react-native/pull/
 
 ## Built-in component strings
 
-Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the recipe labels. None of it is hard-coded in `packages/hig/react/src` or `packages/hig/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig/contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
+Issue #62. HIG components render a small amount of their own copy: the Close button on overlays, the Toast Dismiss button, the Button busy suffix, loading and empty states, and the block labels. None of it is hard-coded in `packages/hig/react/src` or `packages/hig/native/src`. Every string comes from a typed `HIGMessages` catalog (`@bloxwap/hig/contracts/messages`). Hosts translate it through `HIGProvider messages`. A few components also take a per-instance prop (`closeLabel`, `cancelLabel`, `dismissLabel`, `busyLabel`).
 
 HIG ships the English (`en-US`) defaults only (`defaultMessages`). It does not ship or guess translations. The host's message catalog owns French, Korean and other copy, under the same rule as the [glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/): an unapproved locale is never filled by guessing.
 
@@ -120,7 +120,7 @@ Rules:
 - **Close means dismissing an overlay.** `close` closes a dialog or sheet. It is not the glossary sense of closing a position (an exit order). Translate it with the platform's dismiss word, never with the trading term for closing a position.
 - **Functions receive formatted arguments.** `pageOf` and `progressValue` receive numbers already formatted for the provider locale (Eastern Arabic digits in `ar-EG`). `resultCount` receives the raw count and the locale, so it can pick a plural form with `Intl.PluralRules`. Translations may reorder arguments. Component code never concatenates words.
 - **RTL is a direction, not a translation.** Messages render inside the provider's `dir` (web) or `writingDirection` (native). The Unicode bidi algorithm places the ` · ` busy separator and parentheses. Do not add direction marks to messages.
-- **Trading words stay with the host.** Default messages contain no glossary term. The TradeEntry recipe copy (`reviewAssetOrder`, `confirmOrder`, …) is generic order-review copy. The host supplies the asset ticker, which stays untranslated.
+- **Trading words stay with the host.** Default messages contain no glossary term. The TradeEntry block copy (`reviewAssetOrder`, `confirmOrder`, …) is generic order-review copy. The host supplies the asset ticker, which stays untranslated.
 
 | Key | English default | Where | Prop override |
 | --- | --- | --- | --- |
@@ -165,58 +165,66 @@ Rules:
 | `confirmOrder` | Confirm order | TradeEntry dialog title and confirm button | — |
 | `confirmOrderDescription` `(amount, asset)` | Amount: {amount} {asset}. Verify the host-provided terms before submission. | TradeEntry dialog description | — |
 | `orderUnavailable` | Order unavailable | TradeEntry error title (web) | — |
-| `noActivity` | No activity yet | ActivityList empty text | — |
 | `statusOnline` | online | StatusIndicator `online` | — |
 | `statusOffline` | offline | StatusIndicator `offline` | — |
 | `statusStale` | stale | StatusIndicator `stale` | — |
 | `increase` | Increase | Slider increment accessibility action label (native; listed by Android accessibility services) | — |
 | `decrease` | Decrease | Slider decrement accessibility action label (native) | — |
-| `swapFrom` | From | SwapPanel: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
-| `swapTo` | To | SwapPanel: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
-| `swapSelectToken` `(side)` | Select {side} token | SwapPanel: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
-| `swapAmount` `(side)` | {side} amount | SwapPanel: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
-| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanel: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
-| `swapFlip` | Swap direction | SwapPanel: accessible name of the button that exchanges the two tokens | — |
-| `swapActionSend` | Send | SwapPanel: swap panel action when both sides are the same asset | — |
-| `swapActionSwap` | Swap | SwapPanel: swap panel action for different assets on one chain | — |
-| `swapActionBridge` | Bridge | SwapPanel: swap panel action for different assets across chains | — |
-| `swapChooseToken` | Select a token | SwapPanel: swap panel action text while a side has no token | — |
-| `swapChooseDestination` | Pick a destination | SwapPanel: action text while its destination is still to be chosen | — |
-| `swapEnterAmount` | Enter an amount | SwapPanel: swap panel action text while the amount is zero | — |
-| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanel: swap panel action text when the amount exceeds the known balance | — |
-| `swapSendFromWallet` | Send from your wallet | SwapPanel: swap panel action text in the receive view | — |
-| `swapReset` | Reset | SwapPanel: accessible name of the swap panel reset button | — |
-| `swapSettings` | Settings | SwapPanel: swap panel settings button and sheet title | — |
-| `swapMax` | Max | SwapPanel: capsule that enters the whole balance | — |
-| `swapTest` | Test | SwapPanel: capsule that enters a small trial amount | — |
-| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanel: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
-| `swapSlippageTitle` | Slippage | SwapPanel: slippage setting row, view title and preset group | — |
-| `swapSlippageCustom` | Custom slippage (%) | SwapPanel: label of the custom slippage field | — |
-| `swapFee` `(amount)` | Fee {amount} | SwapPanel: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
-| `swapFees` | Fees | SwapPanel: fee breakdown setting row and view title | — |
-| `swapFeeTotal` | Total | SwapPanel: total row of the fee breakdown | — |
-| `swapDenomination` | Show amounts in | SwapPanel: label of the default amount denomination setting | — |
-| `swapDollars` | Dollars | SwapPanel: dollar denomination option | — |
-| `swapUnits` | Units | SwapPanel: token unit denomination option | — |
-| `swapSearchTokens` | Search name or paste address | SwapPanel: token picker search placeholder and accessible name | — |
-| `swapChains` | Chains | SwapPanel: accessible name of the token picker chain filter | — |
-| `swapAllChains` | All | SwapPanel: chain filter option that clears the filter | — |
-| `swapHot` | Hot | SwapPanel: token picker section of host-ranked tokens | — |
-| `swapAllTokens` | All tokens | SwapPanel: token picker section after the hot tokens | — |
-| `swapNoTokens` | No tokens found | SwapPanel: token picker empty state | — |
-| `swapSelected` | Selected | SwapPanel: marks the token picker row that is already selected | — |
-| `swapConnectWallet` | Connect wallet | SwapPanel: token picker button that asks the host to connect a wallet | — |
-| `swapDisconnect` | Disconnect wallet | SwapPanel: accessible name of the token picker disconnect button | — |
-| `swapGenerateAddress` | Generate address | FromPicker and SwapPanel: switch that asks for a deposit address in place of a connected wallet | — |
-| `swapRecipient` | Recipient address | SwapPanel: recipient address field placeholder and accessible name | — |
-| `swapScan` | Scan QR code | SwapPanel: accessible name of the recipient QR scan button | — |
-| `copyAddress` | Copy address | WalletAddress and the SwapPanel receive view: accessible name of an address that copies on press; the address follows it | — |
-| `addressCopied` | Address copied | WalletAddress and the SwapPanel receive view: notice after the address is copied | — |
+| `swapFrom` | From | SwapPanelBlock: swap panel source side: card placeholder (with an ellipsis) and picker title | — |
+| `swapTo` | To | SwapPanelBlock: swap panel destination side: card placeholder (with an ellipsis) and picker title | — |
+| `swapSelectToken` `(side)` | Select {side} token | SwapPanelBlock: accessible name of a swap card's token slot; receives `swapFrom` or `swapTo` | — |
+| `swapAmount` `(side)` | {side} amount | SwapPanelBlock: accessible name of a swap card's amount; receives `swapFrom` or `swapTo` | — |
+| `swapSwitchDenomination` | Switch between dollars and token units | SwapPanelBlock: accessible name of the conversion capsule that switches an amount between dollars and token units | — |
+| `swapFlip` | Swap direction | SwapPanelBlock: accessible name of the button that exchanges the two tokens | — |
+| `swapActionSend` | Send | SwapPanelBlock: swap panel action when both sides are the same asset | — |
+| `swapActionSwap` | Swap | SwapPanelBlock: swap panel action for different assets on one chain | — |
+| `swapActionBridge` | Bridge | SwapPanelBlock: swap panel action for different assets across chains | — |
+| `swapChooseToken` | Select a token | SwapPanelBlock: swap panel action text while a side has no token | — |
+| `swapChooseDestination` | Pick a destination | SwapPanelBlock: action text while its destination is still to be chosen | — |
+| `swapEnterAmount` | Enter an amount | SwapPanelBlock: swap panel action text while the amount is zero | — |
+| `swapInsufficient` `(symbol)` | Insufficient {symbol} | SwapPanelBlock: swap panel action text when the amount exceeds the known balance | — |
+| `swapSendFromWallet` | Send from your wallet | SwapPanelBlock: swap panel action text in the receive view | — |
+| `swapReset` | Reset | SwapPanelBlock: accessible name of the swap panel reset button | — |
+| `swapSettings` | Settings | SwapPanelBlock: swap panel settings button and sheet title | — |
+| `swapMax` | Max | SwapPanelBlock: capsule that enters the whole balance | — |
+| `swapTest` | Test | SwapPanelBlock: capsule that enters a small trial amount | — |
+| `swapSlippage` `(percent)` | Slippage {percent} | SwapPanelBlock: slippage capsule on the destination card; receives a percent such as `0.5%` | — |
+| `swapSlippageTitle` | Slippage | SwapPanelBlock: slippage setting row, view title and preset group | — |
+| `swapSlippageCustom` | Custom slippage (%) | SwapPanelBlock: label of the custom slippage field | — |
+| `swapFee` `(amount)` | Fee {amount} | SwapPanelBlock: fee line on the destination card; receives a formatted amount, an ellipsis while loading, or a dash | — |
+| `swapFees` | Fees | SwapPanelBlock: fee breakdown setting row and view title | — |
+| `swapFeeTotal` | Total | SwapPanelBlock: total row of the fee breakdown | — |
+| `swapDenomination` | Show amounts in | SwapPanelBlock: label of the default amount denomination setting | — |
+| `swapDollars` | Dollars | SwapPanelBlock: dollar denomination option | — |
+| `swapUnits` | Units | SwapPanelBlock: token unit denomination option | — |
+| `swapSearchTokens` | Search name or paste address | SwapPanelBlock: token picker search placeholder and accessible name | — |
+| `swapChains` | Chains | SwapPanelBlock: accessible name of the token picker chain filter | — |
+| `swapAllChains` | All | SwapPanelBlock: chain filter option that clears the filter | — |
+| `swapHot` | Hot | SwapPanelBlock: token picker section of host-ranked tokens | — |
+| `swapAllTokens` | All tokens | SwapPanelBlock: token picker section after the hot tokens | — |
+| `swapNoTokens` | No tokens found | SwapPanelBlock: token picker empty state | — |
+| `swapSelected` | Selected | SwapPanelBlock: marks the token picker row that is already selected | — |
+| `swapConnectWallet` | Connect wallet | SwapPanelBlock: token picker button that asks the host to connect a wallet | — |
+| `swapDisconnect` | Disconnect wallet | SwapPanelBlock: accessible name of the token picker disconnect button | — |
+| `swapGenerateAddress` | Generate address | FromPicker and SwapPanelBlock: switch that asks for a deposit address in place of a connected wallet | — |
+| `swapRecipient` | Recipient address | SwapPanelBlock: recipient address field placeholder and accessible name | — |
+| `swapScan` | Scan QR code | SwapPanelBlock: accessible name of the recipient QR scan button | — |
+| `copyAddress` | Copy address | WalletAddress and the SwapPanelBlock receive view: accessible name of an address that copies on press; the address follows it | — |
+| `addressCopied` | Address copied | WalletAddress and the SwapPanelBlock receive view: notice after the address is copied | — |
 | `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
 | `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
-| `swapControlKey` | Ctrl | SwapPanel: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
-| `swapKeypad` | Keypad | SwapPanel: accessible name of the swap panel keypad | — |
-| `swapDelete` | Delete | SwapPanel: accessible name of the keypad delete key | — |
+| `swapControlKey` | Ctrl | SwapPanelBlock: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
+| `swapKeypad` | Keypad | SwapPanelBlock: accessible name of the swap panel keypad | — |
+| `swapDelete` | Delete | SwapPanelBlock: accessible name of the keypad delete key | — |
+| `account` | Account | AccountBlock: default heading | — |
+| `deposit` | Deposit | AccountBlock: default label of the deposit action | — |
+| `accountBalance` | Total balance | AccountBlock: accessible label of the total balance | — |
+| `showAddress` | Show account address | AccountBlock: accessible name of the header button that shows the account address | — |
+| `language` | Language | LanguageBlock: default heading | — |
+| `searchLanguages` | Search languages | LanguageBlock: search placeholder and accessible name | — |
+| `receive` | Receive | TokenActionBlock: built-in label of the `receive` action | — |
+| `stake` | Stake | TokenActionBlock: built-in label of the `stake` action | — |
+| `unstake` | Unstake | TokenActionBlock: built-in label of the `unstake` action | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

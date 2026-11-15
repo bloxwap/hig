@@ -70,7 +70,7 @@ it('native menu disclosure is quiet and one accepted selection follows the actio
 });
 it('native button keeps adjacent text children in one wrapping Text run (iOS Simulator regression)',()=>{
  // Select/MarketRow pass `{label}: {value}` and `{name} ({symbol})`; split runs rendered "Bitcoin ( BTC" with ")" wrapped alone.
- const {Text}=require('react-native');const {Select}=require('../../packages/hig/native/src/select');const {MarketRow}=require('../../packages/hig/native/src/recipes');
+ const {Text}=require('react-native');const {Select}=require('../../packages/hig/native/src/select');const {MarketRow}=require('../../packages/hig/native/src/blocks');
  const select=mount(React.createElement(Select,{label:'Component',options:[{value:'button',label:'Button'}],value:'button',onValueChange:jest.fn()}));
  expect(select.findAllByType(Text).map(t=>t.props.children)).toContain('Component: Button');
  const row=mount(React.createElement(MarketRow,{symbol:'BTC',name:'Bitcoin',price:1,change:1,onSelect:jest.fn()}));
@@ -145,12 +145,11 @@ it('native iOS slider handles VoiceOver increment/decrement actions in 5% steps 
  if(root)act(()=>root.unmount());const disabled=jest.fn();const t2=mount(React.createElement(Slider,{label:'Volume',value:100,disabled:true,onValueChange:disabled}));
  act(()=>t2.findAll(n=>n.props.onAccessibilityAction)[0].props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));expect(disabled).not.toHaveBeenCalled();
 });
-it('native code recipes use the registered mono face and stay LTR inside RTL roots (simulator capture regression)',()=>{
- const {Text,StyleSheet}=require('react-native');const {HIGProvider}=require('../../packages/hig/native/src/provider');const {CodeWindow,InstallCommand}=require('../../packages/hig/native/src/recipes');
- const tree=mount(React.createElement(HIGProvider,{direction:'rtl',fontFamily:'BloxwapSansRegular',monoFontFamily:'BloxwapMonoRegular'},React.createElement(CodeWindow,{language:'TypeScript'},'a >= b'),React.createElement(InstallCommand,{command:'npm i x',onCopy:jest.fn()})));
+it('native code blocks use the registered mono face and stay LTR inside RTL roots (simulator capture regression)',()=>{
+ const {Text,StyleSheet}=require('react-native');const {HIGProvider}=require('../../packages/hig/native/src/provider');const {InstallCommand}=require('../../packages/hig/native/src/blocks');
+ const tree=mount(React.createElement(HIGProvider,{direction:'rtl',fontFamily:'BloxwapSansRegular',monoFontFamily:'BloxwapMonoRegular'},React.createElement(InstallCommand,{command:'npm i x',onCopy:jest.fn()})));
  const style=text=>StyleSheet.flatten(tree.findAllByType(Text).find(t=>t.props.children===text).props.style);
- for(const text of ['a >= b','npm i x'])expect(style(text)).toMatchObject({fontFamily:'BloxwapMonoRegular',writingDirection:'ltr'});
- expect(style('TypeScript')).toMatchObject({fontFamily:'BloxwapSansRegular',writingDirection:'rtl'});
+ for(const text of ['npm i x'])expect(style(text)).toMatchObject({fontFamily:'BloxwapMonoRegular',writingDirection:'ltr'});
 });
 it('native Menu and Select return focus to their own trigger on close (Android TalkBack regression)',()=>{
  // With TalkBack on the emulator, closing a Menu by Back left focus on the first screen element instead of the trigger.
@@ -167,7 +166,7 @@ it('native Menu and Select return focus to their own trigger on close (Android T
  }}finally{handle.mockRestore();focus.mockRestore();raf.mockRestore();}
 });
 it('native InstallCommand shows a copy outcome as a transient toast capsule and mounts no empty status region (iOS audit regression)',async()=>{
- const {Text}=require('react-native');const {InstallCommand}=require('../../packages/hig/native/src/recipes');
+ const {Text}=require('react-native');const {InstallCommand}=require('../../packages/hig/native/src/blocks');
  const tree=mount(React.createElement(InstallCommand,{command:'npm i x',onCopy:()=>Promise.resolve()}));
  jest.useFakeTimers();try{
  const {Toast}=require('../../packages/hig/native/src/status');const shown=()=>tree.findAllByType(Text).map(t=>t.props.children);

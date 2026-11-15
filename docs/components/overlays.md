@@ -101,7 +101,7 @@ For a screen-level drawer that must prepare and retain its native children while
 
 ## Optional web gesture backend
 
-Install `vaul ^1.1.2` and import `GestureSheet` from `@bloxwap/hig/react/gesture-sheet`. Core `overlay`, Button and overlay-free recipes do not import or install Vaul. The backend supplies its own motion CSS when loaded; HIG's explicitly imported component CSS supplies scoped surface, text, geometry and reduced-motion rules. See the official [Vaul anatomy and API](https://vaul.emilkowal.ski/api) and the verified [1.1.2 source](https://github.com/emilkowalski/vaul/blob/v1.1.2/src/index.tsx).
+Install `vaul ^1.1.2` and import `GestureSheet` from `@bloxwap/hig/react/gesture-sheet`. Core `overlay`, Button and overlay-free blocks do not import or install Vaul. The backend supplies its own motion CSS when loaded; HIG's explicitly imported component CSS supplies scoped surface, text, geometry and reduced-motion rules. See the official [Vaul anatomy and API](https://vaul.emilkowal.ski/api) and the verified [1.1.2 source](https://github.com/emilkowalski/vaul/blob/v1.1.2/src/index.tsx).
 
 ```tsx
 import {GestureSheet} from '@bloxwap/hig/react/gesture-sheet';

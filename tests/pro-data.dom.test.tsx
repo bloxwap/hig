@@ -4,7 +4,7 @@ import {render,screen,within,cleanup} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {Table,NumberReadout,type TableRowProps} from '../packages/hig/react/src/data';
-import {MarketRow} from '../packages/hig/react/src/recipes/market-row';
+import {MarketRow} from '../packages/hig/react/src/blocks/market-row';
 afterEach(cleanup);
 
 it('keeps sortable table semantics, logical numeric alignment and host row highlights in a named scroll region (#110)',async()=>{

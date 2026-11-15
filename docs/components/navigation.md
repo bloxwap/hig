@@ -2,7 +2,7 @@
 
 Tabs, disclosure, search, and navigation that keep the current location clear.
 
-Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, and `Search`. `Breadcrumb` is web-only; native alternatives include `BackButton` and `BottomNavigation`.
+Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, `Search`, `ListGroup`, and `ListRow`. `Breadcrumb` is web-only; native alternatives include `BackButton` and `BottomNavigation`.
 
 Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react/navigation` or `@bloxwap/hig/native/navigation` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -13,6 +13,29 @@ Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react
 | `Tabs` | `label`, `items`, `value`, `defaultValue`, and `onValueChange`. Items include panel content and optional `disabled`. The selected tab is a raised neutral capsule with `text`; the others are bare `muted` labels. Tabs never use the action colour, which stays with the primary action. |
 | `Navigation` | Web links use `href`; native destinations use host callbacks. |
 | `Search` | `query`, `results`, `loading`, and `error`. The host supplies the search index and router. |
+| `ListGroup`, `ListRow` | A grouped list for menus and settings: an optional `title` over rows in one rounded container. Details below. |
+
+### ListGroup and ListRow
+
+`ListGroup` is a section of a menu or settings screen: an optional `title` above rows that share one rounded container, 2 units apart. `ListRow` is one row: the `label` leads, and a `value`, icons, a badge or a control trail. They are available from `@bloxwap/hig/react/list-group` and `@bloxwap/hig/native/list-group`.
+
+```tsx
+import {ListGroup, ListRow} from '@bloxwap/hig/react/list-group';
+
+<ListGroup title="Settings">
+  <ListRow label="Live Mode" trailing={<Switch label="Live Mode" checked={live} onCheckedChange={setLive}/>}/>
+  <ListRow label="Notifications" value="Off" onSelect={openNotifications}/>
+  <ListRow label="Language" value="English" onSelect={openLanguage}/>
+</ListGroup>
+```
+
+- **Rows that open a view.** `onSelect` makes the whole row one button and shows the disclosure chevron on the trailing edge. On web `href` makes it a link instead. The chevron mirrors in right-to-left layouts.
+- **Rows that hold a control.** A row without `onSelect` or `href` is static, so a control in `trailing`, such as a `Switch`, is its only target. On web a `Switch` in `trailing` keeps its label for assistive technology and hides it visually, because the row already shows it.
+- **Trailing content.** `value` is short muted text such as `Off`, `English` or a balance. `trailing` takes anything richer: icons, a `Badge`, or a control. Both can be used together; the value comes first.
+- **Leading content.** `leading` is decorative artwork before the label, such as an icon.
+- **Disabled.** `disabled` dims the row and blocks `onSelect` and `href`.
+- **Anatomy.** Rows are 56 units high with 20 units of inline padding. The group has a 20-unit radius; the first and last rows take its corners. A group without a `title` is the container alone. Stack groups 24 units apart: that gap is what separates one group from the next, where rows inside a group are 2 apart.
+- **Accessibility.** With a `title` the group is a region named by it, and its rows are a list. A selectable row is one button named by its label and value. The chevron and `leading` are decorative.
 
 ## When to use and examples
 

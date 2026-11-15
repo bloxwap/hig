@@ -1,3 +1,32 @@
 {
-  "renamedAnchors": {}
+  "renamedAnchors": {
+    "/docs/guides/components/recipes/#api-and-anatomy": {
+      "to": "/docs/guides/components/blocks/#api-and-anatomy",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+    },
+    "/docs/guides/components/recipes/#swappanel": {
+      "to": "/docs/guides/components/blocks/#swappanelblock",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings. SwapPanel is now SwapPanelBlock."
+    },
+    "/docs/guides/components/recipes/#frompicker-and-topicker": {
+      "to": "/docs/guides/components/blocks/#frompicker-and-topicker",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+    },
+    "/docs/guides/components/recipes/#when-to-use-and-examples": {
+      "to": "/docs/guides/components/blocks/#when-to-use-and-examples",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+    },
+    "/docs/guides/components/recipes/#states-interaction-and-accessibility": {
+      "to": "/docs/guides/components/blocks/#states-interaction-and-accessibility",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+    },
+    "/docs/guides/components/recipes/#platform-mapping-and-limits": {
+      "to": "/docs/guides/components/blocks/#platform-mapping-and-limits",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+    },
+    "/docs/guides/components/recipes/#validation-and-citation": {
+      "to": "/docs/guides/components/blocks/#validation-and-citation",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+    }
+  }
 }

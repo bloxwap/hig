@@ -265,6 +265,23 @@
       "support": "renderer"
     },
     {
+      "name": "ListGroup",
+      "states": [
+        "default",
+        "untitled"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ListRow",
+      "states": [
+        "default",
+        "disabled",
+        "static"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Badge",
       "states": [
         "default"
@@ -417,6 +434,34 @@
       "support": "renderer"
     },
     {
+      "name": "BarMark",
+      "states": [
+        "default",
+        "remaining",
+        "no-legend"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "BarPnl",
+      "states": [
+        "default",
+        "loss",
+        "short",
+        "no-liquidation",
+        "compact"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "AssetBalanceRow",
+      "states": [
+        "default",
+        "value-only"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "VerticalAddress",
       "states": [
         "default"
@@ -453,11 +498,99 @@
       "support": "renderer"
     },
     {
-      "name": "BalanceCard",
+      "name": "AccountBlock",
       "states": [
         "default",
-        "error",
         "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ManagePositionBlock",
+      "states": [
+        "default",
+        "profit",
+        "at-risk"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TargetBlock",
+      "states": [
+        "default",
+        "stop-loss"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "PositionBlock",
+      "states": [
+        "default",
+        "paper-trade"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "LeaderboardBlock",
+      "states": [
+        "default",
+        "sweepstakes"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "SoundHapticsBlock",
+      "states": [
+        "default",
+        "interactive"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "SignalsBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "NotificationsBlock",
+      "states": [
+        "default",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TradeHistoryListBlock",
+      "states": [
+        "default",
+        "empty",
+        "static"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TradeHistoryDetailBlock",
+      "states": [
+        "default",
+        "loss"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "TokenActionBlock",
+      "states": [
+        "default",
+        "single"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "LanguageBlock",
+      "states": [
+        "default",
+        "no-search"
       ],
       "support": "renderer"
     },
@@ -471,7 +604,7 @@
       "support": "renderer"
     },
     {
-      "name": "SwapPanel",
+      "name": "SwapPanelBlock",
       "states": [
         "default",
         "swap",
@@ -514,24 +647,9 @@
       "support": "renderer"
     },
     {
-      "name": "CodeWindow",
-      "states": [
-        "default"
-      ],
-      "support": "renderer"
-    },
-    {
       "name": "MarketingHero",
       "states": [
         "default"
-      ],
-      "support": "renderer"
-    },
-    {
-      "name": "ActivityList",
-      "states": [
-        "default",
-        "empty"
       ],
       "support": "renderer"
     },

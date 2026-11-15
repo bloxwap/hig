@@ -21,6 +21,25 @@
     "platform-mapping-and-limits",
     "validation-and-citation"
   ],
+  "/docs/guides/components/blocks/": [
+    "api-and-anatomy",
+    "swappanelblock",
+    "frompicker-and-topicker",
+    "accountblock",
+    "tokenactionblock",
+    "languageblock",
+    "managepositionblock",
+    "targetblock",
+    "positionblock",
+    "tradehistorylistblock",
+    "tradehistorydetailblock",
+    "leaderboardblock",
+    "soundhapticsblock-signalsblock-and-notificationsblock",
+    "when-to-use-and-examples",
+    "states-interaction-and-accessibility",
+    "platform-mapping-and-limits",
+    "validation-and-citation"
+  ],
   "/docs/guides/components/chart/": [
     "api-and-anatomy",
     "when-to-use-and-examples",
@@ -38,6 +57,9 @@
   ],
   "/docs/guides/components/financial-data/": [
     "api-and-anatomy",
+    "assetbalancerow",
+    "barmark",
+    "barpnl",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
@@ -46,6 +68,7 @@
   ],
   "/docs/guides/components/navigation/": [
     "api-and-anatomy",
+    "listgroup-and-listrow",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
@@ -54,15 +77,6 @@
   "/docs/guides/components/overlays/": [
     "api-and-anatomy",
     "optional-web-gesture-backend",
-    "when-to-use-and-examples",
-    "states-interaction-and-accessibility",
-    "platform-mapping-and-limits",
-    "validation-and-citation"
-  ],
-  "/docs/guides/components/recipes/": [
-    "api-and-anatomy",
-    "swappanel",
-    "frompicker-and-topicker",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",

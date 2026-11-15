@@ -1,0 +1,37 @@
+/** Native ListGroup and ListRow: a grouped list for menus and settings. */
+const React=require('react');
+const {create:render,act}=require('react-test-renderer');
+const {StyleSheet,View}=require('react-native');
+const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {ListGroup,ListRow}=require('../../packages/hig/native/src/list-group');
+const h=React.createElement;
+let root;
+function mount(element,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,provider,element));});return root.root;}
+const flat=node=>StyleSheet.flatten(typeof node.props.style==='function'?node.props.style({pressed:false}):node.props.style)??{};
+const all=(tree,testID)=>tree.findAll(node=>node.props.testID===testID);
+const host=(tree,testID)=>tree.findAll(node=>node.props.testID===testID&&typeof node.type==='string')[0];
+const text=node=>typeof node==='string'?node:node.children.map(text).join('');
+afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
+
+it('shows an optional heading over rows that share one rounded container',()=>{
+ let tree=mount(h(ListGroup,{title:'Settings',testID:'group'},h(ListRow,{label:'Signals',testID:'signals',onSelect(){}}),h(ListRow,{label:'Language',value:'English',testID:'language',onSelect(){}})));
+ const title=host(tree,'group-title');expect(text(title)).toBe('Settings');expect(all(tree,'group-title')[0].props.accessibilityRole).toBe('header');
+ expect(flat(host(tree,'group-rows'))).toMatchObject({gap:2,borderRadius:20,overflow:'hidden'});expect(host(tree,'group-rows').children).toHaveLength(2);
+ tree=mount(h(ListGroup,{testID:'group'},h(ListRow,{label:'Experiments',onSelect(){}})));expect(host(tree,'group-title')).toBeUndefined();
+});
+it('makes a row with onSelect one button named by its label and value, with a chevron that mirrors in RTL',()=>{
+ const select=jest.fn();
+ let tree=mount(h(ListRow,{label:'Notifications',value:'Off',testID:'row',onSelect:select}));
+ const button=all(tree,'row').find(node=>node.props.onPress);expect(button.props.accessibilityRole).toBe('button');expect(button.props.accessibilityLabel).toBe('Notifications, Off');
+ expect(flat(host(tree,'row'))).toMatchObject({minHeight:56,paddingHorizontal:20,backgroundColor:colors.surface});
+ act(()=>{button.props.onPress({});});expect(select).toHaveBeenCalledTimes(1);
+ expect(flat(host(tree,'row-chevron')).transform).toEqual([{rotate:'-90deg'}]);
+ tree=mount(h(ListRow,{label:'Notifications',testID:'row',onSelect:select}),{direction:'rtl'});expect(flat(host(tree,'row-chevron')).transform).toEqual([{rotate:'90deg'}]);
+});
+it('leaves a row without onSelect static so a trailing control is its only target, and blocks a disabled row',()=>{
+ let tree=mount(h(ListRow,{label:'Live Mode',testID:'row',trailing:h(View,{testID:'control'})}));
+ expect(all(tree,'row').some(node=>node.props.onPress)).toBe(false);expect(host(tree,'row-chevron')).toBeUndefined();expect(host(tree,'control')).toBeDefined();
+ tree=mount(h(ListRow,{label:'Signals',testID:'row',disabled:true,onSelect(){}}));
+ const button=all(tree,'row').find(node=>node.props.onPress);expect(button.props.disabled).toBe(true);expect(button.props.accessibilityState).toEqual({disabled:true});expect(flat(host(tree,'row')).opacity).toBe(0.5);
+});

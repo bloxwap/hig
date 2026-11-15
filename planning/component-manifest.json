@@ -80,6 +80,8 @@
         "Accordion",
         "Pagination",
         "Navigation",
+        "ListGroup",
+        "ListRow",
         "Search; DOM Breadcrumb; RN BackButton/BottomNavigation"
       ],
       "docs": "docs/components/navigation.md",
@@ -120,6 +122,9 @@
         "Row",
         "VerticalAddress",
         "WalletAddress",
+        "BarMark",
+        "BarPnl",
+        "AssetBalanceRow",
         "List; DOM Table"
       ],
       "docs": "docs/components/financial-data.md",
@@ -141,25 +146,34 @@
       "remaining": "RN canvas is unsupported in this candidate. Use NumberReadout/List plus host summaries. A native chart engine/WebView bridge needs a separate supported target and device lifecycle review, rather than an invented integration."
     },
     {
-      "slug": "recipes",
+      "slug": "blocks",
       "issue": 26,
-      "module": "recipes",
+      "module": "blocks",
       "components": [
         "MarketRow",
-        "BalanceCard",
+        "AccountBlock",
+        "TokenActionBlock",
+        "LanguageBlock",
+        "ManagePositionBlock",
+        "TradeHistoryListBlock",
+        "TradeHistoryDetailBlock",
+        "TargetBlock",
+        "PositionBlock",
+        "LeaderboardBlock",
+        "SoundHapticsBlock",
+        "SignalsBlock",
+        "NotificationsBlock",
         "TradeEntry",
-        "SwapPanel",
+        "SwapPanelBlock",
         "FromPicker",
         "ToPicker",
-        "ActivityList",
         "InstallCommand",
-        "CodeWindow",
         "MarketingHero"
       ],
-      "docs": "docs/components/recipes.md",
+      "docs": "docs/components/blocks.md",
       "web": "implemented",
       "native": "implemented with documented alternatives",
-      "remaining": "M2 supplies visual recipes; M3 adds semantic feedback composition because #26 depends on #25. Product visual fidelity is provisional until inaccessible monorepo audit. Account/positions variants can compose these primitives without service coupling."
+      "remaining": "M2 supplies visual blocks; M3 adds semantic feedback composition because #26 depends on #25. Product visual fidelity is provisional until inaccessible monorepo audit. Account/positions variants can compose these primitives without service coupling."
     }
   ]
 }

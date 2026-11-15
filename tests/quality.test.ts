@@ -85,3 +85,18 @@ it.each(['chapter', 'examples'])('post-build drift gate rejects stale %s outputs
   expect(node('check-generated-drift').status).toBe(1);
  } finally {rmSync(directory,{recursive:true,force:true});}
 },30000);
+it('blocks entries exist for every block, and each published recipes path is a deprecated alias of the same files',()=>{
+ const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
+ const published=['./react/recipes','./react/recipes/market-row','./react/recipes/trade-entry','./react/recipes/swap-panel','./react/recipes/pickers','./react/recipes/swap-sheet','./react/recipes/install-command','./react/recipes/marketing-hero','./native/recipes'];
+ // The paths that shipped through 0.5.2 keep working, except the removed BalanceCard, CodeWindow and ActivityList; nothing new is added under the old name.
+ expect(Object.keys(exportsMap).filter(key=>key.includes('/recipes')).sort()).toEqual([...published].sort());
+ for(const key of published){const twin=key.replace('/recipes','/blocks');expect(exportsMap[twin],twin).toBeDefined();expect(exportsMap[key],key).toEqual(exportsMap[twin]);expect(JSON.stringify(exportsMap[twin])).not.toContain('recipes');}
+ for(const key of ['./react/blocks/account-block','./react/blocks/token-action-block','./react/blocks/manage-position-block','./react/blocks/trade-history-list-block','./react/blocks/trade-history-detail-block','./react/blocks/target-block','./native/target-block','./react/blocks/position-block','./native/position-block','./react/blocks/leaderboard-block','./native/leaderboard-block','./react/blocks/sound-haptics-block','./native/sound-haptics-block','./react/blocks/signals-block','./native/signals-block','./react/blocks/notifications-block','./native/notifications-block','./react/blocks/language-block','./native/language-block'])expect(exportsMap[key],key).toBeDefined();
+});
+it('SwapPanel keeps working as a deprecated alias of SwapPanelBlock, by name and by path',async()=>{
+ const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
+ for(const key of ['./react/blocks/swap-panel','./react/recipes/swap-panel'])expect(exportsMap[key],key).toEqual(exportsMap['./react/blocks/swap-panel-block']);
+ const web=await import('../packages/hig/react/src/blocks/swap-panel-block'),aggregate=await import('../packages/hig/react/src/blocks');
+ expect(web.SwapPanel).toBe(web.SwapPanelBlock);expect(aggregate.SwapPanel).toBe(aggregate.SwapPanelBlock);
+ for(const file of ['packages/hig/react/src/blocks/swap-panel-block.tsx','packages/hig/native/src/swap-panel-block.tsx'])expect(readFileSync(file,'utf8')).toMatch(/@deprecated Renamed `SwapPanelBlock`[\s\S]*export const SwapPanel=SwapPanelBlock;/);
+});

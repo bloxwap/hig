@@ -41,7 +41,7 @@ for(const name of ['@radix-ui/react-dialog','@radix-ui/react-popover','@radix-ui
 }
 assert.equal(existsSync(join(directory,'node_modules/@bloxwap/hig/node_modules')),false,'@bloxwap/hig nests its own dependency tree');
 writeFileSync(join(directory,'overlay.mjs'),`import React from 'react';import {renderToString} from 'react-dom/server';
-import {Menu,Popover,Tooltip,Dialog} from '@bloxwap/hig/react/overlay';import {TradeEntry} from '@bloxwap/hig/react/recipes';
+import {Menu,Popover,Tooltip,Dialog} from '@bloxwap/hig/react/overlay';import {TradeEntry} from '@bloxwap/hig/react/blocks';
 const h=React.createElement;
 const html=renderToString(h('main',null,h(Menu,{label:'Actions',items:[{label:'Copy',onSelect(){}}]}),h(Popover,{label:'Details'},'Body'),h(Tooltip,{content:'Hint'},h('button',null,'Hover')),h(Dialog,{open:false,onOpenChange(){},title:'T',description:'D',trigger:h('button',null,'Open')},'Body'),h(TradeEntry,{asset:'BTC',amount:'1',onAmountChange(){},onConfirm(){},available:'2'})));
 for(const text of ['Actions','Details','Hover','Open','Review order'])if(!html.includes(text))throw Error('Missing '+text);`);
