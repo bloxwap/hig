@@ -12,8 +12,8 @@ const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
 let root;
 // The host owns every trading word.
-const labels={title:'Take Profit',submit:'Set Take Profit',entry:'Entry',mark:'Mark',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'};
-const base={kind:'take-profit',labels,entry:64700,mark:64500,trigger:65000,unit:'dollar',value:2,onSubmit:()=>{}};
+const labels={title:'Take Profit',submit:'Set Take Profit',entry:'Entry',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'};
+const base={kind:'take-profit',labels,entry:64700,trigger:65000,unit:'dollar',value:2,onSubmit:()=>{}};
 function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(TargetBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
@@ -22,17 +22,16 @@ const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const flat=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
 const button=(view,id)=>view.findAllByType(Button).find(node=>node.props.testID===id);
 const amount=view=>view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='target-amount');
-const prices=view=>['target-entry','target-mark','target-trigger'].filter(id=>has(view,id));
-const order=view=>view.findAll(node=>typeof node.type==='string'&&/^target-(entry|mark|trigger)$/.test(String(node.props.testID))).map(node=>node.props.accessibilityLabel);
+const prices=view=>['target-entry','target-trigger'].filter(id=>has(view,id));
+const order=view=>view.findAll(node=>typeof node.type==='string'&&/^target-(entry|trigger)$/.test(String(node.props.testID))).map(node=>node.props.accessibilityLabel);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
-it('places the known prices on one axis and spans the stretch from the mark, or entry, to the trigger',()=>{
- expect(targetLayout({entry:100,mark:90,trigger:140})).toEqual({positions:{entry:0.2,mark:0,trigger:1},order:['mark','entry','trigger'],from:0,to:1});
- expect(targetLayout({entry:100,mark:120,trigger:80})).toEqual({positions:{entry:0.5,mark:1,trigger:0},order:['trigger','entry','mark'],from:0,to:1});
- expect(targetLayout({entry:100,mark:110,trigger:140})).toMatchObject({from:0.25,to:1});
+it('places entry and the trigger on one axis, with the stretch spanning the whole bar between them',()=>{
  expect(targetLayout({entry:100,trigger:140})).toEqual({positions:{entry:0,trigger:1},order:['entry','trigger'],from:0,to:1});
- expect(targetLayout({entry:100,mark:90,trigger:null})).toEqual({positions:{entry:1,mark:0},order:['mark','entry'],from:0.5,to:0.5});
- expect(targetLayout({entry:100,mark:100,trigger:100}).order).toEqual(['entry','mark','trigger']);
+ expect(targetLayout({entry:100,trigger:80})).toEqual({positions:{entry:1,trigger:0},order:['trigger','entry'],from:0,to:1});
+ expect(targetLayout({entry:100,trigger:140})).toEqual({positions:{entry:0,trigger:1},order:['entry','trigger'],from:0,to:1});
+ expect(targetLayout({entry:100,trigger:null})).toEqual({positions:{entry:0.5},order:['entry'],from:0.5,to:0.5});
+ expect(targetLayout({entry:100,trigger:100}).order).toEqual(['entry','trigger']);
  expect(targetLayout({entry:Number.NaN})).toEqual({positions:{},order:[],from:0.5,to:0.5});
  expect(targetFormat('dollar',undefined,10)).toMatchObject({style:'currency',signDisplay:'exceptZero',maximumFractionDigits:0});expect(targetFormat('dollar',undefined,0.5).maximumFractionDigits).toBeUndefined();
  expect(targetFormat('percent')).toMatchObject({style:'percent',signDisplay:'exceptZero'});expect(targetFormat('price',{style:'currency',currency:'EUR'})).toEqual({style:'currency',currency:'EUR'});
@@ -55,23 +54,22 @@ it('reads the target as the headline figure in the current unit',()=>{
  expect(host(view,'target-trigger').props.accessibilityLabel).toBe('If triggered, $65,250.00');
 });
 
-it('titles the price card with the position and order type and reads the three prices in price order',()=>{
+it('titles the price card with the position and order type and reads the two prices in price order',()=>{
  let view=mount({position:'BTC · Long 40×',orderType:'Take-limit',note:'Fills at your target price or better.'});
  expect(text(host(view,'target-position'))).toBe('BTC · Long 40×');expect(host(view,'target-position').props.accessibilityRole).toBe('header');expect(text(host(view,'target-order-type'))).toBe('Take-limit');
  expect(text(host(view,'target-note'))).toBe('Fills at your target price or better.');
- expect(order(view)).toEqual(['Mark, $64,500.00','Entry, $64,700.00','If triggered, $65,000.00']);
- // The stretch runs from the mark to the trigger, the trigger edge in the positive role, with entry as a tick.
- expect(flat(host(view,'target-move'))).toMatchObject({flexGrow:1,backgroundColor:nativeSrgb.buy,borderStartColor:nativeSrgb.text,borderEndColor:nativeSrgb.buy});expect(flat(host(view,'target-entry-tick')).backgroundColor).toBe(nativeSrgb.background);expect(flat(host(view,'target-entry-tick')).start).toBe('40%');
+ expect(order(view)).toEqual(['Entry, $64,700.00','If triggered, $65,000.00']);
+ // Two prices only: the whole bar is filled from entry to the trigger, the trigger edge in the positive role, and there is no tick.
+ expect(flat(host(view,'target-move'))).toMatchObject({flexGrow:1,backgroundColor:nativeSrgb.buy,borderStartColor:nativeSrgb.text,borderEndColor:nativeSrgb.buy});expect(has(view,'target-entry-tick')).toBe(false);expect(has(view,'target-mark')).toBe(false);
  expect(host(view,'target-bar').props.importantForAccessibility).toBe('no-hide-descendants');
  const trigger=host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0];expect(trigger.props).toMatchObject({value:65000,tone:'positive'});
- // A stop loss under the mark leads with the trigger in the negative role.
- view=mount({kind:'stop-loss',mark:64800,trigger:64600,value:-0.5});
- expect(order(view)).toEqual(['If triggered, $64,600.00','Entry, $64,700.00','Mark, $64,800.00']);
+ // A stop loss under entry leads with the trigger in the negative role.
+ view=mount({kind:'stop-loss',trigger:64600,value:-0.5});
+ expect(order(view)).toEqual(['If triggered, $64,600.00','Entry, $64,700.00']);
  expect(flat(host(view,'target-move'))).toMatchObject({backgroundColor:nativeSrgb.sell,borderStartColor:nativeSrgb.sell,borderEndColor:nativeSrgb.text});expect(host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0].props.tone).toBe('negative');
- // Without a mark the stretch starts at entry with no separate tick; without a trigger there is no stretch; without host text there is no title row.
- view=mount({mark:null});expect(prices(view)).toEqual(['target-entry','target-trigger']);expect(has(view,'target-entry-tick')).toBe(false);expect(has(view,'target-move')).toBe(true);
- view=mount({trigger:undefined});expect(has(view,'target-move')).toBe(false);expect(prices(view)).toEqual(['target-entry','target-mark']);expect(has(view,'target-position')).toBe(false);expect(has(view,'target-note')).toBe(false);
- view=mount({priceOptions:{style:'currency',currency:'USD',maximumFractionDigits:0}});expect(order(view)[2]).toBe('If triggered, $65,000');
+ // Without a trigger there is no stretch and only entry reads; without host text there is no title row.
+ view=mount({trigger:undefined});expect(has(view,'target-move')).toBe(false);expect(prices(view)).toEqual(['target-entry']);expect(has(view,'target-position')).toBe(false);expect(has(view,'target-note')).toBe(false);
+ view=mount({priceOptions:{style:'currency',currency:'USD',maximumFractionDigits:0}});expect(order(view)[1]).toBe('If triggered, $65,000');
 });
 
 it('offers the units as one control, hidden with a single unit, and reports the choice',()=>{
@@ -132,7 +130,7 @@ it('draws the prices without a card by default and inside one with surface, keep
  let view=mount({surface:true});expect(flat(host(view,'target-prices')).backgroundColor).toBe(nativeSrgb.surface);
  view=mount();const plain=flat(host(view,'target-prices'));
  expect(plain.backgroundColor).toBeUndefined();expect(plain.padding).toBeUndefined();expect(plain.borderRadius).toBeUndefined();expect(plain).toMatchObject({gap:12,marginTop:16});
- expect(prices(view)).toEqual(['target-entry','target-mark','target-trigger']);
+ expect(prices(view)).toEqual(['target-entry','target-trigger']);
 });
 it('sizes the headline figure like the SwapPanel amount',()=>{
  const view=mount({});

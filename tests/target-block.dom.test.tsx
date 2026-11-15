@@ -10,23 +10,20 @@ import * as blocks from '../packages/hig/react/src/blocks';
 import * as en from '../packages/hig/contracts/src/messages';
 afterEach(cleanup);
 const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;for(const visual of copy.querySelectorAll('.hig-animated-number-visual'))visual.remove();return copy.textContent;};
-const labels={title:'Take Profit',submit:'Set Take Profit',entry:'Entry',mark:'Mark',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'};
-const base:TargetBlockProps={kind:'take-profit',labels,entry:64700,mark:64500,trigger:65000,unit:'dollar',value:2,onSubmit:()=>{}};
+const labels={title:'Take Profit',submit:'Set Take Profit',entry:'Entry',trigger:'If triggered',unit:'Target in',units:{dollar:'Dollar',price:'Price',percent:'Percent'},custom:'Custom'};
+const base:TargetBlockProps={kind:'take-profit',labels,entry:64700,trigger:65000,unit:'dollar',value:2,onSubmit:()=>{}};
 const readouts=()=>[...document.querySelectorAll('.hig-target-prices dl > div')].map(item=>[item.getAttribute('data-price'),spoken(item.querySelector('dt')!),spoken(item.querySelector('dd')!)]);
 const grow=()=>[...document.querySelectorAll<HTMLElement>('.hig-target-bar > span')].map(part=>[part.className.replace('hig-target-',''),part.style.flexGrow?Number(Number(part.style.flexGrow).toFixed(4)):part.style.insetInlineStart]);
 const presets=()=>[...document.querySelectorAll<HTMLButtonElement>('.hig-target-presets > button')];
 describe('targetLayout',()=>{
- it('places the known prices on one axis in price order and spans the stretch from the mark to the trigger',()=>{
-  expect(targetLayout({entry:100,mark:90,trigger:140})).toEqual({positions:{entry:0.2,mark:0,trigger:1},order:['mark','entry','trigger'],from:0,to:1});
-  // A stop under the mark: the stretch runs down from the mark.
-  expect(targetLayout({entry:100,mark:120,trigger:80})).toEqual({positions:{entry:0.5,mark:1,trigger:0},order:['trigger','entry','mark'],from:0,to:1});
-  // The mark between entry and trigger leaves the ground already covered untinted.
-  expect(targetLayout({entry:100,mark:110,trigger:140})).toMatchObject({from:0.25,to:1,order:['entry','mark','trigger']});
- });
- it('starts from entry without a mark, has no stretch without a trigger, and keeps equal prices in entry, mark, trigger order',()=>{
+ it('places entry and the trigger on one axis in price order, with the stretch spanning the whole bar between them',()=>{
   expect(targetLayout({entry:100,trigger:140})).toEqual({positions:{entry:0,trigger:1},order:['entry','trigger'],from:0,to:1});
-  expect(targetLayout({entry:100,mark:90,trigger:null})).toEqual({positions:{entry:1,mark:0},order:['mark','entry'],from:0.5,to:0.5});
-  expect(targetLayout({entry:100,mark:100,trigger:100})).toEqual({positions:{entry:0.5,mark:0.5,trigger:0.5},order:['entry','mark','trigger'],from:0.5,to:0.5});
+  // A stop under entry: the trigger is the low end.
+  expect(targetLayout({entry:100,trigger:80})).toEqual({positions:{entry:1,trigger:0},order:['trigger','entry'],from:0,to:1});
+ });
+ it('has no stretch without a trigger, and keeps equal prices in entry, trigger order',()=>{
+  expect(targetLayout({entry:100,trigger:null})).toEqual({positions:{entry:0.5},order:['entry'],from:0.5,to:0.5});
+  expect(targetLayout({entry:100,trigger:100})).toEqual({positions:{entry:0.5,trigger:0.5},order:['entry','trigger'],from:0.5,to:0.5});
   expect(targetLayout({entry:Number.NaN})).toEqual({positions:{},order:[],from:0.5,to:0.5});
  });
 });
@@ -47,24 +44,24 @@ describe('TargetBlock',()=>{
   expect(card.querySelector('.hig-bar-mark-description')!.textContent).toBe('Take-limit');expect(document.querySelector('.hig-target-note')!.textContent).toBe('Fills at your target price or better.');
   expect(blocks.TargetBlock).toBe(TargetBlock);expect(blocks.targetLayout).toBe(targetLayout);
  });
- it('draws the prices in price order with the stretch from the mark to the trigger and entry as a tick',()=>{
+ it('draws two prices, entry and the trigger, in price order with the whole bar filled between them',()=>{
   const view=render(<TargetBlock {...base}/>);
   expect(document.querySelector('.hig-target-block')!.getAttribute('data-kind')).toBe('take-profit');
-  expect(readouts()).toEqual([['mark','Mark','$64,500.00'],['entry','Entry','$64,700.00'],['trigger','If triggered','$65,000.00']]);
-  expect(grow()).toEqual([['rest',0],['move',1],['rest',0],['entry','40%']]);expect(document.querySelector('.hig-target-move')!.getAttribute('data-lead')).toBe('start');
+  expect(readouts()).toEqual([['entry','Entry','$64,700.00'],['trigger','If triggered','$65,000.00']]);
+  expect(grow()).toEqual([['rest',0],['move',1],['rest',0]]);expect(document.querySelector('.hig-target-move')!.getAttribute('data-lead')).toBe('start');expect(document.querySelector('.hig-target-entry')).toBeNull();
   expect(document.querySelector('.hig-target-bar')!.getAttribute('aria-hidden')).toBe('true');
-  // A stop loss under the mark leads with the trigger and reads in the negative role.
-  view.rerender(<TargetBlock {...base} kind='stop-loss' mark={64800} trigger={64600} value={-0.5}/>);
+  // A stop loss under entry leads with the trigger and reads in the negative role.
+  view.rerender(<TargetBlock {...base} kind='stop-loss' trigger={64600} value={-0.5}/>);
   expect(document.querySelector('.hig-target-block')!.getAttribute('data-kind')).toBe('stop-loss');expect(spoken(document.querySelector('.hig-target-amount')!)).toBe('-$0.50');
-  expect(readouts().map(row=>row[0])).toEqual(['trigger','entry','mark']);expect(document.querySelector('.hig-target-move')!.getAttribute('data-lead')).toBe('trigger');
-  // Without a mark the stretch starts at entry and there is no separate tick; without a trigger there is no stretch.
-  view.rerender(<TargetBlock {...base} mark={null}/>);expect(grow()).toEqual([['rest',0],['move',1],['rest',0]]);expect(readouts()).toEqual([['entry','Entry','$64,700.00'],['trigger','If triggered','$65,000.00']]);
-  view.rerender(<TargetBlock {...base} trigger={undefined}/>);expect(document.querySelector('.hig-target-move')).toBeNull();expect(readouts().map(row=>row[0])).toEqual(['mark','entry']);
+  expect(readouts().map(row=>row[0])).toEqual(['trigger','entry']);expect(document.querySelector('.hig-target-move')!.getAttribute('data-lead')).toBe('trigger');
+  // Without a trigger there is no stretch and only entry reads; the mark price is not part of this block.
+  view.rerender(<TargetBlock {...base} trigger={undefined}/>);expect(document.querySelector('.hig-target-move')).toBeNull();expect(readouts().map(row=>row[0])).toEqual(['entry']);
+  const props:string[]=Object.keys(base);expect(props).not.toContain('mark');expect(document.querySelector('[data-price="mark"]')).toBeNull();
  });
  it('reads the target in the current unit and takes it as the trigger in the price unit',()=>{
   const view=render(<TargetBlock {...base} unit='percent' value={0.05}/>);expect(spoken(document.querySelector('.hig-target-amount')!)).toBe('+5%');
   view.rerender(<TargetBlock {...base} unit='price' value={65250} trigger={undefined}/>);
-  expect(spoken(document.querySelector('.hig-target-amount')!)).toBe('$65,250.00');expect(readouts()[2]).toEqual(['trigger','If triggered','$65,250.00']);
+  expect(spoken(document.querySelector('.hig-target-amount')!)).toBe('$65,250.00');expect(readouts()[1]).toEqual(['trigger','If triggered','$65,250.00']);
   view.rerender(<TargetBlock {...base} value={null}/>);expect(spoken(document.querySelector('.hig-target-amount')!)).toBe('—');expect((screen.getByRole('button',{name:'Set Take Profit'}) as HTMLButtonElement).disabled).toBe(true);
  });
  it('offers the units as one control, hidden with a single unit, and reports the choice',async()=>{
@@ -98,9 +95,9 @@ describe('TargetBlock',()=>{
  it('ships no trading words of its own: only Cancel is built in, and it follows the provider',()=>{
   render(<HIGProvider locale='fr-FR' messages={{cancel:'Annuler'}}><TargetBlock {...base} labels={{...labels,title:'Prise de profit',submit:'Définir',trigger:'Si déclenché'}} onCancel={()=>{}} presets={[1.5]}/></HIGProvider>);
   expect(screen.getByRole('heading',{name:'Prise de profit'})).toBeTruthy();expect(screen.getByRole('button',{name:'Annuler'})).toBeTruthy();
-  expect(readouts()[2].slice(0,2)).toEqual(['trigger','Si déclenché']);expect(presets()[0].textContent).toMatch(/^\+1,50\s\$US$/);
+  expect(readouts()[1].slice(0,2)).toEqual(['trigger','Si déclenché']);expect(presets()[0].textContent).toMatch(/^\+1,50\s\$US$/);
   const source=readFileSync('packages/hig/react/src/blocks/target-block.tsx','utf8');expect(source.match(/messages\.\w+/g)).toEqual(['messages.cancel']);
-  for(const key of ['takeProfit','stopLoss','trigger','entry','mark','custom'])expect(key in en,key).toBe(false);
+  for(const key of ['takeProfit','stopLoss','trigger','entry','custom'])expect(key in en,key).toBe(false);
  });
 });
 
@@ -129,10 +126,10 @@ describe('TargetBlock price card surface',()=>{
  it('draws the prices without a card by default and inside one with surface, keeping the title row, bar and prices',()=>{
   const view=render(<TargetBlock {...base} position='BTC Long 10×'/>);const card=()=>document.querySelector<HTMLElement>('.hig-target-prices')!;
   expect(card().className).toBe('hig-target-prices');expect(card().dataset.surface).toBe('false');
-  expect(card().querySelector('.hig-target-bar')).toBeTruthy();expect(readouts().map(([price])=>price)).toEqual(['mark','entry','trigger']);
+  expect(card().querySelector('.hig-target-bar')).toBeTruthy();expect(readouts().map(([price])=>price)).toEqual(['entry','trigger']);
   view.rerender(<TargetBlock {...base} position='BTC Long 10×' surface/>);
   expect(card().classList.contains('hig-surface')).toBe(true);expect(card().dataset.surface).toBeUndefined();
-  expect(card().querySelector('.hig-target-bar')).toBeTruthy();expect(readouts().map(([price])=>price)).toEqual(['mark','entry','trigger']);
+  expect(card().querySelector('.hig-target-bar')).toBeTruthy();expect(readouts().map(([price])=>price)).toEqual(['entry','trigger']);
  });
  it('sizes the headline figure like the SwapPanel amount, in the interface face',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');const rule=(selector:string)=>css.split('\n').find(line=>line.startsWith(selector+' {'))??'';
