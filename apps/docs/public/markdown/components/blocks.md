@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -26,7 +26,7 @@ All data and actions are supplied by the host application.
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
 | `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
-| `LeaderboardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
+| `RewardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `SoundHapticsBlock` | Sound, microphone, haptics and flash settings: one card per channel with a switch, and for a channel that is on its device, input meter and volume steps. Details below. |
 | `SignalsBlock` | The signals the viewer receives, in groups with a heading, a small help pill and switches. Details below. |
 | `NotificationsBlock` | The notifications the viewer receives: one card per kind with a switch, and a failure under its card. Details below. |
@@ -306,12 +306,12 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Actions.** `actions=[{id, label, onSelect, intent, disabled, busy}]` draws the buttons in one row with equal widths, 8 units apart and 16 below the details. `intent` defaults to `secondary`; set `primary` on the one that matters, such as Share.
 - **Ownership.** The card never reads trade history, renders an image or opens a share sheet. The host does each of those when an action reports a press.
 
-### LeaderboardBlock
+### RewardBlock
 
-`LeaderboardBlock` is the screen for a trading competition. Under the shared header it shows an optional promotion, an optional choice between standings, the viewer's own standing pinned on a tinted row, and the ranked list. One block covers both a prize pool that fills towards a goal and a sweepstakes with a top prize; the promotion's fields decide which. It is available from `@bloxwap/hig/react/blocks/leaderboard-block`, `@bloxwap/hig/native/leaderboard-block` and the `blocks` aggregates.
+`RewardBlock` is the screen for a trading competition. Under the shared header it shows an optional promotion, an optional choice between standings, the viewer's own standing pinned on a tinted row, and the ranked list. One block covers both a prize pool that fills towards a goal and a sweepstakes with a top prize; the promotion's fields decide which. It is available from `@bloxwap/hig/react/blocks/reward-block`, `@bloxwap/hig/native/reward-block` and the `blocks` aggregates.
 
 ```tsx
-<LeaderboardBlock title={t.leaderboard} onBack={goBack} headerAction={share} verifiedLabel={t.verified}
+<RewardBlock title={t.leaderboard} onBack={goBack} headerAction={share} verifiedLabel={t.verified}
   promo={{eyebrow: t.season, rules: {label: t.rules, onSelect: openRules},
           amount: 4037, goal: 250000, caption: goal => t.ofPrizePool(goal),
           headline: t.topTradersSplit, description: t.poolFunding}}
@@ -319,8 +319,8 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 ```
 
 - **Words.** Every word is host text; only Back is built in.
-- **Promotion.** `promo` draws one quiet card: the `eyebrow` in muted small capitals, `rules` as a text link with a chevron on its trailing edge, `amount` as the one large figure in the action colour, updating place by place, and `caption` as the line under it. `headline` and `description` read as one paragraph: the headline in the text colour, the description continuing it in the muted colour. `action` is a quiet row at the foot of the card, under a hairline, with its label in the muted colour and a chevron on the trailing edge, for example to the draws. It is not a filled button: the card promotes the prize, and the row is a way onward. Leave `promo` out for standings alone.
-- **Prize pool.** With `goal`, a thin progress bar filled to `amount / goal` sits under the caption, and a `caption` function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. The bar carries the progress on its own; there are no lines under it. `leaderboardProgress(amount, goal)` returns the same share.
+- **Promotion.** `promo` draws one quiet card: the `eyebrow` in muted small capitals, `rules` as a text link with a chevron on its trailing edge, `amount` as the one large figure in the action colour, the same size as the `SwapPanelBlock` amount and the `TargetBlock` figure, updating place by place, and `caption` as the line under it. `headline` and `description` read as one paragraph: the headline in the text colour, the description continuing it in the muted colour. `action` is a quiet row at the foot of the card, under a hairline, with its label in the muted colour and a chevron on the trailing edge, for example to the draws. It is not a filled button: the card promotes the prize, and the row is a way onward. Leave `promo` out for standings alone.
+- **Prize pool.** With `goal`, a thin progress bar filled to `amount / goal` sits under the caption, and a `caption` function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. The bar carries the progress on its own; there are no lines under it. `rewardProgress(amount, goal)` returns the same share.
 - **Sweepstakes.** Without `goal` there is no bar, and `caption` is a string under the figure, such as top prize.
 - **Money.** `amountOptions` formats `amount` and `goal`; the default is whole US dollars.
 - **Standings choice.** `tabs={{label, options, value, onValueChange}}` adds a `SegmentedControl`, such as Upcoming draw and Top winners. The host swaps `entries` when it changes.

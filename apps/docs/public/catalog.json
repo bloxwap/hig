@@ -679,8 +679,8 @@
       ]
     },
     {
-      "name": "LeaderboardBlock",
-      "route": "components/leaderboard-block",
+      "name": "RewardBlock",
+      "route": "components/reward-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [

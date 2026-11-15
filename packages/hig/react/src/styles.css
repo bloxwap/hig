@@ -587,48 +587,48 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-position-note { margin:-8px 0 0;padding-inline:20px;color:var(--hig-muted);font-size:.8125rem;line-height:1.5; }
 /* ListGroups stack 24 apart, the standard gap between groups. */
 .hig-position-groups { display:flex;flex-direction:column;gap:24px; }
-/* LeaderboardBlock: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
-.hig-leaderboard-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
-.hig-leaderboard-promo { display:flex;flex-direction:column;gap:12px; }
-.hig-leaderboard-promo > p,.hig-leaderboard-footnote { margin:0; }
-.hig-leaderboard-promo-top,.hig-leaderboard-columns { display:flex;align-items:center;justify-content:space-between;gap:12px; }
-.hig-leaderboard-eyebrow,.hig-leaderboard-columns { color:var(--hig-muted);font-size:.75rem;line-height:1.33;letter-spacing:.12em;text-transform:uppercase; }
-.hig-leaderboard-eyebrow { min-width:0; }
-.hig-leaderboard-rules { appearance:none;flex:none;display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;min-height:var(--hig-button);min-width:var(--hig-button);margin-block:-12px;padding:0;border:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent; }
-.hig-leaderboard-rules:active { color:var(--hig-text); }
-[dir='rtl'] .hig-leaderboard-rules > svg,[dir='rtl'] .hig-leaderboard-action > svg { transform:scaleX(-1); }
+/* RewardBlock: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
+.hig-reward-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-reward-promo { display:flex;flex-direction:column;gap:12px; }
+.hig-reward-promo > p,.hig-reward-footnote { margin:0; }
+.hig-reward-promo-top,.hig-reward-columns { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+.hig-reward-eyebrow,.hig-reward-columns { color:var(--hig-muted);font-size:.75rem;line-height:1.33;letter-spacing:.12em;text-transform:uppercase; }
+.hig-reward-eyebrow { min-width:0; }
+.hig-reward-rules { appearance:none;flex:none;display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;min-height:var(--hig-button);min-width:var(--hig-button);margin-block:-12px;padding:0;border:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent; }
+.hig-reward-rules:active { color:var(--hig-text); }
+[dir='rtl'] .hig-reward-rules > svg,[dir='rtl'] .hig-reward-action > svg { transform:scaleX(-1); }
 /* The card's action is a quiet row under a hairline, not a filled button. */
-.hig-leaderboard-action { appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:var(--hig-button);margin:4px 0 -8px;padding:12px 0 0;border:0;border-block-start:1px solid var(--hig-fill-raised);border-radius:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
-.hig-leaderboard-action:active { color:var(--hig-text); }
-.hig-leaderboard-action > svg { flex:none; }
-.hig-leaderboard-amount { color:var(--hig-action);font-size:clamp(2.5rem,13vw,3.5rem);line-height:1.1;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere; }
-.hig-leaderboard-promo > .hig-leaderboard-caption { margin-block-start:-8px;color:var(--hig-muted);font-size:.9375rem;line-height:1.5; }
-.hig-leaderboard-track { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
-.hig-leaderboard-track > span { display:block;height:100%;min-width:8px;border-radius:2px;background:var(--hig-action);transition:width var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
-.hig-leaderboard-columns > :last-child { text-align:end; }
-.hig-leaderboard-columns { padding-inline:4px; }
-.hig-leaderboard-summary { color:var(--hig-muted);line-height:1.5;overflow-wrap:anywhere; }
-.hig-leaderboard-summary > strong { color:var(--hig-text);font-weight:600; }
-.hig-leaderboard-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-@media(hover:hover) and (pointer:fine) { .hig-leaderboard-rules:hover,.hig-leaderboard-action:hover { color:var(--hig-text); } }
-.hig-leaderboard-footnote { padding-inline:4px; }
-.hig-leaderboard-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
-.hig-leaderboard-list { display:flex;flex-direction:column;gap:8px; }
-.hig-leaderboard-rows { display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;border-radius:20px;overflow:hidden; }
-.hig-leaderboard-row { display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 20px;background:var(--hig-fill); }
-.hig-leaderboard-you > .hig-leaderboard-row { border-radius:20px;background:color-mix(in srgb,var(--hig-action) 12%,var(--hig-background)); }
-.hig-leaderboard-rank { flex:none;min-width:24px;color:var(--hig-muted);font-weight:600; }
-.hig-leaderboard-avatar { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600;overflow:hidden; }
-.hig-leaderboard-avatar > img { width:100%;height:100%;object-fit:cover; }
-.hig-leaderboard-identity { flex:1;display:flex;flex-direction:column;min-width:0; }
-.hig-leaderboard-identity > strong { display:flex;align-items:center;gap:6px;font-weight:600;overflow-wrap:anywhere; }
-.hig-leaderboard-identity > span { color:var(--hig-muted);font-size:.875rem; }
-.hig-leaderboard-verified { flex:none;display:inline-flex;color:var(--hig-warning); }
-.hig-leaderboard-score { flex:none;font-weight:600; }
-.hig-leaderboard-row[data-you] :is(.hig-leaderboard-identity > strong,.hig-leaderboard-score) { color:var(--hig-action); }
-@media(prefers-reduced-motion:reduce) { .hig-leaderboard-track > span { transition:none; } }
-[data-hig-motion='reduced'] .hig-leaderboard-track > span { transition:none; }
-@media(forced-colors:active) { .hig-leaderboard-track > span { forced-color-adjust:none; } }
+.hig-reward-action { appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:var(--hig-button);margin:4px 0 -8px;padding:12px 0 0;border:0;border-block-start:1px solid var(--hig-fill-raised);border-radius:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-reward-action:active { color:var(--hig-text); }
+.hig-reward-action > svg { flex:none; }
+.hig-reward-amount { color:var(--hig-action);font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere; }
+.hig-reward-promo > .hig-reward-caption { margin-block-start:-8px;color:var(--hig-muted);font-size:.9375rem;line-height:1.5; }
+.hig-reward-track { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
+.hig-reward-track > span { display:block;height:100%;min-width:8px;border-radius:2px;background:var(--hig-action);transition:width var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
+.hig-reward-columns > :last-child { text-align:end; }
+.hig-reward-columns { padding-inline:4px; }
+.hig-reward-summary { color:var(--hig-muted);line-height:1.5;overflow-wrap:anywhere; }
+.hig-reward-summary > strong { color:var(--hig-text);font-weight:600; }
+.hig-reward-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+@media(hover:hover) and (pointer:fine) { .hig-reward-rules:hover,.hig-reward-action:hover { color:var(--hig-text); } }
+.hig-reward-footnote { padding-inline:4px; }
+.hig-reward-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+.hig-reward-list { display:flex;flex-direction:column;gap:8px; }
+.hig-reward-rows { display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;border-radius:20px;overflow:hidden; }
+.hig-reward-row { display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 20px;background:var(--hig-fill); }
+.hig-reward-you > .hig-reward-row { border-radius:20px;background:color-mix(in srgb,var(--hig-action) 12%,var(--hig-background)); }
+.hig-reward-rank { flex:none;min-width:24px;color:var(--hig-muted);font-weight:600; }
+.hig-reward-avatar { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600;overflow:hidden; }
+.hig-reward-avatar > img { width:100%;height:100%;object-fit:cover; }
+.hig-reward-identity { flex:1;display:flex;flex-direction:column;min-width:0; }
+.hig-reward-identity > strong { display:flex;align-items:center;gap:6px;font-weight:600;overflow-wrap:anywhere; }
+.hig-reward-identity > span { color:var(--hig-muted);font-size:.875rem; }
+.hig-reward-verified { flex:none;display:inline-flex;color:var(--hig-warning); }
+.hig-reward-score { flex:none;font-weight:600; }
+.hig-reward-row[data-you] :is(.hig-reward-identity > strong,.hig-reward-score) { color:var(--hig-action); }
+@media(prefers-reduced-motion:reduce) { .hig-reward-track > span { transition:none; } }
+[data-hig-motion='reduced'] .hig-reward-track > span { transition:none; }
+@media(forced-colors:active) { .hig-reward-track > span { forced-color-adjust:none; } }
 /* TargetBlock: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
 .hig-target-block { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }

@@ -409,8 +409,8 @@
       "title": "ProfileBlock"
     },
     {
-      "route": "components/leaderboard-block",
-      "title": "LeaderboardBlock"
+      "route": "components/reward-block",
+      "title": "RewardBlock"
     },
     {
       "route": "components/sound-haptics-block",
@@ -1148,8 +1148,8 @@
       ]
     },
     {
-      "name": "LeaderboardBlock",
-      "route": "components/leaderboard-block",
+      "name": "RewardBlock",
+      "route": "components/reward-block",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [

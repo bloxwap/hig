@@ -76,7 +76,7 @@ describe('SignalsBlock',()=>{
  });
  it('keeps the verified mark decorative without a name, and draws a group without items as a heading alone',()=>{
   render(<SignalsBlock title='Signals' groups={[{id:'swing',title:'Swing',verified:true,items:[]}]}/>);
-  expect(screen.queryByRole('img')).toBeNull();expect(q('.hig-leaderboard-verified svg')!.getAttribute('aria-hidden')).toBe('true');expect(q('.hig-setting-list')).toBeNull();expect(screen.getByRole('heading',{name:'Swing'})).toBeTruthy();
+  expect(screen.queryByRole('img')).toBeNull();expect(q('.hig-reward-verified svg')!.getAttribute('aria-hidden')).toBe('true');expect(q('.hig-setting-list')).toBeNull();expect(screen.getByRole('heading',{name:'Swing'})).toBeTruthy();
  });
 });
 describe('NotificationsBlock',()=>{

@@ -29,7 +29,7 @@ function Group({group,verifiedLabel}:{group:SignalsGroup;verifiedLabel?:string})
  const id=useId();
  return <section className='hig-signals-group' aria-labelledby={id}>
   <div className='hig-signals-group-header'>
-   <h3 id={id}>{group.title}{group.verified&&<span className='hig-leaderboard-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark}</span>}</h3>
+   <h3 id={id}>{group.title}{group.verified&&<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark}</span>}</h3>
    {group.help&&<SwapPill onClick={group.help.onSelect}>{group.help.label}</SwapPill>}
   </div>
   {group.items.length>0&&<div className='hig-setting-list'>{group.items.map(item=><div key={item.id} className='hig-setting-card'><SettingSwitch label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} onCheckedChange={item.onCheckedChange}/></div>)}</div>}

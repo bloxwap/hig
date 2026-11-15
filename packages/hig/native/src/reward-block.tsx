@@ -11,7 +11,7 @@ import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 /** The promotion above the standings: a prize pool filling towards a goal, or a draw with a top prize. Every word is host text. */
-export interface LeaderboardPromo {
+export interface RewardPromo {
  /** The small capitals line: Season 01. */
  eyebrow:string;
  /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */
@@ -32,7 +32,7 @@ export interface LeaderboardPromo {
  action?:{label:string;onSelect:()=>void};
 }
 /** One trader in the standings. */
-export interface LeaderboardEntry {
+export interface RewardEntry {
  id:string;rank:number;
  /** A short address, a handle, or the host's word for the viewer. */
  name:string;
@@ -47,19 +47,19 @@ export interface LeaderboardEntry {
  /** Marks the viewer's own row: the name and score take the action colour. */
  you?:boolean;
 }
-export interface LeaderboardBlockProps {
+export interface RewardBlockProps {
  /** Heading: Leaderboard. */
  title:string;
- promo?:LeaderboardPromo;
+ promo?:RewardPromo;
  /** A choice between standings, such as Upcoming draw and Top winners. `label` names the control. */
  tabs?:{label:string;options:readonly {value:string;label:string}[];value:string;onValueChange:(value:string)=>void};
  /** The viewer's own standing, pinned above the list on a tinted row. */
- you?:LeaderboardEntry;
+ you?:RewardEntry;
  /** The column heading over the names: Top 25 by volume. */
  listTitle?:string;
  /** The column heading over the scores: Entries. */
  scoreTitle?:string;
- entries:readonly LeaderboardEntry[];
+ entries:readonly RewardEntry[];
  /** Format of every score. Defaults to a whole number. */
  scoreOptions?:Intl.NumberFormatOptions;
  /** Words for the verified mark, read after the name. */
@@ -77,16 +77,16 @@ const whole:Intl.NumberFormatOptions={maximumFractionDigits:0};
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const avatar=40,space=' ';
 /** The share of the goal reached, from 0 to 1. Unknown amounts and goals that are not above zero give `null`. */
-export function leaderboardProgress(amount:number|null|undefined,goal:number|null|undefined):number|null{
+export function rewardProgress(amount:number|null|undefined,goal:number|null|undefined):number|null{
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function LeaderboardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,testID}:LeaderboardBlockProps){
+export function RewardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,testID}:RewardBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale,monoFontFamily}=useHIG();
- const money=promo?.amountOptions??wholeDollars,reached=promo?leaderboardProgress(promo.amount,promo.goal):null;
+ const money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(promo.amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,money)):undefined:promo?.caption;
  const caps={fontFamily:monoFontFamily,fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase'} as const;
- const standing=(entry:LeaderboardEntry,id:string,style?:ViewStyle)=>{
+ const standing=(entry:RewardEntry,id:string,style?:ViewStyle)=>{
   const mine=!!entry.you,reading=[String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,entry.detail,formatNumberReadout(entry.score,locale,scoreOptions).text].filter(Boolean).join(', ');
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
   return <View key={entry.id} testID={id} accessible accessibilityLabel={reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:fills.well,...style}}>
@@ -103,42 +103,42 @@ export function LeaderboardBlock({title,promo,tabs,you,listTitle,scoreTitle,entr
   </View>;
  };
  // Rows are built here so their test ids are code, not JSX text.
- const pinned=you?standing({...you,you:true},'leaderboard-you',{marginTop:16,borderRadius:20,backgroundColor:withAlpha(colors.action,0.12)}):null;
- const rows=entries.map(entry=>standing(entry,`leaderboard-row-${entry.id}`));
+ const pinned=you?standing({...you,you:true},'reward-you',{marginTop:16,borderRadius:20,backgroundColor:withAlpha(colors.action,0.12)}):null;
+ const rows=entries.map(entry=>standing(entry,`reward-row-${entry.id}`));
  return <View testID={testID} style={{padding:16}}>
-  <View testID='leaderboard-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
-   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='leaderboard-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
-   <Text testID='leaderboard-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{title}</Text>
+  <View testID='reward-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
+   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='reward-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
+   <Text testID='reward-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{title}</Text>
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
   </View>
-  {promo?<Surface testID='leaderboard-promo' style={{gap:12,marginTop:16}}>
+  {promo?<Surface testID='reward-promo' style={{gap:12,marginTop:16}}>
    <View style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
-    <Text testID='leaderboard-eyebrow' style={{...caps,flexShrink:1,color:colors.muted}}>{promo.eyebrow}</Text>
-    {promo.rules?<Pressable testID='leaderboard-rules' accessibilityRole='button' hitSlop={12} onPress={promo.rules.onSelect} style={({pressed})=>({flexDirection:'row',alignItems:'center',gap:4,opacity:pressed?0.6:1})}>
+    <Text testID='reward-eyebrow' style={{...caps,flexShrink:1,color:colors.muted}}>{promo.eyebrow}</Text>
+    {promo.rules?<Pressable testID='reward-rules' accessibilityRole='button' hitSlop={12} onPress={promo.rules.onSelect} style={({pressed})=>({flexDirection:'row',alignItems:'center',gap:4,opacity:pressed?0.6:1})}>
      <Text style={{fontSize:16,lineHeight:24,fontWeight:'500',color:colors.muted}}>{promo.rules.label}</Text>
      <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
     </Pressable>:null}
    </View>
-   <View testID='leaderboard-amount' accessible accessibilityLabel={[formatNumberReadout(promo.amount,locale,money).text,caption].filter(Boolean).join(' ')} style={{gap:4}}>
-    <View {...hidden} style={{alignItems:'flex-start'}}><AnimatedNumberReadout value={promo.amount} options={money} tone='positive' style={{fontSize:48,lineHeight:56,fontWeight:'700'}}/></View>
-    {caption?<Text {...hidden} testID='leaderboard-caption' style={{fontFamily:monoFontFamily,fontSize:15,lineHeight:22,color:colors.muted}}>{caption}</Text>:null}
+   <View testID='reward-amount' accessible accessibilityLabel={[formatNumberReadout(promo.amount,locale,money).text,caption].filter(Boolean).join(' ')} style={{gap:4}}>
+    <View {...hidden} style={{alignItems:'flex-start'}}><AnimatedNumberReadout value={promo.amount} options={money} tone='positive' style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9}}/></View>
+    {caption?<Text {...hidden} testID='reward-caption' style={{fontFamily:monoFontFamily,fontSize:15,lineHeight:22,color:colors.muted}}>{caption}</Text>:null}
    </View>
-   {promo.goal!==undefined?<View {...hidden} testID='leaderboard-track' style={{direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'}}><View testID='leaderboard-fill' style={{width:`${(reached??0)*100}%`,minWidth:8,borderRadius:2,backgroundColor:colors.action}}/></View>:null}
-   {promo.headline||promo.description?<Text testID='leaderboard-summary' style={{fontSize:16,lineHeight:24,color:colors.muted}}>{promo.headline?<Text style={{fontWeight:'600',color:colors.text}}>{promo.headline}</Text>:null}{promo.headline&&promo.description?space:null}{promo.description}</Text>:null}
-   {promo.action?<Pressable testID='leaderboard-action' accessibilityRole='button' accessibilityLabel={promo.action.label} onPress={promo.action.onSelect} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:44,marginTop:4,marginBottom:-8,paddingTop:12,borderTopWidth:1,borderTopColor:fills.raised}}>
+   {promo.goal!==undefined?<View {...hidden} testID='reward-track' style={{direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'}}><View testID='reward-fill' style={{width:`${(reached??0)*100}%`,minWidth:8,borderRadius:2,backgroundColor:colors.action}}/></View>:null}
+   {promo.headline||promo.description?<Text testID='reward-summary' style={{fontSize:16,lineHeight:24,color:colors.muted}}>{promo.headline?<Text style={{fontWeight:'600',color:colors.text}}>{promo.headline}</Text>:null}{promo.headline&&promo.description?space:null}{promo.description}</Text>:null}
+   {promo.action?<Pressable testID='reward-action' accessibilityRole='button' accessibilityLabel={promo.action.label} onPress={promo.action.onSelect} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:44,marginTop:4,marginBottom:-8,paddingTop:12,borderTopWidth:1,borderTopColor:fills.raised}}>
     <Text {...hidden} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:colors.muted}}>{promo.action.label}</Text>
     <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
    </Pressable>:null}
   </Surface>:null}
-  {tabs?<View testID='leaderboard-tabs' style={{marginTop:16}}><SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/></View>:null}
+  {tabs?<View testID='reward-tabs' style={{marginTop:16}}><SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/></View>:null}
   {pinned}
-  {entries.length>0||listTitle||scoreTitle?<View testID='leaderboard-list' style={{gap:8,marginTop:16}}>
+  {entries.length>0||listTitle||scoreTitle?<View testID='reward-list' style={{gap:8,marginTop:16}}>
    {listTitle||scoreTitle?<View style={{direction,flexDirection:'row',justifyContent:'space-between',gap:12,paddingHorizontal:4}}>
-    <Text testID='leaderboard-list-title' style={{...caps,flexShrink:1,color:colors.muted}}>{listTitle}</Text>
-    <Text testID='leaderboard-score-title' style={{...caps,flexShrink:1,color:colors.muted,textAlign:'right'}}>{scoreTitle}</Text>
+    <Text testID='reward-list-title' style={{...caps,flexShrink:1,color:colors.muted}}>{listTitle}</Text>
+    <Text testID='reward-score-title' style={{...caps,flexShrink:1,color:colors.muted,textAlign:'right'}}>{scoreTitle}</Text>
    </View>:null}
-   {entries.length>0?<View testID='leaderboard-rows' style={{gap:2,borderRadius:20,overflow:'hidden'}}>{rows}</View>:null}
+   {entries.length>0?<View testID='reward-rows' style={{gap:2,borderRadius:20,overflow:'hidden'}}>{rows}</View>:null}
   </View>:null}
-  {footnote?<Text testID='leaderboard-footnote' style={{fontSize:14,lineHeight:21,color:colors.muted,marginTop:16,paddingHorizontal:4}}>{footnote}</Text>:null}
+  {footnote?<Text testID='reward-footnote' style={{fontSize:14,lineHeight:21,color:colors.muted,marginTop:16,paddingHorizontal:4}}>{footnote}</Text>:null}
  </View>;
 }
