@@ -7,28 +7,24 @@ import {SegmentedControl} from '../selection.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
-/** One piece of the headline: plain text, or `{highlight}` for a figure drawn in the action colour. */
-export type LeaderboardText=string|{highlight:string};
+import {SwapIcon} from './swap/shared.js';
 /** The promotion above the standings: a prize pool filling towards a goal, or a draw with a top prize. Every word is host text. */
 export interface LeaderboardPromo {
- /** The small capitals line: Season 01 prize pool. */
+ /** The small capitals line: Season 01. */
  eyebrow:string;
- /** The capsule on the trailing edge of the eyebrow: See rules. */
+ /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */
  rules?:{label:string;onSelect:()=>void};
  /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */
  amount:number|null;
  /** Format of `amount` and `goal`. Defaults to whole US dollars. */
  amountOptions?:Intl.NumberFormatOptions;
- /** The amount the pool is filling towards. Shows `/ $250,000` beside the figure and the progress bar under it. */
+ /** The amount the pool is filling towards. Draws the progress bar under the caption. */
  goal?:number;
- /** Words after the figure when there is no goal: top prize. */
- caption?:string;
- /** The line under the leading end of the bar. Receives the share reached as a formatted percent: `percent => percent + ' to goal'`. */
- progress?:(percent:string)=>string;
- /** The line under the trailing end of the bar: Updates every 15 minutes. */
- updated?:string;
- /** The sentence that explains the promotion, as pieces: `['Top ', {highlight: '100'}, ' traders split ', {highlight: '$250,000'}, ' pot']`. */
- headline?:readonly LeaderboardText[];
+ /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */
+ caption?:string|((goal:string)=>string);
+ /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. */
+ headline?:string;
+ /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */
  description?:string;
  /** A full-width action under the description: Draws and winners. The host opens its own destination. */
  action?:{label:string;onSelect:()=>void};
@@ -93,17 +89,15 @@ function Standing({entry,scoreOptions,verifiedLabel,as:Tag='li'}:{entry:Leaderbo
 export function LeaderboardBlock({title,promo,tabs,you,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,footnote,onBack,headerAction,className,...rest}:LeaderboardBlockProps){
  const {locale}=useHIG();
  const money=promo?.amountOptions??wholeDollars,share=promo?leaderboardProgress(promo.amount,promo.goal):null;
+ const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,money)):undefined:promo?.caption;
  return <section {...rest} className={`hig-leaderboard-block${className?` ${className}`:''}`}>
   <ScreenHeader title={title} onBack={onBack} action={headerAction}/>
   {promo&&<section className='hig-surface hig-leaderboard-promo'>
-   <div className='hig-leaderboard-promo-top'><span className='hig-leaderboard-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<Button className='hig-leaderboard-rules' onClick={promo.rules.onSelect}>{promo.rules.label}</Button>}</div>
-   <p className='hig-leaderboard-amount'><strong><AnimatedNumberReadout value={promo.amount} options={money}/></strong>{promo.goal!==undefined?<span className='hig-number'>/ {formatNumber(promo.goal,locale,money)}</span>:promo.caption&&<span className='hig-number'>{promo.caption}</span>}</p>
-   {promo.goal!==undefined&&<div className='hig-leaderboard-progress'>
-    <div className='hig-leaderboard-track' aria-hidden='true'><span style={{width:`${(share??0)*100}%`}}/></div>
-    {(promo.progress||promo.updated)&&<div className='hig-leaderboard-progress-meta hig-number'><span>{promo.progress?.(share===null?'—':formatNumber(share,locale,{style:'percent',maximumFractionDigits:0}))}</span><span>{promo.updated}</span></div>}
-   </div>}
-   {promo.headline&&promo.headline.length>0&&<p className='hig-leaderboard-headline'>{promo.headline.map((part,index)=>typeof part==='string'?<React.Fragment key={index}>{part}</React.Fragment>:<mark key={index}>{part.highlight}</mark>)}</p>}
-   {promo.description&&<p className='hig-leaderboard-description'>{promo.description}</p>}
+   <div className='hig-leaderboard-promo-top'><span className='hig-leaderboard-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<button type='button' className='hig-leaderboard-rules' onClick={promo.rules.onSelect}>{promo.rules.label}<SwapIcon name='chevron' size={16}/></button>}</div>
+   <p className='hig-leaderboard-amount'><AnimatedNumberReadout value={promo.amount} options={money}/></p>
+   {caption&&<p className='hig-leaderboard-caption hig-number'>{caption}</p>}
+   {promo.goal!==undefined&&<div className='hig-leaderboard-track' aria-hidden='true'><span style={{width:`${(share??0)*100}%`}}/></div>}
+   {(promo.headline||promo.description)&&<p className='hig-leaderboard-summary'>{promo.headline&&<strong>{promo.headline}</strong>}{promo.headline&&promo.description?' ':null}{promo.description}</p>}
    {promo.action&&<Button fullWidth onClick={promo.action.onSelect}>{promo.action.label}</Button>}
   </section>}
   {tabs&&<SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/>}

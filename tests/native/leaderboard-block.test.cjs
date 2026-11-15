@@ -12,7 +12,7 @@ const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
 let root;
 const entries=[{id:'a',rank:1,name:'0x4e79…949f',verified:true,detail:'$1,789,061 vol',score:795407},{id:'me',rank:2,name:'you',detail:'$1,090,779 vol',score:418450,you:true},{id:'c',rank:3,name:'Zed',score:null}];
-const pool={eyebrow:'Season 01 prize pool',amount:4037,goal:250000,progress:percent=>`${percent} to goal`,updated:'Updates every 15 minutes',headline:['Top ',{highlight:'100'},' traders split ',{highlight:'$250,000'},' pot'],description:'Funded by fees.'};
+const pool={eyebrow:'Season 01',amount:4037,goal:250000,caption:goal=>`of ${goal} prize pool`,headline:'Top 100 traders split the pool.',description:'Funded by builder fees on every trade.'};
 const base={title:'Leaderboard',entries};
 function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(LeaderboardBlock,{...base,...props})));});return root.root;}
 const all=(view,id)=>view.findAll(node=>node.props.testID===id);
@@ -46,29 +46,33 @@ it('shows the host title as the heading, Back only with onBack, and the ranked r
  expect(blocks.LeaderboardBlock).toBe(LeaderboardBlock);expect(blocks.leaderboardProgress).toBe(leaderboardProgress);
 });
 
-it('draws a prize pool: the figure against its goal, the bar at the share reached, and the lines under it',()=>{
+it('draws a prize pool: a muted eyebrow, one large figure, the goal in the caption under it, and a thin bar at the share reached',()=>{
  let view=mount({promo:pool});
- expect(text(host(view,'leaderboard-eyebrow'))).toBe('Season 01 prize pool');expect(flat(host(view,'leaderboard-eyebrow'))).toMatchObject({textTransform:'uppercase',color:nativeSrgb.action});
- expect(host(view,'leaderboard-amount').props.accessibilityLabel).toBe('$4,037 / $250,000');
- expect(host(view,'leaderboard-amount').findAllByType(AnimatedNumberReadout)[0].props).toMatchObject({value:4037,tone:'positive',options:{style:'currency',currency:'USD',maximumFractionDigits:0}});
- expect(parseFloat(flat(host(view,'leaderboard-fill')).width)).toBeCloseTo(1.6148,3);expect(flat(host(view,'leaderboard-fill')).backgroundColor).toBe(nativeSrgb.action);expect(host(view,'leaderboard-track').props.importantForAccessibility).toBe('no-hide-descendants');
- expect(text(host(view,'leaderboard-progress'))).toBe('2% to goal');expect(text(host(view,'leaderboard-updated'))).toBe('Updates every 15 minutes');
- expect(text(host(view,'leaderboard-headline'))).toBe('Top 100 traders split $250,000 pot');
- expect(host(view,'leaderboard-headline').findAll(node=>node.type==='Text'&&flat(node).color===nativeSrgb.action).map(text)).toEqual(['100','$250,000']);
- expect(text(host(view,'leaderboard-description'))).toBe('Funded by fees.');expect(button(view,'leaderboard-rules')).toBeUndefined();expect(button(view,'leaderboard-action')).toBeUndefined();
+ expect(text(host(view,'leaderboard-eyebrow'))).toBe('Season 01');expect(flat(host(view,'leaderboard-eyebrow'))).toMatchObject({textTransform:'uppercase',color:nativeSrgb.muted});
+ expect(host(view,'leaderboard-amount').props.accessibilityLabel).toBe('$4,037 of $250,000 prize pool');expect(text(host(view,'leaderboard-caption'))).toBe('of $250,000 prize pool');
+ const figure=host(view,'leaderboard-amount').findAllByType(AnimatedNumberReadout)[0];expect(figure.props).toMatchObject({value:4037,tone:'positive',options:{style:'currency',currency:'USD',maximumFractionDigits:0}});expect(flat(figure)).toMatchObject({fontSize:48,lineHeight:56,fontWeight:'700'});
+ expect(flat(host(view,'leaderboard-track'))).toMatchObject({height:4,borderRadius:2});expect(parseFloat(flat(host(view,'leaderboard-fill')).width)).toBeCloseTo(1.6148,3);expect(flat(host(view,'leaderboard-fill')).backgroundColor).toBe(nativeSrgb.action);expect(host(view,'leaderboard-track').props.importantForAccessibility).toBe('no-hide-descendants');
+ // One paragraph: the headline in the text colour, the description continuing it in the muted colour.
+ const summary=host(view,'leaderboard-summary');expect(text(summary)).toBe('Top 100 traders split the pool. Funded by builder fees on every trade.');expect(flat(summary).color).toBe(nativeSrgb.muted);
+ expect(summary.findAll(node=>node.type==='Text'&&flat(node).color===nativeSrgb.text).map(text)).toEqual(['Top 100 traders split the pool.']);
+ // Nothing sits under the bar, and there is no rules link or action without their props.
+ for(const id of ['leaderboard-progress','leaderboard-updated','leaderboard-headline','leaderboard-description','leaderboard-rules'])expect(has(view,id)).toBe(false);expect(button(view,'leaderboard-action')).toBeUndefined();
  // Over the goal the bar is full; an unknown amount reads as a dash and an empty bar; the host formats the money.
- view=mount({promo:{...pool,amount:300000}});expect(flat(host(view,'leaderboard-fill')).width).toBe('100%');expect(text(host(view,'leaderboard-progress'))).toBe('100% to goal');
+ view=mount({promo:{...pool,amount:300000}});expect(flat(host(view,'leaderboard-fill')).width).toBe('100%');
  view=mount({promo:{...pool,amount:null,amountOptions:{style:'currency',currency:'EUR',maximumFractionDigits:0}}});
- expect(host(view,'leaderboard-amount').props.accessibilityLabel).toBe('— / €250,000');expect(flat(host(view,'leaderboard-fill')).width).toBe('0%');expect(text(host(view,'leaderboard-progress'))).toBe('— to goal');
- view=mount({promo:{eyebrow:'Pool',amount:10,goal:100}});expect(has(view,'leaderboard-progress')).toBe(false);expect(has(view,'leaderboard-headline')).toBe(false);
+ expect(host(view,'leaderboard-amount').props.accessibilityLabel).toBe('— of €250,000 prize pool');expect(flat(host(view,'leaderboard-fill')).width).toBe('0%');
+ view=mount({promo:{eyebrow:'Pool',amount:10,goal:100,description:'Funded by fees.'}});expect(text(host(view,'leaderboard-summary'))).toBe('Funded by fees.');expect(has(view,'leaderboard-caption')).toBe(false);
+ view=mount({promo:{eyebrow:'Pool',amount:10,goal:100}});expect(has(view,'leaderboard-summary')).toBe(false);expect(has(view,'leaderboard-track')).toBe(true);
 });
 
-it('draws a sweepstakes: a caption instead of a goal, no bar, and the rules and action report presses',()=>{
+it('draws a sweepstakes: a caption under the figure, no bar, and the rules link and action report presses',()=>{
  const rules=jest.fn(),action=jest.fn();
- const view=mount({promo:{eyebrow:'Sweepstakes',rules:{label:'See rules',onSelect:rules},amount:100000,caption:'top prize',action:{label:'Draws and winners',onSelect:action}}});
+ const view=mount({promo:{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:rules},amount:100000,caption:'top prize',action:{label:'Draws and winners',onSelect:action}}});
  expect(host(view,'leaderboard-amount').props.accessibilityLabel).toBe('$100,000 top prize');expect(has(view,'leaderboard-track')).toBe(false);
- expect(button(view,'leaderboard-rules').props.children).toBe('See rules');expect(button(view,'leaderboard-action').props).toMatchObject({children:'Draws and winners',fullWidth:true});
- act(()=>{button(view,'leaderboard-rules').props.onPress({});});act(()=>{button(view,'leaderboard-action').props.onPress({});});expect(rules).toHaveBeenCalledTimes(1);expect(action).toHaveBeenCalledTimes(1);
+ // The rules control is a text link with a chevron, not a filled button.
+ const link=host(view,'leaderboard-rules');expect(link.props.accessibilityRole).toBe('button');expect(text(link.findAll(node=>node.type==='Text')[0])).toBe('Rules');expect(view.findAllByType(Button).some(node=>node.props.testID==='leaderboard-rules')).toBe(false);
+ expect(button(view,'leaderboard-action').props).toMatchObject({children:'Draws and winners',fullWidth:true});
+ act(()=>{all(view,'leaderboard-rules').find(node=>'onPress' in node.props).props.onPress({});});act(()=>{button(view,'leaderboard-action').props.onPress({});});expect(rules).toHaveBeenCalledTimes(1);expect(action).toHaveBeenCalledTimes(1);
 });
 
 it('pins the viewer on a tinted row above the list, with column headings, a standings choice and a footnote',()=>{

@@ -321,17 +321,16 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 
 ```tsx
 <LeaderboardBlock title={t.leaderboard} onBack={goBack} headerAction={share} verifiedLabel={t.verified}
-  promo={{eyebrow: t.seasonPool, rules: {label: t.seeRules, onSelect: openRules},
-          amount: 4037, goal: 250000, progress: percent => t.toGoal(percent), updated: t.updates,
-          headline: ['Top ', {highlight: '100'}, ' traders split ', {highlight: '$250,000'}, ' pot'],
-          description: t.poolFunding}}
+  promo={{eyebrow: t.season, rules: {label: t.rules, onSelect: openRules},
+          amount: 4037, goal: 250000, caption: goal => t.ofPrizePool(goal),
+          headline: t.topTradersSplit, description: t.poolFunding}}
   you={me} entries={standings}/>
 ```
 
 - **Words.** Every word is host text; only Back is built in.
-- **Promotion.** `promo` draws a card: the `eyebrow` in small capitals with a dot, a `rules` capsule on its trailing edge, and `amount` as the headline figure in the action colour, updating place by place. `headline` is the explaining sentence as pieces, where `{highlight}` pieces take the action colour; `description` sits under it; `action` is a full-width button, for example to the draws. Leave `promo` out for standings alone.
-- **Prize pool.** With `goal`, the figure is followed by the goal (`/ $250,000`) and a progress bar filled to `amount / goal`. `progress` receives the share as a formatted percent for the line under the bar's leading end, and `updated` is the line under its trailing end. `leaderboardProgress(amount, goal)` returns the same share.
-- **Sweepstakes.** Without `goal` there is no bar, and `caption` follows the figure, such as top prize.
+- **Promotion.** `promo` draws one quiet card: the `eyebrow` in muted small capitals, `rules` as a text link with a chevron on its trailing edge, `amount` as the one large figure in the action colour, updating place by place, and `caption` as the line under it. `headline` and `description` read as one paragraph: the headline in the text colour, the description continuing it in the muted colour. `action` is a full-width button, for example to the draws. Leave `promo` out for standings alone.
+- **Prize pool.** With `goal`, a thin progress bar filled to `amount / goal` sits under the caption, and a `caption` function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. The bar carries the progress on its own; there are no lines under it. `leaderboardProgress(amount, goal)` returns the same share.
+- **Sweepstakes.** Without `goal` there is no bar, and `caption` is a string under the figure, such as top prize.
 - **Money.** `amountOptions` formats `amount` and `goal`; the default is whole US dollars.
 - **Standings choice.** `tabs={{label, options, value, onValueChange}}` adds a `SegmentedControl`, such as Upcoming draw and Top winners. The host swaps `entries` when it changes.
 - **Your standing.** `you` is the viewer's entry, pinned above the list on a tinted row with the name and score in the action colour. An entry in the list with `you: true` gets the same colours in place.

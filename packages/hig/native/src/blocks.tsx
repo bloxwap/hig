@@ -28,7 +28,7 @@ export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,t
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-block.js';
 export {TargetBlock,targetLayout,targetFormat,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice} from './target-block.js';
 export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag} from './position-block.js';
-export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type LeaderboardPromo,type LeaderboardEntry,type LeaderboardText} from './leaderboard-block.js';
+export {LeaderboardBlock,leaderboardProgress,type LeaderboardBlockProps,type LeaderboardPromo,type LeaderboardEntry} from './leaderboard-block.js';
 export {FromPicker,ToPicker,type FromPickerProps,type ToPickerProps,type PickerListProps} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapPanel,swapAction,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel.js';

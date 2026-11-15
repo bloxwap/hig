@@ -564,22 +564,22 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-leaderboard-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-leaderboard-promo { display:flex;flex-direction:column;gap:12px; }
 .hig-leaderboard-promo > p,.hig-leaderboard-footnote { margin:0; }
-.hig-leaderboard-promo-top,.hig-leaderboard-progress-meta,.hig-leaderboard-columns { display:flex;align-items:center;justify-content:space-between;gap:12px; }
-.hig-leaderboard-eyebrow,.hig-leaderboard-progress-meta,.hig-leaderboard-columns,.hig-leaderboard-rules { font-size:.75rem;line-height:1.33;letter-spacing:.12em;text-transform:uppercase; }
-.hig-leaderboard-eyebrow { display:inline-flex;align-items:center;gap:8px;min-width:0;color:var(--hig-action); }
-.hig-leaderboard-eyebrow::before { content:'';flex:none;width:8px;height:8px;border-radius:50%;background:currentColor; }
-.hig-button.hig-leaderboard-rules { flex:none;min-height:36px;padding:4px 16px; }
-.hig-leaderboard-amount { display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;color:var(--hig-muted); }
-.hig-leaderboard-amount > strong { color:var(--hig-action);font-size:clamp(1.75rem,9vw,2.5rem);line-height:1.15;font-weight:700;letter-spacing:-.02em; }
-.hig-leaderboard-progress { display:flex;flex-direction:column;gap:8px; }
-.hig-leaderboard-track { height:8px;border-radius:4px;background:var(--hig-fill-raised);overflow:hidden; }
-.hig-leaderboard-track > span { display:block;height:100%;min-width:8px;border-radius:4px;background:var(--hig-action);transition:width var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
-.hig-leaderboard-progress-meta,.hig-leaderboard-columns { color:var(--hig-muted); }
-.hig-leaderboard-progress-meta > :last-child,.hig-leaderboard-columns > :last-child { text-align:end; }
+.hig-leaderboard-promo-top,.hig-leaderboard-columns { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+.hig-leaderboard-eyebrow,.hig-leaderboard-columns { color:var(--hig-muted);font-size:.75rem;line-height:1.33;letter-spacing:.12em;text-transform:uppercase; }
+.hig-leaderboard-eyebrow { min-width:0; }
+.hig-leaderboard-rules { appearance:none;flex:none;display:inline-flex;align-items:center;gap:4px;min-height:var(--hig-button);margin-block:-12px;padding:0;border:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent; }
+.hig-leaderboard-rules:active { color:var(--hig-text); }
+[dir='rtl'] .hig-leaderboard-rules > svg { transform:scaleX(-1); }
+.hig-leaderboard-amount { color:var(--hig-action);font-size:clamp(2.5rem,13vw,3.5rem);line-height:1.1;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere; }
+.hig-leaderboard-promo > .hig-leaderboard-caption { margin-block-start:-8px;color:var(--hig-muted);font-size:.9375rem;line-height:1.5; }
+.hig-leaderboard-track { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
+.hig-leaderboard-track > span { display:block;height:100%;min-width:8px;border-radius:2px;background:var(--hig-action);transition:width var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
+.hig-leaderboard-columns > :last-child { text-align:end; }
 .hig-leaderboard-columns { padding-inline:4px; }
-.hig-leaderboard-headline { font-size:1.25rem;line-height:1.3;font-weight:600;overflow-wrap:anywhere; }
-.hig-leaderboard-headline > mark { background:none;color:var(--hig-action); }
-.hig-leaderboard-description,.hig-leaderboard-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-leaderboard-summary { color:var(--hig-muted);line-height:1.5;overflow-wrap:anywhere; }
+.hig-leaderboard-summary > strong { color:var(--hig-text);font-weight:600; }
+.hig-leaderboard-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+@media(hover:hover) and (pointer:fine) { .hig-leaderboard-rules:hover { color:var(--hig-text); } }
 .hig-leaderboard-footnote { padding-inline:4px; }
 .hig-leaderboard-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-leaderboard-list { display:flex;flex-direction:column;gap:8px; }

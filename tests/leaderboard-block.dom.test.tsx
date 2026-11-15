@@ -10,7 +10,7 @@ import * as blocks from '../packages/hig/react/src/blocks';
 afterEach(cleanup);
 const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;for(const visual of copy.querySelectorAll('.hig-animated-number-visual'))visual.remove();return copy.textContent;};
 const entries:LeaderboardEntry[]=[{id:'a',rank:1,name:'0x4e79…949f',verified:true,detail:'$1,789,061 vol',score:795407},{id:'me',rank:2,name:'you',detail:'$1,090,779 vol',score:418450,you:true},{id:'c',rank:3,name:'Zed',score:null}];
-const pool:LeaderboardPromo={eyebrow:'Season 01 prize pool',amount:4037,goal:250000,progress:percent=>`${percent} to goal`,updated:'Updates every 15 minutes',headline:['Top ',{highlight:'100'},' traders split ',{highlight:'$250,000'},' pot'],description:'Funded by fees.'};
+const pool:LeaderboardPromo={eyebrow:'Season 01',amount:4037,goal:250000,caption:goal=>`of ${goal} prize pool`,headline:'Top 100 traders split the pool.',description:'Funded by builder fees on every trade.'};
 const base:LeaderboardBlockProps={title:'Leaderboard',entries};
 const q=(selector:string)=>document.querySelector<HTMLElement>(selector);
 const rows=(scope='.hig-leaderboard-rows')=>[...document.querySelectorAll(`${scope} > .hig-leaderboard-row`)].map(row=>[spoken(row.querySelector('.hig-leaderboard-rank')!),spoken(row.querySelector('.hig-leaderboard-identity > strong')!),row.querySelector('.hig-leaderboard-identity > span')?.textContent??null,spoken(row.querySelector('.hig-leaderboard-score')!),row.getAttribute('data-you')]);
@@ -31,25 +31,31 @@ describe('LeaderboardBlock',()=>{
   for(const selector of ['.hig-leaderboard-promo','.hig-leaderboard-you','.hig-leaderboard-columns','.hig-leaderboard-footnote','.hig-segmented-control'])expect(q(selector),selector).toBeNull();
   expect(blocks.LeaderboardBlock).toBe(LeaderboardBlock);expect(blocks.leaderboardProgress).toBe(leaderboardProgress);
  });
- it('draws a prize pool: the figure against its goal, the bar at the share reached, and the lines under it',()=>{
+ it('draws a prize pool: a muted eyebrow, one large figure, the goal in the caption under it, and a thin bar at the share reached',()=>{
   const view=render(<LeaderboardBlock {...base} promo={pool}/>);
-  expect(q('.hig-leaderboard-promo')!.classList.contains('hig-surface')).toBe(true);expect(q('.hig-leaderboard-eyebrow')!.textContent).toBe('Season 01 prize pool');
-  expect(spoken(q('.hig-leaderboard-amount')!)).toBe('$4,037/ $250,000');
+  expect(q('.hig-leaderboard-promo')!.classList.contains('hig-surface')).toBe(true);expect(q('.hig-leaderboard-eyebrow')!.textContent).toBe('Season 01');
+  expect(spoken(q('.hig-leaderboard-amount')!)).toBe('$4,037');expect(q('.hig-leaderboard-caption')!.textContent).toBe('of $250,000 prize pool');
   expect(q('.hig-leaderboard-track')!.getAttribute('aria-hidden')).toBe('true');expect(parseFloat(q('.hig-leaderboard-track > span')!.style.width)).toBeCloseTo(1.6148,3);
-  expect([...q('.hig-leaderboard-progress-meta')!.children].map(part=>part.textContent)).toEqual(['2% to goal','Updates every 15 minutes']);
-  expect(q('.hig-leaderboard-headline')!.textContent).toBe('Top 100 traders split $250,000 pot');expect([...document.querySelectorAll('.hig-leaderboard-headline > mark')].map(mark=>mark.textContent)).toEqual(['100','$250,000']);
-  expect(q('.hig-leaderboard-description')!.textContent).toBe('Funded by fees.');expect(q('.hig-leaderboard-rules')).toBeNull();
+  // One paragraph: the headline in the text colour, the description continuing it.
+  const summary=q('.hig-leaderboard-summary')!;expect(summary.textContent).toBe('Top 100 traders split the pool. Funded by builder fees on every trade.');expect(summary.querySelector('strong')!.textContent).toBe('Top 100 traders split the pool.');
+  // Nothing sits under the bar, the eyebrow has no dot, and there is no rules link without its prop.
+  for(const selector of ['.hig-leaderboard-progress-meta','.hig-leaderboard-headline','.hig-leaderboard-description','.hig-leaderboard-rules','.hig-leaderboard-summary mark'])expect(q(selector),selector).toBeNull();
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).not.toContain('.hig-leaderboard-eyebrow::before');expect(css).toMatch(/\.hig-leaderboard-track \{ height:4px/);
   // Over the goal the bar is full; an unknown amount reads as a dash and an empty bar; the host formats the money.
-  view.rerender(<LeaderboardBlock {...base} promo={{...pool,amount:300000}}/>);expect(q('.hig-leaderboard-track > span')!.style.width).toBe('100%');expect(q('.hig-leaderboard-progress-meta')!.firstElementChild!.textContent).toBe('100% to goal');
+  view.rerender(<LeaderboardBlock {...base} promo={{...pool,amount:300000}}/>);expect(q('.hig-leaderboard-track > span')!.style.width).toBe('100%');
   view.rerender(<LeaderboardBlock {...base} promo={{...pool,amount:null,amountOptions:{style:'currency',currency:'EUR',maximumFractionDigits:0}}}/>);
-  expect(spoken(q('.hig-leaderboard-amount')!)).toBe('—/ €250,000');expect(q('.hig-leaderboard-track > span')!.style.width).toBe('0%');expect(q('.hig-leaderboard-progress-meta')!.firstElementChild!.textContent).toBe('— to goal');
-  view.rerender(<LeaderboardBlock {...base} promo={{eyebrow:'Pool',amount:10,goal:100}}/>);expect(q('.hig-leaderboard-progress-meta')).toBeNull();expect(q('.hig-leaderboard-headline')).toBeNull();
+  expect(spoken(q('.hig-leaderboard-amount')!)).toBe('—');expect(q('.hig-leaderboard-caption')!.textContent).toBe('of €250,000 prize pool');expect(q('.hig-leaderboard-track > span')!.style.width).toBe('0%');
+  // A headline or a description alone still reads; a bare pool has neither a caption nor a paragraph.
+  view.rerender(<LeaderboardBlock {...base} promo={{eyebrow:'Pool',amount:10,goal:100,description:'Funded by fees.'}}/>);expect(q('.hig-leaderboard-summary')!.textContent).toBe('Funded by fees.');expect(q('.hig-leaderboard-summary strong')).toBeNull();expect(q('.hig-leaderboard-caption')).toBeNull();
+  view.rerender(<LeaderboardBlock {...base} promo={{eyebrow:'Pool',amount:10,goal:100}}/>);expect(q('.hig-leaderboard-summary')).toBeNull();expect(q('.hig-leaderboard-track')).toBeTruthy();
  });
- it('draws a sweepstakes: a caption instead of a goal, no bar, and the rules and action report presses',async()=>{
+ it('draws a sweepstakes: a caption under the figure, no bar, and the rules link and action report presses',async()=>{
   const rules=vi.fn(),action=vi.fn();
-  render(<LeaderboardBlock {...base} promo={{eyebrow:'Sweepstakes',rules:{label:'See rules',onSelect:rules},amount:100000,caption:'top prize',headline:['Every ',{highlight:'$10'},' you trade earns ',{highlight:'1 entry'}],action:{label:'Draws and winners',onSelect:action}}}/>);
-  expect(spoken(q('.hig-leaderboard-amount')!)).toBe('$100,000top prize');expect(q('.hig-leaderboard-progress')).toBeNull();
-  await userEvent.click(screen.getByRole('button',{name:'See rules'}));await userEvent.click(screen.getByRole('button',{name:'Draws and winners'}));expect(rules).toHaveBeenCalledTimes(1);expect(action).toHaveBeenCalledTimes(1);
+  render(<LeaderboardBlock {...base} promo={{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:rules},amount:100000,caption:'top prize',headline:'Every $10 you trade earns 1 entry.',action:{label:'Draws and winners',onSelect:action}}}/>);
+  expect(spoken(q('.hig-leaderboard-amount')!)).toBe('$100,000');expect(q('.hig-leaderboard-caption')!.textContent).toBe('top prize');expect(q('.hig-leaderboard-track')).toBeNull();
+  // The rules control is a text link with a chevron, not a filled button.
+  const link=screen.getByRole('button',{name:'Rules'});expect(link.className).toBe('hig-leaderboard-rules');expect(link.querySelector('svg')).toBeTruthy();expect(link.closest('.hig-leaderboard-promo-top')).toBeTruthy();
+  await userEvent.click(link);await userEvent.click(screen.getByRole('button',{name:'Draws and winners'}));expect(rules).toHaveBeenCalledTimes(1);expect(action).toHaveBeenCalledTimes(1);
   expect(screen.getByRole('button',{name:'Draws and winners'}).getAttribute('data-full')).toBe('true');
  });
  it('pins the viewer on a tinted row above the list, with column headings, a standings choice and a footnote',async()=>{
@@ -70,7 +76,7 @@ describe('LeaderboardBlock',()=>{
  });
  it('ships no words of its own: only Back is built in, and figures follow the locale',()=>{
   render(<HIGProvider locale='de-DE' messages={{back:'Zurück'}}><LeaderboardBlock {...base} promo={pool} onBack={()=>{}}/></HIGProvider>);
-  expect(screen.getByRole('button',{name:'Zurück'})).toBeTruthy();expect(spoken(q('.hig-leaderboard-amount')!)).toMatch(/^4\.037\s\$\/ 250\.000\s\$$/);expect(rows()[0][3]).toBe('795.407');
+  expect(screen.getByRole('button',{name:'Zurück'})).toBeTruthy();expect(spoken(q('.hig-leaderboard-amount')!)).toMatch(/^4\.037\s\$/);expect(q('.hig-leaderboard-caption')!.textContent).toMatch(/^of 250\.000\s\$ prize pool$/);expect(rows()[0][3]).toBe('795.407');
   expect(readFileSync('packages/hig/react/src/blocks/leaderboard-block.tsx','utf8')).not.toMatch(/messages\./);
  });
 });
