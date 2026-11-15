@@ -142,9 +142,9 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
   }
   return <><View testID='manage-position-row' accessible accessibilityLabel={label} style={surface(false)}>{parts}</View>{note}</>;
  };
- const actionValue=(action:ManagePositionBlockAction):{value?:React.ReactNode;valueLabel?:string}=>{
+ const actionValue=(action:ManagePositionBlockAction):{value?:React.ReactNode;valueLabel?:string;valueTone?:ManagePositionBlockAction['tone']}=>{
   const figure=action.value;if(figure==null)return {};
-  if(typeof figure==='string')return action.tone?{value:<Text testID={`manage-action-${action.id}-value`} numberOfLines={1} style={{fontSize:16,lineHeight:24,color:colors[action.tone]}}>{figure}</Text>,valueLabel:figure}:{value:figure};
+  if(typeof figure==='string')return {value:figure,valueTone:action.tone};
   return {value:<AnimatedNumberReadout {...figure} tone={action.tone??'muted'} testID={`manage-action-${action.id}-value`} style={{fontSize:16,lineHeight:24}}/>,valueLabel:formatNumberReadout(figure.value,locale,present(figure.options),undefined,figure.prefix,figure.suffix).text};
  };
  return <View testID={testID} style={{padding:16}}>

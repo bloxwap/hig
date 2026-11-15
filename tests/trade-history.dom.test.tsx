@@ -93,3 +93,55 @@ describe('TradeHistoryDetailBlock',()=>{
   expect(css.join('\n')).not.toMatch(/\b(left|right)\b/);expect(css.find(line=>line.startsWith('.hig-trade-actions {'))).toContain('gap:var(--hig-action-gap)');
  });
 });
+describe('trade history host slots (Unreleased)',()=>{
+ it('paints side, leverage and result with the market up/down roles on both blocks, which the provider can override',()=>{
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');
+  for(const rule of ['.hig-trade-row-side[data-side=\'long\'] { color:var(--hig-up,var(--hig-buy)); }','.hig-trade-row-side[data-side=\'short\'] { color:var(--hig-down,var(--hig-sell)); }','.hig-trade-side[data-side=\'long\'] { color:var(--hig-up,var(--hig-buy)); }','.hig-trade-side[data-side=\'short\'] { color:var(--hig-down,var(--hig-sell)); }'])expect(css).toContain(rule);
+  expect(css).toMatch(/\.hig-trade-pnl\[data-tone='up'\],\.hig-trade-result\[data-tone='up'\] :is\(\.hig-trade-figure,\.hig-trade-return\) \{ color:var\(--hig-up,var\(--hig-buy\)\); \}/);
+  expect(css.split('\n').filter(line=>line.startsWith('.hig-trade')&&/data-(side|tone)/.test(line)).join('\n')).not.toMatch(/--hig-(positive|negative)\)/);
+  const view=render(<HIGProvider marketColors={{up:'#ff3b30',down:'#0a84ff'}}><HIGProvider primaryColor='#ff0000'><TradeHistoryListBlock labels={list} trades={trades}/></HIGProvider></HIGProvider>);
+  const wrappers=[...view.container.querySelectorAll<HTMLElement>('[data-hig-density]')];
+  expect(wrappers[0].style.getPropertyValue('--hig-up')).toBe('#ff3b30');expect(wrappers[0].style.getPropertyValue('--hig-down')).toBe('#0a84ff');
+  expect(wrappers[1].style.getPropertyValue('--hig-up')).toBe('#ff3b30');expect(wrappers[1].style.getPropertyValue('--hig-action')).not.toBe('');
+  view.rerender(<HIGProvider><TradeHistoryListBlock labels={list} trades={trades}/></HIGProvider>);
+  expect(view.container.querySelector<HTMLElement>('[data-hig-density]')!.style.getPropertyValue('--hig-up')).toBe('');
+  cleanup();const fresh=render(<HIGProvider><TradeHistoryListBlock labels={list} trades={trades}/></HIGProvider>);expect(fresh.container.querySelector('[data-hig-density]')!.hasAttribute('style')).toBe(false);
+ });
+ it('draws a notice, a footer, a tag before the age, a leverage note and a symbol in the fallback disc',()=>{
+  const select=vi.fn();
+  render(<TradeHistoryListBlock labels={list} onSelect={select} notice={<p>Some trades are missing</p>} footer={<button type='button'>Next page</button>}
+   trades={[{id:'1',name:'Bitcoin',symbol:'BTC',side:'long',leverage:20,leverageNote:'current',pnl:2,time:'2d',tag:'0x22…22'}]}/>);
+  const section=document.querySelector('.hig-trade-history-list')!;
+  expect([...section.children].map(child=>child.className)).toEqual(['hig-screen-header','hig-trade-notice','hig-trade-rows','hig-trade-footer']);
+  expect(document.querySelector('.hig-trade-notice')!.textContent).toBe('Some trades are missing');expect(screen.getByRole('button',{name:'Next page'})).toBeTruthy();
+  const row=screen.getByRole('button',{name:'Bitcoin, Long 20× current, +$2.000, 0x22…22, 2d'});
+  expect(row.querySelector('.hig-asset-row-icon')!.textContent).toBe('BTC');expect(row.querySelector('.hig-trade-row-note')!.textContent).toBe('current');
+  expect(spoken(row.querySelector('.hig-trade-row-meta')!)).toBe('0x22…22·2d');expect(row.querySelector('.hig-trade-row-meta > [aria-hidden]')!.textContent).toBe('·');
+ });
+ it('shows skeleton rows while loading, an error in place of the rows, and a two-line empty state',()=>{
+  const view=render(<TradeHistoryListBlock labels={list} trades={trades} loading/>);
+  const busy=document.querySelector<HTMLElement>('.hig-trade-rows')!;expect(busy.getAttribute('aria-busy')).toBe('true');expect(busy.getAttribute('role')).toBeNull();
+  expect(busy.querySelectorAll('.hig-skeleton[aria-hidden="true"]')).toHaveLength(4);expect(screen.queryByRole('list')).toBeNull();
+  expect(screen.queryByRole('status')).toBeNull();
+  // The label is text in its own status region, which is not busy, so it is announced; only the skeletons are busy.
+  view.rerender(<TradeHistoryListBlock labels={list} trades={trades} loading loadingLabel='Loading history'/>);
+  const loadingStatus=screen.getByRole('status');expect(loadingStatus.textContent).toBe('Loading history');expect(loadingStatus.className).toBe('hig-sr-only');
+  expect(loadingStatus.closest('[aria-busy="true"]')).toBeNull();expect(document.querySelector('.hig-trade-rows')!.getAttribute('aria-busy')).toBe('true');
+  view.rerender(<TradeHistoryListBlock labels={list} trades={trades} error='History is unavailable'/>);expect(screen.getByRole('alert').textContent).toBe('History is unavailable');expect(screen.queryByRole('list')).toBeNull();
+  view.rerender(<TradeHistoryListBlock labels={{...list,emptyDescription:'Closed trades appear here.'}} trades={[]}/>);
+  const empty=screen.getByRole('status');expect(empty.querySelector('strong')!.textContent).toBe('No closed trades yet');expect(empty.textContent).toBe('No closed trades yetClosed trades appear here.');
+ });
+ it('detail: a badge beside the title, a note under the details, a leverage note, and host formats for the headline and return',()=>{
+  const ref=React.createRef<HTMLDivElement>();
+  render(<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><TradeHistoryDetailBlock {...base} symbol='AMZN' leverageNote='actuel' badge='Démo' note='Une partie est manquante.' summaryRef={ref}
+   pnlOptions={{style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:2}} percentOptions={{style:'percent',maximumFractionDigits:1,signDisplay:'exceptZero'}}
+   actions={[{id:'share',label:'Partager',onSelect:()=>{}}]}/></HIGProvider>);
+  const heading=screen.getByRole('heading',{name:'Trade Démo'});expect(heading.querySelector('.hig-badge')!.textContent).toBe('Démo');
+  expect(document.querySelector('.hig-trade-avatar')!.textContent).toBe('AMZN');expect(document.querySelector('.hig-trade-leverage-note')!.textContent).toBe('actuel');
+  const plain=(element:Element)=>spoken(element)!.replace(/\s/g,' ');
+  expect(plain(document.querySelector('.hig-trade-figure')!)).toBe('Net PnL +1,42 $');expect(plain(document.querySelector('.hig-trade-return')!)).toBe('+2,8 % on margin');
+  expect(ref.current).toBe(document.querySelector('.hig-trade-result'));
+  const note=document.querySelector('.hig-trade-note')!;expect(note.textContent).toBe('Une partie est manquante.');expect(note.parentElement!.className).toBe('hig-trade-summary');
+  expect(note.compareDocumentPosition(document.querySelector('.hig-trade-actions')!)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ });
+});

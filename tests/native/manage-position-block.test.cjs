@@ -140,8 +140,8 @@ it('puts a trailing value with an optional tone on an action row, read with its 
  expect(['tp','sl','plain','close'].map(id=>press(id).props.accessibilityLabel)).toEqual(['Take Profit, $66,000','Stop Loss, $63,500','Trailing, Off','Close']);
  const figure=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-action-tp-value');expect([figure.props.value,figure.props.tone]).toEqual([66000,'positive']);
  expect(flat(host(view,'manage-action-sl-value')).color).toBe(nativeSrgb.negative);expect(text(host(view,'manage-action-sl-value'))).toBe('$63,500');
- // Without a tone, host text is the row's own muted value.
- expect(has(view,'manage-action-plain-value')).toBe(false);
+ // Host text is the row's own value, toned through ListRow valueTone; without a tone it is muted.
+ expect(flat(host(view,'manage-action-plain-value')).color).toBe(nativeSrgb.muted);expect(text(host(view,'manage-action-plain-value'))).toBe('Off');
  act(()=>{press('tp').props.onPress({});});expect(cancel).toHaveBeenCalledTimes(1);
 });
 

@@ -92,3 +92,38 @@ it('marks verified traders, read out only when the host names the mark, and form
  view=mount();expect(readings(view)[0]).toBe('1, 0x4e79…949f, $1,789,061 vol, 795,407');expect(has(view,'reward-row-a-verified')).toBe(true);
  view=mount({entries:[{id:'a',rank:1,name:'Ada',avatar:h(View,{testID:'ada-art'}),score:1}]});expect(has(view,'ada-art')).toBe(true);
 });
+describe('host slots (Unreleased)',()=>{
+ const {ScrollView,Text}=require('react-native');
+ it('names the pinned row, draws a status line between it and the list, live details and per-entry score formats',()=>{
+  const prizes=[{id:'w1',rank:1,name:'Ada',score:1000},{id:'w2',rank:2,name:'Bo',score:12.5,scoreOptions:{style:'currency',currency:'USD'},detail:{value:1090779,options:{maximumFractionDigits:0},suffix:' vol'}}];
+  const view=mount({testID:'board',entries:prizes,scoreOptions:{style:'currency',currency:'USD',maximumFractionDigits:0},you:{id:'me',rank:9,name:'you',score:3},youLabel:'Your rank',status:"You're not ranked yet"});
+  expect(host(view,'reward-you').props.accessibilityLabel).toBe('Your rank, 9, you, $3');
+  expect(readings(view)).toEqual(['1, Ada, $1,000','2, Bo, 1,090,779 vol, $12.50']);
+  const detail=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='reward-row-w2-detail');expect(detail.props).toMatchObject({value:1090779,suffix:' vol',tone:'muted'});
+  const status=host(view,'reward-status');expect(text(status)).toBe("You're not ranked yet");expect(status.props.accessibilityLiveRegion).toBe('polite');
+  const ids=host(view,'board').children.map(child=>child.props.testID);expect(ids.indexOf('reward-you')).toBeLessThan(ids.indexOf('reward-status'));expect(ids.indexOf('reward-status')).toBeLessThan(ids.indexOf('reward-list'));
+ });
+ it('shows skeleton rows while loading, pagination under the list and a host verified mark',()=>{
+  const previous=jest.fn(),next=jest.fn();
+  let view=mount({loading:true});const busy=host(view,'reward-loading');expect(busy.props.accessibilityState).toEqual({busy:true});expect(busy.children).toHaveLength(5);expect(has(view,'reward-rows')).toBe(false);
+  view=mount({loading:true,loadingLabel:'Loading standings'});expect(host(view,'reward-loading').props).toMatchObject({accessible:true,accessibilityLabel:'Loading standings'});
+  view=mount({testID:'board',verifiedMark:h(View,{testID:'genesis'}),pagination:{previous:{label:'Previous',onSelect:previous,disabled:true},next:{label:'Next',onSelect:next},label:'1–25'},footnote:'Updates every 15 minutes'});
+  expect(has(view,'genesis')).toBe(true);
+  expect(host(view,'board').children.map(child=>child.props.testID).slice(-3)).toEqual(['reward-list','reward-pagination','reward-footnote']);
+  expect(text(host(view,'reward-page'))).toBe('1–25');
+  const buttons=view.findAllByType(Button);expect(buttons.find(b=>b.props.testID==='reward-previous').props.disabled).toBe(true);
+  act(()=>{buttons.find(b=>b.props.testID==='reward-next').props.onPress();});expect(next).toHaveBeenCalledTimes(1);expect(previous).not.toHaveBeenCalled();
+ });
+ it('pins the header in its own scroll view with stickyHeader, on a host fill and through a host scroll view',()=>{
+  let view=mount({stickyHeader:true,testID:'board'});
+  const scroll=view.findByType(ScrollView);expect(scroll.props.stickyHeaderIndices).toEqual([0]);expect(scroll.props.testID).toBe('board');
+  expect(flat(host(view,'reward-sticky-header')).backgroundColor).toBe(nativeSrgb.background);
+  function HostScroll(props){return h(ScrollView,{...props,testID:'host-scroll'});}
+  view=mount({stickyHeader:true,stickyHeaderBackground:'#101010',scrollComponent:HostScroll});
+  expect(has(view,'host-scroll')).toBe(true);expect(flat(host(view,'reward-sticky-header')).backgroundColor).toBe('#101010');
+  view=mount();expect(view.findAllByType(ScrollView)).toHaveLength(0);
+ });
+ it('accepts host elements in the headline',()=>{
+  const view=mount({promo:{...pool,headline:h(Text,{testID:'accent'},'Top 100')}});expect(has(view,'accent')).toBe(true);
+ });
+});

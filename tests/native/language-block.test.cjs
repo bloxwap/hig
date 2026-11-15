@@ -33,3 +33,11 @@ it('filters from the search field, shows no results, and leaves the field out wi
  tree=mount({search:false,title:'Idioma',headerAction:h(View,{testID:'close'})});
  expect(tree.findAllByType(TextInput)).toHaveLength(0);expect(has(tree,'close')).toBe(true);expect(text(all(tree,'lang-title').find(node=>typeof node.type==='string'))).toBe('Idioma');
 });
+it('draws a description under the header, and while disabled dims the rows, reads them unavailable and ignores presses',()=>{
+ const select=jest.fn();
+ let tree=mount({value:'en',onSelect:select,disabled:true,description:'Choose the language used throughout the app.'});
+ expect(text(all(tree,'lang-description').find(node=>typeof node.type==='string'))).toBe('Choose the language used throughout the app.');
+ const rows=radios(tree);expect(rows.every(node=>node.props.disabled===true)).toBe(true);expect(rows[0].props.accessibilityState).toEqual({checked:true,disabled:true});
+ const flatRow=node=>Object.assign({},...[].concat(node.props.style({pressed:false})));expect(flatRow(rows[1]).opacity).toBe(0.5);
+ tree=mount({value:'en',onSelect:select});const enabled=radios(tree);expect(enabled[0].props.accessibilityState).toEqual({checked:true});expect(enabled[1].props.style({pressed:false}).opacity).toBeUndefined();expect(has(tree,'lang-description')).toBe(false);
+});

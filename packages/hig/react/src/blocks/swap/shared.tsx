@@ -125,7 +125,7 @@ export function TokenIcon({token,size=44}:{token:SwapToken;size?:number}){
  </span>;
 }
 /** Small capsule action that sits on a card: Max, Test, the slippage setting and the denomination switch. */
-export function SwapPill({children,...props}:React.ButtonHTMLAttributes<HTMLButtonElement>){return <button type='button' {...props} className='hig-swap-pill'>{children}<PressDecoration kind='button' disabled={!!props.disabled}/></button>;}
+export function SwapPill({children,...props}:React.ComponentPropsWithRef<'button'>){return <button type='button' {...props} className='hig-swap-pill'>{children}<PressDecoration kind='button' disabled={!!props.disabled}/></button>;}
 const keys=['1','2','3','4','5','6','7','8','9','.','0','back'];
 /** Numeric keypad. Emits `0`–`9`, `.` or `back`. */
 export function SwapKeypad({onKey,label,deleteLabel}:{onKey:(key:string)=>void;label:string;deleteLabel:string}){

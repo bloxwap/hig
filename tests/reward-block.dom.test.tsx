@@ -83,3 +83,39 @@ describe('RewardBlock',()=>{
   expect(readFileSync('packages/hig/react/src/blocks/reward-block.tsx','utf8')).not.toMatch(/messages\./);
  });
 });
+describe('RewardBlock host slots (Unreleased)',()=>{
+ it('draws real links for rules and the promo action, and still reports the press',async()=>{
+  const rules=vi.fn();
+  render(<RewardBlock {...base} promo={{...pool,rules:{label:'Rules',href:'/rules',onSelect:rules},action:{label:'Draws and winners',href:'https://example.com/draws',target:'_blank'}}}/>);
+  const link=screen.getByRole('link',{name:'Rules'});expect(link.getAttribute('href')).toBe('/rules');expect(link.className).toBe('hig-reward-rules');expect(link.hasAttribute('target')).toBe(false);
+  link.addEventListener('click',event=>event.preventDefault());await userEvent.click(link);expect(rules).toHaveBeenCalledTimes(1);
+  const draws=screen.getByRole('link',{name:'Draws and winners'});expect(draws.getAttribute('target')).toBe('_blank');expect(draws.getAttribute('rel')).toBe('noopener noreferrer');
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }');
+ });
+ it('names the pinned row, draws a status line between it and the list, live entry details and per-entry score formats',()=>{
+  const prizes:RewardEntry[]=[{id:'w1',rank:1,name:'0xaa…01',score:1000},{id:'w2',rank:2,name:'0xbb…02',score:12.5,scoreOptions:{style:'currency',currency:'USD'},detail:{value:1090779,options:{maximumFractionDigits:0},suffix:' vol'}}];
+  render(<RewardBlock {...base} entries={prizes} scoreOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}} you={{id:'me',rank:9,name:'you',score:3}} youLabel='Your rank' status="You're not ranked yet"/>);
+  const pinned=screen.getByRole('group',{name:'Your rank'});expect(pinned.className).toBe('hig-reward-you');
+  const status=screen.getByRole('status');expect(status.textContent).toBe("You're not ranked yet");
+  expect(pinned.compareDocumentPosition(status)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(status.compareDocumentPosition(q('.hig-reward-list')!)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(rows().map(([rank,name,,score])=>[rank,name,score])).toEqual([['1','0xaa…01','$1,000'],['2','0xbb…02','$12.50']]);
+  expect(spoken(document.querySelectorAll('.hig-reward-rows .hig-reward-identity > span')[0]!)).toBe('1,090,779 vol');
+  expect(document.querySelectorAll('.hig-reward-rows .hig-reward-identity > span .hig-animated-number-visual')).toHaveLength(1);
+ });
+ it('shows skeleton rows while loading, pagination under the list, a host verified mark, a host headline and a sticky header',async()=>{
+  const previous=vi.fn(),next=vi.fn();
+  const view=render(<RewardBlock {...base} loading/>);
+  // Only the skeleton list is busy, not the whole screen.
+  expect(q('.hig-reward-block')!.hasAttribute('aria-busy')).toBe(false);expect(q('.hig-reward-list')!.getAttribute('aria-busy')).toBe('true');expect(document.querySelectorAll('.hig-reward-skeleton[aria-hidden="true"]')).toHaveLength(5);expect(q('.hig-reward-rows')).toBeNull();
+  view.rerender(<RewardBlock {...base} loading loadingLabel='Loading standings'/>);
+  const loadingStatus=screen.getByRole('status');expect(loadingStatus.textContent).toBe('Loading standings');expect(loadingStatus.className).toBe('hig-sr-only');expect(loadingStatus.closest('[aria-busy="true"]')).toBeNull();
+  view.rerender(<RewardBlock {...base} stickyHeader verifiedLabel='Genesis' verifiedMark={<svg data-testid='genesis'/>} promo={{...pool,headline:<>Top 100 <em>split</em> the pool.</>}}
+   pagination={{previous:{label:'Previous',onSelect:previous,disabled:true},next:{label:'Next',onSelect:next},label:'1–25'}} footnote='Updates every 15 minutes'/>);
+  expect(q('.hig-reward-block')!.hasAttribute('aria-busy')).toBe(false);expect(q('.hig-reward-block')!.dataset.stickyHeader).toBe('true');
+  expect(screen.getByRole('img',{name:'Genesis'}).querySelector('[data-testid="genesis"]')).toBeTruthy();expect(q('.hig-reward-summary em')!.textContent).toBe('split');
+  const paging=q('.hig-reward-pagination')!;expect(paging.textContent).toBe('Previous1–25Next');expect(paging.querySelector('[aria-live="polite"]')!.textContent).toBe('1–25');
+  expect(q('.hig-reward-list')!.nextElementSibling).toBe(paging);expect(paging.nextElementSibling!.className).toBe('hig-reward-footnote');
+  expect((screen.getByRole('button',{name:'Previous'}) as HTMLButtonElement).disabled).toBe(true);await userEvent.click(screen.getByRole('button',{name:'Next'}));expect(next).toHaveBeenCalledTimes(1);expect(previous).not.toHaveBeenCalled();
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toMatch(/\.hig-reward-block\[data-sticky-header\] > \.hig-screen-header \{ position:sticky;inset-block-start:0;z-index:1;background:var\(--hig-screen-background,var\(--hig-background\)\); \}/);
+ });
+});

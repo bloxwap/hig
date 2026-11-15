@@ -40,9 +40,9 @@ export function TokenArt({uri,symbol,size,ring}: {uri?:SwapArtwork;symbol?:strin
 /** Token artwork with its chain badge. */
 export function TokenIcon({token,size=44}: {token:SwapToken;size?:number}){const colors=useColors();return <View {...hidden} style={{width:size,height:size}}><TokenArt uri={token.icon} symbol={token.symbol} size={size}/>{token.chainIcon?<View style={{position:'absolute',end:0,bottom:0}}><TokenArt uri={token.chainIcon} size={18} ring={colors.overlay}/></View>:null}</View>;}
 /** Small capsule action that sits on a card: Max, Test, the slippage setting and the denomination switch. 32dp tall with a 44dp target. */
-export function SwapCapsule({children,onPress,label,testID,hitSlop={top:6,bottom:6}}: {children:React.ReactNode;onPress:()=>void;label?:string;testID?:string;/** Defaults to a 44dp target, as on the swap card. */hitSlop?:Insets}){
+export function SwapCapsule({children,onPress,label,testID,hitSlop={top:6,bottom:6},ref}: {children:React.ReactNode;onPress:()=>void;label?:string;testID?:string;/** Defaults to a 44dp target, as on the swap card. */hitSlop?:Insets;/** Reaches the capsule, for example to move accessibility focus back to it. */ref?:React.Ref<View>}){
  const fills=useFills();const {direction}=useHIG();
- return <Pressable accessibilityRole='button' accessibilityLabel={label} testID={testID} onPress={onPress} hitSlop={hitSlop} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:6,minHeight:32,paddingVertical:4,paddingHorizontal:12,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well})}>{children}</Pressable>;
+ return <Pressable ref={ref} accessibilityRole='button' accessibilityLabel={label} testID={testID} onPress={onPress} hitSlop={hitSlop} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:6,minHeight:32,paddingVertical:4,paddingHorizontal:12,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well})}>{children}</Pressable>;
 }
 const keys=['1','2','3','4','5','6','7','8','9','.','0','back'];
 /** Numeric keypad: a 3 by 4 grid of 56dp keys. Emits `0`–`9`, `.` or `back`. */

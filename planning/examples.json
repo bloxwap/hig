@@ -1184,11 +1184,21 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "sweepstakes"
+        "sweepstakes",
+        "loading",
+        "paged"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "loading": {
+          "web": "<C.RewardBlock title='Leaderboard' loading loadingLabel='Loading standings' promo={{eyebrow:'Season 01',amount:null,goal:250000,caption:goal=>'of '+goal+' prize pool'}} entries={[]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.RewardBlock title='Leaderboard' loading loadingLabel='Loading standings' promo={{eyebrow:'Season 01',amount:null,goal:250000,caption:goal=>'of '+goal+' prize pool'}} entries={[]} onBack={()=>setMessage('The host goes back')}/>"
+        },
+        "paged": {
+          "web": "<C.RewardBlock title='Referrals' stickyHeader youLabel='Your rank' you={{id:'you',rank:31,name:'you',detail:{value:12,suffix:' referrals'},score:4}} status='Refer one more trader to reach the top 25.' scoreTitle='Points' entries={[{id:'a',rank:26,name:'0x4e79…949f',detail:{value:30,suffix:' referrals'},score:9},{id:'b',rank:27,name:'0x3f50…eb5f',detail:{value:28,suffix:' referrals'},score:8.5,scoreOptions:{maximumFractionDigits:1}}]} pagination={{previous:{label:'Previous',onSelect:()=>setMessage('The host shows the previous page')},next:{label:'Next',onSelect:()=>setMessage('The host shows the next page')},label:'26–50'}} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.RewardBlock title='Referrals' youLabel='Your rank' you={{id:'you',rank:31,name:'you',detail:{value:12,suffix:' referrals'},score:4}} status='Refer one more trader to reach the top 25.' scoreTitle='Points' entries={[{id:'a',rank:26,name:'0x4e79…949f',detail:{value:30,suffix:' referrals'},score:9},{id:'b',rank:27,name:'0x3f50…eb5f',detail:{value:28,suffix:' referrals'},score:8.5,scoreOptions:{maximumFractionDigits:1}}]} pagination={{previous:{label:'Previous',onSelect:()=>setMessage('The host shows the previous page')},next:{label:'Next',onSelect:()=>setMessage('The host shows the next page')},label:'26–50'}} onBack={()=>setMessage('The host goes back')}/>"
+        },
         "sweepstakes": {
           "web": "<C.RewardBlock title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:'Every $10 you trade earns 1 entry.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>",
           "native": "<C.RewardBlock title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'Rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:'Every $10 you trade earns 1 entry.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>"
@@ -1205,11 +1215,16 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "interactive"
+        "interactive",
+        "devices"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "devices": {
+          "web": "<C.SoundHapticsBlock title='Sound & Haptics' description='How the app sounds and feels.' sections={[{id:'effects',label:'Effects',checked:false,onCheckedChange:setChecked,volumeWhenOff:'disabled',volume:{label:'Volume',value:0.5,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:true,onCheckedChange:setChecked,source:'USB Microphone',level:0.42,levelLabel:'Input level',choices:{label:'Input',options:[{value:'auto',label:'Automatic'},{value:'usb',label:'USB Microphone'},{value:'built-in',label:'iPhone Microphone'}],value:value==='buy'?'auto':value,onValueChange:setValue}},{id:'camera',label:'Camera',checked:false,onCheckedChange:setChecked,description:'Off in Settings',action:{label:'Open Settings',onSelect:()=>setMessage('The host opens the system settings')}}]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.SoundHapticsBlock title='Sound & Haptics' description='How the app sounds and feels.' sections={[{id:'effects',label:'Effects',checked:false,onCheckedChange:setChecked,volumeWhenOff:'disabled',volume:{label:'Volume',value:0.5,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:true,onCheckedChange:setChecked,source:'USB Microphone',level:0.42,levelLabel:'Input level',choices:{label:'Input',options:[{value:'auto',label:'Automatic'},{value:'usb',label:'USB Microphone'},{value:'built-in',label:'iPhone Microphone'}],value:value==='buy'?'auto':value,onValueChange:setValue}},{id:'camera',label:'Camera',checked:false,onCheckedChange:setChecked,description:'Off in Settings',action:{label:'Open Settings',onSelect:()=>setMessage('The host opens the system settings')}}]} onBack={()=>setMessage('The host goes back')}/>"
+        },
         "interactive": {
           "web": "<C.SoundHapticsBlock title='Sound & Haptics' sections={[{id:'effects',label:'Effects',checked:checked,onCheckedChange:setChecked,volume:{label:'Volume',value:0.25,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:checked,onCheckedChange:setChecked,source:'iPhone Microphone',level:0.17,volume:{label:'Mic volume',value:1,onValueChange:next=>setMessage('The host sets the mic volume to '+next)}},{id:'haptics',label:'Haptics',checked:checked,onCheckedChange:setChecked},{id:'flash',label:'Flash',checked:checked,onCheckedChange:setChecked}]} onBack={()=>setMessage('The host goes back')}/>",
           "native": "<C.SoundHapticsBlock title='Sound & Haptics' sections={[{id:'effects',label:'Effects',checked:checked,onCheckedChange:setChecked,volume:{label:'Volume',value:0.25,onValueChange:next=>setMessage('The host sets the volume to '+next)}},{id:'mic',label:'Mic input',checked:checked,onCheckedChange:setChecked,source:'iPhone Microphone',level:0.17,volume:{label:'Mic volume',value:1,onValueChange:next=>setMessage('The host sets the mic volume to '+next)}},{id:'haptics',label:'Haptics',checked:checked,onCheckedChange:setChecked},{id:'flash',label:'Flash',checked:checked,onCheckedChange:setChecked}]} onBack={()=>setMessage('The host goes back')}/>"
@@ -1225,10 +1240,17 @@
       "native": "<C.SignalsBlock title='Signals' verifiedLabel='Verified' groups={[{id:'trend',title:'Trend',help:{label:'How it works',onSelect:()=>setMessage('The host explains trend signals')},items:[{id:'trend',label:'Trend',description:'Direction marks on markets that just moved hard.',checked:true,onCheckedChange:()=>setMessage('The host toggles trend')},{id:'feed',label:'Live Activity Feed',description:'A rolling feed of signal fires as they happen.',checked:true,onCheckedChange:()=>setMessage('The host toggles the feed')}]},{id:'swing',title:'Swing',verified:true,help:{label:'How it works',onSelect:()=>setMessage('The host explains swing signals')},items:[{id:'swing',label:'Swing',description:'Swing signals with entry, stop loss, and take profit levels.',checked,onCheckedChange:setChecked}]}]} onBack={()=>setMessage('The host goes back')}/>",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "locked"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "locked": {
+          "web": "<C.SignalsBlock title='Signals' description='Choose the signals you receive.' verifiedLabel='Verified' groups={[{id:'trend',title:'Trend',help:{label:'How it works',onSelect:()=>setMessage('The host explains trend signals')},items:[{id:'trend',label:'Trend',description:'Always on for every account.',checked:true,locked:true,onCheckedChange:()=>{}},{id:'feed',label:'Live Activity Feed',description:'A rolling feed of signal fires as they happen.',checked,onCheckedChange:setChecked,hint:'Needs this device to allow notifications.',labelAccessory:<C.Badge>New</C.Badge>}]}]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.SignalsBlock title='Signals' description='Choose the signals you receive.' verifiedLabel='Verified' groups={[{id:'trend',title:'Trend',help:{label:'How it works',onSelect:()=>setMessage('The host explains trend signals')},items:[{id:'trend',label:'Trend',description:'Always on for every account.',checked:true,locked:true,onCheckedChange:()=>{}},{id:'feed',label:'Live Activity Feed',description:'A rolling feed of signal fires as they happen.',checked,onCheckedChange:setChecked,hint:'Needs this device to allow notifications.',labelAccessory:<C.Badge>New</C.Badge>}]}]} onBack={()=>setMessage('The host goes back')}/>"
+        }
+      }
     },
     {
       "name": "NotificationsBlock",
@@ -1240,11 +1262,16 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "error"
+        "error",
+        "groups"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "groups": {
+          "web": "<C.NotificationsBlock title='Notifications' description='What reaches this device.' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked:false,onCheckedChange:setChecked,hint:'Notifications are off in Settings.',action:{label:'Open Settings',onSelect:()=>setMessage('The host opens the system settings')}}]} groups={[{id:'kinds',title:'Alert types',items:[{id:'price',label:'Price alerts',checked:true,locked:true,onCheckedChange:()=>{}},{id:'swing',label:'Swing notifications',checked,onCheckedChange:setChecked,labelAccessory:<C.Badge>Genesis</C.Badge>}]}]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.NotificationsBlock title='Notifications' description='What reaches this device.' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked:false,onCheckedChange:setChecked,hint:'Notifications are off in Settings.',action:{label:'Open Settings',onSelect:()=>setMessage('The host opens the system settings')}}]} groups={[{id:'kinds',title:'Alert types',items:[{id:'price',label:'Price alerts',checked:true,locked:true,onCheckedChange:()=>{}},{id:'swing',label:'Swing notifications',checked,onCheckedChange:setChecked,labelAccessory:<C.Badge>Genesis</C.Badge>}]}]} onBack={()=>setMessage('The host goes back')}/>"
+        },
         "error": {
           "web": "<C.NotificationsBlock title='Notifications' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked,onCheckedChange:setChecked,error:'Push request timed out'},{id:'swing',label:'Swing notifications',description:'Choose Open on a signal to place the trade with your wallet, or Dismiss to skip.',checked:true,onCheckedChange:()=>setMessage('The host toggles swing notifications')}]} onBack={()=>setMessage('The host goes back')}/>",
           "native": "<C.NotificationsBlock title='Notifications' items={[{id:'push',label:'Push notifications',description:'Price alerts and signals delivered to your device, even when the app is closed.',checked,onCheckedChange:setChecked,error:'Push request timed out'},{id:'swing',label:'Swing notifications',description:'Choose Open on a signal to place the trade with your wallet, or Dismiss to skip.',checked:true,onCheckedChange:()=>setMessage('The host toggles swing notifications')}]} onBack={()=>setMessage('The host goes back')}/>"
@@ -1262,7 +1289,9 @@
       "states": [
         "default",
         "empty",
-        "static"
+        "static",
+        "loading",
+        "tagged"
       ],
       "a11y": "List named by the title; a selectable row is one button that reads the asset, side and leverage, result and age; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1274,6 +1303,14 @@
         "static": {
           "web": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[{id:'1',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'2d'},{id:'5',name:'Robinhood',side:'long',leverage:10,pnl:-7.762,time:'4d'}]}/>",
           "native": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[{id:'1',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'2d'},{id:'5',name:'Robinhood',side:'long',leverage:10,pnl:-7.762,time:'4d'}]}/>"
+        },
+        "loading": {
+          "web": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[]} loading loadingLabel='Loading history' onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} trades={[]} loading loadingLabel='Loading history' onBack={()=>setMessage('The host goes back')}/>"
+        },
+        "tagged": {
+          "web": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} notice={<C.Text>Some older trades could not be loaded.</C.Text>} footer={<C.Button intent='secondary' onClick={()=>setMessage('The host loads more')}>Load more</C.Button>} trades={[{id:'1',name:'Bitcoin',symbol:'BTC',side:'long',leverage:40,leverageNote:'current',pnl:-1.12,time:'2d',tag:'0x22…22'},{id:'2',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'3d'}]} onBack={()=>setMessage('The host goes back')} onSelect={trade=>setMessage(trade.name+' opened')}/>",
+          "native": "<C.TradeHistoryListBlock labels={{title:'History',long:'Long',short:'Short',empty:'No closed trades yet'}} notice={<C.Text>Some older trades could not be loaded.</C.Text>} footer={<C.Button intent='secondary' onPress={()=>setMessage('The host loads more')}>Load more</C.Button>} trades={[{id:'1',name:'Bitcoin',symbol:'BTC',side:'long',leverage:40,leverageNote:'current',pnl:-1.12,time:'2d',tag:'0x22…22'},{id:'2',name:'Amazon',side:'short',leverage:20,pnl:1.412,time:'3d'}]} onBack={()=>setMessage('The host goes back')} onSelect={trade=>setMessage(trade.name+' opened')}/>"
         }
       }
     },
@@ -1287,11 +1324,16 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "loss"
+        "loss",
+        "demo"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "demo": {
+          "web": "<C.TradeHistoryDetailBlock labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short',entry:'Entry',exit:'Exit'}} badge='Demo' name='Bitcoin' symbol='BTC' side='long' leverage={40} leverageNote='current' pnl={-1.12} pnlPercent={-0.112} entry={64700} exit={64522.5} details={[{label:'Size',value:0.006182,suffix:' BTC',options:{maximumFractionDigits:6}},{label:'Held',value:'2h 4m'}]} note='Funding for part of this trade was not recorded.' actions={[{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.TradeHistoryDetailBlock labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short',entry:'Entry',exit:'Exit'}} badge='Demo' name='Bitcoin' symbol='BTC' side='long' leverage={40} leverageNote='current' pnl={-1.12} pnlPercent={-0.112} entry={64700} exit={64522.5} details={[{label:'Size',value:0.006182,suffix:' BTC',options:{maximumFractionDigits:6}},{label:'Held',value:'2h 4m'}]} note='Funding for part of this trade was not recorded.' actions={[{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]} onBack={()=>setMessage('The host goes back')}/>"
+        },
         "loss": {
           "web": "<C.TradeHistoryDetailBlock labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short',entry:'Entry',exit:'Exit'}} name='Bitcoin' side='long' leverage={40} pnl={-1.12} pnlPercent={-0.112} entry={64700} exit={64522.5} details={[{label:'Size',value:0.006182,suffix:' BTC',options:{maximumFractionDigits:6}},{label:'Notional',value:399.98,options:{style:'currency',currency:'USD'}},{label:'Held',value:'2h 4m'},{label:'Fees',value:0.0721,options:{style:'currency',currency:'USD',maximumFractionDigits:4}}]} actions={[{id:'save',label:'Save image',onSelect:()=>setMessage('The host saves the image')},{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]}/>",
           "native": "<C.TradeHistoryDetailBlock labels={{title:'Trade',netPnl:'Net PnL',onMargin:percent=>percent+' on margin',long:'Long',short:'Short',entry:'Entry',exit:'Exit'}} name='Bitcoin' side='long' leverage={40} pnl={-1.12} pnlPercent={-0.112} entry={64700} exit={64522.5} details={[{label:'Size',value:0.006182,suffix:' BTC',options:{maximumFractionDigits:6}},{label:'Notional',value:399.98,options:{style:'currency',currency:'USD'}},{label:'Held',value:'2h 4m'},{label:'Fees',value:0.0721,options:{style:'currency',currency:'USD',maximumFractionDigits:4}}]} actions={[{id:'save',label:'Save image',onSelect:()=>setMessage('The host saves the image')},{id:'share',label:'Share',intent:'primary',onSelect:()=>setMessage('The host opens the share sheet')}]}/>"
@@ -1334,11 +1376,16 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "no-search"
+        "no-search",
+        "disabled"
       ],
       "a11y": "Named radio group; each language is a radio that reads its own name and the reader's name for it; the search field filters the group and announces no results; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "disabled": {
+          "web": "<C.LanguageBlock disabled search={false} description='Choose the language used throughout the app.' languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'fr',name:'Français',description:'French'}]} value='es' onSelect={language=>setMessage(language.name+' selected')}/>",
+          "native": "<C.LanguageBlock disabled search={false} description='Choose the language used throughout the app.' languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'fr',name:'Français',description:'French'}]} value='es' onSelect={language=>setMessage(language.name+' selected')}/>"
+        },
         "no-search": {
           "web": "<C.LanguageBlock search={false} languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}].slice(0,3)} value='es' onSelect={language=>setMessage(language.name+' selected')}/>",
           "native": "<C.LanguageBlock search={false} languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}].slice(0,3)} value='es' onSelect={language=>setMessage(language.name+' selected')}/>"

@@ -559,7 +559,9 @@
       "name": "RewardBlock",
       "states": [
         "default",
-        "sweepstakes"
+        "sweepstakes",
+        "loading",
+        "paged"
       ],
       "support": "renderer"
     },
@@ -567,14 +569,16 @@
       "name": "SoundHapticsBlock",
       "states": [
         "default",
-        "interactive"
+        "interactive",
+        "devices"
       ],
       "support": "renderer"
     },
     {
       "name": "SignalsBlock",
       "states": [
-        "default"
+        "default",
+        "locked"
       ],
       "support": "renderer"
     },
@@ -582,7 +586,8 @@
       "name": "NotificationsBlock",
       "states": [
         "default",
-        "error"
+        "error",
+        "groups"
       ],
       "support": "renderer"
     },
@@ -591,7 +596,9 @@
       "states": [
         "default",
         "empty",
-        "static"
+        "static",
+        "loading",
+        "tagged"
       ],
       "support": "renderer"
     },
@@ -599,7 +606,8 @@
       "name": "TradeHistoryDetailBlock",
       "states": [
         "default",
-        "loss"
+        "loss",
+        "demo"
       ],
       "support": "renderer"
     },
@@ -616,7 +624,8 @@
       "name": "LanguageBlock",
       "states": [
         "default",
-        "no-search"
+        "no-search",
+        "disabled"
       ],
       "support": "renderer"
     },

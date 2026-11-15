@@ -95,3 +95,47 @@ it('NotificationsBlock: one card per kind with a switch, and a failure under its
  view=mount(NotificationsBlock,{title:'Notifications',items:[]});expect(has(view,'notifications-items')).toBe(false);
  expect(blocks.NotificationsBlock).toBe(NotificationsBlock);
 });
+describe('host slots (Unreleased)',()=>{
+ const {RadioGroup}=require('../../packages/hig/native/src/radio-group');
+ const {SwitchRow}=require('../../packages/hig/native/src/switch-row');
+ const row=(view,id)=>view.findAllByType(SwitchRow).find(node=>node.props.testID===id);
+ it('SoundHapticsBlock: device choices, a named level meter, an action, and volume kept disabled while off',()=>{
+  const choose=jest.fn(),open=jest.fn();
+  const mic={id:'mic',label:'Mic input',checked:true,onCheckedChange:noop,source:'USB Mic',level:0.426,levelLabel:'Input level',
+   choices:{label:'Input',options:[{value:'auto',label:'Automatic'},{value:'usb',label:'USB Mic'}],value:'auto',onValueChange:choose},
+   volume:{label:'Mic volume',value:1,onValueChange:noop},action:{label:'Open Settings',onSelect:open}};
+  let view=mount(SoundHapticsBlock,{title:'Sound & Haptics',description:'How the app sounds and feels.',sections:[mic]});
+  expect(text(host(view,'sound-description'))).toBe('How the app sounds and feels.');
+  const radios=view.findByType(RadioGroup);expect(radios.props).toMatchObject({label:'Input',value:'auto'});act(()=>{radios.props.onValueChange('usb');});expect(choose).toHaveBeenCalledWith('usb');
+  const meter=host(view,'sound-mic-meter');expect(meter.props).toMatchObject({accessible:true,accessibilityRole:'progressbar',accessibilityLabel:'Input level'});expect(meter.props.accessibilityValue).toEqual({min:0,max:100,now:43,text:'43%'});
+  const action=button(view,'sound-mic-action');expect(action.props.intent).toBe('secondary');act(()=>{action.props.onPress();});expect(open).toHaveBeenCalledTimes(1);
+  view=mount(SoundHapticsBlock,{title:'Sound & Haptics',sections:[{...mic,checked:false}]});
+  expect(has(view,'sound-mic-source')).toBe(false);expect(has(view,'sound-mic-choices')).toBe(false);expect(has(view,'sound-mic-meter')).toBe(false);expect(has(view,'sound-mic-volume')).toBe(false);expect(has(view,'sound-mic-action')).toBe(true);
+  view=mount(SoundHapticsBlock,{title:'Sound & Haptics',sections:[{...mic,checked:false,volumeWhenOff:'disabled'}]});
+  expect([0.25,0.5,0.75,1].map(step=>button(view,`sound-mic-volume-${step}`).props.disabled)).toEqual([true,true,true,true]);
+  view=mount(SoundHapticsBlock,{title:'Sound & Haptics',sections:[{...mic,levelLabel:undefined}]});expect(host(view,'sound-mic-meter').props.accessible).toBe(false);
+ });
+ it('SignalsBlock: locked switches stay on at full strength and read unavailable; hints, errors, accessories, a host mark and a help pill ref',()=>{
+  const change=jest.fn();const pill=React.createRef();
+  const view=mount(SignalsBlock,{title:'Signals',description:'Choose what you receive.',verifiedLabel:'Genesis',verifiedMark:h(View,{testID:'mark'}),groups:[{id:'trend',title:'Trend',verified:true,help:{label:'How it works',onSelect:noop,ref:pill},items:[
+   {id:'trend',label:'Trend',checked:false,locked:true,onCheckedChange:change},
+   {id:'feed',label:'Feed',checked:true,onCheckedChange:noop,hint:'Needs permission',error:'Request failed',labelAccessory:h(View,{testID:'badge'})}]}]});
+  const locked=row(view,'signals-trend-trend-switch');expect(locked.props.checked).toBe(true);expect(locked.props.disabled).toBe(true);expect(flat(locked).opacity).toBe(1);
+  expect(host(view,'signals-trend-trend-switch').props.accessibilityState).toMatchObject({checked:true,disabled:true});
+  press(view,'signals-trend-trend-switch');expect(change).not.toHaveBeenCalled();
+  expect(has(view,'badge')).toBe(true);expect(has(view,'signals-trend-feed-switch-label')).toBe(true);
+  expect(text(host(view,'signals-trend-feed-hint'))).toBe('Needs permission');expect(flat(host(view,'signals-trend-feed-error')).color).toBe(nativeSrgb.negative);
+  expect(has(view,'mark')).toBe(true);expect(pill.current).toBeTruthy();expect(text(host(view,'signals-description'))).toBe('Choose what you receive.');
+ });
+ it('NotificationsBlock: hints beside errors, an action under the card, locked items and groups with an optional heading',()=>{
+  const settings=jest.fn();
+  const view=mount(NotificationsBlock,{title:'Notifications',description:'Pick what reaches you.',items:[{id:'push',label:'Push',checked:false,onCheckedChange:noop,hint:'Registering this device',error:'Permission refused',action:{label:'Open Settings',onSelect:settings}}],
+   groups:[{id:'alerts',title:'Alert types',items:[{id:'price',label:'Price',checked:false,locked:true,onCheckedChange:noop}]},{id:'plain',items:[{id:'news',label:'News',checked:false,onCheckedChange:noop}]}]});
+  expect(flat(host(view,'notifications-push-hint')).color).toBe(nativeSrgb.muted);expect(host(view,'notifications-push-hint').props.accessibilityLiveRegion).toBe('polite');
+  act(()=>{button(view,'notifications-push-action').props.onPress();});expect(settings).toHaveBeenCalledTimes(1);
+  expect(text(host(view,'notifications-group-alerts-title'))).toBe('Alert types');expect(host(view,'notifications-group-alerts-title').props.accessibilityRole).toBe('header');
+  expect(flat(host(view,'notifications-group-alerts')).marginTop).toBe(24);expect(has(view,'notifications-group-plain-title')).toBe(false);
+  expect(row(view,'notifications-price-switch').props.checked).toBe(true);expect(text(host(view,'notifications-description'))).toBe('Pick what reaches you.');
+  const groupsOnly=mount(NotificationsBlock,{title:'Notifications',groups:[{id:'a',items:[{id:'x',label:'X',checked:false,onCheckedChange:noop}]}]});expect(has(groupsOnly,'notifications-x')).toBe(true);
+ });
+});

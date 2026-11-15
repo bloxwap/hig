@@ -34,6 +34,40 @@ it('colours the leverage by direction and makes rows buttons with onSelect',()=>
  const button=all(tree,'history-3').find(node=>node.props.onPress);expect(button.props.accessibilityRole).toBe('button');
  act(()=>{button.props.onPress({});});expect(select).toHaveBeenCalledWith(trades[2]);
 });
+describe('host slots (Unreleased)',()=>{
+ const {FlatList}=require('react-native');
+ it('colours side, leverage and result with the market up/down roles, like the detail block',()=>{
+  const tree=mount({},{marketColors:{up:'#ff3b30',down:'#0a84ff'}});
+  const leverage=id=>StyleSheet.flatten(host(tree,`history-${id}-side`).findAll(node=>node.type==='Text')[0].props.style).color;
+  expect(leverage('1')).toBe('#0a84ff');expect(leverage('2')).toBe('#ff3b30');
+  const tones=trades.map(trade=>all(tree,`history-${trade.id}-pnl`).find(node=>node.props.tone).props.tone);expect(tones).toEqual(['up','up','down']);
+  const source=require('node:fs').readFileSync('packages/hig/native/src/trade-history-list-block.tsx','utf8');expect(source).not.toMatch(/colors\[trade\.side==='long'\?'positive':'negative'\]/);
+ });
+ it('draws a notice, a footer, a tag before the age, a leverage note and a symbol fallback',()=>{
+  const tree=mount({onSelect(){},notice:h(View,{testID:'partial'}),footer:h(View,{testID:'more'}),trades:[{id:'9',name:'Bitcoin',symbol:'BTC',side:'long',leverage:20,leverageNote:'current',pnl:2,time:'2d',tag:'0x22…22'}]});
+  const order=host(tree,'history').children.map(child=>child.props.testID);expect(order).toEqual([undefined,'history-notice','history-rows','history-footer']);
+  expect(all(tree,'partial').length).toBeGreaterThan(0);expect(all(tree,'more').length).toBeGreaterThan(0);
+  expect(host(tree,'history-9').props.accessibilityLabel).toBe('Bitcoin, Long 20× current, +$2.000, 0x22…22, 2d');
+  expect(text(host(tree,'history-9-meta'))).toBe('0x22…22·2d');expect(text(host(tree,'history-9-leverage-note'))).toBe('current');
+  expect(host(tree,'history-9').findAll(node=>node.type==='Text').map(text)).toContain('BTC');
+ });
+ it('shows skeleton rows while loading, an error in place of the rows, and a two-line empty state',()=>{
+  let tree=mount({loading:true});const busy=host(tree,'history-loading');expect(busy.props.accessibilityState).toEqual({busy:true});expect(busy.props.accessible).toBe(false);expect(busy.children).toHaveLength(4);expect(host(tree,'history-rows')).toBeUndefined();
+  tree=mount({loading:true,loadingLabel:'Loading history'});expect(host(tree,'history-loading').props).toMatchObject({accessible:true,accessibilityLabel:'Loading history'});
+  tree=mount({error:'History is unavailable'});const error=host(tree,'history-error');expect(error.props.accessibilityRole).toBe('alert');expect(StyleSheet.flatten(error.props.style).color).toBe(colors.negative);
+  tree=mount({trades:[],labels:{...labels,emptyDescription:'Closed trades appear here.'}});expect(host(tree,'history-empty').props.accessibilityLabel).toBe('No closed trades yet, Closed trades appear here.');
+ });
+ it('renders the rows through the host list with renderList, so a long history is virtualized',()=>{
+  const many=Array.from({length:100},(_,index)=>({id:String(index),name:`Asset ${index}`,side:index%2?'short':'long',pnl:index}));
+  const renderList=jest.fn(list=>h(FlatList,{data:list.trades,renderItem:list.renderItem,keyExtractor:list.keyExtractor,ItemSeparatorComponent:list.ItemSeparatorComponent,initialNumToRender:10,windowSize:2}));
+  const tree=mount({trades:many,onSelect(){},renderList});
+  expect(renderList).toHaveBeenCalled();const list=renderList.mock.calls[0][0];expect(list.trades).toBe(many);expect(list.keyExtractor(many[3])).toBe('3');
+  const mounted=many.filter(trade=>host(tree,`history-${trade.id}`)).length;expect(mounted).toBeGreaterThan(0);expect(mounted).toBeLessThan(100);
+  expect(flat(host(tree,'history'))).toMatchObject({flex:1});expect(flat(host(tree,'history-rows'))).toMatchObject({flex:1});
+  // Without renderList the block keeps its plain stack.
+  expect(flat(host(mount(),'history')).flex).toBeUndefined();
+ });
+});
 it('shows the host empty text without trades and a host header action',()=>{
  const tree=mount({trades:[],headerAction:h(View,{testID:'filter'})});
  expect(text(all(tree,'history-empty').find(node=>typeof node.type==='string'))).toBe('No closed trades yet');expect(host(tree,'history-rows')).toBeUndefined();expect(all(tree,'filter').length).toBeGreaterThan(0);

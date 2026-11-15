@@ -2,27 +2,90 @@
 
 ## Unreleased
 
-Shared pieces the app conversions to the 0.6.0 blocks asked for. Everything is additive and optional: without the new props, every component renders exactly as in 0.6.0, except the two changes the app teams asked for that are marked below (a `ProfileBlock` switch row's label now toggles it on web, and an `AccountBlock` asset with an unknown value and a known balance headlines its units).
+Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, grouped by block below. Web and native unless noted; every word stays host text. Everything is additive and optional: without the new props, every component renders exactly as in 0.6.0, except the two changes the app teams asked for that are marked below (a `ProfileBlock` switch row's label now toggles it on web, and an `AccountBlock` asset with an unknown value and a known balance headlines its units).
 
-- `ScreenHeader`, the block header (every web block's, and the native settings blocks'), has its own entries for host panes that have no block: `@bloxwap/hig/react/blocks/screen-header` and `@bloxwap/hig/native/screen-header` (which also exports the `ChevronIcon` its Back control draws). `headingId` sets the heading's `id` on web, so a dialog can name itself with `aria-labelledby`, and its `nativeID` on native, for `accessibilityLabelledBy`. On native, `testID` is now optional.
+### Provider and shared pieces
+
 - `HIGProvider pressDecoration` (web): `({kind, disabled}) => node` draws a host element, such as the native switch input iOS Safari needs for a haptic, inside these controls: `Button`, `IconButton`, pressable and linked `ListRow`s, `Switch` and the settings switch rows, a pressable `AssetBalanceRow`, the block rows, capsules and action buttons, the header's Back, Close, address and info controls, and the swap panel's token pickers, flip button, keypad keys, destination row and receive address. It sits in one absolutely positioned layer that changes no layout and passes pointer events to the host's element; a press on that element reaches the control once with its default action (a submit `Button` submits, a linked `ListRow` navigates, a switch toggles). `PressDecoration` from the provider entry draws the same layer in a host control.
-- `HIGProvider numberFormat` (web and native): `{currencyDisplay, useGrouping}` merged under every currency format HIG draws (the blocks, `BarMark`, `BarPnl`, `AssetBalanceRow`, the swap pieces and the number readouts), with a format's own options still winning. `{currencyDisplay:'narrowSymbol'}` makes French read `12,50 $` instead of `12,50 $US`. `presentNumberFormat` in `@bloxwap/hig/contracts` returns the same merge for host figures.
+- `HIGProvider numberFormat`: `{currencyDisplay, useGrouping}` merged under every currency format HIG draws (the blocks, `BarMark`, `BarPnl`, `AssetBalanceRow`, the swap pieces and the number readouts), with a format's own options still winning. `{currencyDisplay:'narrowSymbol'}` makes French read `12,50 $` instead of `12,50 $US`. `presentNumberFormat` in `@bloxwap/hig/contracts` returns the same merge for host figures.
+- `HIGProvider marketColors` (web): `{up, down}` like native; it sets `--hig-up`/`--hig-down` on the provider's wrapper, and `useThemeStyle()` returns them for a host portal.
+- Native readouts (`NumberReadout`, `AnimatedNumberReadout` and friends) accept `tone='warning'` and `tone='faint'`.
+- Native: block controls drawn under 48dp keep their size and reach 48dp through `hitSlop`: every `IconButton` (all header Back, Close, address and info controls) and `ProfileBlock`'s top-bar and edit controls by 2dp on each side, and the `SignalsBlock` help pill by 8dp.
 - Native: the deprecated `@bloxwap/hig/native/recipes` path is now a real file, `native/dist/recipes.js`, so a Jest `moduleNameMapper` from `@bloxwap/hig/native/<entry>` to `native/dist/<entry>.js` resolves it.
-- `ProfileBlock` (web and native): `action={{label, onSelect, intent, disabled}}` draws a full-width primary button 16 under the name, such as Log in, and `name` may then be left out; `nameAccessory` puts host content, such as a badge, beside the name and keeps it in the accessibility tree; `onAvatarPress` with `avatarLabel` makes the avatar a named button (the status dot stays outside it; with neither `avatarLabel` nor `name` it is named by the new message key `changeProfilePicture`); a row `value` can be a live figure `{value, options, prefix, suffix}` that updates place by place, and a row `tone` (`positive`, `warning`, `negative`, `muted`) colours the value; `footer` draws host content, such as legal links, 24 under the sections. Types `ProfileAction` and `ProfileFigure`.
-- `ProfileBlock` switch rows (web): the whole row is now the target, as in the settings blocks and as native rows already were. The row's markup is byte-for-byte what it was (a static `ListRow` with a `Switch`), a press anywhere on it toggles the switch, the switch input stays the one named control, and with `pressDecoration` the host's layer covers the whole row (one `'switch'` layer on the row instead of one on the track). This is the one behaviour change without a new prop: a press on the row's label used to do nothing.
-- `AccountBlock` (web and native): `sections=[{id, title, total, assets}]` draws titled groups, 24 apart, each with its own total, in place of the flat list; `onAssetSelect` then also receives the section, and `accountSectionRows` / `accountSectionTotal` (and the `AccountSection` type) are exported. `assets` becomes optional. Per asset: `units: false` hides the units line, `selectable: false` keeps the row plain, and `unitsOptions` formats the units. An asset whose value is unknown but whose balance is known now shows its units as the headline figure instead of the unknown dash over the units; that is the one rendering change for existing props, and only for that case.
-- `AssetBalanceRow` (web and native): `headline='units'` puts the units on the headline line with no second line, read as name, symbol, units. The default is unchanged.
-- `TokenActionBlock` (web and native): `note` with `noteTone` (`muted`, `warning`, `negative`, as in `SwapPanelBlock`) draws a line 8 under the actions (16 under the bars when there are none); `assets` and `chains` are each optional, so a card can be actions only, and `name` is needed only with `assets`.
-- `BarMark` (web and native): an element's `detail` can be a live figure `{value, options, prefix, suffix}`; the legend reads its formatted amount. Web moves it place by place. The native bar-mark entry still needs no peers, so on its own it draws the figure without movement; `TokenActionBlock` moves it through `AnimatedNumberReadout`, and a host can do the same with the new `BarMarkFigureContext`. Type `BarMarkFigure`.
-- Native: readouts (`NumberReadout`, `AnimatedNumberReadout` and friends) accept `tone='warning'` and `tone='faint'`; native `ListRow` takes `valueLabel`, how a `value` element is read with the label on a pressable row, and `valueTone`, which colours a text value while keeping its layout.
-- Native: block controls drawn under 48dp keep their size and reach 48dp through `hitSlop`: every `IconButton` (all header Back, Close, address and info controls) and `ProfileBlock`'s top-bar and edit controls by 2dp on each side, and the `SignalsBlock` help pill by 8dp. `SwapCapsule` takes an optional `hitSlop`.
 
-Position blocks (web and native unless noted). Every addition is optional host text or a host value; without it the block renders exactly as in 0.6.0.
+### ScreenHeader
 
-- `ManagePositionBlock`: an action takes a trailing `value` (host text or a live figure) and a `tone`, for a resting order on the row that manages it. `position` takes `badge` (a small badge after the name), `caption` (a muted line under the row, for a stale or estimated result), and `onSelect` with `label` (the row becomes one button named by the label and described by its figures). `pnlOptions` is merged over the profit and loss format. On native an icon URL that fails to load falls back to the initials. `headingId` reaches the header. New type `ManagePositionBlockFigure`.
-- `TargetBlock`: presets may be `{value, disabled}` and units `{unit, disabled}`, drawn dimmed (`targetPresets` and `targetUnits` normalize both, with types `TargetPreset` and `TargetUnitOption`). `customValue` shows the host's entry on the Custom row's trailing edge, which then reads as selected in place of any preset. `headerActionBesideInfo` keeps the info button beside `headerAction` instead of replacing it. `headingId` reaches the header. Dollar presets, the custom value and the headline follow the provider's `numberFormat`.
-- `PositionBlock`: a detail can be `struck` (drawn struck through and read with the host's word, such as Waived) and take a `labelAccessory`. The paper trading row toggles from anywhere on it (web; native already did) and takes an `action` (`{label, onSelect, intent, busy, disabled}`) drawn on the row's card under the switch. Rows in `groups` can be switches (`checked` with `onCheckedChange`) and a row `value` can be a live figure. `headingId` reaches the header. Web: `stickyHeader` pins the header in the nearest scroller (fill from `--hig-sticky-header-background`). Native: `PositionBlockHeader` draws the header on its own for a host's sticky header, with `header={false}` on the block. New type `PositionBlockFlagAction`.
-- Native `ListRow` takes `valueLabel`, what an element `value` reads as in a selectable row.
+- The block header (every web block's, and the native settings blocks') has its own entries for host panes that have no block: `@bloxwap/hig/react/blocks/screen-header` and `@bloxwap/hig/native/screen-header` (which also exports the `ChevronIcon` its Back control draws). Catalog states `default` and `minimal`.
+- `headingId` sets the heading's `id` on web, so a dialog can name itself with `aria-labelledby`, and its `nativeID` on native, for `accessibilityLabelledBy`. On native, `testID` is now optional.
+- `badge`, drawn inside the heading.
+
+### ListRow
+
+- `valueLabel`: what a `value` that is not text reads as, such as the formatted amount of a live `AnimatedNumberReadout`. A selectable native row reads it with the label; on web the element is hidden from assistive technology and `valueLabel` is read in its place. One prop from the profile and position work, now on both platforms.
+- `valueTone` (`positive`, `warning`, `negative`, `muted`) colours a string or number `value` instead of the muted default, keeping its layout and reading.
+
+### AssetBalanceRow
+
+- `headline='units'` puts the units on the headline line with no second line, read as name, symbol, units. The default is unchanged. Catalog state `units-headline`.
+
+### BarMark
+
+- An element's `detail` can be a live figure `{value, options, prefix, suffix}`; the legend reads its formatted amount. Web moves it place by place. The native bar-mark entry still needs no peers, so on its own it draws the figure without movement; `TokenActionBlock` moves it through `AnimatedNumberReadout`, and a host can do the same with the new `BarMarkFigureContext`. Type `BarMarkFigure`. Catalog state `live-detail`.
+
+### Swap pieces
+
+- Native `SwapCapsule` takes an optional `hitSlop` and a `ref`; web `SwapPill` forwards a `ref`.
+
+### ProfileBlock
+
+- `action={{label, onSelect, intent, disabled}}` draws a full-width primary button 16 under the name, such as Log in, and `name` may then be left out; `nameAccessory` puts host content, such as a badge, beside the name and keeps it in the accessibility tree; `onAvatarPress` with `avatarLabel` makes the avatar a named button (the status dot stays outside it; with neither `avatarLabel` nor `name` it is named by the new message key `changeProfilePicture`); a row `value` can be a live figure `{value, options, prefix, suffix}` that updates place by place, and a row `tone` (`positive`, `warning`, `negative`, `muted`) colours the value; `footer` draws host content, such as legal links, 24 under the sections. Types `ProfileAction` and `ProfileFigure`. Catalog states `signed-out` and `host-slots`.
+- Switch rows (web): the whole row is now the target, as in the settings blocks and as native rows already were. The row's markup is byte-for-byte what it was (a static `ListRow` with a `Switch`), a press anywhere on it toggles the switch, the switch input stays the one named control, and with `pressDecoration` the host's layer covers the whole row (one `'switch'` layer on the row instead of one on the track). This is a behaviour change without a new prop: a press on the row's label used to do nothing.
+
+### AccountBlock
+
+- `sections=[{id, title, total, assets}]` draws titled groups, 24 apart, each with its own total, in place of the flat list; `onAssetSelect` then also receives the section, and `accountSectionRows` / `accountSectionTotal` (and the `AccountSection` type) are exported. `assets` becomes optional. Per asset: `units: false` hides the units line, `selectable: false` keeps the row plain, and `unitsOptions` formats the units. Catalog states `sections` and `local-money`.
+- An asset whose value is unknown but whose balance is known now shows its units as the headline figure instead of the unknown dash over the units; that is the one rendering change for existing props, and only for that case.
+
+### TokenActionBlock
+
+- `note` with `noteTone` (`muted`, `warning`, `negative`, as in `SwapPanelBlock`) draws a line 8 under the actions (16 under the bars when there are none); `assets` and `chains` are each optional, so a card can be actions only, and `name` is needed only with `assets`. Catalog state `actions-only`.
+
+### ManagePositionBlock
+
+- An action takes a trailing `value` (host text or a live figure) and a `tone`, for a resting order on the row that manages it. `position` takes `badge` (a small badge after the name), `caption` (a muted line under the row, for a stale or estimated result), and `onSelect` with `label` (the row becomes one button named by the label and described by its figures). `pnlOptions` is merged over the profit and loss format. On native an icon URL that fails to load falls back to the initials. `headingId` reaches the header. New type `ManagePositionBlockFigure`. Catalog state `triggers`.
+
+### TargetBlock
+
+- Presets may be `{value, disabled}` and units `{unit, disabled}`, drawn dimmed (`targetPresets` and `targetUnits` normalize both, with types `TargetPreset` and `TargetUnitOption`). `customValue` shows the host's entry on the Custom row's trailing edge, which then reads as selected in place of any preset. `headerActionBesideInfo` keeps the info button beside `headerAction` instead of replacing it. `headingId` reaches the header. Dollar presets, the custom value and the headline follow the provider's `numberFormat`. Catalog state `custom`.
+
+### PositionBlock
+
+- A detail can be `struck` (drawn struck through and read with the host's word, such as Waived) and take a `labelAccessory`. The paper trading row toggles from anywhere on it (web; native already did) and takes an `action` (`{label, onSelect, intent, busy, disabled}`) drawn on the row's card under the switch. Rows in `groups` can be switches (`checked` with `onCheckedChange`) and a row `value` can be a live figure. `headingId` reaches the header. New type `PositionBlockFlagAction`. Catalog state `farming`.
+- Web: `stickyHeader` pins the header in the nearest scroller (fill from `--hig-sticky-header-background`). Native: `PositionBlockHeader` draws the header on its own for a host's sticky header, with `header={false}` on the block.
+
+### TradeHistoryListBlock and TradeHistoryDetailBlock
+
+- Both paint the side, the leverage and the result with the market `up`/`down` roles on both platforms. Native list rows used `positive`/`negative`; web used them on both blocks. With no override the colours are unchanged, because `up`/`down` default to `buy`/`sell`, which match.
+- `TradeHistoryListBlock`: `loading` (skeleton rows, named by `loadingLabel`), `error` (in place of the rows, announced), `labels.emptyDescription` (a second empty line), `notice` (host content under the header), `footer` (under the rows), and per trade `tag` (muted text before the age), `leverageNote` (a muted qualifier after the leverage, read with it) and `symbol` (the fallback disc's letters). Native `renderList` draws the rows through the host's FlatList (or a sheet library's), so 100 rows do not mount at once. Catalog states `loading` and `tagged`.
+- `TradeHistoryDetailBlock`: `badge` (host text beside the title), `note` (a muted sentence under the details), `pnlOptions` and `percentOptions` (the headline and return formats; the headline already follows `HIGProvider numberFormat`), `leverageNote`, `symbol` and `summaryRef` (a ref to the asset line and headline, for an image capture). Catalog state `demo`.
+
+### RewardBlock
+
+- `loading` and `loadingLabel` (skeleton rows), `status` (a muted line between the pinned row and the list), `youLabel` (the pinned row's accessible name), `pagination={{previous, next, label}}` under the list, `stickyHeader` (web: a sticky header on `--hig-screen-background`; native: the block becomes its own scroll view with `stickyHeaderBackground` and an optional `scrollComponent`), `verifiedMark` (host artwork for the verified mark), a per-entry `scoreOptions`, an entry `detail` as a live figure `{value, options, prefix, suffix}`, and `promo.headline` as host elements. Web only: `promo.rules` and `promo.action` take `href` (and `target`) and render as links; their `onSelect` becomes optional. Catalog states `loading` and `paged`.
+
+### SoundHapticsBlock
+
+- Section `choices` (radios under the source, such as the input device), `action` (a secondary button at the foot of the card, shown on or off), `volumeWhenOff: 'disabled'` (the steps stay, unavailable, while the channel is off), `levelLabel` (names the meter, which then reads its level as a percentage), and block `description`. Catalog state `devices`.
+
+### SignalsBlock and NotificationsBlock
+
+- Item `locked` (on at full strength, read as unavailable, presses ignored), item `hint` (a neutral line beside `error`; `SignalsBlock` items also take `error`), item `labelAccessory` (host content after the label) and block `description`.
+- `SignalsBlock`: help pills take a `ref` so the host can return focus, and `verifiedMark` replaces the built-in mark. Catalog state `locked`.
+- `NotificationsBlock`: `groups` with an optional heading, 24 units apart; `items` becomes optional, and items take an `action` under the card. Catalog state `groups`.
+
+### LanguageBlock
+
+- `disabled` (dims the rows and ignores presses and Enter) and `description` under the header. Catalog state `disabled`.
 
 ## 0.6.0
 
