@@ -153,6 +153,7 @@
         "MarketRow",
         "AccountCard",
         "TokenActionCard",
+        "LanguageCard",
         "ManagePositionCard",
         "TargetCard",
         "TradeEntry",

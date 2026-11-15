@@ -75,7 +75,8 @@
     "AnimatedNumberReadout": "animated-number",
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
-    "ListRow": "list-group"
+    "ListRow": "list-group",
+    "LanguageCard": "blocks"
   },
   "native": {
     "MarketRow": "blocks",
@@ -151,6 +152,7 @@
     "AnimatedNumberReadout": "animated-number",
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
-    "ListRow": "list-group"
+    "ListRow": "list-group",
+    "LanguageCard": "blocks"
   }
 }

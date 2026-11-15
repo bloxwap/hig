@@ -1088,6 +1088,27 @@
       }
     },
     {
+      "name": "LanguageCard",
+      "slug": "language-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.LanguageCard languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}]} value={value==='buy'?'en':value} onSelect={language=>setValue(language.code)} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.LanguageCard languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}]} value={value==='buy'?'en':value} onSelect={language=>setValue(language.code)} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "no-search"
+      ],
+      "a11y": "Named radio group; each language is a radio that reads its own name and the reader's name for it; the search field filters the group and announces no results; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "no-search": {
+          "web": "<C.LanguageCard search={false} languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}].slice(0,3)} value='es' onSelect={language=>setMessage(language.name+' selected')}/>",
+          "native": "<C.LanguageCard search={false} languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}].slice(0,3)} value='es' onSelect={language=>setMessage(language.name+' selected')}/>"
+        }
+      }
+    },
+    {
       "name": "TradeEntry",
       "slug": "trade-entry",
       "entry": "blocks",

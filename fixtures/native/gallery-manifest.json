@@ -531,6 +531,14 @@
       "support": "renderer"
     },
     {
+      "name": "LanguageCard",
+      "states": [
+        "default",
+        "no-search"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "TradeEntry",
       "states": [
         "default",

@@ -669,6 +669,16 @@
       ]
     },
     {
+      "name": "LanguageCard",
+      "route": "components/language-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "no-search"
+      ]
+    },
+    {
       "name": "TradeEntry",
       "route": "components/trade-entry",
       "entry": "blocks",
