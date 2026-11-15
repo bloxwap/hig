@@ -8,7 +8,7 @@ const artifactDirectory=resolve(`artifacts/release-${channel}`);const report=JSO
 assert.equal(report.dryRun,true);assert.equal(report.published,false);assert.equal(report.tagsCreated,false);assert.equal(report.releasesCreated,false);
 const directory=scratchDir('hig-release-smoke-');writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module'}));
 const packages=report.artifacts;
-execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...packages.map(p=>join(artifactDirectory,p.file)),'react@19.1.0','react-dom@19.1.0','@bloxwap/chart@0.4.0'],{cwd:directory,stdio:'pipe'});
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...packages.map(p=>join(artifactDirectory,p.file)),'react@19.1.0','react-dom@19.1.0','@bloxwap/chart@0.5.0'],{cwd:directory,stdio:'pipe'});
 for(const artifact of packages){const manifest=JSON.parse(readFileSync(join(directory,'node_modules',artifact.package,'package.json')));assert.equal(manifest.version,report.artifactVersion);}
 writeFileSync(join(directory,'smoke.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {Button} from '@bloxwap/hig/react/button';import {FeedbackController} from '@bloxwap/hig/feedback';import {PriceChart} from '@bloxwap/hig/chart';new FeedbackController().dispose();if(!renderToString(React.createElement(Button,null,'Review')).includes('Review'))throw Error('Packed release SSR failed');if(!renderToString(React.createElement(PriceChart,{summary:'BTC summary',data:[]})).includes('BTC summary'))throw Error('Packed release @bloxwap/hig/chart SSR failed');");
 execFileSync(process.execPath,[join(directory,'smoke.mjs')],{cwd:directory,stdio:'inherit'});

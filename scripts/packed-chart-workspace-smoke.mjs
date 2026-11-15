@@ -1,6 +1,6 @@
 import {packedTarball,workspaceVersion} from './workspace-version.mjs';
 // #96: a host shaped like bloxwap/chart keeps its workspace @bloxwap/chart when it regenerates package-lock.json
-// from scratch with strict peers. The host is an npm workspace whose packages/chart provides @bloxwap/chart 0.4.0
+// from scratch with strict peers. The host is an npm workspace whose packages/chart provides @bloxwap/chart 0.5.0
 // and whose apps/docs depends on @bloxwap/chart plus the packed HIG tarballs through file: specs, as chart's docs
 // site does. npm (10.9 through 12.2, including chart's 11.6.1) dropped that workspace while the React package declared an optional
 // @bloxwap/chart peer. @bloxwap/hig declares it as a required peer, and only its ./chart entry imports it.
@@ -21,10 +21,10 @@ import {build} from 'esbuild';
 
 const tarball=packedTarball();
 assert.ok(existsSync(tarball),`Run smoke:packed first: missing ${tarball}`);
-// The workspace copy of @bloxwap/chart is the published 0.4.0 build that HIG itself develops against.
+// The workspace copy of @bloxwap/chart is the published 0.5.0 build that HIG itself develops against.
 const chartSource=resolve('node_modules/@bloxwap/chart');
 const chartVersion=JSON.parse(readFileSync(join(chartSource,'package.json'),'utf8')).version;
-assert.equal(chartVersion,'0.4.0','root devDependency @bloxwap/chart must be 0.4.0');
+assert.equal(chartVersion,'0.5.0','root devDependency @bloxwap/chart must be 0.5.0');
 const env={...process.env,npm_config_legacy_peer_deps:'false',npm_config_strict_peer_deps:'true'};
 delete env.npm_config_force;
 const pinnedNpm=JSON.parse(readFileSync('package.json','utf8')).packageManager.replace(/^npm@/,'');

@@ -6,14 +6,14 @@ Version 0.5.0, an entry of `@bloxwap/hig`. The HIG adapter for [`@bloxwap/chart`
 from `@bloxwap/hig/native/data`.
 
 ```sh
-npm install @bloxwap/hig @bloxwap/chart@^0.4.0
+npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 ```
 
 ```tsx
 import {PriceChart, chartTheme} from '@bloxwap/hig/chart';
 ```
 
-Needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0` (0.4.0 is the tested baseline); `HIGProvider` from `@bloxwap/hig/react/provider` supplies the
+Needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline); `HIGProvider` from `@bloxwap/hig/react/provider` supplies the
 loading messages. `@bloxwap/chart` is the one required peer of `@bloxwap/hig`, and deliberately not optional: npm 11 drops a workspace copy of
 `@bloxwap/chart` from a lockfile regenerated from scratch when an installed package declares it as an optional
 peer (bloxwap/hig#96).
