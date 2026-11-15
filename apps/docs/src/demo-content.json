@@ -405,6 +405,10 @@
       "title": "PositionBlock"
     },
     {
+      "route": "components/profile-block",
+      "title": "ProfileBlock"
+    },
+    {
       "route": "components/leaderboard-block",
       "title": "LeaderboardBlock"
     },
@@ -1131,6 +1135,16 @@
       "states": [
         "default",
         "paper-trade"
+      ]
+    },
+    {
+      "name": "ProfileBlock",
+      "route": "components/profile-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "minimal"
       ]
     },
     {

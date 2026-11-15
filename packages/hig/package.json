@@ -323,6 +323,11 @@
       "import": "./react/dist/blocks/trade-history-detail-block.js",
       "default": "./react/dist/blocks/trade-history-detail-block.js"
     },
+    "./react/blocks/profile-block": {
+      "types": "./react/dist/blocks/profile-block.d.ts",
+      "import": "./react/dist/blocks/profile-block.js",
+      "default": "./react/dist/blocks/profile-block.js"
+    },
     "./react/bar-mark": {
       "types": "./react/dist/bar-mark.d.ts",
       "import": "./react/dist/bar-mark.js",
@@ -417,6 +422,11 @@
       "types": "./native/dist/trade-history-detail-block.d.ts",
       "import": "./native/dist/trade-history-detail-block.js",
       "default": "./native/dist/trade-history-detail-block.js"
+    },
+    "./native/profile-block": {
+      "types": "./native/dist/profile-block.d.ts",
+      "import": "./native/dist/profile-block.js",
+      "default": "./native/dist/profile-block.js"
     },
     "./native/bar-mark": {
       "types": "./native/dist/bar-mark.d.ts",

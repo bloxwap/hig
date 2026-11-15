@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, `NotificationsBlock`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `LeaderboardBlock`, `SoundHapticsBlock`, `SignalsBlock`, `NotificationsBlock`, `InstallCommand`, and `MarketingHero`.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/market-row` and `blocks/marketing-hero`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel-block` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -24,6 +24,7 @@ All data and actions are supplied by the host application.
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
+| `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
 | `LeaderboardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `SoundHapticsBlock` | Sound, microphone, haptics and flash settings: one card per channel with a switch, and for a channel that is on its device, input meter and volume steps. Details below. |
 | `SignalsBlock` | The signals the viewer receives, in groups with a heading, a small help pill and switches. Details below. |
@@ -370,6 +371,29 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 - **NotificationsBlock.** `items` draws one card per kind of notification. `error` is a line in the negative role under that card, announced when it appears, for a permission request that failed or timed out; the host keeps the switch off in that case.
 - **State.** Every switch is controlled: the host holds `checked` and decides in `onCheckedChange` whether the change takes, for example after the system permission prompt. `disabled` dims a row and blocks it.
 - **Ownership.** The blocks never play a sound, read the microphone, vibrate, request a permission or subscribe to anything.
+
+### ProfileBlock
+
+`ProfileBlock` is a person's profile as one screen, usually in a sheet. A top bar holds the address control on the leading edge and Close on the trailing edge; under it sit the avatar with an optional status dot, the name with an optional edit control, and then the sections as `ListGroup`s 24 units apart. It is available from `@bloxwap/hig/react/blocks/profile-block`, `@bloxwap/hig/native/profile-block` and the `blocks` aggregates.
+
+```tsx
+<ProfileBlock name="5459····6263" address={account.address} status={{label: 'Demo'}}
+  onShowAddress={showAddress} onClose={close} onEditName={editName}
+  sections={[
+    {id: 'money', rows: [{id: 'accounts', label: 'Accounts', value: '$1,042.09', onSelect: openAccounts},
+                         {id: 'history', label: 'History', onSelect: openHistory}]},
+    {id: 'settings', title: 'Settings', rows: [
+      {id: 'live', label: 'Live Mode', checked: live, onCheckedChange: setLive},
+      {id: 'notifications', label: 'Notifications', value: 'Off', onSelect: openNotifications}]},
+  ]}/>
+```
+
+- **Avatar.** `avatar` is an image URL or a host element. Without it, `address` colours the disc the way wallet avatars are coloured elsewhere; with neither, the disc shows the first letters of the name. It is 144 units across and decorative.
+- **Status.** `status={{label, tone}}` draws a dot on the avatar's top trailing edge for an account mode or state, such as Demo. `label` is read out, so the dot is never colour alone. `tone` is `warning` by default, or `positive`, `negative` or `info`.
+- **Name.** `name` is the heading: a display name or an address the host has shortened. `onEditName` adds the edit control after it.
+- **Top bar.** `onShowAddress` shows the address control and `onClose` shows Close. Leave either out to hide it.
+- **Sections.** Each section is `{id, title, rows}`; a section with no rows is not drawn. A row is `{id, label}` plus optional `leading`, `value`, `trailing`, `disabled`, and either `onSelect` (the whole row is a button with a chevron) or `onCheckedChange` with `checked` (the row is a switch, named by its label). The host writes every label and value.
+- **Ownership.** The block never reads an account, a balance or a setting. Each control only reports the press; the host opens its accounts, history, rewards and settings screens.
 
 ## When to use and examples
 

@@ -1088,6 +1088,27 @@
       }
     },
     {
+      "name": "ProfileBlock",
+      "slug": "profile-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.ProfileBlock name='5459····6263' address='5459Qk3vJm8Rt2Xw9Ln4Hd7Fz1Bp6Yc6263' status={{label:'Demo'}} onEditName={()=>setMessage('The host edits the name')} onShowAddress={()=>setMessage('The host shows the address')} onClose={()=>setMessage('The host closes the profile')} sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')},{id:'history',label:'History',value:'Demo',onSelect:()=>setMessage('The host opens history')}]},{id:'rewards',title:'Rewards',rows:[{id:'pool',label:'Top 100 split $250,000',onSelect:()=>setMessage('The host opens rewards')}]},{id:'settings',title:'Settings',rows:[{id:'live',label:'Live Mode',checked:false,onCheckedChange:value=>setMessage(value?'Live mode on':'Live mode off')},{id:'signals',label:'Signals',onSelect:()=>setMessage('The host opens signals')},{id:'notifications',label:'Notifications',value:'Off',onSelect:()=>setMessage('The host opens notifications')},{id:'sound',label:'Sound & Haptics',onSelect:()=>setMessage('The host opens sound and haptics')}]}]}/>",
+      "native": "<C.ProfileBlock name='5459····6263' address='5459Qk3vJm8Rt2Xw9Ln4Hd7Fz1Bp6Yc6263' status={{label:'Demo'}} onEditName={()=>setMessage('The host edits the name')} onShowAddress={()=>setMessage('The host shows the address')} onClose={()=>setMessage('The host closes the profile')} sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')},{id:'history',label:'History',value:'Demo',onSelect:()=>setMessage('The host opens history')}]},{id:'rewards',title:'Rewards',rows:[{id:'pool',label:'Top 100 split $250,000',onSelect:()=>setMessage('The host opens rewards')}]},{id:'settings',title:'Settings',rows:[{id:'live',label:'Live Mode',checked:false,onCheckedChange:value=>setMessage(value?'Live mode on':'Live mode off')},{id:'signals',label:'Signals',onSelect:()=>setMessage('The host opens signals')},{id:'notifications',label:'Notifications',value:'Off',onSelect:()=>setMessage('The host opens notifications')},{id:'sound',label:'Sound & Haptics',onSelect:()=>setMessage('The host opens sound and haptics')}]}]}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "minimal"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "minimal": {
+          "web": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>",
+          "native": "<C.ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:()=>setMessage('The host opens accounts')}]}]}/>"
+        }
+      }
+    },
+    {
       "name": "LeaderboardBlock",
       "slug": "leaderboard-block",
       "entry": "blocks",
