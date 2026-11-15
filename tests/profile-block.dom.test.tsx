@@ -22,6 +22,8 @@ describe('ProfileBlock',()=>{
   const bar=document.querySelector('.hig-profile-bar') as HTMLElement;
   // Address leads, Close trails.
   expect([...bar.querySelectorAll('button')].map(button=>button.getAttribute('aria-label'))).toEqual(['Show account address','Close']);
+  // Bare icons, as in the other block headers: no filled circle behind them.
+  expect([...bar.querySelectorAll('button')].map(button=>button.getAttribute('data-intent'))).toEqual(['ghost','ghost']);
   await userEvent.click(within(bar).getByRole('button',{name:'Show account address'}));await userEvent.click(within(bar).getByRole('button',{name:'Close'}));await userEvent.click(screen.getByRole('button',{name:'Edit name'}));
   expect(address).toHaveBeenCalledTimes(1);expect(close).toHaveBeenCalledTimes(1);expect(edit).toHaveBeenCalledTimes(1);
   expect(document.querySelector('.hig-profile-name > .hig-button')).toBe(screen.getByRole('button',{name:'Edit name'}));

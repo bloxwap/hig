@@ -546,7 +546,7 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 
 ### ProfileBlock
 
-`ProfileBlock` is a person's profile as one screen, usually in a sheet. A top bar holds the address control on the leading edge and Close on the trailing edge; under it sit the avatar with an optional status dot, the name with an optional edit control, and then the sections as `ListGroup`s 24 units apart. It is available from `@bloxwap/hig/react/blocks/profile-block`, `@bloxwap/hig/native/profile-block` and the `blocks` aggregates.
+`ProfileBlock` is a person's profile as one screen, usually in a sheet. A top bar holds the address control on the leading edge and Close on the trailing edge, both as bare icons with no filled circle behind them, like the other block headers; under it sit the avatar with an optional status dot, the name with an optional edit control, and then the sections as `ListGroup`s 24 units apart. It is available from `@bloxwap/hig/react/blocks/profile-block`, `@bloxwap/hig/native/profile-block` and the `blocks` aggregates.
 
 ```tsx
 <ProfileBlock name="5459····6263" address={account.address} status={{label: 'Demo'}}
