@@ -129,7 +129,7 @@ export function SwapPill({children,...props}:React.ButtonHTMLAttributes<HTMLButt
 const keys=['1','2','3','4','5','6','7','8','9','.','0','back'];
 /** Numeric keypad. Emits `0`–`9`, `.` or `back`. */
 export function SwapKeypad({onKey,label,deleteLabel}:{onKey:(key:string)=>void;label:string;deleteLabel:string}){
- return <div className='hig-swap-keypad' role='group' aria-label={label}>{keys.map(key=><button key={key} type='button' className='hig-swap-key' aria-label={key==='back'?deleteLabel:undefined} onClick={()=>onKey(key)}>{key==='back'?<SwapIcon name='delete' size={24}/>:key}</button>)}</div>;
+ return <div className='hig-swap-keypad' role='group' aria-label={label}>{keys.map(key=><button key={key} type='button' className='hig-swap-key' aria-label={key==='back'?deleteLabel:undefined} onClick={()=>onKey(key)}>{key==='back'?<SwapIcon name='delete' size={24}/>:key}<PressDecoration kind='button'/></button>)}</div>;
 }
 /** Chains present in a token list, in first-seen order. */
 export function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}

@@ -1726,11 +1726,11 @@
       },
       "ScreenHeaderProps": {
         "entry": "screen-header",
-        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** Prefix of the test IDs: `<testID>-header`, `<testID>-back` and `<testID>-title`. Omitted, the header sets none. */\n    testID?: string;\n}"
+        "signature": "export interface ScreenHeaderProps {\n    /** The heading, centred. Host text. */\n    title: string;\n    /** Shows Back on the leading edge. */\n    onBack?: () => void;\n    /** A control on the trailing edge, usually an `IconButton`. */\n    action?: React.ReactNode;\n    /** Prefix of the test IDs: `<testID>-header`, `<testID>-back` and `<testID>-title`. Omitted, the header sets none. */\n    testID?: string;\n    /** Sets `nativeID` on the title, so a sheet around the pane can name itself with `accessibilityLabelledBy` (Android). Omitted, the title has none. */\n    headingId?: string;\n}"
       },
       "ScreenHeader": {
         "entry": "screen-header",
-        "signature": "export declare function ScreenHeader({ title, onBack, action, testID }: ScreenHeaderProps): React.JSX.Element;"
+        "signature": "export declare function ScreenHeader({ title, onBack, action, testID, headingId }: ScreenHeaderProps): React.JSX.Element;"
       },
       "Select": {
         "entry": "select",
@@ -1966,7 +1966,7 @@
       },
       "SettingHeader": {
         "entry": "screen-header",
-        "signature": "export declare function ScreenHeader({ title, onBack, action, testID }: ScreenHeaderProps): React.JSX.Element;"
+        "signature": "export declare function ScreenHeader({ title, onBack, action, testID, headingId }: ScreenHeaderProps): React.JSX.Element;"
       },
       "SettingSwitchProps": {
         "entry": "setting-switch",

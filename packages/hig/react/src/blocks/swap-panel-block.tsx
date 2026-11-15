@@ -199,19 +199,19 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   {side==='from'?(token.balance??0)>0&&<span className='hig-swap-meta'><span className='hig-swap-pills'><SwapPill onClick={()=>setEntry(unitsToEntry(testAmount(token),fromMode,fromPrice))}><SwapIcon name='flask' size={14}/>{(messages.swapTest??en.swapTest)}</SwapPill><SwapPill onClick={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span><SwapNumber value={token.balance} suffix={' '+token.symbol} options={{maximumFractionDigits:6}}/></span>
    :<span className='hig-swap-meta'><SwapPill onClick={()=>show(onSlippageChange?'slippage':'settings')}><SwapIcon name='sliders' size={14}/><SwapNumber template={messages.swapSlippage??en.swapSlippage} {...percentNumber(slippage)}/></SwapPill><span>{feeLine}</span></span>}
  </div>;
- const receiveView=(view:SwapReceive)=>{const content=<>{view.qr&&<span className='hig-swap-qr'>{view.qr}</span>}<VerticalAddress address={view.address}/></>;return view.onCopy?<button type='button' className='hig-swap-receive' aria-label={(messages.copyAddress??en.copyAddress)+': '+view.address} onClick={copyAddress}>{content}</button>:<div className='hig-swap-receive'>{content}</div>;};
+ const receiveView=(view:SwapReceive)=>{const content=<>{view.qr&&<span className='hig-swap-qr'>{view.qr}</span>}<VerticalAddress address={view.address}/></>;return view.onCopy?<button type='button' className='hig-swap-receive' aria-label={(messages.copyAddress??en.copyAddress)+': '+view.address} onClick={copyAddress}>{content}<PressDecoration kind='row'/></button>:<div className='hig-swap-receive'>{content}</div>;};
  const card=(side:'from'|'to')=>{
   const token=side==='from'?from:to,label=side==='from'?(messages.swapFrom??en.swapFrom):(messages.swapTo??en.swapTo),mode=side==='from'?fromMode:toMode,locked=side==='from'?lockFrom:lockTo;
   const cardUnits=side==='from'?units:receivedUnits,cardUsd=side==='from'?usd:receivedUsd;
   const shown=side==='from'?input:mode==='token'?receivedUnits:receivedUsd;
   return <div className='hig-swap-card' data-side={side} data-locked={locked||undefined}>
    <div className='hig-swap-slot'>
-    {!locked&&<button type='button' className='hig-swap-hit' aria-label={(messages.swapSelectToken??en.swapSelectToken)(label)} onClick={()=>openPicker(side)}/>}
+    {!locked&&<button type='button' className='hig-swap-hit' aria-label={(messages.swapSelectToken??en.swapSelectToken)(label)} onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
     <div className='hig-swap-slot-content'>{token?token.caption!==undefined?account(side,token,locked):header(side,token):<><span className='hig-swap-placeholder'>{label}…</span>{shortcuts&&hint&&!locked&&<kbd className='hig-swap-kbd'>{hint==='mac'?'⌘':messages.swapControlKey??en.swapControlKey} {side==='from'?'F':'K'}</kbd>}</>}</div>
    </div>
    {side==='from'&&showReceive&&receive?receiveView(receive):
     !(side==='to'&&showReceive)&&<div className='hig-swap-amount-area'>
-     {!locked&&<button type='button' className='hig-swap-hit' tabIndex={-1} aria-hidden='true' onClick={()=>openPicker(side)}/>}
+     {!locked&&<button type='button' className='hig-swap-hit' tabIndex={-1} aria-hidden='true' onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
      <div className='hig-swap-amount-content'>
       <div className='hig-swap-amount' data-muted={side==='to'||undefined} {...(side==='from'?{role:'textbox',tabIndex:0,'aria-label':(messages.swapAmount??en.swapAmount)(label)}:{})}>
        <AnimatedNumberReadout value={shown} label={side==='to'?(messages.swapAmount??en.swapAmount)(label):undefined} prefix={mode==='usd'?'$':''} suffix={side==='from'&&entry.endsWith('.')?'.':''} options={{minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false}}/>
@@ -228,7 +228,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  // The fixed bottom card is one compact row for the destination (artwork, where it goes, a trailing detail and fee), label and value rows, or both.
  const fixedCard=fixed&&<div className='hig-swap-card' data-side='to' data-compact='true' data-pending={destination?.pending||undefined}>
   {destination&&<div className='hig-swap-slot'>
-   {destination.onPress&&<button type='button' className='hig-swap-hit' aria-label={destination.title} onClick={destination.onPress}/>}
+   {destination.onPress&&<button type='button' className='hig-swap-hit' aria-label={destination.title} onClick={destination.onPress}><PressDecoration kind='row'/></button>}
    <div className='hig-swap-slot-content'><div className='hig-swap-selected'>
     <span className='hig-swap-stack' aria-hidden='true'>{destination.icon?swapArt(destination.icon):destination.address?<span className='hig-swap-avatar' style={{background:addressGradient(destination.address)}}/>:<span className='hig-swap-initials'>{destination.title.slice(0,2)}</span>}</span>
     <span className='hig-swap-identity'><strong>{destination.title}</strong>{destination.subtitle&&<span>{destination.subtitle}</span>}{destination.address&&<span>{shortAddress(destination.address)}</span>}</span>
@@ -242,7 +242,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   {title&&<div className='hig-swap-view-header' data-plain={onBack?undefined:'true'}>{onBack&&<button type='button' className='hig-swap-back' aria-label={messages.back??en.back} onClick={onBack}><SwapIcon name='back'/><PressDecoration kind='back'/></button>}<h2 className='hig-swap-view-title'>{title}</h2></div>}
   {banner}
   {fromCard}
-  <div className='hig-swap-flip'>{oneWay?<span aria-hidden='true'><SwapIcon name='down' size={16}/></span>:<button type='button' aria-label={(messages.swapFlip??en.swapFlip)} disabled={!from||!to} onClick={flip}><SwapIcon name='flip' size={16}/></button>}</div>
+  <div className='hig-swap-flip'>{oneWay?<span aria-hidden='true'><SwapIcon name='down' size={16}/></span>:<button type='button' aria-label={(messages.swapFlip??en.swapFlip)} disabled={!from||!to} onClick={flip}><SwapIcon name='flip' size={16}/><PressDecoration kind='icon-button' disabled={!from||!to}/></button>}</div>
   {toCard}
   {!showReceive&&(keypad==='always'||(keypad==='auto'&&touch))&&<SwapKeypad onKey={press} label={(messages.swapKeypad??en.swapKeypad)} deleteLabel={(messages.swapDelete??en.swapDelete)}/>}
   {note&&<p className='hig-swap-note' data-tone={noteTone} role='note'>{note}</p>}

@@ -30,15 +30,30 @@ const interactive='a[href],button,input,select,textarea,label';
 /**
  * The provider's press decoration for one control: the host content in an absolutely positioned layer that is the control's last
  * child, or nothing without a `pressDecoration`. Place it inside a host control to give it the same treatment as HIG's own.
- * For a control drawn as a `<label>` around its `input`, pass that input: a press on an interactive element in the layer skips
- * the label's own activation (the HTML label rules), so the layer hands the press to the input. A host `<label>` that names a
- * control is left alone, because the click it then sends to that control comes through next.
+ * A press on an interactive element in the layer makes that element the activation target (the HTML activation rules), so the
+ * control around it would skip its own default action: a submit or reset button would not submit, a link would not navigate and
+ * a label would not toggle its input. The layer therefore stops that click and sends the control one click of its own, which
+ * runs the control's handlers and its default action once. For a control drawn as a `<label>` around its `input`, pass that
+ * input and the click goes to it. A host `<label>` that names a control is left alone, because the click it then sends to that
+ * control comes through next. A disabled control gets nothing.
  */
 export function PressDecoration({kind,disabled=false,input}:{kind:PressDecorationKind;disabled?:boolean;input?:React.RefObject<HTMLInputElement|null>}){
  const {pressDecoration}=useContext(Context);if(!pressDecoration)return null;
  const content=pressDecoration({kind,disabled});if(content==null||content===false)return null;
- const forward=input&&((event:React.MouseEvent<HTMLSpanElement>)=>{for(let node=event.target as Element|null;node&&node!==event.currentTarget;node=node.parentElement){if(!node.matches(interactive))continue;if(node!==input.current&&!(node instanceof HTMLLabelElement&&node.control))input.current?.click();return;}});
- return <span className='hig-press-decoration' data-kind={kind} onClick={forward||undefined}>{content}</span>;
+ return <span className='hig-press-decoration' data-kind={kind} onClick={event=>forwardPress(event,input)}>{content}</span>;
+}
+function forwardPress(event:React.MouseEvent<HTMLSpanElement>,input?:React.RefObject<HTMLInputElement|null>){
+ const layer=event.currentTarget;
+ for(let node=event.target as Element|null;node&&node!==layer;node=node.parentElement){
+  if(!node.matches(interactive))continue;
+  if(node instanceof HTMLLabelElement&&node.control)return;
+  const control=input?input.current:layer.parentElement;if(!control)return;
+  event.stopPropagation();
+  if(control.matches(':disabled'))return;
+  const {detail,screenX,screenY,clientX,clientY,ctrlKey,shiftKey,altKey,metaKey,button}=event;
+  control.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,composed:true,view:event.nativeEvent.view,detail,screenX,screenY,clientX,clientY,ctrlKey,shiftKey,altKey,metaKey,button}));
+  return;
+ }
 }
 function primaryStyle(primaryColor?:string):React.CSSProperties|undefined {
  if(primaryColor===undefined)return undefined;

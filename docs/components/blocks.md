@@ -382,7 +382,7 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 
 ### ScreenHeader
 
-`ScreenHeader` is the header every block draws: Back on the leading edge, the title centred, and an optional control on the trailing edge, with the title centred whichever of the two are present. It has its own entry for a host pane that has no block, such as a keypad pushed from `TargetBlock` or a pane between two blocks, so the pane matches the blocks around it: `@bloxwap/hig/react/blocks/screen-header` on web and `@bloxwap/hig/native/screen-header` on native. The native entry also exports `ChevronIcon`, the glyph its Back control draws (it points down; rotate it).
+`ScreenHeader` is the block header: Back on the leading edge, the title centred, and an optional control on the trailing edge, with the title centred whichever of the two are present. On web every block with a header draws it; on native the settings blocks (`NotificationsBlock`, `SignalsBlock`, `SoundHapticsBlock`) draw it and the other blocks draw a header that matches it. It has its own entry for a host pane that has no block, such as a keypad pushed from `TargetBlock` or a pane between two blocks, so the pane matches the blocks around it: `@bloxwap/hig/react/blocks/screen-header` on web and `@bloxwap/hig/native/screen-header` on native. The native entry also exports `ChevronIcon`, the glyph its Back control draws (it points down; rotate it).
 
 ```tsx
 import {ScreenHeader} from '@bloxwap/hig/react/blocks/screen-header';
@@ -392,7 +392,7 @@ import {ScreenHeader} from '@bloxwap/hig/react/blocks/screen-header';
 ```
 
 - **Props.** `title` is host text. `onBack` shows Back, named by the built-in translated `back` message. `action` is the trailing control.
-- **Heading id (web).** `headingId` sets the `id` of the `h2`, so a `Dialog` or sheet around the pane can name itself with `aria-labelledby` and the title is read once. Without it the heading has no `id`.
+- **Heading id.** On web `headingId` sets the `id` of the `h2`, so a `Dialog` or sheet around the pane can name itself with `aria-labelledby` and the title is read once. On native it sets `nativeID` on the title, for `accessibilityLabelledBy` (Android). Without it the heading has no id.
 - **Test IDs (native).** `testID` prefixes `<testID>-header`, `<testID>-back` and `<testID>-title`; without it the header sets none. `SettingHeader`, the name the settings blocks use inside HIG, is the same component.
 - **Targets.** On native the Back control and every other header `IconButton` is drawn at 44dp and reaches 48dp on every side through `hitSlop`.
 
@@ -400,14 +400,14 @@ import {ScreenHeader} from '@bloxwap/hig/react/blocks/screen-header';
 
 Two `HIGProvider` settings reach every block at once. Both are optional and inherited by nested providers; without them nothing a block draws changes.
 
-**Press decoration (web).** iOS Safari gives a haptic only when the finger lands on a native `<input type="checkbox" switch>`, so a host that wants that haptic has to put its own element inside each control it presses. `pressDecoration={({kind, disabled}) => node}` draws the host's node inside every pressable HIG control: `Button` and the block action buttons (`kind: 'button'`, which includes the small capsules such as a help pill), `IconButton` (`'icon-button'`), a pressable or linked `ListRow`, a pressable `AssetBalanceRow` and the block rows that open something (`'row'`), `Switch` and the settings switch rows (`'switch'`), and the header's Back, Close, address and info controls (`'back'`). `disabled` is true when the control will not act, so the host can leave its node out.
+**Press decoration (web).** iOS Safari gives a haptic only when the finger lands on a native `<input type="checkbox" switch>`, so a host that wants that haptic has to put its own element inside each control it presses. `pressDecoration={({kind, disabled}) => node}` draws the host's node inside these HIG controls: `Button`, the block action buttons and the swap keypad keys (`kind: 'button'`, which includes the small capsules such as a help pill), `IconButton` and the swap flip button (`'icon-button'`), a pressable or linked `ListRow`, a pressable `AssetBalanceRow`, the block rows that open something, the swap token pickers, destination row and receive address (`'row'`), `Switch` and the settings switch rows (`'switch'`), and the header's Back, Close, address and info controls (`'back'`). `disabled` is true when the control will not act, so the host can leave its node out. `Checkbox`, `RadioGroup`, `SegmentedControl` and `Filter` do not draw it.
 
 ```tsx
 <HIGProvider pressDecoration={({disabled}) => disabled ? null : <HapticSwitch/>}>…</HIGProvider>
 ```
 
 - **Layout.** The node sits in one `span.hig-press-decoration` that is the control's last child: absolutely positioned over the whole control (`inset: 0`), clipped to its radius, out of flow so it adds no gap or size, and with `pointer-events: none` on the layer itself while its children take pointer events. A control with no position of its own becomes `position: relative` only while it holds the layer. The layer's `data-kind` names the control kind.
-- **Presses.** A press on the host's element reaches the control once. A button receives it by bubbling. A switch is drawn as a `<label>`, which by the HTML rules ignores a press on an interactive element inside it, so the layer hands that press to the switch; a host `<label for>` inside the layer is left to send its own click to its control first. The host keeps its own element out of the accessibility tree and tab order.
+- **Presses.** A press on the host's element reaches the control once, with the control's default action. By the HTML rules a click on an interactive element makes that element the activation target, so the control around it would skip its own: a submit or reset `Button` would not submit, a linked `ListRow` would not navigate, and a switch drawn as a `<label>` would not toggle. The layer therefore stops that click and sends the control one click of its own (to the switch's input for a switch), carrying the pointer position and modifier keys; a disabled control gets nothing. A host `<label for>` inside the layer is left to send its own click to its control first, which the layer then forwards. Native click listeners on the control itself see both clicks; React handlers see one. The host keeps its own element out of the accessibility tree and tab order.
 - **Host controls.** `PressDecoration` from `@bloxwap/hig/react/provider` draws the same layer inside a host control: `<PressDecoration kind='button'/>`; pass `input` (a ref to the switch input) for a host switch drawn as a label.
 - **Native.** There is no native equivalent: native haptics are called directly.
 

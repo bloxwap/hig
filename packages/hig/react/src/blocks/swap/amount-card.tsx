@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import {AnimatedNumberReadout} from '../../animated-number.js';
+import {PressDecoration} from '../../provider.js';
 
 export interface SwapAmountCardProps {
  /** Asset name, drawn in the slot. */
@@ -43,7 +44,7 @@ export interface SwapAmountCardProps {
 export function SwapAmountCard({name,symbol,icon,chainIcon,context,actions,meta,value,amountLabel,prefix='',suffix='',fractionDigits=0,trailingDot=false,maximumFractionDigits=8,conversion,onSelect,selectLabel,className,style}:SwapAmountCardProps){
  return <div className={`hig-swap-card${className?` ${className}`:''}`} style={style} data-side='from'>
   <div className='hig-swap-slot'>
-   {onSelect&&<button type='button' className='hig-swap-hit' aria-label={selectLabel} onClick={onSelect}/>}
+   {onSelect&&<button type='button' className='hig-swap-hit' aria-label={selectLabel} onClick={onSelect}><PressDecoration kind='row'/></button>}
    <div className='hig-swap-slot-content'><div className='hig-swap-selected'>
     <span className='hig-swap-stack' aria-hidden='true'>{chainIcon&&<img src={chainIcon} alt=''/>}{typeof icon==='string'?<img src={icon} alt=''/>:icon??<span className='hig-swap-initials'>{symbol.slice(0,3)}</span>}</span>
     <span className='hig-swap-identity'>{context!=null&&<span>{context}</span>}<strong>{name}</strong></span>

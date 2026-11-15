@@ -41,6 +41,13 @@ it('sets test IDs only when the host names a prefix, and the blocks keep theirs'
  view=mount(h(SignalsBlock,{title:'Signals',groups:[],onBack:()=>{}}));
  expect(['signals-header','signals-back','signals-title'].filter(id=>all(view,id).length===0)).toEqual([]);
 });
+it('sets nativeID on the title only when the host passes headingId, for accessibilityLabelledBy',()=>{
+ const headers=view=>view.findAll(node=>node.props.accessibilityRole==='header');
+ let view=mount(h(header.ScreenHeader,{title:'Pane'}));
+ expect(headers(view).every(node=>node.props.nativeID===undefined)).toBe(true);
+ view=mount(h(header.ScreenHeader,{title:'Pane',headingId:'pane-title'}));
+ expect(headers(view).some(node=>node.props.nativeID==='pane-title')).toBe(true);
+});
 it('keeps the deprecated recipes path as a real module, so a Jest moduleNameMapper to native/dist/<entry>.js resolves it',()=>{
  const recipes=require('../../packages/hig/native/src/recipes'),blocks=require('../../packages/hig/native/src/blocks');
  expect(Object.keys(recipes).sort()).toEqual(Object.keys(blocks).sort());for(const key of Object.keys(blocks))expect(recipes[key]).toBe(blocks[key]);
