@@ -97,5 +97,7 @@ describe('settings blocks',()=>{
   expect(blocks.SoundHapticsBlock).toBe(SoundHapticsBlock);expect(blocks.SignalsBlock).toBe(SignalsBlock);expect(blocks.NotificationsBlock).toBe(NotificationsBlock);expect(blocks.soundLevel).toBe(soundLevel);
   for(const file of ['sound-haptics-block','signals-block','notifications-block','setting-switch']){const source=readFileSync(`packages/hig/react/src/blocks/${file}.tsx`,'utf8');expect(source,file).not.toMatch(/messages\./);if(file!=='setting-switch')expect(source,file).toContain("from './setting-switch.js'");}
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toMatch(/\.hig-setting-switch \{[^}]*min-height:var\(--hig-control\)/);
+  // The row is the label the target size gate measures (scripts/target-size.mjs), not the 40x24 track inside it.
+  expect(readFileSync('packages/hig/react/src/blocks/setting-switch.tsx','utf8')).toContain("<label className='hig-choice hig-setting-switch'");
  });
 });
