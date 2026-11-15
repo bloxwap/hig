@@ -552,14 +552,18 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-position-side[data-side='short'],.hig-position-row [data-tone='down'] { color:var(--hig-negative); }
 /* PositionBlock: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
 .hig-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
-.hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:4px; }
+/* The summary is one quiet container with the list groups' radius and text inset; its values use the interface face. */
+.hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding:16px 20px;border-radius:20px;background:var(--hig-fill); }
 .hig-position-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
-.hig-position-details dd { margin:0;color:var(--hig-text);font-weight:600;text-align:end;overflow-wrap:anywhere; }
+.hig-position-details dd { margin:0;color:var(--hig-text);font-family:inherit;font-weight:500;text-align:end;overflow-wrap:anywhere; }
+.hig-position-details dd .hig-number { font-family:inherit; }
 .hig-position-details [data-tone='positive'] dd { color:var(--hig-positive); }
 .hig-position-details [data-tone='negative'] dd { color:var(--hig-negative); }
 .hig-position-details [data-tone='muted'] dd { color:var(--hig-muted); }
-.hig-position-note { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-.hig-position-groups { display:flex;flex-direction:column;gap:8px; }
+/* The note is the summary's footnote: 8 under it, on the same text inset. */
+.hig-position-note { margin:-8px 0 0;padding-inline:20px;color:var(--hig-muted);font-size:.8125rem;line-height:1.5; }
+/* ListGroups stack 24 apart, the standard gap between groups. */
+.hig-position-groups { display:flex;flex-direction:column;gap:24px; }
 /* LeaderboardBlock: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
 .hig-leaderboard-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-leaderboard-promo { display:flex;flex-direction:column;gap:12px; }

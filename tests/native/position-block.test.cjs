@@ -37,7 +37,7 @@ it('reads the summary in order: live figures, host text, tones, and an unknown f
  let view=mount();
  expect(lines(view)).toEqual(['Notional, $400','Fee, $0.53','Liquidation, -2.5%']);
  const flows=view.findAllByType(AnimatedNumberReadout);expect(flows.map(flow=>[flow.props.value,flow.props.tone])).toEqual([[400,'text'],[0.53,'negative'],[-0.025,'negative']]);
- expect(flat(host(view,'position-details'))).toMatchObject({gap:12,marginTop:16});
+ expect(flat(host(view,'position-details'))).toMatchObject({gap:12,marginTop:16,paddingHorizontal:20,borderRadius:20,backgroundColor:nativeSrgb.surface});
  view=mount({details:[{id:'fee',label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:null},tone:'positive'},{label:'Size',value:{value:10,prefix:'~',suffix:' USDC'}}],note:'Minimum $10 margin.'});
  expect(lines(view)).toEqual(['Fee, 2% of profit','Bust, —','Size, ~10 USDC']);expect(has(view,'position-detail-fee')).toBe(true);
  const words=host(view,'position-detail-fee').findAll(node=>node.type==='Text'&&node.props.children==='2% of profit')[0];expect(flat(words).color).toBe(nativeSrgb.muted);
@@ -50,7 +50,7 @@ it('draws each group as one list of rows that report a press, with values, stati
  const view=mount({groups:[[{id:'size',label:'Size',value:'$10',onSelect:size},{id:'leverage',label:'Leverage',value:'40×'},{id:'stop',label:'Stop Loss',onSelect:stop,disabled:true}],[],[{id:'positions',label:'Positions',value:'2',onSelect:positions}]]});
  // The empty group is not drawn.
  expect(view.findAllByType(ListGroup).map(group=>group.findAllByType(ListRow).map(row=>[row.props.label,row.props.value]))).toEqual([[['Size','$10'],['Leverage','40×'],['Stop Loss',undefined]],[['Positions','2']]]);
- expect(flat(host(view,'position-groups'))).toMatchObject({gap:8,marginTop:16});
+ expect(flat(host(view,'position-groups'))).toMatchObject({gap:24,marginTop:16});
  const press=id=>{const row=all(view,`position-row-${id}`).find(node=>typeof node.type!=='string'&&'onPress' in node.props);if(row&&!row.props.disabled)act(()=>{row.props.onPress({});});return row;};
  press('size');press('positions');expect(size).toHaveBeenCalledTimes(1);expect(positions).toHaveBeenCalledTimes(1);
  expect(press('stop').props.disabled).toBe(true);expect(stop).not.toHaveBeenCalled();expect(press('leverage')).toBeUndefined();
