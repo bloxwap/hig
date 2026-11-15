@@ -1,14 +1,14 @@
 # Bloxwap Human Interface Guidelines
 
-HIG **0.4.0** (`@bloxwap/hig`): a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
+HIG **0.5.1** (`@bloxwap/hig`): a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
 
-The current GitHub release is [v0.4.0](https://github.com/bloxwap/hig/releases/tag/v0.4.0). npm `latest` is still **0.2.0**: 0.3.0 and 0.4.0 are tagged here and have not been published. Published docs: [bloxwap.github.io/hig](https://bloxwap.github.io/hig/).
+The current release is [v0.5.1](https://github.com/bloxwap/hig/releases/tag/v0.5.1), published to npm as `@bloxwap/hig@0.5.1`. Published docs: [bloxwap.github.io/hig](https://bloxwap.github.io/hig/).
 
 ## Install
 
-`npm install @bloxwap/hig` resolves to 0.2.0 until 0.4.0 is published. The same command installs the current release after that publish. Pin `@bloxwap/hig@0.4.0` only once that version is on npm.
+`npm install @bloxwap/hig` installs the current release. Releases are published by the `publish.yml` workflow when a `v*` GitHub release is created; see [the release guide](docs/governance/release.md).
 
-`@bloxwap/chart` is the one required peer (`^0.3.0 || ^0.4.0` in this release; `^0.3.0` on the published 0.2.0). Every renderer, device, and overlay peer is optional. Install a peer only for the entry you import. The [installation guide](docs/installation.md) and the [package README](packages/hig/README.md) list the entries and peers.
+`@bloxwap/chart` is the one required peer (`^0.3.0 || ^0.4.0 || ^0.5.0`). Every renderer, device, and overlay peer is optional. Install a peer only for the entry you import. The [installation guide](docs/installation.md) and the [package README](packages/hig/README.md) list the entries and peers.
 
 ```sh
 npm install @bloxwap/hig @bloxwap/chart
