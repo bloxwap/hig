@@ -388,7 +388,9 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-stack { position:relative;flex:none;display:flex;flex-direction:column;align-items:center; }
 .hig-swap-stack > * { width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--hig-nested);box-shadow:0 0 0 2px var(--hig-surface); }
 .hig-swap-stack > * + * { margin-block-start:-14px; }
-.hig-swap-initials,.hig-swap-token-icon > span { display:grid;place-items:center;font-size:.625rem;font-weight:600;color:var(--hig-muted); }
+.hig-swap-art { display:grid;place-items:center;overflow:hidden; }
+.hig-swap-art > * { width:100%;height:100%; }
+.hig-swap-initials,.hig-swap-token-icon > span:not(.hig-swap-art) { display:grid;place-items:center;font-size:.625rem;font-weight:600;color:var(--hig-muted); }
 .hig-swap-identity { display:flex;flex-direction:column;flex:1;min-width:0;font-size:.875rem;line-height:1.3;color:var(--hig-muted);overflow-wrap:anywhere; }
 .hig-swap-identity > strong { font-size:1rem;font-weight:600;color:var(--hig-text); }
 .hig-swap-meta { display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;max-width:60%;font-size:.875rem;color:var(--hig-muted);text-align:end; }
@@ -485,7 +487,7 @@ button.hig-swap-receive:active { opacity:.8; }
 .hig-swap-row-balance { flex:none;align-items:flex-end; }
 .hig-swap-row :is(strong) { font-size:1rem;font-weight:600;color:var(--hig-text); }
 .hig-swap-token-icon { position:relative;flex:none;display:grid;border-radius:50%;background:var(--hig-nested); }
-.hig-swap-token-icon > img:first-child { width:100%;height:100%;border-radius:50%;object-fit:cover; }
+.hig-swap-token-icon > img:first-child,.hig-swap-token-icon > .hig-swap-art:first-child { width:100%;height:100%;border-radius:50%;object-fit:cover; }
 .hig-swap-chain-badge { position:absolute;inset-block-end:0;inset-inline-end:0;width:16px;height:16px;border-radius:50%;object-fit:cover;background:var(--hig-surface);box-shadow:0 0 0 2px var(--hig-background); }
 .hig-swap-sheet .hig-swap-chain-badge { box-shadow:0 0 0 2px var(--hig-overlay,#111); }
 .hig-swap-settings { display:flex;flex-direction:column;gap:12px;min-width:0; }

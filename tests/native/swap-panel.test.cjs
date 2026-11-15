@@ -383,3 +383,30 @@ it('controls={false} leaves the action on its own, and actionIcon rides before i
  tree=mount({defaultFrom:{...eth,balance:5},defaultTo:usdc,amount:'0.5',actionLabel:'Stake',actionIcon:h(View,{testID:'bank'}),submitting:true});
  expect(action(tree).props.busy).toBe(true);expect(name(tree,'swap-action')).toMatch(/^Stake/);
 });
+it('lets the host hold the action with its own reason, after the panel\'s own checks',()=>{
+ let tree=mount({defaultFrom:usdc,destination:{title:'Papertrade'},denomination:'token',actionLabel:'Deposit',actionDisabled:true,actionStatus:'Below minimum'});
+ // The panel's own reason comes first.
+ expect(actionText(tree)).toBe('Enter an amount');
+ type(tree,'5');expect(actionText(tree)).toBe('Below minimum');expect(action(tree).props.disabled).toBe(true);
+ // Without a status the held action keeps its ready name.
+ tree=mount({defaultFrom:usdc,destination:{title:'Papertrade'},denomination:'token',amount:'5',actionLabel:'Deposit',actionDisabled:true});
+ expect(actionText(tree)).toBe('Deposit');expect(action(tree).props.disabled).toBe(true);
+ tree=mount({defaultFrom:usdc,destination:{title:'Burn'},amount:'5',actionLabel:'Burn',actionIntent:'destructive'});
+ expect(action(tree).props.intent).toBe('destructive');expect(action(tree).props.disabled).toBe(false);
+});
+it('caps typed decimals per token and refuses keys past the balance when asked',()=>{
+ expect(shared.applyAmountKey('1.123456','7','token',6)).toBe('1.123456');expect(shared.applyAmountKey('1.123456','7','token')).toBe('1.1234567');expect(shared.applyAmountKey('1.12','3','usd',6)).toBe('1.12');
+ let tree=mount({defaultFrom:{...usdc,decimals:2},destination:{title:'Papertrade'},denomination:'token'});
+ type(tree,'1.234');expect(amount(tree)).toBe('1.23');
+ // 100 USDC held: a third digit would read 100x, so it is refused; delete still works.
+ tree=mount({defaultFrom:usdc,destination:{title:'Papertrade'},denomination:'token',limitToBalance:true});
+ type(tree,'1000');expect(amount(tree)).toBe('100');type(tree,'<');expect(amount(tree)).toBe('10');
+ // Without the cap the entry runs past the balance and the action says so.
+ tree=mount({defaultFrom:usdc,destination:{title:'Papertrade'},denomination:'token'});
+ type(tree,'1000');expect(amount(tree)).toBe('1000');expect(actionText(tree)).toBe('Insufficient USDC');
+});
+it('draws host artwork elements in place of image URLs, and host content above the cards and under the action',()=>{
+ const tree=mount({defaultFrom:{...usdc,caption:'$100 available',icon:h(View,{testID:'usdc-art'})},destination:{title:'Papertrade',icon:h(View,{testID:'paper-art'})},banner:h(View,{testID:'pending'}),footer:h(View,{testID:'recent'})});
+ expect(has(tree,'usdc-art')).toBe(true);expect(has(tree,'paper-art')).toBe(true);
+ expect(has(node(tree,'swap-banner'),'pending')).toBe(true);expect(has(node(tree,'swap-footer'),'recent')).toBe(true);
+});

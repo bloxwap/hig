@@ -1,3 +1,4 @@
+import type React from 'react';
 // Pure helpers for the SwapPanel recipe. Same behaviour as the web recipe's helpers; kept separate so native never imports the react entry.
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
 export interface SwapToken {
@@ -5,8 +6,10 @@ export interface SwapToken {
  id:string;symbol:string;name:string;
  /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */
  chain:string;chainId:string|number;
- /** Image URLs. A missing token icon falls back to the symbol's first letters. */
- icon?:string;chainIcon?:string;
+ /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */
+ icon?:SwapArtwork;chainIcon?:SwapArtwork;
+ /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */
+ decimals?:number;
  /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */
  balance?:number|null;
  /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */
@@ -16,6 +19,8 @@ export interface SwapToken {
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
 }
+/** An image URL, or an element the host draws. */
+export type SwapArtwork=string|React.ReactElement;
 export interface SwapChain {chainId:string|number;name:string;icon?:string}
 /** Same asset: send. Different asset on one chain: swap. Different asset across chains: bridge. */
 export type SwapAction='send'|'swap'|'bridge';
@@ -46,12 +51,13 @@ export function unitsToEntry(units:number,mode:SwapDenomination,price:number):st
  return price>0?String(Math.floor(units*price*100)/100):'0';
 }
 /** Applies one keypad key (`0`–`9`, `.`, `back`) to an amount string. Dollars stop at two decimals. */
-export function applyAmountKey(current:string,key:string,mode:SwapDenomination):string{
+export function applyAmountKey(current:string,key:string,mode:SwapDenomination,decimals?:number):string{
  if(key==='back')return current.length<=1?'0':current.slice(0,-1);
  if(key==='.')return current.includes('.')?current:`${current}.`;
  if(!/^[0-9]$/.test(key))return current;
  const next=sanitizeAmount(current==='0'?key:current+key);const dot=next.indexOf('.');
- return mode==='usd'&&dot!==-1&&next.length-dot-1>2?current:next;
+ const limit=mode==='usd'?2:decimals;
+ return limit!==undefined&&dot!==-1&&next.length-dot-1>limit?current:next;
 }
 /** Case-insensitive substring or in-order subsequence match. */
 export function fuzzyMatch(query:string,text:string):boolean{
