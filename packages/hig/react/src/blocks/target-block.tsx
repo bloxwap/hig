@@ -56,7 +56,7 @@ export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  presets?:readonly (number|TargetPreset)[];
  /** Shows the Custom row; the host opens its own entry. */
  onCustom?:()=>void;
- /** The value the host's own entry set, in the current unit. The Custom row then shows it on its trailing edge and reads as selected, and no quick choice does. */
+ /** The value the host's own entry set, in the current unit. The Custom row then shows it on its trailing edge and reads as selected, and no quick choice does. Has no effect without `onCustom`; null keeps the row a toggle that reads as not selected. */
  customValue?:number|null;
  /** Format of prices. Defaults to US dollars. */
  priceOptions?:Intl.NumberFormatOptions;
@@ -115,7 +115,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  // The popover closes on a press outside it, on Escape, and when focus leaves it.
  useEffect(()=>{if(!open)return;const outside=(event:Event)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
  const info=note&&labels.info&&(!headerAction||headerActionBesideInfo)?labels.info:undefined;
- const custom=known(customValue)?customValue:null;
+ const custom=onCustom&&known(customValue)?customValue:null;
  const infoButton=info&&<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/><PressDecoration kind='back'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>;
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
@@ -135,7 +135,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <dl className='hig-bar-pnl-readouts'>{order.map(price=><div key={price} data-price={price}><dt>{labels[price]}</dt><dd><AnimatedNumberReadout value={prices[price]} options={priceOptions}/></dd></div>)}</dl>
   </section>
   {units.length>1&&<SegmentedControl label={labels.unit} options={targetUnits(units).map(option=>({value:option.unit,label:labels.units[option.unit],disabled:option.disabled}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
-  {onCustom&&(custom===null?<button type='button' className='hig-swap-setting' onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>:<button type='button' className='hig-swap-setting' aria-pressed='true' onClick={onCustom}><span>{labels.custom}</span><span className='hig-swap-setting-value'>{formatNumber(custom,locale,present(targetFormat(unit,priceOptions)))}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>)}
+  {onCustom&&(custom===null?<button type='button' className='hig-swap-setting' aria-pressed={customValue!==undefined?false:undefined} onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>:<button type='button' className='hig-swap-setting' aria-pressed='true' onClick={onCustom}><span>{labels.custom}</span><span className='hig-swap-setting-value'>{formatNumber(custom,locale,present(targetFormat(unit,priceOptions)))}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>)}
   {presets.length>0&&<div className='hig-target-presets'>{targetPresets(presets).map(({value:preset,disabled})=>{const selected=custom===null&&preset===value;return <Button key={preset} fullWidth intent={selected?intent:'secondary'} aria-pressed={selected} disabled={disabled} onClick={()=>onValueChange?.(preset)}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>;})}</div>}
   <div className='hig-target-actions'>
    {onCancel&&<Button fullWidth intent='secondary' onClick={onCancel}>{labels.cancel??messages.cancel??en.cancel}</Button>}

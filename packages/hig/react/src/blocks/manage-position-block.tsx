@@ -96,11 +96,11 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
   {position?.caption&&!position.onSelect&&<p className='hig-position-caption'>{position.caption}</p>}
  </section>;
 }
-/** The position row as a button: named by the host's label and described by what it shows and the caption. Its own component, so the ids it needs exist only when it is drawn. */
+/** The position row as a button: named by the host's label and described by what it shows and the caption. Without a label it is named by what it shows, so only the caption describes it, as on native. Its own component, so the ids it needs exist only when it is drawn. */
 function PositionButton({position,content}:{position:ManagePositionBlockSummary;content:(position:ManagePositionBlockSummary,ids:{identity:string;amounts:string})=>React.ReactNode}){
  const identity=useId(),amounts=useId(),about=useId();
  return <>
-  <button type='button' className='hig-asset-row hig-position-row' aria-label={position.label} aria-describedby={[identity,amounts,position.caption?about:null].filter(Boolean).join(' ')} onClick={position.onSelect}>{content(position,{identity,amounts})}<PressDecoration kind='row'/></button>
+  <button type='button' className='hig-asset-row hig-position-row' aria-label={position.label} aria-describedby={[position.label?identity:null,position.label?amounts:null,position.caption?about:null].filter(Boolean).join(' ')||undefined} onClick={position.onSelect}>{content(position,{identity,amounts})}<PressDecoration kind='row'/></button>
   {position.caption&&<p id={about} className='hig-position-caption'>{position.caption}</p>}
  </>;
 }

@@ -56,7 +56,7 @@ export interface TargetBlockProps {
  presets?:readonly (number|TargetPreset)[];
  /** Shows the Custom row; the host opens its own entry. */
  onCustom?:()=>void;
- /** The value the host's own entry set, in the current unit. The Custom row then shows it on its trailing edge and reads as selected, and no quick choice does. */
+ /** The value the host's own entry set, in the current unit. The Custom row then shows it on its trailing edge and reads as selected, and no quick choice does. Has no effect without `onCustom`; null keeps the row a toggle that reads as not selected. */
  customValue?:number|null;
  /** Format of prices. Defaults to US dollars. */
  priceOptions?:Intl.NumberFormatOptions;
@@ -119,7 +119,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const info=note&&labels.info&&(!headerAction||headerActionBesideInfo)?labels.info:undefined;
  // With the info button beside a host control, both header sides widen together so the title stays centred.
  const pair=!!info&&headerAction!=null,side=pair?92:44;
- const custom=known(customValue)?customValue:null,customText=custom===null?null:formatNumber(custom,locale,present(targetFormat(unit,priceOptions)));
+ const custom=onCustom&&known(customValue)?customValue:null,customText=custom===null?null:formatNumber(custom,locale,present(targetFormat(unit,priceOptions)));
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
@@ -153,7 +153,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    </View>
   </PriceCard>
   {units.length>1?<View testID='target-units' style={{marginTop:16}}><SegmentedControl label={labels.unit} options={targetUnits(units).map(option=>({value:option.unit,label:labels.units[option.unit],disabled:option.disabled}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/></View>:null}
-  {onCustom&&customText===null?<Pressable testID='target-custom' accessibilityRole='button' onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well,marginTop:16})}>
+  {onCustom&&customText===null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityState={customValue!==undefined?{selected:false}:undefined} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well,marginTop:16})}>
    <Text numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.custom}</Text>
    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
   </Pressable>:null}
