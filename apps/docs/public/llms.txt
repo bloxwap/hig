@@ -192,10 +192,10 @@ Includes web-only `PriceChart` and `chartTheme`. Native uses readouts, lists, an
 Issues #20 and #96. Entry: `@bloxwap/hig/chart`. Import `PriceChart` and `chartTheme` from `@bloxwap/hig/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig/native/data` for summary/readout/list alternatives. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ```sh
-npm install @bloxwap/hig @bloxwap/chart@^0.4.0
+npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 ```
 
-`@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0` (0.4.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
+`@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
 
 ## API and anatomy
 
@@ -862,7 +862,7 @@ HIG passes one adapter-local `AbortSignal` to each play. Muting, backgrounding, 
 
 `createBrowserHapticAdapter()` maps accepted semantic events to browser vibration when `navigator.vibrate` exists. Its existing default and `{vibrate}` injection retain their patterns; neither requires importing Haptic. Device intensity/pattern quality varies and may be suppressed. iOS WebKit without vibration cannot provide imperative async outcome feedback; the adapter reports unavailable and remains silent.
 
-The optional `ImperativeHapticBackend` injection accepts the `canTriggerHaptic` and `triggerHaptic` functions from `@bloxwap/haptic` (`^0.2.0 || ^0.3.0`): `createBrowserHapticAdapter({canTriggerHaptic, triggerHaptic})`. HIG probes capability at request time, so activation and document visibility are current, and delegates the semantic cue to upstream's presets. Rejection/failure cannot change the primary action. `observed` stays false. The adapter adds no eager import, helper DOM or physical-tap simulation.
+The optional `ImperativeHapticBackend` injection accepts the `canTriggerHaptic` and `triggerHaptic` functions from `@bloxwap/haptic` (`^0.2.0 || ^0.3.0 || ^0.4.0`): `createBrowserHapticAdapter({canTriggerHaptic, triggerHaptic})`. HIG probes capability at request time, so activation and document visibility are current, and delegates the semantic cue to upstream's presets. Rejection/failure cannot change the primary action. `observed` stays false. The adapter adds no eager import, helper DOM or physical-tap simulation.
 
 The imperative API reports iOS unavailable, including during transient activation. It cannot replace eligible physical targets or express iOS async outcome patterns. Neither the browser Vibration API nor this upstream API provides a per-root cancellation handle: `cancel()`/`dispose()` retain the existing `navigator.vibrate(0)` stop when available, which is document-wide. This is distinct from SFX's per-root voice cancellation.
 

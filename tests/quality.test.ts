@@ -17,7 +17,7 @@ it('@bloxwap/hig names @bloxwap/chart only as a required peer and has no ./react
  const pkg=JSON.parse(readFileSync('packages/hig/package.json','utf8'));
  expect(pkg.name).toBe('@bloxwap/hig');expect(pkg.version).toBe(JSON.parse(readFileSync('package.json','utf8')).version);
  expect(pkg.exports['./react/chart']).toBeUndefined();expect(pkg.exports['./chart']).toEqual({types:'./chart/dist/index.d.ts',import:'./chart/dist/index.js',default:'./chart/dist/index.js'});
- expect(pkg.peerDependencies['@bloxwap/chart']).toBe('^0.3.0 || ^0.4.0');expect(pkg.peerDependenciesMeta['@bloxwap/chart']).toBeUndefined();
+ expect(pkg.peerDependencies['@bloxwap/chart']).toBe('^0.3.0 || ^0.4.0 || ^0.5.0');expect(pkg.peerDependenciesMeta['@bloxwap/chart']).toBeUndefined();
  expect(pkg.dependencies).toBeUndefined();
  expect(()=>checkChartBoundary()).not.toThrow();
 });

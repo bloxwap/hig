@@ -56,8 +56,8 @@ assert.equal(Object.keys(ordinary.metafile.inputs).some(p=>/[/\\]vaul[/\\]/.test
 const button=await bundle("export {Button} from '@bloxwap/hig/react/button';");
 assert.equal(Object.keys(button.metafile.inputs).some(p=>/@bloxwap[/\\]chart[/\\]/.test(p)),false,'@bloxwap/hig/react/button pulls @bloxwap/chart');
 assert.equal(Object.hasOwn(manifest.exports,'./react/chart'),false,'@bloxwap/hig still exports ./react/chart');
-execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','--strict-peer-deps','@bloxwap/chart@0.4.0'],{cwd:directory,stdio:'pipe'});
-assert.equal(manifest.peerDependencies['@bloxwap/chart'],'^0.3.0 || ^0.4.0');assert.equal(manifest.peerDependenciesMeta?.['@bloxwap/chart'],undefined,'@bloxwap/hig must not make @bloxwap/chart optional');
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','--strict-peer-deps','@bloxwap/chart@0.5.0'],{cwd:directory,stdio:'pipe'});
+assert.equal(manifest.peerDependencies['@bloxwap/chart'],'^0.3.0 || ^0.4.0 || ^0.5.0');assert.equal(manifest.peerDependenciesMeta?.['@bloxwap/chart'],undefined,'@bloxwap/hig must not make @bloxwap/chart optional');
 assert.equal(existsSync(join(directory,'node_modules/@bloxwap/hig/node_modules')),false,'@bloxwap/hig nests its own chart or React copy');
 writeFileSync(join(directory,'chart.mjs'),"import React from 'react';import {renderToString} from 'react-dom/server';import {PriceChart,chartTheme} from '@bloxwap/hig/chart';import {tokens} from '@bloxwap/hig/tokens';const html=renderToString(React.createElement(PriceChart,{summary:'BTC up 1% today',data:[]}));for(const text of ['<figcaption>BTC up 1% today</figcaption>','role=\"status\"','Loading chart'])if(!html.includes(text))throw Error('PriceChart SSR missing '+text+': '+html);if(chartTheme.series.downColor!==tokens.colors.sell.srgb)throw Error('chartTheme lost its token colors');");
 execFileSync(process.execPath,[join(directory,'chart.mjs')],{cwd:directory,stdio:'inherit'});

@@ -35,6 +35,7 @@ Design review pass over all 65 catalog components (web and native). HIG now sepa
 - Closing call-to-action buttons sit a double step, 16 units, below the form and 8 from each other (`--hig-action-offset`, `.hig-form-action`): TradeEntry, the SwapPanel action row, and the buttons that end a Dialog or default sheet.
 - The brand mark's copied-palette drift exception, expired on 2026-11-13, is renewed to 2027-05-12 and tracked in #201, so `npm run check` passes again.
 - Examples: the IconButton example passes `busy`, and the Tooltip example confirms its copy with a toast.
+- Accept the latest feedback and chart packages: the optional peers are now `@bloxwap/sfx` `^0.2.0 || ^0.3.0` and `@bloxwap/haptic` `^0.2.0 || ^0.3.0 || ^0.4.0`, and the required peer is `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0`. HIG develops, smoke-tests and documents against chart 0.5.0, haptic 0.4.0 and sfx 0.3.0; PR CI still checks the oldest accepted versions. Native cues are re-exported with sfx 0.3.0 and are byte-identical.
 
 ## 0.4.0
 

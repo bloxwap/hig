@@ -7,10 +7,10 @@ Includes web-only `PriceChart` and `chartTheme`. Native uses readouts, lists, an
 Issues #20 and #96. Entry: `@bloxwap/hig/chart`. Import `PriceChart` and `chartTheme` from `@bloxwap/hig/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig/native/data` for summary/readout/list alternatives. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ```sh
-npm install @bloxwap/hig @bloxwap/chart@^0.4.0
+npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 ```
 
-`@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0` (0.4.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
+`@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
 
 ## API and anatomy
 
