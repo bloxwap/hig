@@ -1088,6 +1088,27 @@
       }
     },
     {
+      "name": "LeaderboardCard",
+      "slug": "leaderboard-card",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.LeaderboardCard title='Leaderboard' verifiedLabel='Verified' promo={{eyebrow:'Season 01 prize pool',rules:{label:'See rules',onSelect:()=>setMessage('The host opens the rules')},amount:4037,goal:250000,progress:percent=>percent+' to goal',updated:'Updates every 15 minutes',headline:['Top ',{highlight:'100'},' traders split ',{highlight:'$250,000'},' pot'],description:'Pool funded by builder fees from every trade routed through the app.'}} you={{id:'you',rank:2,name:'you',verified:true,detail:'$1,090,779 vol',score:418450}} entries={[{id:'a',rank:1,name:'0x4e79…949f',verified:true,detail:'$1,789,061 vol',score:795407},{id:'you',rank:2,name:'you',verified:true,detail:'$1,090,779 vol',score:418450,you:true},{id:'c',rank:3,name:'0x3f50…eb5f',verified:true,detail:'$1,059,852 vol',score:317217},{id:'d',rank:4,name:'0x9bef…2abb',verified:true,detail:'$1,191,976 vol',score:311658},{id:'e',rank:5,name:'0xa69b…6ac2',detail:'$514,674 vol',score:272644}]} onBack={()=>setMessage('The host goes back')}/>",
+      "native": "<C.LeaderboardCard title='Leaderboard' verifiedLabel='Verified' promo={{eyebrow:'Season 01 prize pool',rules:{label:'See rules',onSelect:()=>setMessage('The host opens the rules')},amount:4037,goal:250000,progress:percent=>percent+' to goal',updated:'Updates every 15 minutes',headline:['Top ',{highlight:'100'},' traders split ',{highlight:'$250,000'},' pot'],description:'Pool funded by builder fees from every trade routed through the app.'}} you={{id:'you',rank:2,name:'you',verified:true,detail:'$1,090,779 vol',score:418450}} entries={[{id:'a',rank:1,name:'0x4e79…949f',verified:true,detail:'$1,789,061 vol',score:795407},{id:'you',rank:2,name:'you',verified:true,detail:'$1,090,779 vol',score:418450,you:true},{id:'c',rank:3,name:'0x3f50…eb5f',verified:true,detail:'$1,059,852 vol',score:317217},{id:'d',rank:4,name:'0x9bef…2abb',verified:true,detail:'$1,191,976 vol',score:311658},{id:'e',rank:5,name:'0xa69b…6ac2',detail:'$514,674 vol',score:272644}]} onBack={()=>setMessage('The host goes back')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sweepstakes"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "sweepstakes": {
+          "web": "<C.LeaderboardCard title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'See rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:['Every ',{highlight:'$10'},' you trade earns ',{highlight:'1 entry'}],description:'Winners are drawn by the sweepstakes operator. More entries, better odds.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.LeaderboardCard title='Leaderboard' promo={{eyebrow:'Sweepstakes',rules:{label:'See rules',onSelect:()=>setMessage('The host opens the rules')},amount:100000,caption:'top prize',headline:['Every ',{highlight:'$10'},' you trade earns ',{highlight:'1 entry'}],description:'Winners are drawn by the sweepstakes operator. More entries, better odds.',action:{label:'Draws and winners',onSelect:()=>setMessage('The host opens the draws')}}} tabs={{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:next=>setMessage('The host shows '+next)}} you={{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'you',rank:1,name:'you',detail:'$27,065 vol',score:2706,you:true}]} footnote='Entries are provisional until audited.' onBack={()=>setMessage('The host goes back')}/>"
+        }
+      }
+    },
+    {
       "name": "TradeHistoryCard",
       "slug": "trade-history-card",
       "entry": "blocks",

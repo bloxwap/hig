@@ -159,6 +159,7 @@
         "TradeHistoryDetailCard",
         "TargetCard",
         "PositionCard",
+        "LeaderboardCard",
         "TradeEntry",
         "SwapPanel",
         "FromPicker",

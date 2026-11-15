@@ -561,6 +561,44 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-position-details [data-tone='muted'] dd { color:var(--hig-muted); }
 .hig-position-note { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-position-groups { display:flex;flex-direction:column;gap:8px; }
+/* LeaderboardCard: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
+.hig-leaderboard-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-leaderboard-promo { display:flex;flex-direction:column;gap:12px; }
+.hig-leaderboard-promo > p,.hig-leaderboard-footnote { margin:0; }
+.hig-leaderboard-promo-top,.hig-leaderboard-progress-meta,.hig-leaderboard-columns { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+.hig-leaderboard-eyebrow,.hig-leaderboard-progress-meta,.hig-leaderboard-columns,.hig-leaderboard-rules { font-size:.75rem;line-height:1.33;letter-spacing:.12em;text-transform:uppercase; }
+.hig-leaderboard-eyebrow { display:inline-flex;align-items:center;gap:8px;min-width:0;color:var(--hig-action); }
+.hig-leaderboard-eyebrow::before { content:'';flex:none;width:8px;height:8px;border-radius:50%;background:currentColor; }
+.hig-button.hig-leaderboard-rules { flex:none;min-height:36px;padding:4px 16px; }
+.hig-leaderboard-amount { display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;color:var(--hig-muted); }
+.hig-leaderboard-amount > strong { color:var(--hig-action);font-size:clamp(1.75rem,9vw,2.5rem);line-height:1.15;font-weight:700;letter-spacing:-.02em; }
+.hig-leaderboard-progress { display:flex;flex-direction:column;gap:8px; }
+.hig-leaderboard-track { height:8px;border-radius:4px;background:var(--hig-fill-raised);overflow:hidden; }
+.hig-leaderboard-track > span { display:block;height:100%;min-width:8px;border-radius:4px;background:var(--hig-action);transition:width var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
+.hig-leaderboard-progress-meta,.hig-leaderboard-columns { color:var(--hig-muted); }
+.hig-leaderboard-progress-meta > :last-child,.hig-leaderboard-columns > :last-child { text-align:end; }
+.hig-leaderboard-columns { padding-inline:4px; }
+.hig-leaderboard-headline { font-size:1.25rem;line-height:1.3;font-weight:600;overflow-wrap:anywhere; }
+.hig-leaderboard-headline > mark { background:none;color:var(--hig-action); }
+.hig-leaderboard-description,.hig-leaderboard-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-leaderboard-footnote { padding-inline:4px; }
+.hig-leaderboard-card .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+.hig-leaderboard-list { display:flex;flex-direction:column;gap:8px; }
+.hig-leaderboard-rows { display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;border-radius:20px;overflow:hidden; }
+.hig-leaderboard-row { display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 20px;background:var(--hig-fill); }
+.hig-leaderboard-you > .hig-leaderboard-row { border-radius:20px;background:color-mix(in srgb,var(--hig-action) 12%,var(--hig-background)); }
+.hig-leaderboard-rank { flex:none;min-width:24px;color:var(--hig-muted);font-weight:600; }
+.hig-leaderboard-avatar { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600;overflow:hidden; }
+.hig-leaderboard-avatar > img { width:100%;height:100%;object-fit:cover; }
+.hig-leaderboard-identity { flex:1;display:flex;flex-direction:column;min-width:0; }
+.hig-leaderboard-identity > strong { display:flex;align-items:center;gap:6px;font-weight:600;overflow-wrap:anywhere; }
+.hig-leaderboard-identity > span { color:var(--hig-muted);font-size:.875rem; }
+.hig-leaderboard-verified { flex:none;display:inline-flex;color:var(--hig-warning); }
+.hig-leaderboard-score { flex:none;font-weight:600; }
+.hig-leaderboard-row[data-you] :is(.hig-leaderboard-identity > strong,.hig-leaderboard-score) { color:var(--hig-action); }
+@media(prefers-reduced-motion:reduce) { .hig-leaderboard-track > span { transition:none; } }
+[data-hig-motion='reduced'] .hig-leaderboard-track > span { transition:none; }
+@media(forced-colors:active) { .hig-leaderboard-track > span { forced-color-adjust:none; } }
 /* TargetCard: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
 .hig-target-card { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }

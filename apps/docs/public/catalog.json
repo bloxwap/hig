@@ -669,6 +669,16 @@
       ]
     },
     {
+      "name": "LeaderboardCard",
+      "route": "components/leaderboard-card",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sweepstakes"
+      ]
+    },
+    {
       "name": "TradeHistoryCard",
       "route": "components/trade-history-card",
       "entry": "blocks",

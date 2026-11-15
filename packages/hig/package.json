@@ -288,6 +288,11 @@
       "import": "./react/dist/blocks/position-card.js",
       "default": "./react/dist/blocks/position-card.js"
     },
+    "./react/blocks/leaderboard-card": {
+      "types": "./react/dist/blocks/leaderboard-card.d.ts",
+      "import": "./react/dist/blocks/leaderboard-card.js",
+      "default": "./react/dist/blocks/leaderboard-card.js"
+    },
     "./react/blocks/trade-history-card": {
       "types": "./react/dist/blocks/trade-history-card.d.ts",
       "import": "./react/dist/blocks/trade-history-card.js",
@@ -362,6 +367,11 @@
       "types": "./native/dist/position-card.d.ts",
       "import": "./native/dist/position-card.js",
       "default": "./native/dist/position-card.js"
+    },
+    "./native/leaderboard-card": {
+      "types": "./native/dist/leaderboard-card.d.ts",
+      "import": "./native/dist/leaderboard-card.js",
+      "default": "./native/dist/leaderboard-card.js"
     },
     "./native/trade-history-card": {
       "types": "./native/dist/trade-history-card.d.ts",

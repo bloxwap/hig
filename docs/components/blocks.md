@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `LanguageCard`, `ManagePositionCard`, `TradeHistoryCard`, `TradeHistoryDetailCard`, `TargetCard`, `PositionCard`, `InstallCommand`, and `MarketingHero`.
+Includes `MarketRow`, `TradeEntry`, `SwapPanel`, `FromPicker`, `ToPicker`, `AccountCard`, `TokenActionCard`, `LanguageCard`, `ManagePositionCard`, `TradeHistoryCard`, `TradeHistoryDetailCard`, `TargetCard`, `PositionCard`, `LeaderboardCard`, `InstallCommand`, and `MarketingHero`.
 
 Issue #26. Entry: `blocks`. Import platform entries from `@bloxwap/hig/react/blocks` or `@bloxwap/hig/native/blocks` according to applicability below. On web, each block also has its own entry, for example `@bloxwap/hig/react/blocks/install-command`, `blocks/code-window`, `blocks/market-row`, `blocks/balance-card`, `blocks/marketing-hero` and `blocks/activity-list`. These need no Radix peer; `smoke:packed-boundaries` renders and bundles them with no Radix installed (#63). `blocks/swap-panel` needs none either. `blocks/trade-entry` and the aggregate `blocks` entry need `@radix-ui/react-dialog` for the confirm step. `blocks/swap-sheet` (not in the aggregate) needs `vaul`. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -24,6 +24,7 @@ All data and actions are supplied by the host application.
 | `ManagePositionCard` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetCard` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry, mark and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionCard` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
+| `LeaderboardCard` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `FromPicker` | Where assets come from: a connected wallet row (disconnect optional) or Connect wallet with a Generate address switch, above a searchable token list. Details below. |
 | `ToPicker` | Where assets go: a destination address field with a scan button, on its own or above a searchable token list with or without the chain filter. Details below. |
 | `InstallCommand` | `command` and `onCopy`; accepts an asynchronous host clipboard adapter. The copy result is raised as a toast: on web when `Toaster` from `@bloxwap/hig/react/toast` is mounted, and inline otherwise. The block itself does not load Sonner. |
@@ -310,6 +311,31 @@ import {FromPicker, ToPicker} from '@bloxwap/hig/react/blocks/pickers';
 - **Details.** `details=[{label, value, options, prefix, suffix}]` draws one row each, in the order given. A number is formatted with `options` between `prefix` and `suffix`; a string is drawn as given, which suits a duration the host has already formatted.
 - **Actions.** `actions=[{id, label, onSelect, intent, disabled, busy}]` draws the buttons in one row with equal widths, 8 units apart and 16 below the details. `intent` defaults to `secondary`; set `primary` on the one that matters, such as Share.
 - **Ownership.** The card never reads trade history, renders an image or opens a share sheet. The host does each of those when an action reports a press.
+
+### LeaderboardCard
+
+`LeaderboardCard` is the screen for a trading competition. Under the shared header it shows an optional promotion, an optional choice between standings, the viewer's own standing pinned on a tinted row, and the ranked list. One block covers both a prize pool that fills towards a goal and a sweepstakes with a top prize; the promotion's fields decide which. It is available from `@bloxwap/hig/react/blocks/leaderboard-card`, `@bloxwap/hig/native/leaderboard-card` and the `blocks` aggregates.
+
+```tsx
+<LeaderboardCard title={t.leaderboard} onBack={goBack} headerAction={share} verifiedLabel={t.verified}
+  promo={{eyebrow: t.seasonPool, rules: {label: t.seeRules, onSelect: openRules},
+          amount: 4037, goal: 250000, progress: percent => t.toGoal(percent), updated: t.updates,
+          headline: ['Top ', {highlight: '100'}, ' traders split ', {highlight: '$250,000'}, ' pot'],
+          description: t.poolFunding}}
+  you={me} entries={standings}/>
+```
+
+- **Words.** Every word is host text; only Back is built in.
+- **Promotion.** `promo` draws a card: the `eyebrow` in small capitals with a dot, a `rules` capsule on its trailing edge, and `amount` as the headline figure in the action colour, updating place by place. `headline` is the explaining sentence as pieces, where `{highlight}` pieces take the action colour; `description` sits under it; `action` is a full-width button, for example to the draws. Leave `promo` out for standings alone.
+- **Prize pool.** With `goal`, the figure is followed by the goal (`/ $250,000`) and a progress bar filled to `amount / goal`. `progress` receives the share as a formatted percent for the line under the bar's leading end, and `updated` is the line under its trailing end. `leaderboardProgress(amount, goal)` returns the same share.
+- **Sweepstakes.** Without `goal` there is no bar, and `caption` follows the figure, such as top prize.
+- **Money.** `amountOptions` formats `amount` and `goal`; the default is whole US dollars.
+- **Standings choice.** `tabs={{label, options, value, onValueChange}}` adds a `SegmentedControl`, such as Upcoming draw and Top winners. The host swaps `entries` when it changes.
+- **Your standing.** `you` is the viewer's entry, pinned above the list on a tinted row with the name and score in the action colour. An entry in the list with `you: true` gets the same colours in place.
+- **Entries.** An entry is `{id, rank, name, score}` plus optional `avatar` (an image URL or a host element; the name's first letters otherwise), `verified`, and `detail`, the line under the name such as the volume. The host ranks and pages them. `scoreOptions` formats the scores; the default is a whole number. Scores update place by place.
+- **Verified.** `verified` shows a mark after the name. `verifiedLabel` names it for assistive technology; without it the mark is decorative.
+- **Columns and footnote.** `listTitle` and `scoreTitle` are small capitals over the names and the scores. `footnote` is a line under the list.
+- **Ownership.** The card never computes a rank, fetches standings, or runs a draw.
 
 ## When to use and examples
 

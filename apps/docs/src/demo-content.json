@@ -405,6 +405,10 @@
       "title": "PositionCard"
     },
     {
+      "route": "components/leaderboard-card",
+      "title": "LeaderboardCard"
+    },
+    {
       "route": "components/trade-history-card",
       "title": "TradeHistoryCard"
     },
@@ -1115,6 +1119,16 @@
       "states": [
         "default",
         "paper-trade"
+      ]
+    },
+    {
+      "name": "LeaderboardCard",
+      "route": "components/leaderboard-card",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sweepstakes"
       ]
     },
     {
