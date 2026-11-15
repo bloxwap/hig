@@ -2,7 +2,6 @@
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {useHIG} from '../provider.js';
-import {Button} from '../button.js';
 import {SegmentedControl} from '../selection.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
@@ -26,7 +25,7 @@ export interface LeaderboardPromo {
  headline?:string;
  /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */
  description?:string;
- /** A full-width action under the description: Draws and winners. The host opens its own destination. */
+ /** A quiet row under a hairline at the foot of the card, with a chevron on its trailing edge: Draws and winners. The host opens its own destination. */
  action?:{label:string;onSelect:()=>void};
 }
 /** One trader in the standings. */
@@ -98,7 +97,7 @@ export function LeaderboardBlock({title,promo,tabs,you,listTitle,scoreTitle,entr
    {caption&&<p className='hig-leaderboard-caption hig-number'>{caption}</p>}
    {promo.goal!==undefined&&<div className='hig-leaderboard-track' aria-hidden='true'><span style={{width:`${(share??0)*100}%`}}/></div>}
    {(promo.headline||promo.description)&&<p className='hig-leaderboard-summary'>{promo.headline&&<strong>{promo.headline}</strong>}{promo.headline&&promo.description?' ':null}{promo.description}</p>}
-   {promo.action&&<Button fullWidth onClick={promo.action.onSelect}>{promo.action.label}</Button>}
+   {promo.action&&<button type='button' className='hig-leaderboard-action' onClick={promo.action.onSelect}><span>{promo.action.label}</span><SwapIcon name='chevron' size={16}/></button>}
   </section>}
   {tabs&&<SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/>}
   {you&&<div className='hig-leaderboard-you'><Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel}/></div>}

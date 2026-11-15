@@ -56,7 +56,7 @@ describe('LeaderboardBlock',()=>{
   // The rules control is a text link with a chevron, not a filled button.
   const link=screen.getByRole('button',{name:'Rules'});expect(link.className).toBe('hig-leaderboard-rules');expect(link.querySelector('svg')).toBeTruthy();expect(link.closest('.hig-leaderboard-promo-top')).toBeTruthy();
   await userEvent.click(link);await userEvent.click(screen.getByRole('button',{name:'Draws and winners'}));expect(rules).toHaveBeenCalledTimes(1);expect(action).toHaveBeenCalledTimes(1);
-  expect(screen.getByRole('button',{name:'Draws and winners'}).getAttribute('data-full')).toBe('true');
+  const row=screen.getByRole('button',{name:'Draws and winners'});expect(row.className).toBe('hig-leaderboard-action');expect(row.classList.contains('hig-button')).toBe(false);expect(row.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
  });
  it('pins the viewer on a tinted row above the list, with column headings, a standings choice and a footnote',async()=>{
   const change=vi.fn();

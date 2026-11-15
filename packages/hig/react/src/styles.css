@@ -595,7 +595,11 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-leaderboard-eyebrow { min-width:0; }
 .hig-leaderboard-rules { appearance:none;flex:none;display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;min-height:var(--hig-button);min-width:var(--hig-button);margin-block:-12px;padding:0;border:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent; }
 .hig-leaderboard-rules:active { color:var(--hig-text); }
-[dir='rtl'] .hig-leaderboard-rules > svg { transform:scaleX(-1); }
+[dir='rtl'] .hig-leaderboard-rules > svg,[dir='rtl'] .hig-leaderboard-action > svg { transform:scaleX(-1); }
+/* The card's action is a quiet row under a hairline, not a filled button. */
+.hig-leaderboard-action { appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:var(--hig-button);margin:4px 0 -8px;padding:12px 0 0;border:0;border-block-start:1px solid var(--hig-fill-raised);border-radius:0;background:none;color:var(--hig-muted);font:inherit;font-weight:500;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-leaderboard-action:active { color:var(--hig-text); }
+.hig-leaderboard-action > svg { flex:none; }
 .hig-leaderboard-amount { color:var(--hig-action);font-size:clamp(2.5rem,13vw,3.5rem);line-height:1.1;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere; }
 .hig-leaderboard-promo > .hig-leaderboard-caption { margin-block-start:-8px;color:var(--hig-muted);font-size:.9375rem;line-height:1.5; }
 .hig-leaderboard-track { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
@@ -605,7 +609,7 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-leaderboard-summary { color:var(--hig-muted);line-height:1.5;overflow-wrap:anywhere; }
 .hig-leaderboard-summary > strong { color:var(--hig-text);font-weight:600; }
 .hig-leaderboard-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-@media(hover:hover) and (pointer:fine) { .hig-leaderboard-rules:hover { color:var(--hig-text); } }
+@media(hover:hover) and (pointer:fine) { .hig-leaderboard-rules:hover,.hig-leaderboard-action:hover { color:var(--hig-text); } }
 .hig-leaderboard-footnote { padding-inline:4px; }
 .hig-leaderboard-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-leaderboard-list { display:flex;flex-direction:column;gap:8px; }

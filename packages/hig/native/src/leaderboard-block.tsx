@@ -4,7 +4,7 @@ import {formatNumber} from '@bloxwap/hig/contracts';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Surface,Text} from './surface.js';
-import {Button,IconButton} from './button.js';
+import {IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon,SeverityIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
@@ -125,7 +125,10 @@ export function LeaderboardBlock({title,promo,tabs,you,listTitle,scoreTitle,entr
    </View>
    {promo.goal!==undefined?<View {...hidden} testID='leaderboard-track' style={{direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'}}><View testID='leaderboard-fill' style={{width:`${(reached??0)*100}%`,minWidth:8,borderRadius:2,backgroundColor:colors.action}}/></View>:null}
    {promo.headline||promo.description?<Text testID='leaderboard-summary' style={{fontSize:16,lineHeight:24,color:colors.muted}}>{promo.headline?<Text style={{fontWeight:'600',color:colors.text}}>{promo.headline}</Text>:null}{promo.headline&&promo.description?space:null}{promo.description}</Text>:null}
-   {promo.action?<Button testID='leaderboard-action' fullWidth onPress={promo.action.onSelect}>{promo.action.label}</Button>:null}
+   {promo.action?<Pressable testID='leaderboard-action' accessibilityRole='button' accessibilityLabel={promo.action.label} onPress={promo.action.onSelect} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:44,marginTop:4,marginBottom:-8,paddingTop:12,borderTopWidth:1,borderTopColor:fills.raised}}>
+    <Text {...hidden} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:colors.muted}}>{promo.action.label}</Text>
+    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
+   </Pressable>:null}
   </Surface>:null}
   {tabs?<View testID='leaderboard-tabs' style={{marginTop:16}}><SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/></View>:null}
   {pinned}
