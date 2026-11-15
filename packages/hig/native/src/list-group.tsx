@@ -22,9 +22,9 @@ export interface ListRowProps {
  label:string;
  /** Artwork before the label, such as an icon. Decorative: the label names the row. */
  leading?:React.ReactNode;
- /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string is drawn muted and read with the label. */
+ /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string or number is drawn muted, or in `valueTone`, and read with the label. */
  value?:React.ReactNode;
- /** How a `value` that is not text is read with the label on a pressable row, such as a live figure's formatted amount. */
+ /** What a `value` that is not text reads as, such as the formatted amount of a live figure. The element is then read as this text in its place: with the label on a pressable row, and on its own on a static row. */
  valueLabel?:string;
  /** Colours a string or number `value` instead of the muted default, keeping its layout and reading. */
  valueTone?:'positive'|'warning'|'negative'|'muted';
@@ -47,7 +47,7 @@ export function ListRow({label,leading,value,valueLabel,valueTone,trailing,onSel
  const first:ViewStyle={minHeight:40,justifyContent:'center'};
  const lead=leading==null?null:<View {...hidden} style={first}>{leading}</View>;
  const name=<Text {...(onSelect?hidden:{})} style={{flex:1,flexShrink:1,minWidth:0,paddingVertical:8,fontSize:16,lineHeight:24,color:colors.text}}>{label}</Text>;
- const amount=value==null||value===false?null:text?<Text {...(onSelect?hidden:{})} testID={testID?`${testID}-value`:undefined} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',paddingVertical:8,fontSize:16,lineHeight:24,color:colors[valueTone??'muted'],textAlign:'right'}}>{value}</Text>:<View style={first}>{value}</View>;
+ const amount=value==null||value===false?null:text?<Text {...(onSelect?hidden:{})} testID={testID?`${testID}-value`:undefined} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',paddingVertical:8,fontSize:16,lineHeight:24,color:colors[valueTone??'muted'],textAlign:'right'}}>{value}</Text>:<View {...(!onSelect&&valueLabel?{accessible:true,accessibilityLabel:valueLabel}:{})} style={first}>{value}</View>;
  const extra=trailing==null?null:<View pointerEvents={onSelect?'none':'auto'} {...(onSelect?hidden:{})} style={{flexDirection:'row',alignItems:'center',gap:8,minHeight:40}}>{trailing}</View>;
  if(!onSelect)return <View testID={testID} style={row(false)}>{lead}{name}{amount}{extra}</View>;
  return <Pressable testID={testID} accessibilityRole='button' accessibilityLabel={reading} accessibilityState={{disabled:!!disabled}} disabled={disabled} onPress={onSelect} style={({pressed})=>row(pressed)}>

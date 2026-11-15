@@ -21,7 +21,7 @@ Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, 
 
 ### ListRow
 
-- `valueLabel`: what a `value` that is not text reads as, such as the formatted amount of a live `AnimatedNumberReadout`. A selectable native row reads it with the label; on web the element is hidden from assistive technology and `valueLabel` is read in its place. One prop from the profile and position work, now on both platforms.
+- `valueLabel`: what a `value` that is not text reads as, such as the formatted amount of a live `AnimatedNumberReadout`. On both platforms the element is read as `valueLabel` in its place, static row or selectable: a selectable native row reads it with the label, a static native row reads the element as one node named by it, and on web the element is hidden from assistive technology and `valueLabel` is read in its place. One prop from the profile and position work, now on both platforms.
 - `valueTone` (`positive`, `warning`, `negative`, `muted`) colours a string or number `value` instead of the muted default, keeping its layout and reading.
 
 ### AssetBalanceRow
