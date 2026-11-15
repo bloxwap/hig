@@ -5,6 +5,7 @@ import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {ListGroup,ListRow} from '../packages/hig/react/src/list-group';
 import {Switch} from '../packages/hig/react/src/selection';
+import {readFileSync} from 'node:fs';
 afterEach(cleanup);
 describe('ListGroup',()=>{
  it('is a region named by its title whose rows are a list; without a title it is the container alone',()=>{
@@ -16,6 +17,10 @@ describe('ListGroup',()=>{
  });
 });
 describe('ListRow',()=>{
+ it('sits a trailing switch flush with the row edge: no padding of its own, aligned to the end',()=>{
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').match(/\.hig-list-row-trailing \.hig-switch \{([^}]*)\}/)?.[1]??'';
+  expect(rule).toContain('padding-inline:0');expect(rule).toContain('justify-content:flex-end');
+ });
  it('is one button with a decorative chevron when it has onSelect, named by its label and value',async()=>{
   const select=vi.fn();render(<ListRow label='Notifications' value='Off' onSelect={select}/>);
   const row=screen.getByRole('button',{name:'Notifications Off'});expect(row.classList.contains('hig-list-row')).toBe(true);
