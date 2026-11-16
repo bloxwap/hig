@@ -21,6 +21,8 @@ it('colours segments in the default tone order, and a tone or a host colour over
  expect(seven.map((_,index)=>flat(host(tree,`storage-segment-${index}`)).backgroundColor)).toEqual([colors.positive,colors.info,colors.warning,colors.negative,colors.muted,colors.faint,colors.positive]);
  tree=mount({elements:[{id:'a',label:'A',value:1,tone:'negative'},{id:'b',label:'B',value:1,color:'#123456',tone:'info'},{id:'c',label:'C',value:1}]});
  expect(['a','b','c'].map(id=>flat(host(tree,`storage-segment-${id}`)).backgroundColor)).toEqual([colors.negative,'#123456',colors.warning]);
+ // Segments draw at the bar fill strength; the legend dots stay solid.
+ expect(['a','b','c'].map(id=>flat(host(tree,`storage-segment-${id}`)).opacity)).toEqual([0.5,0.5,0.5]);
  // The legend dot matches its segment.
  expect(host(tree,'storage-legend-b').findAll(node=>node.type==='View'&&flat(node).width===8).map(dot=>flat(dot))).toEqual([expect.objectContaining({height:8,borderRadius:4,backgroundColor:'#123456'})]);
 });

@@ -79,7 +79,7 @@ describe('numberFormat.locale, formattedValue figures and market colours (Unrele
   const {BarPnl:Bar}=require('../../packages/hig/native/src/bar-pnl');
   const labels={liquidation:'Liq',mark:'Mark',entry:'Entry'};
   let view=mount([h(Bar,{key:'bar',testID:'bar',entry:100,mark:110,labels})],{marketColors:{up:'#ff3b30',down:'#0a84ff'}});
-  const move=()=>view.findAll(node=>node.props.testID==='bar-move'&&typeof node.type==='string')[0];
+  const move=()=>view.findAll(node=>node.props.testID==='bar-fill'&&typeof node.type==='string')[0];
   const style=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
   expect(style(move()).backgroundColor).toBe('#ff3b30');
   view=mount([h(Bar,{key:'bar',testID:'bar',entry:100,mark:90,labels})],{marketColors:{up:'#ff3b30',down:'#0a84ff'}});expect(style(move()).backgroundColor).toBe('#0a84ff');
