@@ -111,11 +111,22 @@ describe('RewardBlock host slots (Unreleased)',()=>{
   const loadingStatus=screen.getByRole('status');expect(loadingStatus.textContent).toBe('Loading standings');expect(loadingStatus.className).toBe('hig-sr-only');expect(loadingStatus.closest('[aria-busy="true"]')).toBeNull();
   view.rerender(<RewardBlock {...base} stickyHeader verifiedLabel='Genesis' verifiedMark={<svg data-testid='genesis'/>} promo={{...pool,headline:<>Top 100 <em>split</em> the pool.</>}}
    pagination={{previous:{label:'Previous',onSelect:previous,disabled:true},next:{label:'Next',onSelect:next},label:'1–25'}} footnote='Updates every 15 minutes'/>);
-  expect(q('.hig-reward-block')!.hasAttribute('aria-busy')).toBe(false);expect(q('.hig-reward-block')!.dataset.stickyHeader).toBe('true');
-  expect(screen.getByRole('img',{name:'Genesis'}).querySelector('[data-testid="genesis"]')).toBeTruthy();expect(q('.hig-reward-summary em')!.textContent).toBe('split');
+  expect(q('.hig-reward-block')!.hasAttribute('aria-busy')).toBe(false);expect(q('.hig-reward-block > .hig-screen-header')!.dataset.sticky).toBe('true');
+  // A host mark stays in the accessibility tree, after the verified words.
+  const mark=screen.getAllByTestId('genesis')[0].closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBeNull();expect(mark.querySelector('.hig-sr-only')!.textContent).toBe('Genesis');expect(q('.hig-reward-summary em')!.textContent).toBe('split');
   const paging=q('.hig-reward-pagination')!;expect(paging.textContent).toBe('Previous1–25Next');expect(paging.querySelector('[aria-live="polite"]')!.textContent).toBe('1–25');
   expect(q('.hig-reward-list')!.nextElementSibling).toBe(paging);expect(paging.nextElementSibling!.className).toBe('hig-reward-footnote');
   expect((screen.getByRole('button',{name:'Previous'}) as HTMLButtonElement).disabled).toBe(true);await userEvent.click(screen.getByRole('button',{name:'Next'}));expect(next).toHaveBeenCalledTimes(1);expect(previous).not.toHaveBeenCalled();
-  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toMatch(/\.hig-reward-block\[data-sticky-header\] > \.hig-screen-header \{ position:sticky;inset-block-start:0;z-index:1;background:var\(--hig-screen-background,var\(--hig-background\)\); \}/);
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-screen-header[data-sticky][data-scrolled] { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); }");
+ });
+ it('leaves the header out with header={false} and keeps an interactive verified mark reachable (Unreleased)',async()=>{
+  const explain=vi.fn();
+  render(<RewardBlock {...base} header={false} verifiedLabel='Genesis' verifiedMark={<button type='button' onClick={explain}>Genesis badge</button>} entries={[{id:'a',rank:1,name:'0xabc',verified:true,score:5}]}/>);
+  expect(q('.hig-screen-header')).toBeNull();expect(screen.queryByRole('heading')).toBeNull();
+  await userEvent.click(screen.getByRole('button',{name:'Genesis badge'}));expect(explain).toHaveBeenCalledTimes(1);
+ });
+ it('draws a detail figure from host-formatted text (Unreleased)',()=>{
+  render(<RewardBlock {...base} entries={[{id:'a',rank:1,name:'0xabc',detail:{value:1090779,formattedValue:'1.090.779',suffix:' vol'},score:5}]}/>);
+  expect(q('.hig-reward-identity .hig-sr-only')!.textContent).toBe('1.090.779 vol');
  });
 });

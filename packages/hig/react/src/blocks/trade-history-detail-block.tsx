@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useHIG} from '../provider.js';
+import {useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {BarPnl} from '../bar-pnl.js';
@@ -20,7 +20,9 @@ export interface TradeHistoryDetailLabels {
  long:string;short:string;
 }
 /** One label and value row. A number is formatted with `options` between `prefix` and `suffix`; a string is drawn as given, for example a duration the host has already formatted. */
-export interface TradeHistoryDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export interface TradeHistoryDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;
+ /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */
+ formattedValue?:string}
 export interface TradeHistoryAction {id:string;label:string;onSelect:()=>void;intent?:'primary'|'secondary';disabled?:boolean;busy?:boolean}
 export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  labels:TradeHistoryDetailLabels;
@@ -58,15 +60,20 @@ export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<
  headerAction?:React.ReactNode;
  /** Ref to the summary (the asset line, the headline figure and the return), for a host that captures it as an image. */
  summaryRef?:React.Ref<HTMLDivElement>;
+ /** Fills the summary, so an image captured from `summaryRef` is not transparent: `true` for the background role, or a CSS colour such as `var(--hig-overlay)` in a sheet. */
+ summaryBackground?:boolean|string;
+ /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
+ stickyHeader?:boolean;
 }
 const pnlFormat={style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:4} as const,percentFormat={style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'} as const;
 /** The full record of one closed trade, drawn on the screen without cards because none of it is pressable: the asset with its side and leverage on one line, the net result as the headline figure, a bar from the entry price to the exit price, the other figures as a compact grid, and the host's actions. */
-export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,leverageNote,pnl,pnlOptions=pnlFormat,pnlPercent,percentOptions=percentFormat,entry,exit,priceOptions,details,note,badge,actions=[],onBack,headerAction,summaryRef,className,...rest}:TradeHistoryDetailBlockProps){
- const {locale}=useHIG();const tone=pnl==null||pnl===0?undefined:pnl>0?'up':'down';
+export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,leverageNote,pnl,pnlOptions=pnlFormat,pnlPercent,percentOptions=percentFormat,entry,exit,priceOptions,details,note,badge,actions=[],onBack,headerAction,summaryRef,summaryBackground,stickyHeader,className,...rest}:TradeHistoryDetailBlockProps){
+ const locale=useNumberLocale();const tone=pnl==null||pnl===0?undefined:pnl>0?'up':'down';
+ const fill=summaryBackground===true?'var(--hig-background)':typeof summaryBackground==='string'&&summaryBackground?summaryBackground:undefined;
  return <section {...rest} className={`hig-trade-detail${className?` ${className}`:''}`}>
-  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} badge={badge}/>
+  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} badge={badge} stickyHeader={stickyHeader}/>
   <div className='hig-trade-summary'>
-   <div ref={summaryRef} className='hig-trade-result' data-tone={tone}>
+   <div ref={summaryRef} className='hig-trade-result' data-tone={tone} style={fill?{background:fill}:undefined}>
     <div className='hig-trade-identity'>
      <span className='hig-trade-avatar' aria-hidden='true'>{typeof icon==='string'?<img src={icon} alt=''/>:icon??symbol??name.slice(0,3)}</span>
      <strong>{name}</strong>
@@ -76,7 +83,7 @@ export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,l
     {pnlPercent!==undefined&&<span className='hig-trade-return'>{pnlPercent===null?labels.onMargin('—'):<SwapNumber template={labels.onMargin} value={pnlPercent} options={percentOptions}/>}</span>}
    </div>
    {entry!=null&&exit!=null&&<BarPnl className='hig-trade-bar' surface={false} fit side={side} entry={entry} mark={exit} labels={{entry:labels.entry??'',mark:labels.exit??'',liquidation:''}} priceOptions={priceOptions}/>}
-   {details.length>0&&<dl className='hig-trade-details'>{details.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{typeof row.value==='number'?<SwapNumber value={row.value} options={row.options} prefix={row.prefix} suffix={row.suffix}/>:row.value}</dd></div>)}</dl>}
+   {details.length>0&&<dl className='hig-trade-details'>{details.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{typeof row.value==='number'?<SwapNumber value={row.value} options={row.options} prefix={row.prefix} suffix={row.suffix} formattedValue={row.formattedValue} animateFormatted={!!row.formattedValue}/>:row.value}</dd></div>)}</dl>}
    {note&&<p className='hig-trade-note'>{note}</p>}
   </div>
   {actions.length>0&&<div className='hig-trade-actions'>{actions.map(action=><Button key={action.id} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} busy={action.busy} onClick={action.onSelect}>{action.label}</Button>)}</div>}

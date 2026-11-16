@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG,usePresentNumber} from './provider.js';
+import {useColors,useFills,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
@@ -28,7 +28,7 @@ const avatar=40;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** One holding as a capsule row: a round avatar, the asset's name over its symbol, and its dollar value over its units. The avatar is padded equally on every side, so the capsule end is concentric with it, and both numbers update place by place. */
 export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,headline='value',onSelect,testID}:AssetBalanceRowProps){
- const colors=useColors(),fills=useFills(),{locale}=useHIG(),present=usePresentNumber();
+ const colors=useColors(),fills=useFills(),locale=useNumberLocale(),present=usePresentNumber();
  const unitsFirst=headline==='units',hasUnits=!unitsFirst&&balance!==undefined;
  const label=[name,symbol,unitsFirst?formatNumberReadout(balance,locale,balanceOptions).text:formatNumberReadout(value,locale,present(usd)).text,hasUnits?formatNumberReadout(balance,locale,balanceOptions).text:null].filter(Boolean).join(', ');
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};

@@ -115,7 +115,17 @@ describe('host slots (Unreleased)',()=>{
   expect(text(host(view,'trade-leverage-note'))).toBe('current');expect(host(view,'trade-asset').props.accessibilityLabel).toBe('Amazon, Short, 20×, current');
   expect(host(view,'trade-asset').findAll(node=>node.type==='Text').map(text)).toContain('AMZN');
   const summary=host(view,'trade-summary');expect(summary.props.collapsable).toBe(false);expect(summary.children.map(child=>child.props.testID)).toEqual(['trade-asset','trade-pnl']);expect(ref.current).toBeTruthy();
-  const order=host(view,'block').children.map(child=>child.props.testID);expect(order).toEqual(['trade-header','trade-summary','trade-details','trade-note','trade-actions']);
+  const order=host(view,'block').children.map(child=>child.props.testID);expect(order).toEqual(['trade','trade-summary','trade-details','trade-note','trade-actions']);expect(has(view,'trade-header')).toBe(true);
   expect(host(mount(),'trade-summary')).toBeUndefined();
+ });
+ it('fills the captured summary with summaryBackground, draws host-formatted details and pins the header (Unreleased)',()=>{
+  const {ScrollView}=require('react-native');const ref=React.createRef();
+  let view=mount({summaryRef:ref});expect(flat(host(view,'trade-summary')).backgroundColor).toBeUndefined();
+  view=mount({summaryRef:ref,summaryBackground:true});expect(flat(host(view,'trade-summary')).backgroundColor).toBe(nativeSrgb.background);
+  view=mount({summaryRef:ref,summaryBackground:'#111111',details:[{label:'Size',value:3.734,formattedValue:'3,734',suffix:' AMZN'}]});
+  expect(flat(host(view,'trade-summary')).backgroundColor).toBe('#111111');expect(flows(view,'trade-detail-Size')[0].props).toMatchObject({formattedValue:'3,734',animateFormatted:true});
+  view=mount({stickyHeader:true});const scroll=view.findByType(ScrollView);expect(scroll.props.stickyHeaderIndices).toEqual([0]);
+  expect(flat(host(view,'trade-sticky-header')).backgroundColor).toBe('transparent');
+  act(()=>{scroll.props.onScroll({nativeEvent:{contentOffset:{y:10}}});});expect(flat(host(view,'trade-sticky-header')).backgroundColor).toBe(nativeSrgb.background);
  });
 });

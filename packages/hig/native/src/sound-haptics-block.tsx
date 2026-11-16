@@ -1,10 +1,12 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View,type ScrollViewProps} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG} from './provider.js';
+import {useColors,useFills,useHIG,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
-import {SettingCard,SettingHeader,SettingSwitch} from './setting-switch.js';
+import {SettingCard,SettingHeader,SettingSwitch,type SettingAction} from './setting-switch.js';
+import {StickyHeaderLayout} from './sticky-header.js';
+export type {SettingAction} from './setting-switch.js';
 import {RadioGroup} from './radio-group.js';
 import type {Choice} from './selection-types.js';
 /** A volume as a few fixed steps. `value` and `options` are fractions: 0.25 reads 25%. */
@@ -30,8 +32,8 @@ export interface SoundSection {
  volume?:SoundVolume;
  /** What the volume does while the channel is off: `hidden` (the default) leaves it out, `disabled` keeps it in place and unavailable. */
  volumeWhenOff?:'hidden'|'disabled';
- /** A secondary action at the foot of the card, shown whether the channel is on or off: Open Settings. */
- action?:{label:string;onSelect:()=>void;disabled?:boolean};
+ /** A secondary action at the foot of the card, shown whether the channel is on or off: Open Settings. `feedback: false` keeps the provider's press feedback off it. */
+ action?:SettingAction;
 }
 /** A choice of device under the source, such as which microphone to use. `label` names the group and is drawn above it. */
 export interface SoundChoices {label:string;options:readonly Choice[];value:string;onValueChange:(value:string)=>void}
@@ -46,6 +48,12 @@ export interface SoundHapticsBlockProps {
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. */
  headerAction?:React.ReactNode;
+ /** Keeps the header pinned while the cards scroll: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container. */
+ stickyHeader?:boolean;
+ /** Fill behind the pinned header once content scrolls under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
  testID?:string;
 }
 const steps:readonly number[]=[0.25,0.5,0.75,1],percent:Intl.NumberFormatOptions={style:'percent',maximumFractionDigits:0};
@@ -53,8 +61,8 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
 /** The share of the meter filled, from 0 to 1. Unknown and out-of-range levels are clamped. */
 export const soundLevel=(level:number|null|undefined):number=>level==null||!Number.isFinite(level)?0:Math.min(1,Math.max(0,level));
 /** The settings for what the app plays and feels like, as a screen: each channel is a card with a switch, and a channel that is on can show the device it uses, a live input meter and its volume as fixed steps. */
-export function SoundHapticsBlock({title,description,sections,onBack,headerAction,testID}:SoundHapticsBlockProps){
- const colors=useColors(),fills=useFills(),{direction,locale}=useHIG();
+export function SoundHapticsBlock({title,description,sections,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:SoundHapticsBlockProps){
+ const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale();
  const caption={fontSize:14,lineHeight:21,color:colors.muted} as const;
  const cards=sections.map(section=>{
   const {source,choices,level,levelLabel,volume,action}=section,on=section.checked,id=`sound-${section.id}`;
@@ -73,13 +81,18 @@ export function SoundHapticsBlock({title,description,sections,onBack,headerActio
      <Text {...hidden} style={caption}>{volume.label}</Text>
      <View style={{direction,flexDirection:'row',gap:8}}>{(volume.options??steps).map(option=><Button key={option} testID={`${id}-volume-${option}`} intent={option===volume.value?'primary':'secondary'} accessibilityState={{selected:option===volume.value}} disabled={on?section.disabled:true} onPress={()=>volume.onValueChange(option)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(option,locale,percent)}</Button>)}</View>
     </View>:null}
-    {action?<View style={{marginTop:on&&(source||choices||level!==undefined)||showVolume?8:0}}><Button testID={`${id}-action`} intent='secondary' fullWidth disabled={action.disabled} onPress={action.onSelect}>{action.label}</Button></View>:null}
+    {action?<View style={{marginTop:on&&(source||choices||level!==undefined)||showVolume?8:0}}><Button testID={`${id}-action`} intent='secondary' fullWidth disabled={action.disabled} suppressFeedback={action.feedback===false} onPress={action.onSelect}>{action.label}</Button></View>:null}
    </View>:null}
   </SettingCard>;
  });
- return <View testID={testID} style={{padding:16}}>
-  <SettingHeader testID='sound' title={title} onBack={onBack} action={headerAction}/>
+ const header=<SettingHeader testID='sound' title={title} onBack={onBack} action={headerAction}/>;
+ const body=<>
   {description?<Text testID='sound-description' style={{...caption,marginTop:16,paddingHorizontal:4}}>{description}</Text>:null}
   {sections.length>0?<View testID='sound-sections' style={{gap:8,marginTop:16}}>{cards}</View>:null}
+ </>;
+ if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='sound-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{padding:16}}>
+  {header}
+  {body}
  </View>;
 }

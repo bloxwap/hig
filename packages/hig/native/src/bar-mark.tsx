@@ -1,8 +1,8 @@
 import React,{useContext} from 'react';
 import {View} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG,usePresentNumber} from './provider.js';
-import {formatNumberReadout} from './animated-number-model.js';
+import {useColors,useFills,useHIG,useNumberLocale,usePresentNumber} from './provider.js';
+import {figureReading,type Figure} from './figure.js';
 import {Surface,Text} from './surface.js';
 /** Colour roles a segment can take. They follow the provider's colour space and market colours as those roles do. */
 export type BarMarkTone='positive'|'info'|'warning'|'negative'|'muted'|'faint';
@@ -19,7 +19,7 @@ export interface BarMarkElement {
  detail?:string|BarMarkFigure;
 }
 /** A legend amount that can change while the bar is shown: formatted with `options` between `prefix` and `suffix`. `null` reads as unknown. */
-export interface BarMarkFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export type BarMarkFigure=Figure;
 /**
  * Draws a live legend figure. The bar-mark entry imports no animation engine, so without a renderer a figure is drawn
  * formatted, without movement. `TokenActionBlock` supplies one that moves place by place through `AnimatedNumberReadout`,
@@ -65,10 +65,10 @@ function Bar({elements,values,rest,colors,small,testID}: {elements:readonly BarM
  * label, detail and share. Layout follows the provider's direction.
  */
 export function BarMark({title,description,elements,total,legend=true,size='default',surface=true,testID}:BarMarkProps){
- const {locale,direction}=useHIG();const palette=useColors(),present=usePresentNumber(),renderFigure=useContext(BarMarkFigureContext);
+ const {direction}=useHIG();const locale=useNumberLocale(),palette=useColors(),present=usePresentNumber(),renderFigure=useContext(BarMarkFigureContext);
  const {values,shares,rest}=barMarkShares(elements,total);
  const colors=elements.map((element,index)=>element.color??palette[element.tone??barMarkTones[index%barMarkTones.length]]);
- const detailText=(detail:string|BarMarkFigure|undefined)=>detail==null||typeof detail==='string'?detail:formatNumberReadout(detail.value,locale,present(detail.options),undefined,detail.prefix,detail.suffix).text;
+ const detailText=(detail:string|BarMarkFigure|undefined)=>detail==null||typeof detail==='string'?detail:figureReading(detail,locale,present(detail.options));
  const reading=(element:BarMarkElement,index:number)=>[element.label,detailText(element.detail),formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})].filter(Boolean).join(', ');
  const detailStyle={color:palette.faint,fontSize:14,lineHeight:21};
  const detail=(element:BarMarkElement,index:number)=>{

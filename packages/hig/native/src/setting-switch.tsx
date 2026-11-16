@@ -3,6 +3,8 @@ import {View} from 'react-native';
 import {useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
 import {SwitchRow} from './switch-row.js';
+/** A secondary button under a setting, such as Open Settings. `feedback: false` keeps the provider's press feedback off this one button, for a host that plays its own cue for it; by default it plays like any `Button`. */
+export interface SettingAction {label:string;onSelect:()=>void;disabled?:boolean;feedback?:boolean}
 export interface SettingSwitchProps {
  label:string;description?:string;checked:boolean;onCheckedChange:(checked:boolean)=>void;disabled?:boolean;testID?:string;
  /** Always on and not changeable: the switch shows on at full strength and is read as unavailable. Presses do nothing. */

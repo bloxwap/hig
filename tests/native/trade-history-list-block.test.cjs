@@ -45,7 +45,7 @@ describe('host slots (Unreleased)',()=>{
  });
  it('draws a notice, a footer, a tag before the age, a leverage note and a symbol fallback',()=>{
   const tree=mount({onSelect(){},notice:h(View,{testID:'partial'}),footer:h(View,{testID:'more'}),trades:[{id:'9',name:'Bitcoin',symbol:'BTC',side:'long',leverage:20,leverageNote:'current',pnl:2,time:'2d',tag:'0x22…22'}]});
-  const order=host(tree,'history').children.map(child=>child.props.testID);expect(order).toEqual([undefined,'history-notice','history-rows','history-footer']);
+  const order=host(tree,'history').children.map(child=>child.props.testID);expect(order).toEqual(['history','history-notice','history-rows','history-footer']);
   expect(all(tree,'partial').length).toBeGreaterThan(0);expect(all(tree,'more').length).toBeGreaterThan(0);
   expect(host(tree,'history-9').props.accessibilityLabel).toBe('Bitcoin, Long 20× current, +$2.000, 0x22…22, 2d');
   expect(text(host(tree,'history-9-meta'))).toBe('0x22…22·2d');expect(text(host(tree,'history-9-leverage-note'))).toBe('current');
@@ -66,6 +66,27 @@ describe('host slots (Unreleased)',()=>{
   expect(flat(host(tree,'history'))).toMatchObject({flex:1});expect(flat(host(tree,'history-rows'))).toMatchObject({flex:1});
   // Without renderList the block keeps its plain stack.
   expect(flat(host(mount(),'history')).flex).toBeUndefined();
+ });
+ it('hands the host list the header, notice, footer and inset, so a self-sizing sheet measures the list alone (Unreleased)',()=>{
+  const renderList=jest.fn(list=>h(FlatList,{data:list.trades,...list}));
+  const tree=mount({renderList,onBack(){},notice:h(View,{testID:'partial'}),footer:h(View,{testID:'more'})});
+  const list=renderList.mock.calls[0][0];
+  expect(list.contentContainerStyle).toEqual({padding:16});expect(list.onScroll).toBeUndefined();
+  expect(all(tree,'history-header').length).toBeGreaterThan(0);expect(all(tree,'partial').length).toBeGreaterThan(0);expect(all(tree,'more').length).toBeGreaterThan(0);
+  // The header and notice are inside the list, not stacked above it, and the block adds no padding of its own.
+  const flatList=tree.findByType(FlatList);expect(flatList.findAll(node=>node.props.testID==='history-header').length).toBeGreaterThan(0);
+  expect(flat(host(tree,'history'))).toEqual(expect.not.objectContaining({padding:16}));
+  // Pinned, the header stays above the list and fills once the list reports an offset.
+  mount({renderList,stickyHeader:true});const pinned=renderList.mock.calls.at(-1)[0];
+  expect(pinned.ListHeaderComponent).toBeNull();expect(typeof pinned.onScroll).toBe('function');
+  expect(flat(host(root.root,'history-sticky-header')).backgroundColor).toBe('transparent');
+  act(()=>{pinned.onScroll({nativeEvent:{contentOffset:{y:30}}});});expect(flat(host(root.root,'history-sticky-header')).backgroundColor).toBe(colors.background);
+ });
+ it('formats one trade with its own pnlOptions and pins the header without renderList (Unreleased)',()=>{
+  const {ScrollView}=require('react-native');
+  const tree=mount({stickyHeader:true,trades:[{id:'a',name:'Amazon',side:'long',pnl:0.00001234,pnlOptions:{style:'currency',currency:'USD',signDisplay:'exceptZero',maximumSignificantDigits:4}}]});
+  expect(host(tree,'history-a').props.accessibilityLabel).toBe('Amazon, Long, +$0.00001234');
+  expect(tree.findByType(ScrollView).props.stickyHeaderIndices).toEqual([0]);expect(flat(host(tree,'history-sticky-header')).backgroundColor).toBe('transparent');
  });
 });
 it('shows the host empty text without trades and a host header action',()=>{

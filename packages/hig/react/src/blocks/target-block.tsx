@@ -2,7 +2,7 @@
 import React,{useEffect,useId,useRef,useState} from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {PressDecoration,usePresentNumber,useHIG} from '../provider.js';
+import {PressDecoration,usePresentNumber,useHIG,useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
 import {SegmentedControl} from '../selection.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
@@ -75,6 +75,8 @@ export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  headerActionBesideInfo?:boolean;
  /** `id` of the heading, so a dialog or sheet can name itself with `aria-labelledby`. */
  headingId?:string;
+ /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
+ stickyHeader?:boolean;
 }
 /** A quick choice that can be shown dimmed. */
 export interface TargetPreset {value:number;disabled?:boolean}
@@ -110,8 +112,8 @@ export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** Set a take profit or a stop loss on one position: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. */
-export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,customValue,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,headerActionBesideInfo,headingId,className,...rest}:TargetBlockProps){
- const {messages,locale}=useHIG();const present=usePresentNumber();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
+export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,customValue,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,headerActionBesideInfo,headingId,stickyHeader,className,...rest}:TargetBlockProps){
+ const {messages}=useHIG();const locale=useNumberLocale();const present=usePresentNumber();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
  // The popover closes on a press outside it, on Escape, and when focus leaves it.
  useEffect(()=>{if(!open)return;const outside=(event:Event)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
  const info=note&&labels.info&&(!headerAction||headerActionBesideInfo)?labels.info:undefined;
@@ -122,7 +124,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
  const intent=kind==='stop-loss'?'destructive':'primary';
  return <section {...rest} className={`hig-target-block${className?` ${className}`:''}`} data-kind={kind}>
-  <ScreenHeader title={labels.title} onBack={onBack} headingId={headingId} action={info?headerAction?<span className='hig-target-header-actions'>{infoButton}{headerAction}</span>:infoButton:headerAction}/>
+  <ScreenHeader title={labels.title} onBack={onBack} headingId={headingId} stickyHeader={stickyHeader} action={info?headerAction?<span className='hig-target-header-actions'>{infoButton}{headerAction}</span>:infoButton:headerAction}/>
   <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={targetFormat(unit,priceOptions)}/></p>
   {note&&!info&&<p className='hig-target-note'>{note}</p>}
   <section className={surface?'hig-surface hig-target-prices':'hig-target-prices'} data-surface={surface?undefined:'false'} aria-labelledby={position?id:undefined}>

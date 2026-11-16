@@ -71,3 +71,22 @@ describe('HIGProvider numberFormat',()=>{
   expect(plain([...document.querySelectorAll('.hig-number')].at(-1)?.textContent)).toBe('USD 1.00');
  });
 });
+describe('numberFormat.locale and formattedValue (Unreleased)',()=>{
+ it('formats numbers in the number locale while the interface keeps its own',()=>{
+  const usd=()=>plain(document.querySelector('[data-usd] .hig-number')?.textContent);
+  const {container}=render(<HIGProvider locale='de-DE' numberFormat={{locale:'en-US'}}><span data-usd><Usd value={1234.5}/></span><AnimatedNumberReadout value={1234.5}/></HIGProvider>);
+  expect(usd()).toBe('$1,234.50');expect(reading()).toEqual(['1,234.5']);expect(container.querySelector('[lang]')!.getAttribute('lang')).toBe('de-DE');
+  cleanup();render(<HIGProvider locale='de-DE'><span data-usd><Usd value={1234.5}/></span></HIGProvider>);expect(usd()).toBe('1.234,50 $');
+  cleanup();render(<HIGProvider locale='de-DE' numberFormat={{locale:' '}}><span data-usd><Usd value={1234.5}/></span></HIGProvider>);expect(usd()).toBe('1.234,50 $');
+ });
+ it('draws host-formatted text static by default and place by place with animateFormatted',()=>{
+  const view=render(<AnimatedNumberReadout value={90} formattedValue='01:30'/>);
+  expect(reading()).toEqual(['01:30']);expect(document.querySelectorAll('.hig-animated-number-visual > span')).toHaveLength(1);
+  view.rerender(<AnimatedNumberReadout value={1234.5} formattedValue='1 234,50 $' animateFormatted prefix='≈ '/>);
+  expect(reading()).toEqual(['≈ 1 234,50 $']);
+  const places=[...document.querySelectorAll('.hig-animated-number-visual > span')].map(node=>node.textContent);
+  expect(places).toEqual(['1',' ','2','3','4',',','5','0',' $']);
+  // Unknown values still read as the dash whatever the host text says.
+  view.rerender(<AnimatedNumberReadout value={null} formattedValue='0' animateFormatted/>);expect(reading()).toEqual(['—']);
+ });
+});

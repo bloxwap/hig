@@ -1,7 +1,8 @@
 "use client";
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {PressDecoration,usePresentNumber,useHIG} from '../provider.js';
+import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
+import {figureProps,type Figure} from '../figure.js';
 import {SegmentedControl} from '../selection.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
@@ -32,7 +33,7 @@ export interface RewardPromo {
  action?:RewardLink;
 }
 /** A host figure that updates place by place: `{value:1090779, options:{style:'currency',currency:'USD',maximumFractionDigits:0}, suffix:' vol'}`. */
-export interface RewardFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export type RewardFigure=Figure;
 /** One trader in the standings. */
 export interface RewardEntry {
  id:string;rank:number;
@@ -74,7 +75,7 @@ export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  scoreOptions?:Intl.NumberFormatOptions;
  /** Accessible name of the verified mark. The mark is decorative without it. */
  verifiedLabel?:string;
- /** Host artwork in place of the built-in verified mark. */
+ /** Host content in place of the built-in verified mark. It stays in the accessibility tree, so it may be interactive, such as a badge with a popover; `verifiedLabel` is then read before it. */
  verifiedMark?:React.ReactNode;
  /** Draws skeleton rows in place of the entries while the host loads them. */
  loading?:boolean;
@@ -87,8 +88,10 @@ export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton` that shares. */
  headerAction?:React.ReactNode;
- /** Keeps the header pinned to the top of the scrolling container. Its fill is `--hig-screen-background`, `--hig-background` by default; inside a sheet remap it, for example `--hig-screen-background: var(--hig-overlay)`. */
+ /** Keeps the header pinned to the top of the scrolling container. It is transparent at rest and fills with `--hig-sticky-header-background` (`--hig-background` by default) once the standings scroll under it; inside a sheet remap it, for example `--hig-sticky-header-background: var(--hig-overlay)`. */
  stickyHeader?:boolean;
+ /** Set false to leave the header out, when the host pins its own `ScreenHeader` above the block. */
+ header?:boolean;
 }
 const wholeDollars={style:'currency',currency:'USD',maximumFractionDigits:0} as const,whole={maximumFractionDigits:0} as const;
 const skeletons=[0,1,2,3,4];
@@ -103,8 +106,8 @@ function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,as:Tag='li'}:{e
   <span className='hig-reward-rank hig-number'>{entry.rank}</span>
   <span className='hig-reward-avatar' aria-hidden='true'>{typeof entry.avatar==='string'?<img src={entry.avatar} alt=''/>:entry.avatar??entry.name.slice(0,2)}</span>
   <span className='hig-reward-identity'>
-   <strong className='hig-number'>{entry.name}{entry.verified&&<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark??verifiedGlyph}</span>}</strong>
-   {detail!=null&&detail!==''&&<span className='hig-number'>{typeof detail==='string'?detail:<SwapNumber value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix}/>}</span>}
+   <strong className='hig-number'>{entry.name}{entry.verified&&(verifiedMark!=null?<span className='hig-reward-verified'>{verifiedLabel&&<span className='hig-sr-only'>{verifiedLabel}</span>}{verifiedMark}</span>:<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedGlyph}</span>)}</strong>
+   {detail!=null&&detail!==''&&<span className='hig-number'>{typeof detail==='string'?detail:<SwapNumber {...figureProps(detail)}/>}</span>}
   </span>
   <span className='hig-reward-score'><AnimatedNumberReadout value={entry.score} options={entry.scoreOptions??scoreOptions}/></span>
  </Tag>;
@@ -114,13 +117,13 @@ function Onward({link,className,children}:{link:RewardLink;className:string;chil
   :<button type='button' className={className} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></button>;
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,className,...rest}:RewardBlockProps){
- const {locale}=useHIG();const present=usePresentNumber();
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,header=true,className,...rest}:RewardBlockProps){
+ const locale=useNumberLocale();const present=usePresentNumber();
  const money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(promo.amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
  const pinned=you&&<Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark}/>;
- return <section {...rest} data-sticky-header={stickyHeader||undefined} className={`hig-reward-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} action={headerAction}/>
+ return <section {...rest} className={`hig-reward-block${className?` ${className}`:''}`}>
+  {header&&<ScreenHeader title={title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>}
   {promo&&<section className='hig-surface hig-reward-promo'>
    <div className='hig-reward-promo-top'><span className='hig-reward-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<Onward link={promo.rules} className='hig-reward-rules'>{promo.rules.label}<SwapIcon name='chevron' size={16}/></Onward>}</div>
    <p className='hig-reward-amount'><AnimatedNumberReadout value={promo.amount} options={money}/></p>

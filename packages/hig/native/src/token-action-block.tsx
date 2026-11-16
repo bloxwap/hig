@@ -4,11 +4,12 @@ import {formatNumber} from '@bloxwap/hig/contracts';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import type {HIGMessages} from '@bloxwap/hig/contracts/messages';
-import {useColors,useHIG,useMessages} from './provider.js';
+import {useColors,useHIG,useMessages,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
+import {figureProps} from './figure.js';
 import {BarMark,BarMarkFigureContext,type BarMarkElement,type BarMarkFigureRenderer} from './bar-mark.js';
 export type {BarMarkElement,BarMarkFigure} from './bar-mark.js';
 /** The actions HIG names itself. */
@@ -48,9 +49,9 @@ const held=(value:number)=>Number.isFinite(value)&&value>0;
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token as a screen: a header, where it is held, which chains it sits on, then what the user can do with it. */
 /** Legend figures inside the block move place by place, like its total. */
-const animatedFigure:BarMarkFigureRenderer=(figure,{testID})=><AnimatedNumberReadout value={figure.value} options={figure.options} prefix={figure.prefix} suffix={figure.suffix} tone='faint' testID={testID} style={{fontSize:14,lineHeight:21}}/>;
+const animatedFigure:BarMarkFigureRenderer=(figure,{testID})=><AnimatedNumberReadout {...figureProps(figure)} tone='faint' testID={testID} style={{fontSize:14,lineHeight:21}}/>;
 export function TokenActionBlock({symbol,name,value,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',testID}:TokenActionBlockProps){
- const colors=useColors(),t=useMessages(),{direction,locale}=useHIG();
+ const colors=useColors(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
  return <View testID={testID} style={{padding:16}}>

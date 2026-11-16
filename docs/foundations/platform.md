@@ -71,7 +71,9 @@ Web takes the same `marketColors={{up, down}}` on `HIGProvider` from
 `var(--hig-down,var(--hig-sell))`, so without an override nothing changes. Nested
 providers inherit them through the cascade; `useThemeStyle()` returns them for a host
 portal outside the provider. `TradeHistoryListBlock` and `TradeHistoryDetailBlock` paint
-the side, the leverage and the result with these roles on both platforms.
+the side, the leverage and the result with these roles on both platforms, and `BarPnl` (with the
+blocks that draw it) fills the stretch between entry and mark and colours the mark price with `up`
+in profit and `down` at a loss. The liquidation tick stays `negative`, because it is a danger, not a direction.
 
 ### Native colour space
 

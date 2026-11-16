@@ -1,18 +1,18 @@
 import React from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
 import {CloseIcon,EditIcon,QrIcon} from './icons.js';
 import {ListGroup,ListRow} from './list-group.js';
 import {SwitchRow} from './switch-row.js';
 import {AnimatedNumberReadout} from './animated-number.js';
-import {formatNumberReadout} from './animated-number-model.js';
+import {figureProps,figureReading,type Figure} from './figure.js';
 import {addressColor} from './swap-shared.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 export type {AssetArtwork} from './asset-balance-row.js';
 /** A row value that can change while the profile is shown, such as a balance: formatted with `options` between `prefix` and `suffix`, and updated place by place. `null` reads as unknown. */
-export interface ProfileFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export type ProfileFigure=Figure;
 /** One row of a profile section. The host supplies every label and value. */
 export interface ProfileRow {
  id:string;label:string;leading?:React.ReactNode;
@@ -85,12 +85,12 @@ function ProfileSwitchRow({row}:{row:ProfileRow}){
 }
 /** A row that opens something or shows a value. A live figure or a toned value is drawn here and read through `valueLabel`. */
 function ProfileListRow({row}:{row:ProfileRow}){
- const {locale}=useHIG(),present=usePresentNumber();
+ const locale=useNumberLocale(),present=usePresentNumber();
  const {value,tone}=row,testID=`profile-row-${row.id}`;
  const style={fontSize:16,lineHeight:24,textAlign:'right' as const};
  if(isProfileFigure(value)){
-  const reading=formatNumberReadout(value.value,locale,present(value.options),undefined,value.prefix,value.suffix).text;
-  return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<AnimatedNumberReadout value={value.value} options={value.options} prefix={value.prefix} suffix={value.suffix} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
+  const reading=figureReading(value,locale,present(value.options));
+  return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<AnimatedNumberReadout {...figureProps(value)} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
  }
  return <ListRow testID={testID} label={row.label} leading={row.leading} value={value as React.ReactNode} valueTone={tone} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
 }

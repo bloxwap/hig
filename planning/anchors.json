@@ -37,6 +37,7 @@
     "soundhapticsblock-signalsblock-and-notificationsblock",
     "profileblock",
     "screenheader",
+    "pinned-headers",
     "shared-host-hooks",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",

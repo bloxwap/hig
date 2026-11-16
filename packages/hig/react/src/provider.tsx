@@ -1,7 +1,7 @@
 "use client";
 import type {FeedbackSink,FeedbackIntent} from '@bloxwap/hig/contracts/feedback';
 import React,{createContext,useContext,useEffect,useMemo,useState,useRef,useId} from 'react';
-import {defaultEnvironment,presentNumberFormat,type Environment,type NumberFormatPresentation} from '@bloxwap/hig/contracts';
+import {defaultEnvironment,numberLocale,presentNumberFormat,type Environment,type NumberFormatPresentation} from '@bloxwap/hig/contracts';
 import {defaultMessages,resolveMessages,type HIGMessages} from '@bloxwap/hig/contracts/messages';
 import {nativeSrgb,resolvePrimaryColor} from '@bloxwap/hig/tokens';
 export type {HIGMessages} from '@bloxwap/hig/contracts/messages';
@@ -33,6 +33,8 @@ export function HIGProvider({children,density='comfortable',locale='en-US',direc
 export const useHIG=()=>useContext(Context);
 /** Number options with the nearest provider's `numberFormat` merged under them; only currency formats change. */
 export function usePresentNumber():<T extends Intl.NumberFormatOptions|undefined>(options:T)=>T {const {numberFormat}=useContext(Context);return useMemo(()=><T extends Intl.NumberFormatOptions|undefined>(options:T)=>presentNumberFormat(options,numberFormat),[numberFormat]);}
+/** The locale numbers are formatted in: the nearest provider's `numberFormat.locale`, else its `locale`. */
+export function useNumberLocale():string{const {locale,numberFormat}=useContext(Context);return numberLocale(locale,numberFormat);}
 const interactive='a[href],button,input,select,textarea,label';
 /**
  * The provider's press decoration for one control: the host content in an absolutely positioned layer that is the control's last

@@ -537,6 +537,21 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-screen-header { display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;min-height:44px; }
 .hig-screen-header-side { display:grid;place-items:center;min-width:0; }
 .hig-screen-title { margin:0;font-size:1.0625rem;line-height:1.4;font-weight:600;text-align:center;overflow-wrap:anywhere; }
+/* hideTitle: the heading leaves the flow, so the trailing side keeps its own column. */
+.hig-screen-header > .hig-screen-header-side:last-child { grid-column:3; }
+.hig-screen-header .hig-swap-back:disabled { color:var(--hig-faint);background:transparent;cursor:default; }
+/* stickyHeader: pinned in the nearest scroller, transparent at rest so whatever the host draws behind it shows through, and filled
+   once content scrolls under it. The script marks that moment with data-scrolled; where scroll-driven animations exist the fill
+   also follows the scroll position itself (the header's parent leaving the top of the scroller), which needs no script. */
+.hig-screen-header[data-sticky] { position:sticky;inset-block-start:0;z-index:1;background-color:transparent;transition:background-color var(--hig-motion-duration-fast) var(--hig-motion-easing-standard,ease); }
+.hig-screen-header[data-sticky][data-scrolled] { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); }
+@keyframes hig-sticky-fill { from { background-color:transparent; } to { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); } }
+@supports (animation-timeline:view()) {
+  :has(> .hig-screen-header[data-sticky]) { view-timeline:--hig-sticky-header block; }
+  .hig-screen-header[data-sticky] { animation:hig-sticky-fill linear both;animation-timeline:--hig-sticky-header;animation-range:exit-crossing 0px exit-crossing 12px; }
+}
+@media(prefers-reduced-motion:reduce) { .hig-screen-header[data-sticky] { transition:none;animation:none; } }
+[data-hig-motion='reduced'] .hig-screen-header[data-sticky] { transition:none;animation:none; }
 .hig-account-summary { display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px; }
 .hig-account-balance { min-width:0;font-size:2rem;line-height:1.25;font-weight:600; }
 .hig-account-balance .hig-number { font-family:inherit; }
@@ -625,8 +640,6 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 /* The paper trading row's action sits on the row's card, 8 under the switch. */
 .hig-position-flag-card { display:flex;flex-direction:column;background:var(--hig-fill); }
 .hig-position-flag-action { display:flex;padding:4px 20px 16px; }
-/* Opt-in: the header stays pinned while the summary and settings scroll under it. The host sets the fill to match its scroller. */
-.hig-position-block[data-sticky-header] > .hig-screen-header { position:sticky;inset-block-start:0;z-index:1;background:var(--hig-sticky-header-background,var(--hig-surface)); }
 /* RewardBlock: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
 .hig-reward-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-reward-promo { display:flex;flex-direction:column;gap:12px; }
@@ -673,7 +686,6 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-reward-pagination > :first-child { justify-self:start; }
 .hig-reward-pagination > :last-child { justify-self:end; }
 .hig-reward-page { color:var(--hig-muted);font-size:.875rem;text-align:center; }
-.hig-reward-block[data-sticky-header] > .hig-screen-header { position:sticky;inset-block-start:0;z-index:1;background:var(--hig-screen-background,var(--hig-background)); }
 @media(prefers-reduced-motion:reduce) { .hig-reward-track > span { transition:none; } }
 [data-hig-motion='reduced'] .hig-reward-track > span { transition:none; }
 @media(forced-colors:active) { .hig-reward-track > span { forced-color-adjust:none; } }
@@ -858,8 +870,9 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 [dir='rtl'] .hig-list-row-chevron { transform:scaleX(-1); }
 @media(hover:hover) and (pointer:fine) { button.hig-list-row:hover,a.hig-list-row:hover { background:var(--hig-fill-raised); } }
 .hig-bar-pnl { display:flex;flex-direction:column;gap:12px;--hig-bar-pnl-tone:var(--hig-muted); }
-.hig-bar-pnl[data-result='profit'] { --hig-bar-pnl-tone:var(--hig-positive); }
-.hig-bar-pnl[data-result='loss'] { --hig-bar-pnl-tone:var(--hig-negative); }
+/* The result follows the market direction roles (HIGProvider marketColors), which default to buy and sell. */
+.hig-bar-pnl[data-result='profit'] { --hig-bar-pnl-tone:var(--hig-up,var(--hig-buy)); }
+.hig-bar-pnl[data-result='loss'] { --hig-bar-pnl-tone:var(--hig-down,var(--hig-sell)); }
 .hig-bar-pnl-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
 .hig-bar-pnl-rest,.hig-bar-pnl-move { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
 .hig-bar-pnl-rest { background:var(--hig-fill-raised); }

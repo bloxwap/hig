@@ -32,7 +32,9 @@ export interface SwapDestination {
 }
 /** One label and value row of the details card. */
 /** One label and value row. A number `value` is formatted with `options` (plus `prefix` and `suffix`) and updates place by place; pass numbers for anything that can change while the card is shown. A string is drawn as given. */
-export interface SwapDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export interface SwapDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;
+ /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */
+ formattedValue?:string}
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
 export interface SwapPanelBlockProps {
@@ -235,7 +237,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
     {(destination.detail||fee!==undefined||destination.onPress)&&<span className='hig-swap-meta' data-row={destination.onPress?'true':undefined}><span>{destination.detail&&<span>{swapFigure(destination.detail)}</span>}{fee!==undefined&&<span>{feeLine}</span>}</span>{destination.onPress&&<SwapIcon name='chevron' size={16}/>}</span>}
    </div></div>
   </div>}
-  {details&&details.length>0&&<dl className='hig-swap-details'>{details.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{typeof row.value==='number'?<SwapNumber value={row.value} options={row.options} prefix={row.prefix} suffix={row.suffix}/>:row.value}</dd></div>)}</dl>}
+  {details&&details.length>0&&<dl className='hig-swap-details'>{details.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{typeof row.value==='number'?<SwapNumber value={row.value} options={row.options} prefix={row.prefix} suffix={row.suffix} formattedValue={row.formattedValue} animateFormatted={!!row.formattedValue}/>:row.value}</dd></div>)}</dl>}
  </div>;
  const fromCard=card('from'),toCard=fixedCard||card('to');
  const body=view==='main'?<>

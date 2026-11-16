@@ -126,6 +126,11 @@ describe('host slots (Unreleased)',()=>{
   expect(has(view,'badge')).toBe(true);expect(has(view,'signals-trend-feed-switch-label')).toBe(true);
   expect(text(host(view,'signals-trend-feed-hint'))).toBe('Needs permission');expect(flat(host(view,'signals-trend-feed-error')).color).toBe(nativeSrgb.negative);
   expect(has(view,'mark')).toBe(true);expect(pill.current).toBeTruthy();expect(text(host(view,'signals-description'))).toBe('Choose what you receive.');
+  // A host mark stays in the accessibility tree (Unreleased): the heading moves to the title text, and the mark follows it.
+  expect(host(view,'signals-trend-title').props.accessible).toBe(false);
+  const title=view.findAll(node=>node.props.accessibilityRole==='header'&&typeof node.type==='string').find(node=>node.props.accessibilityLabel==='Trend, Genesis');expect(title).toBeTruthy();
+  const plain=mount(SignalsBlock,{title:'Signals',verifiedLabel:'Genesis',groups:[{id:'trend',title:'Trend',verified:true,items:[]}]});
+  expect(host(plain,'signals-trend-title').props).toMatchObject({accessible:true,accessibilityRole:'header',accessibilityLabel:'Trend, Genesis'});
  });
  it('NotificationsBlock: hints beside errors, an action under the card, locked items and groups with an optional heading',()=>{
   const settings=jest.fn();

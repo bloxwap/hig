@@ -1,10 +1,11 @@
 import React,{useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {Raised,useColors,useControllable,useHIG,useMessages,usePresentNumber} from './provider.js';
+import {Raised,useColors,useControllable,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {AnimatedNumberReadout} from './animated-number.js';
+import {figureProps} from './figure.js';
 import {Toast,useTransientNotice} from './status.js';
 import {VerticalAddress,addressKind} from './data.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
@@ -31,7 +32,7 @@ export interface SwapDestination {
  pending?:boolean;
 }
 /** One label and value row of the details card. */
-export interface SwapDetail {label:string;/** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export interface SwapDetail {label:string;/** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;/** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */formattedValue?:string}
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
 export interface SwapPanelBlockProps {
@@ -117,7 +118,7 @@ export interface SwapPanelBlockProps {
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
 export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelBlockProps){
- const env=useHIG();const {locale,direction}=env;const present=usePresentNumber();const colors=useColors();const t=useMessages();
+ const env=useHIG();const {direction}=env;const locale=useNumberLocale();const present=usePresentNumber();const colors=useColors();const t=useMessages();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
  const [isReceiving,setReceiving]=useControllable(receiving,false,onReceivingChange);
@@ -175,7 +176,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><TokenArt uri={token.icon} symbol={token.symbol} size={40}/></View>
    <View style={{flex:1,minWidth:0}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:4}}><Text style={{fontWeight:'600',lineHeight:21,flexShrink:1}}>{token.name}</Text>{locked?null:<View testID={`swap-account-chevron-${side}`}><SmallChevron color={colors.muted}/></View>}</View>
-    {typeof token.caption==='object'?<AnimatedNumberReadout testID='swap-caption' {...token.caption} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
+    {typeof token.caption==='object'?<AnimatedNumberReadout testID='swap-caption' {...figureProps(token.caption)} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
    </View>
   </View>
   {side==='from'&&(token.balance??0)>0?<SwapCapsule testID='swap-max' onPress={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
@@ -243,11 +244,11 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{art}</View>
    <View style={{flex:1,minWidth:0}}><Text testID='swap-destination-title' style={{fontWeight:destination.pending?'500':'600',lineHeight:21}}>{destination.title}</Text>{destination.subtitle?<Text style={small}>{destination.subtitle}</Text>:null}{destination.address?<Text style={small}>{shortAddress(destination.address)}</Text>:null}</View>
    {destination.detail||fee!==undefined||destination.onPress?<View style={{flexDirection:'row',alignItems:'center',gap:8,maxWidth:'60%'}}>
-    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{typeof destination.detail==='object'?<AnimatedNumberReadout testID='swap-destination-detail' {...destination.detail} tone='muted' style={{...smallType,textAlign:'right'}}/>:destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<SwapNumberText testID='swap-destination-fee' align='right' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/>:null}</View>
+    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{typeof destination.detail==='object'?<AnimatedNumberReadout testID='swap-destination-detail' {...figureProps(destination.detail)} tone='muted' style={{...smallType,textAlign:'right'}}/>:destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<SwapNumberText testID='swap-destination-fee' align='right' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/>:null}</View>
     {destination.onPress?<View testID='swap-destination-chevron'><SmallChevron color={colors.muted} trailing/></View>:null}
    </View>:null}
   </View>:null;
-  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
+  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
   const shape:ViewStyle={backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'};
   // With a pressable destination the whole card is the button; the rows inside it are read as part of it.
   return destination?.onPress?<Pressable accessibilityRole='button' accessibilityLabel={destination.title} testID='swap-destination' onPress={destination.onPress} style={({pressed})=>[shape,{opacity:pressed?0.85:1}]}><Raised>{row}{rows}</Raised></Pressable>:<View testID='swap-destination' style={shape}><Raised>{row}{rows}</Raised></View>;

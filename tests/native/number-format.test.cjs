@@ -56,3 +56,33 @@ it('is inherited by nested providers, and a nested setting replaces it',()=>{
  const reading=id=>plain(text(view.findAll(node=>node.props.testID===id&&typeof node.type==='string')[0]));
  expect(reading('inherited')).toBe('1,00 $');expect(reading('own')).toBe('1,00 USD');
 });
+describe('numberFormat.locale, formattedValue figures and market colours (Unreleased)',()=>{
+ const {createFormattedReelModel,createNumberReelModel}=require('../../packages/hig/native/src/animated-number-model');
+ const {useNumberLocale}=require('../../packages/hig/native/src/provider');
+ const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
+ it('formats numbers in numberFormat.locale while the interface keeps its locale',()=>{
+  let seen;function Probe(){seen=useNumberLocale();return null;}
+  let view=mount([h(Usd,{key:'usd',value:1234.5,testID:'usd'}),h(Probe,{key:'probe'})],{locale:'de-DE',numberFormat:{locale:'en-US'}});
+  expect(plain(text(view.findAll(node=>node.props.testID==='usd'&&typeof node.type==='string')[0]))).toBe('$1,234.50');expect(seen).toBe('en-US');
+  view=mount([h(Usd,{key:'usd',value:1234.5,testID:'usd'}),h(Probe,{key:'probe'})],{locale:'de-DE'});
+  expect(plain(text(view.findAll(node=>node.props.testID==='usd'&&typeof node.type==='string')[0]))).toBe('1.234,50 $');expect(seen).toBe('de-DE');
+ });
+ it('builds reels from host-formatted text only when asked, keyed by place from the end',()=>{
+  expect(createNumberReelModel(1234.5,'en-US',undefined,'1 234,50 $','ltr')).toBeNull();
+  const model=createNumberReelModel(1234.5,'en-US',undefined,'1 234,50 $','ltr',true);
+  expect(model.canonical).toBe('1 234,50 $');
+  expect(model.tokens.map(token=>token.kind==='digit'?`${token.key}=${token.value}`:token.value)).toEqual(['digit:5=1',' ','digit:4=2','digit:3=3','digit:2=4',',','digit:1=5','digit:0=0',' $']);
+  expect(createFormattedReelModel('—','en-US','ltr')).toBeNull();expect(createFormattedReelModel('12','en-US','rtl')).toBeNull();
+  expect(createNumberReelModel(null,'en-US',undefined,'12','ltr',true)).toBeNull();
+ });
+ it('paints the BarPnl result with the market up and down colours',()=>{
+  const {BarPnl:Bar}=require('../../packages/hig/native/src/bar-pnl');
+  const labels={liquidation:'Liq',mark:'Mark',entry:'Entry'};
+  let view=mount([h(Bar,{key:'bar',testID:'bar',entry:100,mark:110,labels})],{marketColors:{up:'#ff3b30',down:'#0a84ff'}});
+  const move=()=>view.findAll(node=>node.props.testID==='bar-move'&&typeof node.type==='string')[0];
+  const style=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
+  expect(style(move()).backgroundColor).toBe('#ff3b30');
+  view=mount([h(Bar,{key:'bar',testID:'bar',entry:100,mark:90,labels})],{marketColors:{up:'#ff3b30',down:'#0a84ff'}});expect(style(move()).backgroundColor).toBe('#0a84ff');
+  view=mount([h(Bar,{key:'bar',testID:'bar',entry:100,mark:110,labels})]);expect(style(move()).backgroundColor).toBe(nativeSrgb.positive);
+ });
+});

@@ -5,11 +5,12 @@ import {PressDecoration,useControllable,useHIG} from '../provider.js';
 import {Button,IconButton} from '../button.js';
 import {ListGroup,ListRow} from '../list-group.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
+import {figureProps,type Figure} from '../figure.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {qrIcon} from './screen-header.js';
 import {SwapIcon,addressGradient} from './swap/shared.js';
 /** A row value that can change while the profile is shown, such as a balance: formatted with `options` between `prefix` and `suffix`, and updated place by place. `null` reads as unknown. */
-export interface ProfileFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export type ProfileFigure=Figure;
 /** One row of a profile section. With `onSelect` it opens something and shows a chevron; with `onCheckedChange` it is a switch. */
 export interface ProfileRow {
  id:string;label:string;
@@ -74,7 +75,7 @@ const editIcon=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' wid
 const isProfileFigure=(value:unknown):value is ProfileFigure=>value!=null&&typeof value==='object'&&!React.isValidElement(value)&&!Array.isArray(value)&&!(Symbol.iterator in value)&&'value' in value;
 function rowValue(row:ProfileRow):React.ReactNode{
  const {value,tone}=row;if(value==null)return value;
- if(isProfileFigure(value))return <span className='hig-profile-value' data-tone={tone}><AnimatedNumberReadout value={value.value} options={value.options} prefix={value.prefix} suffix={value.suffix}/></span>;
+ if(isProfileFigure(value))return <span className='hig-profile-value' data-tone={tone}><AnimatedNumberReadout {...figureProps(value)}/></span>;
  return tone?<span className='hig-profile-value' data-tone={tone}>{value}</span>:value;
 }
 /**
