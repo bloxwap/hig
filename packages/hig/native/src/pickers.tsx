@@ -1,15 +1,17 @@
 import React,{useContext,useMemo,useState} from 'react';
-import {FlatList,Pressable,View,useWindowDimensions,type StyleProp,type ViewStyle} from 'react-native';
+import {FlatList,Pressable,View,useWindowDimensions,type FlatListProps,type StyleProp,type TextInput,type TextInputProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
-import {Input,SearchInput} from './field.js';
+import {Field,Input,SearchInput} from './field.js';
 import {Filter} from './radio-group.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {SwitchRow} from './switch-row.js';
 import {LeaveIcon,LockIcon,ScanIcon,SwapHostContext,TokenIcon,WalletIcon} from './swap-parts.js';
 import {addressColor,pickerRows,shortAddress,type SwapChain,type SwapToken,type SwapWallet} from './swap-shared.js';
 export type {SwapChain,SwapFigure,SwapToken,SwapWallet} from './swap-shared.js';
+/** The list component (and height animation) a sheet hands to the pickers it holds; `listComponent` on a picker block does the same for one block. */
+export {SwapHostContext} from './swap-parts.js';
 /** The searchable token list both pickers share. */
 export interface PickerListProps {
  /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */
@@ -25,13 +27,29 @@ export interface PickerListProps {
  loading?:boolean;
  /** Web only: focuses the search with a hardware pointer. Native never raises the keyboard on mount. */
  autoFocus?:boolean;
+ /** `false` leaves out the search field, for a short list. Default `true`. */
+ search?:boolean;
+ /** Shows a token's balance when it is zero, where by default only a balance above zero is drawn. */
+ zeroBalances?:boolean;
+ /** A visible label over the search field, which then names it in place of the built-in label. */
+ searchLabel?:string;
+ /** A ref to the search input, for example to register it with a host bottom sheet's keyboard handling. */
+ searchRef?:React.Ref<React.ComponentRef<typeof TextInput>>;
+ /** Props for the search input, such as `onFocus`/`onBlur` for a host sheet or `returnKeyType`. The value and its change handler stay HIG's. */
+ searchInputProps?:PickerInputProps;
+ /** The list component the rows render through, such as a bottom sheet library's `FlatList`, so the list scrolls inside the host's sheet. Defaults to the `SwapHostContext` list, then React Native's `FlatList`. It receives the bounded `style` HIG sets, which the host's component may override. */
+ listComponent?:React.ComponentType<FlatListProps<SwapToken>>;
 }
+/** Host props for a picker's input: what a `TextInput` takes, except the value and its change handler. */
+export type PickerInputProps=Omit<TextInputProps,'value'|'defaultValue'|'onChangeText'|'onChange'>;
 /** Chains present in a token list, in first-seen order. */
 function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}
-function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,side,title}:PickerListProps&{side:'from'|'to';title:string}){
+/** A row shows a known balance above zero, or a zero one when the host asks for it. */
+const showBalance=(token:SwapToken,zero?:boolean)=>token.balance!=null&&Number.isFinite(token.balance)&&(token.balance>0||(!!zero&&token.balance===0));
+function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,search=true,zeroBalances,searchLabel,searchRef,searchInputProps,listComponent,side,title}:PickerListProps&{side:'from'|'to';title:string}){
  const {direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();const window=useWindowDimensions();
- // A sheet passes its backend's list through the host context so drags hand off to the sheet.
- const List=useContext(SwapHostContext).listComponent??FlatList;
+ // A sheet passes its backend's list, through the prop or the host context, so drags hand off to the sheet.
+ const host=useContext(SwapHostContext).listComponent;const List=listComponent??host??FlatList;
  const [query,setQuery]=useState('');const [chain,pickChain]=useState('');
  const options=useMemo(()=>chains??chainsOf(tokens),[chains,tokens]);
  // The filter speaks in strings; an empty value is every chain.
@@ -40,8 +58,10 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
  const section=(heading:string)=><Text accessibilityRole='header' style={{paddingHorizontal:8,paddingTop:12,paddingBottom:6,fontSize:12,lineHeight:18,fontWeight:'600',letterSpacing:1,textTransform:'uppercase',color:colors.muted}}>{heading}</Text>;
  const chainOptions=useMemo(()=>[{value:'',label:t.swapAllChains},...options.map(item=>({value:String(item.chainId),label:item.name,icon:item.icon}))],[options,t.swapAllChains]);
  const empty=<Text accessibilityLiveRegion='polite' testID={`swap-empty-${side}`} style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:21,color:colors.muted}}>{loading?`${t.loading}…`:t.swapNoTokens}</Text>;
+ // A visible label names the field through the Field context instead of the built-in name.
+ const field=<SearchInput ref={searchRef} accessibilityLabel={searchLabel?undefined:t.swapSearchTokens} placeholder={t.swapSearchTokens} testID={`swap-search-${side}`} autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false} {...searchInputProps} value={query} onChangeText={setQuery}/>;
  return <>
-  <SearchInput accessibilityLabel={t.swapSearchTokens} placeholder={t.swapSearchTokens} testID={`swap-search-${side}`} value={query} onChangeText={setQuery} autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false}/>
+  {search?searchLabel?<Field label={searchLabel}>{field}</Field>:field:null}
   {chainFilter&&options.length>1?<Filter label={t.swapChains} options={chainOptions} value={chain} onValueChange={pickChain}/>:null}
   {/* A bounded height so the list scrolls inside its panel or sheet instead of stretching it. */}
   <List style={{height:Math.max(240,Math.round(window.height*0.5))}} data={rows} keyExtractor={token=>token.id} keyboardShouldPersistTaps='handled' accessibilityLabel={title} testID={`swap-list-${side}`} initialNumToRender={12} ListEmptyComponent={empty}
@@ -49,8 +69,8 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
     {hotCount>0&&index===0?section(t.swapHot):null}{hotCount>0&&index===hotCount?section(t.swapAllTokens):null}
     <Pressable accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
      <TokenIcon token={token}/>
-     <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
-     {balance>0?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
+     <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.detail??token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
+     {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
     </Pressable>
    </View>;}}/>
  </>;
@@ -96,19 +116,26 @@ export interface ToPickerBlockProps extends Partial<PickerListProps> {
  addressPlaceholder?:string;
  /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */
  onScan?:()=>void;
+ /** A visible label over the address field, which then names it in place of the built-in “Recipient”. */
+ addressLabel?:string;
+ /** A ref to the address input, for example to register it with a host bottom sheet's keyboard handling. */
+ addressRef?:React.Ref<React.ComponentRef<typeof TextInput>>;
+ /** Props for the address input, such as `onFocus`/`onBlur` for a host sheet, `textContentType` or a mono `style`. The value and its change handler stay HIG's. */
+ addressInputProps?:PickerInputProps;
  style?:StyleProp<ViewStyle>;
 }
 /**
  * Where the assets go. On its own it is a destination address field with a scan button. With `tokens` it adds the
  * searchable token list, with the chain filter or, with `chainFilter={false}`, without it.
  */
-export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan,style,tokens,onSelect,...list}:ToPickerBlockProps){
+export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan,addressLabel,addressRef,addressInputProps,style,tokens,onSelect,...list}:ToPickerBlockProps){
  const colors=useColors();const t=useMessages();
- return <View accessibilityLabel={t.swapTo} testID='to-picker' style={[{gap:16},style]}>
-  {onAddressChange?<View testID='picker-address-row' style={{flexDirection:'row',alignItems:'center',gap:8}}>
-   <View style={{flex:1}}><Input accessibilityLabel={t.swapRecipient} placeholder={addressPlaceholder??t.swapRecipient} testID='picker-address' value={address??''} onChangeText={onAddressChange} autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false}/></View>
+ const row=onAddressChange?<View testID='picker-address-row' style={{flexDirection:'row',alignItems:'center',gap:8}}>
+   <View style={{flex:1}}><Input ref={addressRef} accessibilityLabel={addressLabel?undefined:t.swapRecipient} placeholder={addressPlaceholder??t.swapRecipient} testID='picker-address' autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false} {...addressInputProps} value={address??''} onChangeText={onAddressChange}/></View>
    {onScan?<IconButton intent='secondary' label={t.swapScan} testID='picker-scan' onPress={onScan} style={{minWidth:48,minHeight:48}}><ScanIcon color={colors.text}/></IconButton>:null}
-  </View>:null}
+  </View>:null;
+ return <View accessibilityLabel={t.swapTo} testID='to-picker' style={[{gap:16},style]}>
+  {row&&addressLabel?<Field label={addressLabel}>{row}</Field>:row}
   {tokens&&onSelect?<TokenList {...list} tokens={tokens} onSelect={onSelect} side='to' title={t.swapTo}/>:null}
  </View>;
 }

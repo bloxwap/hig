@@ -136,6 +136,16 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-market-row[data-mode='presentation'] .hig-market-identity { display:flex;align-items:center;gap:8px;min-width:0; }
 .hig-market-row[data-mode='presentation'] :is(.hig-market-price,.hig-market-change,.hig-market-volume) { text-align:end; }
 .hig-market-row[data-mode='presentation'] .hig-number { font-family:inherit; }
+/* Host options: a row without price or change, or with trailing content or a check, flows into as many columns as it has cells. */
+.hig-market-row[data-mode='presentation'][data-flow] { grid-template-columns:minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:auto; }
+.hig-market-row[data-mode='presentation'] .hig-market-trailing { text-align:end; }
+.hig-market-row[data-flow] .hig-market-identity { flex:1 1 auto;min-width:0; }
+.hig-market-text { display:flex;flex-direction:column;align-items:flex-start;min-width:0;text-align:start; }
+.hig-market-detail { font-size:.875rem;line-height:1.43;font-weight:400;color:var(--hig-muted); }
+.hig-market-trailing { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0; }
+.hig-market-check { flex:none;color:var(--hig-text); }
+.hig-market-row[data-active] { border-radius:var(--hig-radius-lg);background:var(--hig-fill); }
+.hig-market-row[data-disabled] :is(.hig-market-name,.hig-market-price,.hig-market-change,.hig-market-volume,.hig-market-trailing,.hig-market-icon) { opacity:.5; }
 .hig-badge { display:inline-flex;align-items:center;gap:4px;width:fit-content;max-width:100%;min-width:0;padding:4px 10px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);line-height:1.5;vertical-align:middle;overflow-wrap:anywhere; }
 .hig-badge[data-tone='positive'] { color:var(--hig-positive);background:color-mix(in srgb,var(--hig-positive) 15%,transparent); }
 .hig-badge[data-tone='negative'] { color:var(--hig-negative);background:color-mix(in srgb,var(--hig-negative) 15%,transparent); }
@@ -531,6 +541,15 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-asset-row-amounts { flex:none;align-items:flex-end;text-align:end; }
 .hig-asset-row strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 .hig-asset-row .hig-number { font-family:inherit; }
+/* A tag is a caption under the figures; the trailing slot and the selected check follow them, 12px apart like the rest of the row. */
+.hig-asset-row-tag { font-size:.75rem;line-height:1.5;color:var(--hig-muted); }
+.hig-asset-row-trailing { flex:none;display:flex;align-items:center;gap:8px;color:var(--hig-muted); }
+.hig-asset-row-check { flex:none;color:var(--hig-text); }
+/* Unavailable: the well fill stays, the text and artwork go muted, and a press does nothing. */
+.hig-asset-row:is(:disabled,[aria-disabled='true']) { cursor:default; }
+button.hig-asset-row:disabled:active { background:var(--hig-fill); }
+.hig-asset-row:is(:disabled,[aria-disabled='true']) strong { color:var(--hig-muted); }
+.hig-asset-row:is(:disabled,[aria-disabled='true']) .hig-asset-row-icon { opacity:.5; }
 /* ScreenHeader: Back, a centred title and a trailing control, shared by the cards that are their own screen.
    AccountBlock: that header, the total with the deposit action, then the holdings 8px apart. */
 .hig-account-block { display:flex;flex-direction:column;gap:16px;min-width:0; }

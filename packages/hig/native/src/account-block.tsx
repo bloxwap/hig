@@ -22,7 +22,17 @@ export interface AccountAsset {
  selectable?:boolean;
  /** Format of the units figure; default `{maximumFractionDigits:6}`. */
  unitsOptions?:Intl.NumberFormatOptions;
+ /** Host text after the units figure, such as ` PAPER`. */
+ unitsSuffix?:string;
+ /** Short muted host text under the figures, such as the ledger the holding sits in (Perp, Spot, Staked). */
+ tag?:string;
+ /** When the value is unknown but the balance is known: `units` (the default) headlines the units; `dash` shows the unknown dash over the units, for a value that is still loading. */
+ unknownValue?:'units'|'dash';
 }
+/** Row order after the pinned asset: `value` (largest first, the default) or `given` (the order the host passed). */
+export type AccountOrder='value'|'given';
+/** How `accountRows` picks and orders: `order` after the pinned asset, and `pinnedId`, an asset id pinned in place of the symbol match. */
+export interface AccountRowsOptions {order?:AccountOrder;pinnedId?:string}
 /** A titled group of holdings with its own total, such as one ledger of the account. */
 export interface AccountSection {
  id:string;
@@ -31,6 +41,10 @@ export interface AccountSection {
  /** The group's total in dollars, on the trailing edge of its heading; defaults to the sum of its asset values. `null` shows it as unknown. */
  total?:number|null;
  assets:readonly AccountAsset[];
+ /** Row order in this group; defaults to the block's `order`. */
+ order?:AccountOrder;
+ /** Id of the asset that leads this group; defaults to the block's `pinnedId`, then the `pinnedSymbol` match. */
+ pinnedId?:string;
 }
 export interface AccountBlockProps {
  /** Defaults to the localized "Account". */
@@ -49,6 +63,10 @@ export interface AccountBlockProps {
  sections?:readonly AccountSection[];
  /** Symbol of the asset pinned first; default 'USDC'. */
  pinnedSymbol?:string;
+ /** Id of the asset pinned first, in place of the `pinnedSymbol` match, for a holding whose symbol is not unique. */
+ pinnedId?:string;
+ /** Order of the rows after the pinned one: `value` (largest first, the default) or `given` (the order passed). */
+ order?:AccountOrder;
  /** Shows the deposit action beside the total. */
  onDeposit?:()=>void;
  depositLabel?:string;
@@ -60,11 +78,13 @@ const usdc='USDC',usdCoin='USD Coin';
 const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
 /** An asset's dollar value: its own `value`, else balance × price, else unknown. */
 export const assetValue=(asset:AccountAsset):number|null=>asset.value!==undefined?asset.value:asset.balance!=null&&asset.price!=null?asset.balance*asset.price:null;
-/** The pinned asset (a zero placeholder when the account does not hold it) and the rest by dollar value, largest first, unknown values last, ties by name. */
-export function accountRows(assets:readonly AccountAsset[],pinnedSymbol:string=usdc):{pinned:AccountAsset;rest:AccountAsset[]}{
- const wanted=pinnedSymbol.toLowerCase(),found=assets.find(asset=>asset.symbol.toLowerCase()===wanted);
+/** The pinned asset (the one with `options.pinnedId`, else the first with `pinnedSymbol`, else a zero placeholder) and the rest by dollar value, largest first, unknown values last, ties by name, or with `options.order` `given` in the order passed. */
+export function accountRows(assets:readonly AccountAsset[],pinnedSymbol:string=usdc,options:AccountRowsOptions={}):{pinned:AccountAsset;rest:AccountAsset[]}{
+ const wanted=pinnedSymbol.toLowerCase();
+ const found=(options.pinnedId===undefined?undefined:assets.find(asset=>asset.id===options.pinnedId))??assets.find(asset=>asset.symbol.toLowerCase()===wanted);
  const pinned=found??{id:pinnedSymbol,name:pinnedSymbol===usdc?usdCoin:pinnedSymbol,symbol:pinnedSymbol,balance:0,value:0};
- const rest=assets.filter(asset=>asset!==found).sort((a,b)=>{const x=assetValue(a),y=assetValue(b);return x===y?a.name.localeCompare(b.name):x===null?1:y===null?-1:y-x||a.name.localeCompare(b.name);});
+ const others=assets.filter(asset=>asset!==found);
+ const rest=options.order==='given'?others:others.sort((a,b)=>{const x=assetValue(a),y=assetValue(b);return x===y?a.name.localeCompare(b.name):x===null?1:y===null?-1:y-x||a.name.localeCompare(b.name);});
  return {pinned,rest};
 }
 const sum=(assets:readonly AccountAsset[])=>assets.reduce((total,asset)=>total+(assetValue(asset)??0),0);
@@ -73,31 +93,33 @@ export const accountSectionTotal=(section:AccountSection):number|null=>section.t
 /** The block total for `sections`: the sum of the section totals, or unknown (`null`) when any of them is unknown. Pass only the sections that are drawn. */
 const accountSectionsTotal=(sections:readonly AccountSection[]):number|null=>{let all=0;for(const section of sections){const total=accountSectionTotal(section);if(total===null)return null;all+=total;}return all;};
 /** A section's rows in display order: the pinned asset first when the section holds it (no placeholder), then the rest by value as in `accountRows`. */
-export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol:string=usdc):{pinned:AccountAsset|null;rest:AccountAsset[]}{
- const {pinned,rest}=accountRows(assets,pinnedSymbol);return {pinned:assets.includes(pinned)?pinned:null,rest};
+export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol:string=usdc,options:AccountRowsOptions={}):{pinned:AccountAsset|null;rest:AccountAsset[]}{
+ const {pinned,rest}=accountRows(assets,pinnedSymbol,options);return {pinned:assets.includes(pinned)?pinned:null,rest};
 }
 /** The account as one screen: a header, the total with the deposit action, the pinned asset, then every other holding by value. */
-export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol=usdc,onDeposit,depositLabel,onAssetSelect,testID}:AccountBlockProps){
+export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol=usdc,pinnedId,order,onDeposit,depositLabel,onAssetSelect,testID}:AccountBlockProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const shown=sections?.filter(section=>section.assets.length>0);
  const total=balance!==undefined?balance:shown?accountSectionsTotal(shown):sum(assets);
- const row=(asset:AccountAsset,pin:boolean,section?:AccountSection,prefix='account-asset')=>{
-  const value=assetValue(asset),units=!pin&&asset.units!==false;
+ const row=(asset:AccountAsset,pin:boolean,pinId:string|undefined,section?:AccountSection,prefix='account-asset')=>{
+  // A row pinned by symbol is the dollar balance, so its units would repeat its value; a row pinned by id keeps its own units setting.
+  const value=assetValue(asset),units=(!pin||asset.id===pinId)&&asset.units!==false;
   const select=onAssetSelect&&asset.selectable!==false?(section?()=>onAssetSelect(asset,section):()=>onAssetSelect(asset)):undefined;
-  return <AssetBalanceRow key={asset.id} testID={`${prefix}-${asset.id}`} name={asset.name} symbol={asset.symbol} icon={asset.icon} value={value} balance={units?asset.balance??null:undefined} balanceOptions={asset.unitsOptions} headline={units&&value===null&&asset.balance!=null?'units':undefined} onSelect={select}/>;
+  return <AssetBalanceRow key={asset.id} testID={`${prefix}-${asset.id}`} name={asset.name} symbol={asset.symbol} icon={asset.icon} value={value} balance={units?asset.balance??null:undefined} balanceOptions={asset.unitsOptions} unitsSuffix={asset.unitsSuffix} tag={asset.tag} headline={units&&value===null&&asset.balance!=null&&asset.unknownValue!=='dash'?'units':undefined} onSelect={select}/>;
  };
  let list:React.ReactNode;
  if(shown)list=<View testID='account-sections' style={{gap:24,marginTop:16}}>{shown.map(section=>{
-  const {pinned,rest}=accountSectionRows(section.assets,pinnedSymbol),prefix=`account-section-${section.id}`,rowPrefix=`${prefix}-asset`;
+  const pinId=section.pinnedId??pinnedId;
+  const {pinned,rest}=accountSectionRows(section.assets,pinnedSymbol,{order:section.order??order,pinnedId:pinId}),prefix=`account-section-${section.id}`,rowPrefix=`${prefix}-asset`;
   return <View key={section.id} testID={prefix} style={{gap:8}}>
    <View testID={`${prefix}-header`} style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12,paddingHorizontal:4}}>
     <Text accessibilityRole='header' testID={`${prefix}-title`} style={{flexShrink:1,color:colors.muted,fontSize:14,lineHeight:20,fontWeight:'500'}}>{section.title}</Text>
     <AnimatedNumberReadout value={accountSectionTotal(section)} options={usd} tone='muted' testID={`${prefix}-total`} style={{fontSize:14,lineHeight:20,fontWeight:'500'}}/>
    </View>
-   <View testID={`${prefix}-assets`} style={{gap:8}}>{pinned?row(pinned,true,section,rowPrefix):null}{rest.map(asset=>row(asset,false,section,rowPrefix))}</View>
+   <View testID={`${prefix}-assets`} style={{gap:8}}>{pinned?row(pinned,true,pinId,section,rowPrefix):null}{rest.map(asset=>row(asset,false,pinId,section,rowPrefix))}</View>
   </View>;
  })}</View>;
- else{const {pinned,rest}=accountRows(assets,pinnedSymbol);list=<View testID='account-assets' style={{gap:8,marginTop:16}}>{row(pinned,true)}{rest.map(asset=>row(asset,false))}</View>;}
+ else{const {pinned,rest}=accountRows(assets,pinnedSymbol,{order,pinnedId});list=<View testID='account-assets' style={{gap:8,marginTop:16}}>{row(pinned,true,pinnedId)}{rest.map(asset=>row(asset,false,pinnedId))}</View>;}
  return <View testID={testID} style={{padding:16}}>
   <View testID='account-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
    <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='account-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>

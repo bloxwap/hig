@@ -20,11 +20,11 @@
       },
       "AssetBalanceRowProps": {
         "entry": "asset-balance-row",
-        "signature": "export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {\n    name: string;\n    symbol: string;\n    /** A missing icon falls back to the first letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, shown under the value. Omit it to show the value alone, as for a dollar stablecoin. */\n    balance?: number | null;\n    /** Format of the units line. Defaults to at most six fraction digits. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Defaults to `value`. */\n    headline?: 'value' | 'units';\n    /** Makes the whole row a button. */\n    onSelect?: () => void;\n}"
+        "signature": "export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {\n    name: string;\n    symbol: string;\n    /** A missing icon falls back to the first letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, shown under the value. Omit it to show the value alone, as for a dollar stablecoin. */\n    balance?: number | null;\n    /** Format of the units line. Defaults to at most six fraction digits. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** Host text after the units figure, such as ` HYPE`. Drawn only when the units are known. */\n    unitsSuffix?: string;\n    /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Defaults to `value`. */\n    headline?: 'value' | 'units';\n    /** `false` draws no figures at all, for a row that is just an item to pick, such as a method or a chain. Defaults to `true`. */\n    amounts?: boolean;\n    /** Short muted host text under the figures, such as the ledger a holding sits in. Read after them. */\n    tag?: string;\n    /** Host content on the trailing edge, after the figures. Inside a pressable row it must not be interactive. */\n    trailing?: React.ReactNode;\n    /** Marks the row in use: a check on the trailing edge, and `aria-current` for assistive technology. */\n    selected?: boolean;\n    /** Dims the row and ignores presses. */\n    disabled?: boolean;\n    /** Makes the whole row a button. */\n    onSelect?: () => void;\n}"
       },
       "AssetBalanceRow": {
         "entry": "asset-balance-row",
-        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, headline, onSelect, className, ...rest }: AssetBalanceRowProps): React.JSX.Element;"
+        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, unitsSuffix, headline, amounts, tag, trailing, selected, disabled, onSelect, className, ...rest }: AssetBalanceRowProps): React.JSX.Element;"
       },
       "BarMarkTone": {
         "entry": "bar-mark",
@@ -84,7 +84,11 @@
       },
       "MarketRow": {
         "entry": "blocks/market-row",
-        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect, priceOptions, changeOptions, mode, identity, icon, favorite, volume, className, style }: MarketRowProps): React.JSX.Element;"
+        "signature": "export declare const MarketRow: React.ForwardRefExoticComponent<MarketRowProps & React.RefAttributes<HTMLDivElement>>;"
+      },
+      "MarketRowProps": {
+        "entry": "blocks/market-row",
+        "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity, such as symbol/name with its existing compact layout. */\n    identity?: React.ReactNode;\n});"
       },
       "TradeEntry": {
         "entry": "blocks/trade-entry",
@@ -100,15 +104,15 @@
       },
       "AccountBlock": {
         "entry": "blocks/account-block",
-        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, sections, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, className, ...rest }: AccountBlockProps): React.JSX.Element;"
+        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, sections, pinnedSymbol, pinnedId, order, onDeposit, depositLabel, onAssetSelect, className, ...rest }: AccountBlockProps): React.JSX.Element;"
       },
       "accountRows": {
         "entry": "blocks/account-block",
-        "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
+        "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string, options?: AccountRowsOptions): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
       },
       "accountSectionRows": {
         "entry": "blocks/account-block",
-        "signature": "export declare function accountSectionRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset | null;\n    rest: AccountAsset[];\n};"
+        "signature": "export declare function accountSectionRows(assets: readonly AccountAsset[], pinnedSymbol?: string, options?: AccountRowsOptions): {\n    pinned: AccountAsset | null;\n    rest: AccountAsset[];\n};"
       },
       "accountSectionTotal": {
         "entry": "blocks/account-block",
@@ -120,15 +124,23 @@
       },
       "AccountBlockProps": {
         "entry": "blocks/account-block",
-        "signature": "export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading. Defaults to the built-in “Account”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with `WalletAddress`. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars. Defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is); `null` reads as unknown. */\n    balance?: number | null;\n    /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */\n    assets?: readonly AccountAsset[];\n    /** Titled groups, each with its own total, drawn in the order given in place of the flat `assets` list. */\n    sections?: readonly AccountSection[];\n    /** Symbol of the asset that is always first. Defaults to `USDC`. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    /** Text of the deposit action. Defaults to the built-in “Deposit”. */\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset, and with `sections` the section it is in. */\n    onAssetSelect?: (asset: AccountAsset, section?: AccountSection) => void;\n}"
+        "signature": "export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading. Defaults to the built-in “Account”. */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with `WalletAddress`. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars. Defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is); `null` reads as unknown. */\n    balance?: number | null;\n    /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */\n    assets?: readonly AccountAsset[];\n    /** Titled groups, each with its own total, drawn in the order given in place of the flat `assets` list. */\n    sections?: readonly AccountSection[];\n    /** Symbol of the asset that is always first. Defaults to `USDC`. */\n    pinnedSymbol?: string;\n    /** Id of the asset that is always first, in place of the `pinnedSymbol` match, for a holding whose symbol is not unique. */\n    pinnedId?: string;\n    /** Order of the rows after the pinned one: `value` (largest first, the default) or `given` (the order passed). */\n    order?: AccountOrder;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    /** Text of the deposit action. Defaults to the built-in “Deposit”. */\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset, and with `sections` the section it is in. */\n    onAssetSelect?: (asset: AccountAsset, section?: AccountSection) => void;\n}"
       },
       "AccountAsset": {
         "entry": "blocks/account-block",
-        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. */\n    price?: number | null;\n    /** Dollar value of the holding. Defaults to `balance × price`. */\n    value?: number | null;\n    /** Set false to draw no units line, for a holding whose units are the same figure as its value. */\n    units?: boolean;\n    /** Set false to draw this row plain even when the block has `onAssetSelect`. */\n    selectable?: boolean;\n    /** Format of the units figure. Defaults to at most six fraction digits. */\n    unitsOptions?: Intl.NumberFormatOptions;\n}"
+        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. */\n    price?: number | null;\n    /** Dollar value of the holding. Defaults to `balance × price`. */\n    value?: number | null;\n    /** Set false to draw no units line, for a holding whose units are the same figure as its value. */\n    units?: boolean;\n    /** Set false to draw this row plain even when the block has `onAssetSelect`. */\n    selectable?: boolean;\n    /** Format of the units figure. Defaults to at most six fraction digits. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Host text after the units figure, such as ` PAPER`. */\n    unitsSuffix?: string;\n    /** Short muted host text under the figures, such as the ledger the holding sits in (Perp, Spot, Staked). */\n    tag?: string;\n    /** When the value is unknown but the balance is known: `units` (the default) headlines the units; `dash` shows the unknown dash over the units, for a value that is still loading. */\n    unknownValue?: 'units' | 'dash';\n}"
       },
       "AccountSection": {
         "entry": "blocks/account-block",
-        "signature": "export interface AccountSection {\n    id: string;\n    /** Heading over the group. */\n    title: string;\n    /** The group's total in dollars, on the trailing edge of its heading. Defaults to the sum of its asset values; `null` reads as unknown. */\n    total?: number | null;\n    assets: readonly AccountAsset[];\n}"
+        "signature": "export interface AccountSection {\n    id: string;\n    /** Heading over the group. */\n    title: string;\n    /** The group's total in dollars, on the trailing edge of its heading. Defaults to the sum of its asset values; `null` reads as unknown. */\n    total?: number | null;\n    assets: readonly AccountAsset[];\n    /** Row order in this group; defaults to the block's `order`. */\n    order?: AccountOrder;\n    /** Id of the asset that leads this group; defaults to the block's `pinnedId`, then the `pinnedSymbol` match. */\n    pinnedId?: string;\n}"
+      },
+      "AccountOrder": {
+        "entry": "blocks/account-block",
+        "signature": "export type AccountOrder = 'value' | 'given';"
+      },
+      "AccountRowsOptions": {
+        "entry": "blocks/account-block",
+        "signature": "export interface AccountRowsOptions {\n    order?: AccountOrder;\n    pinnedId?: string;\n}"
       },
       "LanguageBlock": {
         "entry": "blocks/language-block",
@@ -148,7 +160,7 @@
       },
       "TokenActionBlock": {
         "entry": "blocks/token-action-block",
-        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, className, ...rest }: TokenActionBlockProps): React.JSX.Element;"
+        "signature": "export declare function TokenActionBlock({ symbol, name, value, units, unitsSuffix, unitsOptions, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, className, ...rest }: TokenActionBlockProps): React.JSX.Element;"
       },
       "tokenActionLabel": {
         "entry": "blocks/token-action-block",
@@ -156,7 +168,7 @@
       },
       "TokenActionBlockProps": {
         "entry": "blocks/token-action-block",
-        "signature": "export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapPanelBlock`. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n}"
+        "signature": "export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, for a token with no dollar value: with `value` left out or `null` it is drawn in place of the dollar total. */\n    units?: number | null;\n    /** Host text after the units, such as ` BLOX`. */\n    unitsSuffix?: string;\n    /** Format of the units. Defaults to at most six fraction digits. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapPanelBlock`. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n}"
       },
       "TokenAction": {
         "entry": "blocks/token-action-block",
@@ -412,7 +424,7 @@
       },
       "ToPickerBlock": {
         "entry": "blocks/pickers",
-        "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, className, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
+        "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, addressLabel, addressRef, addressInputProps, className, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
       },
       "FromPicker": {
         "entry": "blocks/pickers",
@@ -428,7 +440,7 @@
       },
       "ToPickerBlockProps": {
         "entry": "blocks/pickers",
-        "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    className?: string;\n}"
+        "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    /** A visible label over the address field, which then names it in place of the built-in hidden “Recipient”. */\n    addressLabel?: string;\n    /** A ref to the address input, for example to focus it or register it with a host sheet. */\n    addressRef?: React.Ref<HTMLInputElement>;\n    /** Attributes for the address input, such as `name='recipient'`, `data-1p-ignore`, `data-lpignore`, a mono `className` or `onFocus`/`onBlur`. The value and its change handler stay HIG's. */\n    addressInputProps?: PickerInputProps;\n    className?: string;\n}"
       },
       "FromPickerProps": {
         "entry": "blocks/pickers",
@@ -440,7 +452,11 @@
       },
       "PickerListProps": {
         "entry": "blocks/pickers",
-        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n}"
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** With a hardware pointer, focus the search field on mount so typing filters at once. */\n    autoFocus?: boolean;\n    /** `false` leaves out the search field, for a short list. Defaults to `true`. */\n    search?: boolean;\n    /** Shows a token's balance when it is zero, where by default only a balance above zero is drawn. */\n    zeroBalances?: boolean;\n    /** A visible label over the search field, which then names it in place of the built-in hidden label. */\n    searchLabel?: string;\n    /** A ref to the search input, for example to focus it or register it with a host sheet. */\n    searchRef?: React.Ref<HTMLInputElement>;\n    /** Attributes for the search input, such as `name`, `autoComplete`, `data-1p-ignore` or `onFocus`/`onBlur`. The value and its change handler stay HIG's; a host `onKeyDown` runs before the list's arrow keys. */\n    searchInputProps?: PickerInputProps;\n}"
+      },
+      "PickerInputProps": {
+        "entry": "blocks/pickers",
+        "signature": "export type PickerInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'type' | 'children'> & {\n    [attribute: `data-${string}`]: string | number | boolean | undefined;\n};"
       },
       "SwapPanelBlock": {
         "entry": "blocks/swap-panel-block",
@@ -464,7 +480,7 @@
       },
       "SwapToken": {
         "entry": "blocks",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n    /** Picker rows: host text after the balance figure, such as ` HYPE`. */\n    unitsSuffix?: string;\n    /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */\n    detail?: string;\n}"
       },
       "SwapChain": {
         "entry": "blocks",
@@ -914,17 +930,17 @@
         "entry": "toast",
         "signature": "export declare function dismissToast(id?: string | number): void;"
       },
-      "WalletAddressProps": {
-        "entry": "wallet-address",
-        "signature": "export interface WalletAddressProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** QR payload when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR; the code then uses high error correction. */\n    arena?: string;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+      "WalletAddressCoreProps": {
+        "entry": "wallet-address-core",
+        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. */\n    qr: React.ReactNode;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
       },
       "WalletAddress": {
-        "entry": "wallet-address",
-        "signature": "export declare function WalletAddress({ address, kind, qrValue, arena, size, onCopy, className, style }: WalletAddressProps): React.JSX.Element;"
+        "entry": "wallet-address-core",
+        "signature": "export declare function WalletAddress({ address, kind, qr, size, onCopy, announce, className, style }: WalletAddressCoreProps): React.JSX.Element;"
       },
-      "MarketRowProps": {
-        "entry": "blocks/market-row",
-        "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity, such as symbol/name with its existing compact layout. */\n    identity?: React.ReactNode;\n});"
+      "WalletAddressProps": {
+        "entry": "wallet-address",
+        "signature": "export interface WalletAddressProps extends Omit<WalletAddressCoreProps, 'qr'> {\n    /** QR payload when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR; the code then uses high error correction. */\n    arena?: string;\n    /** The host's own QR drawing in place of the Cuer code; `qrValue` and `arena` are then unused. Without `cuer` installed, import `WalletAddress` from `wallet-address-core` instead. */\n    qr?: React.ReactNode;\n}"
       },
       "SwapArtwork": {
         "entry": "blocks/swap-panel-block",
@@ -1034,7 +1050,7 @@
     "native": {
       "AssetBalanceRow": {
         "entry": "asset-balance-row",
-        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, headline, onSelect, testID }: AssetBalanceRowProps): React.JSX.Element;"
+        "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, unitsSuffix, headline, amounts, tag, trailing, selected, disabled, onSelect, testID }: AssetBalanceRowProps): React.JSX.Element;"
       },
       "AssetArtwork": {
         "entry": "asset-balance-row",
@@ -1042,19 +1058,27 @@
       },
       "AssetBalanceRowProps": {
         "entry": "asset-balance-row",
-        "signature": "export interface AssetBalanceRowProps {\n    name: string;\n    symbol: string;\n    /** Without artwork the avatar shows the first three letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. */\n    value?: number | null;\n    /** Holding in token units; omit to show the value alone. */\n    balance?: number | null;\n    /** Format of the units line; default `{maximumFractionDigits:6}`. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Default `value`. */\n    headline?: 'value' | 'units';\n    /** Makes the row a button. */\n    onSelect?: () => void;\n    testID?: string;\n}"
+        "signature": "export interface AssetBalanceRowProps {\n    name: string;\n    symbol: string;\n    /** Without artwork the avatar shows the first three letters of the symbol. */\n    icon?: AssetArtwork;\n    /** Dollar value of the holding. */\n    value?: number | null;\n    /** Holding in token units; omit to show the value alone. */\n    balance?: number | null;\n    /** Format of the units line; default `{maximumFractionDigits:6}`. */\n    balanceOptions?: Intl.NumberFormatOptions;\n    /** Host text after the units figure, such as ` HYPE`. Drawn and read only when the units are known. */\n    unitsSuffix?: string;\n    /** `units` puts the units on the headline line in place of the value and draws no second line, for a holding with no dollar value. Default `value`. */\n    headline?: 'value' | 'units';\n    /** `false` draws no figures at all, for a row that is just an item to pick, such as a method or a chain. Default `true`. */\n    amounts?: boolean;\n    /** Short muted host text under the figures, such as the ledger a holding sits in. Read after them. */\n    tag?: string;\n    /** Host content on the trailing edge, after the figures. Inside a pressable row it must not be interactive; it is hidden from assistive technology, which reads the row's label. */\n    trailing?: React.ReactNode;\n    /** Marks the row in use: a check on the trailing edge and `accessibilityState.selected`. */\n    selected?: boolean;\n    /** Dims the row, ignores presses and reads as unavailable. */\n    disabled?: boolean;\n    /** Makes the row a button. */\n    onSelect?: () => void;\n    testID?: string;\n}"
       },
       "AccountAsset": {
         "entry": "account-block",
-        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit. */\n    price?: number | null;\n    /** USD value; defaults to balance × price. */\n    value?: number | null;\n    /** Set false to draw no units line, for a holding whose units are the same figure as its value. */\n    units?: boolean;\n    /** Set false to draw this row plain even when the block has `onAssetSelect`. */\n    selectable?: boolean;\n    /** Format of the units figure; default `{maximumFractionDigits:6}`. */\n    unitsOptions?: Intl.NumberFormatOptions;\n}"
+        "signature": "export interface AccountAsset {\n    id: string;\n    name: string;\n    symbol: string;\n    icon?: AssetArtwork;\n    /** Holding in token units. */\n    balance?: number | null;\n    /** USD per unit. */\n    price?: number | null;\n    /** USD value; defaults to balance × price. */\n    value?: number | null;\n    /** Set false to draw no units line, for a holding whose units are the same figure as its value. */\n    units?: boolean;\n    /** Set false to draw this row plain even when the block has `onAssetSelect`. */\n    selectable?: boolean;\n    /** Format of the units figure; default `{maximumFractionDigits:6}`. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Host text after the units figure, such as ` PAPER`. */\n    unitsSuffix?: string;\n    /** Short muted host text under the figures, such as the ledger the holding sits in (Perp, Spot, Staked). */\n    tag?: string;\n    /** When the value is unknown but the balance is known: `units` (the default) headlines the units; `dash` shows the unknown dash over the units, for a value that is still loading. */\n    unknownValue?: 'units' | 'dash';\n}"
+      },
+      "AccountOrder": {
+        "entry": "account-block",
+        "signature": "export type AccountOrder = 'value' | 'given';"
+      },
+      "AccountRowsOptions": {
+        "entry": "account-block",
+        "signature": "export interface AccountRowsOptions {\n    order?: AccountOrder;\n    pinnedId?: string;\n}"
       },
       "AccountSection": {
         "entry": "account-block",
-        "signature": "export interface AccountSection {\n    id: string;\n    /** Heading over the group. */\n    title: string;\n    /** The group's total in dollars, on the trailing edge of its heading; defaults to the sum of its asset values. `null` shows it as unknown. */\n    total?: number | null;\n    assets: readonly AccountAsset[];\n}"
+        "signature": "export interface AccountSection {\n    id: string;\n    /** Heading over the group. */\n    title: string;\n    /** The group's total in dollars, on the trailing edge of its heading; defaults to the sum of its asset values. `null` shows it as unknown. */\n    total?: number | null;\n    assets: readonly AccountAsset[];\n    /** Row order in this group; defaults to the block's `order`. */\n    order?: AccountOrder;\n    /** Id of the asset that leads this group; defaults to the block's `pinnedId`, then the `pinnedSymbol` match. */\n    pinnedId?: string;\n}"
       },
       "AccountBlockProps": {
         "entry": "account-block",
-        "signature": "export interface AccountBlockProps {\n    /** Defaults to the localized \"Account\". */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with WalletAddress. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars; defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is). `null` shows it as unknown. */\n    balance?: number | null;\n    /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */\n    assets?: readonly AccountAsset[];\n    /** Titled groups, each with its own total, drawn in the order given in place of the flat `assets` list. */\n    sections?: readonly AccountSection[];\n    /** Symbol of the asset pinned first; default 'USDC'. */\n    pinnedSymbol?: string;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset, and with `sections` the section it is in. */\n    onAssetSelect?: (asset: AccountAsset, section?: AccountSection) => void;\n    testID?: string;\n}"
+        "signature": "export interface AccountBlockProps {\n    /** Defaults to the localized \"Account\". */\n    title?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** Shows a QR button on the trailing edge of the header, above the deposit action. The host shows the account address, for example with WalletAddress. */\n    onShowAddress?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. Replaces the QR button. */\n    headerAction?: React.ReactNode;\n    /** Total in dollars; defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is). `null` shows it as unknown. */\n    balance?: number | null;\n    /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */\n    assets?: readonly AccountAsset[];\n    /** Titled groups, each with its own total, drawn in the order given in place of the flat `assets` list. */\n    sections?: readonly AccountSection[];\n    /** Symbol of the asset pinned first; default 'USDC'. */\n    pinnedSymbol?: string;\n    /** Id of the asset pinned first, in place of the `pinnedSymbol` match, for a holding whose symbol is not unique. */\n    pinnedId?: string;\n    /** Order of the rows after the pinned one: `value` (largest first, the default) or `given` (the order passed). */\n    order?: AccountOrder;\n    /** Shows the deposit action beside the total. */\n    onDeposit?: () => void;\n    depositLabel?: string;\n    /** Makes each row a button that reports its asset, and with `sections` the section it is in. */\n    onAssetSelect?: (asset: AccountAsset, section?: AccountSection) => void;\n    testID?: string;\n}"
       },
       "assetValue": {
         "entry": "account-block",
@@ -1062,7 +1086,7 @@
       },
       "accountRows": {
         "entry": "account-block",
-        "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
+        "signature": "export declare function accountRows(assets: readonly AccountAsset[], pinnedSymbol?: string, options?: AccountRowsOptions): {\n    pinned: AccountAsset;\n    rest: AccountAsset[];\n};"
       },
       "accountSectionTotal": {
         "entry": "account-block",
@@ -1070,11 +1094,11 @@
       },
       "accountSectionRows": {
         "entry": "account-block",
-        "signature": "export declare function accountSectionRows(assets: readonly AccountAsset[], pinnedSymbol?: string): {\n    pinned: AccountAsset | null;\n    rest: AccountAsset[];\n};"
+        "signature": "export declare function accountSectionRows(assets: readonly AccountAsset[], pinnedSymbol?: string, options?: AccountRowsOptions): {\n    pinned: AccountAsset | null;\n    rest: AccountAsset[];\n};"
       },
       "AccountBlock": {
         "entry": "account-block",
-        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, sections, pinnedSymbol, onDeposit, depositLabel, onAssetSelect, testID }: AccountBlockProps): React.JSX.Element;"
+        "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, sections, pinnedSymbol, pinnedId, order, onDeposit, depositLabel, onAssetSelect, testID }: AccountBlockProps): React.JSX.Element;"
       },
       "AnimatedNumberTrend": {
         "entry": "animated-number",
@@ -1154,7 +1178,11 @@
       },
       "MarketRow": {
         "entry": "blocks",
-        "signature": "export declare function MarketRow({ symbol, name, price, change, onSelect }: {\n    symbol: string;\n    name: string;\n    price: number | null;\n    change: number | null;\n    onSelect: () => void;\n}): React.JSX.Element;"
+        "signature": "export declare const MarketRow: React.ForwardRefExoticComponent<MarketRowProps & React.RefAttributes<React.ComponentRef<typeof View>>>;"
+      },
+      "MarketRowProps": {
+        "entry": "blocks",
+        "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity in place of `name (symbol)`. */\n    identity?: React.ReactNode;\n});"
       },
       "TradeEntry": {
         "entry": "blocks",
@@ -1186,7 +1214,7 @@
       },
       "TokenActionBlock": {
         "entry": "token-action-block",
-        "signature": "export declare function TokenActionBlock({ symbol, name, value, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, testID }: TokenActionBlockProps): React.JSX.Element;"
+        "signature": "export declare function TokenActionBlock({ symbol, name, value, units, unitsSuffix, unitsOptions, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, testID }: TokenActionBlockProps): React.JSX.Element;"
       },
       "tokenActionLabel": {
         "entry": "token-action-block",
@@ -1194,7 +1222,7 @@
       },
       "TokenActionBlockProps": {
         "entry": "token-action-block",
-        "signature": "export interface TokenActionBlockProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapPanelBlock. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    testID?: string;\n}"
+        "signature": "export interface TokenActionBlockProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, for a token with no dollar value: with `value` left out or null it is drawn in place of the dollar total. */\n    units?: number | null;\n    /** Host text after the units, such as ` BLOX`. */\n    unitsSuffix?: string;\n    /** Format of the units; default `{maximumFractionDigits:6}`. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapPanelBlock. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    testID?: string;\n}"
       },
       "TokenAction": {
         "entry": "token-action-block",
@@ -1458,7 +1486,7 @@
       },
       "ToPickerBlock": {
         "entry": "pickers",
-        "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, style, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
+        "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, addressLabel, addressRef, addressInputProps, style, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
       },
       "FromPicker": {
         "entry": "pickers",
@@ -1474,7 +1502,7 @@
       },
       "ToPickerBlockProps": {
         "entry": "pickers",
-        "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    style?: StyleProp<ViewStyle>;\n}"
+        "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    /** A visible label over the address field, which then names it in place of the built-in “Recipient”. */\n    addressLabel?: string;\n    /** A ref to the address input, for example to register it with a host bottom sheet's keyboard handling. */\n    addressRef?: React.Ref<React.ComponentRef<typeof TextInput>>;\n    /** Props for the address input, such as `onFocus`/`onBlur` for a host sheet, `textContentType` or a mono `style`. The value and its change handler stay HIG's. */\n    addressInputProps?: PickerInputProps;\n    style?: StyleProp<ViewStyle>;\n}"
       },
       "FromPickerProps": {
         "entry": "pickers",
@@ -1486,7 +1514,15 @@
       },
       "PickerListProps": {
         "entry": "pickers",
-        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** Web only: focuses the search with a hardware pointer. Native never raises the keyboard on mount. */\n    autoFocus?: boolean;\n}"
+        "signature": "export interface PickerListProps {\n    /** Tokens offered: a wallet's holdings, a whitelist, or a whole catalog. */\n    tokens: readonly SwapToken[];\n    /** Chain filter options. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** `false` leaves out the chain filter, for a list on one chain or one that should not be narrowed by chain. */\n    chainFilter?: boolean;\n    /** Token ids for a Hot section at the top of the unfiltered list, in rank order. */\n    hotTokenIds?: readonly string[];\n    selected?: SwapToken | null;\n    onSelect: (token: SwapToken) => void;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    /** Web only: focuses the search with a hardware pointer. Native never raises the keyboard on mount. */\n    autoFocus?: boolean;\n    /** `false` leaves out the search field, for a short list. Default `true`. */\n    search?: boolean;\n    /** Shows a token's balance when it is zero, where by default only a balance above zero is drawn. */\n    zeroBalances?: boolean;\n    /** A visible label over the search field, which then names it in place of the built-in label. */\n    searchLabel?: string;\n    /** A ref to the search input, for example to register it with a host bottom sheet's keyboard handling. */\n    searchRef?: React.Ref<React.ComponentRef<typeof TextInput>>;\n    /** Props for the search input, such as `onFocus`/`onBlur` for a host sheet or `returnKeyType`. The value and its change handler stay HIG's. */\n    searchInputProps?: PickerInputProps;\n    /** The list component the rows render through, such as a bottom sheet library's `FlatList`, so the list scrolls inside the host's sheet. Defaults to the `SwapHostContext` list, then React Native's `FlatList`. It receives the bounded `style` HIG sets, which the host's component may override. */\n    listComponent?: React.ComponentType<FlatListProps<SwapToken>>;\n}"
+      },
+      "PickerInputProps": {
+        "entry": "pickers",
+        "signature": "export type PickerInputProps = Omit<TextInputProps, 'value' | 'defaultValue' | 'onChangeText' | 'onChange'>;"
+      },
+      "SwapHostContext": {
+        "entry": "blocks",
+        "signature": "export declare const SwapHostContext: React.Context<{\n    listComponent?: React.ComponentType<FlatListProps<SwapToken>>;\n    animateHeight?: boolean;\n}>;"
       },
       "SwapKeypad": {
         "entry": "blocks",
@@ -1518,7 +1554,7 @@
       },
       "SwapToken": {
         "entry": "blocks",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n}"
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n    /** Picker rows: host text after the balance figure, such as ` HYPE`. */\n    unitsSuffix?: string;\n    /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */\n    detail?: string;\n}"
       },
       "SwapArtwork": {
         "entry": "blocks",
@@ -2040,17 +2076,25 @@
         "entry": "trade-history-list-block",
         "signature": "export interface TradeHistoryListRender {\n    trades: readonly TradeHistoryItem[];\n    /** Draws one row; the signature matches FlatList's `renderItem`. */\n    renderItem: (info: {\n        item: TradeHistoryItem;\n    }) => React.ReactElement;\n    keyExtractor: (trade: TradeHistoryItem) => string;\n    /** The 8dp gap between rows, for `ItemSeparatorComponent`. */\n    ItemSeparatorComponent: React.ComponentType;\n}"
       },
+      "WalletAddressCoreProps": {
+        "entry": "wallet-address-core",
+        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder or SVG), laid out in a `size` square. It is read as one image named by the built-in “QR code” label. */\n    qr: React.ReactNode;\n    /** QR edge in dp; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` shows no “Address copied” notice after a copy, for a host that confirms the copy itself. Default `true`. */\n    announce?: boolean;\n    testID?: string;\n}"
+      },
+      "WalletAddressFrame": {
+        "entry": "wallet-address-core",
+        "signature": "export declare function WalletAddressFrame({ address, kind, code, size, onCopy, announce, testID }: Omit<WalletAddressCoreProps, 'qr'> & {\n    code: React.ReactNode;\n}): React.JSX.Element;"
+      },
+      "WalletAddress": {
+        "entry": "wallet-address-core",
+        "signature": "export declare function WalletAddress({ qr, ...props }: WalletAddressCoreProps): React.JSX.Element;"
+      },
       "WalletAddressProps": {
         "entry": "wallet-address",
-        "signature": "export interface WalletAddressProps {\n    address: string;\n    kind?: AddressKind;\n    /** QR payload when it differs from the address, e.g. an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR. */\n    arena?: string;\n    /** QR edge in dp; default 196. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    testID?: string;\n}"
+        "signature": "export interface WalletAddressProps extends Omit<WalletAddressCoreProps, 'qr'> {\n    /** QR payload when it differs from the address, e.g. an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR. */\n    arena?: string;\n    /** The host's own QR drawing in place of the cuer-style code; `qrValue` and `arena` are then unused and nothing is encoded. Without `cuer` installed, import `WalletAddress` from `wallet-address-core` instead. */\n    qr?: React.ReactNode;\n}"
       },
       "qrGeometry": {
         "entry": "wallet-address",
         "signature": "export declare function qrGeometry(grid: readonly (readonly boolean[])[], withArena: boolean): {\n    edge: number;\n    finders: {\n        x: number;\n        y: number;\n    }[];\n    dots: string;\n    count: number;\n    arena: {\n        origin: number;\n        size: number;\n    } | null;\n};"
-      },
-      "WalletAddress": {
-        "entry": "wallet-address",
-        "signature": "export declare function WalletAddress({ address, kind, qrValue, arena, size, onCopy, testID }: WalletAddressProps): React.JSX.Element;"
       },
       "NumberTrend": {
         "entry": "animated-number-model",
@@ -2139,10 +2183,6 @@
       "swapParentView": {
         "entry": "swap-panel-block",
         "signature": "export declare const swapParentView: (view: SwapView) => SwapView;"
-      },
-      "SwapHostContext": {
-        "entry": "swap-panel-block",
-        "signature": "export declare const SwapHostContext: React.Context<{\n    listComponent?: React.ComponentType<FlatListProps<SwapToken>>;\n    animateHeight?: boolean;\n}>;"
       },
       "DownIcon": {
         "entry": "swap-parts",
