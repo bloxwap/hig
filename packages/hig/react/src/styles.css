@@ -910,6 +910,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-assets-section-header > h3 { margin:0;min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500;overflow-wrap:anywhere; }
 .hig-assets-status { flex:none;padding:2px 10px;font:600 .75rem/1.33 var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);letter-spacing:.08em; }
 .hig-assets-status[data-countdown] { color:var(--hig-muted);letter-spacing:.02em;font-variant-numeric:tabular-nums; }
+.hig-assets-status .hig-number { font-family:inherit; }
 .hig-assets-icon,.hig-assets-signal { width:44px;height:44px; }
 .hig-assets-signal { flex:none;display:grid;place-items:center;border-radius:9999px;background:var(--hig-fill); }
 .hig-assets-trailing { flex:none;display:flex;align-items:center; }

@@ -93,10 +93,10 @@ test('counts down to a legacy market reopening, reads it in words, then falls ba
  jest.useFakeTimers();jest.setSystemTime(new Date('2026-11-16T12:00:00Z'));
  const opensAt=Date.now()+((2*60+14)*60+33)*1000;
  const view=mount({categories:[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]});
- expect(text(host(view,'assets-status-commodities'))).toBe('Opens in 2:14:33');
+ expect(text(host(view,'assets-countdown-commodities'))).toBe('Opens in 2:14:33');
  expect(view.findAll(n=>n.props.accessibilityRole==='header'&&n.props.accessibilityLabel==='Commodities, Opens in 2 hours 14 minutes').length).toBeGreaterThan(0);
  act(()=>{jest.advanceTimersByTime(1000);});
- expect(text(host(root.root,'assets-status-commodities'))).toBe('Opens in 2:14:32');
+ expect(text(host(root.root,'assets-countdown-commodities'))).toBe('Opens in 2:14:32');
  act(()=>{jest.setSystemTime(opensAt+1);jest.advanceTimersByTime(1000);});
  expect(text(host(root.root,'assets-status-commodities'))).toBe('OPEN');
  jest.useRealTimers();
