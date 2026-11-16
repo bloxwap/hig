@@ -80,3 +80,26 @@ test('counts down to a legacy market reopening, reads it in words, then falls ba
  expect(text(host(root.root,'assets-status-commodities'))).toBe('OPEN');
  jest.useRealTimers();
 });
+
+test('rows are one line each, headingId names the title, and stickyHeader pins the header in the block\'s own scroll view',()=>{
+ const {ScrollView}=require('react-native');
+ let view=mount({assets:[{id:'LONG',name:'A market with a name far too long for one line',symbol:'LONGSYMBOL',detail:'40×',category:'crypto'}],headingId:'assets-title'});
+ const lines=host(view,'assets-LONG').findAll(node=>typeof node.type==='string'&&node.props.numberOfLines!==undefined);
+ expect(lines.map(node=>[node.props.numberOfLines,text(node)])).toEqual([[1,'A market with a name far too long for one line'],[1,'LONGSYMBOL · 40×']]);
+ expect(view.findAll(node=>node.props.nativeID==='assets-title'&&node.props.accessibilityRole==='header').length).toBeGreaterThan(0);
+ // Without stickyHeader the host owns the scrolling.
+ // (The category capsules' own horizontal scroller aside.)
+ const vertical=tree=>tree.findAllByType(ScrollView).filter(node=>!node.props.horizontal);
+ expect(vertical(view)).toHaveLength(0);expect(has(view,'assets-sticky-header')).toBe(false);
+ view=mount({stickyHeader:true,stickyHeaderBackground:'#123456'});
+ expect(vertical(view)).toHaveLength(1);const scroll=vertical(view)[0];expect(scroll.props.stickyHeaderIndices).toEqual([0]);
+ expect(flat(host(view,'assets-sticky-header'))).toMatchObject({paddingTop:16,paddingHorizontal:16,backgroundColor:'transparent'});
+ expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-header').length).toBeGreaterThan(0);
+ act(()=>scroll.props.onScroll({nativeEvent:{contentOffset:{y:40}}}));expect(flat(host(view,'assets-sticky-header')).backgroundColor).toBe('#123456');
+ // The search and the list scroll under the pinned header.
+ expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-search')).toHaveLength(0);expect(has(view,'assets-list')).toBe(true);
+ // A host scroll view, such as a sheet library's, takes ScrollView's place.
+ const Sheet=props=>h(ScrollView,{...props,testID:'sheet-scroll'});view=mount({stickyHeader:true,scrollComponent:Sheet});expect(has(view,'sheet-scroll')).toBe(true);
+ // Without a test ID the pinned header is `assets-sticky-header`.
+ act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{assets,categories,onSelect:()=>{},stickyHeader:true})));});expect(has(root.root,'assets-sticky-header')).toBe(true);
+});

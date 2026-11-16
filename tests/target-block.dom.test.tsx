@@ -34,6 +34,12 @@ describe('targetFormat',()=>{
   expect(text(0.05,targetFormat('percent'))).toBe('+5%');expect(text(-0.025,targetFormat('percent'))).toBe('-2.5%');
   expect(text(65024.48,targetFormat('price'))).toBe('$65,024.48');expect(text(0.5123,targetFormat('price',{style:'currency',currency:'USD',maximumFractionDigits:4}))).toBe('$0.5123');
  });
+ it('shortens a whole price preset whatever fraction digits the host fixes, as native does',()=>{
+  const text=(value:number,options:Intl.NumberFormatOptions)=>new Intl.NumberFormat('en-US',options).format(value);
+  const fixed={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2} as const;
+  expect(text(63000,targetFormat('price',fixed,63000))).toBe('$63,000');expect(text(63000,targetFormat('price',undefined,63000))).toBe('$63,000');
+  expect(text(62500.5,targetFormat('price',fixed,62500.5))).toBe('$62,500.50');expect(text(63000,targetFormat('price',fixed))).toBe('$63,000.00');
+ });
 });
 describe('TargetBlock',()=>{
  it('shows the heading, the target as the headline figure, and the position and order type on the price card',async()=>{

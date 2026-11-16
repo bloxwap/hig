@@ -6,6 +6,7 @@ import {Text} from './surface.js';
 import {SearchInput} from './field.js';
 import {Filter,SegmentedControl} from './radio-group.js';
 import {ScreenHeader,HeaderClose} from './screen-header.js';
+import {StickyHeaderLayout} from './sticky-header.js';
 import {EyeIcon,TrendIcon} from './icons.js';
 /** A market's live heat signal: `watch` while it is being watched, `up` or `down` once it trends. */
 export type AssetSignal='watch'|'up'|'down';
@@ -64,6 +65,14 @@ export interface AssetsBlockProps {
  filterScrollComponent?:React.ComponentType<ScrollViewProps>;
  /** Shows the loading text in place of the empty text while the list is empty. */
  loading?:boolean;
+ /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it (test ID `<testID>-sticky-header`, `assets-sticky-header` without one). Place it in a bounded container, such as a sheet body. */
+ stickyHeader?:boolean;
+ /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
+ /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android), as `GestureSheet labelledBy` does. */
+ headingId?:string;
  testID?:string;
 }
 const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
@@ -89,10 +98,10 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
 const disc=44;
 /**
  * Choose a market as one screen: a header, a search field, category capsules, the All / Positions / Trend views, then the
- * markets in sections by category, each with its icon, name, symbol and detail, and its signal disc. The host owns the data
- * and the scrolling.
+ * markets in sections by category, each with its icon, name, symbol and detail on one line each, and its signal disc. The host
+ * owns the data and the scrolling, unless `stickyHeader` makes the block its own scroll view.
  */
-export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,testID}:AssetsBlockProps){
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:AssetsBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
  const now=useNow(categories.some(entry=>{const at=opensAtTime(entry);return at!=null&&at>Date.now();}));
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
@@ -112,8 +121,8 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   return <Pressable key={asset.id} testID={id(asset.id)} accessibilityRole='button' accessibilityLabel={[asset.name,second,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ')} accessibilityState={{selected,disabled:!!asset.disabled}} disabled={asset.disabled} onPress={()=>onSelect(asset)} style={style}>
    <View {...hidden}>{typeof asset.icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:asset.icon}} style={round as object}/>:<View style={[round,{backgroundColor:fills.raised}]}>{asset.icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{asset.symbol.slice(0,4)}</Text>}</View>}</View>
    <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
-    <Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{asset.name}</Text>
-    <Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{second}</Text>
+    <Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{asset.name}</Text>
+    <Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{second}</Text>
    </View>
    {asset.signal===undefined?null:<View {...hidden} testID={id(`${asset.id}-signal`)} style={[round,{backgroundColor:asset.signal?`${signalColor[asset.signal]}26`:fills.well}]}>
     {asset.signal==='watch'?<EyeIcon color={colors.warning}/>:asset.signal?<TrendIcon color={signalColor[asset.signal]} direction={asset.signal}/>:null}
@@ -121,8 +130,8 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   </Pressable>;
  };
  const showFilter=(categoryFilter??true)&&categories.length>1;
- return <View testID={testID} style={{direction,padding:16,gap:16}}>
-  <ScreenHeader title={title??t.assets} testID={id('header')} action={onClose?<HeaderClose onClose={onClose} label={t.close} testID={id('close')}/>:undefined}/>
+ const header=<ScreenHeader title={title??t.assets} testID={id('header')} headingId={headingId} action={onClose?<HeaderClose onClose={onClose} label={t.close} testID={id('close')}/>:undefined}/>;
+ const body=<>
   <SearchInput testID={id('search')} accessibilityLabel={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChangeText={setQuery} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>
   {showFilter?<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory} scrollComponent={filterScrollComponent}/>:null}
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
@@ -136,5 +145,11 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
     <View style={{gap:4}}>{section.assets.map(row)}</View>
    </View>;})}
   </View>}
+ </>;
+ // The sticky layout puts the header and the body in separate views, so the body's first gap is its top padding.
+ if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID={id('sticky-header')??'assets-sticky-header'} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{direction,padding:16,gap:16}}>
+  {header}
+  {body}
  </View>;
 }

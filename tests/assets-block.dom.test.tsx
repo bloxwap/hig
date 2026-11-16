@@ -89,4 +89,14 @@ describe('AssetsBlock opening countdown',()=>{
   const html=renderToString(<HIGProvider><AssetsBlock assets={assets} categories={[{id:'crypto',label:'Crypto',opensAt:Date.now()+60000}]} onSelect={()=>{}}/></HIGProvider>);
   expect(html).not.toContain('Opens in');
  });
+ it('names its heading with headingId, pins the header with stickyHeader, and keeps each row one line',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const {container}=mount({headingId:'assets-title',stickyHeader:true});
+  expect(screen.getByRole('heading',{level:2,name:'Assets'}).id).toBe('assets-title');
+  expect(container.querySelector('.hig-screen-header')?.hasAttribute('data-sticky')).toBe(true);
+  cleanup();const plain=mount();expect(plain.container.querySelector('.hig-screen-header')?.hasAttribute('data-sticky')).toBe(false);
+  // The name and the symbol line truncate rather than wrap.
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');
+  expect(css).toContain('.hig-assets-text > * { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }');
+ });
 });

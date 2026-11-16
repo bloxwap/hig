@@ -61,6 +61,10 @@ export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  categoryFilter?:boolean;
  /** Shows the loading text in place of the empty text while the list is empty. */
  loading?:boolean;
+ /** Pins the header (title and Close) to the top of the nearest scroller while the rest scrolls, as `ScreenHeader stickyHeader` does: transparent at rest, filled once content scrolls under it. */
+ stickyHeader?:boolean;
+ /** `id` of the heading, so a dialog or sheet around the block can name itself by it (`aria-labelledby`, `GestureSheet labelledBy`). */
+ headingId?:string;
 }
 const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 /** The markets a view, category and query leave, grouped by category in the host's order. Empty sections are dropped. */
@@ -91,7 +95,7 @@ const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+categor
  * Choose a market as one screen: a header, a search field, category capsules, the All / Positions / Trend views, then the
  * markets in sections by category, each with its icon, name, symbol and detail, and its signal disc. The host owns the data.
  */
-export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,className,...rest}:AssetsBlockProps){
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,stickyHeader,headingId,className,...rest}:AssetsBlockProps){
  const t=useMessages();const {locale}=useHIG();const id=useId();
  const now=useNow(categories.some(entry=>{const at=opensAtTime(entry);return at!=null&&at>Date.now();}));
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
@@ -118,7 +122,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   return <div className='hig-assets-section-header'><h3 id={`${id}-${entry.id}`} aria-label={badge?`${entry.label}, ${badge.spoken}`:undefined}>{entry.label}</h3>{badge&&<Badge aria-hidden='true' className='hig-assets-status' data-countdown={countdown?'':undefined} tone={badge.tone}>{badge.visible}</Badge>}</div>;
  };
  return <section {...rest} className={`hig-assets-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={heading} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
+  <ScreenHeader title={heading} headingId={headingId} stickyHeader={stickyHeader} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
   <SearchInput aria-label={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
   {showFilter&&<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory}/>}
   <SegmentedControl hideLabel label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>

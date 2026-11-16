@@ -100,11 +100,16 @@ const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
 const allUnits:readonly TargetUnit[]=['dollar','price','percent'];
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const known=(value:number|null|undefined):value is number=>value!=null&&Number.isFinite(value);
-/** Number format of a target in a unit. Dollars and percents carry their sign; `short` drops the cents of a whole dollar amount, for a preset. */
+/**
+ * Number format of a target in a unit. Dollars and percents carry their sign. `short` is a preset's value: a whole dollar amount
+ * or a whole price drops its fraction digits (`+$10`, `$63,000`), whatever fraction digits `priceOptions` fix, so a preset reads
+ * the same on web and native; a price formatted by significant digits keeps `priceOptions`.
+ */
 export function targetFormat(unit:TargetUnit,priceOptions:Intl.NumberFormatOptions=usd,short?:number):Intl.NumberFormatOptions{
- if(unit==='price')return priceOptions;
+ const whole=short!==undefined&&Number.isInteger(short);
+ if(unit==='price')return whole&&priceOptions.minimumSignificantDigits===undefined&&priceOptions.maximumSignificantDigits===undefined?{...priceOptions,minimumFractionDigits:0,maximumFractionDigits:0}:priceOptions;
  if(unit==='percent')return {style:'percent',maximumFractionDigits:2,signDisplay:'exceptZero'};
- return {...usd,signDisplay:'exceptZero',...(short!==undefined&&Number.isInteger(short)?{maximumFractionDigits:0}:null)};
+ return {...usd,signDisplay:'exceptZero',...(whole?{maximumFractionDigits:0}:null)};
 }
 /**
  * Where each known price sits on the bar, as a fraction of its width from the low-price edge, the prices in price order, and

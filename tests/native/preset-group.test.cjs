@@ -17,7 +17,7 @@ const press=(node)=>act(()=>{node.props.onPress({stopPropagation(){},isDefaultPr
 
 it('draws one Button per option in the selected intent, reading selected, with per-option test IDs',()=>{
  const tree=mount({value:25,testID:'size',label:'Size'});
- expect(chips(tree).map(chip=>[chip.props.children,chip.props.intent,chip.props.accessibilityState.selected,chip.props.disabled])).toEqual([['$10','secondary',false,undefined],['$25','primary',true,undefined],['$50','secondary',false,undefined],['$100','secondary',false,undefined],['$1,000','secondary',false,true],['Max','secondary',false,undefined]]);
+ expect(chips(tree).map(chip=>[chip.props.accessibilityLabel,chip.props.intent,chip.props.accessibilityState.selected,chip.props.disabled])).toEqual([['$10','secondary',false,undefined],['$25','primary',true,undefined],['$50','secondary',false,undefined],['$100','secondary',false,undefined],['$1,000','secondary',false,true],['Max','secondary',false,undefined]]);
  // An option's own test ID wins; otherwise `<group>-<value>`.
  expect(chips(tree).map(chip=>chip.props.testID)).toEqual(['size-10','size-25','size-50','size-100','size-1000','size-max']);
  // React Native has no named group, so the group's name is each chip's hint, and the container is not read.
@@ -80,6 +80,24 @@ it('keeps its own selection when uncontrolled and plays selection feedback, unle
  expect(emit).toHaveBeenCalledTimes(1);expect(emit.mock.calls[0][0]).toMatchObject({intent:'selection',origin:'native'});
  act(()=>root.unmount());root=null;emit.mockClear();
  tree=mount({defaultValue:10,suppressFeedback:true},{feedback:{emit}});press(chips(tree)[3]);expect(chips(tree)[3].props.accessibilityState.selected).toBe(true);expect(emit).not.toHaveBeenCalled();
+});
+
+// On an iPhone the stop loss price presets wrapped `$63,000.00` onto two lines; a chip label is now one line that shrinks to fit.
+it('draws each label on one line that shrinks to fit its column instead of wrapping, in Button\'s label colours',()=>{
+ const prices=[{value:63000,label:'$63,000'},{value:62000,label:'$62,000'},{value:61000,label:'$61,000',disabled:true},{value:60000,label:'$60,000'}];
+ const tree=mount({options:prices,value:62000,testID:'price',selectedIntent:'destructive'});
+ const labels=prices.map(option=>host(tree,`price-${option.value}-label`));
+ expect(labels.map(label=>label.children.join(''))).toEqual(['$63,000','$62,000','$61,000','$60,000']);
+ for(const label of labels){
+  expect(label.props).toMatchObject({numberOfLines:1,adjustsFontSizeToFit:true,minimumFontScale:0.75});
+  expect(flat(label)).toMatchObject({fontSize:16,fontWeight:'600',textAlign:'center',alignSelf:'stretch'});
+ }
+ // The chip is still read by its label, and the colours follow Button: text, the selected intent's dark label, muted when dimmed.
+ expect(host(tree,'price-63000').props.accessibilityLabel).toBe('$63,000');
+ const [plain,selected,dimmed]=labels.map(label=>flat(label).color);
+ expect(new Set([plain,selected,dimmed]).size).toBe(3);
+ // An option's own test ID names its label too.
+ expect(host(mount({value:null,testID:'size'}),'size-10-label').children.join('')).toBe('$10');
 });
 
 it('takes the selected intent the host gives it',()=>{

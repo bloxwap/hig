@@ -17,7 +17,8 @@ import type {SwapToken} from '../packages/hig/react/src/blocks/swap-panel-block'
 beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventListener:vi.fn(),removeEventListener:vi.fn()})));});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks();});
 const css=readFileSync('packages/hig/react/src/styles.css','utf8');
-const rule=(selector:string)=>css.split('\n').find(line=>line.startsWith(`${selector} {`))??'';
+// The rule whose selector list names the selector (rules shared by several components list them all).
+const rule=(selector:string)=>css.split('\n').find(line=>line.startsWith(`${selector} {`)||(line.includes(' { ')&&line.slice(0,line.indexOf(' { ')).split(',').includes(selector)))??'';
 const rect=(top:number)=>({top,bottom:top+44,left:0,right:0,width:0,height:44,x:0,y:top,toJSON:()=>({})}) as DOMRect;
 
 describe('MarketRow in action mode is one line (defect fix)',()=>{

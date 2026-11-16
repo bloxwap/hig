@@ -55,6 +55,6 @@ describe('LanguageBlock',()=>{
   await userEvent.type(screen.getByRole('searchbox'),'fran{Enter}');expect(select).not.toHaveBeenCalled();
   view.rerender(<LanguageBlock languages={languages} value='en' onSelect={select}/>);expect(document.querySelector('.hig-settings-description')).toBeNull();
   expect(screen.getByRole('radiogroup').hasAttribute('aria-disabled')).toBe(false);
-  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('.hig-language-row:disabled { opacity:.5;cursor:not-allowed; }');
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('.hig-language-row:disabled,.hig-assets-row:disabled { opacity:.5;cursor:not-allowed; }');
  });
 });

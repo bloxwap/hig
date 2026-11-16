@@ -6,7 +6,7 @@
  */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
-const {Text:RNText}=require('react-native');
+const {Text:RNText,StyleSheet}=require('react-native');
 const {formatSignedNumber}=require('../../packages/hig/contracts/dist/index.js');
 const {formatNumber}=require('../../packages/hig/native/src/number-format');
 const {createNumberReelModel,formatNumberReadout}=require('../../packages/hig/native/src/animated-number-model');
@@ -171,6 +171,22 @@ describe('blocks and readouts on the iOS stub',()=>{
   act(()=>{for(const probe of probes)probe.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:10,height:20}}});});
   const drawn=view.findAllByType(RNText).filter(node=>node.props.accessible===false&&typeof node.props.children==='string').map(node=>node.props.children);
   expect(drawn).toContain('+');expect(drawn).toContain('%');
+ });
+ it.each([['the iOS stub',()=>stubIntl()],['a full Intl',()=>undefined]])('the reels spell every character of the composed reading, so the row that sizes the readout counts the sign (%s)',(_name,setup)=>{
+  setup();
+  for(const [value,expected] of [[1,'+100.00%'],[0.1234,'+12.34%'],[-0.5,'-50.00%'],[0,'0.00%']]){
+   const model=createNumberReelModel(value,'en-US',pnlShare,undefined,'ltr');
+   expect(formatNumberReadout(value,'en-US',pnlShare).core).toBe(expected);expect(model.tokens.map(token=>token.value).join('')).toBe(expected);
+  }
+  // In a sentence the readout draws its reels in the flow, ahead of the template's words.
+  const view=mount(h(TradeHistoryDetailBlock,{labels:{title:'Trade',netPnl:'Net PnL',onMargin:percent=>`${percent} on margin`,long:'Long',short:'Short'},name:'Amazon',side:'long',leverage:20,pnl:12.5,pnlPercent:1,details:[]}));
+  const sentence=view.find(node=>node.props.testID==='trade-pnl-percent'&&typeof node.type==='string');
+  const probes=sentence.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function');expect(probes).toHaveLength(10);
+  act(()=>{for(const probe of probes)probe.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:9,height:21}}});});
+  const row=sentence.find(node=>typeof node.type==='string'&&node.props.accessibilityElementsHidden===true&&node.props.style?.direction==='ltr');
+  expect(row.props.style.position).toBeUndefined();
+  const glyphs=row.findAll(node=>typeof node.type==='string'&&node.children.every(child=>typeof child==='string')&&StyleSheet.flatten(node.props.style)?.height===undefined).map(node=>node.children.join(''));
+  expect(glyphs.join('')).toBe('+.%');expect(strings(view)).toContain('+100.00% on margin');
  });
  it('trade detail, history and manage position draw +$ and +% as Android does',()=>{
   stubIntl();

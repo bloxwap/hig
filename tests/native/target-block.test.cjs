@@ -84,15 +84,15 @@ it('draws the quick choices in the unit format, selects the one equal to the tar
  expect(has(mount(),'target-presets')).toBe(false);expect(has(mount(),'target-custom')).toBe(false);
  const change=jest.fn(),custom=jest.fn();let view=mount({presets:[1,2,5,10],onValueChange:change,onCustom:custom});
  const choices=()=>view.findAllByType(Button).filter(node=>String(node.props.testID).startsWith('target-preset-'));
- expect(choices().map(node=>[node.props.children,node.props.intent,node.props.accessibilityState.selected])).toEqual([['+$1','secondary',false],['+$2','primary',true],['+$5','secondary',false],['+$10','secondary',false]]);
+ expect(choices().map(node=>[node.props.accessibilityLabel,node.props.intent,node.props.accessibilityState.selected])).toEqual([['+$1','secondary',false],['+$2','primary',true],['+$5','secondary',false],['+$10','secondary',false]]);
  expect(flat(host(view,'target-presets'))).toMatchObject({flexDirection:'row',gap:8,marginTop:16});
  // The quick choices are named by the title unless the host names them; native reads the name as each chip's hint.
  expect(choices().map(node=>node.props.accessibilityHint)).toEqual(Array(4).fill('Take Profit'));
  act(()=>{choices()[2].props.onPress({});});expect(change).toHaveBeenCalledWith(5);
  const row=host(view,'target-custom');expect(row.props.accessibilityRole).toBe('button');expect(row.findAll(node=>node.type==='Text'&&node.props.children==='Custom')).toHaveLength(1);
  act(()=>{all(view,'target-custom').find(node=>'onPress' in node.props).props.onPress({});});expect(custom).toHaveBeenCalledTimes(1);
- view=mount({kind:'stop-loss',value:-0.5,presets:[-0.5,-1,-2,-5]});expect(choices().map(node=>[node.props.children,node.props.intent])).toEqual([['-$0.50','destructive'],['-$1','secondary'],['-$2','secondary'],['-$5','secondary']]);
- view=mount({unit:'percent',value:0.1,presets:[0.05,0.1,0.25]});expect(choices().map(node=>node.props.children)).toEqual(['+5%','+10%','+25%']);
+ view=mount({kind:'stop-loss',value:-0.5,presets:[-0.5,-1,-2,-5]});expect(choices().map(node=>[node.props.accessibilityLabel,node.props.intent])).toEqual([['-$0.50','destructive'],['-$1','secondary'],['-$2','secondary'],['-$5','secondary']]);
+ view=mount({unit:'percent',value:0.1,presets:[0.05,0.1,0.25]});expect(choices().map(node=>node.props.accessibilityLabel)).toEqual(['+5%','+10%','+25%']);
  view=mount({labels:{...labels,presets:'Quick targets'},presets:[1,2]});expect(choices().map(node=>node.props.accessibilityHint)).toEqual(['Quick targets','Quick targets']);
 });
 
@@ -148,6 +148,21 @@ it('dims a preset or a unit the host cannot offer now',()=>{
  act(()=>{button(view,'target-preset-1').props.onPress({});});expect(change).toHaveBeenCalledWith(1);
 });
 
+// On an iPhone the stop loss price presets drew `$63,000.00` over two lines where web drew `$63,000`: a whole price preset
+// now drops its fraction digits whatever `priceOptions` fix, and its label is one line that shrinks to fit.
+it('draws whole price presets without fraction digits, on one line, as web does',()=>{
+ const priceOptions={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2};
+ const view=mount({kind:'stop-loss',unit:'price',value:63000,priceOptions,presets:[63000,62500.5,61000,60000]});
+ const choices=view.findAllByType(Button).filter(node=>String(node.props.testID).startsWith('target-preset-'));
+ expect(choices.map(node=>node.props.accessibilityLabel)).toEqual(['$63,000','$62,500.50','$61,000','$60,000']);
+ const label=host(view,'target-preset-63000-label');expect(label.children.join('')).toBe('$63,000');
+ expect(label.props).toMatchObject({numberOfLines:1,adjustsFontSizeToFit:true});
+ // The headline keeps the host's fraction digits; only the quick choices are short.
+ expect(targetFormat('price',priceOptions,63000)).toEqual({...priceOptions,minimumFractionDigits:0,maximumFractionDigits:0});
+ expect(targetFormat('price',priceOptions,62500.5)).toBe(priceOptions);expect(targetFormat('price',priceOptions)).toBe(priceOptions);
+ const significant={style:'currency',currency:'USD',maximumSignificantDigits:5};expect(targetFormat('price',significant,63000)).toBe(significant);
+});
+
 it('shows the custom value on the Custom row, which then reads as selected in place of any preset',()=>{
  const custom=jest.fn();
  let view=mount({value:2,presets:[1,2],onCustom:custom});
@@ -162,7 +177,7 @@ it('shows the custom value on the Custom row, which then reads as selected in pl
 
 it('formats dollar presets and the custom value with the provider money presentation',()=>{
  const view=mount({value:2,presets:[1],onCustom:()=>{},customValue:2.5},{locale:'fr-FR',numberFormat:{currencyDisplay:'narrowSymbol'}});
- expect(text(host(view,'target-custom-value'))).toMatch(/^\+2,50\s\$$/);expect(button(view,'target-preset-1').props.children).toMatch(/^\+1\s\$$/);
+ expect(text(host(view,'target-custom-value'))).toMatch(/^\+2,50\s\$$/);expect(button(view,'target-preset-1').props.accessibilityLabel).toMatch(/^\+1\s\$$/);
 });
 
 it('keeps the info button beside a host header control with headerActionBesideInfo, and names the heading',()=>{
