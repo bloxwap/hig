@@ -5,6 +5,8 @@ import {Text, Heading} from '@bloxwap/hig/native/surface';
 import {Input, TextArea} from '@bloxwap/hig/native/field';
 import {Dialog} from '@bloxwap/hig/native/overlay';
 import {GestureSheet} from '@bloxwap/hig/native/gesture-sheet';
+import {ListRow} from '@bloxwap/hig/native/list-group';
+import {SwitchRow} from '@bloxwap/hig/native/switch';
 
 // Compiled against independently installed tarballs and each supported RN minor.
 // This catches declaration emit that accidentally freezes RN 0.81's class refs.
@@ -23,6 +25,8 @@ export function NativeConsumerRefs() {
     <Heading ref={heading}>Heading</Heading>
     <Input ref={input} />
     <TextArea ref={input} />
+    <ListRow ref={trigger} label="Signals" android_disableSound onSelect={() => {}} />
+    <SwitchRow ref={trigger} label="Live Mode"><Text>Live Mode</Text></SwitchRow>
     <Dialog open title="Account" onOpenChange={() => {}} initialFocusRef={input} titleRef={heading} returnFocusRef={trigger}><Text>Dialog</Text></Dialog>
     <GestureSheet presentation="modal" snapPoints={['50%']} open title="Account" onOpenChange={() => {}} titleRef={heading} returnFocusRef={trigger}><Text>Sheet</Text></GestureSheet>
   </>;

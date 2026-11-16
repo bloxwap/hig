@@ -41,7 +41,7 @@ Readout `prefix` and `suffix` are host-localized display strings, not parsers or
 
 ## Currency, signed PnL and compact notation
 
-USD uses ISO `currency:'USD'`. Intl places the symbol (`$1,234.50` vs `1.234,50 $`). USDC is a ticker, not a reliable ISO 4217 code: use `formatTicker(amount, 'USDC', locale)`, which formats the number without `style:'currency'` and appends `USDC` after a no-break space. Never show USDC as `$` or `USD`.
+USD uses ISO `currency:'USD'`. Intl places the symbol (`$1,234.50` vs `1.234,50 $`). Intl's default `symbol` display can read `$US` or `US$` outside `en-US`; a host that writes dollars as `$` sets `HIGProvider numberFormat={{currencyDisplay:'narrowSymbol'}}` (and `useGrouping`, for example `'always'` for Spanish four-digit amounts), and every currency format HIG draws follows it, with a format's own options still winning ([blocks](../components/blocks.md#shared-host-hooks)). USDC is a ticker, not a reliable ISO 4217 code: use `formatTicker(amount, 'USDC', locale)`, which formats the number without `style:'currency'` and appends `USDC` after a no-break space. Never show USDC as `$` or `USD`.
 
 Signed PnL always includes a sign except at zero (`+$12.34`, `-$12.34`). Color is not a substitute for the sign. Don’t use accounting parentheses.
 
@@ -221,11 +221,13 @@ Rules:
 | `accountBalance` | Total balance | AccountBlock: accessible label of the total balance | — |
 | `showAddress` | Show account address | AccountBlock: accessible name of the header button that shows the account address | — |
 | `editName` | Edit name | ProfileBlock: accessible name of the control that edits the profile name | — |
+| `changeProfilePicture` | Change profile picture | ProfileBlock: accessible name of the avatar button when the host gives neither `avatarLabel` nor `name` | — |
 | `language` | Language | LanguageBlock: default heading | — |
 | `searchLanguages` | Search languages | LanguageBlock: search placeholder and accessible name | — |
 | `receive` | Receive | TokenActionBlock: built-in label of the `receive` action | — |
 | `stake` | Stake | TokenActionBlock: built-in label of the `stake` action | — |
 | `unstake` | Unstake | TokenActionBlock: built-in label of the `unstake` action | — |
+| `clearSearch` | Clear search | SearchInput: accessible name of the clear button when the host gives no `clearLabel` | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

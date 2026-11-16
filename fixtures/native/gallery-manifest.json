@@ -29,7 +29,8 @@
     {
       "name": "Text",
       "states": [
-        "default"
+        "default",
+        "muted-caption"
       ],
       "support": "renderer"
     },
@@ -111,7 +112,8 @@
       "name": "SearchInput",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "clear"
       ],
       "support": "renderer"
     },
@@ -143,7 +145,8 @@
       "name": "SegmentedControl",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "hidden-label"
       ],
       "support": "renderer"
     },
@@ -268,7 +271,8 @@
       "name": "ListGroup",
       "states": [
         "default",
-        "untitled"
+        "untitled",
+        "heading-slots"
       ],
       "support": "renderer"
     },
@@ -277,7 +281,11 @@
       "states": [
         "default",
         "disabled",
-        "static"
+        "static",
+        "busy",
+        "details",
+        "choice",
+        "switch"
       ],
       "support": "renderer"
     },
@@ -429,7 +437,8 @@
     {
       "name": "WalletAddress",
       "states": [
-        "default"
+        "default",
+        "host-qr"
       ],
       "support": "renderer"
     },
@@ -438,7 +447,8 @@
       "states": [
         "default",
         "remaining",
-        "no-legend"
+        "no-legend",
+        "live-detail"
       ],
       "support": "renderer"
     },
@@ -457,7 +467,9 @@
       "name": "AssetBalanceRow",
       "states": [
         "default",
-        "value-only"
+        "value-only",
+        "units-headline",
+        "picker"
       ],
       "support": "renderer"
     },
@@ -493,7 +505,8 @@
       "name": "MarketRow",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "picker"
       ],
       "support": "renderer"
     },
@@ -501,7 +514,10 @@
       "name": "AccountBlock",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "local-money",
+        "sections",
+        "ledgers"
       ],
       "support": "renderer"
     },
@@ -510,7 +526,9 @@
       "states": [
         "default",
         "profit",
-        "at-risk"
+        "at-risk",
+        "triggers",
+        "symbol"
       ],
       "support": "renderer"
     },
@@ -518,7 +536,8 @@
       "name": "TargetBlock",
       "states": [
         "default",
-        "stop-loss"
+        "stop-loss",
+        "custom"
       ],
       "support": "renderer"
     },
@@ -526,7 +545,8 @@
       "name": "PositionBlock",
       "states": [
         "default",
-        "paper-trade"
+        "paper-trade",
+        "farming"
       ],
       "support": "renderer"
     },
@@ -534,7 +554,18 @@
       "name": "ProfileBlock",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "signed-out",
+        "host-slots"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ScreenHeader",
+      "states": [
+        "default",
+        "minimal",
+        "unavailable"
       ],
       "support": "renderer"
     },
@@ -542,7 +573,10 @@
       "name": "RewardBlock",
       "states": [
         "default",
-        "sweepstakes"
+        "sweepstakes",
+        "loading",
+        "paged",
+        "no-header"
       ],
       "support": "renderer"
     },
@@ -550,14 +584,16 @@
       "name": "SoundHapticsBlock",
       "states": [
         "default",
-        "interactive"
+        "interactive",
+        "devices"
       ],
       "support": "renderer"
     },
     {
       "name": "SignalsBlock",
       "states": [
-        "default"
+        "default",
+        "locked"
       ],
       "support": "renderer"
     },
@@ -565,7 +601,8 @@
       "name": "NotificationsBlock",
       "states": [
         "default",
-        "error"
+        "error",
+        "groups"
       ],
       "support": "renderer"
     },
@@ -574,7 +611,9 @@
       "states": [
         "default",
         "empty",
-        "static"
+        "static",
+        "loading",
+        "tagged"
       ],
       "support": "renderer"
     },
@@ -582,7 +621,8 @@
       "name": "TradeHistoryDetailBlock",
       "states": [
         "default",
-        "loss"
+        "loss",
+        "demo"
       ],
       "support": "renderer"
     },
@@ -590,7 +630,9 @@
       "name": "TokenActionBlock",
       "states": [
         "default",
-        "single"
+        "single",
+        "actions-only",
+        "units"
       ],
       "support": "renderer"
     },
@@ -598,7 +640,8 @@
       "name": "LanguageBlock",
       "states": [
         "default",
-        "no-search"
+        "no-search",
+        "disabled"
       ],
       "support": "renderer"
     },
@@ -634,7 +677,8 @@
         "connected",
         "no-logout",
         "whitelist",
-        "empty"
+        "empty",
+        "short-list"
       ],
       "support": "renderer"
     },
@@ -643,7 +687,8 @@
       "states": [
         "default",
         "tokens",
-        "no-chain"
+        "no-chain",
+        "labelled"
       ],
       "support": "renderer"
     },

@@ -2,7 +2,7 @@
 import React,{useEffect,useId,useRef,useState} from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,usePresentNumber,useHIG,useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
 import {SegmentedControl} from '../selection.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
@@ -46,16 +46,18 @@ export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  /** Price the order triggers at. Defaults to `value` when the unit is `price`; otherwise unknown until the host supplies it. */
  trigger?:number|null;
  unit:TargetUnit;
- /** Units offered, in order. Defaults to all three; one unit hides the control. */
- units?:readonly TargetUnit[];
+ /** Units offered, in order. Defaults to all three; one unit hides the control. `{unit, disabled}` shows a unit that cannot be chosen now, dimmed. */
+ units?:readonly (TargetUnit|TargetUnitOption)[];
  onUnitChange?:(unit:TargetUnit)=>void;
  /** The target in the current unit: signed dollars (2, -0.5), a price, or a signed fraction (0.05 reads +5%). `null` reads as unknown and disables the confirming action. */
  value:number|null;
  onValueChange?:(value:number)=>void;
- /** Quick choices in the current unit. The one equal to `value` is shown selected. */
- presets?:readonly number[];
+ /** Quick choices in the current unit. The one equal to `value` is shown selected. `{value, disabled}` shows a choice that cannot be taken now, dimmed. */
+ presets?:readonly (number|TargetPreset)[];
  /** Shows the Custom row; the host opens its own entry. */
  onCustom?:()=>void;
+ /** The value the host's own entry set, in the current unit. The Custom row then shows it on its trailing edge and reads as selected, and no quick choice does. Has no effect without `onCustom`; null keeps the row a toggle that reads as not selected. */
+ customValue?:number|null;
  /** Format of prices. Defaults to US dollars. */
  priceOptions?:Intl.NumberFormatOptions;
  /** Set true to draw the prices inside a card: a surface fill, padding and radius. By default the title row, bar and readouts sit directly on the screen. */
@@ -67,9 +69,23 @@ export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  /** Shows Cancel beside the confirming action. */
  onCancel?:()=>void;
  onBack?:()=>void;
- /** A control on the trailing edge of the header, usually an `IconButton`. It takes the place of the info button, and the note is then always shown. */
+ /** A control on the trailing edge of the header, usually an `IconButton`. It takes the place of the info button, and the note is then always shown, unless `headerActionBesideInfo` is set. */
  headerAction?:React.ReactNode;
+ /** Set true to keep the info button when `headerAction` is given: the info button comes first and `headerAction` sits on the trailing edge. */
+ headerActionBesideInfo?:boolean;
+ /** `id` of the heading, so a dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
+ /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
+ stickyHeader?:boolean;
 }
+/** A quick choice that can be shown dimmed. */
+export interface TargetPreset {value:number;disabled?:boolean}
+/** A unit that can be shown dimmed. */
+export interface TargetUnitOption {unit:TargetUnit;disabled?:boolean}
+/** The quick choices as `{value, disabled}`, whichever form the host gave. */
+export function targetPresets(presets:readonly (number|TargetPreset)[]):TargetPreset[]{return presets.map(preset=>typeof preset==='number'?{value:preset}:preset);}
+/** The units as `{unit, disabled}`, whichever form the host gave. */
+export function targetUnits(units:readonly (TargetUnit|TargetUnitOption)[]):TargetUnitOption[]{return units.map(unit=>typeof unit==='string'?{unit}:unit);}
 const usd={style:'currency',currency:'USD'} as const,allUnits:readonly TargetUnit[]=['dollar','price','percent'];
 const known=(value:number|null|undefined):value is number=>value!=null&&Number.isFinite(value);
 /** Number format of a target in a unit. Dollars and percents carry their sign; `short` drops the cents of a whole dollar amount, for a preset. */
@@ -96,17 +112,19 @@ export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** Set a take profit or a stop loss on one position: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. */
-export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,className,...rest}:TargetBlockProps){
- const {messages,locale}=useHIG();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
+export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,customValue,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,headerActionBesideInfo,headingId,stickyHeader,className,...rest}:TargetBlockProps){
+ const {messages}=useHIG();const locale=useNumberLocale();const present=usePresentNumber();const id=useId(),noteId=useId();const [open,setOpen]=useState(false);const anchor=useRef<HTMLSpanElement>(null);
  // The popover closes on a press outside it, on Escape, and when focus leaves it.
  useEffect(()=>{if(!open)return;const outside=(event:Event)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
- const info=note&&labels.info&&!headerAction?labels.info:undefined;
+ const info=note&&labels.info&&(!headerAction||headerActionBesideInfo)?labels.info:undefined;
+ const custom=onCustom&&known(customValue)?customValue:null;
+ const infoButton=info&&<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/><PressDecoration kind='back'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>;
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
  const intent=kind==='stop-loss'?'destructive':'primary';
  return <section {...rest} className={`hig-target-block${className?` ${className}`:''}`} data-kind={kind}>
-  <ScreenHeader title={labels.title} onBack={onBack} action={info?<span ref={anchor} className='hig-target-info' onKeyDown={event=>{if(event.key==='Escape'&&open){event.stopPropagation();setOpen(false);}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false);}}><button type='button' className='hig-swap-back' aria-label={info} aria-expanded={open} aria-controls={open?noteId:undefined} onClick={()=>setOpen(!open)}><SwapIcon name='info'/></button>{open&&<span id={noteId} role='status' className='hig-popover hig-target-popover'>{note}</span>}</span>:headerAction}/>
+  <ScreenHeader title={labels.title} onBack={onBack} headingId={headingId} stickyHeader={stickyHeader} action={info?headerAction?<span className='hig-target-header-actions'>{infoButton}{headerAction}</span>:infoButton:headerAction}/>
   <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={targetFormat(unit,priceOptions)}/></p>
   {note&&!info&&<p className='hig-target-note'>{note}</p>}
   <section className={surface?'hig-surface hig-target-prices':'hig-target-prices'} data-surface={surface?undefined:'false'} aria-labelledby={position?id:undefined}>
@@ -118,9 +136,9 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    </div>
    <dl className='hig-bar-pnl-readouts'>{order.map(price=><div key={price} data-price={price}><dt>{labels[price]}</dt><dd><AnimatedNumberReadout value={prices[price]} options={priceOptions}/></dd></div>)}</dl>
   </section>
-  {units.length>1&&<SegmentedControl label={labels.unit} options={units.map(option=>({value:option,label:labels.units[option]}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
-  {onCustom&&<button type='button' className='hig-swap-setting' onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/></button>}
-  {presets.length>0&&<div className='hig-target-presets'>{presets.map(preset=><Button key={preset} fullWidth intent={preset===value?intent:'secondary'} aria-pressed={preset===value} onClick={()=>onValueChange?.(preset)}>{formatNumber(preset,locale,targetFormat(unit,priceOptions,preset))}</Button>)}</div>}
+  {units.length>1&&<SegmentedControl label={labels.unit} options={targetUnits(units).map(option=>({value:option.unit,label:labels.units[option.unit],disabled:option.disabled}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
+  {onCustom&&(custom===null?<button type='button' className='hig-swap-setting' aria-pressed={customValue!==undefined?false:undefined} onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>:<button type='button' className='hig-swap-setting' aria-pressed='true' onClick={onCustom}><span>{labels.custom}</span><span className='hig-swap-setting-value'>{formatNumber(custom,locale,present(targetFormat(unit,priceOptions)))}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>)}
+  {presets.length>0&&<div className='hig-target-presets'>{targetPresets(presets).map(({value:preset,disabled})=>{const selected=custom===null&&preset===value;return <Button key={preset} fullWidth intent={selected?intent:'secondary'} aria-pressed={selected} disabled={disabled} onClick={()=>onValueChange?.(preset)}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>;})}</div>}
   <div className='hig-target-actions'>
    {onCancel&&<Button fullWidth intent='secondary' onClick={onCancel}>{labels.cancel??messages.cancel??en.cancel}</Button>}
    <Button fullWidth intent={intent} disabled={submitDisabled??value===null} busy={busy} onClick={onSubmit}>{labels.submit}</Button>

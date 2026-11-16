@@ -114,3 +114,78 @@ it('switch rows keep the track flush with the trailing edge and level with the f
  // The switch keeps its 44-unit target; the track is flush right inside it.
  const inRow=rule('.hig-list-row-trailing .hig-switch {');expect(inRow).toMatch(/padding-inline:0;justify-content:flex-end/);expect(inRow).not.toMatch(/min-width/);
 });
+describe('settings host slots (Unreleased)',()=>{
+ const noop=()=>{};
+ it('SoundHapticsBlock: a device choice under the source, a named level meter, an action, and volume kept disabled while off',async()=>{
+  const choose=vi.fn(),open=vi.fn(),volume=vi.fn();
+  const mic:SoundSection={id:'mic',label:'Mic input',checked:true,onCheckedChange:noop,source:'USB Mic',level:0.426,levelLabel:'Input level',
+   choices:{label:'Input',options:[{value:'auto',label:'Automatic'},{value:'usb',label:'USB Mic'}],value:'auto',onValueChange:choose},
+   volume:{label:'Mic volume',value:1,onValueChange:volume},action:{label:'Open Settings',onSelect:open}};
+  const view=render(<SoundHapticsBlock title='Sound & Haptics' description='How the app sounds and feels.' sections={[mic]}/>);
+  expect(q('.hig-settings-block > .hig-settings-description')!.textContent).toBe('How the app sounds and feels.');
+  const group=screen.getByRole('group',{name:'Input'});expect(within(group).getByRole('radio',{name:'Automatic'})).toHaveProperty('checked',true);
+  await userEvent.click(within(group).getByRole('radio',{name:'USB Mic'}));expect(choose).toHaveBeenCalledWith('usb');
+  const meter=screen.getByRole('meter',{name:'Input level'});expect(meter.getAttribute('aria-valuenow')).toBe('43');expect(meter.getAttribute('aria-valuetext')).toBe('43%');
+  const body=q('.hig-setting-body')!;expect([...body.children].map(child=>child.className.split(' ')[0])).toEqual(['hig-setting-caption','hig-setting-choices','hig-setting-meter','hig-setting-volume','hig-button']);
+  expect(body.lastElementChild!.classList.contains('hig-setting-action')).toBe(true);await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(open).toHaveBeenCalledTimes(1);
+  // Off: source, choices and meter go; the volume stays only with volumeWhenOff 'disabled', unavailable; the action stays.
+  view.rerender(<SoundHapticsBlock title='Sound & Haptics' sections={[{...mic,checked:false}]}/>);
+  expect([...q('.hig-setting-body')!.children].map(child=>child.className.split(' ')[0])).toEqual(['hig-button']);
+  view.rerender(<SoundHapticsBlock title='Sound & Haptics' sections={[{...mic,checked:false,volumeWhenOff:'disabled'}]}/>);
+  const steps=within(screen.getByRole('group',{name:'Mic volume'})).getAllByRole('button');expect(steps.every(step=>(step as HTMLButtonElement).disabled)).toBe(true);
+  expect(screen.queryByRole('meter')).toBeNull();expect(screen.queryByRole('radiogroup')).toBeNull();
+  // Without levelLabel the meter stays decorative.
+  view.rerender(<SoundHapticsBlock title='Sound & Haptics' sections={[{...mic,levelLabel:undefined}]}/>);expect(screen.queryByRole('meter')).toBeNull();expect(q('.hig-setting-meter')!.getAttribute('aria-hidden')).toBe('true');
+ });
+ it('SignalsBlock: a locked switch stays on at full strength, read as unavailable; hints, errors, label accessories, a host verified mark and a help pill ref',async()=>{
+  const change=vi.fn(),help=vi.fn();const pill=React.createRef<HTMLButtonElement>();
+  render(<SignalsBlock title='Signals' description='Choose what you receive.' verifiedLabel='Genesis' verifiedMark={<svg data-testid='mark'/>} groups={[{id:'trend',title:'Trend',verified:true,help:{label:'How it works',onSelect:help,ref:pill},items:[
+   {id:'trend',label:'Trend',checked:false,locked:true,onCheckedChange:change},
+   {id:'feed',label:'Feed',checked:true,onCheckedChange:noop,hint:'Needs permission',error:'Request failed',labelAccessory:<span role='img' aria-label='New'>★</span>}]}]}/>);
+  const locked=toggle('Trend');expect(locked.checked).toBe(true);expect(locked.disabled).toBe(false);expect(locked.getAttribute('aria-disabled')).toBe('true');
+  expect(locked.closest('label')!.hasAttribute('data-disabled')).toBe(false);expect(locked.closest('label')!.hasAttribute('data-locked')).toBe(true);
+  await userEvent.click(locked);expect(change).not.toHaveBeenCalled();expect(locked.checked).toBe(true);
+  // The accessory reads after the label and a pause, not run into it.
+  expect(screen.getByRole('switch',{name:/^Feed ?, New$/})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.textContent).toBe('★');
+  expect(screen.getByRole('status').textContent).toBe('Needs permission');expect(screen.getByRole('alert').textContent).toBe('Request failed');
+  // Host artwork is drawn inside the mark's image role, named by the verified words.
+  const mark=screen.getByTestId('mark').closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBe('img');expect(mark.getAttribute('aria-label')).toBe('Genesis');
+  expect(screen.getByRole('heading',{level:3,name:/^Trend ?Genesis/})).toBeTruthy();
+  expect(pill.current).toBe(screen.getByRole('button',{name:'How it works'}));await userEvent.click(pill.current!);expect(help).toHaveBeenCalledTimes(1);
+  expect(q('.hig-settings-description')!.textContent).toBe('Choose what you receive.');
+ });
+ it('SignalsBlock: verifiedMarkInteractive keeps a control mark outside the image role, after the verified words (Unreleased)',async()=>{
+  const explain=vi.fn();
+  render(<SignalsBlock title='Signals' verifiedLabel='Genesis' verifiedMarkInteractive verifiedMark={<button type='button' onClick={explain}>Genesis badge</button>} groups={[{id:'trend',title:'Trend',verified:true,items:[]}]}/>);
+  const mark=screen.getByRole('button',{name:'Genesis badge'}).closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBeNull();expect(mark.querySelector('.hig-sr-only')!.textContent).toBe('Genesis');
+  await userEvent.click(screen.getByRole('button',{name:'Genesis badge'}));expect(explain).toHaveBeenCalledTimes(1);
+ });
+ it('SettingSwitch: labelAccessoryLabel names the accessory in place of its content, as on native (Unreleased)',()=>{
+  render(<SignalsBlock title='Signals' groups={[{id:'trend',title:'Trend',items:[{id:'feed',label:'Feed',checked:true,onCheckedChange:noop,labelAccessory:<span>★</span>,labelAccessoryLabel:'New'}]}]}/>);
+  expect(screen.getByRole('switch',{name:/^Feed ?, New$/})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
+ });
+ it('keeps provider feedback on section and item actions unless feedback is false (Unreleased)',async()=>{
+  const emit=vi.fn(),feedback={emit};
+  const view=render(<HIGProvider feedback={feedback}><NotificationsBlock title='Notifications' items={[{id:'push',label:'Push',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(1);
+  view.rerender(<HIGProvider feedback={feedback}><NotificationsBlock title='Notifications' items={[{id:'push',label:'Push',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop,feedback:false}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(1);
+  view.rerender(<HIGProvider feedback={feedback}><SoundHapticsBlock title='Sound' sections={[{id:'mic',label:'Mic',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop,feedback:false}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(1);
+  view.rerender(<HIGProvider feedback={feedback}><SoundHapticsBlock title='Sound' sections={[{id:'mic',label:'Mic',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(2);
+ });
+ it('NotificationsBlock: hints beside errors, an action under the card, locked items and groups with an optional heading',async()=>{
+  const settings=vi.fn();
+  render(<NotificationsBlock title='Notifications' items={[{id:'push',label:'Push',checked:false,onCheckedChange:noop,hint:'Registering this device',error:'Permission refused',action:{label:'Open Settings',onSelect:settings}}]}
+   groups={[{id:'alerts',title:'Alert types',items:[{id:'price',label:'Price',checked:true,locked:true,onCheckedChange:noop}]},{id:'untitled',items:[{id:'news',label:'News',checked:false,onCheckedChange:noop}]}]}/>);
+  const item=q('.hig-notifications-item')!;expect([...item.children].map(child=>child.className.split(' ')[0])).toEqual(['hig-setting-card','hig-setting-hint','hig-setting-error','hig-button']);
+  expect(screen.getByRole('status').textContent).toBe('Registering this device');await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(settings).toHaveBeenCalledTimes(1);
+  const groups=[...document.querySelectorAll('.hig-notifications-group')];expect(groups).toHaveLength(2);
+  expect(within(screen.getByRole('region',{name:'Alert types'})).getByRole('switch',{name:'Price'}).getAttribute('aria-disabled')).toBe('true');
+  expect(groups[1].querySelector('h3')).toBeNull();expect(groups[1].hasAttribute('aria-labelledby')).toBe(false);
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain('.hig-notifications-group { display:flex;flex-direction:column;gap:8px;margin-block-start:8px; }');
+  // Groups alone: items may be left out.
+  cleanup();render(<NotificationsBlock title='Notifications' groups={[{id:'a',items:[{id:'x',label:'X',checked:false,onCheckedChange:noop}]}]}/>);expect(toggle('X')).toBeTruthy();
+ });
+});

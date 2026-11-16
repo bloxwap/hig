@@ -38,7 +38,8 @@
       "entry": "surface",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "muted-caption"
       ]
     },
     {
@@ -142,7 +143,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "clear"
       ]
     },
     {
@@ -182,7 +184,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "hidden-label"
       ]
     },
     {
@@ -341,7 +344,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "untitled"
+        "untitled",
+        "heading-slots"
       ]
     },
     {
@@ -352,7 +356,11 @@
       "states": [
         "default",
         "disabled",
-        "static"
+        "static",
+        "busy",
+        "details",
+        "choice",
+        "switch"
       ]
     },
     {
@@ -544,7 +552,8 @@
       "entry": "wallet-address",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "host-qr"
       ]
     },
     {
@@ -555,7 +564,8 @@
       "states": [
         "default",
         "remaining",
-        "no-legend"
+        "no-legend",
+        "live-detail"
       ]
     },
     {
@@ -578,7 +588,9 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "value-only"
+        "value-only",
+        "units-headline",
+        "picker"
       ]
     },
     {
@@ -624,7 +636,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "picker"
       ]
     },
     {
@@ -634,7 +647,10 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "local-money",
+        "sections",
+        "ledgers"
       ]
     },
     {
@@ -645,7 +661,9 @@
       "states": [
         "default",
         "profit",
-        "at-risk"
+        "at-risk",
+        "triggers",
+        "symbol"
       ]
     },
     {
@@ -655,7 +673,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "stop-loss"
+        "stop-loss",
+        "custom"
       ]
     },
     {
@@ -665,7 +684,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "paper-trade"
+        "paper-trade",
+        "farming"
       ]
     },
     {
@@ -675,7 +695,20 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "signed-out",
+        "host-slots"
+      ]
+    },
+    {
+      "name": "ScreenHeader",
+      "route": "components/screen-header",
+      "entry": "blocks/screen-header",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "minimal",
+        "unavailable"
       ]
     },
     {
@@ -685,7 +718,10 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "sweepstakes"
+        "sweepstakes",
+        "loading",
+        "paged",
+        "no-header"
       ]
     },
     {
@@ -695,7 +731,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "interactive"
+        "interactive",
+        "devices"
       ]
     },
     {
@@ -704,7 +741,8 @@
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "locked"
       ]
     },
     {
@@ -714,7 +752,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "error"
+        "error",
+        "groups"
       ]
     },
     {
@@ -725,7 +764,9 @@
       "states": [
         "default",
         "empty",
-        "static"
+        "static",
+        "loading",
+        "tagged"
       ]
     },
     {
@@ -735,7 +776,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "loss"
+        "loss",
+        "demo"
       ]
     },
     {
@@ -745,7 +787,9 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "single"
+        "single",
+        "actions-only",
+        "units"
       ]
     },
     {
@@ -755,7 +799,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "no-search"
+        "no-search",
+        "disabled"
       ]
     },
     {
@@ -797,7 +842,8 @@
         "connected",
         "no-logout",
         "whitelist",
-        "empty"
+        "empty",
+        "short-list"
       ]
     },
     {
@@ -808,7 +854,8 @@
       "states": [
         "default",
         "tokens",
-        "no-chain"
+        "no-chain",
+        "labelled"
       ]
     },
     {

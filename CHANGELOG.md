@@ -1,5 +1,155 @@
 # Changelog
 
+## Unreleased
+
+Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, grouped by block below. Web and native unless noted; every word stays host text. Everything is additive and optional: without the new props, every component renders exactly as in 0.6.0, except the changes the app teams asked for that are marked below (a `ProfileBlock` switch row's label now toggles it on web, an `AccountBlock` asset with an unknown value and a known balance headlines its units, a native `RewardBlock` given a `testID` prefixes its inner test IDs with it, and a web `ManagePositionBlock` icon URL that fails to load shows the initials).
+
+### Provider and shared pieces
+
+- `HIGProvider pressDecoration` (web): `({kind, disabled}) => node` draws a host element, such as the native switch input iOS Safari needs for a haptic, inside these controls: `Button`, `IconButton`, pressable and linked `ListRow`s, a switch `ListRow`, a `ListGroup` heading action, the `SearchInput` clear button, each `SegmentedControl` segment (kind `'segment'`), `Switch` and the settings switch rows, a pressable `AssetBalanceRow`, the `WalletAddress` copy button, the block rows, capsules and action buttons, the header's Back, Close, address and info controls, and the swap panel's token pickers, flip button, keypad keys, destination row and receive address. It sits in one absolutely positioned layer that changes no layout and passes pointer events to the host's element; a press on that element reaches the control once with its default action (a submit `Button` submits, a linked `ListRow` navigates, a switch toggles). `PressDecoration` from the provider entry draws the same layer in a host control.
+- `HIGProvider numberFormat`: `{currencyDisplay, useGrouping}` merged under every currency format HIG draws (the blocks, `BarMark`, `BarPnl`, `AssetBalanceRow`, the swap pieces and the number readouts), with a format's own options still winning. `{currencyDisplay:'narrowSymbol'}` makes French read `12,50 $` instead of `12,50 $US`. `presentNumberFormat` in `@bloxwap/hig/contracts` returns the same merge for host figures.
+- `HIGProvider marketColors` (web): `{up, down}` like native; it sets `--hig-up`/`--hig-down` on the provider's wrapper, and `useThemeStyle()` returns them for a host portal.
+- Native readouts (`NumberReadout`, `AnimatedNumberReadout` and friends) accept `tone='warning'` and `tone='faint'`.
+- Native: block controls drawn under 48dp keep their size and reach 48dp through `hitSlop`: every `IconButton` (all header Back, Close, address and info controls) and `ProfileBlock`'s top-bar and edit controls by 2dp on each side, and the `SignalsBlock` help pill by 8dp.
+- Native: the deprecated `@bloxwap/hig/native/recipes` path is now a real file, `native/dist/recipes.js`, so a Jest `moduleNameMapper` from `@bloxwap/hig/native/<entry>` to `native/dist/<entry>.js` resolves it.
+- `HIGProvider numberFormat.locale`: the locale every number HIG formats is drawn in, when it differs from the interface `locale` (a Korean interface with US separators), while messages, `lang` and direction keep the interface locale. `useNumberLocale()` from both provider entries and `numberLocale(locale, numberFormat)` from `@bloxwap/hig/contracts` return it for host figures.
+- Live figures take `formattedValue`: every `{value, options, prefix, suffix}` figure a block accepts (the `PositionBlock`, `ManagePositionBlock`, `RewardBlock`, `ProfileBlock`, `BarMark`, swap and `TradeHistoryDetailBlock` figures and detail rows) can carry the host's own text for the value, drawn and read in place of Intl's and still moving place by place, for a runtime whose Intl does not match the host's number table. `AnimatedNumberReadout` takes the same text as `formattedValue` with the new `animateFormatted` (web now accepts `formattedValue` too); without `animateFormatted` host text stays static, as before. Each digit of the text rolls in its place counted from the end. Shared type `Figure` behind `PositionBlockFigure`, `ManagePositionBlockFigure`, `RewardFigure`, `ProfileFigure` and `BarMarkFigure`.
+- Pinned headers: `stickyHeader` is one behaviour on `ScreenHeader` and on `PositionBlock`, `TargetBlock`, `RewardBlock`, the settings blocks and the trade history blocks, on web and native. The header is transparent at rest, so a glow the host draws behind it shows through, and fills once content has scrolled under it. Web: `position: sticky`, the fill `--hig-sticky-header-background` (default `--hig-background`, with `--hig-screen-background` still read before it), faded in by a scroll-driven animation where the browser has one and marked `data-scrolled` by a script everywhere else and under reduced motion; when the header's parent is itself the scroller the script marks it `data-sticky-own` and fills it alone, since a view timeline there would follow an outer scroller. Native: the block becomes its own scroll view (`scrollComponent`) whose header takes `stickyHeaderBackground` once the offset moves; `useStickyHeaderScroll()` from the screen-header entry gives a host scroller the same signal. This replaces the solid fills the unreleased `PositionBlock` and `RewardBlock` `stickyHeader` drew at rest.
+
+### ScreenHeader
+
+- The block header (every web block's, and the native settings blocks') has its own entries for host panes that have no block: `@bloxwap/hig/react/blocks/screen-header` and `@bloxwap/hig/native/screen-header` (which also exports the `ChevronIcon` its Back control draws). Catalog states `default` and `minimal`.
+- `headingId` sets the heading's `id` on web, so a dialog can name itself with `aria-labelledby`, and its `nativeID` on native, for `accessibilityLabelledBy`. On native, `testID` is now optional.
+- `badge`, drawn inside the heading and read after a pause (`Trade, Demo`; web adds a comma that is read, not drawn).
+- `backDisabled` draws Back unavailable (faint, disabled, no press decoration on web). `backProps` passes attributes (web) or Pressable props such as `android_disableSound` (native) through to Back; `PositionBlock` and `PositionBlockHeader` take `backProps` and `closeProps`. Type `ScreenHeaderControlProps`.
+- `hideTitle` hides the title visually while it stays the accessible heading, so a host dialog's own title is not read twice. Native `titleRef` reaches the heading's accessible element for accessibility focus.
+- `stickyHeader` (see Pinned headers above); native adds `scrolled` and `stickyHeaderBackground` for a header in the host's scroller, and `style`. Catalog state `unavailable`.
+
+### ListRow
+
+- `valueLabel`: what a `value` that is not text reads as, such as the formatted amount of a live `AnimatedNumberReadout`. On both platforms the element is read as `valueLabel` in its place, static row or selectable: a selectable native row reads it with the label, a static native row reads the element as one node named by it, and on web the element is hidden from assistive technology and `valueLabel` is read in its place. One prop from the profile and position work, now on both platforms.
+- `valueTone` (`positive`, `warning`, `negative`, `muted`) colours a string or number `value` instead of the muted default, keeping its layout and reading.
+- `description`: a muted second line under the label; the row grows, and it is read with the label (a switch row's hint).
+- `tone` (`destructive`, `muted`) colours the label.
+- `selected`: a row in a list that selects and closes. `true` draws a check on the trailing edge in place of the chevron and sets `aria-current` (web) or `accessibilityState.selected` (native); with `selected` set, true or false, no chevron is drawn unless `disclosure` asks for one.
+- `busy` (with `busyLabel`): a spinner in place of the disclosure, `aria-busy` / `accessibilityState.busy`, the busy text added to a selectable row's name as `Button` does, and presses ignored, without dimming. A busy linked row (web) stays the same `<a>`, marked `aria-disabled` and not navigating, so it keeps the focus the press left on it. A static native row with `selected` or `busy` and no `trailing` is one element named by its label and value, so the state is read.
+- `disclosure`: `chevron` (default), `external` (an arrow for something outside the app, mirrored in right-to-left layouts) or `none`.
+- A whole-row switch: `checked` (or `defaultChecked`) with `onCheckedChange` and no `onSelect`/`href`. The row is the target, the switch on the trailing edge is named by `label`, and on web the host's press decoration covers the row as one `'switch'` layer aimed at the input. Catalog state `switch`.
+- The ref reaches the row's element on both platforms. Web already passed other attributes (`data-*`, `aria-*`) through; native now passes Pressable props such as `android_disableSound`, `hitSlop`, `onLongPress` and `accessibilityHint` to the row. Catalog states `details` and `choice`.
+
+### ListGroup
+
+- `title` may be an element; `titleAccessory` (a count or figure read with the heading, while the group stays named by the title; on native the title and accessory are one header element, and the action stays its own button); `action={{label, onSelect, disabled}}` (a text action on the trailing edge of the heading, 44 units tall on web without growing it, at least 48dp each way on native through `minWidth` and `hitSlop`, with the `'button'` press decoration on web); `intro` (host content between the heading and the rows; with no rows there is no row container). Type `ListGroupAction`. Catalog state `heading-slots`.
+
+### Small primitives
+
+- `Text`: `tone='muted'` and `size='caption'` (12/18), web and native. Catalog state `muted-caption`.
+- `Field`: `descriptionTone='positive'` draws the description as a success line and announces it when it changes. (No catalog state: every Field state carries a visual baseline per platform, and this one needs Linux captures first.)
+- `SearchInput`: `trailing` (host content inside the trailing edge) and `onClear` with `clearLabel` (a clear button while the controlled value is not empty; it returns focus to the field, and it is disabled with the input, including inside a disabled `Field`). New message key `clearSearch` (“Clear search”). Catalog state `clear`.
+- `Switch`: `hideLabel` draws the track alone, keeping `label` as the name (web and native); native `testID`. Native `SwitchRow` forwards a ref. Type `SwitchProps` from the selection entries.
+- `SegmentedControl`: `hideLabel` (web: a visually hidden legend); native `testID`; on web each segment draws the provider's press decoration with the new kind `'segment'`, aimed at its radio. `PressDecorationKind` gains `'segment'`. Type `SegmentedControlProps`. Catalog state `hidden-label`.
+- Native `Filter`: `scrollComponent`, the host's horizontal scroll view (for a sheet library's scroller).
+- Native `Progress`: `hideValue` leaves out the drawn ` value/max` suffix; the value is still read.
+- Native `Alert`: a string or number child is drawn in a HIG `Text`; `announce` is documented on both platforms.
+
+### AssetBalanceRow
+
+- `headline='units'` puts the units on the headline line with no second line, read as name, symbol, units. The default is unchanged. Catalog state `units-headline`.
+- `selected` (a check on the trailing edge; web `aria-current`, native `accessibilityState.selected`), `disabled` (muted text and half-strength artwork on the well fill, presses ignored, read as unavailable; a static web row becomes `role="group"` so its `aria-disabled` is read), `trailing` (host content after the figures, read last: on web in place, on native its text appended to the row's label) with `trailingLabel` (what is read for it instead, on both platforms), `amounts={false}` (no figures, for a row that is just an item to pick, such as a method or a chain), `tag` (short muted text under the figures, read after them) and `unitsSuffix` (host text after the units figure, such as ` HYPE`). Catalog state `picker`.
+
+### BarMark
+
+- An element's `detail` can be a live figure `{value, options, prefix, suffix}`; the legend reads its formatted amount. Web moves it place by place. The native bar-mark entry still needs no peers, so on its own it draws the figure without movement; `TokenActionBlock` moves it through `AnimatedNumberReadout`, and a host can do the same with the new `BarMarkFigureContext`. Type `BarMarkFigure`. Catalog state `live-detail`.
+
+### BarPnl
+
+- The result follows the market direction roles like the trade history blocks: the stretch and the mark price take `up` in profit and `down` at a loss, so `HIGProvider marketColors` recolours them on both platforms. They default to `buy` and `sell`, the same colours as `positive` and `negative`, so nothing changes without an override. The liquidation tick stays `negative`.
+
+### Swap pieces
+
+- Native `SwapCapsule` takes an optional `hitSlop` and a `ref`; web `SwapPill` forwards a `ref`.
+
+### ProfileBlock
+
+- `action={{label, onSelect, intent, disabled}}` draws a full-width primary button 16 under the name, such as Log in, and `name` may then be left out; `nameAccessory` puts host content, such as a badge, beside the name and keeps it in the accessibility tree; `onAvatarPress` with `avatarLabel` makes the avatar a named button (the status dot stays outside it; with neither `avatarLabel` nor `name` it is named by the new message key `changeProfilePicture`); a row `value` can be a live figure `{value, options, prefix, suffix}` that updates place by place, and a row `tone` (`positive`, `warning`, `negative`, `muted`) colours the value; `footer` draws host content, such as legal links, 24 under the sections. Types `ProfileAction` and `ProfileFigure`. Catalog states `signed-out` and `host-slots`.
+- Switch rows (web): the whole row is now the target, as in the settings blocks and as native rows already were. The row's markup is byte-for-byte what it was (a static `ListRow` with a `Switch`), a press anywhere on it toggles the switch, the switch input stays the one named control, and with `pressDecoration` the host's layer covers the whole row (one `'switch'` layer on the row instead of one on the track). This is a behaviour change without a new prop: a press on the row's label used to do nothing.
+
+### AccountBlock
+
+- `sections=[{id, title, total, assets}]` draws titled groups, 24 apart, each with its own total, in place of the flat list; `onAssetSelect` then also receives the section, and `accountSectionRows` / `accountSectionTotal` (and the `AccountSection` type) are exported. `assets` becomes optional. Per asset: `units: false` hides the units line, `selectable: false` keeps the row plain, and `unitsOptions` formats the units. Catalog states `sections` and `local-money`.
+- An asset whose value is unknown but whose balance is known now shows its units as the headline figure instead of the unknown dash over the units; that is the one rendering change for existing props, and only for that case.
+- `order: 'value' | 'given'` on the block and on each section (`given` keeps the host's order after the pinned row), `pinnedId` on the block and on each section (pins by asset id, for a dollar ledger whose symbol is not unique; a row pinned by id keeps its units), and per asset `tag` (muted text under the figures, such as Perp or Staked), `unitsSuffix` and `unknownValue: 'units' | 'dash'` (`dash` keeps the 0.6.0 unknown dash over the units, for a price that is still loading). `accountRows` and `accountSectionRows` take `{order, pinnedId}` as a third argument; new types `AccountOrder` and `AccountRowsOptions`. Catalog state `ledgers`.
+
+### TokenActionBlock
+
+- `note` with `noteTone` (`muted`, `warning`, `negative`, as in `SwapPanelBlock`) draws a line 8 under the actions (16 under the bars when there are none); `assets` and `chains` are each optional, so a card can be actions only, and `name` is needed only with `assets`. Catalog state `actions-only`.
+- `units` with `unitsSuffix` and `unitsOptions`: for a token with no dollar value (`value` left out or `null`), the units take the total's place on the assets bar and update place by place. Catalog state `units`.
+
+### FromPickerBlock and ToPickerBlock
+
+- `search={false}` leaves out the search field; `zeroBalances` draws a known zero balance; a token's `unitsSuffix` follows its balance and its `detail` replaces the chain on the row's second line (both new optional `SwapToken` fields, used only by the picker rows).
+- `searchInputProps` / `searchRef`, and on `ToPickerBlock` `addressInputProps` / `addressRef`: host attributes and the input ref (web: any `<input>` attribute, such as `name`, `autoComplete`, `data-1p-ignore` or `onFocus`/`onBlur`; native: any `TextInput` prop, such as `onFocus`/`onBlur` for a bottom sheet's keyboard handling). The value and its change handler stay the block's; type `PickerInputProps`.
+- `searchLabel` and `addressLabel` draw a visible label over the field, which then names it.
+- Native: `listComponent` renders the rows through the host's list (such as a bottom sheet's `FlatList`) so they scroll inside a host sheet, and `SwapHostContext` is exported from `@bloxwap/hig/native/pickers` and the `blocks` aggregate. Catalog states `short-list` (From) and `labelled` (To).
+
+### WalletAddress
+
+- `qr` draws the host's own code in place of the Cuer one. New entries `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` with `qr` required and import neither `cuer` nor `react-native-svg`, for a host without the peer. On both platforms `qr={null}` is the same as leaving it out. `announce={false}` raises no “Address copied” notice, for a host that shows its own. Web: the copy button draws the `pressDecoration` layer (`kind: 'row'`). Catalog state `host-qr`.
+
+### MarketRow
+
+- `price` and `change` are optional: left out, the cell is not drawn and no dash is shown. `detail` (a muted line under the name, text or host nodes on both platforms, read with it), `trailing`, `selected` (a check; `aria-current` / `accessibilityState.selected`), `disabled` and `active` (the well fill with the 14 corner radius on both platforms, for a host keyboard cursor). Web forwards the ref and any other attribute or handler (`data-*`, `onPointerDown`) to the row's root; native forwards the ref to the root view and takes `testID` and `onPressIn`.
+- Native gains the web's presentation mode (`mode='presentation'` with `identity`, `icon`, `favorite`, `volume`) and `priceOptions` / `changeOptions`; type `MarketRowProps` is exported on both platforms. Catalog state `picker`.
+
+### ManagePositionBlock
+
+- An action takes a trailing `value` (host text or a live figure) and a `tone`, for a resting order on the row that manages it. `position` takes `badge` (a small badge after the name), `caption` (a muted line under the row, for a stale or estimated result), and `onSelect` with `label` (the row becomes one button named by the label and described by its figures). `pnlOptions` is merged over the profit and loss format. On native an icon URL that fails to load falls back to the initials. `headingId` reaches the header. New type `ManagePositionBlockFigure`. Catalog state `triggers`.
+- `position.symbol` is the fallback initials (`BT`) in place of the name's first letters. `position.icon` can be a function that draws a host element and receives `failed`; once called the disc shows `position.iconFallback` (a host element) or the initials until the artwork changes. A web icon URL that fails to load now falls back the same way, as native already did. Type `ManagePositionIcon`.
+- A pressable position row is named by its `label` followed by its figures (`View Bitcoin, Bitcoin, Long, 40×, -$0.0247`), so the figures are read with hints off; the caption alone is its description (native: hint). Catalog state `symbol`.
+
+### TargetBlock
+
+- Presets may be `{value, disabled}` and units `{unit, disabled}`, drawn dimmed (`targetPresets` and `targetUnits` normalize both, with types `TargetPreset` and `TargetUnitOption`). `customValue` shows the host's entry on the Custom row's trailing edge, which then reads as selected in place of any preset. `headerActionBesideInfo` keeps the info button beside `headerAction` instead of replacing it. `headingId` reaches the header. Dollar presets, the custom value and the headline follow the provider's `numberFormat`. Catalog state `custom`.
+- `stickyHeader` (see Pinned headers), with native `stickyHeaderBackground` and `scrollComponent`; the native info popover opens under the pinned header.
+
+### PositionBlock
+
+- A detail can be `struck` (drawn struck through and read with the host's word, such as Waived) and take a `labelAccessory`. The paper trading row toggles from anywhere on it (web; native already did) and takes an `action` (`{label, onSelect, intent, busy, disabled}`) drawn on the row's card under the switch. Rows in `groups` can be switches (`checked` with `onCheckedChange`) and a row `value` can be a live figure. `headingId` reaches the header. New type `PositionBlockFlagAction`. Catalog state `farming`.
+- `stickyHeader` pins the header with the shared behaviour (see Pinned headers): web in the nearest scroller, native as the block's own scroll view (`stickyHeaderBackground`, `scrollComponent`). Native: `PositionBlockHeader` draws the header on its own for a host's sticky header, with `header={false}` on the block, and fills once its `scrolled` is true.
+- `backProps` and `closeProps` reach the header's Back and Close. Row and detail values document Leverage and other counts as figures (`{value: 40, suffix: '×'}`), so they move place by place; the `farming` catalog state shows one. The paper trading action draws the provider's `pressDecoration` as a `'button'`, like every block action (covered by a test).
+
+### TradeHistoryListBlock and TradeHistoryDetailBlock
+
+- Both paint the side, the leverage and the result with the market `up`/`down` roles on both platforms. Native list rows used `positive`/`negative`; web used them on both blocks. With no override the colours are unchanged, because `up`/`down` default to `buy`/`sell`, which match.
+- `TradeHistoryListBlock`: `loading` (skeleton rows, named by `loadingLabel`), `error` (in place of the rows, announced), `labels.emptyDescription` (a second empty line), `notice` (host content under the header), `footer` (under the rows), and per trade `tag` (muted text before the age), `leverageNote` (a muted qualifier after the leverage, read with it) and `symbol` (the fallback disc's letters). Native `renderList` draws the rows through the host's FlatList (or a sheet library's), so 100 rows do not mount at once. Catalog states `loading` and `tagged`.
+- `TradeHistoryDetailBlock`: `badge` (host text beside the title), `note` (a muted sentence under the details), `pnlOptions` and `percentOptions` (the headline and return formats; the headline already follows `HIGProvider numberFormat`), `leverageNote`, `symbol` and `summaryRef` (a ref to the asset line and headline, for an image capture). Catalog state `demo`.
+- `TradeHistoryListBlock`: a trade's own `pnlOptions` wins over the block's. Native `listChrome` (with `renderList`) also hands the list `ListHeaderComponent` (the header and notice), `ListFooterComponent` (the footer) and `contentContainerStyle` (the 16 unit inset), so a spread FlatList holds the whole screen and a sheet that sizes itself to its content needs no offsets; without it `renderList` keeps the fixed header, notice and footer in the block's own inset, as before. With `stickyHeader` the header stays above the list and the list gets `onScroll`.
+- `TradeHistoryDetailBlock`: `summaryBackground` (`true` for the background role, or a colour) fills the captured summary so an image of it is not transparent; detail rows take `formattedValue`.
+- Both take `stickyHeader` (see Pinned headers), with native `stickyHeaderBackground` and `scrollComponent`.
+
+### RewardBlock
+
+- `loading` and `loadingLabel` (skeleton rows), `status` (a muted line between the pinned row and the list), `youLabel` (the pinned row's accessible name), `pagination={{previous, next, label}}` under the list, `stickyHeader` (see Pinned headers; native also takes `stickyHeaderBackground` and an optional `scrollComponent`), `verifiedMark` (host artwork for the verified mark), a per-entry `scoreOptions`, an entry `detail` as a live figure `{value, options, prefix, suffix}`, and `promo.headline` as host elements. Web only: `promo.rules` and `promo.action` take `href` (and `target`) and render as links; their `onSelect` becomes optional. Catalog states `loading` and `paged`.
+- `header={false}` leaves the header out for a host that pins its own `ScreenHeader`. `verifiedMarkInteractive` keeps a control `verifiedMark` in the accessibility tree: web drops the image role around it and reads `verifiedLabel` before it; native moves the row's reading to the name and leaves the mark as its own element. Without it a `verifiedMark` is artwork, as before. `promo.headline` as accented host elements is documented. Catalog state `no-header`.
+- Native: with a `testID` every inner test ID takes it as the prefix (`<testID>-header`, `<testID>-back`, `<testID>-row-<id>`…), so a pinned header and the block no longer share IDs; without one they still start with `reward`. This changes the IDs for a host that already passes `testID`. The header is now the shared `ScreenHeader`, with the same markup.
+
+### SoundHapticsBlock
+
+- Section `choices` (radios under the source, such as the input device), `action` (a secondary button at the foot of the card, shown on or off), `volumeWhenOff: 'disabled'` (the steps stay, unavailable, while the channel is off), `levelLabel` (names the meter, which then reads its level as a percentage), and block `description`. Catalog state `devices`.
+- Section `action.feedback: false` keeps the provider's press feedback off that one button (by default it plays, like any `Button`), so a host that cues it itself need not remove feedback from the whole block. Type `SettingAction`, shared with `NotificationsBlock` items. `stickyHeader` (see Pinned headers).
+
+### SignalsBlock and NotificationsBlock
+
+- Item `locked` (on at full strength, read as unavailable, presses ignored), item `hint` (a neutral line beside `error`; `SignalsBlock` items also take `error`), item `labelAccessory` (host content after the label) and block `description`.
+- `SignalsBlock`: help pills take a `ref` so the host can return focus, and `verifiedMark` replaces the built-in mark. Catalog state `locked`.
+- `NotificationsBlock`: `groups` with an optional heading, 24 units apart; `items` becomes optional, and items take an `action` under the card. Catalog state `groups`.
+- Web: an item's `labelAccessory` reads after the label and a pause (`Swing notifications, Genesis`), not run into it. Item `action.feedback: false` as in `SoundHapticsBlock`. `SignalsBlock` takes `verifiedMarkInteractive`, as in `RewardBlock`. Both take `stickyHeader` (see Pinned headers).
+- Item `labelAccessoryLabel` (and on `SettingSwitch`): host words for the accessory, read after the label and a pause (`Feed, New`). Native adds them to the switch's name, which before read the label alone; web reads them in place of the accessory's content, which is then hidden from assistive technology.
+
+### LanguageBlock
+
+- `disabled` (dims the rows and ignores presses and Enter) and `description` under the header. Catalog state `disabled`.
+
 ## 0.6.0
 
 Blocks for web and React Native (iOS and Android). Recipes are now called blocks, and this release adds the screens the apps are built from: `AccountBlock`, `TokenActionBlock`, `ManagePositionBlock`, `PositionBlock`, `TargetBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `ProfileBlock`, `RewardBlock`, `LanguageBlock`, `SoundHapticsBlock`, `SignalsBlock` and `NotificationsBlock`, beside `SwapPanelBlock`, `FromPickerBlock` and `ToPickerBlock`. New components `BarMark`, `BarPnl`, `AssetBalanceRow`, `ListGroup` and `ListRow` carry them.

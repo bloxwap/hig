@@ -2,7 +2,9 @@ import type React from 'react';
 // Pure helpers for the SwapPanelBlock block. Same behaviour as the web block's helpers; kept separate so native never imports the react entry.
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
 /** A live figure in place of a line of text: formatted with `options` between `prefix` and `suffix`, and updated through `AnimatedNumberReadout` when `value` changes. For example `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
-export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;
+ /** Host-formatted text for `value`, drawn and read in place of Intl's and still moving place by place. Never parsed back. */
+ formattedValue?:string}
 export interface SwapToken {
  /** Unique per asset and chain, for example `${chainId}-${address}`. */
  id:string;symbol:string;name:string;
@@ -20,6 +22,10 @@ export interface SwapToken {
  caption?:string|SwapFigure;
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
+ /** Picker rows: host text after the balance figure, such as ` HYPE`. */
+ unitsSuffix?:string;
+ /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */
+ detail?:string;
 }
 /** An image URL, or an element the host draws. */
 export type SwapArtwork=string|React.ReactElement;

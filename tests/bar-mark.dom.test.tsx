@@ -48,6 +48,17 @@ describe('BarMark',()=>{
   expect(card().className).toBe('hig-bar-mark wide');expect(card().dataset.surface).toBe('false');expect(screen.getByRole('region',{name:'Portfolio'})).toBe(card());
   expect(card().querySelector('.hig-bar-mark-header')).toBeTruthy();expect(segments()).toHaveLength(3);expect(screen.getAllByRole('listitem')).toHaveLength(3);
  });
+ it('takes a live figure as a detail, updated place by place, and reads it with the label',()=>{
+  Object.defineProperty(HTMLElement.prototype,'animate',{value:()=>({cancel(){}}),configurable:true});
+  const live=(value:number)=>[{label:'Staked',value,detail:{value,options:{style:'currency',currency:'USD'} as const}},{label:'Core',value:239,detail:'$239'}];
+  const view=render(<BarMark title='HYPE' elements={live(320)}/>);
+  const details=()=>[...document.querySelectorAll('.hig-bar-mark-detail')];
+  expect(details()[0].querySelector('.hig-animated-number-visual')).toBeTruthy();expect(details()[0].querySelector('.hig-sr-only')!.textContent).toBe('$320.00');expect(details()[1].innerHTML).toBe('$239');
+  view.rerender(<BarMark title='HYPE' elements={live(321.5)}/>);expect(details()[0].querySelectorAll('.hig-animated-number-old').length).toBeGreaterThan(0);
+  view.rerender(<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><BarMark title='HYPE' elements={[{label:'Staked',value:1,detail:{value:null}},{label:'Paper',value:1,detail:{value:12.5,options:{style:'currency',currency:'USD'},suffix:' net'}}]}/></HIGProvider>);
+  expect(details().map(detail=>detail.querySelector('.hig-sr-only')!.textContent)).toEqual(['—','12,50 $ net']);
+  delete (HTMLElement.prototype as {animate?:unknown}).animate;
+ });
  it('passes host attributes to the card and keeps its own classes',()=>{
   render(<BarMark title='Portfolio' elements={parts} className='wide' data-testid='mix'/>);
   expect(screen.getByTestId('mix').className).toBe('hig-surface hig-bar-mark wide');

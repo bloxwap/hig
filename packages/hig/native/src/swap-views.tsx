@@ -1,7 +1,7 @@
 import React,{useState} from 'react';
 import {Pressable,View} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Field,Input} from './field.js';
 import {SegmentedControl} from './radio-group.js';
@@ -40,8 +40,8 @@ export interface SwapSettingsProps {
 }
 /** The settings views. Slippage and the fee breakdown push from the settings list, and Back returns to it. */
 export function SwapSettings({view,onViewChange,onBack,denomination,onDenominationChange,slippage,onSlippageChange,fee,fees,quoteLoading,children}:SwapSettingsProps){
- const {locale,direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();
- const usd=(value:number)=>formatNumber(value,locale,{style:'currency',currency:'USD'});
+ const {direction}=useHIG();const locale=useNumberLocale();const colors=useColors();const fills=useFills();const t=useMessages();const present=usePresentNumber();
+ const usd=(value:number)=>formatNumber(value,locale,present({style:'currency',currency:'USD'}));
  const [custom,setCustom]=useState<string|null>(null);
  const title=view==='slippage'?t.swapSlippageTitle:view==='fees'?t.swapFees:t.swapSettings;
  const feeText=quoteLoading?'…':fee!=null?usd(fee):'—';

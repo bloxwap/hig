@@ -4,6 +4,7 @@ import {afterEach,describe,expect,it} from 'vitest';
 import {cleanup,render,screen} from '@testing-library/react';
 import {readFileSync} from 'node:fs';
 import {BarPnl,barPnlLayout,barPnlCompactOptions} from '../packages/hig/react/src/bar-pnl';
+import {HIGProvider} from '../packages/hig/react/src/provider';
 afterEach(cleanup);
 const labels={liquidation:'Liquidation',mark:'Mark',entry:'Entry'};
 /** What is read once: the text without the decorative copy of each animated number. */
@@ -82,5 +83,14 @@ describe('BarPnl',()=>{
 it('fills the stretch between entry and mark solid in the result colour',()=>{
  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
  expect(rule('.hig-bar-pnl-move {')).toContain('background:var(--hig-bar-pnl-tone);');expect(rule('.hig-bar-pnl-move {')).not.toContain('color-mix');
- expect(rule(".hig-bar-pnl[data-result='profit']")).toContain('var(--hig-positive)');expect(rule(".hig-bar-pnl[data-result='loss']")).toContain('var(--hig-negative)');
+ // The result follows the market direction roles, which default to buy and sell (the same colours as positive and negative).
+ expect(rule(".hig-bar-pnl[data-result='profit']")).toContain('var(--hig-up,var(--hig-buy))');expect(rule(".hig-bar-pnl[data-result='loss']")).toContain('var(--hig-down,var(--hig-sell))');
+ expect(rule('.hig-bar-pnl-liquidation {')).toContain('background:var(--hig-negative)');
+});
+
+it('paints the result with the provider market colours (Unreleased)',()=>{
+ const {container}=render(<HIGProvider marketColors={{up:'#ff3b30',down:'#0a84ff'}}><BarPnl entry={100} mark={110} labels={{liquidation:'Liq',mark:'Mark',entry:'Entry'}}/></HIGProvider>);
+ const wrapper=container.querySelector<HTMLElement>('[data-hig-density]');
+ expect(wrapper?.style.getPropertyValue('--hig-up')).toBe('#ff3b30');
+ expect(container.querySelector('.hig-bar-pnl')?.getAttribute('data-result')).toBe('profit');
 });

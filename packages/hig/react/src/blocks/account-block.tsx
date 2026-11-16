@@ -1,7 +1,7 @@
 "use client";
-import React from 'react';
+import React,{useId} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {AssetBalanceRow,type AssetArtwork} from '../asset-balance-row.js';
@@ -16,6 +16,35 @@ export interface AccountAsset {
  price?:number|null;
  /** Dollar value of the holding. Defaults to `balance × price`. */
  value?:number|null;
+ /** Set false to draw no units line, for a holding whose units are the same figure as its value. */
+ units?:boolean;
+ /** Set false to draw this row plain even when the block has `onAssetSelect`. */
+ selectable?:boolean;
+ /** Format of the units figure. Defaults to at most six fraction digits. */
+ unitsOptions?:Intl.NumberFormatOptions;
+ /** Host text after the units figure, such as ` PAPER`. */
+ unitsSuffix?:string;
+ /** Short muted host text under the figures, such as the ledger the holding sits in (Perp, Spot, Staked). */
+ tag?:string;
+ /** When the value is unknown but the balance is known: `units` (the default) headlines the units; `dash` shows the unknown dash over the units, for a value that is still loading. */
+ unknownValue?:'units'|'dash';
+}
+/** Row order after the pinned asset: `value` (largest first, the default) or `given` (the order the host passed). */
+export type AccountOrder='value'|'given';
+/** How `accountRows` picks and orders: `order` after the pinned asset, and `pinnedId`, an asset id pinned in place of the symbol match. */
+export interface AccountRowsOptions {order?:AccountOrder;pinnedId?:string}
+/** A titled group of holdings with its own total, such as one ledger of the account. */
+export interface AccountSection {
+ id:string;
+ /** Heading over the group. */
+ title:string;
+ /** The group's total in dollars, on the trailing edge of its heading. Defaults to the sum of its asset values; `null` reads as unknown. */
+ total?:number|null;
+ assets:readonly AccountAsset[];
+ /** Row order in this group; defaults to the block's `order`. */
+ order?:AccountOrder;
+ /** Id of the asset that leads this group; defaults to the block's `pinnedId`, then the `pinnedSymbol` match. */
+ pinnedId?:string;
 }
 export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  /** Heading. Defaults to the built-in “Account”. */
@@ -26,39 +55,73 @@ export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  onShowAddress?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */
  headerAction?:React.ReactNode;
- /** Total in dollars. Defaults to the sum of the asset values; `null` reads as unknown. */
+ /** Total in dollars. Defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is); `null` reads as unknown. */
  balance?:number|null;
- assets:readonly AccountAsset[];
+ /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */
+ assets?:readonly AccountAsset[];
+ /** Titled groups, each with its own total, drawn in the order given in place of the flat `assets` list. */
+ sections?:readonly AccountSection[];
  /** Symbol of the asset that is always first. Defaults to `USDC`. */
  pinnedSymbol?:string;
+ /** Id of the asset that is always first, in place of the `pinnedSymbol` match, for a holding whose symbol is not unique. */
+ pinnedId?:string;
+ /** Order of the rows after the pinned one: `value` (largest first, the default) or `given` (the order passed). */
+ order?:AccountOrder;
  /** Shows the deposit action beside the total. */
  onDeposit?:()=>void;
  /** Text of the deposit action. Defaults to the built-in “Deposit”. */
  depositLabel?:string;
- /** Makes each row a button that reports its asset. */
- onAssetSelect?:(asset:AccountAsset)=>void;
+ /** Makes each row a button that reports its asset, and with `sections` the section it is in. */
+ onAssetSelect?:(asset:AccountAsset,section?:AccountSection)=>void;
 }
 const usdCoin='USD Coin',usd={style:'currency',currency:'USD'} as const;
 /** Dollar value of a holding: its `value`, or `balance × price` when both are known. */
 export const assetValue=(asset:AccountAsset):number|null=>asset.value!==undefined?asset.value:asset.balance!=null&&asset.price!=null?asset.balance*asset.price:null;
-/** The account's rows in display order: the pinned asset (a zero placeholder when the account does not hold it), then every other asset by dollar value, largest first, unknown values last and ties by name. */
-export function accountRows(assets:readonly AccountAsset[],pinnedSymbol='USDC'):{pinned:AccountAsset;rest:AccountAsset[]}{
- const index=assets.findIndex(asset=>asset.symbol.toUpperCase()===pinnedSymbol.toUpperCase());
+/** The account's rows in display order: the pinned asset (the one with `options.pinnedId`, else the first with `pinnedSymbol`, else a zero placeholder), then every other asset by dollar value, largest first, unknown values last and ties by name, or with `options.order` `given` in the order passed. */
+export function accountRows(assets:readonly AccountAsset[],pinnedSymbol='USDC',options:AccountRowsOptions={}):{pinned:AccountAsset;rest:AccountAsset[]}{
+ const byId=options.pinnedId===undefined?-1:assets.findIndex(asset=>asset.id===options.pinnedId);
+ const index=byId>=0?byId:assets.findIndex(asset=>asset.symbol.toUpperCase()===pinnedSymbol.toUpperCase());
  const pinned=index>=0?assets[index]:{id:pinnedSymbol,name:pinnedSymbol==='USDC'?usdCoin:pinnedSymbol,symbol:pinnedSymbol,balance:0,value:0};
- const rest=assets.filter((_,position)=>position!==index).sort((a,b)=>{const left=assetValue(a),right=assetValue(b);return left===right?a.name.localeCompare(b.name):left===null?1:right===null?-1:right-left||a.name.localeCompare(b.name);});
+ const others=assets.filter((_,position)=>position!==index);
+ const rest=options.order==='given'?others:others.sort((a,b)=>{const left=assetValue(a),right=assetValue(b);return left===right?a.name.localeCompare(b.name):left===null?1:right===null?-1:right-left||a.name.localeCompare(b.name);});
  return {pinned,rest};
 }
+const sum=(assets:readonly AccountAsset[])=>assets.reduce((total,asset)=>total+(assetValue(asset)??0),0);
+/** A section's total: its own `total`, or the sum of its asset values. */
+export const accountSectionTotal=(section:AccountSection):number|null=>section.total!==undefined?section.total:sum(section.assets);
+/** The block total for `sections`: the sum of the section totals, or unknown (`null`) when any of them is unknown. Pass only the sections that are drawn. */
+const accountSectionsTotal=(sections:readonly AccountSection[]):number|null=>{let all=0;for(const section of sections){const total=accountSectionTotal(section);if(total===null)return null;all+=total;}return all;};
+/** A section's rows in display order: the pinned asset first when the section holds it (no placeholder), then the rest by dollar value as in `accountRows`. */
+export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol='USDC',options:AccountRowsOptions={}):{pinned:AccountAsset|null;rest:AccountAsset[]}{
+ const {pinned,rest}=accountRows(assets,pinnedSymbol,options);return {pinned:assets.includes(pinned)?pinned:null,rest};
+}
 /** An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. */
-export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets,pinnedSymbol='USDC',onDeposit,depositLabel,onAssetSelect,className,...rest}:AccountBlockProps){
- const {messages}=useHIG();const {pinned,rest:others}=accountRows(assets,pinnedSymbol);
- const total=balance!==undefined?balance:assets.reduce((sum,asset)=>sum+(assetValue(asset)??0),0);
- const row=(asset:AccountAsset,pin:boolean)=><li key={asset.id} data-pinned={pin||undefined}><AssetBalanceRow name={asset.name} symbol={asset.symbol} icon={asset.icon} value={assetValue(asset)} balance={pin?undefined:asset.balance??null} onSelect={onAssetSelect&&(()=>onAssetSelect(asset))}/></li>;
+export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol='USDC',pinnedId,order,onDeposit,depositLabel,onAssetSelect,className,...rest}:AccountBlockProps){
+ const {messages}=useHIG();const id=useId();
+ const shown=sections?.filter(section=>section.assets.length>0);
+ const total=balance!==undefined?balance:shown?accountSectionsTotal(shown):sum(assets);
+ const row=(asset:AccountAsset,pin:boolean,pinId:string|undefined,section?:AccountSection)=>{
+  // A row pinned by symbol is the dollar balance, so its units would repeat its value; a row pinned by id keeps its own units setting.
+  const value=assetValue(asset),units=(!pin||asset.id===pinId)&&asset.units!==false;
+  const select=onAssetSelect&&asset.selectable!==false?(section?()=>onAssetSelect(asset,section):()=>onAssetSelect(asset)):undefined;
+  return <li key={asset.id} data-pinned={pin||undefined}><AssetBalanceRow name={asset.name} symbol={asset.symbol} icon={asset.icon} value={value} balance={units?asset.balance??null:undefined} balanceOptions={asset.unitsOptions} unitsSuffix={asset.unitsSuffix} tag={asset.tag} headline={units&&value===null&&asset.balance!=null&&asset.unknownValue!=='dash'?'units':undefined} onSelect={select}/></li>;
+ };
+ let list:React.ReactNode;
+ if(shown)list=<div className='hig-account-sections'>{shown.map((section,index)=>{
+  const pinId=section.pinnedId??pinnedId;
+  const {pinned,rest:others}=accountSectionRows(section.assets,pinnedSymbol,{order:section.order??order,pinnedId:pinId}),heading=`${id}-section-${index}`;
+  return <section key={section.id} className='hig-account-section' aria-labelledby={heading}>
+   <div className='hig-account-section-header'><h3 id={heading}>{section.title}</h3><span className='hig-account-section-total'><AnimatedNumberReadout value={accountSectionTotal(section)} options={usd}/></span></div>
+   <ul className='hig-account-assets'>{pinned&&row(pinned,true,pinId,section)}{others.map(asset=>row(asset,false,pinId,section))}</ul>
+  </section>;
+ })}</div>;
+ else{const {pinned,rest:others}=accountRows(assets,pinnedSymbol,{order,pinnedId});list=<ul className='hig-account-assets'>{row(pinned,true,pinnedId)}{others.map(asset=>row(asset,false,pinnedId))}</ul>;}
  return <section {...rest} className={`hig-account-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title??messages.account??en.account} onBack={onBack} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}</button>)}/>
+  <ScreenHeader title={title??messages.account??en.account} onBack={onBack} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}<PressDecoration kind='back'/></button>)}/>
   <div className='hig-account-summary'>
    <div className='hig-account-balance'><AnimatedNumberReadout value={total} label={messages.accountBalance??en.accountBalance} options={usd}/></div>
    {onDeposit&&<Button onClick={onDeposit}>{depositLabel??messages.deposit??en.deposit}</Button>}
   </div>
-  <ul className='hig-account-assets'>{row(pinned,true)}{others.map(asset=>row(asset,false))}</ul>
+  {list}
  </section>;
 }

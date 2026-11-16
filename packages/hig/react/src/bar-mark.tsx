@@ -1,13 +1,17 @@
 "use client";
 import React,{useId} from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useHIG} from './provider.js';
+import {useNumberLocale} from './provider.js';
+import {AnimatedNumberReadout} from './animated-number.js';
+import {figureProps,type Figure} from './figure.js';
 /** Colour roles a segment can take. They follow the token palette (and a host's market colours) like any other role. */
 export type BarMarkTone='positive'|'info'|'warning'|'negative'|'muted'|'faint';
 /** The order segments take tones in when they name neither a `tone` nor a `color`. */
 export const barMarkTones:readonly BarMarkTone[]=['positive','info','warning','negative','muted','faint'];
-/** One part of the bar. `value` is in the host's own unit; only its share of the whole is drawn. `detail` is host-formatted text shown after the label, such as `12.4 GB`. `color` is a host hex for a category outside the tone roles. */
-export interface BarMarkElement {id?:string;label:string;value:number;tone?:BarMarkTone;color?:string;detail?:string}
+/** A legend amount that can change while the bar is shown: formatted with `options` between `prefix` and `suffix`, and updated place by place. `null` reads as unknown. */
+export type BarMarkFigure=Figure;
+/** One part of the bar. `value` is in the host's own unit; only its share of the whole is drawn. `detail` is shown after the label: host-formatted text, such as `12.4 GB`, or a live figure. `color` is a host hex for a category outside the tone roles. */
+export interface BarMarkElement {id?:string;label:string;value:number;tone?:BarMarkTone;color?:string;detail?:string|BarMarkFigure}
 export interface BarMarkProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  title:string;
  /** A line on the trailing edge of the title row, such as `59.2 GB of 64 GB used`. */
@@ -30,11 +34,11 @@ export function barMarkShares(elements:readonly BarMarkElement[],total?:number):
 }
 /** A one-dimensional stacked bar: a titled card whose single bar is divided among its elements, with a legend naming each part. */
 export function BarMark({title,description,elements,total,legend=true,size='default',surface=true,className,...rest}:BarMarkProps){
- const {locale}=useHIG();const id=useId();const {shares,rest:remainder}=barMarkShares(elements,total);
+ const locale=useNumberLocale();const id=useId();const {shares,rest:remainder}=barMarkShares(elements,total);
  const paint=(element:BarMarkElement,index:number)=>element.color?{style:{'--hig-bar-mark-color':element.color} as React.CSSProperties}:{'data-tone':element.tone??barMarkTones[index%barMarkTones.length]};
  return <section {...rest} className={`${surface?'hig-surface ':''}hig-bar-mark${className?` ${className}`:''}`} data-surface={surface?undefined:'false'} data-size={size==='small'?size:undefined} aria-labelledby={id}>
   <div className='hig-bar-mark-header'><strong id={id} className='hig-bar-mark-title'>{title}</strong>{description!=null&&<span className='hig-bar-mark-description'>{description}</span>}</div>
   <div className='hig-bar-mark-bar' aria-hidden='true'>{elements.map((element,index)=>shares[index]>0&&<span key={element.id??index} className='hig-bar-mark-segment' {...paint(element,index)} style={{...paint(element,index).style,flexGrow:shares[index]}}/>)}{remainder>0&&<span className='hig-bar-mark-rest' style={{flexGrow:remainder}}/>}</div>
-  <ul className={legend?'hig-bar-mark-legend':'hig-sr-only'}>{elements.map((element,index)=><li key={element.id??index}><span className='hig-bar-mark-dot' aria-hidden='true' {...paint(element,index)}/><span>{element.label}</span>{element.detail&&<span className='hig-bar-mark-detail'>{element.detail}</span>}<span className='hig-sr-only'>{formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})}</span></li>)}</ul>
+  <ul className={legend?'hig-bar-mark-legend':'hig-sr-only'}>{elements.map((element,index)=><li key={element.id??index}><span className='hig-bar-mark-dot' aria-hidden='true' {...paint(element,index)}/><span>{element.label}</span>{element.detail&&<span className='hig-bar-mark-detail'>{typeof element.detail==='string'?element.detail:<AnimatedNumberReadout {...figureProps(element.detail)}/>}</span>}<span className='hig-sr-only'>{formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})}</span></li>)}</ul>
  </section>;
 }

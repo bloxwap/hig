@@ -1,6 +1,6 @@
 {
   "version": "0.6.0",
-  "sourceCommit": "8a411152269f36659989860cc027be55ccba5ccb",
+  "sourceCommit": "4c6099ecd7a7b2f81128b23e14993f98d1712bd9",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -8,12 +8,12 @@
     "reactNative": "0.81.5"
   },
   "exports": {
-    "hig": 331
+    "hig": 343
   },
   "sizes": {
     "button": {
-      "raw": 1463,
-      "gzip": 801,
+      "raw": 1536,
+      "gzip": 836,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
@@ -25,8 +25,8 @@
       ]
     },
     "field": {
-      "raw": 653,
-      "gzip": 292,
+      "raw": 665,
+      "gzip": 296,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/index.js",
@@ -38,8 +38,8 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 4856,
-      "gzip": 2379,
+      "raw": 5008,
+      "gzip": 2449,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -55,8 +55,8 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 2404,
-      "gzip": 1175,
+      "raw": 2460,
+      "gzip": 1198,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -72,8 +72,8 @@
       ]
     },
     "nativeLink": {
-      "raw": 3525,
-      "gzip": 1692,
+      "raw": 3638,
+      "gzip": 1747,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/tokens/dist/theme.js",
@@ -96,11 +96,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2397140,
-      "gzip": 642171
+      "raw": 2551759,
+      "gzip": 657012
     },
     "docsCSS": {
-      "raw": 171228
+      "raw": 183135
     },
     "fonts": {
       "raw": 592796

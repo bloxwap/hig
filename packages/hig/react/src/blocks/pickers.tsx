@@ -1,9 +1,9 @@
 "use client";
-import React,{useEffect,useId,useMemo,useRef,useState} from 'react';
+import React,{useCallback,useEffect,useId,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {PressDecoration,useHIG} from '../provider.js';
 import {Button,IconButton} from '../button.js';
-import {Input,SearchInput} from '../field.js';
+import {Field,Input,SearchInput} from '../field.js';
 import {Filter} from '../selection.js';
 import {SwapIcon,SwapNumber,TokenIcon,usdNumber,addressGradient,chainsOf,fuzzyMatch,shortAddress,type SwapChain,type SwapToken} from './swap/shared.js';
 export type {SwapChain,SwapToken} from './swap/shared.js';
@@ -23,11 +23,30 @@ export interface PickerListProps {
  loading?:boolean;
  /** With a hardware pointer, focus the search field on mount so typing filters at once. */
  autoFocus?:boolean;
+ /** `false` leaves out the search field, for a short list. Defaults to `true`. */
+ search?:boolean;
+ /** Shows a token's balance when it is zero, where by default only a balance above zero is drawn. */
+ zeroBalances?:boolean;
+ /** A visible label over the search field, which then names it in place of the built-in hidden label. */
+ searchLabel?:string;
+ /** A ref to the search input, for example to focus it or register it with a host sheet. */
+ searchRef?:React.Ref<HTMLInputElement>;
+ /** Attributes for the search input, such as `name`, `autoComplete`, `data-1p-ignore` or `onFocus`/`onBlur`. The value and its change handler stay HIG's; a host `onKeyDown` runs before the list's arrow keys. */
+ searchInputProps?:PickerInputProps;
 }
-function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,autoFocus,label}:PickerListProps&{label:string}){
+/** Host attributes for a picker's input: anything an `<input>` takes, including `data-*`, except the value and its change handler. */
+export type PickerInputProps=Omit<React.InputHTMLAttributes<HTMLInputElement>,'value'|'defaultValue'|'onChange'|'type'|'children'>&{[attribute:`data-${string}`]:string|number|boolean|undefined};
+/** A row shows a known balance above zero, or a zero one when the host asks for it. */
+const showBalance=(token:SwapToken,zero?:boolean)=>token.balance!=null&&Number.isFinite(token.balance)&&(token.balance>0||(!!zero&&token.balance===0));
+/** One callback ref that sets each given ref. */
+function useMergedRef<T>(...refs:(React.Ref<T>|undefined)[]){
+ const latest=useRef(refs);latest.current=refs;
+ return useCallback((node:T|null)=>{for(const ref of latest.current){if(typeof ref==='function')ref(node);else if(ref)(ref as React.RefObject<T|null>).current=node;}},[]);
+}
+function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,autoFocus,search:searchable=true,zeroBalances,searchLabel,searchRef,searchInputProps,label}:PickerListProps&{label:string}){
  const {messages}=useHIG();const id=useId();
- const [query,setQuery]=useState('');const [chainId,setChainId]=useState<string|number|null>(null);const [active,setActive]=useState(0);
- const list=useRef<HTMLDivElement>(null);const search=useRef<HTMLInputElement>(null);
+ const [query,setQuery]=useState('');const [chainId,setChainId]=useState<string|number|null>(null);const [active,setActive]=useState(searchable?0:-1);
+ const list=useRef<HTMLDivElement>(null);const search=useRef<HTMLInputElement>(null);const searchInput=useMergedRef(search,searchRef);
  useEffect(()=>{if(autoFocus&&window.matchMedia?.('(pointer: fine)').matches)search.current?.focus();},[]);
  const options=useMemo(()=>chains??chainsOf(tokens),[chains,tokens]);
  // Hot tokens lead the unfiltered list; any search or chain filter shows one flat list.
@@ -39,7 +58,8 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
   if(!hot.length||hot.length===filtered.length)return {rows:filtered,hotCount:0};
   return {rows:[...hot,...filtered.filter(token=>!hot.includes(token))],hotCount:hot.length};
  },[tokens,hotTokenIds,query,chainId]);
- useEffect(()=>{setActive(0);},[query,chainId]);
+ // Without a search field there is no arrow-key cursor, so no row is highlighted until the pointer moves over one.
+ useEffect(()=>{setActive(searchable?0:-1);},[query,chainId,searchable]);
  useEffect(()=>{list.current?.querySelector('[data-active="true"]')?.scrollIntoView?.({block:'nearest'});},[active]);
  const onKeyDown=(event:React.KeyboardEvent)=>{
   if(event.key==='ArrowDown'){event.preventDefault();setActive(index=>Math.min(index+1,rows.length-1));}
@@ -50,11 +70,14 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
  const filters=[{value:'',label:messages.swapAllChains??en.swapAllChains},...options.map(chain=>({value:String(chain.chainId),label:chain.name,icon:chain.icon}))];
  const row=(token:SwapToken,index:number)=>{const isSelected=selected?.id===token.id;return <div role='listitem' key={token.id}><button type='button' className='hig-swap-row' data-active={index===active} data-selected={isSelected||undefined} onClick={()=>onSelect(token)} onPointerMove={()=>setActive(index)}>
   <TokenIcon token={token}/>
-  <span className='hig-swap-row-text'><strong>{token.name}</strong><span>{token.chain}{isSelected?' · '+(messages.swapSelected??en.swapSelected):''}</span></span>
-  {(token.balance??0)>0&&<span className='hig-swap-row-balance'><strong><SwapNumber value={token.balance} options={{maximumFractionDigits:6}}/></strong>{(token.price??0)>0&&<SwapNumber {...usdNumber((token.balance??0)*(token.price??0))}/>}</span>}
+  <span className='hig-swap-row-text'><strong>{token.name}</strong><span>{token.detail??token.chain}{isSelected?' · '+(messages.swapSelected??en.swapSelected):''}</span></span>
+  {showBalance(token,zeroBalances)&&<span className='hig-swap-row-balance'><strong><SwapNumber value={token.balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix}/></strong>{(token.price??0)>0&&<SwapNumber {...usdNumber((token.balance??0)*(token.price??0))}/>}</span>}
+  <PressDecoration kind='row'/>
  </button></div>;};
+ const searchName=messages.swapSearchTokens??en.swapSearchTokens;
+ const field=<SearchInput ref={searchInput} aria-label={searchLabel?undefined:searchName} placeholder={searchName} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false} {...searchInputProps} value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{searchInputProps?.onKeyDown?.(event);if(!event.defaultPrevented)onKeyDown(event);}}/>;
  return <>
-  <SearchInput ref={search} aria-label={messages.swapSearchTokens??en.swapSearchTokens} placeholder={messages.swapSearchTokens??en.swapSearchTokens} value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
+  {searchable&&(searchLabel?<Field label={searchLabel}>{field}</Field>:field)}
   {chainFilter&&options.length>1&&<Filter label={messages.swapChains??en.swapChains} options={filters} value={chainId===null?'':String(chainId)} onValueChange={next=>setChainId(options.find(chain=>String(chain.chainId)===next)?.chainId??null)}/>}
   {/* Lists hold only their rows: the empty text and the section headings sit outside them, and each section is its own named list. */}
   <div ref={list} className='hig-swap-list' aria-busy={loading||undefined}>
@@ -101,16 +124,23 @@ export interface ToPickerBlockProps extends Partial<PickerListProps> {
  addressPlaceholder?:string;
  /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */
  onScan?:()=>void;
+ /** A visible label over the address field, which then names it in place of the built-in hidden “Recipient”. */
+ addressLabel?:string;
+ /** A ref to the address input, for example to focus it or register it with a host sheet. */
+ addressRef?:React.Ref<HTMLInputElement>;
+ /** Attributes for the address input, such as `name='recipient'`, `data-1p-ignore`, `data-lpignore`, a mono `className` or `onFocus`/`onBlur`. The value and its change handler stay HIG's. */
+ addressInputProps?:PickerInputProps;
  className?:string;
 }
 /**
  * Where the assets go. On its own it is a destination address field with a scan button. With `tokens` it adds the
  * searchable token list, with the chain filter or, with `chainFilter={false}`, without it.
  */
-export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan,className,tokens,onSelect,...list}:ToPickerBlockProps){
- const {messages}=useHIG();const label=messages.swapTo??en.swapTo;
+export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan,addressLabel,addressRef,addressInputProps,className,tokens,onSelect,...list}:ToPickerBlockProps){
+ const {messages}=useHIG();const label=messages.swapTo??en.swapTo;const recipient=messages.swapRecipient??en.swapRecipient;
+ const row=onAddressChange&&<div className='hig-swap-wallet'><Input ref={addressRef} aria-label={addressLabel?undefined:recipient} placeholder={addressPlaceholder??recipient} autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false} {...addressInputProps} value={address??''} onChange={event=>onAddressChange(event.target.value)}/>{onScan&&<IconButton intent='secondary' label={messages.swapScan??en.swapScan} onClick={onScan}><SwapIcon name='scan'/></IconButton>}</div>;
  return <div className={`hig-picker${className?` ${className}`:''}`} role='group' aria-label={label}>
-  {onAddressChange&&<div className='hig-swap-wallet'><Input aria-label={messages.swapRecipient??en.swapRecipient} placeholder={addressPlaceholder??messages.swapRecipient??en.swapRecipient} value={address??''} onChange={event=>onAddressChange(event.target.value)} autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>{onScan&&<IconButton intent='secondary' label={messages.swapScan??en.swapScan} onClick={onScan}><SwapIcon name='scan'/></IconButton>}</div>}
+  {row&&(addressLabel?<Field label={addressLabel}>{row}</Field>:row)}
   {tokens&&onSelect&&<TokenList {...list} tokens={tokens} onSelect={onSelect} label={label}/>}
  </div>;
 }

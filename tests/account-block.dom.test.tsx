@@ -95,3 +95,49 @@ describe('AccountBlock',()=>{
   expect(rule('.hig-account-assets {')).toContain('gap:8px');expect(css.filter(line=>/^\.hig-(asset-row|account)/.test(line)).join('\n')).not.toMatch(/\b(left|right)\b/);
  });
 });
+describe('AccountBlock host options',()=>{
+ const perp:AccountAsset={id:'perp-usdc',name:'USD Coin',symbol:'USDC',value:500,units:false};
+ const bloxwap:AccountAsset={id:'blox',name:'Bloxwap',symbol:'BLOX',balance:1234.5,value:null};
+ it('draws titled sections with their own totals in the order given, 24 apart, in place of the flat list',async()=>{
+  const select=vi.fn();
+  render(<AccountBlock sections={[
+   {id:'exchange',title:'Exchange',assets:[perp,{...hype,id:'perp-hype'}]},
+   {id:'empty',title:'Nothing',assets:[]},
+   {id:'wallet',title:'Wallet',total:999,assets:[sol,usdc,bloxwap]},
+  ]} onAssetSelect={select}/>);
+  const groups=[...document.querySelectorAll('.hig-account-section')];expect(groups).toHaveLength(2);
+  expect(groups.map(group=>group.querySelector('h3')!.textContent)).toEqual(['Exchange','Wallet']);
+  expect(screen.getByRole('region',{name:'Wallet'})).toBe(groups[1]);
+  expect(groups.map(group=>spoken(group.querySelector('.hig-account-section-total')!))).toEqual(['$1,259.00','$999.00']);
+  // The block total sums the section totals.
+  expect(spoken(document.querySelector('.hig-account-balance')!)).toBe('Total balance: $2,258.00');
+  // A section's pinned asset leads when it holds one; no zero placeholder is added.
+  expect([...groups[0].querySelectorAll('li')].map(spoken)).toEqual(['USDUSD CoinUSDC$500.00','HYPHyperliquidHYPE$759.0013.2']);
+  expect([...groups[1].querySelectorAll('li')].map(item=>item.getAttribute('data-pinned'))).toEqual(['true',null,null]);
+  await userEvent.click(within(groups[1] as HTMLElement).getAllByRole('button')[1]);expect(select).toHaveBeenCalledWith(sol,expect.objectContaining({id:'wallet'}));
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
+  expect(rule('.hig-account-sections {')).toContain('gap:24px');expect(rule('.hig-account-section {')).toContain('gap:8px');
+ });
+ it('totals only the sections it draws, and the total is unknown when a drawn section total is unknown',()=>{
+  const balance=()=>spoken(document.querySelector('.hig-account-balance')!);
+  const view=render(<AccountBlock sections={[{id:'stake',title:'Staking',total:500,assets:[]},{id:'wallet',title:'Wallet',assets:[usdc]}]}/>);
+  expect(screen.queryByRole('region',{name:'Staking'})).toBeNull();expect(balance()).toBe('Total balance: $100.33');
+  view.rerender(<AccountBlock sections={[{id:'perps',title:'Perps',total:null,assets:[perp]},{id:'wallet',title:'Wallet',assets:[usdc]}]}/>);expect(balance()).toBe('Total balance: —');
+  view.rerender(<AccountBlock sections={[{id:'perps',title:'Perps',total:null,assets:[]},{id:'wallet',title:'Wallet',assets:[usdc]}]}/>);expect(balance()).toBe('Total balance: $100.33');
+ });
+ it('hides a units line, makes a row plain, formats units, and headlines units when the value is unknown',async()=>{
+  const select=vi.fn();
+  render(<AccountBlock assets={[usdc,{...sol,selectable:false},perp,{...eth,unitsOptions:{minimumFractionDigits:4,maximumFractionDigits:4}},bloxwap]} onAssetSelect={select}/>);
+  const rows=screen.getAllByRole('listitem');
+  expect(rows.map(spoken)).toEqual(['USDUSD CoinUSDC$100.33','USDUSD CoinUSDC$500.00','SOLSolanaSOL$203.001.42','ETHEtherETH$176.060.0500','BLOBloxwapBLOX1,234.5']);
+  expect(rows[4].querySelectorAll('.hig-asset-row-amounts > *')).toHaveLength(1);expect(rows[4].querySelector('.hig-asset-row-amounts > strong')).toBeTruthy();
+  expect(rows[1].querySelectorAll('.hig-asset-row-amounts > *')).toHaveLength(1);
+  expect(rows[2].querySelector('button')).toBeNull();expect(rows[2].querySelector('.hig-asset-row')!.tagName).toBe('DIV');
+  await userEvent.click(within(rows[4]).getByRole('button'));expect(select).toHaveBeenCalledWith(bloxwap);
+ });
+ it('AssetBalanceRow headline units puts the units on the headline line; the default stays value over units',()=>{
+  const view=render(<AssetBalanceRow name='Bloxwap' symbol='BLOX' value={null} balance={1234.5} headline='units'/>);
+  expect(spoken(document.querySelector('.hig-asset-row-amounts')!)).toBe('1,234.5');expect(document.querySelectorAll('.hig-asset-row-amounts > *')).toHaveLength(1);
+  view.rerender(<AssetBalanceRow name='Bloxwap' symbol='BLOX' value={null} balance={1234.5}/>);expect(spoken(document.querySelector('.hig-asset-row-amounts')!)).toBe('—1,234.5');
+ });
+});

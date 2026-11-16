@@ -34,7 +34,39 @@ export function safeNumberLayout(text:string,direction:string):boolean{
  return true;
 }
 
-export function createNumberReelModel(value:number|null|undefined,locale:string,options:Intl.NumberFormatOptions|undefined,formattedValue:string|undefined,direction:string):NumberReelModel|null{
+const asciiDigits:readonly string[]=['0','1','2','3','4','5','6','7','8','9'];
+/** The ten digit glyphs of a locale's numbering system, or `null` when Intl cannot name them one character each. */
+function localeDigits(locale:string):readonly string[]|null{
+ try{
+  const numberingSystem=new Intl.NumberFormat(locale).resolvedOptions().numberingSystem;
+  const digitFormatter=new Intl.NumberFormat(locale,{numberingSystem,useGrouping:false,minimumFractionDigits:0,maximumFractionDigits:0});
+  const digits=Array.from({length:10},(_,digit)=>{const formatted=digitFormatter.format(digit);return Array.from(formatted).length===1?formatted:'';});
+  return digits.every(Boolean)&&new Set(digits).size===10?digits:null;
+ }catch{return null;}
+}
+/**
+ * Reels for host-formatted text: every digit of `text` (ASCII, or the locale's own digits) becomes a reel keyed by its place
+ * counted from the end, and everything else stays as written. Used for a figure's `formattedValue` when the host formats
+ * numbers itself, for example because the runtime's Intl does not match its number table.
+ */
+export function createFormattedReelModel(text:string,locale:string,direction:string):NumberReelModel|null{
+ if(!text||!safeNumberLayout(text,direction))return null;
+ const characters=Array.from(text),ascii=characters.some(character=>asciiDigits.includes(character));
+ const digits=ascii?asciiDigits:localeDigits(locale);if(!digits)return null;
+ const count=characters.filter(character=>digits.includes(character)).length;if(!count)return null;
+ const tokens:NumberReelToken[]=[];let run='',seen=0;
+ const flush=()=>{if(run){tokens.push({key:`static:${tokens.length}`,kind:'static',type:'literal',value:run,partIndex:tokens.length});run='';}};
+ for(const character of characters){
+  const digit=digits.indexOf(character);
+  if(digit<0){run+=character;continue;}
+  flush();const place=count-++seen;
+  tokens.push({key:`digit:${place}`,kind:'digit',type:'integer',value:character,partIndex:tokens.length,digit,place});
+ }
+ flush();
+ return {canonical:text,digits,tokens};
+}
+export function createNumberReelModel(value:number|null|undefined,locale:string,options:Intl.NumberFormatOptions|undefined,formattedValue:string|undefined,direction:string,animateFormatted=false):NumberReelModel|null{
+ if(typeof value==='number'&&Number.isFinite(value)&&formattedValue&&animateFormatted&&typeof Intl!=='undefined')return createFormattedReelModel(formattedValue,locale,direction);
  if(typeof value!=='number'||!Number.isFinite(value)||formattedValue||direction!=='ltr'||typeof Intl==='undefined'||typeof Intl.NumberFormat!=='function')return null;
  try{
   const formatter=new Intl.NumberFormat(locale,options);if(typeof formatter.formatToParts!=='function')return null;

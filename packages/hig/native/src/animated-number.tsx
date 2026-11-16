@@ -2,14 +2,17 @@ import React,{useEffect,useRef,useState} from 'react';
 import {PixelRatio,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type TextStyle} from 'react-native';
 import Reanimated,{cancelAnimation,Easing,ReduceMotion,useAnimatedStyle,useSharedValue,withTiming} from 'react-native-reanimated';
 import * as en from '@bloxwap/hig/contracts/messages';
+import {presentNumberFormat} from '@bloxwap/hig/contracts';
 import {tokens} from '@bloxwap/hig/tokens';
 import {type NumberProps} from './data.js';
 import {createNumberReelModel,formatNumberReadout,numberTrendDirection,safeNumberLayout,type NumberTrend} from './animated-number-model.js';
-import {useColors,useHIG} from './provider.js';
+import {useColors,useHIG,useNumberLocale} from './provider.js';
 import {detectScript,Text,type TextScript} from './surface.js';
 
 export type AnimatedNumberTrend=NumberTrend;
-export interface AnimatedNumberProps extends NumberProps {duration?:number;trend?:AnimatedNumberTrend}
+export interface AnimatedNumberProps extends NumberProps {duration?:number;trend?:AnimatedNumberTrend;
+ /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */
+ animateFormatted?:boolean}
 const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
 // Android Fabric reads colour 0 as "unset", so 'transparent' (0x00000000) drew the hidden reading in the default
 // black under the reels. Clear white is non-zero there and still invisible.
@@ -49,16 +52,17 @@ function recordGlyph(measurements:React.MutableRefObject<{key:string;values:Map<
  setMetrics(current=>current?.key===key&&current.width===measuredWidth&&current.height===measuredHeight?current:{key,width:measuredWidth,height:measuredHeight});
 }
 
-export function AnimatedNumberReadout({value,options,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier,trend,prefix,suffix,duration=180}:AnimatedNumberProps){
- const {locale,messages,direction,reducedMotion,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript,maxFontSizeMultiplier:providerMaxFontSizeMultiplier}=useHIG(),colors=useColors();
+export function AnimatedNumberReadout({value,options:requested,formattedValue,animateFormatted,stale,label,tone='text',style,testID,maxFontSizeMultiplier,trend,prefix,suffix,duration=180}:AnimatedNumberProps){
+ const locale=useNumberLocale();
+ const {messages,direction,reducedMotion,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript,maxFontSizeMultiplier:providerMaxFontSizeMultiplier,numberFormat}=useHIG(),colors=useColors();const options=presentNumberFormat(requested,numberFormat);
  const reading=formatNumberReadout(value,locale,options,formattedValue,prefix,suffix),staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  const previousValue=useRef(value),directionTrend=numberTrendDirection(trend,previousValue.current,value);
  useEffect(()=>{previousValue.current=value;},[value]);
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
- const color=colors[tone==='positive'||tone==='negative'||tone==='muted'||tone==='up'||tone==='down'?tone:'text'];
+ const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
  const textStyle:StyleProp<TextStyle>=[typography,{color,fontVariant:['tabular-nums']}];
  const script=detectScript(`${reading.text}${staleSuffix}`,locale);
- const model=createNumberReelModel(value,locale,options,formattedValue,direction);
+ const model=createNumberReelModel(value,locale,options,formattedValue,direction,animateFormatted);
  const safeModel=model&&safeNumberLayout(`${prefix??''}${suffix??''}${staleSuffix}`,direction)?model:null;
  let fontScale=0;try{fontScale=PixelRatio.getFontScale();}catch{/* Static until native font metrics are available. */}
  const measurementKey=JSON.stringify([safeModel?.digits,typography,fontScale,maxFontSizeMultiplier,providerMaxFontSizeMultiplier,script,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript]);

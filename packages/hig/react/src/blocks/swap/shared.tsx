@@ -1,6 +1,8 @@
 "use client";
 import React from 'react';
 import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../animated-number.js';
+import {PressDecoration} from '../../provider.js';
+import {figureProps} from '../../figure.js';
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
 export interface SwapToken {
  /** Unique per asset and chain, for example `${chainId}-${address}`. */
@@ -20,6 +22,10 @@ export interface SwapToken {
  caption?:string|SwapFigure;
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
+ /** Picker rows: host text after the balance figure, such as ` HYPE`. */
+ unitsSuffix?:string;
+ /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */
+ detail?:string;
 }
 /** An image URL, or an element the host draws. */
 export type SwapArtwork=string|React.ReactElement;
@@ -72,9 +78,11 @@ export function SwapNumber({template,...number}:AnimatedNumberProps&{template?:(
  return <span>{before}<AnimatedNumberReadout {...number}/>{after}</span>;
 }
 /** A figure the host supplies as a number so it can update place by place: `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
-export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;
+ /** Host-formatted text for `value`, drawn and read in place of Intl's and still moving place by place. Never parsed back. */
+ formattedValue?:string}
 /** Host text that is either a fixed string or a live figure. */
-export const swapFigure=(text:string|SwapFigure)=>typeof text==='string'?text:<SwapNumber value={text.value} options={text.options} prefix={text.prefix} suffix={text.suffix}/>;
+export const swapFigure=(text:string|SwapFigure)=>typeof text==='string'?text:<SwapNumber {...figureProps(text)}/>;
 /** `SwapNumber` props for a dollar amount and for a slippage fraction (0.005 reads `0.5%`). */
 export const usdNumber=(value:number|null|undefined)=>({value,options:{style:'currency',currency:'USD'}} as const);
 export const percentNumber=(fraction:number)=>({value:Number((fraction*100).toFixed(4)),suffix:'%',options:{maximumFractionDigits:4,useGrouping:false}} as const);
@@ -124,11 +132,11 @@ export function TokenIcon({token,size=44}:{token:SwapToken;size?:number}){
  </span>;
 }
 /** Small capsule action that sits on a card: Max, Test, the slippage setting and the denomination switch. */
-export function SwapPill({children,...props}:React.ButtonHTMLAttributes<HTMLButtonElement>){return <button type='button' {...props} className='hig-swap-pill'>{children}</button>;}
+export function SwapPill({children,...props}:React.ComponentPropsWithRef<'button'>){return <button type='button' {...props} className='hig-swap-pill'>{children}<PressDecoration kind='button' disabled={!!props.disabled}/></button>;}
 const keys=['1','2','3','4','5','6','7','8','9','.','0','back'];
 /** Numeric keypad. Emits `0`–`9`, `.` or `back`. */
 export function SwapKeypad({onKey,label,deleteLabel}:{onKey:(key:string)=>void;label:string;deleteLabel:string}){
- return <div className='hig-swap-keypad' role='group' aria-label={label}>{keys.map(key=><button key={key} type='button' className='hig-swap-key' aria-label={key==='back'?deleteLabel:undefined} onClick={()=>onKey(key)}>{key==='back'?<SwapIcon name='delete' size={24}/>:key}</button>)}</div>;
+ return <div className='hig-swap-keypad' role='group' aria-label={label}>{keys.map(key=><button key={key} type='button' className='hig-swap-key' aria-label={key==='back'?deleteLabel:undefined} onClick={()=>onKey(key)}>{key==='back'?<SwapIcon name='delete' size={24}/>:key}<PressDecoration kind='button'/></button>)}</div>;
 }
 /** Chains present in a token list, in first-seen order. */
 export function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}
@@ -137,5 +145,5 @@ export type SwapView='main'|'from'|'to'|'settings'|'slippage'|'fees';
 export const parentView=(view:SwapView):SwapView=>view==='slippage'||view==='fees'?'settings':'main';
 /** Header of a pushed view: Back on the leading edge, then the title, which takes focus when the view arrives. */
 export function SwapViewHeader({title,titleRef,backLabel,onBack}:{title:string;titleRef:React.Ref<HTMLHeadingElement>;backLabel:string;onBack:()=>void}){
- return <div className='hig-swap-view-header'><button type='button' className='hig-swap-back' aria-label={backLabel} onClick={onBack}><SwapIcon name='back'/></button><h2 ref={titleRef} tabIndex={-1} className='hig-swap-view-title'>{title}</h2></div>;
+ return <div className='hig-swap-view-header'><button type='button' className='hig-swap-back' aria-label={backLabel} onClick={onBack}><SwapIcon name='back'/><PressDecoration kind='back'/></button><h2 ref={titleRef} tabIndex={-1} className='hig-swap-view-title'>{title}</h2></div>;
 }

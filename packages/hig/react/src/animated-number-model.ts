@@ -33,6 +33,23 @@ export function createAnimatedNumberModel(value:number|null|undefined,locale:str
  }
  return tokens.some(token=>token.digit)?{reading,tokens,animatable:true}:staticModel(reading);
 }
+/**
+ * A model for host-formatted text. Without `animate` it is the text as one static token. With it, every digit of the text
+ * (ASCII, or the locale's own digits) is a place keyed by its position counted from the end, so a host's own number table
+ * still moves place by place; everything else stays as written.
+ */
+export function createFormattedAnimatedNumberModel(text:string,locale:string,animate:boolean):AnimatedNumberModel{
+ if(!animate)return staticModel(text);
+ const ascii=['0','1','2','3','4','5','6','7','8','9'];let local:readonly string[]|null=null;
+ try{local=digitsFor(new Intl.NumberFormat(locale));}catch{local=null;}
+ const characters=Array.from(text),values=characters.map(character=>{const own=ascii.indexOf(character);return own>=0?own:local?local.indexOf(character):-1;});
+ const count=values.filter(value=>value>=0).length;if(!count)return staticModel(text);
+ const tokens:AnimatedNumberToken[]=[];let run='',seen=0;
+ const flush=()=>{if(run){tokens.push({key:`literal:${tokens.length}`,text:run,digit:false});run='';}};
+ characters.forEach((character,index)=>{const value=values[index];if(value<0){run+=character;return;}flush();const place=count-++seen;tokens.push({key:`digit:number:${place}`,text:character,digit:true,value,place,section:'number'});});
+ flush();
+ return {reading:text,tokens,animatable:true};
+}
 export function createAnimatedNumberTransitions(previous:AnimatedNumberModel|null,next:AnimatedNumberModel):readonly AnimatedNumberTransitionToken[]{
  if(!previous?.animatable||!next.animatable)return next.tokens.map(token=>({...token,changed:false}));
  const oldDigits=new Map(previous.tokens.filter(token=>token.digit).map(token=>[token.key,token]));const nextDigits=new Set(next.tokens.filter(token=>token.digit).map(token=>token.key));

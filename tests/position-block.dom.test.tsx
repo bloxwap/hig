@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen} from '@testing-library/react';
+import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -62,5 +62,60 @@ describe('PositionBlock',()=>{
  it('draws the summary directly on the screen, with no card',()=>{
   const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-details {'))??'';
   expect(rule).toContain('padding-inline:20px');expect(rule).not.toMatch(/background|border-radius/);
+ });
+});
+describe('PositionBlock host slots',()=>{
+ it('strikes a waived value through, reads the host word after it, and draws a label accessory',async()=>{
+  const explain=vi.fn();
+  render(<PositionBlock {...base} details={[{id:'fee',label:'Fee',value:{value:0.53,options:usd},tone:'muted',struck:'Waived',labelAccessory:<button type='button' onClick={explain}>Genesis</button>},{label:'Notional',value:'$400'}]}/>);
+  const fee=document.querySelector('.hig-position-details > div')!;
+  expect(fee.querySelector('dd > .hig-position-struck .hig-animated-number-visual')).not.toBeNull();expect(spoken(fee.querySelector('dd')!)).toBe('$0.53 Waived');expect(fee.querySelector('dd > .hig-sr-only')!.textContent).toBe(' Waived');
+  expect(fee.querySelector('dt > .hig-position-label-accessory > button')!.textContent).toBe('Genesis');await userEvent.click(screen.getByRole('button',{name:'Genesis'}));expect(explain).toHaveBeenCalledTimes(1);
+  expect(document.querySelectorAll('.hig-position-struck')).toHaveLength(1);expect(document.querySelectorAll('.hig-position-label-accessory')).toHaveLength(1);
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain('.hig-position-struck::after');
+ });
+ it('toggles the paper trading switch from anywhere on its row, once, and not when disabled',async()=>{
+  const change=vi.fn();const view=render(<PositionBlock {...base} paperTrade={{label:'Paper trade',checked:false,onCheckedChange:change}} groups={[]}/>);
+  const row=document.querySelector<HTMLElement>('.hig-position-flag .hig-list-row')!;
+  await userEvent.click(row.querySelector('.hig-list-row-label')!);expect(change).toHaveBeenCalledTimes(1);expect(change).toHaveBeenLastCalledWith(true);
+  await userEvent.click(screen.getByRole('switch'));expect(change).toHaveBeenCalledTimes(2);
+  view.rerender(<PositionBlock {...base} paperTrade={{label:'Paper trade',checked:false,onCheckedChange:change,disabled:true}} groups={[]}/>);
+  await userEvent.click(document.querySelector('.hig-position-flag .hig-list-row-label')!);expect(change).toHaveBeenCalledTimes(2);
+ });
+ it('draws an action on the paper trading row card, under the switch, without toggling it',async()=>{
+  const change=vi.fn(),harvest=vi.fn();
+  const view=render(<PositionBlock {...base} paperTrade={{label:'Farming',checked:true,onCheckedChange:change,action:{label:'Harvest',onSelect:harvest}}} groups={[]}/>);
+  const card=document.querySelector('.hig-position-flag .hig-position-flag-card')!;expect(card.children[0].classList.contains('hig-list-row')).toBe(true);
+  const button=within(card as HTMLElement).getByRole('button',{name:'Harvest'});expect(button.closest('.hig-position-flag-action')).not.toBeNull();expect(button.getAttribute('data-intent')).toBe('primary');
+  await userEvent.click(button);expect(harvest).toHaveBeenCalledTimes(1);expect(change).not.toHaveBeenCalled();
+  view.rerender(<PositionBlock {...base} paperTrade={{label:'Farming',checked:true,onCheckedChange:change,action:{label:'Confirm harvest',onSelect:harvest,intent:'destructive',busy:true}}} groups={[]}/>);
+  const busy=screen.getByRole('button',{name:/Confirm harvest/}) as HTMLButtonElement;expect(busy.getAttribute('data-intent')).toBe('destructive');expect(busy.disabled).toBe(true);expect(busy.getAttribute('aria-busy')).toBe('true');
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-flag-action {'))??'';expect(rule).toContain('padding:4px 20px 16px');
+ });
+ it('takes switch rows and live figures inside the groups',async()=>{
+  const change=vi.fn();
+  render(<PositionBlock {...base} groups={[[{id:'size',label:'Size',value:{value:10,options:usd},onSelect:()=>{}},{id:'reduce',label:'Reduce only',checked:false,onCheckedChange:change}]]}/>);
+  const rows=[...document.querySelectorAll<HTMLElement>('.hig-position-groups .hig-list-row')];
+  expect(rows[0].tagName).toBe('BUTTON');expect(rows[0].querySelector('.hig-list-row-value .hig-animated-number-visual')).not.toBeNull();expect(spoken(rows[0].querySelector('.hig-list-row-value')!)).toBe('$10.00');
+  expect(rows[1].tagName).toBe('DIV');const toggle=screen.getByRole('switch',{name:'Reduce only'}) as HTMLInputElement;expect(toggle.checked).toBe(false);
+  await userEvent.click(rows[1].querySelector('.hig-list-row-label')!);expect(change).toHaveBeenCalledWith(true);expect(change).toHaveBeenCalledTimes(1);
+ });
+ it('pins the header only with stickyHeader, and names the heading with headingId',()=>{
+  const view=render(<PositionBlock {...base}/>);expect(document.querySelector('.hig-screen-header')!.hasAttribute('data-sticky')).toBe(false);
+  view.rerender(<PositionBlock {...base} stickyHeader headingId='position-title'/>);expect(document.querySelector('.hig-position-block > .hig-screen-header')!.getAttribute('data-sticky')).toBe('true');
+  expect(screen.getByRole('heading',{name:'Position'}).id).toBe('position-title');
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-screen-header[data-sticky] {'))??'';expect(rule).toContain('position:sticky');expect(rule).toContain('inset-block-start:0');expect(rule).toContain('background-color:transparent');
+ });
+ it('passes attributes through to Back and Close (Unreleased)',()=>{
+  render(<PositionBlock {...base} onBack={()=>{}} onClose={()=>{}} backProps={{'data-host':'back'} as never} closeProps={{'data-host':'close'} as never}/>);
+  expect(screen.getByRole('button',{name:'Back'}).getAttribute('data-host')).toBe('back');expect(screen.getByRole('button',{name:'Close'}).getAttribute('data-host')).toBe('close');
+ });
+ it('draws the press decoration on the paper trading action (Unreleased)',()=>{
+  render(<HIGProvider pressDecoration={({kind})=><i data-kind-host={kind}/>}><PositionBlock {...base} paperTrade={{label:'Paper trade',checked:true,onCheckedChange:()=>{},action:{label:'Harvest',onSelect:()=>{}}}}/></HIGProvider>);
+  expect(screen.getByRole('button',{name:'Harvest'}).querySelector('.hig-press-decoration [data-kind-host="button"]')).toBeTruthy();
+ });
+ it('draws a live figure with host-formatted text, such as Leverage (Unreleased)',()=>{
+  render(<PositionBlock {...base} groups={[[{id:'leverage',label:'Leverage',value:{value:40,suffix:'×',formattedValue:'40'},onSelect:()=>{}}]]}/>);
+  expect(screen.getByRole('button',{name:/Leverage/}).textContent).toContain('40×');
  });
 });

@@ -1,21 +1,27 @@
 "use client";
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {type NumberProps} from './data.js';
-import {createAnimatedNumberModel,createAnimatedNumberTransitions} from './animated-number-model.js';
-import {useHIG} from './provider.js';
+import {createAnimatedNumberModel,createAnimatedNumberTransitions,createFormattedAnimatedNumberModel} from './animated-number-model.js';
+import {useHIG,useNumberLocale} from './provider.js';
 import {tokens as higTokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
+import {presentNumberFormat} from '@bloxwap/hig/contracts';
 export type AnimatedNumberTrend=-1|0|1|((oldValue:number,newValue:number)=>-1|0|1);
-export interface AnimatedNumberProps extends NumberProps {duration?:number;trend?:AnimatedNumberTrend}
-export function AnimatedNumberReadout({duration=180,trend,...props}:AnimatedNumberProps){
- const {locale,direction,reducedMotion,messages}=useHIG();const element=useRef<HTMLSpanElement>(null);const previous=useRef<{value:number|null|undefined;signature:string;model:ReturnType<typeof createAnimatedNumberModel>}|null>(null);const generation=useRef(0);const active=useRef<Animation[]>([]);
- const signature=JSON.stringify([locale,direction,props.options??{}]);
- const frame=useMemo(()=>{const model=createAnimatedNumberModel(props.value,locale,props.options),prior=previous.current,changed=!!prior&&prior.signature===signature&&!Object.is(prior.value,props.value);let movement:-1|0|1=0;
+export interface AnimatedNumberProps extends NumberProps {duration?:number;trend?:AnimatedNumberTrend;
+ /** Host-formatted text for a finite `value`, drawn in place of the Intl reading and read the same way, for a host whose number table the browser's Intl does not match. Never parse it back. Empty text falls back to Intl. Unknown values still read as the dash. */
+ formattedValue?:string;
+ /** With `formattedValue`, moves the host's text place by place: each digit rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static. */
+ animateFormatted?:boolean}
+export function AnimatedNumberReadout({duration=180,trend,options:requested,formattedValue,animateFormatted=false,...rest}:AnimatedNumberProps){
+ const locale=useNumberLocale();const {direction,reducedMotion,messages,numberFormat}=useHIG();const props={...rest,options:presentNumberFormat(requested,numberFormat)};const element=useRef<HTMLSpanElement>(null);const previous=useRef<{value:number|null|undefined;signature:string;model:ReturnType<typeof createAnimatedNumberModel>}|null>(null);const generation=useRef(0);const active=useRef<Animation[]>([]);
+ const known=props.value!=null&&Number.isFinite(props.value),own=known&&!!formattedValue;
+ const signature=JSON.stringify([locale,direction,props.options??{},own,own&&animateFormatted]);
+ const frame=useMemo(()=>{const model=own?createFormattedAnimatedNumberModel(formattedValue as string,locale,animateFormatted):createAnimatedNumberModel(props.value,locale,props.options),prior=previous.current,changed=!!prior&&prior.signature===signature&&!Object.is(prior.value,props.value);let movement:-1|0|1=0;
   if(changed&&prior&&model.animatable&&prior.model.animatable&&Number.isFinite(prior.value)&&Number.isFinite(props.value)){const requested=typeof trend==='function'?trend(prior.value as number,props.value as number):trend??Math.sign((props.value as number)-(prior.value as number));movement=requested===-1||requested===1?requested:0;}
   return {model,changed,movement,tokens:createAnimatedNumberTransitions(changed?prior?.model??null:null,model)};
- },[props.value,signature]);
+ },[props.value,signature,formattedValue]);
  const [settled,setSettled]=useState<typeof frame|null>(null);
- const known=props.value!=null&&Number.isFinite(props.value),reading=known?`${props.prefix??''}${frame.model.reading}${props.suffix??''}`:frame.model.reading,staleText=messages.stale??en.stale,accessible=`${props.label?`${props.label}: `:''}${reading}${props.stale?` ${staleText}`:''}`;
+ const reading=known?`${props.prefix??''}${frame.model.reading}${props.suffix??''}`:frame.model.reading,staleText=messages.stale??en.stale,accessible=`${props.label?`${props.label}: `:''}${reading}${props.stale?` ${staleText}`:''}`;
  useEffect(()=>{const id=++generation.current;const cancel=()=>{const running=active.current;active.current=[];for(const animation of running){animation.onfinish=null;animation.cancel();}};cancel();previous.current={value:props.value,signature,model:frame.model};
   if(!frame.changed)return;
   if(reducedMotion||!Number.isFinite(duration)||duration<=0||!frame.model.animatable){setSettled(frame);return;}

@@ -95,3 +95,37 @@ it('draws one bar from entry to exit without a card in place of two rows, and no
  view=mount({labels:{...labels,entry:'Entry',exit:'Exit'},entry:267.6,exit:267.18,priceOptions:{style:'currency',currency:'USD'}});
  expect(view.findByType(BarPnl).props).toEqual({testID:'trade-bar',surface:false,fit:true,side:'short',entry:267.6,mark:267.18,labels:{entry:'Entry',mark:'Exit',liquidation:''},priceOptions:{style:'currency',currency:'USD'}});
 });
+describe('host slots (Unreleased)',()=>{
+ it('draws a badge beside the title, read with it, and leaves the plain title without one',()=>{
+  let view=mount({badge:'Demo'});
+  const heading=all(view,'trade-header')[0].findAll(node=>node.props.accessibilityRole==='header'&&typeof node.type==='string')[0];
+  expect(heading.props.accessibilityLabel).toBe('Trade, Demo');expect(text(host(view,'trade-badge'))).toBe('Demo');expect(host(view,'trade-title').props.accessible).toBe(false);
+  view=mount();expect(host(view,'trade-badge')).toBeUndefined();expect(host(view,'trade-title').props.accessibilityRole).toBe('header');
+ });
+ it('takes host formats for the headline and the return; the headline follows the provider money presentation',()=>{
+  const view=mount({pnlOptions:{style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:2},percentOptions:{style:'percent',maximumFractionDigits:1,signDisplay:'exceptZero'}},{locale:'fr-FR',numberFormat:{currencyDisplay:'narrowSymbol'}});
+  expect(figure(view).props.options).toEqual({style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:2});
+  expect(host(view,'trade-pnl-value').props.accessibilityLabel.replace(/\s/g,' ')).toBe('Net PnL: +1,42 $');
+  expect(host(view,'trade-pnl-percent').props.accessibilityLabel.replace(/\s/g,' ')).toBe('+2,8 % on margin');
+ });
+ it('draws a note under the details, a leverage note, a symbol fallback and a capture ref around the summary',()=>{
+  const ref=React.createRef();
+  const view=mount({testID:'block',note:'Part of this record is missing.',leverageNote:'current',symbol:'AMZN',summaryRef:ref,actions:[{id:'share',label:'Share',onSelect(){}}]});
+  expect(text(host(view,'trade-note'))).toBe('Part of this record is missing.');expect(flat(host(view,'trade-note'))).toMatchObject({marginTop:16,color:nativeSrgb.muted});
+  expect(text(host(view,'trade-leverage-note'))).toBe('current');expect(host(view,'trade-asset').props.accessibilityLabel).toBe('Amazon, Short, 20×, current');
+  expect(host(view,'trade-asset').findAll(node=>node.type==='Text').map(text)).toContain('AMZN');
+  const summary=host(view,'trade-summary');expect(summary.props.collapsable).toBe(false);expect(summary.children.map(child=>child.props.testID)).toEqual(['trade-asset','trade-pnl']);expect(ref.current).toBeTruthy();
+  const order=host(view,'block').children.map(child=>child.props.testID);expect(order).toEqual(['trade','trade-summary','trade-details','trade-note','trade-actions']);expect(has(view,'trade-header')).toBe(true);
+  expect(host(mount(),'trade-summary')).toBeUndefined();
+ });
+ it('fills the captured summary with summaryBackground, draws host-formatted details and pins the header (Unreleased)',()=>{
+  const {ScrollView}=require('react-native');const ref=React.createRef();
+  let view=mount({summaryRef:ref});expect(flat(host(view,'trade-summary')).backgroundColor).toBeUndefined();
+  view=mount({summaryRef:ref,summaryBackground:true});expect(flat(host(view,'trade-summary')).backgroundColor).toBe(nativeSrgb.background);
+  view=mount({summaryRef:ref,summaryBackground:'#111111',details:[{label:'Size',value:3.734,formattedValue:'3,734',suffix:' AMZN'}]});
+  expect(flat(host(view,'trade-summary')).backgroundColor).toBe('#111111');expect(flows(view,'trade-detail-Size')[0].props).toMatchObject({formattedValue:'3,734',animateFormatted:true});
+  view=mount({stickyHeader:true});const scroll=view.findByType(ScrollView);expect(scroll.props.stickyHeaderIndices).toEqual([0]);
+  expect(flat(host(view,'trade-sticky-header')).backgroundColor).toBe('transparent');
+  act(()=>{scroll.props.onScroll({nativeEvent:{contentOffset:{y:10}}});});expect(flat(host(view,'trade-sticky-header')).backgroundColor).toBe(nativeSrgb.background);
+ });
+});

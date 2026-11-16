@@ -23,6 +23,32 @@ export function localeDirection(locale: HostLocale | null | undefined): Directio
  const script = (singleton < 0 ? rest : rest.slice(0, singleton)).find(subtag => /^[a-z]{4}$/.test(subtag));
  return (script ? rtlScripts.has(script) : rtlLanguages.has(language)) ? 'rtl' : 'ltr';
 }
+/** How money reads across a provider: the currency sign and digit grouping a host's own figures use, such as `narrowSymbol` so French reads `12,50 $` rather than `12,50 $US`. */
+export interface NumberFormatPresentation {
+ /** How the currency is named. Intl's default is `symbol`. */
+ currencyDisplay?: 'symbol' | 'narrowSymbol' | 'code' | 'name';
+ /** Digit grouping. `'always'` groups four-digit amounts in locales that otherwise leave them ungrouped, such as Spanish. */
+ useGrouping?: boolean | 'always' | 'auto' | 'min2';
+ /** The locale numbers are formatted in, when it differs from the provider's interface `locale`: `'en-US'` keeps Korean or Chinese figures in US separators. It changes every number HIG formats (separators, digits and currency placement), not only money. Omitted, numbers follow the provider's `locale`. */
+ locale?: string;
+}
+/** The locale HIG formats numbers in: the presentation's `locale` when it names one, otherwise the interface locale. */
+export function numberLocale(locale: string, presentation?: NumberFormatPresentation): string {
+ const own = presentation?.locale;
+ return typeof own === 'string' && own.trim() !== '' ? own : locale;
+}
+/**
+ * Merges a provider's money presentation under the options of one currency format. Only `style: 'currency'` options change, and any
+ * field the options set themselves wins. Without a presentation, or for any other style, the same options object is returned.
+ */
+export function presentNumberFormat<T extends Intl.NumberFormatOptions | undefined>(options: T, presentation?: NumberFormatPresentation): T {
+ if (!presentation || options?.style !== 'currency') return options;
+ const merged: Record<string, unknown> = {};
+ if (presentation.currencyDisplay !== undefined) merged.currencyDisplay = presentation.currencyDisplay;
+ if (presentation.useGrouping !== undefined) merged.useGrouping = presentation.useGrouping;
+ for (const [key, value] of Object.entries(options)) if (value !== undefined) merged[key] = value;
+ return merged as T;
+}
 /** Display only. Keep raw decimal strings in transaction logic. */
 export function formatNumber(value: number | null | undefined, locale = 'en-US', options: Intl.NumberFormatOptions = {}): string {
  return value == null || !Number.isFinite(value) ? '—' : new Intl.NumberFormat(locale, options).format(value);

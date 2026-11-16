@@ -1,10 +1,10 @@
 "use client";
 import React from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber,presentNumberFormat} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from './provider.js';
+import {useHIG,useNumberLocale} from './provider.js';
 export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;stale?:boolean;label?:string;prefix?:string;suffix?:string}
-export function NumberReadout({value,options,stale,label,prefix='',suffix=''}:NumberProps){const {locale,messages}=useHIG();const known=value!=null&&Number.isFinite(value),formatted=formatNumber(value,locale,options),reading=known?`${prefix}${formatted}${suffix}`:formatted;return <span className='hig-number' aria-label={label?`${label}: ${reading}${stale?` ${messages.stale??en.stale}`:''}`:undefined}>{reading}{stale&&<span> {messages.stale??en.stale}</span>}</span>;}
+export function NumberReadout({value,options,stale,label,prefix='',suffix=''}:NumberProps){const {messages,numberFormat}=useHIG();const locale=useNumberLocale();const known=value!=null&&Number.isFinite(value),formatted=formatNumber(value,locale,presentNumberFormat(options,numberFormat)),reading=known?`${prefix}${formatted}${suffix}`:formatted;return <span className='hig-number' aria-label={label?`${label}: ${reading}${stale?` ${messages.stale??en.stale}`:''}`:undefined}>{reading}{stale&&<span> {messages.stale??en.stale}</span>}</span>;}
 export function Usd(props:NumberProps){return <NumberReadout {...props} options={{style:'currency',currency:'USD',...props.options}}/>;}
 /** Input is percent points: 5 means 5%, not 500%. */
 export function Percent(props:NumberProps){return <NumberReadout {...props} value={props.value==null?props.value:props.value/100} options={{maximumFractionDigits:Math.max(3,props.options?.minimumFractionDigits??0),...props.options,style:'percent'}}/>;}

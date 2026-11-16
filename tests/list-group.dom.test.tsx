@@ -43,4 +43,13 @@ describe('ListRow',()=>{
   await userEvent.click(row);expect(select).not.toHaveBeenCalled();
   view.rerender(<ListRow label='Docs' href='/docs' disabled/>);expect(screen.queryByRole('link')).toBeNull();expect(document.querySelector('.hig-list-row')?.getAttribute('aria-disabled')).toBe('true');
  });
+ it('reads an element value as valueLabel and tones a text value, as native does',()=>{
+  const view=render(<ListRow label='Balance' value={<span data-testid='live'>1,0</span>} valueLabel='$1,042.09' onSelect={()=>{}}/>);
+  expect(screen.getByRole('button',{name:'Balance $1,042.09'})).toBeTruthy();expect(screen.getByTestId('live').parentElement?.getAttribute('aria-hidden')).toBe('true');
+  view.rerender(<ListRow label='PnL' value='+$12.50' valueTone='positive'/>);
+  const value=document.querySelector('.hig-list-row-value');expect(value?.getAttribute('data-tone')).toBe('positive');expect(value?.textContent).toBe('+$12.50');
+  view.rerender(<ListRow label='PnL' value='+$12.50' valueTone='muted' valueLabel='ignored'/>);
+  expect(document.querySelector('.hig-list-row-value')?.getAttribute('data-tone')).toBeNull();expect(document.querySelector('.hig-list-row-value')?.textContent).toBe('+$12.50');
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-list-row-value[data-tone='positive'] { color:var(--hig-positive); }");
+ });
 });

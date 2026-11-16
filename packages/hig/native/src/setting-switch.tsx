@@ -3,14 +3,26 @@ import {View} from 'react-native';
 import {useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
 import {SwitchRow} from './switch-row.js';
-export interface SettingSwitchProps {label:string;description?:string;checked:boolean;onCheckedChange:(checked:boolean)=>void;disabled?:boolean;testID?:string}
+/** A secondary button under a setting, such as Open Settings. `feedback: false` keeps the provider's press feedback off this one button, for a host that plays its own cue for it; by default it plays like any `Button`. */
+export interface SettingAction {label:string;onSelect:()=>void;disabled?:boolean;feedback?:boolean}
+export interface SettingSwitchProps {
+ label:string;description?:string;checked:boolean;onCheckedChange:(checked:boolean)=>void;disabled?:boolean;testID?:string;
+ /** Always on and not changeable: the switch shows on at full strength and is read as unavailable. Presses do nothing. */
+ locked?:boolean;
+ /** Host content after the label, such as a badge. It is drawn only: the switch is read by `label` (and `labelAccessoryLabel`), so put any meaning it carries there or in the description. */
+ labelAccessory?:React.ReactNode;
+ /** Host words for the `labelAccessory`, read after the label and a pause: `Feed, New`. Same prop on web. */
+ labelAccessoryLabel?:string;
+}
 /** One setting as a switch: the label over an optional description on the leading edge, the track on the trailing edge. The whole row is the switch; the label names it and the description is its hint. */
-export function SettingSwitch({label,description,checked,onCheckedChange,disabled,testID}:SettingSwitchProps){
- const colors=useColors(),fills=useFills(),{direction}=useHIG();
- return <SwitchRow testID={testID} label={label} accessibilityHint={description} checked={checked} disabled={disabled} onCheckedChange={onCheckedChange} style={{minHeight:32,opacity:disabled?0.5:1}}>
+export function SettingSwitch({label,description,checked:requested,onCheckedChange,disabled,locked,labelAccessory,labelAccessoryLabel,testID}:SettingSwitchProps){
+ const colors=useColors(),fills=useFills(),{direction}=useHIG();const checked=locked?true:requested;
+ const name=<Text style={{fontSize:16,lineHeight:24,color:colors.text}}>{label}</Text>;
+ const named=labelAccessoryLabel&&labelAccessory!=null&&labelAccessory!==false?`${label}, ${labelAccessoryLabel}`:label;
+ return <SwitchRow testID={testID} label={named}accessibilityHint={description} checked={checked} disabled={locked?true:disabled} onCheckedChange={onCheckedChange} style={{minHeight:32,opacity:disabled?0.5:1}}>
   <View style={{direction,flex:1,flexDirection:'row',alignItems:'flex-start',gap:12}}>
    <View style={{flex:1,minWidth:0,gap:2}}>
-    <Text style={{fontSize:16,lineHeight:24,color:colors.text}}>{label}</Text>
+    {labelAccessory!=null&&labelAccessory!==false?<View testID={testID?`${testID}-label`:undefined} style={{direction,flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:8}}>{name}{labelAccessory}</View>:name}
     {description?<Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{description}</Text>:null}
    </View>
    <View testID={testID?`${testID}-track`:undefined} style={{width:40,height:24,borderRadius:12,padding:3,backgroundColor:checked?colors.action:fills.raised,alignItems:checked?'flex-end':'flex-start'}}><View style={{width:18,height:18,borderRadius:9,backgroundColor:checked?colors.onAction:colors.text}}/></View>

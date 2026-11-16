@@ -258,6 +258,11 @@
       "import": "./react/dist/wallet-address.js",
       "default": "./react/dist/wallet-address.js"
     },
+    "./react/wallet-address-core": {
+      "types": "./react/dist/wallet-address-core.d.ts",
+      "import": "./react/dist/wallet-address-core.js",
+      "default": "./react/dist/wallet-address-core.js"
+    },
     "./react/asset-balance-row": {
       "types": "./react/dist/asset-balance-row.d.ts",
       "import": "./react/dist/asset-balance-row.js",
@@ -328,6 +333,11 @@
       "import": "./react/dist/blocks/profile-block.js",
       "default": "./react/dist/blocks/profile-block.js"
     },
+    "./react/blocks/screen-header": {
+      "types": "./react/dist/blocks/screen-header.d.ts",
+      "import": "./react/dist/blocks/screen-header.js",
+      "default": "./react/dist/blocks/screen-header.js"
+    },
     "./react/bar-mark": {
       "types": "./react/dist/bar-mark.d.ts",
       "import": "./react/dist/bar-mark.js",
@@ -357,6 +367,11 @@
       "types": "./native/dist/wallet-address.d.ts",
       "import": "./native/dist/wallet-address.js",
       "default": "./native/dist/wallet-address.js"
+    },
+    "./native/wallet-address-core": {
+      "types": "./native/dist/wallet-address-core.d.ts",
+      "import": "./native/dist/wallet-address-core.js",
+      "default": "./native/dist/wallet-address-core.js"
     },
     "./native/asset-balance-row": {
       "types": "./native/dist/asset-balance-row.d.ts",
@@ -427,6 +442,11 @@
       "types": "./native/dist/profile-block.d.ts",
       "import": "./native/dist/profile-block.js",
       "default": "./native/dist/profile-block.js"
+    },
+    "./native/screen-header": {
+      "types": "./native/dist/screen-header.d.ts",
+      "import": "./native/dist/screen-header.js",
+      "default": "./native/dist/screen-header.js"
     },
     "./native/bar-mark": {
       "types": "./native/dist/bar-mark.d.ts",

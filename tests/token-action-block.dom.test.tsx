@@ -49,4 +49,23 @@ describe('TokenActionBlock',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
   expect(rule(".hig-bar-mark[data-size='small']")).toMatch(/height:12px;border-radius:6px/);expect(rule('.hig-token-card {')).toContain('gap:16px');expect(rule('.hig-token-bars,.hig-token-actions {')).toContain('gap:8px');
  });
+ it('draws a note under the actions with an optional tone, 8 below the actions',()=>{
+  const view=render(<TokenActionBlock symbol='SOL' name='Solana' assets={assets} chains={chains} actions={four()} note='View-only account'/>);
+  const note=screen.getByRole('note');expect(note.textContent).toBe('View-only account');expect(note.dataset.tone).toBe('muted');expect(note.classList.contains('hig-token-note')).toBe(true);
+  expect(document.querySelector('.hig-token-actions')!.nextElementSibling).toBe(note);
+  view.rerender(<TokenActionBlock symbol='SOL' name='Solana' assets={assets} chains={chains} actions={[]} note='View-only account' noteTone='warning'/>);expect(screen.getByRole('note').dataset.tone).toBe('warning');
+  view.rerender(<TokenActionBlock symbol='SOL' name='Solana' assets={assets} chains={chains} actions={four()}/>);expect(screen.queryByRole('note')).toBeNull();
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');
+  expect(css).toContain('.hig-token-card > .hig-token-actions + .hig-token-note { margin-block-start:-8px; }');
+ });
+ it('draws actions only when the host leaves out both bars, or one bar when it leaves out the other',()=>{
+  const view=render(<TokenActionBlock symbol='USDC' actions={four()}/>);
+  expect(document.querySelector('.hig-token-bars')).toBeNull();expect(screen.queryByRole('region')).toBeNull();expect(document.querySelectorAll('.hig-token-actions > button')).toHaveLength(4);
+  view.rerender(<TokenActionBlock symbol='USDC' chains={chains} actions={four()}/>);expect(screen.getAllByRole('region').map(region=>region.getAttribute('aria-labelledby')&&document.getElementById(region.getAttribute('aria-labelledby')!)!.textContent)).toEqual(['Chains']);
+  view.rerender(<TokenActionBlock symbol='USDC' assets={assets} actions={[]}/>);expect(description(screen.getByRole('region',{name:'USDC'}))).toBe('$759.00');expect(screen.queryByRole('region',{name:'Chains'})).toBeNull();
+ });
+ it('passes live legend figures through to the bars',()=>{
+  render(<TokenActionBlock symbol='HYPE' name='Hyperliquid' assets={[{label:'Staked',value:320,detail:{value:320,options:{style:'currency',currency:'USD'}}}]} chains={chains} actions={[]}/>);
+  const detail=screen.getByRole('region',{name:'Hyperliquid'}).querySelector('.hig-bar-mark-detail')!;expect(detail.querySelector('.hig-animated-number-visual')).toBeTruthy();expect(spoken(detail)).toBe('$320.00');
+ });
 });

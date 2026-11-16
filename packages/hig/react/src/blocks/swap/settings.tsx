@@ -1,7 +1,7 @@
 "use client";
 import React,{useEffect,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../../provider.js';
+import {PressDecoration,useHIG} from '../../provider.js';
 import {Field,Input} from '../../field.js';
 import {SegmentedControl} from '../../selection.js';
 import {SwapIcon,SwapNumber,SwapViewHeader,formatPercent,percentNumber,usdNumber,type SwapDenomination} from './shared.js';
@@ -24,7 +24,7 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
  const title=view==='slippage'?(messages.swapSlippageTitle??en.swapSlippageTitle):view==='fees'?(messages.swapFees??en.swapFees):(messages.swapSettings??en.swapSettings);
  const feeText=quoteLoading?'…':fee!=null?<SwapNumber {...usdNumber(fee)}/>:'—';
  const preset=slippagePresets.find(value=>Math.abs(value-slippage)<1e-9);
- const row=(label:string,value:React.ReactNode,target:SwapSettingsView)=><button type='button' className='hig-swap-setting' onClick={()=>onViewChange(target)}><span>{label}</span><span className='hig-swap-setting-value'>{value}<SwapIcon name='chevron' size={16}/></span></button>;
+ const row=(label:string,value:React.ReactNode,target:SwapSettingsView)=><button type='button' className='hig-swap-setting' onClick={()=>onViewChange(target)}><span>{label}</span><span className='hig-swap-setting-value'>{value}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>;
  const slippageRow=row(messages.swapSlippageTitle??en.swapSlippageTitle,<SwapNumber {...percentNumber(slippage)}/>,'slippage'),feesRow=row(messages.swapFees??en.swapFees,feeText,'fees');
  return <div className='hig-swap-settings-view' role='group' aria-label={title}>
   <SwapViewHeader title={title} titleRef={heading} backLabel={messages.back??en.back} onBack={onBack}/>

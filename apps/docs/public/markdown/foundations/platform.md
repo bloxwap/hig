@@ -65,6 +65,16 @@ channels on an iOS P3 host). `buy`, `sell`, `positive` and `negative` never chan
 `positive`/`negative` mean success and error, not market direction. Readouts paint
 direction with `tone="up"` or `tone="down"`.
 
+Web takes the same `marketColors={{up, down}}` on `HIGProvider` from
+`@bloxwap/hig/react/provider`, as CSS colours. The provider sets `--hig-up` and
+`--hig-down` on its wrapper, and CSS reads them as `var(--hig-up,var(--hig-buy))` and
+`var(--hig-down,var(--hig-sell))`, so without an override nothing changes. Nested
+providers inherit them through the cascade; `useThemeStyle()` returns them for a host
+portal outside the provider. `TradeHistoryListBlock` and `TradeHistoryDetailBlock` paint
+the side, the leverage and the result with these roles on both platforms, and `BarPnl` (with the
+blocks that draw it) fills the stretch between entry and mark and colours the mark price with `up`
+in profit and `down` at a loss. The liquidation tick stays `negative`, because it is a danger, not a direction.
+
 ### Native colour space
 
 React Native reads a hex colour's channels in the app's default colour space. That is sRGB unless the iOS host overrides `defaultColorSpace()` in its React Native factory delegate to return Display P3. If it does, `#ff479c` is read as P3 channels and paints a more saturated pink than the token. Set `colorSpace` on the root `HIGProvider` to match the host. Every HIG native component (Text, Surface, Separator, Button, Link, Field, Switch, Slider, Alert, Badge, Spinner, Skeleton, Dialog and GestureSheet) then paints from that table through `useColors()`, with the primary brand override applied if present. The Bloxwap mark uses `useBrandColors()` to retain its approved colours in the same colour space. Hosts choose a table and can configure the primary accent through `primaryColor`. Nested providers inherit both settings, and a test fails if a component imports `nativeSrgb` or paints a raw hex value.
