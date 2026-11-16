@@ -241,11 +241,11 @@ Rules:
 | `noPositions` | No open positions | AssetsBlock: empty Positions view | — |
 | `noTrend` | No trending markets | AssetsBlock: empty Trend view | — |
 | `opensIn` | Opens in | AssetsBlock: before the countdown to when a closed legacy market opens | — |
-| `confirmSend` | Confirm send | ConfirmSendBlock: the default heading and confirming action | — |
-| `sendTo` | To | ConfirmSendBlock: label of the destination address row | — |
-| `sendNetwork` | Network | ConfirmSendBlock: label of the network row | — |
-| `sendWarningTitle` | Double-check the address. | ConfirmSendBlock: heading of the warning above the actions | — |
-| `sendWarning` | HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong. | ConfirmSendBlock: body of the warning | `symbol`, `network` |
+| `confirmSend` | Confirm send | ConfirmBlock: the default heading and confirming action | — |
+| `sendTo` | To | ConfirmBlock: label of the destination address row | — |
+| `sendNetwork` | Network | ConfirmBlock: label of the network row | — |
+| `sendWarningTitle` | Double-check the address. | ConfirmBlock: heading of the warning above the actions | — |
+| `sendWarning` | HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong. | ConfirmBlock: body of the warning | `symbol`, `network` |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

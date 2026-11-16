@@ -242,15 +242,15 @@ export interface HIGMessages {
  noTrend: string;
  /** AssetsBlock: before the countdown to when a closed legacy market opens, as in “Opens in 2:14:33”. */
  opensIn: string;
- /** ConfirmSendBlock: the default heading and confirming action. */
+ /** ConfirmBlock: the default heading and confirming action. */
  confirmSend: string;
- /** ConfirmSendBlock: label of the destination address row. */
+ /** ConfirmBlock: label of the destination address row. */
  sendTo: string;
- /** ConfirmSendBlock: label of the network row. */
+ /** ConfirmBlock: label of the network row. */
  sendNetwork: string;
- /** ConfirmSendBlock: heading of the warning above the actions. */
+ /** ConfirmBlock: heading of the warning above the actions. */
  sendWarningTitle: string;
- /** ConfirmSendBlock: body of the warning, naming the token and the network. */
+ /** ConfirmBlock: body of the warning, naming the token and the network. */
  sendWarning: (symbol: string, network: string) => string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.

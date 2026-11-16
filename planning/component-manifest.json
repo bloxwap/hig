@@ -169,7 +169,7 @@
         "PositionBlock",
         "RewardBlock",
         "AssetsBlock",
-        "ConfirmSendBlock",
+        "ConfirmBlock",
         "ProfileBlock",
         "ScreenHeader",
         "SoundHapticsBlock",

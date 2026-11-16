@@ -417,8 +417,8 @@
       "title": "AssetsBlock"
     },
     {
-      "route": "components/confirm-send-block",
-      "title": "ConfirmSendBlock"
+      "route": "components/confirm-block",
+      "title": "ConfirmBlock"
     },
     {
       "route": "components/profile-block",
@@ -1205,8 +1205,8 @@
       ]
     },
     {
-      "name": "ConfirmSendBlock",
-      "route": "components/confirm-send-block",
+      "name": "ConfirmBlock",
+      "route": "components/confirm-block",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [

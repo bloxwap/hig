@@ -570,7 +570,7 @@
       "support": "renderer"
     },
     {
-      "name": "ConfirmSendBlock",
+      "name": "ConfirmBlock",
       "states": [
         "default",
         "busy",

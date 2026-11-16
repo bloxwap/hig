@@ -9,10 +9,10 @@ import {ListGroup,ListRow} from './list-group.js';
 import {ScreenHeader} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 /** One more row under Network, such as a fee: host text on both edges. */
-export interface ConfirmSendDetail {label:string;value:React.ReactNode;
+export interface ConfirmDetail {label:string;value:React.ReactNode;
  /** What a `value` that is not text reads as. */
  valueLabel?:string}
-export interface ConfirmSendBlockProps {
+export interface ConfirmBlockProps {
  /** The amount being sent, in token units. `null` reads as unknown. */
  amount:number|null;
  /** The token's ticker, after the amount: HYPE. */
@@ -24,7 +24,7 @@ export interface ConfirmSendBlockProps {
  /** The network the send moves on: HyperEVM. */
  network:string;
  /** More rows under Network, such as a fee. */
- details?:readonly ConfirmSendDetail[];
+ details?:readonly ConfirmDetail[];
  /** Heading. Defaults to the built-in "Confirm send". */
  title?:string;
  /** Heading of the warning. Defaults to the built-in "Double-check the address." */
@@ -39,7 +39,7 @@ export interface ConfirmSendBlockProps {
  busy?:boolean;
  /** Draws the confirming action unavailable, for example while a quote refreshes. */
  confirmDisabled?:boolean;
- /** Shows Cancel under the confirming action. */
+ /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. Without it the confirming action takes the full width. */
  onCancel?:()=>void;
  /** Text of Cancel. Defaults to the built-in "Cancel". */
  cancelLabel?:string;
@@ -55,12 +55,12 @@ export interface ConfirmSendBlockProps {
  scrollComponent?:React.ComponentType<ScrollViewProps>;
  /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */
  headingId?:string;
- /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`. Defaults to `confirm-send`. */
+ /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`. Defaults to `confirm`. */
  testID?:string;
 }
 const amountFormat:Intl.NumberFormatOptions={maximumFractionDigits:6};
-/** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Confirm and Cancel. */
-export function ConfirmSendBlock({amount,symbol,amountOptions=amountFormat,address,network,details,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm-send'}:ConfirmSendBlockProps){
+/** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const note=warning===undefined?t.sendWarning(symbol,network):warning;
@@ -79,9 +79,9 @@ export function ConfirmSendBlock({amount,symbol,amountOptions=amountFormat,addre
    <Text testID={id('warning-title')} style={{fontSize:24,lineHeight:30,fontWeight:'700',color:colors.warning}}>{warningTitle??t.sendWarningTitle}</Text>
    <Text testID={id('warning-body')} style={{fontSize:16,lineHeight:24,color:colors.text}}>{note}</Text>
   </View>:null}
-  <View testID={id('actions')} style={{gap:8}}>
-   <Button testID={id('confirm')} fullWidth busy={busy} disabled={confirmDisabled} onPress={onConfirm}>{confirmLabel??t.confirmSend}</Button>
-   {onCancel?<Button testID={id('cancel')} fullWidth intent='secondary' disabled={busy} onPress={onCancel}>{cancelLabel??t.cancel}</Button>:null}
+  <View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
+   {onCancel?<Button testID={id('cancel')} intent='secondary' disabled={busy} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
+   <Button testID={id('confirm')} busy={busy} disabled={confirmDisabled} onPress={onConfirm} style={{flex:1,alignSelf:'auto'}}>{confirmLabel??t.confirmSend}</Button>
   </View>
  </>;
  // The sticky layout puts the header and the body in separate views, so the body's first gap is its top padding.

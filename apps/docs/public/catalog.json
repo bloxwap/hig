@@ -712,8 +712,8 @@
       ]
     },
     {
-      "name": "ConfirmSendBlock",
-      "route": "components/confirm-send-block",
+      "name": "ConfirmBlock",
+      "route": "components/confirm-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
