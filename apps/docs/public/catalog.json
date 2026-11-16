@@ -712,6 +712,17 @@
       ]
     },
     {
+      "name": "ConfirmSendBlock",
+      "route": "components/confirm-send-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "fee"
+      ]
+    },
+    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "entry": "blocks",

@@ -242,6 +242,16 @@ export interface HIGMessages {
  noTrend: string;
  /** AssetsBlock: before the countdown to when a closed legacy market opens, as in “Opens in 2:14:33”. */
  opensIn: string;
+ /** ConfirmSendBlock: the default heading and confirming action. */
+ confirmSend: string;
+ /** ConfirmSendBlock: label of the destination address row. */
+ sendTo: string;
+ /** ConfirmSendBlock: label of the network row. */
+ sendNetwork: string;
+ /** ConfirmSendBlock: heading of the warning above the actions. */
+ sendWarningTitle: string;
+ /** ConfirmSendBlock: body of the warning, naming the token and the network. */
+ sendWarning: (symbol: string, network: string) => string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.
 export const close = 'Close';
@@ -361,8 +371,13 @@ export const signalDown = 'Falling';
 export const noPositions = 'No open positions';
 export const noTrend = 'No trending markets';
 export const opensIn = 'Opens in';
+export const confirmSend = 'Confirm send';
+export const sendTo = 'To';
+export const sendNetwork = 'Network';
+export const sendWarningTitle = 'Double-check the address.';
+export const sendWarning = (symbol: string, network: string) => `${symbol} moves to this address on ${network} instantly — there's no clawback if the address is wrong.`;
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete, account, deposit, accountBalance, showAddress, editName, changeProfilePicture, language, searchLanguages, receive, stake, unstake, clearSearch, assets, searchMarkets, marketCategories, assetsView, assetsAll, assetsPositions, assetsTrend, signalWatch, signalUp, signalDown, noPositions, noTrend, opensIn};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete, account, deposit, accountBalance, showAddress, editName, changeProfilePicture, language, searchLanguages, receive, stake, unstake, clearSearch, assets, searchMarkets, marketCategories, assetsView, assetsAll, assetsPositions, assetsTrend, signalWatch, signalUp, signalDown, noPositions, noTrend, opensIn, confirmSend, sendTo, sendNetwork, sendWarningTitle, sendWarning};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**
@@ -372,7 +387,7 @@ export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as reado
  */
 export function resolveMessages<T extends Partial<HIGMessages>>(base: T, overrides?: Partial<HIGMessages>): T {
  if (!overrides) return base;
- const formatters = ['dismissNotice', 'pageOf', 'resultCount', 'progressValue', 'reviewAssetOrder', 'amountInAsset', 'availableAmount', 'confirmOrderDescription', 'swapSelectToken', 'swapAmount', 'swapInsufficient', 'swapSlippage', 'swapFee'];
+ const formatters = ['dismissNotice', 'pageOf', 'resultCount', 'progressValue', 'reviewAssetOrder', 'amountInAsset', 'availableAmount', 'confirmOrderDescription', 'swapSelectToken', 'swapAmount', 'swapInsufficient', 'swapSlippage', 'swapFee', 'sendWarning'];
  const resolved: Record<string, unknown> = {...base};
  for (const [key, value] of Object.entries(overrides)) {
   if (value !== undefined && typeof value === (formatters.includes(key) ? 'function' : 'string')) resolved[key] = value;

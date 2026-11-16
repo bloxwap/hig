@@ -27,6 +27,7 @@
     "frompickerblock-and-topickerblock",
     "accountblock",
     "tokenactionblock",
+    "confirmsendblock",
     "languageblock",
     "managepositionblock",
     "targetblock",

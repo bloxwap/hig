@@ -1243,6 +1243,32 @@
       }
     },
     {
+      "name": "ConfirmSendBlock",
+      "slug": "confirm-send-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.ConfirmSendBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>",
+      "native": "<C.ConfirmSendBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "fee"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "busy": {
+          "web": "<C.ConfirmSendBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' busy onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>",
+          "native": "<C.ConfirmSendBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' busy onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>"
+        },
+        "fee": {
+          "web": "<C.ConfirmSendBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' details={[{label:'Network fee',value:'0.0001 HYPE'}]} onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>",
+          "native": "<C.ConfirmSendBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' details={[{label:'Network fee',value:'0.0001 HYPE'}]} onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>"
+        }
+      }
+    },
+    {
       "name": "ProfileBlock",
       "slug": "profile-block",
       "entry": "blocks",

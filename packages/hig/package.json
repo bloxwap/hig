@@ -333,6 +333,16 @@
       "import": "./react/dist/blocks/profile-block.js",
       "default": "./react/dist/blocks/profile-block.js"
     },
+    "./react/blocks/confirm-send-block": {
+      "types": "./react/dist/blocks/confirm-send-block.d.ts",
+      "import": "./react/dist/blocks/confirm-send-block.js",
+      "default": "./react/dist/blocks/confirm-send-block.js"
+    },
+    "./native/confirm-send-block": {
+      "types": "./native/dist/confirm-send-block.d.ts",
+      "import": "./native/dist/confirm-send-block.js",
+      "default": "./native/dist/confirm-send-block.js"
+    },
     "./react/blocks/assets-block": {
       "types": "./react/dist/blocks/assets-block.d.ts",
       "import": "./react/dist/blocks/assets-block.js",
