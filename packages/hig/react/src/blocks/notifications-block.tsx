@@ -11,6 +11,8 @@ export interface NotificationsItem {
  locked?:boolean;
  /** Host content after the label, such as a badge. It is part of the switch's name. */
  labelAccessory?:React.ReactNode;
+ /** Host words for the `labelAccessory`, read after the label and a pause in place of its content: `Push, New`. */
+ labelAccessoryLabel?:string;
  /** A neutral line under the card, announced when it changes, for progress or a hint: Registering this device. */
  hint?:string;
  /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */
@@ -37,7 +39,7 @@ export interface NotificationsBlockProps extends Omit<React.HTMLAttributes<HTMLE
 }
 function Item({item}:{item:NotificationsItem}){
  return <div className='hig-notifications-item'>
-  <div className='hig-setting-card'><SettingSwitch label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} locked={item.locked} labelAccessory={item.labelAccessory} onCheckedChange={item.onCheckedChange}/></div>
+  <div className='hig-setting-card'><SettingSwitch label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} locked={item.locked} labelAccessory={item.labelAccessory} labelAccessoryLabel={item.labelAccessoryLabel} onCheckedChange={item.onCheckedChange}/></div>
   {item.hint&&<p role='status' className='hig-setting-hint'>{item.hint}</p>}
   {item.error&&<p role='alert' className='hig-setting-error'>{item.error}</p>}
   {item.action&&<Button className='hig-notifications-action' intent='secondary' fullWidth disabled={item.action.disabled} suppressFeedback={item.action.feedback===false} onClick={item.action.onSelect}>{item.action.label}</Button>}

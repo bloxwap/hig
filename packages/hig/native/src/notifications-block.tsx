@@ -13,6 +13,8 @@ export interface NotificationsItem {
  locked?:boolean;
  /** Host content after the label, such as a badge. It is drawn only; the switch is read by `label`. */
  labelAccessory?:React.ReactNode;
+ /** Host words for the `labelAccessory`, read after the label and a pause: `Push, New`. */
+ labelAccessoryLabel?:string;
  /** A neutral line under the card, announced when it changes, for progress or a hint: Registering this device. */
  hint?:string;
  /** Why turning it on failed, under the card: Push request timed out. It is announced when it appears. */
@@ -50,7 +52,7 @@ export function NotificationsBlock({title,description,items=[],groups,onBack,hea
  const card=(item:NotificationsItem)=>{
   const id=`notifications-${item.id}`;
   return <View key={item.id} style={{gap:8}}>
-   <SettingCard testID={id}><SettingSwitch testID={`${id}-switch`} label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} locked={item.locked} labelAccessory={item.labelAccessory} onCheckedChange={item.onCheckedChange}/></SettingCard>
+   <SettingCard testID={id}><SettingSwitch testID={`${id}-switch`} label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} locked={item.locked} labelAccessory={item.labelAccessory} labelAccessoryLabel={item.labelAccessoryLabel} onCheckedChange={item.onCheckedChange}/></SettingCard>
    {item.hint?<Text testID={`${id}-hint`} accessibilityLiveRegion='polite' style={{...note,color:colors.muted}}>{item.hint}</Text>:null}
    {item.error?<Text testID={`${id}-error`} accessibilityRole='alert' accessibilityLiveRegion='polite' style={{paddingHorizontal:20,fontSize:14,lineHeight:21,color:colors.negative}}>{item.error}</Text>:null}
    {item.action?<View style={{marginTop:8}}><Button testID={`${id}-action`} intent='secondary' fullWidth disabled={item.action.disabled} suppressFeedback={item.action.feedback===false} onPress={item.action.onSelect}>{item.action.label}</Button></View>:null}

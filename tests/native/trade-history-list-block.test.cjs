@@ -64,12 +64,25 @@ describe('host slots (Unreleased)',()=>{
   expect(renderList).toHaveBeenCalled();const list=renderList.mock.calls[0][0];expect(list.trades).toBe(many);expect(list.keyExtractor(many[3])).toBe('3');
   const mounted=many.filter(trade=>host(tree,`history-${trade.id}`)).length;expect(mounted).toBeGreaterThan(0);expect(mounted).toBeLessThan(100);
   expect(flat(host(tree,'history'))).toMatchObject({flex:1});expect(flat(host(tree,'history-rows'))).toMatchObject({flex:1});
+  // Without listChrome the block keeps its own padded stack around the list, and the list gets only the row helpers.
+  expect(flat(host(tree,'history'))).toMatchObject({padding:16,gap:16,flex:1});
+  expect(Object.keys(list).sort()).toEqual(['ItemSeparatorComponent','keyExtractor','renderItem','trades']);
+  const stacked=mount({renderList,notice:h(View,{testID:'partial'}),footer:h(View,{testID:'more'})});
+  expect(host(stacked,'history').children.map(child=>child.props.testID)).toEqual(['history','history-notice','history-rows','history-footer']);
   // Without renderList the block keeps its plain stack.
   expect(flat(host(mount(),'history')).flex).toBeUndefined();
  });
- it('hands the host list the header, notice, footer and inset, so a self-sizing sheet measures the list alone (Unreleased)',()=>{
+ it('keeps the header fixed above a pinned host list without listChrome, and fills it once the list scrolls (Unreleased)',()=>{
   const renderList=jest.fn(list=>h(FlatList,{data:list.trades,...list}));
-  const tree=mount({renderList,onBack(){},notice:h(View,{testID:'partial'}),footer:h(View,{testID:'more'})});
+  const tree=mount({renderList,stickyHeader:true,notice:h(View,{testID:'partial'}),footer:h(View,{testID:'more'})});
+  const list=renderList.mock.calls[0][0];expect(list.ListHeaderComponent).toBeUndefined();expect(list.contentContainerStyle).toBeUndefined();expect(typeof list.onScroll).toBe('function');
+  expect(tree.findByType(FlatList).findAll(node=>node.props.testID==='partial').length).toBe(0);
+  expect(flat(host(tree,'history-sticky-header')).backgroundColor).toBe('transparent');
+  act(()=>{list.onScroll({nativeEvent:{contentOffset:{y:30}}});});expect(flat(host(root.root,'history-sticky-header')).backgroundColor).toBe(colors.background);
+ });
+ it('hands the host list the header, notice, footer and inset with listChrome, so a self-sizing sheet measures the list alone (Unreleased)',()=>{
+  const renderList=jest.fn(list=>h(FlatList,{data:list.trades,...list}));
+  const tree=mount({renderList,listChrome:true,onBack(){},notice:h(View,{testID:'partial'}),footer:h(View,{testID:'more'})});
   const list=renderList.mock.calls[0][0];
   expect(list.contentContainerStyle).toEqual({padding:16});expect(list.onScroll).toBeUndefined();
   expect(all(tree,'history-header').length).toBeGreaterThan(0);expect(all(tree,'partial').length).toBeGreaterThan(0);expect(all(tree,'more').length).toBeGreaterThan(0);
@@ -77,7 +90,7 @@ describe('host slots (Unreleased)',()=>{
   const flatList=tree.findByType(FlatList);expect(flatList.findAll(node=>node.props.testID==='history-header').length).toBeGreaterThan(0);
   expect(flat(host(tree,'history'))).toEqual(expect.not.objectContaining({padding:16}));
   // Pinned, the header stays above the list and fills once the list reports an offset.
-  mount({renderList,stickyHeader:true});const pinned=renderList.mock.calls.at(-1)[0];
+  mount({renderList,listChrome:true,stickyHeader:true});const pinned=renderList.mock.calls.at(-1)[0];
   expect(pinned.ListHeaderComponent).toBeNull();expect(typeof pinned.onScroll).toBe('function');
   expect(flat(host(root.root,'history-sticky-header')).backgroundColor).toBe('transparent');
   act(()=>{pinned.onScroll({nativeEvent:{contentOffset:{y:30}}});});expect(flat(host(root.root,'history-sticky-header')).backgroundColor).toBe(colors.background);

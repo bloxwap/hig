@@ -112,8 +112,8 @@ describe('RewardBlock host slots (Unreleased)',()=>{
   view.rerender(<RewardBlock {...base} stickyHeader verifiedLabel='Genesis' verifiedMark={<svg data-testid='genesis'/>} promo={{...pool,headline:<>Top 100 <em>split</em> the pool.</>}}
    pagination={{previous:{label:'Previous',onSelect:previous,disabled:true},next:{label:'Next',onSelect:next},label:'1–25'}} footnote='Updates every 15 minutes'/>);
   expect(q('.hig-reward-block')!.hasAttribute('aria-busy')).toBe(false);expect(q('.hig-reward-block > .hig-screen-header')!.dataset.sticky).toBe('true');
-  // A host mark stays in the accessibility tree, after the verified words.
-  const mark=screen.getAllByTestId('genesis')[0].closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBeNull();expect(mark.querySelector('.hig-sr-only')!.textContent).toBe('Genesis');expect(q('.hig-reward-summary em')!.textContent).toBe('split');
+  // Host artwork is drawn inside the mark's image role, named by the verified words, as before.
+  const mark=screen.getAllByTestId('genesis')[0].closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBe('img');expect(mark.getAttribute('aria-label')).toBe('Genesis');expect(mark.querySelector('.hig-sr-only')).toBeNull();expect(q('.hig-reward-summary em')!.textContent).toBe('split');
   const paging=q('.hig-reward-pagination')!;expect(paging.textContent).toBe('Previous1–25Next');expect(paging.querySelector('[aria-live="polite"]')!.textContent).toBe('1–25');
   expect(q('.hig-reward-list')!.nextElementSibling).toBe(paging);expect(paging.nextElementSibling!.className).toBe('hig-reward-footnote');
   expect((screen.getByRole('button',{name:'Previous'}) as HTMLButtonElement).disabled).toBe(true);await userEvent.click(screen.getByRole('button',{name:'Next'}));expect(next).toHaveBeenCalledTimes(1);expect(previous).not.toHaveBeenCalled();
@@ -121,8 +121,10 @@ describe('RewardBlock host slots (Unreleased)',()=>{
  });
  it('leaves the header out with header={false} and keeps an interactive verified mark reachable (Unreleased)',async()=>{
   const explain=vi.fn();
-  render(<RewardBlock {...base} header={false} verifiedLabel='Genesis' verifiedMark={<button type='button' onClick={explain}>Genesis badge</button>} entries={[{id:'a',rank:1,name:'0xabc',verified:true,score:5}]}/>);
+  render(<RewardBlock {...base} header={false} verifiedLabel='Genesis' verifiedMarkInteractive verifiedMark={<button type='button' onClick={explain}>Genesis badge</button>} entries={[{id:'a',rank:1,name:'0xabc',verified:true,score:5}]}/>);
   expect(q('.hig-screen-header')).toBeNull();expect(screen.queryByRole('heading')).toBeNull();
+  // An interactive mark sits outside the image role, after the verified words.
+  const mark=screen.getByRole('button',{name:'Genesis badge'}).closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBeNull();expect(mark.querySelector('.hig-sr-only')!.textContent).toBe('Genesis');
   await userEvent.click(screen.getByRole('button',{name:'Genesis badge'}));expect(explain).toHaveBeenCalledTimes(1);
  });
  it('draws a detail figure from host-formatted text (Unreleased)',()=>{

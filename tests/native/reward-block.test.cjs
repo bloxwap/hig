@@ -132,8 +132,11 @@ describe('host slots (Unreleased)',()=>{
   const view=mount({header:false,testID:'board',onBack:()=>{}});
   expect(has(view,'board-header')).toBe(false);expect(has(view,'board-back')).toBe(false);expect(flat(host(view,'board'))).toMatchObject({padding:16,paddingTop:0});
  });
- it('keeps a host verified mark in the accessibility tree, with the row read on the name (Unreleased)',()=>{
-  const view=mount({verifiedLabel:'Genesis',verifiedMark:h(View,{testID:'genesis',accessible:true,accessibilityRole:'button',accessibilityLabel:'Genesis badge'}),entries:[{id:'a',rank:1,name:'Ada',verified:true,score:5}]});
+ it('keeps an interactive host verified mark in the accessibility tree, with the row read on the name (Unreleased)',()=>{
+  // Without verifiedMarkInteractive the mark is artwork inside the row's one element, as before.
+  const art=mount({verifiedLabel:'Genesis',verifiedMark:h(View,{testID:'genesis'}),entries:[{id:'a',rank:1,name:'Ada',verified:true,score:5}]});
+  expect(host(art,'reward-row-a').props).toMatchObject({accessible:true,accessibilityLabel:'1, Ada, Genesis, 5'});
+  const view=mount({verifiedLabel:'Genesis',verifiedMarkInteractive:true,verifiedMark:h(View,{testID:'genesis',accessible:true,accessibilityRole:'button',accessibilityLabel:'Genesis badge'}),entries:[{id:'a',rank:1,name:'Ada',verified:true,score:5}]});
   const row=host(view,'reward-row-a');expect(row.props.accessible).toBe(false);expect(row.props.accessibilityLabel).toBeUndefined();
   expect(host(view,'reward-row-a-name').props).toMatchObject({accessible:true,accessibilityLabel:'1, Ada, Genesis, 5'});
   const hiddenAncestor=node=>{for(let current=node;current;current=current.parent)if(current.props?.accessibilityElementsHidden)return true;return false;};

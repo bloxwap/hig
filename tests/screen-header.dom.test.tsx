@@ -65,6 +65,14 @@ describe('ScreenHeader',()=>{
   expect(css).toContain('.hig-screen-header[data-sticky] { position:sticky;inset-block-start:0;z-index:1;background-color:transparent;');
   expect(css).toMatch(/@supports \(animation-timeline:view\(\)\) \{\s*:has\(> \.hig-screen-header\[data-sticky\]\) \{ view-timeline:--hig-sticky-header block; \}/);
   expect(css).toContain('animation-range:exit-crossing 0px exit-crossing 12px;');
+  expect(header.hasAttribute('data-sticky-own')).toBe(false);
+ });
+ it('leaves the scroll-driven fill to the script when the header\'s parent is itself the scroller (Unreleased)',()=>{
+  const {container}=render(<div data-testid='pane' style={{overflowY:'auto'}}><ScreenHeader title='Signals' stickyHeader/><p>Rows</p></div>);
+  const header=container.querySelector<HTMLElement>('.hig-screen-header')!,pane=screen.getByTestId('pane');
+  expect(header.hasAttribute('data-sticky-own')).toBe(true);expect(header.hasAttribute('data-scrolled')).toBe(false);
+  pane.scrollTop=30;pane.dispatchEvent(new Event('scroll'));expect(header.hasAttribute('data-scrolled')).toBe(true);
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('.hig-screen-header[data-sticky][data-sticky-own] { animation:none; }');
  });
  it('gives every block with a header the same sticky behaviour (Unreleased)',()=>{
   const history={title:'History',long:'Long',short:'Short',empty:'None'};

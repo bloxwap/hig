@@ -75,8 +75,10 @@ export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  scoreOptions?:Intl.NumberFormatOptions;
  /** Accessible name of the verified mark. The mark is decorative without it. */
  verifiedLabel?:string;
- /** Host content in place of the built-in verified mark. It stays in the accessibility tree, so it may be interactive, such as a badge with a popover; `verifiedLabel` is then read before it. */
+ /** Host artwork in place of the built-in verified mark, drawn inside the mark's image role. */
  verifiedMark?:React.ReactNode;
+ /** The `verifiedMark` is a control, such as a badge with a popover: it stays in the accessibility tree outside the image role, and `verifiedLabel` is read before it. */
+ verifiedMarkInteractive?:boolean;
  /** Draws skeleton rows in place of the entries while the host loads them. */
  loading?:boolean;
  /** Host text that names the skeleton rows for assistive technology and announces them: Loading standings. Without it the block is only marked busy. */
@@ -100,13 +102,13 @@ export function rewardProgress(amount:number|null|undefined,goal:number|null|und
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 const verifiedGlyph=<svg className='hig-reward-verified-mark' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><circle cx='10' cy='10' r='7.5'/><path d='m6.75 10.25 2.25 2.25 4.25-4.75'/></svg>;
-function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,as:Tag='li'}:{entry:RewardEntry;scoreOptions:Intl.NumberFormatOptions;verifiedLabel?:string;verifiedMark?:React.ReactNode;as?:'li'|'div'}){
+function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive,as:Tag='li'}:{entry:RewardEntry;scoreOptions:Intl.NumberFormatOptions;verifiedLabel?:string;verifiedMark?:React.ReactNode;verifiedMarkInteractive?:boolean;as?:'li'|'div'}){
  const detail=entry.detail;
  return <Tag className='hig-reward-row' data-you={entry.you||undefined}>
   <span className='hig-reward-rank hig-number'>{entry.rank}</span>
   <span className='hig-reward-avatar' aria-hidden='true'>{typeof entry.avatar==='string'?<img src={entry.avatar} alt=''/>:entry.avatar??entry.name.slice(0,2)}</span>
   <span className='hig-reward-identity'>
-   <strong className='hig-number'>{entry.name}{entry.verified&&(verifiedMark!=null?<span className='hig-reward-verified'>{verifiedLabel&&<span className='hig-sr-only'>{verifiedLabel}</span>}{verifiedMark}</span>:<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedGlyph}</span>)}</strong>
+   <strong className='hig-number'>{entry.name}{entry.verified&&(verifiedMark!=null&&verifiedMarkInteractive?<span className='hig-reward-verified'>{verifiedLabel&&<span className='hig-sr-only'>{verifiedLabel}</span>}{verifiedMark}</span>:<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark??verifiedGlyph}</span>)}</strong>
    {detail!=null&&detail!==''&&<span className='hig-number'>{typeof detail==='string'?detail:<SwapNumber {...figureProps(detail)}/>}</span>}
   </span>
   <span className='hig-reward-score'><AnimatedNumberReadout value={entry.score} options={entry.scoreOptions??scoreOptions}/></span>
@@ -117,11 +119,11 @@ function Onward({link,className,children}:{link:RewardLink;className:string;chil
   :<button type='button' className={className} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></button>;
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,header=true,className,...rest}:RewardBlockProps){
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,header=true,className,...rest}:RewardBlockProps){
  const locale=useNumberLocale();const present=usePresentNumber();
  const money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(promo.amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
- const pinned=you&&<Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark}/>;
+ const pinned=you&&<Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>;
  return <section {...rest} className={`hig-reward-block${className?` ${className}`:''}`}>
   {header&&<ScreenHeader title={title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>}
   {promo&&<section className='hig-surface hig-reward-promo'>
@@ -140,7 +142,7 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
    <div className='hig-reward-list' aria-busy='true'>{skeletons.map(index=><div key={index} className='hig-skeleton hig-reward-skeleton' aria-hidden='true'/>)}</div>
   </>:(entries.length>0||listTitle||scoreTitle)&&<div className='hig-reward-list'>
    {(listTitle||scoreTitle)&&<div className='hig-reward-columns hig-number'><span>{listTitle}</span><span>{scoreTitle}</span></div>}
-   {entries.length>0&&<ol className='hig-reward-rows'>{entries.map(entry=><Standing key={entry.id} entry={entry} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark}/>)}</ol>}
+   {entries.length>0&&<ol className='hig-reward-rows'>{entries.map(entry=><Standing key={entry.id} entry={entry} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>)}</ol>}
   </div>}
   {pagination&&<div className='hig-reward-pagination'>
    {pagination.previous?<Button intent='secondary' disabled={pagination.previous.disabled} onClick={pagination.previous.onSelect}>{pagination.previous.label}</Button>:<span/>}

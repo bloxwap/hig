@@ -68,8 +68,10 @@ export interface RewardBlockProps {
  youLabel?:string;
  /** A muted line between the pinned row and the list, announced when it changes: You're not ranked yet. */
  status?:string;
- /** Host content in place of the built-in verified mark. It stays in the accessibility tree, so it may be interactive, such as a badge that opens an explanation: the row's reading then sits on the name and the mark follows as its own element. */
+ /** Host artwork in place of the built-in verified mark, inside the row's one accessible element. */
  verifiedMark?:React.ReactNode;
+ /** The `verifiedMark` is a control, such as a badge that opens an explanation: it stays in the accessibility tree, the row's reading then sits on the name and the mark follows as its own element. */
+ verifiedMarkInteractive?:boolean;
  /** Draws skeleton rows in place of the entries while the host loads them. */
  loading?:boolean;
  /** Host text that names the skeleton rows for assistive technology: Loading standings. Without it they are only marked busy. */
@@ -111,7 +113,7 @@ export function rewardProgress(amount:number|null|undefined,goal:number|null|und
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,header:showHeader=true,testID}:RewardBlockProps){
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,header:showHeader=true,testID}:RewardBlockProps){
  const colors=useColors(),fills=useFills(),{direction,monoFontFamily}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
  const prefix=testID??'reward',tid=(part:string)=>`${prefix}-${part}`;
  const money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(promo.amount,promo.goal):null;
@@ -122,8 +124,8 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
   const said=figure?formatNumberReadout(figure.value,locale,present(figure.options),figure.formattedValue,figure.prefix,figure.suffix).text:detail;
   const mine=!!entry.you,reading=[lead,String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,said,formatNumberReadout(entry.score,locale,present(score)).text].filter(Boolean).join(', ');
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
-  // A host mark stays in the accessibility tree: the row's reading moves to the name, and the mark follows as its own element.
-  const split=!!entry.verified&&verifiedMark!=null;
+  // An interactive host mark stays in the accessibility tree: the row's reading moves to the name, and the mark follows as its own element.
+  const split=!!entry.verified&&verifiedMark!=null&&!!verifiedMarkInteractive;
   return <View key={entry.id} testID={id} accessible={!split} accessibilityLabel={split?undefined:reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:fills.well,...style}}>
    <Text {...hidden} style={{minWidth:24,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.muted}}>{entry.rank}</Text>
    <View {...hidden}>{typeof entry.avatar==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:entry.avatar}} style={disc as object}/>:<View style={disc}>{entry.avatar??<Text maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{entry.name.slice(0,2)}</Text>}</View>}</View>

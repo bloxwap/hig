@@ -42,9 +42,9 @@ export interface TradeHistoryItem {
  pnlOptions?:Intl.NumberFormatOptions;
 }
 /**
- * What `renderList` receives, shaped for FlatList so `{...list}` spreads onto it: the trades, helpers that draw them exactly as
- * the block does, and everything around them, so the list holds the whole screen and a sheet that sizes itself to its content
- * measures the list alone.
+ * What `renderList` receives, shaped for FlatList so `{...list}` spreads onto it: the trades and helpers that draw them exactly
+ * as the block does. With `listChrome` it also carries everything around them, so the list holds the whole screen and a sheet
+ * that sizes itself to its content measures the list alone.
  */
 export interface TradeHistoryListRender {
  trades:readonly TradeHistoryItem[];
@@ -53,12 +53,12 @@ export interface TradeHistoryListRender {
  keyExtractor:(trade:TradeHistoryItem)=>string;
  /** The 8dp gap between rows, for `ItemSeparatorComponent`. */
  ItemSeparatorComponent:React.ComponentType;
- /** The header (unless it is pinned with `stickyHeader`) and the `notice`, 16dp above the first row. `null` when there is neither. */
- ListHeaderComponent:React.ReactElement|null;
- /** The `footer`, 16dp under the last row. `null` without one. */
- ListFooterComponent:React.ReactElement|null;
- /** The block's 16dp inset around the rows, header and footer. */
- contentContainerStyle:ViewStyle;
+ /** With `listChrome`: the header (unless it is pinned with `stickyHeader`) and the `notice`, 16dp above the first row. `null` when there is neither. */
+ ListHeaderComponent?:React.ReactElement|null;
+ /** With `listChrome`: the `footer`, 16dp under the last row. `null` without one. */
+ ListFooterComponent?:React.ReactElement|null;
+ /** With `listChrome`: the block's 16dp inset around the rows, header and footer. */
+ contentContainerStyle?:ViewStyle;
  /** With `stickyHeader`: reports the list's offset so the pinned header fills once rows scroll under it. */
  onScroll?:(event:NativeSyntheticEvent<NativeScrollEvent>)=>void;
  scrollEventThrottle?:number;
@@ -87,11 +87,17 @@ export interface TradeHistoryListBlockProps {
  footer?:React.ReactNode;
  /**
   * Draws the rows through the host's own list, so a long history does not mount every row at once:
-  * `renderList={list => <FlatList data={list.trades} {...list} initialNumToRender={10}/>}`. The list then carries the header,
-  * notice, footer and inset (`ListHeaderComponent`, `ListFooterComponent`, `contentContainerStyle`), and the block fills its
-  * parent (`flex: 1`), so place it in a bounded container such as a sheet body, not inside a ScrollView.
+  * `renderList={list => <FlatList data={list.trades} {...list} initialNumToRender={10}/>}`. The header, notice and footer stay
+  * fixed around the list in the block's inset, and the block fills its parent (`flex: 1`), so place it in a bounded container
+  * such as a sheet body, not inside a ScrollView.
   */
  renderList?:(list:TradeHistoryListRender)=>React.ReactNode;
+ /**
+  * With `renderList`: hands the list the header, notice, footer and inset as well (`ListHeaderComponent`, `ListFooterComponent`,
+  * `contentContainerStyle`), so they scroll with the rows, a spread FlatList holds the whole screen and a sheet that sizes itself
+  * to its content measures the list alone. The block then adds no padding of its own. Spread the whole object.
+  */
+ listChrome?:boolean;
  /** Keeps the header pinned while the rows scroll, transparent at rest and filled once rows scroll under it. Without `renderList` the block becomes its own scroll view; with it the header stays above the host's list, which reports its offset through `onScroll`. Place it in a bounded container. */
  stickyHeader?:boolean;
  /** Fill behind the pinned header once rows scroll under it. Defaults to the background role; in a sheet pass the sheet's fill. */
@@ -110,7 +116,7 @@ function Gap(){return <View style={{height:8}}/>;}
 /** Points up; a short turns it over. */
 function Arrow({color,down}:{color:string;down:boolean}){return <View style={{width:12,height:14,alignItems:'center',transform:down?[{rotate:'180deg'}]:undefined}}><View style={{position:'absolute',top:1,width:7,height:7,borderLeftWidth:1.75,borderTopWidth:1.75,borderColor:color,transform:[{rotate:'45deg'}]}}/><View style={{width:1.75,height:14,borderRadius:1,backgroundColor:color}}/></View>;}
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
-export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,renderList,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TradeHistoryListBlockProps){
+export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,renderList,listChrome,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TradeHistoryListBlockProps){
  const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
  const listScroll=useStickyHeaderScroll();
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
@@ -145,20 +151,23 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
  const header=<ScreenHeader testID={testID} title={labels.title} onBack={onBack} action={headerAction}/>;
  const noticeView=notice!=null&&notice!==false?<View testID={testID?`${testID}-notice`:undefined} style={{gap:8}}>{notice}</View>:null;
  const footerView=footer!=null&&footer!==false?<View testID={testID?`${testID}-footer`:undefined} style={{gap:8}}>{footer}</View>:null;
+ let hosted:React.ReactElement|null=null;
  if(!body&&renderList){
-  // The list holds the whole screen: header and notice above the rows, the footer under them, and the block's inset around both.
+  const scroll=stickyHeader?{onScroll:listScroll.onScroll,scrollEventThrottle:listScroll.scrollEventThrottle}:null;
+  const base={trades,renderItem:({item}:{item:TradeHistoryItem})=>draw(item),keyExtractor:keyOf,ItemSeparatorComponent:Gap,...scroll};
+  // listChrome: the list holds the whole screen, with header and notice above the rows, the footer under them, and the block's inset around both.
   const top=stickyHeader?noticeView:<>{header}{noticeView}</>;
-  const list=renderList({trades,renderItem:({item})=>draw(item),keyExtractor:keyOf,ItemSeparatorComponent:Gap,
+  const list=renderList(listChrome?{...base,
    ListHeaderComponent:stickyHeader&&!noticeView?null:<View style={{direction,gap:16,paddingBottom:16}}>{top}</View>,
    ListFooterComponent:footerView?<View style={{direction,paddingTop:16}}>{footerView}</View>:null,
-   contentContainerStyle:stickyHeader?{padding:16,paddingTop:16}:{padding:16},
-   ...(stickyHeader?{onScroll:listScroll.onScroll,scrollEventThrottle:listScroll.scrollEventThrottle}:null)});
-  return <View testID={testID} style={{direction,flex:1}}>
-   {stickyHeader?<View testID={testID?`${testID}-sticky-header`:undefined} style={[{paddingHorizontal:16,paddingTop:16},stickyHeaderFill(listScroll.scrolled,stickyHeaderBackground??colors.background)]}>{header}</View>:null}
-   <View testID={testID?`${testID}-rows`:undefined} style={{flex:1}}>{list}</View>
-  </View>;
+   contentContainerStyle:{padding:16}}:base);
+  hosted=<View testID={testID?`${testID}-rows`:undefined} style={{flex:1}}>{list}</View>;
+  const pinned=stickyHeader?<View testID={testID?`${testID}-sticky-header`:undefined} style={[{paddingHorizontal:16,paddingTop:16},stickyHeaderFill(listScroll.scrolled,stickyHeaderBackground??colors.background)]}>{header}</View>:null;
+  if(listChrome)return <View testID={testID} style={{direction,flex:1}}>{pinned}{hosted}</View>;
+  // Pinned without listChrome: the header fills over the block's own stack, which keeps the notice, the list and the footer as before.
+  if(stickyHeader)return <View testID={testID} style={{direction,flex:1}}>{pinned}<View style={{padding:16,gap:16,flex:1}}>{noticeView}{hosted}{footerView}</View></View>;
  }
- const rows=body??<View testID={testID?`${testID}-rows`:undefined} style={{gap:8}}>{trades.map(draw)}</View>;
+ const rows=body??hosted??<View testID={testID?`${testID}-rows`:undefined} style={{gap:8}}>{trades.map(draw)}</View>;
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID={testID?`${testID}-sticky-header`:undefined} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>
   {noticeView}
   {rows}

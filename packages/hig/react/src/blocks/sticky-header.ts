@@ -20,13 +20,16 @@ export function useStickyHeader(header:RefObject<HTMLElement|null>,enabled:boole
   const element=header.current;if(!enabled||!element)return;
   const content=element.parentElement;if(!content)return;
   const root=scroller(content);const target:HTMLElement|Window=root??window;
+  // When the parent is the scroller itself a view timeline on it tracks an outer scroller, never its own scrolling, so the
+  // stylesheet leaves the scroll-driven fill off (data-sticky-own) and this script alone marks the moment.
+  const own=root===content;element.toggleAttribute('data-sticky-own',own);
   const update=()=>{
-   const scrolled=root===content?content.scrollTop>0:content.getBoundingClientRect().top<(root?root.getBoundingClientRect().top:0)-0.5;
+   const scrolled=own?content.scrollTop>0:content.getBoundingClientRect().top<(root?root.getBoundingClientRect().top:0)-0.5;
    if(element.hasAttribute('data-scrolled')!==scrolled)element.toggleAttribute('data-scrolled',scrolled);
   };
   update();
   target.addEventListener('scroll',update,{passive:true});
   window.addEventListener('resize',update,{passive:true});
-  return()=>{target.removeEventListener('scroll',update);window.removeEventListener('resize',update);element.removeAttribute('data-scrolled');};
+  return()=>{target.removeEventListener('scroll',update);window.removeEventListener('resize',update);element.removeAttribute('data-scrolled');element.removeAttribute('data-sticky-own');};
  },[header,enabled]);
 }

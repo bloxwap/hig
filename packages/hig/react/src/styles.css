@@ -549,6 +549,8 @@ button.hig-asset-row:active { background:var(--hig-fill-raised); }
 @supports (animation-timeline:view()) {
   :has(> .hig-screen-header[data-sticky]) { view-timeline:--hig-sticky-header block; }
   .hig-screen-header[data-sticky] { animation:hig-sticky-fill linear both;animation-timeline:--hig-sticky-header;animation-range:exit-crossing 0px exit-crossing 12px; }
+  /* Not when the parent is itself the scroller (data-sticky-own): its view timeline would follow an outer scroller, so the script's data-scrolled rule fills it. */
+  .hig-screen-header[data-sticky][data-sticky-own] { animation:none; }
 }
 @media(prefers-reduced-motion:reduce) { .hig-screen-header[data-sticky] { transition:none;animation:none; } }
 [data-hig-motion='reduced'] .hig-screen-header[data-sticky] { transition:none;animation:none; }
