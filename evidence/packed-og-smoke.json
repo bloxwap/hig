@@ -1,14 +1,14 @@
 {
-  "version": "0.2.0",
+  "version": "0.7.0",
   "evidence": "automated (local tarball, clean temporary consumer)",
   "package": "@bloxwap/hig",
   "entry": "@bloxwap/hig/og-fonts",
-  "ogFontsGzipBytes": 840599,
+  "ogFontsGzipBytes": 840600,
   "tarball": {
-    "file": "bloxwap-hig-0.2.0.tgz",
-    "bytes": 5410159,
-    "unpackedBytes": 14749180,
-    "sha256": "a59561f8b744b9d48a32e403b171292a6d9e29d6e554ec54fd9820763c78704c",
+    "file": "bloxwap-hig-0.7.0.tgz",
+    "bytes": 5579498,
+    "unpackedBytes": 15539240,
+    "sha256": "65586127722662c6fd35af60983a35d410167bcbb14be1dc5d5297c2a29cdd6e",
     "limit": 1000000
   },
   "fonts": [
@@ -31,10 +31,10 @@
     "A Next app/og/route.tsx handler (runtime nodejs, top-level loadOgFonts() as in docs/installation.md) built with Turbopack (default next build) and with next build --webpack and served by next start, plus Turbopack output: standalone and webpack output: standalone with serverExternalPackages, each copied to another directory with the consumer node_modules hidden: GET /og-fonts returns every face with its own manifest SHA-256 (all five, and the weight >= 700 subset); GET /og returns 200 image/png 1200x630 for each Sans weight, byte-identical to the plain Node render and different from the default font"
   ],
   "pngBytes": {
-    "400": 33675,
-    "500": 33676,
-    "700": 33390,
-    "900": 33082
+    "400": 33913,
+    "500": 33894,
+    "700": 33633,
+    "900": 33311
   },
   "nextRouteHandler": {
     "turbopack": {
@@ -45,12 +45,12 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33675,
-        "500": 33676,
-        "700": 33390,
-        "900": 33082
+        "400": 33913,
+        "500": 33894,
+        "700": 33633,
+        "900": 33311
       },
-      "fallbackPngBytes": 34831
+      "fallbackPngBytes": 34680
     },
     "webpack": {
       "build": "next build --webpack",
@@ -60,12 +60,12 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33675,
-        "500": 33676,
-        "700": 33390,
-        "900": 33082
+        "400": 33913,
+        "500": 33894,
+        "700": 33633,
+        "900": 33311
       },
-      "fallbackPngBytes": 34831
+      "fallbackPngBytes": 34680
     },
     "turbopack-standalone": {
       "build": "next build",
@@ -77,12 +77,12 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33675,
-        "500": 33676,
-        "700": 33390,
-        "900": 33082
+        "400": 33913,
+        "500": 33894,
+        "700": 33633,
+        "900": 33311
       },
-      "fallbackPngBytes": 34831
+      "fallbackPngBytes": 34680
     },
     "webpack-standalone-external": {
       "build": "next build --webpack",
@@ -97,12 +97,12 @@
       "contentType": "image/png",
       "faces": 5,
       "pngBytes": {
-        "400": 33675,
-        "500": 33676,
-        "700": 33390,
-        "900": 33082
+        "400": 33913,
+        "500": 33894,
+        "700": 33633,
+        "900": 33311
       },
-      "fallbackPngBytes": 34831
+      "fallbackPngBytes": 34680
     }
   }
 }
