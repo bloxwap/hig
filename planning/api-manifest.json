@@ -590,9 +590,13 @@
         "entry": "data",
         "signature": "export declare function Table<T>({ caption, rows, columns, keyFor, rowProps, className, style, tableClassName, captionHidden, stickyHeader, loading, state }: TableProps<T>): React.JSX.Element;"
       },
+      "FieldProps": {
+        "entry": "field",
+        "signature": "export interface FieldProps {\n    id?: string;\n    label: string;\n    description?: string; /** `positive` draws the description as a success line, such as a name that is available, and announces it when it changes. The words carry the meaning; the colour repeats it. */\n    descriptionTone?: 'muted' | 'positive';\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}"
+      },
       "Field": {
         "entry": "field",
-        "signature": "export declare function Field({ id: provided, label, description, error, required, disabled, children }: React.PropsWithChildren<{\n    id?: string;\n    label: string;\n    description?: string;\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}>): React.JSX.Element;"
+        "signature": "export declare function Field({ id: provided, label, description, descriptionTone, error, required, disabled, children }: React.PropsWithChildren<FieldProps>): React.JSX.Element;"
       },
       "Label": {
         "entry": "field",
@@ -606,9 +610,13 @@
         "entry": "field",
         "signature": "export declare const TextArea: React.ForwardRefExoticComponent<React.TextareaHTMLAttributes<HTMLTextAreaElement> & React.RefAttributes<HTMLTextAreaElement>>;"
       },
+      "SearchInputProps": {
+        "entry": "field",
+        "signature": "export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {\n    /** Host content on the trailing edge inside the field, such as a filter button. The text stops 48 units short of the edge; wider content sets the input's `padding-inline-end`. */\n    trailing?: React.ReactNode;\n    /** Shows a clear button on the trailing edge while the controlled `value` is not empty. It calls this and returns focus to the field. */\n    onClear?: () => void;\n    /** Accessible name of the clear button; defaults to HIGProvider `messages.clearSearch`. */\n    clearLabel?: string;\n}"
+      },
       "SearchInput": {
         "entry": "field",
-        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
+        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<SearchInputProps & React.RefAttributes<HTMLInputElement>>;"
       },
       "GestureSheetBackendProps": {
         "entry": "gesture-sheet",
@@ -638,21 +646,25 @@
         "entry": "gesture-sheet",
         "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps, enableDynamicSizing, maxDynamicContentSize }: GestureSheetProps): React.JSX.Element;"
       },
+      "ListGroupAction": {
+        "entry": "list-group",
+        "signature": "export interface ListGroupAction {\n    /** Host text drawn as the action and naming it. */\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      },
       "ListGroupProps": {
         "entry": "list-group",
-        "signature": "export interface ListGroupProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading above the group, such as “Settings”. Omit it for an untitled group. */\n    title?: string;\n    /** `ListRow` elements. */\n    children?: React.ReactNode;\n}"
+        "signature": "export interface ListGroupProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading above the group, such as “Settings”: host text or an element such as a live count. Omit it for an untitled group. */\n    title?: React.ReactNode;\n    /** Host content after the title, such as a count or a figure. It is read with the heading; the group itself stays named by the title. */\n    titleAccessory?: React.ReactNode;\n    /** A text action on the trailing edge of the heading. */\n    action?: ListGroupAction;\n    /** Host content between the heading and the rows, such as a note or a field. A group with `intro` and no rows draws no row container. */\n    intro?: React.ReactNode;\n    /** `ListRow` elements. */\n    children?: React.ReactNode;\n}"
       },
       "ListGroup": {
         "entry": "list-group",
-        "signature": "export declare function ListGroup({ title, children, className, ...rest }: ListGroupProps): React.JSX.Element;"
+        "signature": "export declare function ListGroup({ title, titleAccessory, action, intro, children, className, ...rest }: ListGroupProps): React.JSX.Element;"
       },
       "ListRowProps": {
         "entry": "list-group",
-        "signature": "export interface ListRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {\n    label: string;\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string or number is drawn muted. */\n    value?: React.ReactNode;\n    /** What a `value` that is not text reads as, such as the formatted amount of a live figure. The element is then hidden from assistive technology and this text is read in its place. */\n    valueLabel?: string;\n    /** Colours a string or number `value` instead of the muted default, keeping its layout and reading. */\n    valueTone?: 'positive' | 'warning' | 'negative' | 'muted';\n    /** Anything richer on the trailing edge: icons, a `Badge`, or a control such as a `Switch`. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Makes the whole row a link and shows the disclosure chevron. */\n    href?: string;\n    /** Dims the row and blocks `onSelect` and `href`. */\n    disabled?: boolean;\n}"
+        "signature": "export interface ListRowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect' | 'defaultChecked'> {\n    label: string;\n    /** A muted second line under the label, such as a subtitle or an address. The row grows to fit it, and it is read with the label. */\n    description?: React.ReactNode;\n    /** Colours the label: `destructive` for an action that deletes or ends something, `muted` for one that is done or inactive. */\n    tone?: 'destructive' | 'muted';\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string or number is drawn muted. */\n    value?: React.ReactNode;\n    /** What a `value` that is not text reads as, such as the formatted amount of a live figure. The element is then hidden from assistive technology and this text is read in its place. */\n    valueLabel?: string;\n    /** Colours a string or number `value` instead of the muted default, keeping its layout and reading. */\n    valueTone?: 'positive' | 'warning' | 'negative' | 'muted';\n    /** Anything richer on the trailing edge: icons, a `Badge`, or a control such as a `Switch`. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Makes the whole row a link and shows the disclosure chevron. */\n    href?: string;\n    /** Dims the row and blocks `onSelect`, `href` and the switch. */\n    disabled?: boolean;\n    /** A row in a list of choices, such as a picker that selects and closes: `true` draws a check on the trailing edge and marks the row `aria-current`. With `selected` set, true or false, the row draws no chevron unless `disclosure` asks for one. */\n    selected?: boolean;\n    /** Something the row started is in progress: a spinner takes the disclosure's place, the row is marked busy and presses are ignored, without dimming it. */\n    busy?: boolean;\n    /** Busy text appended to the accessible name while `busy`; defaults to HIGProvider `messages.busy`. `''` omits it (the busy state stays exposed). */\n    busyLabel?: string;\n    /** The glyph a row with `onSelect` or `href` draws on its trailing edge: the `chevron` (default), `external` (an arrow, for something that opens outside the app) or `none`. */\n    disclosure?: 'chevron' | 'external' | 'none';\n    /** Makes the row a switch: the whole row is the target, the switch on its trailing edge is named by `label`, and `onCheckedChange` receives the new state. Use with no `onSelect` or `href`. */\n    checked?: boolean;\n    defaultChecked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n}"
       },
       "ListRow": {
         "entry": "list-group",
-        "signature": "export declare function ListRow({ label, leading, value, valueLabel, valueTone, trailing, onSelect, href, disabled, className, ...rest }: ListRowProps): React.JSX.Element;"
+        "signature": "export declare const ListRow: React.ForwardRefExoticComponent<ListRowProps & React.RefAttributes<HTMLElement>>;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -716,7 +728,7 @@
       },
       "PressDecorationKind": {
         "entry": "provider",
-        "signature": "export type PressDecorationKind = 'button' | 'icon-button' | 'row' | 'switch' | 'back';"
+        "signature": "export type PressDecorationKind = 'button' | 'icon-button' | 'row' | 'switch' | 'segment' | 'back';"
       },
       "PressDecorationInfo": {
         "entry": "provider",
@@ -774,13 +786,21 @@
         "entry": "selection",
         "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): React.JSX.Element;"
       },
+      "SwitchProps": {
+        "entry": "selection",
+        "signature": "export interface SwitchProps extends CheckedProps {\n    hideLabel?: boolean;\n}"
+      },
       "Switch": {
         "entry": "selection",
-        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): React.JSX.Element;"
+        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, hideLabel, onCheckedChange }: SwitchProps): React.JSX.Element;"
       },
       "ChoicesProps": {
         "entry": "selection",
         "signature": "export interface ChoicesProps {\n    label: string;\n    options: readonly Choice[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void;\n}"
+      },
+      "SegmentedControlProps": {
+        "entry": "selection",
+        "signature": "export interface SegmentedControlProps extends ChoicesProps {\n    hideLabel?: boolean;\n}"
       },
       "RadioGroup": {
         "entry": "selection",
@@ -788,7 +808,7 @@
       },
       "SegmentedControl": {
         "entry": "selection",
-        "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): React.JSX.Element;"
+        "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, hideLabel, onValueChange }: SegmentedControlProps): React.JSX.Element;"
       },
       "FilterOption": {
         "entry": "selection",
@@ -870,9 +890,13 @@
         "entry": "status",
         "signature": "export declare function StatusIndicator({ label, state }: {\n    label: string;\n    state: 'online' | 'offline' | 'stale';\n}): React.JSX.Element;"
       },
+      "TextProps": {
+        "entry": "surface",
+        "signature": "export interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {\n    tone?: 'muted'; /** `caption` draws the 12/18 caption size instead of the 16/24 body size. */\n    size?: 'caption';\n}"
+      },
       "Text": {
         "entry": "surface",
-        "signature": "export declare function Text(props: React.HTMLAttributes<HTMLParagraphElement>): React.JSX.Element;"
+        "signature": "export declare function Text({ tone, size, ...props }: TextProps): React.JSX.Element;"
       },
       "Heading": {
         "entry": "surface",
@@ -1664,9 +1688,13 @@
         "entry": "data",
         "signature": "export declare function VerticalAddress({ address, kind, rowHeight, testID }: VerticalAddressProps): React.JSX.Element;"
       },
+      "FieldProps": {
+        "entry": "field",
+        "signature": "export interface FieldProps {\n    label: string;\n    description?: string; /** `positive` draws the description as a success line, such as a name that is available, and announces it when it changes. The words carry the meaning; the colour repeats it. */\n    descriptionTone?: 'muted' | 'positive';\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}"
+      },
       "Field": {
         "entry": "field",
-        "signature": "export declare function Field({ label, description, error, required, disabled, children }: React.PropsWithChildren<{\n    label: string;\n    description?: string;\n    error?: string;\n    required?: boolean;\n    disabled?: boolean;\n}>): React.JSX.Element;"
+        "signature": "export declare function Field({ label, description, descriptionTone, error, required, disabled, children }: React.PropsWithChildren<FieldProps>): React.JSX.Element;"
       },
       "Label": {
         "entry": "field",
@@ -1680,9 +1708,13 @@
         "entry": "field",
         "signature": "export declare const TextArea: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
+      "SearchInputProps": {
+        "entry": "field",
+        "signature": "export interface SearchInputProps extends TextInputProps {\n    /** Host content on the trailing edge inside the field, such as a filter button. The text stops 48dp short of the edge; wider content sets the input's end padding through `style`. */\n    trailing?: React.ReactNode;\n    /** Shows a clear button (44dp, reaching 48dp through `hitSlop`) on the trailing edge while the controlled `value` is not empty. It calls this and returns focus to the field. */\n    onClear?: () => void;\n    /** Accessible name of the clear button; defaults to HIGProvider `messages.clearSearch`. */\n    clearLabel?: string;\n}"
+      },
       "SearchInput": {
         "entry": "field",
-        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
+        "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<SearchInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
@@ -1692,21 +1724,25 @@
         "entry": "gesture-sheet",
         "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, contentMode, titleRef, presentation, sheetRef, snapPoints, enableDynamicSizing, maxDynamicContentSize, enableContentPanningGesture, keyboardBehavior, keyboardBlurBehavior, android_keyboardInputMode, initialIndex, dismissible, returnFocusRef, closeLabel, onDismiss, onChange, onHardwareBackPress, topInset, bottomInset, modalRef, handleComponent, handleStyle, handleIndicatorStyle, backgroundComponent, backgroundStyle, containerStyle, animateOnMount, animationConfigs, backdropComponent }: GestureSheetProps): React.JSX.Element;"
       },
+      "ListGroupAction": {
+        "entry": "list-group",
+        "signature": "export interface ListGroupAction {\n    /** Host text drawn as the action and naming it. */\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
+      },
       "ListGroupProps": {
         "entry": "list-group",
-        "signature": "export interface ListGroupProps {\n    /** Heading above the group, such as “Settings”. Omit it for an untitled group. */\n    title?: string;\n    /** `ListRow` elements. */\n    children?: React.ReactNode;\n    testID?: string;\n}"
+        "signature": "export interface ListGroupProps {\n    /** Heading above the group, such as “Settings”: host text or an element such as a live count. Omit it for an untitled group. */\n    title?: React.ReactNode;\n    /** Host content after the title, such as a count or a figure; a string is drawn muted. */\n    titleAccessory?: React.ReactNode;\n    /** A text action on the trailing edge of the heading. */\n    action?: ListGroupAction;\n    /** Host content between the heading and the rows, such as a note or a field. A group with `intro` and no rows draws no row container. */\n    intro?: React.ReactNode;\n    /** `ListRow` elements. */\n    children?: React.ReactNode;\n    testID?: string;\n}"
       },
       "ListGroup": {
         "entry": "list-group",
-        "signature": "export declare function ListGroup({ title, children, testID }: ListGroupProps): React.JSX.Element;"
+        "signature": "export declare function ListGroup({ title, titleAccessory, action, intro, children, testID }: ListGroupProps): React.JSX.Element;"
       },
       "ListRowProps": {
         "entry": "list-group",
-        "signature": "export interface ListRowProps {\n    label: string;\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string or number is drawn muted, or in `valueTone`, and read with the label. */\n    value?: React.ReactNode;\n    /** What a `value` that is not text reads as, such as the formatted amount of a live figure. The element is then read as this text in its place: with the label on a pressable row, and on its own on a static row. */\n    valueLabel?: string;\n    /** Colours a string or number `value` instead of the muted default, keeping its layout and reading. */\n    valueTone?: 'positive' | 'warning' | 'negative' | 'muted';\n    /** Anything richer on the trailing edge: icons, a Badge, or a control such as a Switch. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Dims the row and blocks `onSelect`. */\n    disabled?: boolean;\n    testID?: string;\n}"
+        "signature": "export interface ListRowProps extends Omit<PressableProps, 'children' | 'style' | 'onPress' | 'disabled' | 'role' | 'accessibilityRole' | 'accessibilityLabel' | 'accessibilityState' | 'aria-label' | 'aria-checked' | 'aria-disabled' | 'aria-busy' | 'aria-selected'> {\n    label: string;\n    /** A muted second line under the label, such as a subtitle or an address. The row grows to fit it, and it is read with the label (as the hint of a switch row). */\n    description?: React.ReactNode;\n    /** Colours the label: `destructive` for an action that deletes or ends something, `muted` for one that is done or inactive. */\n    tone?: 'destructive' | 'muted';\n    /** Artwork before the label, such as an icon. Decorative: the label names the row. */\n    leading?: React.ReactNode;\n    /** Short text on the trailing edge, such as `Off`, `English` or a balance. A string or number is drawn muted, or in `valueTone`, and read with the label. */\n    value?: React.ReactNode;\n    /** What a `value` that is not text reads as, such as the formatted amount of a live figure. The element is then read as this text in its place: with the label on a pressable row, and on its own on a static row. */\n    valueLabel?: string;\n    /** Colours a string or number `value` instead of the muted default, keeping its layout and reading. */\n    valueTone?: 'positive' | 'warning' | 'negative' | 'muted';\n    /** Anything richer on the trailing edge: icons, a Badge, or a control such as a Switch. */\n    trailing?: React.ReactNode;\n    /** Makes the whole row a button, usually one that opens another view, and shows the disclosure chevron. */\n    onSelect?: () => void;\n    /** Dims the row and blocks `onSelect` and the switch. */\n    disabled?: boolean;\n    /** A row in a list of choices, such as a picker that selects and closes: `true` draws a check on the trailing edge, and the row exposes `accessibilityState.selected`. With `selected` set, true or false, the row draws no chevron unless `disclosure` asks for one. */\n    selected?: boolean;\n    /** Something the row started is in progress: a spinner takes the disclosure's place, the row is read as busy and presses are ignored, without dimming it. A busy switch row ignores presses and is read as unavailable. */\n    busy?: boolean;\n    /** Busy text appended to the accessible name while `busy` (not on Android, which speaks its own); defaults to HIGProvider `messages.busy`. `''` omits it. */\n    busyLabel?: string;\n    /** The glyph a row with `onSelect` draws on its trailing edge: the `chevron` (default), `external` (an arrow, for something that opens outside the app) or `none`. */\n    disclosure?: 'chevron' | 'external' | 'none';\n    /** Makes the row a switch: the whole row is the target, named by `label`, with the track on its trailing edge; `onCheckedChange` receives the new state. Use without `onSelect`. */\n    checked?: boolean;\n    defaultChecked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n    testID?: string;\n}"
       },
       "ListRow": {
         "entry": "list-group",
-        "signature": "export declare function ListRow({ label, leading, value, valueLabel, valueTone, trailing, onSelect, disabled, testID }: ListRowProps): React.JSX.Element;"
+        "signature": "export declare const ListRow: React.ForwardRefExoticComponent<ListRowProps & React.RefAttributes<React.ComponentRef<typeof View>>>;"
       },
       "Tabs": {
         "entry": "navigation",
@@ -1844,9 +1880,13 @@
         "entry": "radio-group",
         "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): React.JSX.Element;"
       },
+      "SegmentedControlProps": {
+        "entry": "radio-group",
+        "signature": "export interface SegmentedControlProps extends ChoicesProps {\n    hideLabel?: boolean;\n    testID?: string;\n}"
+      },
       "SegmentedControl": {
         "entry": "radio-group",
-        "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): React.JSX.Element;"
+        "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, hideLabel, testID, onValueChange }: SegmentedControlProps): React.JSX.Element;"
       },
       "FilterOption": {
         "entry": "radio-group",
@@ -1854,11 +1894,11 @@
       },
       "FilterProps": {
         "entry": "radio-group",
-        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void;\n}"
+        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void; /** The horizontal scroll view the capsules sit in, such as a sheet library's ScrollView that keeps sideways drags from the sheet. It receives the same props as React Native's `ScrollView`, which is the default. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n}"
       },
       "Filter": {
         "entry": "radio-group",
-        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange }: FilterProps): React.JSX.Element;"
+        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange, scrollComponent: Scroll }: FilterProps): React.JSX.Element;"
       },
       "RewardFigure": {
         "entry": "reward-block",
@@ -1898,11 +1938,15 @@
       },
       "Switch": {
         "entry": "switch",
-        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, tone, onCheckedChange }: SwitchProps): React.JSX.Element;"
+        "signature": "export declare function Switch({ label, checked, defaultChecked, disabled, tone, hideLabel, testID, onCheckedChange }: SwitchProps): React.JSX.Element;"
       },
       "SwitchRow": {
         "entry": "selection",
-        "signature": "export declare function SwitchRow({ label, checked, defaultChecked, disabled, onCheckedChange, children, style, accessibilityState, ...props }: SwitchRowProps): React.JSX.Element;"
+        "signature": "export declare const SwitchRow: React.ForwardRefExoticComponent<SwitchRowProps & React.RefAttributes<React.ComponentRef<typeof View>>>;"
+      },
+      "SwitchProps": {
+        "entry": "switch",
+        "signature": "export interface SwitchProps extends CheckedProps {\n    tone?: AccentRole; /** Draws the track alone: `label` still names the switch but is not shown, for a switch whose row already shows its name (such as a ListRow `trailing` control). */\n    hideLabel?: boolean;\n    testID?: string;\n}"
       },
       "SwitchRowProps": {
         "entry": "selection",
@@ -1930,7 +1974,7 @@
       },
       "Alert": {
         "entry": "status",
-        "signature": "export declare function Alert({ title, children, severity, tone, action, announce }: React.PropsWithChildren<{\n    title: React.ReactNode;\n    severity?: AlertSeverity;\n    tone?: AccentRole;\n    action?: React.ReactNode;\n    announce?: boolean;\n}>): React.JSX.Element;"
+        "signature": "export declare function Alert({ title, children: body, severity, tone, action, announce }: React.PropsWithChildren<{\n    title: React.ReactNode;\n    severity?: AlertSeverity;\n    tone?: AccentRole;\n    action?: React.ReactNode; /** Speaks the alert when it appears or changes (iOS announcement, Android live region). Defaults to true. */\n    announce?: boolean;\n}>): React.JSX.Element;"
       },
       "Callout": {
         "entry": "status",
@@ -1958,7 +2002,7 @@
       },
       "Progress": {
         "entry": "status",
-        "signature": "export declare function Progress({ label, value, max }: {\n    label: string;\n    value?: number;\n    max?: number;\n}): React.JSX.Element;"
+        "signature": "export declare function Progress({ label, value, max, hideValue }: {\n    label: string;\n    value?: number;\n    max?: number; /** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */\n    hideValue?: boolean;\n}): React.JSX.Element;"
       },
       "Skeleton": {
         "entry": "status",
@@ -1994,7 +2038,7 @@
       },
       "HIGTextProps": {
         "entry": "surface",
-        "signature": "export interface HIGTextProps extends TextProps {\n    script?: TextScript; /** Caps Dynamic Type / Android font scale for dense numeric readouts (2 = 200%). Defaults to HIGProvider `maxFontSizeMultiplier`; never disable scaling. */\n    maxFontSizeMultiplier?: number;\n}"
+        "signature": "export interface HIGTextProps extends TextProps {\n    script?: TextScript; /** Caps Dynamic Type / Android font scale for dense numeric readouts (2 = 200%). Defaults to HIGProvider `maxFontSizeMultiplier`; never disable scaling. */\n    maxFontSizeMultiplier?: number; /** `muted` draws secondary text, such as a note under a group, in the muted role. A `style` colour still wins. */\n    tone?: 'muted'; /** `caption` draws the 12/18 caption size instead of the 16/24 body size. A `style` size still wins. */\n    size?: 'caption';\n}"
       },
       "Text": {
         "entry": "surface",
@@ -2031,10 +2075,6 @@
       "SwapSheet": {
         "entry": "swap-sheet",
         "signature": "export declare function SwapSheet({ open, onOpenChange, title, view: viewProp, onViewChange, style, ...panel }: SwapSheetProps): React.JSX.Element;"
-      },
-      "SwitchProps": {
-        "entry": "switch",
-        "signature": "export interface SwitchProps extends CheckedProps {\n    tone?: AccentRole;\n}"
       },
       "TradeHistoryListRender": {
         "entry": "trade-history-list-block",

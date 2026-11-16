@@ -1,5 +1,5 @@
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
-import {Animated,Easing,Image,Platform,Pressable,ScrollView,View} from 'react-native';
+import {Animated,Easing,Image,Platform,Pressable,ScrollView,View,type ScrollViewProps} from 'react-native';
 import {tokens} from '@bloxwap/hig/tokens';
 import {useControllable,useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
@@ -14,7 +14,8 @@ export function RadioGroup({label,options,value,defaultValue='',disabled,onValue
 /** Segments are 36dp inside a 44dp track; the slop restores a 48dp touch target. */
 const segmentSlop={top:6,bottom:6};
 /** Equal-width choices with one interruptible selection indicator. The track is the dark well and the selected segment the lighter fill; the control is 44dp tall (36 compact). */
-export function SegmentedControl({label,options,value,defaultValue='',disabled,onValueChange}:ChoicesProps){
+export interface SegmentedControlProps extends ChoicesProps {/** Keeps `label` as the group's accessible name but does not draw it, for a control whose heading or row already names it. */hideLabel?:boolean;testID?:string}
+export function SegmentedControl({label,options,value,defaultValue='',disabled,hideLabel,testID,onValueChange}:SegmentedControlProps){
  const [current,set]=useControllable(value,defaultValue,onValueChange);
  const {direction,locale,reducedMotion,density}=useHIG();const colors=useColors();const fills=useFills();const compact=density==='compact';
  const [width,setWidth]=useState(0);const translateX=useRef(new Animated.Value(0)).current;
@@ -34,8 +35,8 @@ export function SegmentedControl({label,options,value,defaultValue='',disabled,o
   const animation=Animated.timing(translateX,{toValue:target,duration:tokens.motion.base,easing:Easing.bezier(...tokens.easing.standard),useNativeDriver:Platform.OS!=='web',isInteraction:false});
   animation.start();return()=>animation.stop();
  },[selected,width,count,direction,reducedMotion,target,translateX]);
- return <View accessibilityRole='radiogroup' accessibilityLabel={label} style={{direction,gap:8}}>
-  <Text style={{fontWeight:'600'}}>{label}</Text>
+ return <View testID={testID} accessibilityRole='radiogroup' accessibilityLabel={label} style={{direction,gap:8}}>
+  {hideLabel?null:<Text style={{fontWeight:'600'}}>{label}</Text>}
   <View style={{padding:4,borderRadius:9999,backgroundColor:fills.well}}>
    <View onLayout={event=>setWidth(event.nativeEvent.layout.width)} style={{flexDirection:'row',gap:4}}>
     {selected>=0&&width>0&&<Animated.View pointerEvents='none' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{position:'absolute',...anchor,top:0,bottom:0,width:segmentWidth,borderRadius:9999,backgroundColor:fills.raised,opacity:disabled||options[selected].disabled?0.5:1,transform:[{translateX}]}}/>}
@@ -52,7 +53,7 @@ export function SegmentedControl({label,options,value,defaultValue='',disabled,o
  </View>;
 }
 export interface FilterOption {value:string;label:string;disabled?:boolean;/** Image URL shown in the option's circle until it is selected. */icon?:string}
-export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void}
+export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void;/** The horizontal scroll view the capsules sit in, such as a sheet library's ScrollView that keeps sideways drags from the sheet. It receives the same props as React Native's `ScrollView`, which is the default. */scrollComponent?:React.ComponentType<ScrollViewProps>}
 /** Chips are 40dp; the slop restores a 44dp touch target. */
 const filterSlop={top:2,bottom:2};
 const hiddenMark={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const,pointerEvents:'none' as const};
@@ -79,9 +80,9 @@ function FilterChip({option,checked,blocked,reducedMotion,onSelect}: {option:Fil
  </Pressable>;
 }
 /** A horizontal, scrolling row of single-choice filter chips. The selected chip inverts and its circle shows a check that animates in. */
-export function Filter({label,options,value,defaultValue='',disabled,onValueChange}:FilterProps){
+export function Filter({label,options,value,defaultValue='',disabled,onValueChange,scrollComponent:Scroll=ScrollView}:FilterProps){
  const [current,set]=useControllable(value,defaultValue,onValueChange);const {direction,reducedMotion}=useHIG();
- return <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' accessibilityRole='radiogroup' accessibilityLabel={label} style={{flexGrow:0,direction}} contentContainerStyle={{direction,gap:8}}>
+ return <Scroll horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' accessibilityRole='radiogroup' accessibilityLabel={label} style={{flexGrow:0,direction}} contentContainerStyle={{direction,gap:8}}>
   {options.map(option=><FilterChip key={option.value} option={option} checked={current===option.value} blocked={!!disabled||!!option.disabled} reducedMotion={!!reducedMotion} onSelect={()=>set(option.value)}/>)}
- </ScrollView>;
+ </Scroll>;
 }

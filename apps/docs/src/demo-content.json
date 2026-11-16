@@ -511,7 +511,8 @@
       "family": "actions-surfaces",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "muted-caption"
       ]
     },
     {
@@ -615,7 +616,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "clear"
       ]
     },
     {
@@ -655,7 +657,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "hidden-label"
       ]
     },
     {
@@ -814,7 +817,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "untitled"
+        "untitled",
+        "heading-slots"
       ]
     },
     {
@@ -825,7 +829,11 @@
       "states": [
         "default",
         "disabled",
-        "static"
+        "static",
+        "busy",
+        "details",
+        "choice",
+        "switch"
       ]
     },
     {

@@ -6,8 +6,8 @@ import {defaultMessages,resolveMessages,type HIGMessages} from '@bloxwap/hig/con
 import {nativeSrgb,resolvePrimaryColor} from '@bloxwap/hig/tokens';
 export type {HIGMessages} from '@bloxwap/hig/contracts/messages';
 export type {NumberFormatPresentation} from '@bloxwap/hig/contracts';
-/** The kind of pressable HIG control a press decoration is drawn in: `button` (Button and the block action buttons), `icon-button` (IconButton), `row` (a pressable ListRow, AssetBalanceRow or block row), `switch` (Switch and the setting switch rows) and `back` (the block header's Back, Close and address controls). */
-export type PressDecorationKind='button'|'icon-button'|'row'|'switch'|'back';
+/** The kind of pressable HIG control a press decoration is drawn in: `button` (Button, the block action buttons and a ListGroup heading action), `icon-button` (IconButton and the SearchInput clear button), `row` (a pressable ListRow, AssetBalanceRow or block row), `switch` (Switch, a switch ListRow and the setting switch rows), `segment` (each SegmentedControl segment) and `back` (the block header's Back, Close and address controls). */
+export type PressDecorationKind='button'|'icon-button'|'row'|'switch'|'segment'|'back';
 export interface PressDecorationInfo {kind:PressDecorationKind;/** The control is disabled or busy and will not act on a press. */disabled:boolean}
 export interface HIGContext extends Environment { onAccepted?: (id:string)=>void; feedback?:FeedbackSink; /** Brand accent as opaque sRGB hex (#RGB or #RRGGBB). Nested providers inherit it; omitted at the root, Bloxwap green applies. */ primaryColor?:string; /** Host translations of built-in copy, merged through nested providers. Components fall back to the English export per key; read the full resolved catalog with `useMessages()`. */ messages:Readonly<Partial<HIGMessages>>;
  /** Host content drawn inside every pressable HIG control, such as a native switch input that gives iOS Safari a haptic. It sits in an absolutely positioned layer over the control that changes no layout and catches no pointer events itself; its children do. Nested providers inherit it. Omitted, nothing is drawn. */
