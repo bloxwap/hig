@@ -20,6 +20,7 @@ export function useStickyHeaderScroll(onScroll?:(event:NativeSyntheticEvent<Nati
 }
 /** The fill of a pinned header: transparent at rest so what the host draws behind it shows through, `background` once content has scrolled under it. */
 export function stickyHeaderFill(scrolled:boolean,background:string):ViewStyle{return {backgroundColor:scrolled?background:'transparent'};}
+const stickySlotStyle:ViewStyle={flexDirection:'row'};
 export interface StickyHeaderLayoutProps {
  /** The header, pinned as the scroll view's first child. */
  header:React.ReactNode;
@@ -36,8 +37,11 @@ export interface StickyHeaderLayoutProps {
 /** A block as its own scroll view with its header pinned: 16dp around the content as the block draws it, the header transparent until content scrolls under it. Place it in a bounded container, such as a sheet body. */
 export function StickyHeaderLayout({header,children,background,scrollComponent:Scroll=ScrollView,testID,headerTestID,bodyStyle}:StickyHeaderLayoutProps){
  const colors=useColors(),{scrolled,onScroll,scrollEventThrottle}=useStickyHeaderScroll();
+ // React Native's sticky slot moves the pinned child's style onto its own wrapper and gives the child flex:1, which measures 0 tall in a column.
+ // So the pinned child carries only a row direction (the wrapper lays out as a row, where flex:1 fills the width and the height follows content),
+ // and the inset and fill sit on the inner view, which keeps its full height whether or not the scroller pins it.
  return <Scroll testID={testID} stickyHeaderIndices={[0]} onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} contentContainerStyle={{paddingBottom:16}}>
-  <View testID={headerTestID} style={[{paddingHorizontal:16,paddingTop:16},stickyHeaderFill(scrolled,background??colors.background)]}>{header}</View>
+  <View style={stickySlotStyle}><View testID={headerTestID} style={[{flexGrow:1,paddingHorizontal:16,paddingTop:16},stickyHeaderFill(scrolled,background??colors.background)]}>{header}</View></View>
   <View style={[{paddingHorizontal:16},bodyStyle]}>{children}</View>
  </Scroll>;
 }

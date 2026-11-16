@@ -138,3 +138,22 @@ it('grows the readout to the measured reel row so a proportional reading never c
  update(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28}},{direction:'rtl'}));
  expect(StyleSheet.flatten(container().props.style).minWidth).toBeUndefined();
 });
+
+it('leaves the reel overlay unclipped until the row it draws has been measured, so no frame cuts a glyph (Android)',()=>{
+ jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
+ mount(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28,textAlign:'right'}}));
+ measure(14,28);
+ const overlay=()=>root.root.findAllByType(RNView).find(node=>{const style=StyleSheet.flatten(node.props.style);return style?.position==='absolute'&&style.top===0&&style.bottom===0&&style.direction==='ltr';});
+ const row=()=>root.root.findAllByType(RNView).find(node=>typeof node.props.onLayout==='function'&&StyleSheet.flatten(node.props.style)?.flexShrink===0);
+ expect(StyleSheet.flatten(overlay().props.style).overflow).toBe('visible');
+ act(()=>row().props.onLayout({nativeEvent:{layout:{x:0,y:0,width:73.5,height:28}}}));
+ expect(StyleSheet.flatten(overlay().props.style).overflow).toBe('hidden');
+ // Same row shape, new digits: the measured width still holds, so the overlay keeps clipping.
+ update(example({value:2000,prefix:'$',style:{fontSize:20,lineHeight:28,textAlign:'right'}}));
+ expect(StyleSheet.flatten(overlay().props.style).overflow).toBe('hidden');
+ // One more reel: unclipped (keeping the old minimum) until the wider row reports its width.
+ update(example({value:20000,prefix:'$',style:{fontSize:20,lineHeight:28,textAlign:'right'}}));
+ expect(StyleSheet.flatten(overlay().props.style).overflow).toBe('visible');expect(StyleSheet.flatten(root.root.findAllByType(RNView).find(node=>node.props.collapsable===false&&StyleSheet.flatten(node.props.style)?.position==='relative').props.style).minWidth).toBe(73.5);
+ act(()=>row().props.onLayout({nativeEvent:{layout:{x:0,y:0,width:87.5,height:28}}}));
+ expect(StyleSheet.flatten(overlay().props.style).overflow).toBe('hidden');
+});

@@ -79,13 +79,20 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  // `tabular-nums` is not honoured (Android's custom faces), so the reel row can be wider than the reading. The row is
  // measured at its own width and the readout grows to it, so the clipping overlay never cuts the first or last glyph.
  // Where the reading is already as wide as the reels (iOS), the minimum is at most its width and changes nothing.
- const [reelRowWidth,setReelRowWidth]=useState(0);
- const minWidth=activeModel&&activeMetrics&&reelRowWidth>0?reelRowWidth:undefined;
- const recordReelRow=(event:LayoutChangeEvent)=>{const {width}=event.nativeEvent.layout;if(Number.isFinite(width)&&width>0)setReelRowWidth(current=>current===width?current:width);};
+ // Until the row's onLayout has reported the width of the row now drawn (first frame, or a new digit count or separator),
+ // the overlay does not clip: the reels draw past the readout for that frame instead of losing a glyph. Each reel still
+ // clips its own column, so nothing bleeds vertically. The width is keyed by what sets it: the glyph metrics, the
+ // static tokens, the number of reels and the affixes. If a new key lays out at the same width, onLayout does not fire
+ // and the overlay stays unclipped, which is harmless: the row is then no wider than the readout it already sized.
+ const reelRowKey=activeModel?JSON.stringify([measurementKey,activeModel.tokens.map(token=>token.kind==='static'?token.value:0),prefix,suffix,staleSuffix]):'';
+ const [reelRow,setReelRow]=useState<{key:string;width:number}|null>(null);
+ const minWidth=activeModel&&activeMetrics&&reelRow?reelRow.width:undefined;
+ const clipped=reelRow!==null&&reelRow.key===reelRowKey;
+ const recordReelRow=(event:LayoutChangeEvent)=>{const {width}=event.nativeEvent.layout;if(Number.isFinite(width)&&width>0)setReelRow(current=>current?.key===reelRowKey&&current.width===width?current:{key:reelRowKey,width});};
  return <View collapsable={false} style={minWidth===undefined?{position:'relative'}:{position:'relative',minWidth}}>
   <Text accessibilityLabel={label?`${label}: ${reading.text}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[textStyle,activeModel?hiddenReading:undefined]}>{reading.text}{staleSuffix}</Text>
   {safeModel&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={{position:'absolute',opacity:0,flexDirection:'row'}}>{safeModel.digits.map((glyph,index)=><Text {...visualProps} key={`${measurementKey}:${index}`} onLayout={event=>recordGlyph(measurements,measurementKey,index,event,setMetrics)} style={textStyle}>{glyph}</Text>)}</View>}
-  {activeModel&&activeMetrics&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={[StyleSheet.absoluteFill,{overflow:'hidden',flexDirection:'row',direction:'ltr',alignItems:'center',justifyContent}]}>
+  {activeModel&&activeMetrics&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={[StyleSheet.absoluteFill,{overflow:clipped?'hidden':'visible',flexDirection:'row',direction:'ltr',alignItems:'center',justifyContent}]}>
    <View collapsable={false} onLayout={recordReelRow} style={reelRowStyle}>
     {prefix&&<Text {...visualProps} style={textStyle}>{prefix}</Text>}
     {activeModel.tokens.map(token=>token.kind==='static'?<Text {...visualProps} key={token.key} style={textStyle}>{token.value}</Text>:<DigitReel key={token.key} digits={activeModel.digits} digit={token.digit??0} trend={directionTrend} duration={duration} reducedMotion={reducedMotion} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>)}
