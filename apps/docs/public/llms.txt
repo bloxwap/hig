@@ -189,7 +189,7 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -212,6 +212,7 @@ All data and actions are supplied by the host application.
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
+| `AssetsBlock` | Choose a market: a search field, category capsules, All / Positions / Trend views, then the markets in sections by category, each with its signal disc. Details below. |
 | `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
 | `RewardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `SoundHapticsBlock` | Sound, microphone, haptics and flash settings: one card per channel with a switch, and for a channel that is on its device, input meter and volume steps. Details below. |
@@ -598,6 +599,25 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 - **Description.** `description` on each of the three blocks, and on `LanguageBlock`, is a muted line under the header that explains the screen.
 - **State.** Every switch is controlled: the host holds `checked` and decides in `onCheckedChange` whether the change takes, for example after the system permission prompt. `disabled` dims a row and blocks it.
 - **Ownership.** The blocks never play a sound, read the microphone, vibrate, request a permission or subscribe to anything.
+
+### AssetsBlock
+
+`AssetsBlock` is the market chooser as one screen, usually in a sheet: the header with an optional Close, a search field, the category capsules (`Filter`), the All / Positions / Trend views (`SegmentedControl`), then the markets in sections by category. Each row shows the market's round icon, its name over its symbol and detail, and an optional signal disc on the trailing edge. It is available from `@bloxwap/hig/react/blocks/assets-block`, `@bloxwap/hig/native/assets-block` and the `blocks` aggregates.
+
+```tsx
+<AssetsBlock onClose={close} selectedId={market.id} onSelect={openMarket}
+  categories={[{id: 'crypto', label: 'Crypto', status: {label: 'OPEN'}},
+               {id: 'commodities', label: 'Commodities', status: {label: 'CLOSED', tone: 'negative'}}]}
+  assets={[{id: 'BTC', name: 'Bitcoin', symbol: 'BTC', detail: '40×', category: 'crypto', signal: 'watch', position: true},
+           {id: 'GOLD', name: 'Gold', symbol: 'GOLD', detail: '20×', category: 'commodities', signal: null}]}/>
+```
+
+- **Markets.** Each asset is `{id, name, symbol, category}` plus optional `detail` (short text after the symbol, such as the maximum leverage `40×`), `icon` (an image URL or a host element; without it the disc shows the symbol's first letters), `keywords` for search, and `disabled`. A selectable row is one button named by its name, symbol line and signal.
+- **Signal.** `signal` is `'watch'` (an eye on a warning tint), `'up'` or `'down'` (a trend arrow on a positive or negative tint), or `null` for an empty disc. Leave it out to draw no disc. The signal is read after the market (built-in `signalWatch`, `signalUp`, `signalDown`), so it is never colour alone.
+- **Categories.** `categories` orders the sections and the capsules; a market whose category is not listed is not shown, and an empty section is not drawn. `status={{label, tone}}` puts a badge on the section heading, such as the session state, read with the heading. `tone` is `positive` by default. The capsules are left out with one category or `categoryFilter={false}`; on native, `filterScrollComponent` reaches `Filter`'s `scrollComponent`.
+- **Views.** All shows every market, Positions those with `position: true`, and Trend those with a signal (not `null`). Each view, the category (`''` is All) and the search query are uncontrolled by default (`defaultView`, `defaultCategory`, `defaultQuery`) or controlled with `view`/`onViewChange`, `category`/`onCategoryChange` and `query`/`onQueryChange`, for example to restore the last choice. The search matches name, symbol and `keywords`, ignoring case and accents. `filterAssets` exports the same filtering for a host that needs the counts.
+- **Empty and loading.** With nothing to show, the list reads `noResults` for a search, `noPositions` or `noTrend` for those views, and `noItems` otherwise; `loading` shows the loading text instead.
+- **Ownership.** The block never reads a market, a position or a signal. The host passes the data and opens the market on `onSelect`; on native the host also owns the scrolling, as for the other blocks.
 
 ### ProfileBlock
 
@@ -1940,6 +1960,18 @@ Rules:
 | `stake` | Stake | TokenActionBlock: built-in label of the `stake` action | — |
 | `unstake` | Unstake | TokenActionBlock: built-in label of the `unstake` action | — |
 | `clearSearch` | Clear search | SearchInput: accessible name of the clear button when the host gives no `clearLabel` | — |
+| `assets` | Assets | AssetsBlock: the default heading | — |
+| `searchMarkets` | Search markets | AssetsBlock: search placeholder (with a trailing ellipsis) and accessible name | — |
+| `marketCategories` | Market categories | AssetsBlock: accessible name of the category filter | — |
+| `assetsView` | View | AssetsBlock: accessible name of the All / Positions / Trend control | — |
+| `assetsAll` | All | AssetsBlock: the unfiltered category capsule and view | — |
+| `assetsPositions` | Positions | AssetsBlock: the view of markets with an open position | — |
+| `assetsTrend` | Trend | AssetsBlock: the view of markets with a signal | — |
+| `signalWatch` | Watch | AssetsBlock: a row's watch signal, read after the market | — |
+| `signalUp` | Rising | AssetsBlock: a row's upward signal, read after the market | — |
+| `signalDown` | Falling | AssetsBlock: a row's downward signal, read after the market | — |
+| `noPositions` | No open positions | AssetsBlock: empty Positions view | — |
+| `noTrend` | No trending markets | AssetsBlock: empty Trend view | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 

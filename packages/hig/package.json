@@ -333,6 +333,11 @@
       "import": "./react/dist/blocks/profile-block.js",
       "default": "./react/dist/blocks/profile-block.js"
     },
+    "./react/blocks/assets-block": {
+      "types": "./react/dist/blocks/assets-block.d.ts",
+      "import": "./react/dist/blocks/assets-block.js",
+      "default": "./react/dist/blocks/assets-block.js"
+    },
     "./react/blocks/screen-header": {
       "types": "./react/dist/blocks/screen-header.d.ts",
       "import": "./react/dist/blocks/screen-header.js",
@@ -442,6 +447,11 @@
       "types": "./native/dist/profile-block.d.ts",
       "import": "./native/dist/profile-block.js",
       "default": "./native/dist/profile-block.js"
+    },
+    "./native/assets-block": {
+      "types": "./native/dist/assets-block.d.ts",
+      "import": "./native/dist/assets-block.js",
+      "default": "./native/dist/assets-block.js"
     },
     "./native/screen-header": {
       "types": "./native/dist/screen-header.d.ts",

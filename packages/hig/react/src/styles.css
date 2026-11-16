@@ -957,6 +957,27 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-language-check { flex:none;color:var(--hig-text); }
 .hig-language-row:disabled { opacity:.5;cursor:not-allowed; }
 @media(hover:hover) and (pointer:fine) { .hig-language-row:not(:disabled):hover { background:var(--hig-fill); } }
+/* AssetsBlock: header, search, category capsules and views over markets in sections by category. */
+.hig-assets-block { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
+.hig-assets-list { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-assets-section { display:flex;flex-direction:column;gap:4px;min-width:0; }
+.hig-assets-section > ul { display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none; }
+.hig-assets-section-header { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;padding-inline:4px; }
+.hig-assets-section-header > h3 { margin:0;min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500;overflow-wrap:anywhere; }
+.hig-assets-status { flex:none;padding:2px 10px;font:600 .75rem/1.33 var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);letter-spacing:.08em; }
+.hig-assets-row { position:relative;appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:64px;margin:0;padding:8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-assets-row:active,.hig-assets-row[aria-current='true'] { background:var(--hig-fill); }
+.hig-assets-row:disabled { opacity:.5;cursor:not-allowed; }
+.hig-assets-icon { flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:9999px;overflow:hidden;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600; }
+.hig-assets-icon > img,.hig-assets-icon > svg { width:100%;height:100%;object-fit:cover; }
+.hig-assets-text { flex:1;display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted);overflow-wrap:anywhere; }
+.hig-assets-text > strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
+.hig-assets-signal { flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:9999px;background:var(--hig-fill); }
+.hig-assets-signal[data-signal='watch'] { color:var(--hig-warning);background:color-mix(in srgb,var(--hig-warning) 15%,transparent); }
+.hig-assets-signal[data-signal='up'] { color:var(--hig-positive);background:color-mix(in srgb,var(--hig-positive) 15%,transparent); }
+.hig-assets-signal[data-signal='down'] { color:var(--hig-negative);background:color-mix(in srgb,var(--hig-negative) 15%,transparent); }
+.hig-assets-empty { margin:0;padding-block:32px;text-align:center;color:var(--hig-muted);font-size:.875rem;line-height:1.43; }
+@media(hover:hover) and (pointer:fine) { .hig-assets-row:not(:disabled):hover { background:var(--hig-fill); } }
 /* Press decoration: the host layer HIGProvider pressDecoration draws inside a pressable control. Out of flow, so it changes no
    layout; it catches no pointer events itself, its children do. Zero specificity keeps a control that is already positioned as it is. */
 :where(:has(> .hig-press-decoration)) { position:relative; }

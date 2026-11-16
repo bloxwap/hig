@@ -689,6 +689,17 @@
       ]
     },
     {
+      "name": "AssetsBlock",
+      "route": "components/assets-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "trend",
+        "empty"
+      ]
+    },
+    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "entry": "blocks",

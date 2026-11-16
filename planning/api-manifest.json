@@ -286,6 +286,34 @@
         "entry": "blocks/position-block",
         "signature": "export interface PositionBlockFlagAction {\n    label: string;\n    onSelect: () => void;\n    intent?: 'primary' | 'secondary' | 'destructive';\n    busy?: boolean;\n    disabled?: boolean;\n}"
       },
+      "AssetsBlock": {
+        "entry": "blocks/assets-block",
+        "signature": "export declare function AssetsBlock({ title, onClose, assets, categories, onSelect, selectedId, view, defaultView, onViewChange, category, defaultCategory, onCategoryChange, query, defaultQuery, onQueryChange, categoryFilter, loading, className, ...rest }: AssetsBlockProps): React.JSX.Element;"
+      },
+      "filterAssets": {
+        "entry": "blocks/assets-block",
+        "signature": "export declare function filterAssets(assets: readonly AssetItem[], categories: readonly AssetCategory[], { view, category, query }?: {\n    view?: AssetsView;\n    category?: string;\n    query?: string;\n}): {\n    category: AssetCategory;\n    assets: AssetItem[];\n}[];"
+      },
+      "AssetsBlockProps": {
+        "entry": "blocks/assets-block",
+        "signature": "export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {\n    /** Heading. Defaults to the built-in “Assets”. */\n    title?: string;\n    /** Shows Close on the trailing edge of the header. */\n    onClose?: () => void;\n    assets: readonly AssetItem[];\n    /** Sections and filter capsules, in order. A market whose category is not listed is not shown. */\n    categories: readonly AssetCategory[];\n    onSelect: (asset: AssetItem) => void;\n    /** `id` of the market in use: its row is marked current. */\n    selectedId?: string | null;\n    view?: AssetsView;\n    defaultView?: AssetsView;\n    onViewChange?: (view: AssetsView) => void;\n    /** `id` of the chosen category; `''` is All. */\n    category?: string;\n    defaultCategory?: string;\n    onCategoryChange?: (category: string) => void;\n    query?: string;\n    defaultQuery?: string;\n    onQueryChange?: (query: string) => void;\n    /** `false` leaves out the category filter. Defaults to `true` when there is more than one category. */\n    categoryFilter?: boolean;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n}"
+      },
+      "AssetItem": {
+        "entry": "blocks/assets-block",
+        "signature": "export interface AssetItem {\n    /** Stable id the host switches on. */\n    id: string;\n    /** Bitcoin. */\n    name: string;\n    /** BTC. */\n    symbol: string;\n    /** `id` of the `AssetCategory` whose section the market sits in. */\n    category: string;\n    /** Short host text after the symbol on the second line, such as the maximum leverage: `40×`. */\n    detail?: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the symbol. */\n    icon?: string | React.ReactElement;\n    /** The trailing signal disc. `null` draws an empty disc, for a market with no signal yet; leave it out to draw no disc. */\n    signal?: AssetSignal | null;\n    /** The viewer holds an open position in this market, so it shows under Positions. */\n    position?: boolean;\n    /** More text the search matches, such as an alias or a ticker on another venue. */\n    keywords?: string;\n    disabled?: boolean;\n}"
+      },
+      "AssetCategory": {
+        "entry": "blocks/assets-block",
+        "signature": "export interface AssetCategory {\n    id: string;\n    /** Crypto. */\n    label: string;\n    /** A badge on the section heading's trailing edge, such as the session state: OPEN or CLOSED. */\n    status?: {\n        label: string;\n        tone?: 'positive' | 'negative' | 'warning' | 'info';\n    };\n}"
+      },
+      "AssetSignal": {
+        "entry": "blocks/assets-block",
+        "signature": "export type AssetSignal = 'watch' | 'up' | 'down';"
+      },
+      "AssetsView": {
+        "entry": "blocks/assets-block",
+        "signature": "export type AssetsView = 'all' | 'positions' | 'trend';"
+      },
       "ProfileBlock": {
         "entry": "blocks/profile-block",
         "signature": "export declare function ProfileBlock({ name, nameAccessory, address, avatar, onAvatarPress, avatarLabel, status, onEditName, onShowAddress, onClose, action, sections, footer, className, ...rest }: ProfileBlockProps): React.JSX.Element;"
@@ -1171,6 +1199,34 @@
       "AnimatedNumberReadout": {
         "entry": "animated-number",
         "signature": "export declare function AnimatedNumberReadout({ value, options: requested, formattedValue, animateFormatted, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "AssetSignal": {
+        "entry": "assets-block",
+        "signature": "export type AssetSignal = 'watch' | 'up' | 'down';"
+      },
+      "AssetsView": {
+        "entry": "assets-block",
+        "signature": "export type AssetsView = 'all' | 'positions' | 'trend';"
+      },
+      "AssetItem": {
+        "entry": "assets-block",
+        "signature": "export interface AssetItem {\n    /** Stable id the host switches on. */\n    id: string;\n    /** Bitcoin. */\n    name: string;\n    /** BTC. */\n    symbol: string;\n    /** `id` of the `AssetCategory` whose section the market sits in. */\n    category: string;\n    /** Short host text after the symbol on the second line, such as the maximum leverage: `40×`. */\n    detail?: string;\n    /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the symbol. */\n    icon?: string | React.ReactElement;\n    /** The trailing signal disc. `null` draws an empty disc, for a market with no signal yet; leave it out to draw no disc. */\n    signal?: AssetSignal | null;\n    /** The viewer holds an open position in this market, so it shows under Positions. */\n    position?: boolean;\n    /** More text the search matches, such as an alias or a ticker on another venue. */\n    keywords?: string;\n    disabled?: boolean;\n}"
+      },
+      "AssetCategory": {
+        "entry": "assets-block",
+        "signature": "export interface AssetCategory {\n    id: string;\n    /** Crypto. */\n    label: string;\n    /** A badge on the section heading's trailing edge, such as the session state: OPEN or CLOSED. */\n    status?: {\n        label: string;\n        tone?: 'positive' | 'negative' | 'warning' | 'info';\n    };\n}"
+      },
+      "AssetsBlockProps": {
+        "entry": "assets-block",
+        "signature": "export interface AssetsBlockProps {\n    /** Heading. Defaults to the built-in “Assets”. */\n    title?: string;\n    /** Shows Close on the trailing edge of the header. */\n    onClose?: () => void;\n    assets: readonly AssetItem[];\n    /** Sections and filter capsules, in order. A market whose category is not listed is not shown. */\n    categories: readonly AssetCategory[];\n    onSelect: (asset: AssetItem) => void;\n    /** `id` of the market in use: its row is marked selected. */\n    selectedId?: string | null;\n    view?: AssetsView;\n    defaultView?: AssetsView;\n    onViewChange?: (view: AssetsView) => void;\n    /** `id` of the chosen category; `''` is All. */\n    category?: string;\n    defaultCategory?: string;\n    onCategoryChange?: (category: string) => void;\n    query?: string;\n    defaultQuery?: string;\n    onQueryChange?: (query: string) => void;\n    /** `false` leaves out the category filter. Defaults to `true` when there is more than one category. */\n    categoryFilter?: boolean;\n    /** The horizontal scroll view the category capsules sit in, such as a sheet library's ScrollView. Forwarded to `Filter`. */\n    filterScrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** Shows the loading text in place of the empty text while the list is empty. */\n    loading?: boolean;\n    testID?: string;\n}"
+      },
+      "filterAssets": {
+        "entry": "assets-block",
+        "signature": "export declare function filterAssets(assets: readonly AssetItem[], categories: readonly AssetCategory[], { view, category, query }?: {\n    view?: AssetsView;\n    category?: string;\n    query?: string;\n}): {\n    category: AssetCategory;\n    assets: AssetItem[];\n}[];"
+      },
+      "AssetsBlock": {
+        "entry": "assets-block",
+        "signature": "export declare function AssetsBlock({ title, onClose, assets, categories, onSelect, selectedId, view, defaultView, onViewChange, category, defaultCategory, onCategoryChange, query, defaultQuery, onQueryChange, categoryFilter, filterScrollComponent, loading, testID }: AssetsBlockProps): React.JSX.Element;"
       },
       "BarMarkTone": {
         "entry": "bar-mark",
@@ -2275,6 +2331,14 @@
       "EmptyIcon": {
         "entry": "icons",
         "signature": "export declare function EmptyIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "EyeIcon": {
+        "entry": "icons",
+        "signature": "export declare function EyeIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "TrendIcon": {
+        "entry": "icons",
+        "signature": "export declare function TrendIcon({ color, direction }: {\n    color: string;\n    direction: 'up' | 'down';\n}): React.JSX.Element;"
       },
       "accentRoles": {
         "entry": "roles",
