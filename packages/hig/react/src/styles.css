@@ -26,6 +26,9 @@
 .hig-button > svg,.hig-icon-button > span { display:inline-flex;align-items:center;justify-content:center;flex:none; }
 .hig-icon-button { min-width:var(--hig-button);padding-inline:8px; }
 .hig-button[data-intent='destructive'] { background:var(--hig-negative);color:var(--hig-background); }
+/* Market-direction fills follow HIGProvider marketColors (default buy and sell), with the dark label destructive uses. */
+.hig-button[data-intent='up'] { background:var(--hig-up,var(--hig-buy));color:var(--hig-background); }
+.hig-button[data-intent='down'] { background:var(--hig-down,var(--hig-sell));color:var(--hig-background); }
 .hig-button[data-full] { width:100%; }
 .hig-button-spinner { flex:none;width:1em;height:1em;border:2px solid color-mix(in srgb,currentColor 30%,transparent);border-top-color:currentColor;border-radius:50%;animation:hig-spin .8s linear infinite; }
 .hig-icon-button[aria-busy='true'] > .hig-button-spinner ~ span[aria-hidden='true'] { display:none; }
@@ -133,19 +136,44 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
    insets the name, which lines the row up with the content of the cards around it. */
 .hig-market-row[data-mode='action'] { padding-inline-end:20px; }
 .hig-market-row[data-mode='action'] .hig-button[data-intent='ghost'] { color:var(--hig-text); }
+/* Action mode is one line: the identity (favourite, icon, then the name over its detail) holds the leading edge, the figures,
+   trailing content and check sit on the trailing edge, and the name truncates instead of wrapping. The name button is a 44px target
+   with no block padding, so a row is 56px (58px with a detail line) like the other capsule rows.
+   When the row is too narrow for everything, space is given up in this order: the name truncates down to a floor (the button keeps
+   5em, so the icon never leaves the identity and the start of the name stays readable); then whole figures drop from the end of
+   .hig-market-figures (volume, change, price): the group is one 44px line that wraps and clips, so a figure that does not fit moves to
+   the hidden second line instead of being cut (the empty ::before item lets even the first figure wrap away); then the trailing content
+   is clipped (the figures' shrink factor of 1000 makes them give up their space first; the trailing content's 6px padding keeps the
+   fraction of a pixel it gives up meanwhile, and a focus ring, inside its clip). The check always keeps its place. The identity's basis is 0 and the button has inline-size containment, so the floor is
+   the favourite + icon + 5em, not the full name. */
+.hig-market-row[data-mode='action'] { flex-wrap:nowrap;padding-block:6px; }
+.hig-market-row[data-mode='action'] .hig-market-identity { display:flex;align-items:center;flex:1 1 0;min-width:min-content; }
+.hig-market-row[data-mode='action'] .hig-market-identity > .hig-button { flex:1 1 0;min-width:5em;contain:inline-size;justify-content:flex-start;padding-block:0;padding-inline-end:8px;text-align:start;overflow:hidden; }
+.hig-market-row[data-mode='action'] :is(.hig-market-favorite,.hig-market-icon) { flex:none;display:inline-flex;align-items:center; }
+.hig-market-row[data-mode='action'] .hig-market-icon + .hig-button { padding-inline-start:12px; }
+.hig-market-row[data-mode='action'] .hig-market-figures { display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:flex-end;flex:0 1000 auto;min-width:0;height:var(--hig-button);margin-inline-start:-12px;overflow:hidden; }
+.hig-market-row[data-mode='action'] .hig-market-figures::before { content:'';flex:none;width:0;height:var(--hig-button); }
+.hig-market-row[data-mode='action'] .hig-market-figures > * { display:inline-flex;align-items:center;flex:none;height:var(--hig-button);margin-inline-start:12px;white-space:nowrap; }
+.hig-market-row[data-mode='action'] .hig-market-trailing { flex:0 1 auto;justify-content:safe flex-end;min-width:0;padding:6px;margin:-6px;overflow:hidden;white-space:nowrap; }
+.hig-market-row[data-mode='action'] :is(.hig-market-text,.hig-market-label,.hig-market-detail) { max-width:100%;min-width:0; }
+.hig-market-row[data-mode='action'] :is(.hig-market-label,.hig-market-detail) { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.hig-market-row[data-mode='action'] .hig-market-label { display:block; }
 .hig-market-row[data-mode='presentation'] { display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--hig-gap);padding-block:0; }
 .hig-market-row[data-mode='presentation'][data-has-volume] { grid-template-columns:minmax(0,1fr) auto auto auto; }
 .hig-market-row[data-mode='presentation'] .hig-market-identity { display:flex;align-items:center;gap:8px;min-width:0; }
 .hig-market-row[data-mode='presentation'] :is(.hig-market-price,.hig-market-change,.hig-market-volume) { text-align:end; }
-.hig-market-row[data-mode='presentation'] .hig-number { font-family:inherit; }
+/* A number read like the text around it uses the interface face, still with tabular digits, not the mono face: presentation
+   market rows, the swap figures, asset and account balances, action, position, trade, profile and BarMark values, the TargetBlock
+   headline and a row value. */
+.hig-market-row[data-mode='presentation'] .hig-number,.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number,.hig-swap-details .hig-number,.hig-swap-setting-value .hig-number,.hig-swap-identity .hig-number,.hig-asset-row .hig-number,.hig-account-balance .hig-number,.hig-account-section-total .hig-number,.hig-manage-action-value .hig-number,.hig-position-details dd .hig-number,.hig-target-amount .hig-number,.hig-trade-result .hig-number,.hig-trade-pnl .hig-number,.hig-trade-details .hig-number,.hig-profile-value .hig-number,.hig-bar-mark-description .hig-number,.hig-bar-mark-detail .hig-number,.hig-list-row-value .hig-number { font-family:inherit; }
 /* Host options: a row without price or change, or with trailing content or a check, flows into as many columns as it has cells. */
 .hig-market-row[data-mode='presentation'][data-flow] { grid-template-columns:minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:auto; }
 .hig-market-row[data-mode='presentation'] .hig-market-trailing { text-align:end; }
-.hig-market-row[data-flow] .hig-market-identity { flex:1 1 auto;min-width:0; }
+.hig-market-row[data-mode='presentation'][data-flow] .hig-market-identity { flex:1 1 auto;min-width:0; }
 .hig-market-text { display:flex;flex-direction:column;align-items:flex-start;min-width:0;text-align:start; }
 .hig-market-detail { font-size:.875rem;line-height:1.43;font-weight:400;color:var(--hig-muted); }
 .hig-market-trailing { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0; }
-.hig-market-check { flex:none;color:var(--hig-text); }
+.hig-market-check,.hig-asset-row-check,.hig-list-row-check,.hig-language-check { flex:none;color:var(--hig-text); }
 .hig-market-row[data-active] { border-radius:var(--hig-radius-xl,14px);background:var(--hig-fill); }
 .hig-market-row[data-disabled] :is(.hig-market-name,.hig-market-price,.hig-market-change,.hig-market-volume,.hig-market-trailing,.hig-market-icon) { opacity:.5; }
 .hig-badge { display:inline-flex;align-items:center;gap:4px;width:fit-content;max-width:100%;min-width:0;padding:4px 10px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);line-height:1.5;vertical-align:middle;overflow-wrap:anywhere; }
@@ -269,6 +297,10 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-segment span { display:flex; justify-content:center; align-items:center; min-height:calc(var(--hig-button) - 8px); padding:2px .75rem; border-radius:9999px; color:var(--hig-muted); font-weight:500; line-height:1.5; text-align:center; overflow-wrap:anywhere; }
 .hig-segment input:focus-visible { outline:0; }
 
+/* PresetGroup: equal-width chips, `--hig-preset-columns` to a row, each at least a 44px target at any density. */
+.hig-preset-group { display:grid;grid-template-columns:repeat(var(--hig-preset-columns,1),minmax(0,1fr));gap:8px;width:100%;min-width:0; }
+.hig-preset-group > .hig-button { min-height:44px;padding-inline:8px; }
+
 /* Filter: capsules in one row that scrolls sideways. The radio covers its capsule; the circle holds the option's image or an
    empty ring, and fills while a check draws in when chosen. */
 .hig-filter { display:flex;gap:var(--hig-action-gap);min-width:0;margin:-4px;padding:4px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none; }
@@ -320,25 +352,6 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 @keyframes hig-pulse { 50% { opacity:.45; } }
 @keyframes hig-spin { to { transform:rotate(360deg); } }
 @keyframes hig-progress { to { background-position:-200% 0; } }
-@media(prefers-reduced-motion:reduce) {
-  .hig-spinner-indicator,.hig-progress progress:not([value]),.hig-skeleton,.hig-status-indicator::before { animation:none; }
-  .hig-button-spinner { animation:none; }
-  .hig-progress progress::-webkit-progress-bar,.hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
-  .hig-button,.hig-switch input,.hig-switch input::before { transition:none; }
-  .hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path { transition:none; }
-  .hig-segment-indicator,.hig-accordion-chevron,.hig-accordion-summary,.hig-accordion::details-content { transition:none; }
-  .hig-select-list,.hig-popover { animation:none; }
-}
-[data-hig-motion='reduced'] :is(.hig-spinner-indicator,.hig-progress progress,.hig-skeleton) { animation:none; }
-[data-hig-motion='reduced'] .hig-status-indicator::before { animation:none; }
-[data-hig-motion='reduced'] .hig-button-spinner { animation:none; }
-[data-hig-motion='reduced'] :is(.hig-accordion-chevron,.hig-accordion-summary) { transition:none; }
-[data-hig-motion='reduced'] .hig-accordion::details-content { transition:none; }
-[data-hig-motion='reduced'] .hig-progress progress::-webkit-progress-bar,[data-hig-motion='reduced'] .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }
-[data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-switch input,[data-hig-motion='reduced'] .hig-switch input::before { transition:none; }
-[data-hig-motion='reduced'] .hig-segment-indicator { transition:none; }
-[data-hig-motion='reduced'] :is(.hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path) { transition:none; }
-[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'].hig-popover { animation:none; }
 @media(forced-colors:active) {
   .hig-choice input,.hig-select select,.hig-range { appearance:auto; -webkit-appearance:auto; }
   .hig-choice input::before,.hig-select::after { display:none; }
@@ -376,7 +389,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-vertical-address [data-anchor] { font-weight:700;color:var(--hig-text); }
 /* WalletAddress: the QR code and the address column share one height; the hint sits under both. */
 .hig-wallet-address { appearance:none;display:inline-flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;margin:0;padding:12px;border:0;border-radius:var(--hig-radius-xl,14px);background:transparent;color:var(--hig-text);font:inherit;text-align:start; }
-button.hig-wallet-address { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+button.hig-wallet-address,button.hig-trade-row,button.hig-list-row,a.hig-list-row { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 button.hig-wallet-address:active { opacity:.8; }
 .hig-wallet-address-body { display:flex;align-items:center;gap:16px;max-width:100%; }
 .hig-wallet-address-qr { flex:none;display:block;width:var(--hig-qr);height:var(--hig-qr); }
@@ -411,7 +424,6 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-icon { flex:none; }
 .hig-swap-amount-content { position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 16px 20px;pointer-events:none; }
 .hig-swap-amount { max-width:100%;border-radius:var(--hig-radius-lg,10px);font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;overflow:hidden;pointer-events:auto;cursor:text; }
-.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number,.hig-swap-details .hig-number,.hig-swap-setting-value .hig-number,.hig-swap-identity .hig-number { font-family:inherit; }
 .hig-swap-amount[data-muted] { color:var(--hig-muted);pointer-events:none; }
 /* An account reads name over caption beside one 40px disc; a pending destination is a placeholder. */
 .hig-swap-selected[data-account] { align-items:center; }
@@ -432,6 +444,8 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-note[data-tone='warning'] { --hig-swap-tone:var(--hig-warning); }
 .hig-swap-note[data-tone='negative'] { --hig-swap-tone:var(--hig-negative); }
 .hig-swap-panel > .hig-swap-view > .hig-swap-view-header { margin-block-end:12px; }
+/* A titled panel draws the shared ScreenHeader, 12px above the cards as the pushed views' headers are. */
+.hig-swap-panel > .hig-swap-view > .hig-screen-header { margin-block-end:12px; }
 .hig-swap-view-header[data-plain] { margin-inline-start:4px;min-height:44px; }
 /* A compact card is the slot row alone: a fixed destination with no amount. */
 .hig-swap-card[data-compact] > .hig-swap-slot { border-radius:24px; }
@@ -463,7 +477,8 @@ button.hig-swap-receive:active { opacity:.8; }
 .hig-swap-view { --hig-swap-from:24px;display:flex;flex-direction:column;min-width:0;animation:hig-swap-push var(--hig-motion-duration-base,260ms) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)); }
 .hig-swap-view[data-direction='pop'],[dir='rtl'] .hig-swap-view[data-direction='push'] { --hig-swap-from:-24px; }
 @keyframes hig-swap-push { from { opacity:0;transform:translateX(var(--hig-swap-from)); } }
-.hig-swap-picker,.hig-swap-settings-view { display:flex;flex-direction:column;gap:16px;min-width:0; }
+/* Every block's column: the swap views, the blocks and the AssetsBlock list. */
+.hig-swap-picker,.hig-swap-settings-view,.hig-account-block,.hig-token-card,.hig-manage-position-block,.hig-settings-block,.hig-position-block,.hig-reward-block,.hig-trade-history-list,.hig-trade-detail,.hig-language-block,.hig-assets-block,.hig-assets-list { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-swap-view-header { display:flex;align-items:center;gap:4px;min-width:0;margin-inline-start:-8px; }
 .hig-swap-view-title { margin:0;min-width:0;font-size:1.5rem;line-height:1.25;font-weight:700;overflow-wrap:anywhere;outline:none; }
 .hig-swap-back { appearance:none;flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
@@ -500,8 +515,8 @@ button.hig-swap-receive:active { opacity:.8; }
 .hig-swap-chain-badge { position:absolute;inset-block-end:0;inset-inline-end:0;width:16px;height:16px;border-radius:50%;object-fit:cover;background:var(--hig-surface);box-shadow:0 0 0 2px var(--hig-background); }
 .hig-swap-sheet .hig-swap-chain-badge { box-shadow:0 0 0 2px var(--hig-overlay,#111); }
 .hig-swap-settings { display:flex;flex-direction:column;gap:12px;min-width:0; }
-/* The view title already names the presets; the group keeps its legend for assistive technology only. */
-.hig-swap-presets .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+/* The view title already names the presets, the RewardBlock tabs and the TargetBlock unit; each group keeps its legend for assistive technology only. */
+.hig-swap-presets .hig-segmented-control > legend,.hig-reward-block .hig-segmented-control > legend,.hig-target-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .hig-swap-setting { appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:var(--hig-control);padding:8px 16px;border:0;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);font:inherit;font-size:1rem;font-weight:600;text-align:start;cursor:pointer; }
 .hig-swap-setting-value { display:inline-flex;align-items:center;gap:6px;font-weight:500;color:var(--hig-muted); }
 .hig-swap-fees { display:flex;flex-direction:column;gap:12px;margin:0; }
@@ -524,29 +539,25 @@ button.hig-swap-receive:active { opacity:.8; }
   .hig-swap-key:hover,.hig-swap-back:hover { background:var(--hig-surface); }
   .hig-swap-back:hover { color:var(--hig-text); }
 }
-@media(prefers-reduced-motion:reduce) { .hig-swap-view { animation:none; } .hig-swap-flip > *,.hig-swap-card { transition:none; } .hig-swap-flip > :active { transform:none; } }
-[data-hig-motion='reduced'] .hig-swap-view { animation:none; }
-[data-hig-motion='reduced'] :is(.hig-swap-flip > *,.hig-swap-card) { transition:none; }
+@media(prefers-reduced-motion:reduce) { .hig-swap-flip > :active { transform:none; } }
 [data-hig-motion='reduced'] .hig-swap-flip > :active { transform:none; }
 /* Inline prose links retain line layout (WCAG inline-text exception). */
 p .hig-link { display:inline;min-height:0;min-width:0; }
 .hig-input,.hig-range,.hig-menu-item,.hig-select-option,.hig-table-sort,.hig-choice,.hig-segment { min-width:var(--hig-button); }
 
 /* AssetBalanceRow: a capsule row concentric with its 40px avatar (8px padding, 56px row, 28px end radius). */
-.hig-asset-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px;padding-inline-end:16px;border:0;border-radius:28px;background:var(--hig-fill);color:var(--hig-text);font:inherit;text-align:start; }
+.hig-asset-row,.hig-trade-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px;padding-inline-end:16px;border:0;border-radius:28px;background:var(--hig-fill);color:var(--hig-text);font:inherit;text-align:start; }
 button.hig-asset-row { cursor:pointer; }
 button.hig-asset-row:active { background:var(--hig-fill-raised); }
 .hig-asset-row-icon { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:9999px;overflow:hidden;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.625rem;font-weight:600; }
-.hig-asset-row-icon > img { width:100%;height:100%;object-fit:cover; }
-.hig-asset-row-identity,.hig-asset-row-amounts { display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted); }
+.hig-asset-row-icon > img,.hig-reward-avatar > img,.hig-trade-avatar > img,.hig-profile-artwork > img { width:100%;height:100%;object-fit:cover; }
+.hig-asset-row-identity,.hig-asset-row-amounts,.hig-trade-row-identity,.hig-trade-row-result { display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted); }
 .hig-asset-row-identity { flex:1;overflow-wrap:anywhere; }
 .hig-asset-row-amounts { flex:none;align-items:flex-end;text-align:end; }
-.hig-asset-row strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
-.hig-asset-row .hig-number { font-family:inherit; }
+.hig-asset-row strong,.hig-trade-row strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 /* A tag is a caption under the figures; the trailing slot and the selected check follow them, 12px apart like the rest of the row. */
 .hig-asset-row-tag { font-size:.75rem;line-height:1.5;color:var(--hig-muted); }
 .hig-asset-row-trailing { flex:none;display:flex;align-items:center;gap:8px;color:var(--hig-muted); }
-.hig-asset-row-check { flex:none;color:var(--hig-text); }
 /* Unavailable: the well fill stays, the text and artwork go muted, and a press does nothing. */
 .hig-asset-row:is(:disabled,[aria-disabled='true']) { cursor:default; }
 button.hig-asset-row:disabled:active { background:var(--hig-fill); }
@@ -554,7 +565,6 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-asset-row:is(:disabled,[aria-disabled='true']) .hig-asset-row-icon { opacity:.5; }
 /* ScreenHeader: Back, a centred title and a trailing control, shared by the cards that are their own screen.
    AccountBlock: that header, the total with the deposit action, then the holdings 8px apart. */
-.hig-account-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-screen-header { display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;min-height:44px; }
 .hig-screen-header-side { display:grid;place-items:center;min-width:0; }
 .hig-screen-title { margin:0;font-size:1.0625rem;line-height:1.4;font-weight:600;text-align:center;overflow-wrap:anywhere; }
@@ -564,8 +574,8 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 /* stickyHeader: pinned in the nearest scroller, transparent at rest so whatever the host draws behind it shows through, and filled
    once content scrolls under it. The script marks that moment with data-scrolled; where scroll-driven animations exist the fill
    also follows the scroll position itself (the header's parent leaving the top of the scroller), which needs no script. */
-.hig-screen-header[data-sticky] { position:sticky;inset-block-start:0;z-index:1;background-color:transparent;transition:background-color var(--hig-motion-duration-fast) var(--hig-motion-easing-standard,ease); }
-.hig-screen-header[data-sticky][data-scrolled] { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); }
+.hig-screen-header[data-sticky],.hig-profile-bar[data-sticky] { position:sticky;inset-block-start:0;z-index:1;background-color:transparent;transition:background-color var(--hig-motion-duration-fast) var(--hig-motion-easing-standard,ease); }
+.hig-screen-header[data-sticky][data-scrolled],.hig-profile-bar[data-sticky][data-scrolled] { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); }
 @keyframes hig-sticky-fill { from { background-color:transparent; } to { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); } }
 @supports (animation-timeline:view()) {
   :has(> .hig-screen-header[data-sticky]) { view-timeline:--hig-sticky-header block; }
@@ -573,31 +583,30 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
   /* Not when the parent is itself the scroller (data-sticky-own): its view timeline would follow an outer scroller, so the script's data-scrolled rule fills it. */
   .hig-screen-header[data-sticky][data-sticky-own] { animation:none; }
 }
-@media(prefers-reduced-motion:reduce) { .hig-screen-header[data-sticky] { transition:none;animation:none; } }
-[data-hig-motion='reduced'] .hig-screen-header[data-sticky] { transition:none;animation:none; }
+/* ProfileBlock's top bar pins the same way (with the screen header's rule above). */
+/* No jump when it pins: a header that leads its pane sticks where it rests (--hig-sticky-inset, the padding between it and the
+   scroller's content edge, measured by the script), and its fill reaches up to the scroller's edge (--hig-sticky-cover) so content
+   does not show through above it. An inset header fills on the script's data-scrolled, which marks the moment it pins. */
+:is(.hig-screen-header,.hig-profile-bar)[data-sticky][data-sticky-inset] { inset-block-start:var(--hig-sticky-inset,0px);animation:none; }
+:is(.hig-screen-header,.hig-profile-bar)[data-sticky]::before { content:'';position:absolute;inset-inline:0;inset-block-end:100%;block-size:var(--hig-sticky-cover,0px);background-color:inherit;pointer-events:none; }
 .hig-account-summary { display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px; }
 .hig-account-balance { min-width:0;font-size:2rem;line-height:1.25;font-weight:600; }
-.hig-account-balance .hig-number { font-family:inherit; }
 .hig-account-assets { display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none; }
 .hig-account-sections { display:flex;flex-direction:column;gap:24px;min-width:0; }
-.hig-account-section { display:flex;flex-direction:column;gap:8px;min-width:0; }
+.hig-account-section,.hig-trade-notice,.hig-trade-footer,.hig-list-group { display:flex;flex-direction:column;gap:8px;min-width:0; }
 .hig-account-section-header { display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500; }
 .hig-account-section-header > h3 { margin:0;min-width:0;font:inherit;overflow-wrap:anywhere; }
 .hig-account-section-total { flex:none; }
-.hig-account-section-total .hig-number { font-family:inherit; }
 /* TokenActionBlock: header, the assets and chains bars 8px apart, then equal full-width actions 16px below. */
-.hig-token-card { display:flex;flex-direction:column;gap:16px;min-width:0; }
-.hig-token-bars,.hig-token-actions { display:flex;flex-direction:column;gap:8px; }
+.hig-token-bars,.hig-token-actions,.hig-setting-cards,.hig-setting-body,.hig-setting-volume,.hig-notifications-item,.hig-signals-group,.hig-reward-list { display:flex;flex-direction:column;gap:8px; }
 .hig-token-card > .hig-token-note { margin:0; }
 .hig-token-card > .hig-token-actions + .hig-token-note { margin-block-start:-8px; }
 /* ManagePositionBlock: header, two bars 8px apart, action rows and the position row 16px below each other. */
-.hig-manage-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 /* The two bars are read-only, so they sit on the page without a card, further apart than cards would be. */
 .hig-token-card > .hig-token-bars,.hig-manage-position-block > .hig-token-bars { gap:20px;padding-inline:4px; }
 .hig-position-side[data-side='long'],.hig-position-row [data-tone='up'] { color:var(--hig-positive); }
 .hig-position-side[data-side='short'],.hig-position-row [data-tone='down'] { color:var(--hig-negative); }
 /* An action row's trailing value (a resting trigger's price) is muted unless the host gives it a tone. */
-.hig-manage-action-value .hig-number { font-family:inherit; }
 .hig-manage-action-value[data-tone='positive'] { color:var(--hig-positive); }
 .hig-manage-action-value[data-tone='negative'] { color:var(--hig-negative); }
 .hig-manage-action-value[data-tone='muted'] { color:var(--hig-muted); }
@@ -607,8 +616,6 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 /* The caption under the position row, such as a stale or estimated result: 8 under the row, on its end inset. */
 .hig-position-caption { margin:-8px 0 0;padding-inline:16px;color:var(--hig-muted);font-size:.8125rem;line-height:1.5; }
 /* SoundHapticsBlock, SignalsBlock and NotificationsBlock: a header, then settings as cards 8px apart. Cards inside a list share one rounded container, 2px apart. */
-.hig-settings-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
-.hig-setting-cards,.hig-setting-body,.hig-setting-volume,.hig-notifications-item,.hig-signals-group { display:flex;flex-direction:column;gap:8px; }
 .hig-setting-list { display:flex;flex-direction:column;gap:2px;border-radius:20px;overflow:hidden; }
 .hig-setting-card { display:flex;flex-direction:column;gap:12px;padding:4px 20px;border-radius:20px;background:var(--hig-fill); }
 .hig-setting-card:has(> .hig-setting-body) { padding-block-end:16px; }
@@ -619,7 +626,7 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-setting-switch[data-locked] { cursor:default; }
 .hig-setting-switch-accessory { display:inline-flex;align-items:center;margin-inline-start:8px;vertical-align:middle; }
 .hig-setting-hint { margin:0;padding-inline:20px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-.hig-settings-description { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-settings-description,.hig-reward-status { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-notifications-group { display:flex;flex-direction:column;gap:8px;margin-block-start:8px; }
 .hig-notifications-action { margin-block-start:8px; }
 .hig-setting-notes {display:flex;flex-direction:column;gap:4px;padding-block-end:12px; }
@@ -629,23 +636,19 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-setting-switch-text { flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;padding-block:calc((var(--hig-control) - 1.5em)/2);overflow-wrap:anywhere; }
 .hig-setting-switch-description,.hig-setting-caption { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-setting-switch > .hig-switch { flex:none;display:inline-flex;align-items:center;justify-content:flex-end;height:var(--hig-control); }
-.hig-setting-meter { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
+.hig-setting-meter,.hig-reward-track { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
 .hig-setting-meter > span { display:block;height:100%;border-radius:2px;background:var(--hig-action);transition:width var(--hig-motion-duration-fast) linear; }
 .hig-setting-steps { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 .hig-setting-steps > .hig-button { padding-inline:8px; }
 .hig-setting-error { margin:0;padding-inline:20px;color:var(--hig-negative);font-size:.875rem;line-height:1.5; }
 .hig-signals-group-header { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:var(--hig-button);padding-inline-start:4px; }
 .hig-signals-group-header > h3 { display:inline-flex;align-items:center;gap:6px;min-width:0;margin:0;color:var(--hig-muted);font-size:1rem;line-height:1.5;font-weight:500; }
-@media(prefers-reduced-motion:reduce) { .hig-setting-meter > span { transition:none; } }
-[data-hig-motion='reduced'] .hig-setting-meter > span { transition:none; }
 @media(forced-colors:active) { .hig-setting-meter > span { forced-color-adjust:none; } }
 /* PositionBlock: header, the summary lines 12px apart, an optional note, then the paper trading switch and the setting groups 8px apart. */
-.hig-position-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
 /* The summary sits directly on the screen, with no card, on the list rows' text inset; its values use the interface face. */
 .hig-position-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:20px; }
 .hig-position-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
 .hig-position-details dd { margin:0;color:var(--hig-text);font-family:inherit;font-weight:500;text-align:end;overflow-wrap:anywhere; }
-.hig-position-details dd .hig-number { font-family:inherit; }
 .hig-position-details [data-tone='positive'] dd { color:var(--hig-positive); }
 .hig-position-details [data-tone='negative'] dd { color:var(--hig-negative); }
 .hig-position-details [data-tone='muted'] dd { color:var(--hig-muted); }
@@ -664,8 +667,7 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-position-flag-card { display:flex;flex-direction:column;background:var(--hig-fill); }
 .hig-position-flag-action { display:flex;padding:4px 20px 16px; }
 /* RewardBlock: header, the promotion card, the standings choice, the viewer's row on a tint, then the ranked rows 2px apart in one rounded container. */
-.hig-reward-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
-.hig-reward-promo { display:flex;flex-direction:column;gap:12px; }
+.hig-reward-promo,.hig-target-prices,.hig-bar-mark { display:flex;flex-direction:column;gap:12px; }
 .hig-reward-promo > p,.hig-reward-footnote { margin:0; }
 .hig-reward-promo-top,.hig-reward-columns { display:flex;align-items:center;justify-content:space-between;gap:12px; }
 .hig-reward-eyebrow,.hig-reward-columns { color:var(--hig-muted);font-size:.75rem;line-height:1.33;letter-spacing:.12em;text-transform:uppercase; }
@@ -679,7 +681,6 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-reward-action > svg { flex:none; }
 .hig-reward-amount { color:var(--hig-action);font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere; }
 .hig-reward-promo > .hig-reward-caption { margin-block-start:-8px;color:var(--hig-muted);font-size:.9375rem;line-height:1.5; }
-.hig-reward-track { height:4px;border-radius:2px;background:var(--hig-fill-raised);overflow:hidden; }
 .hig-reward-track > span { display:block;height:100%;min-width:8px;border-radius:2px;background:var(--hig-action);transition:width var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
 .hig-reward-columns > :last-child { text-align:end; }
 .hig-reward-columns { padding-inline:4px; }
@@ -688,14 +689,11 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-reward-footnote { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 @media(hover:hover) and (pointer:fine) { .hig-reward-rules:hover,.hig-reward-action:hover { color:var(--hig-text); } }
 .hig-reward-footnote { padding-inline:4px; }
-.hig-reward-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
-.hig-reward-list { display:flex;flex-direction:column;gap:8px; }
-.hig-reward-rows { display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;border-radius:20px;overflow:hidden; }
+.hig-reward-rows,.hig-list-group-rows { display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;border-radius:20px;overflow:hidden; }
 .hig-reward-row { display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 20px;background:var(--hig-fill); }
 .hig-reward-you > .hig-reward-row { border-radius:20px;background:color-mix(in srgb,var(--hig-action) 12%,var(--hig-background)); }
 .hig-reward-rank { flex:none;min-width:24px;color:var(--hig-muted);font-weight:600; }
 .hig-reward-avatar { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600;overflow:hidden; }
-.hig-reward-avatar > img { width:100%;height:100%;object-fit:cover; }
 .hig-reward-identity { flex:1;display:flex;flex-direction:column;min-width:0; }
 .hig-reward-identity > strong { display:flex;align-items:center;gap:6px;font-weight:600;overflow-wrap:anywhere; }
 .hig-reward-identity > span { color:var(--hig-muted);font-size:.875rem; }
@@ -703,14 +701,11 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-reward-score { flex:none;font-weight:600; }
 .hig-reward-row[data-you] :is(.hig-reward-identity > strong,.hig-reward-score) { color:var(--hig-action); }
 a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
-.hig-reward-status { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-reward-skeleton { min-height:64px;border-radius:20px; }
 .hig-reward-pagination { display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px; }
 .hig-reward-pagination > :first-child { justify-self:start; }
 .hig-reward-pagination > :last-child { justify-self:end; }
 .hig-reward-page { color:var(--hig-muted);font-size:.875rem;text-align:center; }
-@media(prefers-reduced-motion:reduce) { .hig-reward-track > span { transition:none; } }
-[data-hig-motion='reduced'] .hig-reward-track > span { transition:none; }
 @media(forced-colors:active) { .hig-reward-track > span { forced-color-adjust:none; } }
 /* TargetBlock: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
@@ -718,10 +713,8 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-target-block[data-kind='stop-loss'] { --hig-target-tone:var(--hig-negative); }
 /* The headline figure matches the SwapPanel amount: the same size and the interface face, not the mono face. */
 .hig-target-amount { margin:0;font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere; }
-.hig-target-amount .hig-number { font-family:inherit; }
-.hig-target-prices { display:flex;flex-direction:column;gap:12px; }
-.hig-target-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
-.hig-target-rest,.hig-target-move { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
+.hig-target-bar,.hig-bar-pnl-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
+.hig-target-rest,.hig-target-move,.hig-bar-mark-segment,.hig-bar-mark-rest,.hig-bar-pnl-rest,.hig-bar-pnl-move { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
 .hig-target-rest { background:var(--hig-fill-raised); }
 .hig-target-move { box-sizing:border-box;min-width:6px;background:var(--hig-target-tone);border-inline:3px solid var(--hig-text); }
 .hig-target-move[data-lead='trigger'] { border-inline-start-color:var(--hig-target-tone); }
@@ -730,9 +723,7 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-target-info { position:relative;display:inline-flex; }
 .hig-target-popover { position:absolute;inset-block-start:calc(100% + 4px);inset-inline-end:0;width:max-content;max-width:min(280px,calc(100vw - 48px));font-size:.875rem;font-weight:400;text-align:start; }
 .hig-target-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5;text-align:center; }
-.hig-target-block .hig-segmented-control > legend { position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
-.hig-target-presets,.hig-target-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
-.hig-target-presets > .hig-button { padding-inline:8px; }
+.hig-target-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 /* The Custom row holding the host's value reads as the selected choice: the value on its trailing edge and a ring in the kind's colour. */
 .hig-target-block .hig-swap-setting[aria-pressed='true'] { box-shadow:inset 0 0 0 2px var(--hig-target-tone); }
 .hig-target-block .hig-swap-setting[aria-pressed='true'] > .hig-swap-setting-value { color:var(--hig-target-tone); }
@@ -741,20 +732,14 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-target-block > .hig-screen-header:has(.hig-target-header-actions) { grid-template-columns:92px minmax(0,1fr) 92px; }
 .hig-target-block > .hig-screen-header:has(.hig-target-header-actions) > .hig-screen-header-side:first-child { justify-items:start; }
 .hig-target-block > .hig-screen-header:has(.hig-target-header-actions) > .hig-screen-header-side:last-child { justify-items:end; }
-@media(prefers-reduced-motion:reduce) { .hig-target-rest,.hig-target-move { transition:none; } }
-[data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move { transition:none; }
 @media(forced-colors:active) { .hig-target-move { forced-color-adjust:none; } }
 /* TradeHistoryListBlock: a header, then one capsule row per closed trade, 8px apart.
    TradeHistoryDetailBlock: header, the asset row, the result and the figures 8px apart, then the actions in one row 16px below. */
-.hig-trade-history-list { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
+.hig-trade-history-list,.hig-language-block,.hig-assets-block { color:var(--hig-text); }
 .hig-trade-rows { display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none; }
-.hig-trade-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px;padding-inline-end:16px;border:0;border-radius:28px;background:var(--hig-fill);color:var(--hig-text);font:inherit;text-align:start; }
-button.hig-trade-row { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 button.hig-trade-row:active { background:var(--hig-fill-raised); }
-.hig-trade-row-identity,.hig-trade-row-result { display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted); }
 .hig-trade-row-identity { flex:1;overflow-wrap:anywhere; }
 .hig-trade-row-result { flex:none;align-items:flex-end;text-align:end; }
-.hig-trade-row strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
 .hig-trade-row-side { display:inline-flex;align-items:center;gap:4px;font-weight:600; }
 .hig-trade-row-side[data-side='long'] { color:var(--hig-up,var(--hig-buy)); }
 .hig-trade-row-side[data-side='short'] { color:var(--hig-down,var(--hig-sell)); }
@@ -766,9 +751,9 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-trade-row-tag { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .hig-trade-skeleton { min-height:56px;border-radius:28px; }
 .hig-trade-error { color:var(--hig-negative); }
+.hig-trade-history-list>.hig-swap-empty { padding-bottom:0; }
 .hig-trade-empty-title,.hig-trade-empty-description { display:block; }
 .hig-trade-empty-title { color:var(--hig-text);font-weight:600; }
-.hig-trade-notice,.hig-trade-footer { display:flex;flex-direction:column;gap:8px;min-width:0; }
 .hig-trade-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-screen-badge { font-size:.75rem;line-height:1.33;font-weight:600;vertical-align:middle; }
 .hig-trade-row-chevron { flex:none;color:var(--hig-muted); }
@@ -778,22 +763,18 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-trade-pnl[data-tone='down'],.hig-trade-result[data-tone='down'] :is(.hig-trade-figure,.hig-trade-return) { color:var(--hig-down,var(--hig-sell)); }
 .hig-trade-side[data-side='long'] { color:var(--hig-up,var(--hig-buy)); }
 .hig-trade-side[data-side='short'] { color:var(--hig-down,var(--hig-sell)); }
-.hig-trade-detail { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-trade-summary { display:flex;flex-direction:column;gap:20px;padding-inline:4px; }
 .hig-trade-side { font-weight:600;text-transform:uppercase; }
 .hig-trade-result { display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center; }
 .hig-trade-identity { display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;color:var(--hig-muted); }
 .hig-trade-identity > strong { color:var(--hig-text);font-weight:600; }
 .hig-trade-avatar { flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--hig-fill);color:var(--hig-muted);font-size:.5625rem;font-weight:600;overflow:hidden; }
-.hig-trade-avatar > img { width:100%;height:100%;object-fit:cover; }
 .hig-trade-figure { font-size:clamp(2rem,10vw,2.5rem);line-height:1.2;font-weight:700;overflow-wrap:anywhere; }
 .hig-trade-return { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-.hig-trade-result .hig-number,.hig-trade-pnl .hig-number { font-family:inherit; }
 .hig-trade-details { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 12px;margin:0; }
 .hig-trade-details > div { display:flex;flex-direction:column;gap:2px;min-width:0; }
 .hig-trade-details dt { color:var(--hig-muted);font-size:.75rem;line-height:1.33; }
 .hig-trade-details dd { margin:0;font-weight:600;overflow-wrap:anywhere; }
-.hig-trade-details .hig-number { font-family:inherit; }
 .hig-trade-actions { display:flex;gap:var(--hig-action-gap); }
 .hig-trade-actions > * { flex:1 1 0;min-width:0; }
 /* ProfileBlock: a top bar, the avatar with its status dot, the name, then list groups 24px apart. */
@@ -802,7 +783,6 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-profile-identity { display:flex;flex-direction:column;align-items:center;gap:16px;margin-block-start:-16px; }
 .hig-profile-avatar { position:relative;display:block;width:144px;height:144px;border-radius:50%;background:var(--hig-fill); }
 .hig-profile-artwork { display:grid;place-items:center;width:100%;height:100%;border-radius:50%;overflow:hidden;color:var(--hig-muted);font-size:2.5rem;font-weight:600; }
-.hig-profile-artwork > img { width:100%;height:100%;object-fit:cover; }
 .hig-profile-status { position:absolute;inset-block-start:10px;inset-inline-end:10px;width:20px;height:20px;border-radius:50%;background:var(--hig-warning);box-shadow:0 0 0 3px var(--hig-background); }
 .hig-profile-status[data-tone='positive'] { background:var(--hig-positive); }
 .hig-profile-status[data-tone='negative'] { background:var(--hig-negative); }
@@ -818,59 +798,30 @@ button.hig-profile-artwork:active { opacity:.85; }
 .hig-profile-value[data-tone='warning'] { color:var(--hig-warning); }
 .hig-profile-value[data-tone='negative'] { color:var(--hig-negative); }
 .hig-profile-value[data-tone='muted'] { color:var(--hig-muted); }
-.hig-profile-value .hig-number { font-family:inherit; }
 .hig-profile-block .hig-list-row:has(> .hig-list-row-trailing .hig-switch):not([aria-disabled='true']) { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 .hig-profile-footer { min-width:0; }
 /* BarMark: one bar divided among its elements. Segments are flex shares of the bar with a 2px gap that shows the card, and the
    remainder of a larger total is an empty track segment. Colours come from tone roles (or a host colour) through one custom property. */
-.hig-bar-mark { display:flex;flex-direction:column;gap:12px; }
 .hig-bar-mark-header { display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px; }
 .hig-bar-mark-title { font-weight:600;min-width:0; }
 .hig-bar-mark-description { color:var(--hig-muted);font-size:.875rem;text-align:end;min-width:0; }
-.hig-bar-mark-description .hig-number { font-family:inherit; }
 .hig-bar-mark-bar { display:flex;gap:2px;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
 .hig-bar-mark[data-size='small'] > .hig-bar-mark-bar { height:12px;border-radius:6px; }
-.hig-bar-mark-segment,.hig-bar-mark-rest { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
 .hig-bar-mark-segment { min-width:3px;background:var(--hig-bar-mark-color,var(--hig-muted)); }
 .hig-bar-mark-rest { background:var(--hig-fill-raised); }
 .hig-bar-mark-legend { display:flex;flex-wrap:wrap;gap:8px 16px;margin:0;padding:0;list-style:none;color:var(--hig-muted);font-size:.875rem; }
 .hig-bar-mark-legend > li { display:inline-flex;align-items:center;gap:6px;min-width:0; }
 .hig-bar-mark-dot { flex:none;width:8px;height:8px;border-radius:9999px;background:var(--hig-bar-mark-color,var(--hig-muted)); }
 .hig-bar-mark-detail { color:var(--hig-faint); }
-.hig-bar-mark-detail .hig-number { font-family:inherit; }
 .hig-bar-mark [data-tone='positive'] { --hig-bar-mark-color:var(--hig-positive); }
 .hig-bar-mark [data-tone='info'] { --hig-bar-mark-color:var(--hig-info); }
 .hig-bar-mark [data-tone='warning'] { --hig-bar-mark-color:var(--hig-warning); }
 .hig-bar-mark [data-tone='negative'] { --hig-bar-mark-color:var(--hig-negative); }
 .hig-bar-mark [data-tone='muted'] { --hig-bar-mark-color:var(--hig-muted); }
 .hig-bar-mark [data-tone='faint'] { --hig-bar-mark-color:var(--hig-faint); }
-@media(prefers-reduced-motion:reduce) { .hig-bar-mark-segment,.hig-bar-mark-rest { transition:none; } }
-[data-hig-motion='reduced'] .hig-bar-mark-segment,[data-hig-motion='reduced'] .hig-bar-mark-rest { transition:none; }
 @media(forced-colors:active) { .hig-bar-mark-segment,.hig-bar-mark-dot { forced-color-adjust:none; } }
-/* Reduced-motion stops for the selectors above, one per animated or transitioned selector in each preference path
-   (tests/motion-css.test.ts). Elements portalled out of the provider carry data-hig-motion themselves and are stopped where they are styled. */
-@media(prefers-reduced-motion:reduce) {
-  .hig-accordion > .hig-accordion-summary { transition:none; }
-  .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before { animation:none; }
-}
-[data-hig-motion='reduced'] .hig-accordion > .hig-accordion-summary { transition:none; }
-[data-hig-motion='reduced'] .hig-accordion-chevron { transition:none; }
-[data-hig-motion='reduced'] .hig-filter-chip { transition:none; }
-[data-hig-motion='reduced'] .hig-filter-mark { transition:none; }
-[data-hig-motion='reduced'] .hig-filter-mark > img { transition:none; }
-[data-hig-motion='reduced'] .hig-filter-mark path { transition:none; }
-[data-hig-motion='reduced'] .hig-swap-card { transition:none; }
-[data-hig-motion='reduced'] .hig-swap-flip > * { transition:none; }
-[data-hig-motion='reduced'] .hig-skeleton { animation:none; }
-[data-hig-motion='reduced'] .hig-popover { animation:none; }
-[data-hig-motion='reduced'] .hig-progress progress:not([value]) { animation:none; }
-[data-hig-motion='reduced'] .hig-spinner-indicator { animation:none; }
-[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before { animation:none; }
-.hig-list-group { display:flex;flex-direction:column;gap:8px;min-width:0; }
 .hig-list-group-title { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500; }
-.hig-list-group-rows { display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;border-radius:20px;overflow:hidden; }
 .hig-list-row { appearance:none;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:4px 20px;border:0;border-radius:0;background:var(--hig-fill);color:var(--hig-text);font:inherit;text-align:start;text-decoration:none; }
-button.hig-list-row,a.hig-list-row { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-raised); }
 .hig-list-row:focus-visible { outline:2px solid var(--hig-focus,var(--hig-text));outline-offset:-2px; }
 .hig-list-row:disabled,.hig-list-row[aria-disabled='true'] { cursor:default;opacity:.5; }
@@ -899,7 +850,6 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-list-row:has(> .hig-list-row-trailing .hig-switch) > .hig-list-row-text { padding-block:calc((48px - 1.5em)/2); }
 .hig-list-row-label[data-tone='destructive'] { color:var(--hig-negative); }
 .hig-list-row-label[data-tone='muted'] { color:var(--hig-muted); }
-.hig-list-row-check { flex:none;color:var(--hig-text); }
 .hig-list-row-spinner { margin:2px;color:var(--hig-muted); }
 .hig-list-row[aria-busy='true'] { cursor:progress; }
 .hig-list-row[data-switch]:not([aria-disabled='true']) { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
@@ -925,8 +875,6 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 /* The result follows the market direction roles (HIGProvider marketColors), which default to buy and sell. */
 .hig-bar-pnl[data-result='profit'] { --hig-bar-pnl-tone:var(--hig-up,var(--hig-buy)); }
 .hig-bar-pnl[data-result='loss'] { --hig-bar-pnl-tone:var(--hig-down,var(--hig-sell)); }
-.hig-bar-pnl-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
-.hig-bar-pnl-rest,.hig-bar-pnl-move { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
 .hig-bar-pnl-rest { background:var(--hig-fill-raised); }
 .hig-bar-pnl-move { box-sizing:border-box;min-width:6px;background:var(--hig-bar-pnl-tone);border-inline:3px solid var(--hig-text); }
 .hig-bar-pnl-move[data-lead='mark'] { border-inline-start-color:var(--hig-bar-pnl-tone); }
@@ -943,44 +891,47 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-bar-pnl-readouts [data-kind='liquidation'] dd { color:var(--hig-negative); }
 .hig-bar-pnl-readouts [data-kind='mark'] dd { color:var(--hig-bar-pnl-tone); }
 .hig-bar-pnl[data-result='flat'] [data-kind='mark'] dd { color:var(--hig-text); }
-@media(prefers-reduced-motion:reduce) { .hig-bar-pnl-rest,.hig-bar-pnl-move,.hig-bar-pnl-liquidation { transition:none; } }
-[data-hig-motion='reduced'] .hig-bar-pnl-rest,[data-hig-motion='reduced'] .hig-bar-pnl-move,[data-hig-motion='reduced'] .hig-bar-pnl-liquidation { transition:none; }
 @media(forced-colors:active) { .hig-bar-pnl-move,.hig-bar-pnl-liquidation { forced-color-adjust:none; } }
-.hig-language-block { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
-.hig-language-list { display:flex;flex-direction:column;gap:4px;min-width:0; }
-.hig-language-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px 16px 8px 8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
-.hig-language-row:active,.hig-language-row[data-active='true'] { background:var(--hig-fill); }
-.hig-language-flag { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:9999px;overflow:hidden;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600; }
-.hig-language-flag > img,.hig-language-flag > svg { width:100%;height:100%;object-fit:cover; }
-.hig-language-text { flex:1;display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted);overflow-wrap:anywhere; }
-.hig-language-text > strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
-.hig-language-check { flex:none;color:var(--hig-text); }
-.hig-language-row:disabled { opacity:.5;cursor:not-allowed; }
-@media(hover:hover) and (pointer:fine) { .hig-language-row:not(:disabled):hover { background:var(--hig-fill); } }
-/* AssetsBlock: header, search, category capsules and views over markets in sections by category. */
-.hig-assets-block { display:flex;flex-direction:column;gap:16px;min-width:0;color:var(--hig-text); }
-.hig-assets-list { display:flex;flex-direction:column;gap:16px;min-width:0; }
-.hig-assets-section { display:flex;flex-direction:column;gap:4px;min-width:0; }
+/* LanguageBlock and AssetsBlock (header, search, category capsules and views over markets in sections by category) share their rows: an avatar, the name over a muted line, a trailing mark. */
+.hig-language-list,.hig-assets-section { display:flex;flex-direction:column;gap:4px;min-width:0; }
+.hig-language-row,.hig-assets-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px 16px 8px 8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-assets-row { position:relative;min-height:64px;padding:8px; }
+.hig-language-row:active,.hig-language-row[data-active='true'],.hig-assets-row:active,.hig-assets-row[aria-current='true'] { background:var(--hig-fill); }
+.hig-language-flag,.hig-assets-icon { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:9999px;overflow:hidden;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600; }
+.hig-language-flag > :is(img,svg),.hig-assets-icon > :is(img,svg) { width:100%;height:100%;object-fit:cover; }
+.hig-language-text,.hig-assets-text { flex:1;display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted);overflow-wrap:anywhere; }
+.hig-language-text > strong,.hig-assets-text > strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
+/* A market row is one line each: the name and the symbol line truncate. */
+.hig-assets-text > * { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.hig-language-row:disabled,.hig-assets-row:disabled { opacity:.5;cursor:not-allowed; }
+@media(hover:hover) and (pointer:fine) { .hig-language-row:not(:disabled):hover,.hig-assets-row:not(:disabled):hover { background:var(--hig-fill); } }
 .hig-assets-section > ul { display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none; }
 .hig-assets-section-header { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;padding-inline:4px; }
 .hig-assets-section-header > h3 { margin:0;min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500;overflow-wrap:anywhere; }
 .hig-assets-status { flex:none;padding:2px 10px;font:600 .75rem/1.33 var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);letter-spacing:.08em; }
 .hig-assets-status[data-countdown] { color:var(--hig-muted);letter-spacing:.02em;font-variant-numeric:tabular-nums; }
-.hig-assets-row { position:relative;appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:64px;margin:0;padding:8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
-.hig-assets-row:active,.hig-assets-row[aria-current='true'] { background:var(--hig-fill); }
-.hig-assets-row:disabled { opacity:.5;cursor:not-allowed; }
-.hig-assets-icon { flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:9999px;overflow:hidden;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600; }
-.hig-assets-icon > img,.hig-assets-icon > svg { width:100%;height:100%;object-fit:cover; }
-.hig-assets-text { flex:1;display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted);overflow-wrap:anywhere; }
-.hig-assets-text > strong { font-size:1rem;line-height:1.5;font-weight:600;color:var(--hig-text); }
-.hig-assets-signal { flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:9999px;background:var(--hig-fill); }
-.hig-assets-signal[data-signal='watch'] { color:var(--hig-warning);background:color-mix(in srgb,var(--hig-warning) 15%,transparent); }
-.hig-assets-signal[data-signal='up'] { color:var(--hig-positive);background:color-mix(in srgb,var(--hig-positive) 15%,transparent); }
-.hig-assets-signal[data-signal='down'] { color:var(--hig-negative);background:color-mix(in srgb,var(--hig-negative) 15%,transparent); }
+.hig-assets-icon,.hig-assets-signal { width:44px;height:44px; }
+.hig-assets-signal { flex:none;display:grid;place-items:center;border-radius:9999px;background:var(--hig-fill); }
+.hig-assets-trailing { flex:none;display:flex;align-items:center; }
+.hig-assets-signal[data-signal] { color:var(--hig-signal);background:color-mix(in srgb,var(--hig-signal) 15%,transparent); }
+.hig-assets-signal[data-signal='watch'] { --hig-signal:var(--hig-warning); }
+.hig-assets-signal[data-signal='up'] { --hig-signal:var(--hig-positive); }
+.hig-assets-signal[data-signal='down'] { --hig-signal:var(--hig-negative); }
 .hig-assets-empty { margin:0;padding-block:32px;text-align:center;color:var(--hig-muted);font-size:.875rem;line-height:1.43; }
-@media(hover:hover) and (pointer:fine) { .hig-assets-row:not(:disabled):hover { background:var(--hig-fill); } }
 /* Press decoration: the host layer HIGProvider pressDecoration draws inside a pressable control. Out of flow, so it changes no
    layout; it catches no pointer events itself, its children do. Zero specificity keeps a control that is already positioned as it is. */
 :where(:has(> .hig-press-decoration)) { position:relative; }
 span.hig-press-decoration[data-kind],.hig-list-row-trailing .hig-switch > span.hig-press-decoration[data-kind] { position:absolute;inset:0;display:block;width:auto;height:auto;margin:0;padding:0;border:0;border-radius:inherit;overflow:hidden;clip:auto;white-space:normal;pointer-events:none; }
 span.hig-press-decoration[data-kind] > * { pointer-events:auto; }
+/* Reduced-motion stops, last so they outrank every motion declaration above: exactly one per animated or transitioned selector
+   in each preference path (tests/motion-css.test.ts). Elements portalled out of the provider carry data-hig-motion themselves. */
+@media(prefers-reduced-motion:reduce) {
+  .hig-button,.hig-accordion > .hig-accordion-summary,.hig-accordion-chevron,.hig-switch input,.hig-switch input::before,.hig-segment-indicator,.hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path,.hig-swap-card,.hig-swap-flip > *,.hig-screen-header[data-sticky],.hig-profile-bar[data-sticky],.hig-setting-meter > span,.hig-reward-track > span,.hig-target-rest,.hig-target-move,.hig-bar-mark-segment,.hig-bar-mark-rest,.hig-bar-pnl-rest,.hig-bar-pnl-move,.hig-bar-pnl-liquidation { transition:none; }
+  .hig-button-spinner,.hig-skeleton,.hig-select-list,.hig-popover,.hig-progress progress:not([value]),.hig-spinner-indicator,.hig-status-indicator:is([data-state='online'],[data-state='stale'])::before,.hig-swap-view,.hig-screen-header[data-sticky] { animation:none; }
+}
+[data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-accordion > .hig-accordion-summary,[data-hig-motion='reduced'] .hig-accordion-chevron,[data-hig-motion='reduced'] .hig-switch input,[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-segment-indicator,[data-hig-motion='reduced'] .hig-filter-chip,[data-hig-motion='reduced'] .hig-filter-mark,[data-hig-motion='reduced'] .hig-filter-mark > img,[data-hig-motion='reduced'] .hig-filter-mark path,[data-hig-motion='reduced'] .hig-swap-card,[data-hig-motion='reduced'] .hig-swap-flip > *,[data-hig-motion='reduced'] .hig-screen-header[data-sticky],[data-hig-motion='reduced'] .hig-profile-bar[data-sticky],[data-hig-motion='reduced'] .hig-setting-meter > span,[data-hig-motion='reduced'] .hig-reward-track > span,[data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-bar-mark-segment,[data-hig-motion='reduced'] .hig-bar-mark-rest,[data-hig-motion='reduced'] .hig-bar-pnl-rest,[data-hig-motion='reduced'] .hig-bar-pnl-move,[data-hig-motion='reduced'] .hig-bar-pnl-liquidation { transition:none; }
+[data-hig-motion='reduced'] .hig-button-spinner,[data-hig-motion='reduced'] .hig-skeleton,[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'] .hig-popover,[data-hig-motion='reduced'].hig-popover,[data-hig-motion='reduced'] .hig-progress progress:not([value]),[data-hig-motion='reduced'] .hig-spinner-indicator,[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before,[data-hig-motion='reduced'] .hig-swap-view,[data-hig-motion='reduced'] .hig-screen-header[data-sticky] { animation:none; }
+/* Selectors some engines do not parse stay in rules of their own, so they cannot drop the lists above. */
+@media(prefers-reduced-motion:reduce) { .hig-accordion::details-content { transition:none; } .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; } }
+[data-hig-motion='reduced'] .hig-accordion::details-content { transition:none; }
+[data-hig-motion='reduced'] .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; }

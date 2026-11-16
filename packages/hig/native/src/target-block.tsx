@@ -1,11 +1,12 @@
 import React,{useState} from 'react';
 import {Pressable,View,type ScrollViewProps} from 'react-native';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 import {Surface,Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
+import {PresetGroup} from './preset-group.js';
 import {ChevronIcon,SeverityIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
@@ -33,6 +34,8 @@ export interface TargetBlockLabels {
  custom:string;
  /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */
  info?:string;
+ /** Accessible name of the quick choices, not drawn: Quick targets. Defaults to `title`. */
+ presets?:string;
 }
 export interface TargetBlockProps {
  kind:TargetKind;
@@ -97,11 +100,16 @@ const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
 const allUnits:readonly TargetUnit[]=['dollar','price','percent'];
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const known=(value:number|null|undefined):value is number=>value!=null&&Number.isFinite(value);
-/** Number format of a target in a unit. Dollars and percents carry their sign; `short` drops the cents of a whole dollar amount, for a preset. */
+/**
+ * Number format of a target in a unit. Dollars and percents carry their sign. `short` is a preset's value: a whole dollar amount
+ * or a whole price drops its fraction digits (`+$10`, `$63,000`), whatever fraction digits `priceOptions` fix, so a preset reads
+ * the same on web and native; a price formatted by significant digits keeps `priceOptions`.
+ */
 export function targetFormat(unit:TargetUnit,priceOptions:Intl.NumberFormatOptions=usd,short?:number):Intl.NumberFormatOptions{
- if(unit==='price')return priceOptions;
+ const whole=short!==undefined&&Number.isInteger(short);
+ if(unit==='price')return whole&&priceOptions.minimumSignificantDigits===undefined&&priceOptions.maximumSignificantDigits===undefined?{...priceOptions,minimumFractionDigits:0,maximumFractionDigits:0}:priceOptions;
  if(unit==='percent')return {style:'percent',maximumFractionDigits:2,signDisplay:'exceptZero'};
- return {...usd,signDisplay:'exceptZero',...(short!==undefined&&Number.isInteger(short)?{maximumFractionDigits:0}:null)};
+ return {...usd,signDisplay:'exceptZero',...(whole?{maximumFractionDigits:0}:null)};
 }
 /**
  * Where each known price sits on the bar, as a fraction of its width from the low-price edge, the prices in price order, and
@@ -172,9 +180,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
     <View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
    </View>
   </Pressable>:null}
-  {presets.length>0?<View testID='target-presets' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>
-   {targetPresets(presets).map(({value:preset,disabled})=>{const selected=custom===null&&preset===value;return <Button key={preset} testID={`target-preset-${preset}`} intent={selected?intent:'secondary'} disabled={disabled} accessibilityState={{selected}} onPress={()=>onValueChange?.(preset)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>;})}
-  </View>:null}
+  {presets.length>0?<PresetGroup testID='target-presets' label={labels.presets??labels.title} selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,testID:`target-preset-${preset}`,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)} style={{marginTop:16}}/>:null}
   {info&&open?<Pressable testID='target-popover-dismiss' {...hidden} onPress={()=>setOpen(false)} style={{position:'absolute',top:0,bottom:0,left:0,right:0,zIndex:1}}/>:null}
   {info&&open?<View testID='target-popover' accessibilityLiveRegion='polite' style={{position:'absolute',top:sticky?4:64,...(direction==='rtl'?{left:16}:{right:16}),maxWidth:280,zIndex:2,padding:12,borderRadius:14,backgroundColor:colors.nested}}><Text testID='target-note' style={{color:colors.text,fontSize:14,lineHeight:21}}>{note}</Text></View>:null}
   <View testID='target-actions' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>

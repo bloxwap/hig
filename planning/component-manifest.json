@@ -50,6 +50,7 @@
         "Switch",
         "SegmentedControl",
         "Filter",
+        "PresetGroup",
         "Select",
         "Slider; Tabs in navigation"
       ],

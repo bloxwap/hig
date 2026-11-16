@@ -104,7 +104,7 @@ describe('PositionBlock host slots',()=>{
   const view=render(<PositionBlock {...base}/>);expect(document.querySelector('.hig-screen-header')!.hasAttribute('data-sticky')).toBe(false);
   view.rerender(<PositionBlock {...base} stickyHeader headingId='position-title'/>);expect(document.querySelector('.hig-position-block > .hig-screen-header')!.getAttribute('data-sticky')).toBe('true');
   expect(screen.getByRole('heading',{name:'Position'}).id).toBe('position-title');
-  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-screen-header[data-sticky] {'))??'';expect(rule).toContain('position:sticky');expect(rule).toContain('inset-block-start:0');expect(rule).toContain('background-color:transparent');
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-screen-header[data-sticky],'))??'';expect(rule).toContain('position:sticky');expect(rule).toContain('inset-block-start:0');expect(rule).toContain('background-color:transparent');
  });
  it('passes attributes through to Back and Close (Unreleased)',()=>{
   render(<PositionBlock {...base} onBack={()=>{}} onClose={()=>{}} backProps={{'data-host':'back'} as never} closeProps={{'data-host':'close'} as never}/>);

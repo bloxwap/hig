@@ -46,8 +46,8 @@ describe('TokenActionBlock',()=>{
  });
  it('BarMark small is a 12px bar the card does not use; the card spaces bars 8 apart and actions 16 below',()=>{
   render(<BarMark title='Chains' size='small' elements={chains}/>);expect(screen.getByRole('region',{name:'Chains'}).getAttribute('data-size')).toBe('small');
-  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
-  expect(rule(".hig-bar-mark[data-size='small']")).toMatch(/height:12px;border-radius:6px/);expect(rule('.hig-token-card {')).toContain('gap:16px');expect(rule('.hig-token-bars,.hig-token-actions {')).toContain('gap:8px');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start)||(start.endsWith(' {')&&line.includes(' { ')&&line.slice(0,line.indexOf(' { ')).split(',').includes(start.slice(0,-2))))??'';
+  expect(rule(".hig-bar-mark[data-size='small']")).toMatch(/height:12px;border-radius:6px/);expect(rule('.hig-token-card {')).toContain('gap:16px');expect(rule('.hig-token-bars {')).toContain('gap:8px');expect(rule('.hig-token-actions {')).toContain('gap:8px');
  });
  it('draws a note under the actions with an optional tone, 8 below the actions',()=>{
   const view=render(<TokenActionBlock symbol='SOL' name='Solana' assets={assets} chains={chains} actions={four()} note='View-only account'/>);

@@ -28,6 +28,10 @@ export interface AssetItem {
  signal?:AssetSignal|null;
  /** The viewer holds an open position in this market, so it shows under Positions. */
  position?:boolean;
+ /** Host content on the trailing edge, before the signal disc, such as the live result of the viewer's open position. It is drawn only (it sits inside the row button, hidden from assistive technology); the row reads `trailingLabel` for it. */
+ trailing?:React.ReactNode;
+ /** Words the row reads after its symbol line, such as `open position`, for what `trailing` shows. */
+ trailingLabel?:string;
  /** More text the search matches, such as an alias or a ticker on another venue. */
  keywords?:string;
  disabled?:boolean;
@@ -43,6 +47,8 @@ export interface AssetCategory {
  opensAt?:number|Date;
 }
 export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'|'onSelect'> {
+ /** Shows a clear button in the search field while it holds text: it empties the query and returns focus to the field. Named by `messages.clearSearch`. */
+ clearable?:boolean;
  /** Heading. Defaults to the built-in “Assets”. */
  title?:string;
  /** Shows Close on the trailing edge of the header. */
@@ -61,6 +67,10 @@ export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  categoryFilter?:boolean;
  /** Shows the loading text in place of the empty text while the list is empty. */
  loading?:boolean;
+ /** Pins the header (title and Close) to the top of the nearest scroller while the rest scrolls, as `ScreenHeader stickyHeader` does: transparent at rest, filled once content scrolls under it. */
+ stickyHeader?:boolean;
+ /** `id` of the heading, so a dialog or sheet around the block can name itself by it (`aria-labelledby`, `GestureSheet labelledBy`). */
+ headingId?:string;
 }
 const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 /** The markets a view, category and query leave, grouped by category in the host's order. Empty sections are dropped. */
@@ -91,7 +101,7 @@ const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+categor
  * Choose a market as one screen: a header, a search field, category capsules, the All / Positions / Trend views, then the
  * markets in sections by category, each with its icon, name, symbol and detail, and its signal disc. The host owns the data.
  */
-export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,className,...rest}:AssetsBlockProps){
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,stickyHeader,headingId,clearable,className,...rest}:AssetsBlockProps){
  const t=useMessages();const {locale}=useHIG();const id=useId();
  const now=useNow(categories.some(entry=>{const at=opensAtTime(entry);return at!=null&&at>Date.now();}));
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
@@ -103,10 +113,11 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  const row=(asset:AssetItem)=>{
   const second=asset.detail?`${asset.symbol} · ${asset.detail}`:asset.symbol;
   const signal=asset.signal===undefined?null:<span className='hig-assets-signal' data-signal={asset.signal??undefined}>{asset.signal?signalIcons[asset.signal]:null}</span>;
-  const name=[asset.name,second,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ');
+  const name=[asset.name,second,asset.trailingLabel,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ');
   return <li key={asset.id}><button type='button' className='hig-assets-row' aria-label={name} aria-current={asset.id===selectedId||undefined} disabled={asset.disabled} onClick={()=>onSelect(asset)}>
    <span className='hig-assets-icon' aria-hidden='true'>{typeof asset.icon==='string'?<img src={asset.icon} alt=''/>:asset.icon??asset.symbol.slice(0,4)}</span>
    <span className='hig-assets-text' aria-hidden='true'><strong>{asset.name}</strong><span>{second}</span></span>
+   {asset.trailing!=null&&asset.trailing!==false?<span className='hig-assets-trailing' aria-hidden='true'>{asset.trailing}</span>:null}
    {signal}
    <PressDecoration kind='row' disabled={!!asset.disabled}/>
   </button></li>;
@@ -118,8 +129,8 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   return <div className='hig-assets-section-header'><h3 id={`${id}-${entry.id}`} aria-label={badge?`${entry.label}, ${badge.spoken}`:undefined}>{entry.label}</h3>{badge&&<Badge aria-hidden='true' className='hig-assets-status' data-countdown={countdown?'':undefined} tone={badge.tone}>{badge.visible}</Badge>}</div>;
  };
  return <section {...rest} className={`hig-assets-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={heading} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
-  <SearchInput aria-label={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
+  <ScreenHeader title={heading} headingId={headingId} stickyHeader={stickyHeader} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
+  <SearchInput aria-label={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} onClear={clearable?()=>setQuery(''):undefined} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
   {showFilter&&<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory}/>}
   <SegmentedControl hideLabel label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   <div className='hig-assets-list' aria-busy={loading||undefined}>

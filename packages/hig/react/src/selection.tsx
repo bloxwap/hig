@@ -35,3 +35,4 @@ export function Filter({label,options,value,defaultValue='',disabled,onValueChan
 }
 export {Select} from './select.js';
 export {Slider} from './slider.js';
+export {PresetGroup,type PresetGroupProps,type PresetOption} from './preset-group.js';

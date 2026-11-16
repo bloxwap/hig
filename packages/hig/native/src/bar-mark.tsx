@@ -1,6 +1,6 @@
 import React,{useContext} from 'react';
 import {View} from 'react-native';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {useColors,useFills,useHIG,useNumberLocale,usePresentNumber} from './provider.js';
 import {figureReading,type Figure} from './figure.js';
 import {Surface,Text} from './surface.js';

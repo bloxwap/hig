@@ -57,6 +57,14 @@ describe('host slots (Unreleased)',()=>{
   tree=mount({error:'History is unavailable'});const error=host(tree,'history-error');expect(error.props.accessibilityRole).toBe('alert');expect(StyleSheet.flatten(error.props.style).color).toBe(colors.negative);
   tree=mount({trades:[],labels:{...labels,emptyDescription:'Closed trades appear here.'}});expect(host(tree,'history-empty').props.accessibilityLabel).toBe('No closed trades yet, Closed trades appear here.');
  });
+ it('keeps 32 above the empty and error lines and none below, so only the block\'s 16 inset sits under the text',()=>{
+  const vertical=node=>{const style=flat(node);return [style.paddingTop??style.paddingVertical??0,style.paddingBottom??style.paddingVertical??0];};
+  let tree=mount({trades:[]});expect(vertical(host(tree,'history-empty'))).toEqual([32,0]);
+  tree=mount({trades:[],labels:{...labels,emptyDescription:'Closed trades appear here.'}});const empty=host(tree,'history-empty');expect(vertical(empty)).toEqual([32,0]);
+  expect(empty.findAll(node=>node.type==='Text').map(vertical)).toEqual([[0,0],[0,0]]);
+  tree=mount({error:'History is unavailable'});expect(vertical(host(tree,'history-error'))).toEqual([32,0]);
+  expect(flat(host(tree,'history')).padding).toBe(16);
+ });
  it('renders the rows through the host list with renderList, so a long history is virtualized',()=>{
   const many=Array.from({length:100},(_,index)=>({id:String(index),name:`Asset ${index}`,side:index%2?'short':'long',pnl:index}));
   const renderList=jest.fn(list=>h(FlatList,{data:list.trades,renderItem:list.renderItem,keyExtractor:list.keyExtractor,ItemSeparatorComponent:list.ItemSeparatorComponent,initialNumToRender:10,windowSize:2}));

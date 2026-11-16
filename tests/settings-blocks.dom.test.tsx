@@ -146,7 +146,7 @@ describe('settings host slots (Unreleased)',()=>{
   expect(locked.closest('label')!.hasAttribute('data-disabled')).toBe(false);expect(locked.closest('label')!.hasAttribute('data-locked')).toBe(true);
   await userEvent.click(locked);expect(change).not.toHaveBeenCalled();expect(locked.checked).toBe(true);
   // The accessory reads after the label and a pause, not run into it.
-  expect(screen.getByRole('switch',{name:/^Feed ?, New$/})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.textContent).toBe('★');
+  expect(screen.getByRole('switch',{name:'Feed, New'})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.textContent).toBe('★');
   expect(screen.getByRole('status').textContent).toBe('Needs permission');expect(screen.getByRole('alert').textContent).toBe('Request failed');
   // Host artwork is drawn inside the mark's image role, named by the verified words.
   const mark=screen.getByTestId('mark').closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBe('img');expect(mark.getAttribute('aria-label')).toBe('Genesis');
@@ -162,7 +162,29 @@ describe('settings host slots (Unreleased)',()=>{
  });
  it('SettingSwitch: labelAccessoryLabel names the accessory in place of its content, as on native (Unreleased)',()=>{
   render(<SignalsBlock title='Signals' groups={[{id:'trend',title:'Trend',items:[{id:'feed',label:'Feed',checked:true,onCheckedChange:noop,labelAccessory:<span>★</span>,labelAccessoryLabel:'New'}]}]}/>);
-  expect(screen.getByRole('switch',{name:/^Feed ?, New$/})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
+  expect(screen.getByRole('switch',{name:'Feed, New'})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
+ });
+ it('SettingSwitch: with labelAccessoryLabel the name is one text node, so browsers read no space before the comma',()=>{
+  // A visually hidden span beside the label is laid out apart, and Chromium and WebKit read `Swing notifications , Genesis`; one hidden text node reads as written.
+  render(<NotificationsBlock title='Notifications' items={[{id:'swing',label:'Swing notifications',checked:true,onCheckedChange:noop,labelAccessory:<span>G</span>,labelAccessoryLabel:'Genesis'}]}/>);
+  const input=screen.getByRole('switch',{name:'Swing notifications, Genesis'});
+  const ids=input.getAttribute('aria-labelledby')!.split(' ');expect(ids).toHaveLength(1);
+  const spoken=document.getElementById(ids[0])!;expect(spoken.hidden).toBe(true);expect(spoken.childNodes).toHaveLength(1);expect(spoken.textContent).toBe('Swing notifications, Genesis');
+  // Nothing visually hidden is left inside the drawn label, and the drawn label is still the label text and the hidden accessory.
+  const row=input.closest('label')!;expect(row.querySelector('.hig-sr-only')).toBeNull();expect(row.querySelector('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
+ });
+ it('SettingSwitch: without labelAccessoryLabel the label and its comma are one hidden text node, then the accessory reads its own content',()=>{
+  // The name joins the hidden `Feed,` and the accessory with one space, so no browser reads `Feed , New`.
+  render(<NotificationsBlock title='Notifications' items={[{id:'feed',label:'Feed',checked:true,onCheckedChange:noop,labelAccessory:<span className='badge'>New</span>}]}/>);
+  const input=screen.getByRole('switch',{name:'Feed, New'});
+  const ids=input.getAttribute('aria-labelledby')!.split(' ');expect(ids).toHaveLength(2);
+  const spoken=document.getElementById(ids[0])!;expect(spoken.hidden).toBe(true);expect(spoken.childNodes).toHaveLength(1);expect(spoken.textContent).toBe('Feed,');
+  const accessory=document.getElementById(ids[1])!;expect(accessory.classList.contains('hig-setting-switch-accessory')).toBe(true);expect(accessory.hasAttribute('aria-hidden')).toBe(false);expect(accessory.textContent).toBe('New');
+  const row=input.closest('label')!;expect(row.querySelector('.hig-sr-only')).toBeNull();
+ });
+ it('SettingSwitch: without an accessory the switch reads the drawn label alone',()=>{
+  render(<NotificationsBlock title='Notifications' items={[{id:'feed',label:'Feed',checked:true,onCheckedChange:noop}]}/>);
+  const input=screen.getByRole('switch',{name:'Feed'});const ids=input.getAttribute('aria-labelledby')!.split(' ');expect(ids).toHaveLength(1);expect(document.getElementById(ids[0])!.hidden).toBe(false);
  });
  it('keeps provider feedback on section and item actions unless feedback is false (Unreleased)',async()=>{
   const emit=vi.fn(),feedback={emit};

@@ -48,7 +48,9 @@ it('falls back for opaque, unknown, RTL, bidi, unmappable, and missing-part layo
  expect(safeNumberLayout('\u202e123','ltr')).toBe(false);expect(safeNumberLayout('مبلغ 123','ltr')).toBe(false);
  const Original=Intl.NumberFormat;
  jest.spyOn(Intl,'NumberFormat').mockImplementation(function(locale,options){const formatter=new Original(locale,options);return {format:formatter.format.bind(formatter),resolvedOptions:formatter.resolvedOptions.bind(formatter)};});
- expect(createNumberReelModel(12,'en-US',{},undefined,'ltr')).toBeNull();
+ // Without formatToParts (Hermes on iOS) the reels are read from the text (tests/native/sign-display.test.cjs); scientific notation stays static.
+ expect(createNumberReelModel(12,'en-US',{},undefined,'ltr').tokens.map(token=>token.key)).toEqual(['integer:1','integer:0']);
+ expect(createNumberReelModel(-1234.5,'en-US',{notation:'scientific'},undefined,'ltr')).toBeNull();
 });
 
 it('resolves explicit and callback trends from previous and current finite values',()=>{
@@ -119,4 +121,42 @@ it('keeps RTL and invalid native metrics on the static final reading',()=>{
  const probes=root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function');
  act(()=>{for(const probe of probes)probe.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:0,height:28}}});});
  expect(StyleSheet.flatten(finalText().props.style).opacity).toBeUndefined();expect(global.__numberReanimated.timing).not.toHaveBeenCalled();
+});
+
+// The Seeker (Android) drew `+100.00%on margin`: the reels were an overlay on the reading, so the readout kept the reading's
+// width and the row drew past it into the following text. The readout's box is now sized by the row it draws.
+describe('the readout is as wide as what it draws',()=>{
+ const container=()=>root.root.findAllByType(RNView).find(node=>node.props.collapsable===false&&StyleSheet.flatten(node.props.style)?.position==='relative');
+ const reelRow=()=>root.root.findAllByType(RNView).find(node=>node.props.accessibilityElementsHidden===true&&StyleSheet.flatten(node.props.style)?.direction==='ltr');
+ // The readout's own children (under the host element that carries its style), less the ones taken out of the flow.
+ const flowChildren=()=>{let box=container();while(box.children.length===1&&typeof box.children[0]!=='string'&&box.children[0].props.style===box.props.style)box=box.children[0];return box.children.filter(child=>typeof child!=='string'&&StyleSheet.flatten(child.props.style)?.position!=='absolute');};
+ const flow=()=>flowChildren().map(child=>child.findAll(node=>node.props.testID==='price').length?'reading':child.props.accessibilityElementsHidden&&StyleSheet.flatten(child.props.style)?.direction==='ltr'?'reels':'other');
+ const drawnText=row=>row.findAllByType(RNText).filter(node=>StyleSheet.flatten(node.props.style)?.height===undefined).map(node=>node.props.children).join('');
+ it('draws the reels in the flow and takes the reading out of it, with no measured minimum or clipping overlay',()=>{
+  jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
+  mount(example({value:1,options:{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'},style:{fontSize:14,lineHeight:21}}));
+  // Before the glyphs are measured the reading is the only in-flow content.
+  expect(flow()).toEqual(['reading']);expect(StyleSheet.flatten(finalText().props.style).position).toBeUndefined();
+  measure(9,21);
+  const row=reelRow(),reading=StyleSheet.flatten(finalText().props.style);
+  expect(flow()).toEqual(['reels']);expect(StyleSheet.flatten(row.props.style)).toMatchObject({flexDirection:'row',flexShrink:0,direction:'ltr'});
+  expect(StyleSheet.flatten(row.props.style).position).toBeUndefined();
+  expect(reading).toMatchObject({position:'absolute',top:0,left:0,color:'#ffffff00'});
+  const box=StyleSheet.flatten(container().props.style);expect(box.minWidth).toBeUndefined();expect(box.overflow).toBeUndefined();expect(box.flexDirection).toBe('row');
+  // Nothing in the readout clips except the reels' own columns, and no onLayout round trip sizes it.
+  expect(root.root.findAllByType(RNView).filter(node=>StyleSheet.flatten(node.props.style)?.overflow==='hidden').every(node=>StyleSheet.flatten(node.props.style).width===9)).toBe(true);
+  expect(root.root.findAllByType(RNView).filter(node=>typeof node.props.onLayout==='function')).toHaveLength(0);
+  // The composed sign and every static part are drawn in the row, so the box counts them.
+  expect(drawnText(row)).toBe('+.%');expect(finalText().props.children[0]).toBe('+100.00%');
+ });
+ it('keeps the alignment of a right-aligned or centred figure',()=>{
+  jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
+  mount(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28,textAlign:'right'}}));measure(14,28);
+  expect(StyleSheet.flatten(container().props.style).justifyContent).toBe('flex-end');expect(StyleSheet.flatten(finalText().props.style)).toMatchObject({position:'absolute',right:0});
+  update(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28,textAlign:'center'}}));measure(14,28);
+  expect(StyleSheet.flatten(container().props.style).justifyContent).toBe('center');expect(StyleSheet.flatten(finalText().props.style)).toMatchObject({position:'absolute',left:0,right:0});
+  // The static fallback (no reels) keeps the reading in the flow at its own width.
+  update(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28}},{direction:'rtl'}));
+  expect(flow()).toEqual(['reading']);expect(StyleSheet.flatten(container().props.style)).toEqual({position:'relative'});
+ });
 });

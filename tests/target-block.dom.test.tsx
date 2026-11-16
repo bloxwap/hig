@@ -34,6 +34,12 @@ describe('targetFormat',()=>{
   expect(text(0.05,targetFormat('percent'))).toBe('+5%');expect(text(-0.025,targetFormat('percent'))).toBe('-2.5%');
   expect(text(65024.48,targetFormat('price'))).toBe('$65,024.48');expect(text(0.5123,targetFormat('price',{style:'currency',currency:'USD',maximumFractionDigits:4}))).toBe('$0.5123');
  });
+ it('shortens a whole price preset whatever fraction digits the host fixes, as native does',()=>{
+  const text=(value:number,options:Intl.NumberFormatOptions)=>new Intl.NumberFormat('en-US',options).format(value);
+  const fixed={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2} as const;
+  expect(text(63000,targetFormat('price',fixed,63000))).toBe('$63,000');expect(text(63000,targetFormat('price',undefined,63000))).toBe('$63,000');
+  expect(text(62500.5,targetFormat('price',fixed,62500.5))).toBe('$62,500.50');expect(text(63000,targetFormat('price',fixed))).toBe('$63,000.00');
+ });
 });
 describe('TargetBlock',()=>{
  it('shows the heading, the target as the headline figure, and the position and order type on the price card',async()=>{
@@ -82,6 +88,12 @@ describe('TargetBlock',()=>{
   expect(screen.queryByRole('button',{name:'Custom'})).toBeNull();
   view.rerender(<TargetBlock {...base} unit='percent' value={0.1} presets={[0.05,0.1,0.25]}/>);expect(presets().map(button=>button.textContent)).toEqual(['+5%','+10%','+25%']);
   view.rerender(<TargetBlock {...base}/>);expect(document.querySelector('.hig-target-presets')).toBeNull();
+ });
+ it('names the quick choices\' group by the title, or by the host\'s own name for it',()=>{
+  const view=render(<TargetBlock {...base} presets={[1,2]}/>);
+  expect(document.querySelector('.hig-target-presets')).toBe(screen.getByRole('group',{name:'Take Profit'}));
+  view.rerender(<TargetBlock {...base} labels={{...labels,presets:'Quick targets'}} presets={[1,2]}/>);
+  expect(document.querySelector('.hig-target-presets')).toBe(screen.getByRole('group',{name:'Quick targets'}));
  });
  it('confirms in the role of its kind, with Cancel beside it only when the host handles it',async()=>{
   const submit=vi.fn(),cancel=vi.fn();const view=render(<TargetBlock {...base} onSubmit={submit} onCancel={cancel}/>);
@@ -135,7 +147,7 @@ describe('TargetBlock price card surface',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');const rule=(selector:string)=>css.split('\n').find(line=>line.startsWith(selector+' {'))??'';
   const size=(line:string)=>line.match(/font-size:[^;]+;line-height:[^;]+;font-weight:[^;]+;letter-spacing:[^;]+/)?.[0];
   expect(size(rule('.hig-target-amount'))).toBe(size(rule('.hig-swap-amount')));expect(size(rule('.hig-target-amount'))).toBeTruthy();
-  expect(rule('.hig-target-amount .hig-number')).toContain('font-family:inherit');
+  expect(css.split('\n').find(line=>line.endsWith(' { font-family:inherit; }'))?.split(' {')[0].split(',')).toContain('.hig-target-amount .hig-number');
  });
 });
 describe('TargetBlock host slots',()=>{

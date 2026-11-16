@@ -22,6 +22,10 @@ export interface LanguageBlockProps extends Omit<React.HTMLAttributes<HTMLElemen
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton` that closes the sheet. */
  headerAction?:React.ReactNode;
+ /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */
+ stickyHeader?:boolean;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  languages:readonly LanguageOption[];
  /** `code` of the language in use. */
  value?:string|null;
@@ -43,7 +47,7 @@ export function filterLanguages(languages:readonly LanguageOption[],query:string
 }
 const check=<svg className='hig-language-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
 /** Choose the app's language: a header, a search field, then each language as a row with its flag, its own name over the reader's name for it, and a check on the one in use. */
-export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,autoFocus,disabled,description,className,...rest}:LanguageBlockProps){
+export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,autoFocus,disabled,description,stickyHeader,headingId,className,...rest}:LanguageBlockProps){
  const {messages}=useHIG();const heading=title??messages.language??en.language;
  const [query,setQuery]=useState('');const [active,setActive]=useState(-1);
  const field=useRef<HTMLInputElement>(null),list=useRef<HTMLDivElement>(null);
@@ -59,7 +63,7 @@ export function LanguageBlock({title,onBack,headerAction,languages,value=null,on
  };
  const label=messages.searchLanguages??en.searchLanguages;
  return <section {...rest} className={`hig-language-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={heading} onBack={onBack} action={headerAction}/>
+  <ScreenHeader title={heading} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {description&&<p className='hig-settings-description'>{description}</p>}
   {search&&<SearchInput ref={field} aria-label={label} placeholder={label} value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>}
   {rows.length===0&&<p className='hig-swap-empty' role='status'>{messages.noResults??en.noResults}</p>}

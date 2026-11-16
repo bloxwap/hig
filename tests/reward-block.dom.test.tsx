@@ -117,7 +117,7 @@ describe('RewardBlock host slots (Unreleased)',()=>{
   const paging=q('.hig-reward-pagination')!;expect(paging.textContent).toBe('Previous1–25Next');expect(paging.querySelector('[aria-live="polite"]')!.textContent).toBe('1–25');
   expect(q('.hig-reward-list')!.nextElementSibling).toBe(paging);expect(paging.nextElementSibling!.className).toBe('hig-reward-footnote');
   expect((screen.getByRole('button',{name:'Previous'}) as HTMLButtonElement).disabled).toBe(true);await userEvent.click(screen.getByRole('button',{name:'Next'}));expect(next).toHaveBeenCalledTimes(1);expect(previous).not.toHaveBeenCalled();
-  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-screen-header[data-sticky][data-scrolled] { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); }");
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-screen-header[data-sticky][data-scrolled],.hig-profile-bar[data-sticky][data-scrolled] { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); }");
  });
  it('leaves the header out with header={false} and keeps an interactive verified mark reachable (Unreleased)',async()=>{
   const explain=vi.fn();

@@ -52,6 +52,8 @@ interface GestureSheetCommonProps {
  animateOnMount?:BottomSheetModalProps['animateOnMount'];
  animationConfigs?:BottomSheetModalProps['animationConfigs'];
  backdropComponent?:BottomSheetModalProps['backdropComponent'];
+ /** `nativeID` of a heading inside the sheet that names it, such as a block's `headingId`: the sheet's content takes `accessibilityLabelledBy` (Android). The `title` still names the sheet elsewhere. Same prop as web. */
+ labelledBy?:string;
 }
 export type GestureSheetProps=GestureSheetCommonProps&(
  /** Modal is the default. Inline retains the screen-level backend and its child state while closed. */
@@ -64,7 +66,7 @@ export type GestureSheetProps=GestureSheetCommonProps&(
  |{enableDynamicSizing:true;snapPoints?:never;initialIndex?:never;maxDynamicContentSize?:BottomSheetModalProps['maxDynamicContentSize']}
 );
 /** Optional backend: host supplies GestureHandlerRootView, SafeAreaProvider and BottomSheetModalProvider. */
-export function GestureSheet({open,onOpenChange,title,description,children,contentMode='default',raised=true,titleRef,presentation='modal',sheetRef,snapPoints,enableDynamicSizing=false,maxDynamicContentSize,enableContentPanningGesture,keyboardBehavior='interactive',keyboardBlurBehavior='restore',android_keyboardInputMode='adjustResize',initialIndex=0,dismissible=true,returnFocusRef,closeLabel,onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,modalRef,handleComponent,handleStyle,handleIndicatorStyle,backgroundComponent,backgroundStyle,containerStyle,animateOnMount,animationConfigs,backdropComponent}:GestureSheetProps){
+export function GestureSheet({open,onOpenChange,title,description,children,contentMode='default',raised=true,titleRef,presentation='modal',sheetRef,snapPoints,enableDynamicSizing=false,maxDynamicContentSize,enableContentPanningGesture,keyboardBehavior='interactive',keyboardBlurBehavior='restore',android_keyboardInputMode='adjustResize',initialIndex=0,dismissible=true,returnFocusRef,closeLabel,onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,modalRef,handleComponent,handleStyle,handleIndicatorStyle,backgroundComponent,backgroundStyle,containerStyle,animateOnMount,animationConfigs,backdropComponent,labelledBy}:GestureSheetProps){
  if(enableDynamicSizing&&snapPoints!==undefined)throw new Error('Content-sized GestureSheet does not accept fixed snapPoints.');
  const fixedSnapPoints=snapPoints??[];
  if(!enableDynamicSizing&&fixedSnapPoints.length===0)throw new Error('GestureSheet requires at least one snap point.');
@@ -117,7 +119,7 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
   frame.current=requestAnimationFrame(()=>{frame.current=null;if(latest.current.open){requested.current=false;if(presentation==='inline')inline.current?.snapToIndex(activeIndex.current);else{focused.current=false;sheet.current?.present();}}else if(!dismissed.current){dismissed.current=true;focus(latest.current.returnFocusRef?.current??null);latest.current.onDismiss?.();}});
  },[focus,presentation,requestClose]);
  const inlineAccessibility=presentation==='inline'?{accessibilityElementsHidden:!open,importantForAccessibility:open?'auto' as const:'no-hide-descendants' as const,pointerEvents:open?'auto' as const:'none' as const}:{};
- const contentAccessibility={...inlineAccessibility,...(presentation==='modal'&&{accessibilityViewIsModal:true,onAccessibilityEscape:requestClose})};
+ const contentAccessibility={...inlineAccessibility,...(presentation==='modal'&&{accessibilityViewIsModal:true,onAccessibilityEscape:requestClose}),...(labelledBy?{accessibilityLabelledBy:labelledBy}:{})};
  const content=contentMode==='custom'?<CustomContent {...contentAccessibility} accessible={false} collapsable={false} style={{...(!enableDynamicSizing&&{flex:1,flexShrink:1,minHeight:0}),direction:env.direction}}>{!titleRef&&<Heading ref={heading} accessible accessibilityLabel={title} style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{title}</Heading>}{children}</CustomContent>:<BottomSheetScrollView {...contentAccessibility} accessible={false} keyboardShouldPersistTaps='handled' contentContainerStyle={{padding:tokens.space.xl,paddingBottom:tokens.space.xl+(bottomInset??insets.bottom)}}><Stack><Heading ref={heading}>{title}</Heading>{description&&<Text>{description}</Text>}{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??env.messages.close??en.close}</Button></Stack></BottomSheetScrollView>;
  // Expose individual children instead of grouping the sheet as one adjustable element. Gorhom forwards only
  // basic accessibility props, so modal escape and VoiceOver scope belong on its measured or scrolling content.

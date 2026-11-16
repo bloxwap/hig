@@ -1,4 +1,4 @@
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 
 export type NumberTrend=-1|0|1|((previousValue:number,value:number)=>-1|0|1);
 export interface NumberReading {known:boolean;core:string;text:string}
@@ -65,20 +65,73 @@ export function createFormattedReelModel(text:string,locale:string,direction:str
  flush();
  return {canonical:text,digits,tokens};
 }
+interface NumberPart {type:string;value:string}
+const minusSign=/[-−‐-―﹣－]/u;
+/** The ten digit glyphs a reel rolls through: the numbering system's when Intl names it (each checked one glyph, and one integer part where `formatToParts` exists), else ASCII when the text uses it, else the locale's. */
+function reelDigits(locale:string,numberingSystem:string|undefined,text:string):readonly string[]|null{
+ if(!numberingSystem)return Array.from(text).some(character=>asciiDigits.includes(character))?asciiDigits:localeDigits(locale);
+ const formatter=new Intl.NumberFormat(locale,{numberingSystem,useGrouping:false,minimumFractionDigits:0,maximumFractionDigits:0});
+ const digits=Array.from({length:10},(_,digit)=>{
+  const formatted=formatter.format(digit);if(Array.from(formatted).length!==1)return '';
+  if(typeof formatter.formatToParts!=='function')return formatted;
+  const parts=formatter.formatToParts(digit);
+  return parts.length===1&&parts[0].type==='integer'&&parts[0].value===formatted?formatted:'';
+ });
+ return digits.every(Boolean)&&new Set(digits).size===10?digits:null;
+}
+/** Intl's own parts for the value, when the runtime has `formatToParts` and they spell `text` with at least one integer digit. */
+function intlParts(value:number,locale:string,options:Intl.NumberFormatOptions|undefined,text:string):NumberPart[]|null{
+ try{
+  const formatter=new Intl.NumberFormat(locale,options);if(typeof formatter.formatToParts!=='function')return null;
+  const parts=formatter.formatToParts(value);
+  return parts.length&&parts.some(part=>part.type==='integer')&&parts.map(part=>part.value).join('')===text?parts:null;
+ }catch{return null;}
+}
+/** The locale's decimal separator for these options, read from formatted text: whatever sits between the digits of `1.5`. */
+function decimalSeparator(locale:string,options:Intl.NumberFormatOptions|undefined,digits:readonly string[]):string|null{
+ const {style,currency,currencyDisplay,numberingSystem}=options??{};
+ const probe=new Intl.NumberFormat(locale,{...(style==='currency'&&currency?{style,currency,currencyDisplay}:null),...(numberingSystem?{numberingSystem}:null),useGrouping:false,minimumFractionDigits:1,maximumFractionDigits:1});
+ const characters=Array.from(probe.format(1.5)),first=characters.findIndex(character=>digits.includes(character));
+ let last=characters.length-1;while(last>first&&!digits.includes(characters[last]))last--;
+ return first>=0&&last>first+1?characters.slice(first+1,last).join(''):null;
+}
+/**
+ * Parts read from formatted text, for runtimes without `formatToParts` (Hermes on iOS): digits before the locale's decimal
+ * separator are the integer, digits after it the fraction, anything else between the first and last digit a group separator,
+ * and what lies outside them the sign (`-`, `−`, `+`) or literal text (currency, percent, compact and unit signs, spaces).
+ * Scientific and engineering notation are left to Intl's parts.
+ */
+function textParts(text:string,locale:string,options:Intl.NumberFormatOptions|undefined,digits:readonly string[]):NumberPart[]|null{
+ if(options?.notation==='scientific'||options?.notation==='engineering')return null;
+ const characters=Array.from(text),isDigit=(character:string)=>digits.includes(character);
+ const first=characters.findIndex(isDigit);if(first<0)return null;
+ let last=characters.length-1;while(!isDigit(characters[last]))last--;
+ const separator=Array.from(decimalSeparator(locale,options,digits)??'');let point=-1;
+ if(separator.length)for(let index=first+1;index+separator.length<=last;index++)if(separator.every((character,offset)=>characters[index+offset]===character)){point=index;break;}
+ const parts:NumberPart[]=[];
+ const push=(type:string,value:string)=>{const previous=parts[parts.length-1];if(previous&&previous.type===type&&type!=='decimal')previous.value+=value;else parts.push({type,value});};
+ for(let index=0;index<characters.length;index++){
+  const character=characters[index];
+  if(index===point){push('decimal',separator.join(''));index+=separator.length-1;continue;}
+  if(isDigit(character))push(point>=0&&index>point?'fraction':'integer',character);
+  else if(index>first&&index<last)push('group',character);
+  else push(minusSign.test(character)?'minusSign':character==='+'?'plusSign':'literal',character);
+ }
+ return parts;
+}
 export function createNumberReelModel(value:number|null|undefined,locale:string,options:Intl.NumberFormatOptions|undefined,formattedValue:string|undefined,direction:string,animateFormatted=false):NumberReelModel|null{
  if(typeof value==='number'&&Number.isFinite(value)&&formattedValue&&animateFormatted&&typeof Intl!=='undefined')return createFormattedReelModel(formattedValue,locale,direction);
  if(typeof value!=='number'||!Number.isFinite(value)||formattedValue||direction!=='ltr'||typeof Intl==='undefined'||typeof Intl.NumberFormat!=='function')return null;
  try{
-  const formatter=new Intl.NumberFormat(locale,options);if(typeof formatter.formatToParts!=='function')return null;
-  const canonical=formatter.format(value);if(canonical!==formatNumberReadout(value,locale,options).core)return null;
-  const parts=formatter.formatToParts(value);if(!parts.length||parts.map(part=>part.value).join('')!==canonical)return null;
-  const numberingSystem=formatter.resolvedOptions().numberingSystem;if(!numberingSystem)return null;
-  const digitFormatter=new Intl.NumberFormat(locale,{numberingSystem,useGrouping:false,minimumFractionDigits:0,maximumFractionDigits:0});if(typeof digitFormatter.formatToParts!=='function')return null;
-  const digits=Array.from({length:10},(_,digit)=>{
-   const formatted=digitFormatter.format(digit),parts=digitFormatter.formatToParts(digit);
-   return parts.length===1&&parts[0].type==='integer'&&parts[0].value===formatted&&Array.from(formatted).length===1?formatted:'';
-  });
-  if(digits.some(digit=>!digit)||new Set(digits).size!==10||!safeNumberLayout(canonical,direction))return null;
+  // The reels draw the readout's own text, whose sign HIG composes (Hermes on iOS ignores `signDisplay`). Intl's parts are used
+  // when they spell exactly that text; otherwise (no `formatToParts`, or parts without the composed sign) the parts are read
+  // from the text itself, so iOS and Android roll the same reels.
+  const canonical=formatNumberReadout(value,locale,options).core;
+  const {signDisplay:_sign,...unsigned}=options??{};
+  const numberingSystem=new Intl.NumberFormat(locale,unsigned).resolvedOptions().numberingSystem;
+  const digits=reelDigits(locale,numberingSystem,canonical);
+  if(!digits||!safeNumberLayout(canonical,direction))return null;
+  const parts=intlParts(value,locale,options,canonical)??textParts(canonical,locale,options,digits);if(!parts)return null;
   const digitIndexes=new Map(digits.map((digit,index)=>[digit,index]));
   const count=(type:string)=>parts.filter(part=>part.type===type).reduce((total,part)=>total+Array.from(part.value).length,0);
   const integerCount=count('integer'),exponentCount=count('exponentInteger');let integerIndex=0,fractionIndex=0,exponentIndex=0;

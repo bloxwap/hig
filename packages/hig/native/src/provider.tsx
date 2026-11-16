@@ -61,9 +61,10 @@ export function useColorSpace():HIGColorSpace{return useContext(Context).colorSp
 export function useBrandColors():Readonly<Record<HIGTableColorRole,string>>{return colorTable(useContext(Context).colorSpace);}
 /** Complete built-in copy for the nearest HIGProvider: host translations over the English defaults. */
 export function useMessages():HIGMessages{const overrides=useContext(Context).messages;return useMemo(()=>resolveMessages({...defaultMessages},overrides),[overrides]);}
-export function useControllable<T>(value:T|undefined,initial:T,onChange?: (value:T)=>void,intent:FeedbackIntent='selection'):[T,(next:T)=>void]{
+/** Controlled values never silently switch to internal state. `intent: null` commits without provider feedback. */
+export function useControllable<T>(value:T|undefined,initial:T,onChange?: (value:T)=>void,intent:FeedbackIntent|null='selection'):[T,(next:T)=>void]{
  const [internal,setInternal]=useState(initial);const current=value===undefined?internal:value;
  const {feedback}=useHIG();const id=useId();const sequence=useRef(0);const pending=useRef<{value:T}|null>(null);
- useEffect(()=>{const request=pending.current;if(!request)return;pending.current=null;if(Object.is(current,request.value)){try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent,origin:'native'});}catch{/* Effects remain optional. */}}});
+ useEffect(()=>{const request=pending.current;if(!request)return;pending.current=null;if(intent&&Object.is(current,request.value)){try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent,origin:'native'});}catch{/* Effects remain optional. */}}});
  return [current,(next)=>{if(Object.is(current,next))return;pending.current={value:next};if(value===undefined)setInternal(next);onChange?.(next);}];
 }

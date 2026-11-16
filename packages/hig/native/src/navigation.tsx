@@ -2,7 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Animated,Easing,Pressable,View} from 'react-native';
 import {tokens} from '@bloxwap/hig/tokens';
 import {ChevronIcon} from './icons.js';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useControllable,useFills,useHIG} from './provider.js';
 import {Button} from './button.js';

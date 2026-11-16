@@ -39,14 +39,18 @@ export interface PickerListProps {
  searchInputProps?:PickerInputProps;
  /** The list component the rows render through, such as a bottom sheet library's `FlatList`, so the list scrolls inside the host's sheet. Defaults to the `SwapHostContext` list, then React Native's `FlatList`. It receives the bounded `style` HIG sets, which the host's component may override. */
  listComponent?:React.ComponentType<FlatListProps<SwapToken>>;
+ /** Host props for each token's row, such as `{testID: \`token-${token.id}\`}` in place of the built-in `swap-token-<id>`. HIG keeps the row's role, name, selected state and press. */
+ tokenRowProps?:(token:SwapToken)=>PickerRowProps;
 }
 /** Host props for a picker's input: what a `TextInput` takes, except the value and its change handler. */
 export type PickerInputProps=Omit<TextInputProps,'value'|'defaultValue'|'onChangeText'|'onChange'>;
+/** Host props for one token row: its `testID` (replacing `swap-token-<id>`), `nativeID` and `accessibilityHint`. */
+export interface PickerRowProps {testID?:string;nativeID?:string;accessibilityHint?:string}
 /** Chains present in a token list, in first-seen order. */
 function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}
 /** A row shows a known balance above zero, or a zero one when the host asks for it. */
 const showBalance=(token:SwapToken,zero?:boolean)=>token.balance!=null&&Number.isFinite(token.balance)&&(token.balance>0||(!!zero&&token.balance===0));
-function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,search=true,zeroBalances,searchLabel,searchRef,searchInputProps,listComponent,side,title}:PickerListProps&{side:'from'|'to';title:string}){
+function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,search=true,zeroBalances,searchLabel,searchRef,searchInputProps,listComponent,tokenRowProps,side,title}:PickerListProps&{side:'from'|'to';title:string}){
  const {direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();const window=useWindowDimensions();
  // A sheet passes its backend's list, through the prop or the host context, so drags hand off to the sheet.
  const host=useContext(SwapHostContext).listComponent;const List=listComponent??host??FlatList;
@@ -65,9 +69,9 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
   {chainFilter&&options.length>1?<Filter label={t.swapChains} options={chainOptions} value={chain} onValueChange={pickChain}/>:null}
   {/* A bounded height so the list scrolls inside its panel or sheet instead of stretching it. */}
   <List style={{height:Math.max(240,Math.round(window.height*0.5))}} data={rows} keyExtractor={token=>token.id} keyboardShouldPersistTaps='handled' accessibilityLabel={title} testID={`swap-list-${side}`} initialNumToRender={12} ListEmptyComponent={empty}
-   renderItem={({item:token,index})=>{const isSelected=selected?.id===token.id,balance=token.balance??0,price=token.price??0;return <View>
+   renderItem={({item:token,index})=>{const isSelected=selected?.id===token.id,balance=token.balance??0,price=token.price??0,host=tokenRowProps?.(token);return <View>
     {hotCount>0&&index===0?section(t.swapHot):null}{hotCount>0&&index===hotCount?section(t.swapAllTokens):null}
-    <Pressable accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
+    <Pressable nativeID={host?.nativeID} accessibilityHint={host?.accessibilityHint} accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={host?.testID??`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
      <TokenIcon token={token}/>
      <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.detail??token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
      {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}

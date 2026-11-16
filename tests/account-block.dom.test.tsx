@@ -90,7 +90,7 @@ describe('AccountBlock',()=>{
   expect(screen.getByRole('heading',{name:'Compte'})).toBeTruthy();expect(screen.getByRole('button',{name:'Déposer'})).toBeTruthy();expect(screen.getByRole('button',{name:'Retour'})).toBeTruthy();expect(spoken(document.querySelector('.hig-account-balance')!)).toBe('Solde total: $100.33');
  });
  it('rows are concentric capsules 8 apart and the layout follows the writing direction',()=>{
-  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start)||(start.endsWith(' {')&&line.includes(' { ')&&line.slice(0,line.indexOf(' { ')).split(',').includes(start.slice(0,-2))))??'';
   expect(rule('.hig-asset-row {')).toMatch(/min-height:56px;.*padding:8px;padding-inline-end:16px;.*border-radius:28px/);expect(rule('.hig-asset-row-icon {')).toMatch(/width:40px;height:40px/);
   expect(rule('.hig-account-assets {')).toContain('gap:8px');expect(css.filter(line=>/^\.hig-(asset-row|account)/.test(line)).join('\n')).not.toMatch(/\b(left|right)\b/);
  });
@@ -115,7 +115,7 @@ describe('AccountBlock host options',()=>{
   expect([...groups[0].querySelectorAll('li')].map(spoken)).toEqual(['USDUSD CoinUSDC$500.00','HYPHyperliquidHYPE$759.0013.2']);
   expect([...groups[1].querySelectorAll('li')].map(item=>item.getAttribute('data-pinned'))).toEqual(['true',null,null]);
   await userEvent.click(within(groups[1] as HTMLElement).getAllByRole('button')[1]);expect(select).toHaveBeenCalledWith(sol,expect.objectContaining({id:'wallet'}));
-  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start)||(start.endsWith(' {')&&line.includes(' { ')&&line.slice(0,line.indexOf(' { ')).split(',').includes(start.slice(0,-2))))??'';
   expect(rule('.hig-account-sections {')).toContain('gap:24px');expect(rule('.hig-account-section {')).toContain('gap:8px');
  });
  it('totals only the sections it draws, and the total is unknown when a drawn section total is unknown',()=>{

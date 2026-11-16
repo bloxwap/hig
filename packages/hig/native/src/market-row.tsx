@@ -41,26 +41,39 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
 export const MarketRow:React.ForwardRefExoticComponent<MarketRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,MarketRowProps>(function MarketRow({symbol,name,price,change,priceOptions,changeOptions,mode='action',onSelect,identity,icon,favorite,volume,detail,trailing,selected,disabled,active,onPressIn,testID,style},ref){
  const colors=useColors(),fills=useFills();
  const label=`${name} (${symbol})`;
- const lines=detail===undefined?null:<View style={{alignItems:'flex-start'}}><Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:disabled?colors.muted:colors.text}}>{label}</Text>{typeof detail==='string'||typeof detail==='number'?<Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:detail}</View>;
+ // A row with host options is one line: the name and its detail truncate rather than wrap, so the trailing cells keep their place.
+ const lines=detail===undefined?null:<View style={{alignItems:'flex-start',flexShrink:1,minWidth:0}}><Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:disabled?colors.muted:colors.text}}>{label}</Text>{typeof detail==='string'||typeof detail==='number'?<Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:detail}</View>;
  const detailText=detail===undefined?'':plainText(detail);
+ // When the row is too narrow for everything, space is given up in this order (as on web): the name truncates down to a floor (the
+ // name cell's basis is 96dp and it never shrinks, so the icon never leaves the identity and the start of the name stays readable);
+ // then whole figures drop from the end (volume, change, price); then the trailing content is clipped. The check keeps its place.
+ const nameCell={flexGrow:1,flexShrink:0,flexBasis:96,minWidth:0};
  const title=mode==='presentation'
-  ?<View style={disabled?{opacity:0.5,flexShrink:1}:{flexShrink:1}}>{identity??lines??<Text>{label}</Text>}</View>
-  :lines?<Button intent='ghost' contentMode='custom' accessibilityLabel={detailText?`${label}, ${detailText}`:label} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start'}}>{lines}</Button>
-  :<Button intent='ghost' accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined}>{label}</Button>;
+  ?<View style={disabled?{opacity:0.5,...nameCell}:nameCell}>{identity??lines??<Text numberOfLines={1}>{label}</Text>}</View>
+  :lines?<Button intent='ghost' contentMode='custom' accessibilityLabel={detailText?`${label}, ${detailText}`:label} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start',...nameCell,paddingVertical:0}}>{lines}</Button>
+  :<Button intent='ghost' contentMode='custom' accessibilityLabel={label} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start',...nameCell}}><Text numberOfLines={1} style={{fontSize:16,fontWeight:'600',color:disabled?colors.faint:colors.muted}}>{label}</Text></Button>;
  const leading=favorite!==undefined||icon!==undefined;
- const identityCell=leading?<View style={{flexDirection:'row',alignItems:'center',gap:8,flexShrink:1,minWidth:0}}>{favorite!==undefined?favorite:null}{icon!==undefined?<View {...hidden}>{icon}</View>:null}{title}</View>:title;
- const dim=disabled?{opacity:0.5}:undefined;
+ // The identity's basis is its favourite + icon + the name cell's 96dp, and it does not shrink: that is the floor.
+ const identityCell=<View style={{flexDirection:'row',alignItems:'center',gap:leading?8:0,flexGrow:1,flexShrink:0,flexBasis:'auto'}}>{favorite!==undefined?<View style={{flexShrink:0}}>{favorite}</View>:null}{icon!==undefined?<View {...hidden} style={{flexShrink:0}}>{icon}</View>:null}{title}</View>;
+ const dim=disabled?{opacity:0.5}:null;
+ // The figures are one 44dp line that wraps and clips, so a figure that does not fit moves to the hidden second line instead of being
+ // cut; the zero-width first item lets even the price wrap away. Their large shrink factor makes them give up space before the trailing content.
+ const figure=(node:React.ReactNode)=><View style={[{height:44,justifyContent:'center',marginStart:12,flexShrink:0},dim]}>{node}</View>;
+ const figures=price===undefined&&change===undefined&&volume===undefined?null:<View testID={testID?`${testID}-figures`:undefined} style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'flex-end',alignContent:'flex-start',height:44,overflow:'hidden',flexGrow:0,flexShrink:1000,minWidth:0,marginStart:-12}}>
+  <View style={{width:0,height:44}}/>
+  {price!==undefined?figure(<Usd value={price} options={priceOptions}/>):null}
+  {change!==undefined?figure(<Percent value={change} options={changeOptions}/>):null}
+  {volume!==undefined?figure(volume):null}
+ </View>;
  const cells=<>
   {identityCell}
-  {price!==undefined?<View style={dim}><Usd value={price} options={priceOptions}/></View>:null}
-  {change!==undefined?<View style={dim}><Percent value={change} options={changeOptions}/></View>:null}
-  {volume!==undefined?<View style={dim}>{volume}</View>:null}
-  {trailing!=null&&trailing!==false?<View testID={testID?`${testID}-trailing`:undefined} style={[{flexDirection:'row',alignItems:'center',gap:8},dim]}>{trailing}</View>:null}
+  {figures}
+  {trailing!=null&&trailing!==false?<View testID={testID?`${testID}-trailing`:undefined} style={[{flexDirection:'row',alignItems:'center',gap:8,flexShrink:1,minWidth:0,overflow:'hidden'},dim]}>{trailing}</View>:null}
   {selected?<View {...hidden} testID={testID?`${testID}-check`:undefined} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:colors.text,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>:null}
  </>;
  const plain=!ref&&!leading&&detail===undefined&&price!==undefined&&change!==undefined&&volume===undefined&&trailing==null&&!selected&&!disabled&&!active&&!onPressIn&&mode==='action'&&!testID&&!style;
  // Without host options the row is exactly the 0.6.0 one: the name button, the price and the change in a wrapping Row.
  if(plain)return <Row><Button intent='ghost' onPress={onSelect}>{name} ({symbol})</Button><Usd value={price} options={priceOptions}/><Percent value={change} options={changeOptions}/></Row>;
  const state=mode==='presentation'&&(selected||disabled)?{...(selected?{selected:true}:{}),...(disabled?{disabled:true}:{})}:undefined;
- return <View ref={ref} testID={testID} accessibilityState={state} style={[{flexDirection:'row',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,paddingVertical:12},active?{backgroundColor:fills.well,borderRadius:14}:null,style]}>{cells}</View>;
+ return <View ref={ref} testID={testID} accessibilityState={state} style={[{flexDirection:'row',alignItems:'center',justifyContent:'space-between',flexWrap:'nowrap',gap:12,paddingVertical:8},active?{backgroundColor:fills.well,borderRadius:14}:null,style]}>{cells}</View>;
 });

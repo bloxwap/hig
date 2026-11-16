@@ -62,7 +62,7 @@ describe('ScreenHeader',()=>{
   scroller.dispatchEvent(new Event('scroll'));expect(header.hasAttribute('data-scrolled')).toBe(true);
   content.getBoundingClientRect=()=>at(0);scroller.dispatchEvent(new Event('scroll'));expect(header.hasAttribute('data-scrolled')).toBe(false);
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');
-  expect(css).toContain('.hig-screen-header[data-sticky] { position:sticky;inset-block-start:0;z-index:1;background-color:transparent;');
+  expect(css).toContain('.hig-screen-header[data-sticky],.hig-profile-bar[data-sticky] { position:sticky;inset-block-start:0;z-index:1;background-color:transparent;');
   expect(css).toMatch(/@supports \(animation-timeline:view\(\)\) \{\s*:has\(> \.hig-screen-header\[data-sticky\]\) \{ view-timeline:--hig-sticky-header block; \}/);
   expect(css).toContain('animation-range:exit-crossing 0px exit-crossing 12px;');
   expect(header.hasAttribute('data-sticky-own')).toBe(false);

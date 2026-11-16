@@ -16,7 +16,12 @@ export interface AnimatedNumberProps extends NumberProps {duration?:number;trend
 const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
 // Android Fabric reads colour 0 as "unset", so 'transparent' (0x00000000) drew the hidden reading in the default
 // black under the reels. Clear white is non-zero there and still invisible.
-const hiddenReading={color:'#ffffff00'};
+const hiddenColor='#ffffff00';
+// While the reels draw, the reading stays for assistive technology and tests but leaves the flow, so the readout is sized by
+// what it draws. It sits on the side the figure is aligned to; in a row it is measured at its own width and never wraps.
+const hiddenReading={left:{color:hiddenColor,position:'absolute',top:0,left:0},right:{color:hiddenColor,position:'absolute',top:0,right:0},center:{color:hiddenColor,position:'absolute',top:0,left:0,right:0}} as const;
+// The reel row is the readout's in-flow content: it keeps its content width (no shrink) and the readout takes that width.
+const reelRowStyle={flexDirection:'row',alignItems:'center',flexShrink:0,direction:'ltr'} as const;
 const clampedDuration=(duration:number)=>Number.isFinite(duration)&&duration>0?Math.min(duration,600):0;
 
 interface DigitReelProps {digits:readonly string[];digit:number;trend:-1|0|1;duration:number;reducedMotion:boolean;width:number;height:number;style:StyleProp<TextStyle>;script:TextScript;maxFontSizeMultiplier?:number}
@@ -71,12 +76,21 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  const [metrics,setMetrics]=useState<{key:string;width:number;height:number}|null>(null);
  const activeModel=safeModel&&fontScale>0&&Number.isFinite(fontScale)&&metrics?.key===measurementKey?safeModel:null;
  const activeMetrics=activeModel?metrics:null;
- const justifyContent=typography.textAlign==='right'?'flex-end':typography.textAlign==='center'?'center':'flex-start';
+ const align=typography.textAlign==='right'?'right':typography.textAlign==='center'?'center':'left';
+ const justifyContent=align==='right'?'flex-end':align==='center'?'center':'flex-start';
  const visualProps={accessible:false,script,maxFontSizeMultiplier};
- return <View collapsable={false} style={{position:'relative'}}>
-  <Text accessibilityLabel={label?`${label}: ${reading.text}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[textStyle,activeModel?hiddenReading:undefined]}>{reading.text}{staleSuffix}</Text>
+ // The reels are drawn in the readout's flow, so the readout is exactly as wide as the row it draws: the composed sign, every
+ // static part read from the text, each reel at the widest digit's advance and the affixes, each its own text, measured by
+ // the layout pass that draws it. The reading they replace leaves the flow (it stays, invisible, for assistive technology).
+ // Before, the reels were an overlay on the reading, and the readout only grew to the reels after their row reported its
+ // width; on the Seeker (Android) the readout kept the reading's width, so `+100.00%` drew past its box into the following
+ // ` on margin`. Wherever the parts are wider than the reading (separate texts lose the reading's kerning, a face without
+ // tabular digits), the readout is now wider by that much; where they match (iOS), nothing moves. Each reel clips its own
+ // column, so nothing bleeds vertically, and no frame clips a glyph.
+ return <View collapsable={false} style={activeModel?{position:'relative',flexDirection:'row',alignItems:'center',justifyContent}:{position:'relative'}}>
+  <Text accessibilityLabel={label?`${label}: ${reading.text}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[textStyle,activeModel?hiddenReading[align]:undefined]}>{reading.text}{staleSuffix}</Text>
   {safeModel&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={{position:'absolute',opacity:0,flexDirection:'row'}}>{safeModel.digits.map((glyph,index)=><Text {...visualProps} key={`${measurementKey}:${index}`} onLayout={event=>recordGlyph(measurements,measurementKey,index,event,setMetrics)} style={textStyle}>{glyph}</Text>)}</View>}
-  {activeModel&&activeMetrics&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={[StyleSheet.absoluteFill,{overflow:'hidden',flexDirection:'row',direction:'ltr',alignItems:'center',justifyContent}]}>
+  {activeModel&&activeMetrics&&<View collapsable={false} accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={reelRowStyle}>
    {prefix&&<Text {...visualProps} style={textStyle}>{prefix}</Text>}
    {activeModel.tokens.map(token=>token.kind==='static'?<Text {...visualProps} key={token.key} style={textStyle}>{token.value}</Text>:<DigitReel key={token.key} digits={activeModel.digits} digit={token.digit??0} trend={directionTrend} duration={duration} reducedMotion={reducedMotion} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>)}
    {(suffix||staleSuffix)&&<Text {...visualProps} style={textStyle}>{`${suffix??''}${staleSuffix}`}</Text>}

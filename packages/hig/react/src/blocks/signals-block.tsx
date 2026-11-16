@@ -41,6 +41,8 @@ export interface SignalsBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
  stickyHeader?:boolean;
 }
@@ -62,9 +64,9 @@ function Group({group,verifiedLabel,verifiedMark,verifiedMarkInteractive}:{group
  </section>;
 }
 /** The signals the viewer receives, in groups: each group has a heading with an optional verified mark and a small help pill, and its signals as switches with a line of explanation, sharing one rounded container. */
-export function SignalsBlock({title,description,groups,verifiedLabel,verifiedMark,verifiedMarkInteractive,onBack,headerAction,stickyHeader,className,...rest}:SignalsBlockProps){
+export function SignalsBlock({title,description,groups,verifiedLabel,verifiedMark,verifiedMarkInteractive,onBack,headerAction,stickyHeader,headingId,className,...rest}:SignalsBlockProps){
  return <section {...rest} className={`hig-settings-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {description&&<p className='hig-settings-description'>{description}</p>}
   {groups.map(group=><Group key={group.id} group={group} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>)}
  </section>;

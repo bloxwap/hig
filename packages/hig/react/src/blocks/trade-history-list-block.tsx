@@ -48,6 +48,8 @@ export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HT
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** Format of the result. Defaults to signed US dollars at four significant digits: `+$1.412`, `+$17.90`, `-$0.6878`. The provider's `numberFormat` is merged under it. */
  pnlOptions?:Intl.NumberFormatOptions;
  /** Draws rows of skeletons in place of the trades while the host loads them. */
@@ -70,7 +72,7 @@ export const tradeHistorySide=(trade:Pick<TradeHistoryItem,'side'|'leverage'>&{l
 const arrow=(side:'long'|'short')=><svg aria-hidden='true' focusable='false' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'>{side==='long'?<path d='M8 13V3.5M4 7.5l4-4 4 4'/>:<path d='M8 3v9.5M4 8.5l4 4 4-4'/>}</svg>;
 const chevron=<svg className='hig-trade-row-chevron' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><path d='m7.5 4.5 5.5 5.5-5.5 5.5'/></svg>;
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
-export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,stickyHeader,className,...rest}:TradeHistoryListBlockProps){
+export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,stickyHeader,headingId,className,...rest}:TradeHistoryListBlockProps){
  const locale=useNumberLocale();const present=usePresentNumber();
  const row=(trade:TradeHistoryItem)=>{
   const result=trade.pnlOptions??pnlOptions;
@@ -88,7 +90,7 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
   :trades.length===0?<p className='hig-swap-empty' role='status'>{labels.emptyDescription?<><strong className='hig-trade-empty-title'>{labels.empty}</strong><span className='hig-trade-empty-description'>{labels.emptyDescription}</span></>:labels.empty}</p>
   :<ul className='hig-trade-rows' aria-label={labels.title}>{trades.map(row)}</ul>;
  return <section {...rest} className={`hig-trade-history-list${className?` ${className}`:''}`}>
-  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {notice!=null&&notice!==false&&<div className='hig-trade-notice'>{notice}</div>}
   {body}
   {footer!=null&&footer!==false&&<div className='hig-trade-footer'>{footer}</div>}

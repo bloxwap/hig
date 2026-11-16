@@ -58,6 +58,8 @@ export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** Ref to the summary (the asset line, the headline figure and the return), for a host that captures it as an image. */
  summaryRef?:React.Ref<HTMLDivElement>;
  /** Fills the summary, so an image captured from `summaryRef` is not transparent: `true` for the background role, or a CSS colour such as `var(--hig-overlay)` in a sheet. */
@@ -67,11 +69,11 @@ export interface TradeHistoryDetailBlockProps extends Omit<React.HTMLAttributes<
 }
 const pnlFormat={style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:4} as const,percentFormat={style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'} as const;
 /** The full record of one closed trade, drawn on the screen without cards because none of it is pressable: the asset with its side and leverage on one line, the net result as the headline figure, a bar from the entry price to the exit price, the other figures as a compact grid, and the host's actions. */
-export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,leverageNote,pnl,pnlOptions=pnlFormat,pnlPercent,percentOptions=percentFormat,entry,exit,priceOptions,details,note,badge,actions=[],onBack,headerAction,summaryRef,summaryBackground,stickyHeader,className,...rest}:TradeHistoryDetailBlockProps){
+export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,leverageNote,pnl,pnlOptions=pnlFormat,pnlPercent,percentOptions=percentFormat,entry,exit,priceOptions,details,note,badge,actions=[],onBack,headerAction,summaryRef,summaryBackground,stickyHeader,headingId,className,...rest}:TradeHistoryDetailBlockProps){
  const locale=useNumberLocale();const tone=pnl==null||pnl===0?undefined:pnl>0?'up':'down';
  const fill=summaryBackground===true?'var(--hig-background)':typeof summaryBackground==='string'&&summaryBackground?summaryBackground:undefined;
  return <section {...rest} className={`hig-trade-detail${className?` ${className}`:''}`}>
-  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} badge={badge} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} badge={badge} headingId={headingId} stickyHeader={stickyHeader}/>
   <div className='hig-trade-summary'>
    <div ref={summaryRef} className='hig-trade-result' data-tone={tone} style={fill?{background:fill}:undefined}>
     <div className='hig-trade-identity'>

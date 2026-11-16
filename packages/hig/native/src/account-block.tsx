@@ -1,5 +1,6 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View,type ScrollViewProps} from 'react-native';
+import {StickyHeaderLayout} from './sticky-header.js';
 import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
@@ -72,6 +73,14 @@ export interface AccountBlockProps {
  depositLabel?:string;
  /** Makes each row a button that reports its asset, and with `sections` the section it is in. */
  onAssetSelect?:(asset:AccountAsset,section?:AccountSection)=>void;
+ /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */
+ stickyHeader?:boolean;
+ /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
+ /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */
+ headingId?:string;
  testID?:string;
 }
 const usdc='USDC',usdCoin='USD Coin';
@@ -97,7 +106,7 @@ export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol:s
  const {pinned,rest}=accountRows(assets,pinnedSymbol,options);return {pinned:assets.includes(pinned)?pinned:null,rest};
 }
 /** The account as one screen: a header, the total with the deposit action, the pinned asset, then every other holding by value. */
-export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol=usdc,pinnedId,order,onDeposit,depositLabel,onAssetSelect,testID}:AccountBlockProps){
+export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol=usdc,pinnedId,order,onDeposit,depositLabel,onAssetSelect,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:AccountBlockProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const shown=sections?.filter(section=>section.assets.length>0);
  const total=balance!==undefined?balance:shown?accountSectionsTotal(shown):sum(assets);
@@ -120,16 +129,21 @@ export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,as
   </View>;
  })}</View>;
  else{const {pinned,rest}=accountRows(assets,pinnedSymbol,{order,pinnedId});list=<View testID='account-assets' style={{gap:8,marginTop:16}}>{row(pinned,true,pinnedId)}{rest.map(asset=>row(asset,false,pinnedId))}</View>;}
- return <View testID={testID} style={{padding:16}}>
-  <View testID='account-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
-   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='account-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
-   <Text testID='account-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{title??t.account}</Text>
-   <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction??(onShowAddress?<IconButton intent='ghost' label={t.showAddress} testID='account-address' onPress={onShowAddress}><QrIcon color={colors.text}/></IconButton>:null)}</View>
-  </View>
+ const header=<View testID='account-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
+  <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='account-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
+  <Text testID='account-title' nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{title??t.account}</Text>
+  <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction??(onShowAddress?<IconButton intent='ghost' label={t.showAddress} testID='account-address' onPress={onShowAddress}><QrIcon color={colors.text}/></IconButton>:null)}</View>
+ </View>;
+ const body=<>
   <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,marginTop:8}}>
    <View style={{flexShrink:1}}><AnimatedNumberReadout value={total} options={usd} label={t.accountBalance} testID='account-balance' style={{fontSize:32,lineHeight:40,fontWeight:'600'}}/></View>
    {onDeposit?<Button testID='account-deposit' onPress={onDeposit}>{depositLabel??t.deposit}</Button>:null}
   </View>
   {list}
+ </>;
+ if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='account-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{padding:16}}>
+  {header}
+  {body}
  </View>;
 }

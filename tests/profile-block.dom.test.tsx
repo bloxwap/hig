@@ -8,7 +8,6 @@ import {HIGProvider} from '../packages/hig/react/src/provider';
 import {ProfileBlock,type ProfileSection} from '../packages/hig/react/src/blocks/profile-block';
 import * as blocks from '../packages/hig/react/src/blocks';
 import {ListRow} from '../packages/hig/react/src/list-group';
-import {Switch} from '../packages/hig/react/src/selection';
 afterEach(cleanup);
 const sections=(handlers:{accounts?:()=>void;live?:(value:boolean)=>void}={}):ProfileSection[]=>[
  {id:'money',rows:[{id:'accounts',label:'Accounts',value:'$1,042.09',onSelect:handlers.accounts??(()=>{})},{id:'history',label:'History',value:'Demo',onSelect:()=>{}}]},
@@ -107,14 +106,19 @@ describe('ProfileBlock host slots',()=>{
   delete (HTMLElement.prototype as {animate?:unknown}).animate;
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');for(const tone of ['positive','warning','negative','muted'])expect(css).toContain(`.hig-profile-value[data-tone='${tone}'] { color:var(--hig-${tone}); }`);
  });
- it('makes the whole switch row the target while drawing the same markup as a static row with a Switch',async()=>{
+ it('makes the whole switch row the target as ListRow\'s switch row, its name drawn and read once (Unreleased)',async()=>{
   const live=vi.fn();
   const {container}=render(<ProfileBlock name='Joe' sections={[{id:'settings',rows:[{id:'live',label:'Live Mode',value:'Off',checked:false,onCheckedChange:live}]}]}/>);
   const row=container.querySelector('.hig-list-group-rows > li > .hig-list-row')!;
-  const reference=render(<ListRow label='Live Mode' value='Off' trailing={<Switch label='Live Mode' checked={false} onCheckedChange={()=>{}}/>}/>).container.firstElementChild!;
-  expect(row.outerHTML).toBe(reference.outerHTML);
+  const reference=render(<ListRow label='Live Mode' value='Off' checked={false} onCheckedChange={()=>{}}/>).container.firstElementChild!;
+  // Same markup as a ListRow switch row, apart from the generated ids.
+  const strip=(html:string)=>html.replace(/ (id|aria-labelledby)="[^"]*"/g,'');
+  expect(strip(row.outerHTML)).toBe(strip(reference.outerHTML));
+  // The text appears once: the visible label names the input, and the switch's label holds no second copy.
+  expect(row.textContent!.match(/Live Mode/g)).toHaveLength(1);
+  const control=screen.getAllByRole('switch',{name:'Live Mode'})[0];expect(document.getElementById(control.getAttribute('aria-labelledby')!)).toBe(row.querySelector('.hig-list-row-label'));
   await userEvent.click(row.querySelector('.hig-list-row-label')!);expect(live).toHaveBeenCalledWith(true);
-  await userEvent.click(screen.getAllByRole('switch',{name:'Live Mode'})[0]);expect(live).toHaveBeenCalledTimes(2);
+  await userEvent.click(control);expect(live).toHaveBeenCalledTimes(2);
  });
  it('does not toggle a disabled switch row from the row, and the press decoration covers the whole row',async()=>{
   const live=vi.fn();

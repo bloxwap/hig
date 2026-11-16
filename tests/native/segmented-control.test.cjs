@@ -67,3 +67,14 @@ it.each([true,false])('rejects disabled touch and accessibility callbacks (whole
  }
  expect(changed).not.toHaveBeenCalled();expect(timing).not.toHaveBeenCalled();expect(style().opacity).toBe(0.5);
 });
+
+it('reaches a 48dp touch target at either density, with vertical slop only so segments 4 apart never overlap',()=>{
+ for(const density of ['comfortable','compact']){
+  mount({defaultValue:'all'},{density});
+  for(const radio of radios()){
+   const {minHeight}=StyleSheet.flatten(radio.props.style),slop=radio.props.hitSlop;
+   expect([density,minHeight+slop.top+slop.bottom]).toEqual([density,48]);expect(slop.left).toBeUndefined();expect(slop.right).toBeUndefined();
+  }
+  act(()=>root.unmount());root=null;
+ }
+});

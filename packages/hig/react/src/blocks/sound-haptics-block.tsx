@@ -44,6 +44,8 @@ export interface SoundSection {
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
  stickyHeader?:boolean;
 }
@@ -51,10 +53,10 @@ const steps:readonly number[]=[0.25,0.5,0.75,1],percent={style:'percent',maximum
 /** The share of the meter filled, from 0 to 1. Unknown and out-of-range levels are clamped. */
 export const soundLevel=(level:number|null|undefined):number=>level==null||!Number.isFinite(level)?0:Math.min(1,Math.max(0,level));
 /** The settings for what the app plays and feels like: each channel is a card with a switch, and a channel that is on can show the device it uses, a choice of devices, a live input meter and its volume as fixed steps. */
-export function SoundHapticsBlock({title,description,sections,onBack,headerAction,stickyHeader,className,...rest}:SoundHapticsBlockProps){
+export function SoundHapticsBlock({title,description,sections,onBack,headerAction,stickyHeader,headingId,className,...rest}:SoundHapticsBlockProps){
  const locale=useNumberLocale();
  return <section {...rest} className={`hig-settings-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {description&&<p className='hig-settings-description'>{description}</p>}
   {sections.length>0&&<div className='hig-setting-cards'>{sections.map(section=>{
    const {source,choices,level,levelLabel,volume,action}=section,on=section.checked;

@@ -317,6 +317,28 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "PresetGroup",
+      "slug": "preset-group",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.PresetGroup label='Order size' options={[{value:10,label:'$10'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'}]} defaultValue={25} disabled={disabled} onValueChange={size=>setMessage(`$${size} selected`)}/>",
+      "native": "<C.PresetGroup label='Order size' options={[{value:10,label:'$10'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'}]} defaultValue={25} disabled={disabled} onValueChange={size=>setMessage(`$${size} selected`)}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "grid"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "grid": {
+          "web": "<C.PresetGroup label='Leverage' columns={4} options={[{value:1,label:'1x'},{value:2,label:'2x'},{value:3,label:'3x'},{value:5,label:'5x'},{value:10,label:'10x'},{value:20,label:'20x'},{value:40,label:'40x',disabled:true}]} defaultValue={5} onValueChange={leverage=>setMessage(`${leverage}x selected`)}/>",
+          "native": "<C.PresetGroup label='Leverage' columns={4} options={[{value:1,label:'1x'},{value:2,label:'2x'},{value:3,label:'3x'},{value:5,label:'5x'},{value:10,label:'10x'},{value:20,label:'20x'},{value:40,label:'40x',disabled:true}]} defaultValue={5} onValueChange={leverage=>setMessage(`${leverage}x selected`)}/>"
+        }
+      }
+    },
+    {
       "name": "Select",
       "slug": "select",
       "entry": "selection",
@@ -1058,11 +1080,16 @@
       "states": [
         "default",
         "empty",
-        "picker"
+        "picker",
+        "one-line"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "one-line": {
+          "web": "<C.Stack><C.MarketRow symbol='HYPESTRAT' name='Hyperliquid Strategies Holdings' detail='Up to 10× leverage on the perpetual' icon={<C.Avatar name='HS'/>} trailing={<C.Badge>-$1,204.88</C.Badge>} onSelect={()=>setMessage('Hyperliquid Strategies selected')}/><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25× · Perp' icon={<C.Avatar name='ETH'/>} price={3521.12} change={-1.23} trailing={<C.Badge>-$48.10</C.Badge>} selected onSelect={()=>setMessage('Ether selected')}/></C.Stack>",
+          "native": "<C.Stack><C.MarketRow symbol='HYPESTRAT' name='Hyperliquid Strategies Holdings' detail='Up to 10× leverage on the perpetual' icon={<C.Avatar name='HS'/>} trailing={<C.Badge>-$1,204.88</C.Badge>} onSelect={()=>setMessage('Hyperliquid Strategies selected')}/><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25× · Perp' icon={<C.Avatar name='ETH'/>} price={3521.12} change={-1.23} trailing={<C.Badge>-$48.10</C.Badge>} selected onSelect={()=>setMessage('Ether selected')}/></C.Stack>"
+        },
         "picker": {
           "web": "<C.Stack><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} selected onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25×' icon={<C.Avatar name='ETH'/>} active onSelect={()=>setMessage('Ether selected')}/><C.MarketRow symbol='SOL' name='Solana' detail='20×' icon={<C.Avatar name='SOL'/>} disabled onSelect={()=>setMessage('Solana selected')}/></C.Stack>",
           "native": "<C.Stack><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} selected onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25×' icon={<C.Avatar name='ETH'/>} active onSelect={()=>setMessage('Ether selected')}/><C.MarketRow symbol='SOL' name='Solana' detail='20×' icon={<C.Avatar name='SOL'/>} disabled onSelect={()=>setMessage('Solana selected')}/></C.Stack>"

@@ -26,17 +26,23 @@ export type MarketRowProps=MarketRowContent&({/** Default: HIG owns the name but
 const check=<svg className='hig-market-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
 /** A market as one row: its name (a button, or the host's identity in presentation mode), price and change. Other attributes, pointer handlers and the ref reach the row's root. */
 export const MarketRow=forwardRef<HTMLDivElement,MarketRowProps>(function MarketRow({symbol,name,price,change,onSelect,priceOptions,changeOptions,mode='action',identity,icon,favorite,volume,detail,trailing,selected,disabled,active,className,style,...rest},ref){
- const title=detail===undefined?<>{name} ({symbol})</>:<span className='hig-market-text'><span>{name} ({symbol})</span><span className='hig-market-detail'>{detail}</span></span>;
+ // The name sits in its own span so an action row can truncate it on one line instead of wrapping.
+ const title=detail===undefined?<span className='hig-market-label'>{name} ({symbol})</span>:<span className='hig-market-text'><span className='hig-market-label'>{name} ({symbol})</span><span className='hig-market-detail'>{detail}</span></span>;
  const current=selected?'true' as const:undefined;
  const content=<>{favorite!==undefined&&<span className='hig-market-favorite'>{favorite}</span>}{icon!==undefined&&<span className='hig-market-icon'>{icon}</span>}{mode==='presentation'?<span className='hig-market-name'>{identity===undefined?title:identity}</span>:<Button intent='ghost' onClick={onSelect} disabled={disabled} aria-current={current}>{title}</Button>}</>;
  const hasTrailing=trailing!==undefined&&trailing!==null&&trailing!==false;
  // The default three or four columns keep their grid; any other set of cells flows into as many columns as it has.
  const flow=price===undefined||change===undefined||hasTrailing||!!selected||undefined;
- return <div ref={ref} {...rest} className={`hig-row hig-market-row${className?` ${className}`:''}`} style={style} data-mode={mode} data-has-volume={volume!==undefined||undefined} data-flow={flow} data-selected={selected||undefined} data-active={active||undefined} data-disabled={disabled||undefined} aria-current={mode==='presentation'?current:undefined} aria-disabled={mode==='presentation'&&disabled?true:undefined}>
-  <div className='hig-market-identity'>{content}</div>
+ // Presentation mode places each figure in its own grid column. An action row groups them so that, when the row is too narrow for
+ // everything, whole figures drop from the end (volume, then change, then price) instead of the name collapsing or cells overlapping.
+ const figures=price===undefined&&change===undefined&&volume===undefined?null:<>
   {price!==undefined&&<span className='hig-market-price'><Usd value={price} options={priceOptions}/></span>}
   {change!==undefined&&<span className='hig-market-change'><Percent value={change} options={changeOptions}/></span>}
   {volume!==undefined&&<span className='hig-market-volume'>{volume}</span>}
+ </>;
+ return <div ref={ref} {...rest} className={`hig-row hig-market-row${className?` ${className}`:''}`} style={style} data-mode={mode} data-has-volume={volume!==undefined||undefined} data-flow={flow} data-selected={selected||undefined} data-active={active||undefined} data-disabled={disabled||undefined} aria-current={mode==='presentation'?current:undefined} aria-disabled={mode==='presentation'&&disabled?true:undefined}>
+  <div className='hig-market-identity'>{content}</div>
+  {mode==='action'&&figures!==null?<span className='hig-market-figures'>{figures}</span>:figures}
   {hasTrailing&&<span className='hig-market-trailing'>{trailing}</span>}
   {selected&&check}
  </div>;

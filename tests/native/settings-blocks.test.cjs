@@ -151,3 +151,27 @@ describe('host slots (Unreleased)',()=>{
   const groupsOnly=mount(NotificationsBlock,{title:'Notifications',groups:[{id:'a',items:[{id:'x',label:'X',checked:false,onCheckedChange:noop}]}]});expect(has(groupsOnly,'notifications-x')).toBe(true);
  });
 });
+
+it('lays a setting row out as web does: a 48dp switch with 12 above and below its text, in a card 4 above and below, 16 at the foot when content follows',()=>{
+ // The row's own vertical geometry, summed as Yoga lays it out for one-line text: label 24, gap 2, description 21.
+ const geometry=(view,card,sw)=>{
+  const box=flat(host(view,card)),row=flat(host(view,sw));
+  const content=host(view,sw).findAll(node=>typeof node.type==='string'&&flat(node).paddingVertical===12&&flat(node).flexDirection==='row')[0];
+  return {top:box.paddingTop,bottom:box.paddingBottom,gap:box.gap,minHeight:row.minHeight,padding:flat(content).paddingVertical};
+ };
+ let view=mount(NotificationsBlock,{title:'Notifications',items:[{id:'push',label:'Push',checked:true,onCheckedChange:noop},{id:'price',label:'Price alerts',description:'When a market moves.',checked:false,onCheckedChange:noop}]});
+ const plain=geometry(view,'notifications-push','notifications-push-switch');
+ expect(plain).toEqual({top:4,bottom:4,gap:12,minHeight:48,padding:12});
+ // Separate cards stay 8 apart, as on web (.hig-setting-cards).
+ expect(flat(host(view,'notifications-items')).gap).toBe(8);
+ // Plain row: 4 + max(48, 12 + 24 + 12) + 4 = 56. Described row: 4 + 12 + 24 + 2 + 21 + 12 + 4 = 79.
+ expect(plain.top+Math.max(plain.minHeight,plain.padding*2+24)+plain.bottom).toBe(56);
+ const described=geometry(view,'notifications-price','notifications-price-switch');
+ expect(described.top+Math.max(described.minHeight,described.padding*2+24+2+21)+described.bottom).toBe(79);
+ // A signal with a hint, and a sound channel with its body, end 16 above the card's foot.
+ view=mount(SignalsBlock,{title:'Signals',groups:[{id:'trend',title:'Trend',items:[{id:'feed',label:'Feed',hint:'Registering',checked:true,onCheckedChange:noop},{id:'plain',label:'Plain',checked:false,onCheckedChange:noop}]}]});
+ expect(flat(host(view,'signals-trend-feed'))).toMatchObject({paddingTop:4,paddingBottom:16});expect(flat(host(view,'signals-trend-plain'))).toMatchObject({paddingTop:4,paddingBottom:4});
+ expect(flat(host(view,'signals-trend-items')).gap).toBe(2);
+ view=mount(SoundHapticsBlock,{title:'Sound',sections:sections()});
+ expect(flat(host(view,'sound-effects'))).toMatchObject({paddingTop:4,paddingBottom:16});expect(flat(host(view,'sound-haptics'))).toMatchObject({paddingTop:4,paddingBottom:4});
+});

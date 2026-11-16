@@ -33,17 +33,23 @@ export interface PickerListProps {
  searchRef?:React.Ref<HTMLInputElement>;
  /** Attributes for the search input, such as `name`, `autoComplete`, `data-1p-ignore` or `onFocus`/`onBlur`. The value and its change handler stay HIG's; a host `onKeyDown` runs before the list's arrow keys. */
  searchInputProps?:PickerInputProps;
+ /** Host attributes for each token's row, such as `{'data-testid': \`token-${token.id}\`}`. HIG keeps the row's type, class, state, click and pointer handlers. */
+ tokenRowProps?:(token:SwapToken)=>PickerRowProps;
 }
 /** Host attributes for a picker's input: anything an `<input>` takes, including `data-*`, except the value and its change handler. */
 export type PickerInputProps=Omit<React.InputHTMLAttributes<HTMLInputElement>,'value'|'defaultValue'|'onChange'|'type'|'children'>&{[attribute:`data-${string}`]:string|number|boolean|undefined};
+/** Host attributes for one token row (a `<button>`): `data-*`, `id`, `title` or ARIA descriptions. The row's own type, class, selected state and handlers stay HIG's. */
+export type PickerRowProps={id?:string;title?:string;'aria-describedby'?:string;[attribute:`data-${string}`]:string|number|boolean|undefined};
 /** A row shows a known balance above zero, or a zero one when the host asks for it. */
 const showBalance=(token:SwapToken,zero?:boolean)=>token.balance!=null&&Number.isFinite(token.balance)&&(token.balance>0||(!!zero&&token.balance===0));
+/** The host's row attributes HIG accepts: `data-*` (except the row's own state), `id`, `title` and `aria-describedby`. */
+const rowAttributes=(props:PickerRowProps|undefined)=>Object.fromEntries(Object.entries(props??{}).filter(([key])=>(key.startsWith('data-')&&key!=='data-active'&&key!=='data-selected')||key==='id'||key==='title'||key==='aria-describedby'));
 /** One callback ref that sets each given ref. */
 function useMergedRef<T>(...refs:(React.Ref<T>|undefined)[]){
  const latest=useRef(refs);latest.current=refs;
  return useCallback((node:T|null)=>{for(const ref of latest.current){if(typeof ref==='function')ref(node);else if(ref)(ref as React.RefObject<T|null>).current=node;}},[]);
 }
-function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,autoFocus,search:searchable=true,zeroBalances,searchLabel,searchRef,searchInputProps,label}:PickerListProps&{label:string}){
+function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,autoFocus,search:searchable=true,zeroBalances,searchLabel,searchRef,searchInputProps,tokenRowProps,label}:PickerListProps&{label:string}){
  const {messages}=useHIG();const id=useId();
  const [query,setQuery]=useState('');const [chainId,setChainId]=useState<string|number|null>(null);const [active,setActive]=useState(searchable?0:-1);
  const list=useRef<HTMLDivElement>(null);const search=useRef<HTMLInputElement>(null);const searchInput=useMergedRef(search,searchRef);
@@ -68,7 +74,7 @@ function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onS
  };
  // An empty value is the unfiltered list.
  const filters=[{value:'',label:messages.swapAllChains??en.swapAllChains},...options.map(chain=>({value:String(chain.chainId),label:chain.name,icon:chain.icon}))];
- const row=(token:SwapToken,index:number)=>{const isSelected=selected?.id===token.id;return <div role='listitem' key={token.id}><button type='button' className='hig-swap-row' data-active={index===active} data-selected={isSelected||undefined} onClick={()=>onSelect(token)} onPointerMove={()=>setActive(index)}>
+ const row=(token:SwapToken,index:number)=>{const isSelected=selected?.id===token.id;return <div role='listitem' key={token.id}><button {...rowAttributes(tokenRowProps?.(token))} type='button' className='hig-swap-row' data-active={index===active} data-selected={isSelected||undefined} aria-current={isSelected||undefined} onClick={()=>onSelect(token)} onPointerMove={()=>setActive(index)}>
   <TokenIcon token={token}/>
   <span className='hig-swap-row-text'><strong>{token.name}</strong><span>{token.detail??token.chain}{isSelected?' · '+(messages.swapSelected??en.swapSelected):''}</span></span>
   {showBalance(token,zeroBalances)&&<span className='hig-swap-row-balance'><strong><SwapNumber value={token.balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix}/></strong>{(token.price??0)>0&&<SwapNumber {...usdNumber((token.balance??0)*(token.price??0))}/>}</span>}

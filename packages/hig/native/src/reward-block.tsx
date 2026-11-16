@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useFills,useHIG,useNumberLocale,usePresentNumber} from './provider.js';
 import {Surface,Text} from './surface.js';
