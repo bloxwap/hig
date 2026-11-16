@@ -183,3 +183,31 @@ it('clears retained host card state once after an accepted dismissal, skipping r
  node=update({open:false,onOpenChange:change,onDismiss:closed});act(()=>node.props.onDismiss());flushFrames();
  expect(closed).toHaveBeenCalledTimes(2);
 });
+
+it('raises content by default and keeps page fills when the host paints the page background',()=>{
+ const {useFills,useColors}=require('../../packages/hig/native/src/provider');
+ let seen;
+ function Probe(){const fills=useFills(),colors=useColors();seen={fills,colors};return null;}
+ mount({},React.createElement(Probe));
+ expect(seen.fills).toEqual({well:seen.colors.nested,raised:seen.colors.border});
+ update({raised:false},React.createElement(Probe));
+ expect(seen.fills).toEqual({well:seen.colors.surface,raised:seen.colors.nested});
+});
+
+it('raised={false} gives buttons, switches and list rows their page fills',()=>{
+ const {Button}=require('../../packages/hig/native/src/button');
+ const {Switch}=require('../../packages/hig/native/src/switch');
+ const {ListRow}=require('../../packages/hig/native/src/list-group');
+ const {nativeSrgb:c}=require('../../packages/hig/tokens/src/index');
+ const body=React.createElement(View,null,
+  React.createElement(ListRow,{testID:'row',label:'Accounts',onSelect:()=>{}}),
+  React.createElement(Button,{testID:'off',intent:'secondary',disabled:true},'Unavailable'),
+  React.createElement(Button,{testID:'quiet',intent:'secondary'},'Quiet'),
+  React.createElement(Switch,{testID:'sw',label:'Live',checked:false,onCheckedChange:()=>{}}));
+ const fill=id=>{const n=root.root.findAll(x=>x.props.testID===id&&x.props.style)[0];const s=n.props.style;return StyleSheet.flatten(typeof s==='function'?s({pressed:false}):s).backgroundColor;};
+ const track=()=>root.root.findAll(x=>x.props.ios_backgroundColor)[0].props.ios_backgroundColor;
+ mount({},body);
+ expect([fill('row'),fill('off'),fill('quiet'),track()]).toEqual([c.nested,c.nested,c.nested,c.border]);
+ update({raised:false},body);
+ expect([fill('row'),fill('off'),fill('quiet'),track()]).toEqual([c.surface,c.surface,c.nested,c.nested]);
+});
