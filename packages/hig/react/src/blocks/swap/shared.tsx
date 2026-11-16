@@ -2,6 +2,7 @@
 import React from 'react';
 import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../animated-number.js';
 import {PressDecoration} from '../../provider.js';
+import {figureProps} from '../../figure.js';
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
 export interface SwapToken {
  /** Unique per asset and chain, for example `${chainId}-${address}`. */
@@ -77,9 +78,11 @@ export function SwapNumber({template,...number}:AnimatedNumberProps&{template?:(
  return <span>{before}<AnimatedNumberReadout {...number}/>{after}</span>;
 }
 /** A figure the host supplies as a number so it can update place by place: `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
-export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;
+ /** Host-formatted text for `value`, drawn and read in place of Intl's and still moving place by place. Never parsed back. */
+ formattedValue?:string}
 /** Host text that is either a fixed string or a live figure. */
-export const swapFigure=(text:string|SwapFigure)=>typeof text==='string'?text:<SwapNumber value={text.value} options={text.options} prefix={text.prefix} suffix={text.suffix}/>;
+export const swapFigure=(text:string|SwapFigure)=>typeof text==='string'?text:<SwapNumber {...figureProps(text)}/>;
 /** `SwapNumber` props for a dollar amount and for a slippage fraction (0.005 reads `0.5%`). */
 export const usdNumber=(value:number|null|undefined)=>({value,options:{style:'currency',currency:'USD'}} as const);
 export const percentNumber=(fraction:number)=>({value:Number((fraction*100).toFixed(4)),suffix:'%',options:{maximumFractionDigits:4,useGrouping:false}} as const);

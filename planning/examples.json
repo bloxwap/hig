@@ -1117,7 +1117,8 @@
         "default",
         "profit",
         "at-risk",
-        "triggers"
+        "triggers",
+        "symbol"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1133,6 +1134,10 @@
         "triggers": {
           "web": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'take-profit-order',label:'Take Profit',value:{value:66000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}},tone:'positive',onSelect:()=>setMessage('The host cancels the take profit')},{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',badge:'Papertrade',caption:'Estimated, funding unavailable',label:'View Bitcoin',onSelect:()=>setMessage('The host opens the market'),leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} pnlOptions={{maximumFractionDigits:3}} onBack={()=>setMessage('The host goes back')}/>",
           "native": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'take-profit-order',label:'Take Profit',value:{value:66000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}},tone:'positive',onSelect:()=>setMessage('The host cancels the take profit')},{id:'stop-loss',label:'Stop Loss',onSelect:()=>setMessage('The host opens stop loss')},{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',badge:'Papertrade',caption:'Estimated, funding unavailable',label:'View Bitcoin',onSelect:()=>setMessage('The host opens the market'),leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} pnlOptions={{maximumFractionDigits:3}} onBack={()=>setMessage('The host goes back')}/>"
+        },
+        "symbol": {
+          "web": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',symbol:'BT',label:'View Bitcoin',onSelect:()=>setMessage('The host opens the market'),leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.ManagePositionBlock labels={{title:'Manage Position',margin:'Margin',notional:'Notional',liquidation:'Liquidation',toLiquidation:percent=>percent+' to liquidation',mark:'Mark',entry:'Entry',long:'Long',short:'Short'}} mode='Cross' side='long' entry={64700} mark={64696} liquidation={63082} margin={10} notional={399.98} actions={[{id:'close',label:'Close',onSelect:()=>setMessage('The host opens close')}]} position={{name:'Bitcoin',symbol:'BT',label:'View Bitcoin',onSelect:()=>setMessage('The host opens the market'),leverage:40,size:0.006182,pnl:-0.0247,pnlPercent:-0.0025}} onBack={()=>setMessage('The host goes back')}/>"
         }
       }
     },
@@ -1183,8 +1188,8 @@
           "native": "<C.PositionBlock title='Position' details={[{label:'Notional',value:{value:1000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:-0.0095,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} note='Minimum $10 margin and $500 position (margin × leverage).' paperTrade={{label:'Paper trade',checked,onCheckedChange:setChecked}} groups={[[{id:'size',label:'Size',value:'$10',onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:'100×',onSelect:()=>setMessage('The host opens Leverage')}],[{id:'positions',label:'Positions',value:'2',onSelect:()=>setMessage('The host opens Positions')}]]} onClose={()=>setMessage('The host closes the card')}/>"
         },
         "farming": {
-          "web": "<C.PositionBlock title='Position' stickyHeader details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{id:'fee',label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'muted',struck:'Waived'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} paperTrade={{label:'Farming',checked:true,onCheckedChange:setChecked,action:{label:'Harvest',onSelect:()=>setMessage('The host harvests')}}} groups={[[{id:'size',label:'Size',value:{value:10,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens Size')},{id:'reduce',label:'Reduce only',checked,onCheckedChange:setChecked}]]} onClose={()=>setMessage('The host closes the card')}/>",
-          "native": "<C.PositionBlock title='Position' details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{id:'fee',label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'muted',struck:'Waived'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} paperTrade={{label:'Farming',checked:true,onCheckedChange:setChecked,action:{label:'Harvest',onSelect:()=>setMessage('The host harvests')}}} groups={[[{id:'size',label:'Size',value:{value:10,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens Size')},{id:'reduce',label:'Reduce only',checked,onCheckedChange:setChecked}]]} onClose={()=>setMessage('The host closes the card')}/>"
+          "web": "<C.PositionBlock title='Position' stickyHeader details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{id:'fee',label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'muted',struck:'Waived'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} paperTrade={{label:'Farming',checked:true,onCheckedChange:setChecked,action:{label:'Harvest',onSelect:()=>setMessage('The host harvests')}}} groups={[[{id:'size',label:'Size',value:{value:10,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:{value:40,suffix:'×'},onSelect:()=>setMessage('The host opens Leverage')},{id:'reduce',label:'Reduce only',checked,onCheckedChange:setChecked}]]} onClose={()=>setMessage('The host closes the card')}/>",
+          "native": "<C.PositionBlock title='Position' details={[{label:'Notional',value:{value:400,options:{style:'currency',currency:'USD',maximumFractionDigits:0}}},{id:'fee',label:'Fee',value:{value:0.53,options:{style:'currency',currency:'USD'}},tone:'muted',struck:'Waived'},{label:'Liquidation',value:{value:-0.025,options:{style:'percent',maximumFractionDigits:2}},tone:'negative'}]} paperTrade={{label:'Farming',checked:true,onCheckedChange:setChecked,action:{label:'Harvest',onSelect:()=>setMessage('The host harvests')}}} groups={[[{id:'size',label:'Size',value:{value:10,options:{style:'currency',currency:'USD'}},onSelect:()=>setMessage('The host opens Size')},{id:'leverage',label:'Leverage',value:{value:40,suffix:'×'},onSelect:()=>setMessage('The host opens Leverage')},{id:'reduce',label:'Reduce only',checked,onCheckedChange:setChecked}]]} onClose={()=>setMessage('The host closes the card')}/>"
         }
       }
     },
@@ -1229,7 +1234,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "unavailable"
       ],
       "a11y": "The title is a level-two heading (native: header role); Back is named by the translated built-in back text; the trailing control names itself; on web headingId lets a dialog be labelled by the heading; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1237,6 +1243,10 @@
         "minimal": {
           "web": "<C.ScreenHeader title='Edit name'/>",
           "native": "<C.ScreenHeader title='Edit name'/>"
+        },
+        "unavailable": {
+          "web": "<C.ScreenHeader title='Close position' badge='Demo' backDisabled onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.ScreenHeader title='Close position' badge='Demo' backDisabled onBack={()=>setMessage('The host goes back')}/>"
         }
       }
     },
@@ -1252,7 +1262,8 @@
         "default",
         "sweepstakes",
         "loading",
-        "paged"
+        "paged",
+        "no-header"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1260,6 +1271,10 @@
         "loading": {
           "web": "<C.RewardBlock title='Leaderboard' loading loadingLabel='Loading standings' promo={{eyebrow:'Season 01',amount:null,goal:250000,caption:goal=>'of '+goal+' prize pool'}} entries={[]} onBack={()=>setMessage('The host goes back')}/>",
           "native": "<C.RewardBlock title='Leaderboard' loading loadingLabel='Loading standings' promo={{eyebrow:'Season 01',amount:null,goal:250000,caption:goal=>'of '+goal+' prize pool'}} entries={[]} onBack={()=>setMessage('The host goes back')}/>"
+        },
+        "no-header": {
+          "web": "<C.RewardBlock title='Leaderboard' header={false} verifiedLabel='Verified' verifiedMarkInteractive verifiedMark={<C.Button intent='secondary' onClick={()=>setMessage('The host explains the badge')}>Genesis</C.Button>} entries={[{id:'a',rank:1,name:'0x4e79…949f',verified:true,detail:{value:1789061,formattedValue:'1,789,061',prefix:'$',suffix:' vol'},score:795407}]}/>",
+          "native": "<C.RewardBlock title='Leaderboard' header={false} verifiedLabel='Verified' verifiedMarkInteractive verifiedMark={<C.Button intent='secondary' onPress={()=>setMessage('The host explains the badge')}>Genesis</C.Button>} entries={[{id:'a',rank:1,name:'0x4e79…949f',verified:true,detail:{value:1789061,formattedValue:'1,789,061',prefix:'$',suffix:' vol'},score:795407}]}/>"
         },
         "paged": {
           "web": "<C.RewardBlock title='Referrals' stickyHeader youLabel='Your rank' you={{id:'you',rank:31,name:'you',detail:{value:12,suffix:' referrals'},score:4}} status='Refer one more trader to reach the top 25.' scoreTitle='Points' entries={[{id:'a',rank:26,name:'0x4e79…949f',detail:{value:30,suffix:' referrals'},score:9},{id:'b',rank:27,name:'0x3f50…eb5f',detail:{value:28,suffix:' referrals'},score:8.5,scoreOptions:{maximumFractionDigits:1}}]} pagination={{previous:{label:'Previous',onSelect:()=>setMessage('The host shows the previous page')},next:{label:'Next',onSelect:()=>setMessage('The host shows the next page')},label:'26–50'}} onBack={()=>setMessage('The host goes back')}/>",

@@ -29,6 +29,13 @@ export interface NumberFormatPresentation {
  currencyDisplay?: 'symbol' | 'narrowSymbol' | 'code' | 'name';
  /** Digit grouping. `'always'` groups four-digit amounts in locales that otherwise leave them ungrouped, such as Spanish. */
  useGrouping?: boolean | 'always' | 'auto' | 'min2';
+ /** The locale numbers are formatted in, when it differs from the provider's interface `locale`: `'en-US'` keeps Korean or Chinese figures in US separators. It changes every number HIG formats (separators, digits and currency placement), not only money. Omitted, numbers follow the provider's `locale`. */
+ locale?: string;
+}
+/** The locale HIG formats numbers in: the presentation's `locale` when it names one, otherwise the interface locale. */
+export function numberLocale(locale: string, presentation?: NumberFormatPresentation): string {
+ const own = presentation?.locale;
+ return typeof own === 'string' && own.trim() !== '' ? own : locale;
 }
 /**
  * Merges a provider's money presentation under the options of one currency format. Only `style: 'currency'` options change, and any

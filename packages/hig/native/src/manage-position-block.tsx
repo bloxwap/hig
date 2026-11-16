@@ -1,10 +1,11 @@
 import React,{useState} from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
+import {figureProps,figureReading,type Figure} from './figure.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import {BarMark,type BarMarkElement} from './bar-mark.js';
 import {BarPnl} from './bar-pnl.js';
@@ -23,7 +24,9 @@ export interface ManagePositionBlockLabels {
  long:string;short:string;
 }
 /** A number the host supplies as a number so it updates place by place: `{value:66000,options:{style:'currency',currency:'USD'}}`. `null` reads as unknown. */
-export interface ManagePositionBlockFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export type ManagePositionBlockFigure=Figure;
+/** The position's artwork: an image URL, a host element, or a function that draws a host element and receives `failed`, to call when that element cannot draw (an SVG that did not load); the row then shows `iconFallback` or the initials. */
+export type ManagePositionIcon=AssetArtwork|((failed:()=>void)=>React.ReactNode);
 export interface ManagePositionBlockAction {
  id:string;label:string;onSelect:()=>void;disabled?:boolean;
  /** Trailing value of the row, before the chevron: host text or a live figure, such as the price a resting trigger is set at. */
@@ -33,15 +36,19 @@ export interface ManagePositionBlockAction {
 }
 export interface ManagePositionBlockSummary {
  name:string;
- /** An image URL or a host element. An image that fails to load falls back to the first letters of the name. */
- icon?:AssetArtwork;
+ /** An image URL, a host element, or a function that draws one and reports its failure. An image or element that fails shows `iconFallback`, else the initials. */
+ icon?:ManagePositionIcon;
+ /** A host element drawn in place of an `icon` that failed to draw. Without it the row shows the initials. */
+ iconFallback?:React.ReactNode;
+ /** Short ticker for the initials when there is no artwork: BTC. Without it the first letters of the name are shown. */
+ symbol?:string;
  /** Host text after the name, drawn as a small Badge, such as a venue. */
  badge?:string;
  /** One line under the row, such as that the profit and loss is stale or estimated. */
  caption?:string;
  /** Makes the whole row a button, for example one that opens the market. Needs `label`. */
  onSelect?:()=>void;
- /** Accessible name of the row when it is a button: View Bitcoin. The figures are read as its hint. */
+ /** Accessible name of the row when it is a button, read before the figures, which stay in the label: View Bitcoin. The caption is its hint. */
  label?:string;
  /** 40 reads `40×`. */
  leverage?:number;
@@ -100,8 +107,8 @@ function Sentence({template,text,value,options,suffix,testID}:{template:(amount:
 }
 /** One open position as a screen: margin and notional under the share left before liquidation, then the liquidation, mark and entry prices as a `BarPnl`, what can be done, and the position itself. Both bars are drawn without a card, because nothing in them can be pressed. */
 export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,pnlOptions,onBack,headerAction,headingId,testID}:ManagePositionBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();
- // The artwork URL that failed to load; that URL then shows the initials instead of an empty circle.
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
+ // The artwork that failed to draw (its URL, or the position for a host element); it then shows the fallback or the initials until the artwork changes.
  const [broken,setBroken]=useState<string|null>(null);
  const pnlUsd=pnlOptions?{...pnlUsdDefault,...pnlOptions}:pnlUsdDefault;
  const read=(value:number|null|undefined,options:Intl.NumberFormatOptions)=>known(value)?formatNumberReadout(value,locale,present(options)).text:unknown;
@@ -110,9 +117,12 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
  const left=corridor.share===null?null:corridor.share*100;
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const row=()=>{
-  if(!position)return null;const {name,icon,leverage,size,pnl,pnlPercent,badge,caption,onSelect}=position;
-  const initials=<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{name.slice(0,3)}</Text>;
-  const art=typeof icon==='string'?broken===icon?<View testID='manage-position-initials' style={shape}>{initials}</View>:<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} onError={()=>setBroken(icon)} style={shape as object}/>:<View style={shape}>{icon??initials}</View>;
+  if(!position)return null;const {name,icon,iconFallback,symbol,leverage,size,pnl,pnlPercent,badge,caption,onSelect}=position;
+  const initials=<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{symbol??name.slice(0,3)}</Text>;
+  const key=typeof icon==='string'?icon:`${symbol??''}|${name}`,failed=broken===key,fail=()=>setBroken(key);
+  const art=failed?<View testID='manage-position-initials' style={shape}>{iconFallback??initials}</View>
+   :typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} onError={fail} style={shape as object}/>
+   :<View style={shape}>{typeof icon==='function'?icon(fail):icon??initials}</View>;
   const gearing=known(leverage)?formatNumberReadout(leverage,locale,units).text+times:null,held=size!==undefined?read(size,units):null;
   const label=[name,long?labels.long:labels.short,gearing,held,pnl!==undefined?read(pnl,pnlUsd):null,pnlPercent!==undefined?read(pnlPercent,pnlShare):null].filter(Boolean).join(', ');
   const meta={fontSize:14,lineHeight:20} as const;
@@ -136,16 +146,15 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
   </>;
   const note=caption?<Text testID='manage-position-caption' style={{marginTop:8,paddingHorizontal:16,color:colors.muted,fontSize:13,lineHeight:20}}>{caption}</Text>:null;
   if(onSelect){
-   // A pressable row is named by the host's label; what it shows is its hint.
-   const hint=[position.label?label:null,caption??null].filter(Boolean).join('. ')||undefined;
-   return <><Pressable testID='manage-position-row' accessibilityRole='button' accessibilityLabel={position.label??label} accessibilityHint={hint} onPress={onSelect} style={({pressed})=>surface(pressed)}>{parts}</Pressable>{note}</>;
+   // A pressable row is named by the host's label and then what it shows, so the figures are read even with hints off; the caption is its hint.
+   return <><Pressable testID='manage-position-row' accessibilityRole='button' accessibilityLabel={position.label?`${position.label}, ${label}`:label} accessibilityHint={caption} onPress={onSelect} style={({pressed})=>surface(pressed)}>{parts}</Pressable>{note}</>;
   }
   return <><View testID='manage-position-row' accessible accessibilityLabel={label} style={surface(false)}>{parts}</View>{note}</>;
  };
  const actionValue=(action:ManagePositionBlockAction):{value?:React.ReactNode;valueLabel?:string;valueTone?:ManagePositionBlockAction['tone']}=>{
   const figure=action.value;if(figure==null)return {};
   if(typeof figure==='string')return {value:figure,valueTone:action.tone};
-  return {value:<AnimatedNumberReadout {...figure} tone={action.tone??'muted'} testID={`manage-action-${action.id}-value`} style={{fontSize:16,lineHeight:24}}/>,valueLabel:formatNumberReadout(figure.value,locale,present(figure.options),undefined,figure.prefix,figure.suffix).text};
+  return {value:<AnimatedNumberReadout {...figureProps(figure)} tone={action.tone??'muted'} testID={`manage-action-${action.id}-value`} style={{fontSize:16,lineHeight:24}}/>,valueLabel:figureReading(figure,locale,present(figure.options))};
  };
  return <View testID={testID} style={{padding:16}}>
   <View testID='manage-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>

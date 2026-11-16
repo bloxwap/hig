@@ -527,7 +527,8 @@
         "default",
         "profit",
         "at-risk",
-        "triggers"
+        "triggers",
+        "symbol"
       ],
       "support": "renderer"
     },
@@ -563,7 +564,8 @@
       "name": "ScreenHeader",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "unavailable"
       ],
       "support": "renderer"
     },
@@ -573,7 +575,8 @@
         "default",
         "sweepstakes",
         "loading",
-        "paged"
+        "paged",
+        "no-header"
       ],
       "support": "renderer"
     },

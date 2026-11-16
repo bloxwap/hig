@@ -126,6 +126,18 @@ describe('host slots (Unreleased)',()=>{
   expect(has(view,'badge')).toBe(true);expect(has(view,'signals-trend-feed-switch-label')).toBe(true);
   expect(text(host(view,'signals-trend-feed-hint'))).toBe('Needs permission');expect(flat(host(view,'signals-trend-feed-error')).color).toBe(nativeSrgb.negative);
   expect(has(view,'mark')).toBe(true);expect(pill.current).toBeTruthy();expect(text(host(view,'signals-description'))).toBe('Choose what you receive.');
+  expect(host(view,'signals-trend-feed-switch').props.accessibilityLabel).toBe('Feed');
+  // Host artwork stays inside the heading's one element.
+  expect(host(view,'signals-trend-title').props).toMatchObject({accessible:true,accessibilityRole:'header',accessibilityLabel:'Trend, Genesis'});
+  // An interactive mark stays in the accessibility tree (Unreleased): the heading moves to the title text, and the mark follows it.
+  const live=mount(SignalsBlock,{title:'Signals',verifiedLabel:'Genesis',verifiedMarkInteractive:true,verifiedMark:h(View,{testID:'mark',accessible:true,accessibilityRole:'button'}),groups:[{id:'trend',title:'Trend',verified:true,items:[]}]});
+  expect(host(live,'signals-trend-title').props.accessible).toBe(false);
+  const title=live.findAll(node=>node.props.accessibilityRole==='header'&&typeof node.type==='string').find(node=>node.props.accessibilityLabel==='Trend, Genesis');expect(title).toBeTruthy();
+  // labelAccessoryLabel names the accessory after the label and a pause, as on web (Unreleased); without it the switch reads the label alone.
+  const named=mount(SignalsBlock,{title:'Signals',groups:[{id:'trend',title:'Trend',items:[{id:'feed',label:'Feed',checked:true,onCheckedChange:noop,labelAccessory:h(View,{testID:'badge'}),labelAccessoryLabel:'New'}]}]});
+  expect(host(named,'signals-trend-feed-switch').props.accessibilityLabel).toBe('Feed, New');
+  const plain=mount(SignalsBlock,{title:'Signals',verifiedLabel:'Genesis',groups:[{id:'trend',title:'Trend',verified:true,items:[]}]});
+  expect(host(plain,'signals-trend-title').props).toMatchObject({accessible:true,accessibilityRole:'header',accessibilityLabel:'Trend, Genesis'});
  });
  it('NotificationsBlock: hints beside errors, an action under the card, locked items and groups with an optional heading',()=>{
   const settings=jest.fn();

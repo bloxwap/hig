@@ -145,11 +145,35 @@ describe('settings host slots (Unreleased)',()=>{
   const locked=toggle('Trend');expect(locked.checked).toBe(true);expect(locked.disabled).toBe(false);expect(locked.getAttribute('aria-disabled')).toBe('true');
   expect(locked.closest('label')!.hasAttribute('data-disabled')).toBe(false);expect(locked.closest('label')!.hasAttribute('data-locked')).toBe(true);
   await userEvent.click(locked);expect(change).not.toHaveBeenCalled();expect(locked.checked).toBe(true);
-  expect(toggle('Feed New')).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.textContent).toBe('★');
+  // The accessory reads after the label and a pause, not run into it.
+  expect(screen.getByRole('switch',{name:/^Feed ?, New$/})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.textContent).toBe('★');
   expect(screen.getByRole('status').textContent).toBe('Needs permission');expect(screen.getByRole('alert').textContent).toBe('Request failed');
-  expect(screen.getByRole('img',{name:'Genesis'}).querySelector('[data-testid="mark"]')).toBeTruthy();
+  // Host artwork is drawn inside the mark's image role, named by the verified words.
+  const mark=screen.getByTestId('mark').closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBe('img');expect(mark.getAttribute('aria-label')).toBe('Genesis');
+  expect(screen.getByRole('heading',{level:3,name:/^Trend ?Genesis/})).toBeTruthy();
   expect(pill.current).toBe(screen.getByRole('button',{name:'How it works'}));await userEvent.click(pill.current!);expect(help).toHaveBeenCalledTimes(1);
   expect(q('.hig-settings-description')!.textContent).toBe('Choose what you receive.');
+ });
+ it('SignalsBlock: verifiedMarkInteractive keeps a control mark outside the image role, after the verified words (Unreleased)',async()=>{
+  const explain=vi.fn();
+  render(<SignalsBlock title='Signals' verifiedLabel='Genesis' verifiedMarkInteractive verifiedMark={<button type='button' onClick={explain}>Genesis badge</button>} groups={[{id:'trend',title:'Trend',verified:true,items:[]}]}/>);
+  const mark=screen.getByRole('button',{name:'Genesis badge'}).closest('.hig-reward-verified')!;expect(mark.getAttribute('role')).toBeNull();expect(mark.querySelector('.hig-sr-only')!.textContent).toBe('Genesis');
+  await userEvent.click(screen.getByRole('button',{name:'Genesis badge'}));expect(explain).toHaveBeenCalledTimes(1);
+ });
+ it('SettingSwitch: labelAccessoryLabel names the accessory in place of its content, as on native (Unreleased)',()=>{
+  render(<SignalsBlock title='Signals' groups={[{id:'trend',title:'Trend',items:[{id:'feed',label:'Feed',checked:true,onCheckedChange:noop,labelAccessory:<span>★</span>,labelAccessoryLabel:'New'}]}]}/>);
+  expect(screen.getByRole('switch',{name:/^Feed ?, New$/})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
+ });
+ it('keeps provider feedback on section and item actions unless feedback is false (Unreleased)',async()=>{
+  const emit=vi.fn(),feedback={emit};
+  const view=render(<HIGProvider feedback={feedback}><NotificationsBlock title='Notifications' items={[{id:'push',label:'Push',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(1);
+  view.rerender(<HIGProvider feedback={feedback}><NotificationsBlock title='Notifications' items={[{id:'push',label:'Push',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop,feedback:false}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(1);
+  view.rerender(<HIGProvider feedback={feedback}><SoundHapticsBlock title='Sound' sections={[{id:'mic',label:'Mic',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop,feedback:false}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(1);
+  view.rerender(<HIGProvider feedback={feedback}><SoundHapticsBlock title='Sound' sections={[{id:'mic',label:'Mic',checked:false,onCheckedChange:noop,action:{label:'Open Settings',onSelect:noop}}]}/></HIGProvider>);
+  await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(emit).toHaveBeenCalledTimes(2);
  });
  it('NotificationsBlock: hints beside errors, an action under the card, locked items and groups with an optional heading',async()=>{
   const settings=vi.fn();

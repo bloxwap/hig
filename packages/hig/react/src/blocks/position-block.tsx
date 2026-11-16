@@ -1,15 +1,15 @@
 "use client";
 import React from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {PressDecoration,useHIG} from '../provider.js';
+import {useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {Switch} from '../selection.js';
 import {ListGroup,ListRow} from '../list-group.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
-import {ScreenHeader} from './screen-header.js';
-import {SwapIcon} from './swap/shared.js';
-/** A number the host supplies as a number so it updates place by place: `{value:0.53,options:{style:'currency',currency:'USD'}}`. `null` reads as unknown. */
-export interface PositionBlockFigure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+import {figureProps,type Figure} from '../figure.js';
+import {HeaderClose,ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
+/** A number the host supplies as a number so it updates place by place: `{value:0.53,options:{style:'currency',currency:'USD'}}`, or Leverage as `{value:40,suffix:'×'}`. `null` reads as unknown. `formattedValue` is the host's own text for it, still moving place by place. */
+export type PositionBlockFigure=Figure;
 /** One line of the summary: Notional, Fee, Liquidation. `value` is host text (`2% of profit`) or a live figure. `tone` colours the value; the default is the text colour. */
 export interface PositionBlockDetail {
  id?:string;label:string;value:string|PositionBlockFigure;tone?:'positive'|'negative'|'muted';
@@ -53,21 +53,25 @@ export interface PositionBlockProps extends Omit<React.HTMLAttributes<HTMLElemen
  headerAction?:React.ReactNode;
  /** `id` of the heading, so a dialog or sheet can name itself with `aria-labelledby`. */
  headingId?:string;
- /** Set true to pin the header to the top of the nearest scrolling container while the rest scrolls under it. */
+ /** Set true to pin the header to the top of the nearest scrolling container while the rest scrolls under it. It is transparent at rest and fills with `--hig-sticky-header-background` once content scrolls under it. */
  stickyHeader?:boolean;
+ /** Attributes for the header's Back `<button>`. */
+ backProps?:ScreenHeaderControlProps;
+ /** Attributes for the header's Close `<button>`. */
+ closeProps?:ScreenHeaderControlProps;
 }
-const figure=(value:string|PositionBlockFigure)=>typeof value==='string'?value:<AnimatedNumberReadout {...value}/>;
+const figure=(value:string|PositionBlockFigure)=>typeof value==='string'?value:<AnimatedNumberReadout {...figureProps(value)}/>;
 /** A press anywhere on a switch row that is not on a control toggles the row's switch, through the switch itself so its change and feedback run once. */
 function toggleRow(event:React.MouseEvent<HTMLElement>){
  if((event.target as Element).closest('a,button,input,label,select,textarea'))return;
  const input=event.currentTarget.querySelector<HTMLInputElement>('input[role="switch"]');if(input&&!input.disabled)input.click();
 }
 /** The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows that open the host's own views. */
-export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,headingId,stickyHeader,className,...rest}:PositionBlockProps){
+export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,headingId,stickyHeader,backProps,closeProps,className,...rest}:PositionBlockProps){
  const {messages}=useHIG();
  const flag=paperTrade&&<ListRow label={paperTrade.label} disabled={paperTrade.disabled} onClick={toggleRow} trailing={<Switch label={paperTrade.label} checked={paperTrade.checked} disabled={paperTrade.disabled} onCheckedChange={paperTrade.onCheckedChange}/>}/>;
- return <section {...rest} className={`hig-position-block${className?` ${className}`:''}`} data-sticky-header={stickyHeader||undefined}>
-  <ScreenHeader title={title} onBack={onBack} headingId={headingId} action={headerAction??(onClose&&<button type='button' className='hig-swap-back' aria-label={messages.close??en.close} onClick={onClose}><SwapIcon name='close'/><PressDecoration kind='back'/></button>)}/>
+ return <section {...rest} className={`hig-position-block${className?` ${className}`:''}`}>
+  <ScreenHeader title={title} onBack={onBack} backProps={backProps} headingId={headingId} stickyHeader={stickyHeader} action={headerAction??(onClose&&<HeaderClose onClose={onClose} label={messages.close??en.close} closeProps={closeProps}/>)}/>
   {details.length>0&&<dl className='hig-position-details'>{details.map((detail,index)=><div key={detail.id??index} data-tone={detail.tone}><dt>{detail.label}{detail.labelAccessory!=null&&<span className='hig-position-label-accessory'>{detail.labelAccessory}</span>}</dt><dd className='hig-number'>{detail.struck?<><span className='hig-position-struck'>{figure(detail.value)}</span><span className='hig-sr-only'> {detail.struck}</span></>:figure(detail.value)}</dd></div>)}</dl>}
   {note&&<p className='hig-position-note'>{note}</p>}
   {(paperTrade||groups.some(group=>group.length>0))&&<div className='hig-position-groups'>

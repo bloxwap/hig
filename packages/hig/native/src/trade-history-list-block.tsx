@@ -1,10 +1,11 @@
 import React from 'react';
-import {Image,Pressable,View,type ViewStyle} from 'react-native';
+import {Image,Pressable,View,type NativeScrollEvent,type NativeSyntheticEvent,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
+import {useColors,useFills,useHIG,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
-import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
+import {ScreenHeader} from './screen-header.js';
+import {StickyHeaderLayout,stickyHeaderFill,useStickyHeaderScroll} from './sticky-header.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 /** The words of the block. They are trading terms, so the host supplies them; HIG ships none. */
@@ -37,8 +38,14 @@ export interface TradeHistoryItem {
  time?:string;
  /** Small muted host text before the age, such as the wallet the trade came from: `0x22…22`. */
  tag?:string;
+ /** Format of this trade's result, in place of the block's `pnlOptions`, for a host whose decimal ladder depends on the amount. */
+ pnlOptions?:Intl.NumberFormatOptions;
 }
-/** What `renderList` receives: the trades and FlatList-shaped helpers that draw them exactly as the block does. */
+/**
+ * What `renderList` receives, shaped for FlatList so `{...list}` spreads onto it: the trades and helpers that draw them exactly
+ * as the block does. With `listChrome` it also carries everything around them, so the list holds the whole screen and a sheet
+ * that sizes itself to its content measures the list alone.
+ */
 export interface TradeHistoryListRender {
  trades:readonly TradeHistoryItem[];
  /** Draws one row; the signature matches FlatList's `renderItem`. */
@@ -46,6 +53,15 @@ export interface TradeHistoryListRender {
  keyExtractor:(trade:TradeHistoryItem)=>string;
  /** The 8dp gap between rows, for `ItemSeparatorComponent`. */
  ItemSeparatorComponent:React.ComponentType;
+ /** With `listChrome`: the header (unless it is pinned with `stickyHeader`) and the `notice`, 16dp above the first row. `null` when there is neither. */
+ ListHeaderComponent?:React.ReactElement|null;
+ /** With `listChrome`: the `footer`, 16dp under the last row. `null` without one. */
+ ListFooterComponent?:React.ReactElement|null;
+ /** With `listChrome`: the block's 16dp inset around the rows, header and footer. */
+ contentContainerStyle?:ViewStyle;
+ /** With `stickyHeader`: reports the list's offset so the pinned header fills once rows scroll under it. */
+ onScroll?:(event:NativeSyntheticEvent<NativeScrollEvent>)=>void;
+ scrollEventThrottle?:number;
 }
 export interface TradeHistoryListBlockProps {
  labels:TradeHistoryListLabels;
@@ -71,10 +87,23 @@ export interface TradeHistoryListBlockProps {
  footer?:React.ReactNode;
  /**
   * Draws the rows through the host's own list, so a long history does not mount every row at once:
-  * `renderList={list => <FlatList data={list.trades} {...list} initialNumToRender={10}/>}`. The block then fills its parent
-  * (`flex: 1`), so place it in a bounded container such as a sheet body, not inside a ScrollView.
+  * `renderList={list => <FlatList data={list.trades} {...list} initialNumToRender={10}/>}`. The header, notice and footer stay
+  * fixed around the list in the block's inset, and the block fills its parent (`flex: 1`), so place it in a bounded container
+  * such as a sheet body, not inside a ScrollView.
   */
  renderList?:(list:TradeHistoryListRender)=>React.ReactNode;
+ /**
+  * With `renderList`: hands the list the header, notice, footer and inset as well (`ListHeaderComponent`, `ListFooterComponent`,
+  * `contentContainerStyle`), so they scroll with the rows, a spread FlatList holds the whole screen and a sheet that sizes itself
+  * to its content measures the list alone. The block then adds no padding of its own. Spread the whole object.
+  */
+ listChrome?:boolean;
+ /** Keeps the header pinned while the rows scroll, transparent at rest and filled once rows scroll under it. Without `renderList` the block becomes its own scroll view; with it the header stays above the host's list, which reports its offset through `onScroll`. Place it in a bounded container. */
+ stickyHeader?:boolean;
+ /** Fill behind the pinned header once rows scroll under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader` without `renderList`, such as a sheet library's own. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
  testID?:string;
 }
 const pnlFormat:Intl.NumberFormatOptions={style:'currency',currency:'USD',signDisplay:'exceptZero',minimumSignificantDigits:4,maximumSignificantDigits:4};
@@ -87,14 +116,15 @@ function Gap(){return <View style={{height:8}}/>;}
 /** Points up; a short turns it over. */
 function Arrow({color,down}:{color:string;down:boolean}){return <View style={{width:12,height:14,alignItems:'center',transform:down?[{rotate:'180deg'}]:undefined}}><View style={{position:'absolute',top:1,width:7,height:7,borderLeftWidth:1.75,borderTopWidth:1.75,borderColor:color,transform:[{rotate:'45deg'}]}}/><View style={{width:1.75,height:14,borderRadius:1,backgroundColor:color}}/></View>;}
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
-export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,renderList,testID}:TradeHistoryListBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();
+export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,renderList,listChrome,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TradeHistoryListBlockProps){
+ const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
+ const listScroll=useStickyHeaderScroll();
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well});
  const meta={fontSize:14,lineHeight:20,color:colors.muted} as const;
  const draw=(trade:TradeHistoryItem)=>{
-  const side=trade.side==='long'?colors.up:colors.down;
-  const reading=[trade.name,tradeHistorySide(trade,labels,locale),formatNumber(trade.pnl,locale,present(pnlOptions)),trade.tag,trade.time].filter(Boolean).join(', ');
+  const side=trade.side==='long'?colors.up:colors.down,result=trade.pnlOptions??pnlOptions;
+  const reading=[trade.name,tradeHistorySide(trade,labels,locale),formatNumber(trade.pnl,locale,present(result)),trade.tag,trade.time].filter(Boolean).join(', ');
   const content=<>
    <View {...hidden}>{typeof trade.icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:trade.icon}} style={shape as object}/>:<View style={shape}>{trade.icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{trade.symbol??trade.name.slice(0,3)}</Text>}</View>}</View>
    <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
@@ -102,7 +132,7 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
     <View testID={testID?`${testID}-${trade.id}-side`:undefined} style={{flexDirection:'row',alignItems:'center',gap:4}}><Arrow color={side} down={trade.side==='short'}/>{trade.leverage!=null?<Text style={{fontSize:14,lineHeight:20,fontWeight:'600',color:side}}>{`${formatNumber(trade.leverage,locale)}×`}</Text>:null}{trade.leverageNote?<Text testID={testID?`${testID}-${trade.id}-leverage-note`:undefined} numberOfLines={1} style={{...meta,flexShrink:1}}>{trade.leverageNote}</Text>:null}</View>
    </View>
    <View {...hidden} style={trade.tag?{alignItems:'flex-end',justifyContent:'center',flexShrink:1}:{alignItems:'flex-end',justifyContent:'center'}}>
-    <AnimatedNumberReadout value={trade.pnl} options={pnlOptions} tone={trade.pnl==null||trade.pnl===0?'text':trade.pnl>0?'up':'down'} testID={testID?`${testID}-${trade.id}-pnl`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>
+    <AnimatedNumberReadout value={trade.pnl} options={result} tone={trade.pnl==null||trade.pnl===0?'text':trade.pnl>0?'up':'down'} testID={testID?`${testID}-${trade.id}-pnl`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>
     {trade.tag?<View testID={testID?`${testID}-${trade.id}-meta`:undefined} style={{direction,flexDirection:'row',alignItems:'center',gap:4,flexShrink:1}}><Text numberOfLines={1} style={{...meta,flexShrink:1}}>{trade.tag}</Text>{trade.time?<><Text style={meta}>{dot}</Text><Text style={meta}>{trade.time}</Text></>:null}</View>
      :trade.time?<Text style={meta}>{trade.time}</Text>:null}
    </View>
@@ -117,16 +147,36 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
    <Text style={{...plain,paddingVertical:0,fontWeight:'600',color:colors.text}}>{labels.empty}</Text>
    <Text style={{...plain,paddingVertical:0,color:colors.muted}}>{labels.emptyDescription}</Text>
   </View>:<Text testID={testID?`${testID}-empty`:undefined} style={{...plain,color:colors.muted}}>{labels.empty}</Text>)
-  :renderList?<View testID={testID?`${testID}-rows`:undefined} style={{flex:1}}>{renderList({trades,renderItem:({item})=>draw(item),keyExtractor:keyOf,ItemSeparatorComponent:Gap})}</View>
-  :<View testID={testID?`${testID}-rows`:undefined} style={{gap:8}}>{trades.map(draw)}</View>;
+  :null;
+ const header=<ScreenHeader testID={testID} title={labels.title} onBack={onBack} action={headerAction}/>;
+ const noticeView=notice!=null&&notice!==false?<View testID={testID?`${testID}-notice`:undefined} style={{gap:8}}>{notice}</View>:null;
+ const footerView=footer!=null&&footer!==false?<View testID={testID?`${testID}-footer`:undefined} style={{gap:8}}>{footer}</View>:null;
+ let hosted:React.ReactElement|null=null;
+ if(!body&&renderList){
+  const scroll=stickyHeader?{onScroll:listScroll.onScroll,scrollEventThrottle:listScroll.scrollEventThrottle}:null;
+  const base={trades,renderItem:({item}:{item:TradeHistoryItem})=>draw(item),keyExtractor:keyOf,ItemSeparatorComponent:Gap,...scroll};
+  // listChrome: the list holds the whole screen, with header and notice above the rows, the footer under them, and the block's inset around both.
+  const top=stickyHeader?noticeView:<>{header}{noticeView}</>;
+  const list=renderList(listChrome?{...base,
+   ListHeaderComponent:stickyHeader&&!noticeView?null:<View style={{direction,gap:16,paddingBottom:16}}>{top}</View>,
+   ListFooterComponent:footerView?<View style={{direction,paddingTop:16}}>{footerView}</View>:null,
+   contentContainerStyle:{padding:16}}:base);
+  hosted=<View testID={testID?`${testID}-rows`:undefined} style={{flex:1}}>{list}</View>;
+  const pinned=stickyHeader?<View testID={testID?`${testID}-sticky-header`:undefined} style={[{paddingHorizontal:16,paddingTop:16},stickyHeaderFill(listScroll.scrolled,stickyHeaderBackground??colors.background)]}>{header}</View>:null;
+  if(listChrome)return <View testID={testID} style={{direction,flex:1}}>{pinned}{hosted}</View>;
+  // Pinned without listChrome: the header fills over the block's own stack, which keeps the notice, the list and the footer as before.
+  if(stickyHeader)return <View testID={testID} style={{direction,flex:1}}>{pinned}<View style={{padding:16,gap:16,flex:1}}>{noticeView}{hosted}{footerView}</View></View>;
+ }
+ const rows=body??hosted??<View testID={testID?`${testID}-rows`:undefined} style={{gap:8}}>{trades.map(draw)}</View>;
+ if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID={testID?`${testID}-sticky-header`:undefined} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>
+  {noticeView}
+  {rows}
+  {footerView}
+ </StickyHeaderLayout>;
  return <View testID={testID} style={renderList?{direction,padding:16,gap:16,flex:1}:{direction,padding:16,gap:16}}>
-  <View style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
-   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID={testID?`${testID}-back`:undefined} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
-   <Text testID={testID?`${testID}-title`:undefined} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
-   <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
-  </View>
-  {notice!=null&&notice!==false?<View testID={testID?`${testID}-notice`:undefined} style={{gap:8}}>{notice}</View>:null}
-  {body}
-  {footer!=null&&footer!==false?<View testID={testID?`${testID}-footer`:undefined} style={{gap:8}}>{footer}</View>:null}
+  {header}
+  {noticeView}
+  {rows}
+  {footerView}
  </View>;
 }

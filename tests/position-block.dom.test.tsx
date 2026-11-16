@@ -101,9 +101,21 @@ describe('PositionBlock host slots',()=>{
   await userEvent.click(rows[1].querySelector('.hig-list-row-label')!);expect(change).toHaveBeenCalledWith(true);expect(change).toHaveBeenCalledTimes(1);
  });
  it('pins the header only with stickyHeader, and names the heading with headingId',()=>{
-  const view=render(<PositionBlock {...base}/>);expect(document.querySelector('.hig-position-block')!.hasAttribute('data-sticky-header')).toBe(false);
-  view.rerender(<PositionBlock {...base} stickyHeader headingId='position-title'/>);expect(document.querySelector('.hig-position-block')!.getAttribute('data-sticky-header')).toBe('true');
+  const view=render(<PositionBlock {...base}/>);expect(document.querySelector('.hig-screen-header')!.hasAttribute('data-sticky')).toBe(false);
+  view.rerender(<PositionBlock {...base} stickyHeader headingId='position-title'/>);expect(document.querySelector('.hig-position-block > .hig-screen-header')!.getAttribute('data-sticky')).toBe('true');
   expect(screen.getByRole('heading',{name:'Position'}).id).toBe('position-title');
-  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-block[data-sticky-header] > .hig-screen-header {'))??'';expect(rule).toContain('position:sticky');expect(rule).toContain('inset-block-start:0');
+  const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-screen-header[data-sticky] {'))??'';expect(rule).toContain('position:sticky');expect(rule).toContain('inset-block-start:0');expect(rule).toContain('background-color:transparent');
+ });
+ it('passes attributes through to Back and Close (Unreleased)',()=>{
+  render(<PositionBlock {...base} onBack={()=>{}} onClose={()=>{}} backProps={{'data-host':'back'} as never} closeProps={{'data-host':'close'} as never}/>);
+  expect(screen.getByRole('button',{name:'Back'}).getAttribute('data-host')).toBe('back');expect(screen.getByRole('button',{name:'Close'}).getAttribute('data-host')).toBe('close');
+ });
+ it('draws the press decoration on the paper trading action (Unreleased)',()=>{
+  render(<HIGProvider pressDecoration={({kind})=><i data-kind-host={kind}/>}><PositionBlock {...base} paperTrade={{label:'Paper trade',checked:true,onCheckedChange:()=>{},action:{label:'Harvest',onSelect:()=>{}}}}/></HIGProvider>);
+  expect(screen.getByRole('button',{name:'Harvest'}).querySelector('.hig-press-decoration [data-kind-host="button"]')).toBeTruthy();
+ });
+ it('draws a live figure with host-formatted text, such as Leverage (Unreleased)',()=>{
+  render(<PositionBlock {...base} groups={[[{id:'leverage',label:'Leverage',value:{value:40,suffix:'×',formattedValue:'40'},onSelect:()=>{}}]]}/>);
+  expect(screen.getByRole('button',{name:/Leverage/}).textContent).toContain('40×');
  });
 });

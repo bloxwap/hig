@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {PressDecoration,usePresentNumber,useHIG} from '../provider.js';
+import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
@@ -35,6 +35,8 @@ export interface TradeHistoryItem {
  time?:string;
  /** Small muted host text before the age, such as the wallet the trade came from: `0x22…22`. */
  tag?:string;
+ /** Format of this trade's result, in place of the block's `pnlOptions`, for a host whose decimal ladder depends on the amount. */
+ pnlOptions?:Intl.NumberFormatOptions;
 }
 export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'|'onSelect'> {
  labels:TradeHistoryListLabels;
@@ -58,6 +60,8 @@ export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HT
  notice?:React.ReactNode;
  /** Host content under the rows: paging, a spinner for the next page, a note. */
  footer?:React.ReactNode;
+ /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once the rows scroll under it. */
+ stickyHeader?:boolean;
 }
 const pnlFormat={style:'currency',currency:'USD',signDisplay:'exceptZero',minimumSignificantDigits:4,maximumSignificantDigits:4} as const;
 const skeletons=[0,1,2,3];
@@ -66,24 +70,25 @@ export const tradeHistorySide=(trade:Pick<TradeHistoryItem,'side'|'leverage'>&{l
 const arrow=(side:'long'|'short')=><svg aria-hidden='true' focusable='false' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'>{side==='long'?<path d='M8 13V3.5M4 7.5l4-4 4 4'/>:<path d='M8 3v9.5M4 8.5l4 4 4-4'/>}</svg>;
 const chevron=<svg className='hig-trade-row-chevron' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><path d='m7.5 4.5 5.5 5.5-5.5 5.5'/></svg>;
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
-export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,className,...rest}:TradeHistoryListBlockProps){
- const {locale}=useHIG();const present=usePresentNumber();
+export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,stickyHeader,className,...rest}:TradeHistoryListBlockProps){
+ const locale=useNumberLocale();const present=usePresentNumber();
  const row=(trade:TradeHistoryItem)=>{
+  const result=trade.pnlOptions??pnlOptions;
   const side=tradeHistorySide(trade,labels,locale),tone=trade.pnl==null||trade.pnl===0?undefined:trade.pnl>0?'up':'down';
   const content=<>
    <span className='hig-asset-row-icon' aria-hidden='true'>{typeof trade.icon==='string'?<img src={trade.icon} alt=''/>:trade.icon??trade.symbol??trade.name.slice(0,3)}</span>
    <span className='hig-trade-row-identity'><strong>{trade.name}</strong><span className='hig-trade-row-side' data-side={trade.side}>{arrow(trade.side)}<span className='hig-sr-only'>{trade.side==='long'?labels.long:labels.short} </span>{trade.leverage!=null&&`${formatNumber(trade.leverage,locale)}×`}{trade.leverageNote&&<span className='hig-trade-row-note'>{trade.leverageNote}</span>}</span></span>
-   <span className='hig-trade-row-result'><strong className='hig-trade-pnl' data-tone={tone}><AnimatedNumberReadout value={trade.pnl} options={pnlOptions}/></strong>{trade.tag?<span className='hig-trade-row-meta'><span className='hig-trade-row-tag'>{trade.tag}</span>{trade.time&&<><span aria-hidden='true'>·</span><span>{trade.time}</span></>}</span>:trade.time&&<span>{trade.time}</span>}</span>
+   <span className='hig-trade-row-result'><strong className='hig-trade-pnl' data-tone={tone}><AnimatedNumberReadout value={trade.pnl} options={result}/></strong>{trade.tag?<span className='hig-trade-row-meta'><span className='hig-trade-row-tag'>{trade.tag}</span>{trade.time&&<><span aria-hidden='true'>·</span><span>{trade.time}</span></>}</span>:trade.time&&<span>{trade.time}</span>}</span>
    {onSelect&&chevron}
   </>;
-  return <li key={trade.id}>{onSelect?<button type='button' className='hig-trade-row' aria-label={[trade.name,side,formatNumber(trade.pnl,locale,present(pnlOptions)),trade.tag,trade.time].filter(Boolean).join(', ')} onClick={()=>onSelect(trade)}>{content}<PressDecoration kind='row'/></button>:<div className='hig-trade-row'>{content}</div>}</li>;
+  return <li key={trade.id}>{onSelect?<button type='button' className='hig-trade-row' aria-label={[trade.name,side,formatNumber(trade.pnl,locale,present(result)),trade.tag,trade.time].filter(Boolean).join(', ')} onClick={()=>onSelect(trade)}>{content}<PressDecoration kind='row'/></button>:<div className='hig-trade-row'>{content}</div>}</li>;
  };
  const body=loading?<>{loadingLabel&&<p className='hig-sr-only' role='status'>{loadingLabel}</p>}<div className='hig-trade-rows' aria-busy='true'>{skeletons.map(index=><div key={index} className='hig-skeleton hig-trade-skeleton' aria-hidden='true'/>)}</div></>
   :error?<p className='hig-swap-empty hig-trade-error' role='alert'>{error}</p>
   :trades.length===0?<p className='hig-swap-empty' role='status'>{labels.emptyDescription?<><strong className='hig-trade-empty-title'>{labels.empty}</strong><span className='hig-trade-empty-description'>{labels.emptyDescription}</span></>:labels.empty}</p>
   :<ul className='hig-trade-rows' aria-label={labels.title}>{trades.map(row)}</ul>;
  return <section {...rest} className={`hig-trade-history-list${className?` ${className}`:''}`}>
-  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction}/>
+  <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>
   {notice!=null&&notice!==false&&<div className='hig-trade-notice'>{notice}</div>}
   {body}
   {footer!=null&&footer!==false&&<div className='hig-trade-footer'>{footer}</div>}

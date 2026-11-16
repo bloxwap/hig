@@ -10,6 +10,8 @@ export interface SignalsItem {
  locked?:boolean;
  /** Host content after the label, such as a badge. It is part of the switch's name. */
  labelAccessory?:React.ReactNode;
+ /** Host words for the `labelAccessory`, read after the label and a pause in place of its content: `Feed, New`. */
+ labelAccessoryLabel?:string;
  /** A neutral line under the switch, announced when it changes: Needs this browser's permission. */
  hint?:string;
  /** A failure under the switch, in the negative role and announced. */
@@ -32,22 +34,26 @@ export interface SignalsBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  groups:readonly SignalsGroup[];
  /** Accessible name of the verified mark. The mark is decorative without it. */
  verifiedLabel?:string;
- /** Host artwork in place of the built-in verified mark. */
+ /** Host artwork in place of the built-in verified mark, drawn inside the mark's image role. */
  verifiedMark?:React.ReactNode;
+ /** The `verifiedMark` is a control, such as a badge with a popover: it stays in the accessibility tree outside the image role, and `verifiedLabel` is read before it. */
+ verifiedMarkInteractive?:boolean;
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
+ /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
+ stickyHeader?:boolean;
 }
 const verifiedGlyph=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><circle cx='10' cy='10' r='7.5'/><path d='m6.75 10.25 2.25 2.25 4.25-4.75'/></svg>;
-function Group({group,verifiedLabel,verifiedMark}:{group:SignalsGroup;verifiedLabel?:string;verifiedMark?:React.ReactNode}){
+function Group({group,verifiedLabel,verifiedMark,verifiedMarkInteractive}:{group:SignalsGroup;verifiedLabel?:string;verifiedMark?:React.ReactNode;verifiedMarkInteractive?:boolean}){
  const id=useId();
  return <section className='hig-signals-group' aria-labelledby={id}>
   <div className='hig-signals-group-header'>
-   <h3 id={id}>{group.title}{group.verified&&<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark??verifiedGlyph}</span>}</h3>
+   <h3 id={id}>{group.title}{group.verified&&(verifiedMark!=null&&verifiedMarkInteractive?<span className='hig-reward-verified'>{verifiedLabel&&<span className='hig-sr-only'>{verifiedLabel}</span>}{verifiedMark}</span>:<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark??verifiedGlyph}</span>)}</h3>
    {group.help&&<SwapPill ref={group.help.ref} onClick={group.help.onSelect}>{group.help.label}</SwapPill>}
   </div>
   {group.items.length>0&&<div className='hig-setting-list'>{group.items.map(item=><div key={item.id} className='hig-setting-card'>
-   <SettingSwitch label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} locked={item.locked} labelAccessory={item.labelAccessory} onCheckedChange={item.onCheckedChange}/>
+   <SettingSwitch label={item.label} description={item.description} checked={item.checked} disabled={item.disabled} locked={item.locked} labelAccessory={item.labelAccessory} labelAccessoryLabel={item.labelAccessoryLabel} onCheckedChange={item.onCheckedChange}/>
    {(item.hint||item.error)&&<div className='hig-setting-notes'>
     {item.hint&&<p role='status' className='hig-setting-hint'>{item.hint}</p>}
     {item.error&&<p role='alert' className='hig-setting-error'>{item.error}</p>}
@@ -56,10 +62,10 @@ function Group({group,verifiedLabel,verifiedMark}:{group:SignalsGroup;verifiedLa
  </section>;
 }
 /** The signals the viewer receives, in groups: each group has a heading with an optional verified mark and a small help pill, and its signals as switches with a line of explanation, sharing one rounded container. */
-export function SignalsBlock({title,description,groups,verifiedLabel,verifiedMark,onBack,headerAction,className,...rest}:SignalsBlockProps){
+export function SignalsBlock({title,description,groups,verifiedLabel,verifiedMark,verifiedMarkInteractive,onBack,headerAction,stickyHeader,className,...rest}:SignalsBlockProps){
  return <section {...rest} className={`hig-settings-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} action={headerAction}/>
+  <ScreenHeader title={title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>
   {description&&<p className='hig-settings-description'>{description}</p>}
-  {groups.map(group=><Group key={group.id} group={group} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark}/>)}
+  {groups.map(group=><Group key={group.id} group={group} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>)}
  </section>;
 }

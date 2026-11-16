@@ -1,7 +1,8 @@
 import React,{useState} from 'react';
-import {Pressable,View} from 'react-native';
+import {Pressable,View,type ScrollViewProps} from 'react-native';
 import {formatNumber} from '@bloxwap/hig/contracts';
-import {useColors,useFills,useHIG,useMessages,usePresentNumber} from './provider.js';
+import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
+import {StickyHeaderLayout} from './sticky-header.js';
 import {Surface,Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
@@ -76,6 +77,12 @@ export interface TargetBlockProps {
  headerActionBesideInfo?:boolean;
  /** Sets `nativeID` on the title, so a sheet around the pane can name itself with `accessibilityLabelledBy` (Android). */
  headingId?:string;
+ /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container. */
+ stickyHeader?:boolean;
+ /** Fill behind the pinned header once content scrolls under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
  testID?:string;
 }
 /** A quick choice that can be shown dimmed. */
@@ -114,8 +121,8 @@ export function targetLayout({entry,trigger}:{entry:number;trigger?:number|null}
  return start===undefined||end===undefined?{positions,order,from:0.5,to:0.5}:{positions,order,from:Math.min(start,end),to:Math.max(start,end)};
 }
 /** A take profit or a stop loss on one position as a screen: the target as the headline figure, a price card whose bar shows how far the price is from the trigger, the unit, the host's quick choices, and the confirming action. The bar is decorative; each price reads its label and value. */
-export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,customValue,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,headerActionBesideInfo,headingId,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG(),present=usePresentNumber();const [open,setOpen]=useState(false);
+export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,unit,units=allUnits,onUnitChange,value,onValueChange,presets=[],onCustom,customValue,priceOptions=usd,surface=false,onSubmit,submitDisabled,busy,onCancel,onBack,headerAction,headerActionBesideInfo,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TargetBlockProps){const PriceCard=surface?Surface:View;
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();const [open,setOpen]=useState(false);
  const info=note&&labels.info&&(!headerAction||headerActionBesideInfo)?labels.info:undefined;
  // With the info button beside a host control, both header sides widen together so the title stays centred.
  const pair=!!info&&headerAction!=null,side=pair?92:44;
@@ -127,12 +134,13 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const triggerLeads=(positions.trigger??0)<(positions.entry??0);
  const align=(index:number)=>order.length>1&&index===order.length-1?'flex-end' as const:order.length===3&&index===1?'center' as const:'flex-start' as const;
  const part=(grow:number)=>({flexGrow:grow,flexShrink:1,flexBasis:0,backgroundColor:fills.raised});
- return <View testID={testID} style={{padding:16}}>
-  <View testID='target-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
+ const sticky=!!stickyHeader;
+ const header=<View testID='target-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
    <View style={{minWidth:side,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='target-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
    <Text testID='target-title' nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
    <View style={{minWidth:side,alignItems:'flex-end'}}>{info?(()=>{const button=<IconButton intent='ghost' label={info} suppressFeedback testID='target-info' accessibilityState={{expanded:open}} onPress={()=>setOpen(!open)}><SeverityIcon kind='info' color={colors.text}/></IconButton>;return pair?<View testID='target-header-actions' style={{direction,flexDirection:'row',alignItems:'center',gap:4}}>{button}{headerAction}</View>:button;})():headerAction}</View>
-  </View>
+  </View>;
+ const body=<>
   <View style={{alignItems:'center',marginTop:16}}><AnimatedNumberReadout testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {note&&!info?<Text testID='target-note' style={{color:colors.muted,fontSize:14,lineHeight:21,textAlign:'center',marginTop:16}}>{note}</Text>:null}
   <PriceCard testID='target-prices' style={{gap:12,marginTop:16,minWidth:0}}>
@@ -168,10 +176,15 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    {targetPresets(presets).map(({value:preset,disabled})=>{const selected=custom===null&&preset===value;return <Button key={preset} testID={`target-preset-${preset}`} intent={selected?intent:'secondary'} disabled={disabled} accessibilityState={{selected}} onPress={()=>onValueChange?.(preset)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>;})}
   </View>:null}
   {info&&open?<Pressable testID='target-popover-dismiss' {...hidden} onPress={()=>setOpen(false)} style={{position:'absolute',top:0,bottom:0,left:0,right:0,zIndex:1}}/>:null}
-  {info&&open?<View testID='target-popover' accessibilityLiveRegion='polite' style={{position:'absolute',top:64,...(direction==='rtl'?{left:16}:{right:16}),maxWidth:280,zIndex:2,padding:12,borderRadius:14,backgroundColor:colors.nested}}><Text testID='target-note' style={{color:colors.text,fontSize:14,lineHeight:21}}>{note}</Text></View>:null}
+  {info&&open?<View testID='target-popover' accessibilityLiveRegion='polite' style={{position:'absolute',top:sticky?4:64,...(direction==='rtl'?{left:16}:{right:16}),maxWidth:280,zIndex:2,padding:12,borderRadius:14,backgroundColor:colors.nested}}><Text testID='target-note' style={{color:colors.text,fontSize:14,lineHeight:21}}>{note}</Text></View>:null}
   <View testID='target-actions' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>
    {onCancel?<Button testID='target-cancel' intent='secondary' onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{labels.cancel??t.cancel}</Button>:null}
    <Button testID='target-submit' intent={intent} disabled={submitDisabled??value===null} busy={busy} onPress={onSubmit} style={{flex:1,alignSelf:'auto'}}>{labels.submit}</Button>
   </View>
+ </>;
+ if(sticky)return <StickyHeaderLayout testID={testID} headerTestID='target-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{padding:16}}>
+  {header}
+  {body}
  </View>;
 }

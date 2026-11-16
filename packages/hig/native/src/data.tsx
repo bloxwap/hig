@@ -3,7 +3,7 @@ import {FlatList,Platform,View,StyleSheet,type StyleProp,type TextStyle} from 'r
 import {formatNumberReadout} from './animated-number-model.js';
 import {presentNumberFormat} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useColors,useHIG} from './provider.js';
+import {useColors,useHIG,useNumberLocale} from './provider.js';
 import {Text,Surface,Separator} from './surface.js';
 import {Button} from './button.js';
 /** `up`/`down` are market direction (rising/long/gain, falling/short/loss) and follow `HIGProvider marketColors`; `positive`/`negative` stay success/error. */
@@ -13,7 +13,7 @@ export type NumberReadoutStyle=Pick<TextStyle,'fontFamily'|'fontSize'|'fontWeigh
 const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
 export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;/** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */formattedValue?:string;stale?:boolean;label?:string;/** Explicit semantic meaning; sign alone never chooses the tone. */tone?:NumberTone;/** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */style?:StyleProp<NumberReadoutStyle>;testID?:string;/** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */maxFontSizeMultiplier?:number;/** Display-only affixes, omitted for unknown values. */prefix?:string;suffix?:string}
 export function NumberReadout({value,options,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier,prefix,suffix}:NumberProps){
- const {locale,messages,numberFormat}=useHIG();const colors=useColors();const reading=formatNumberReadout(value,locale,presentNumberFormat(options,numberFormat),formattedValue,prefix,suffix).text;const staleSuffix=stale?` ${messages.stale??en.stale}`:'';
+ const {messages,numberFormat}=useHIG();const locale=useNumberLocale();const colors=useColors();const reading=formatNumberReadout(value,locale,presentNumberFormat(options,numberFormat),formattedValue,prefix,suffix).text;const staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  // Keep the same boundary for untyped hosts and registered/array styles: no raw colour, glyph or layout overrides.
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key)));
  const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];

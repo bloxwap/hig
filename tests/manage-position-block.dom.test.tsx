@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen,within} from '@testing-library/react';
+import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -100,13 +100,33 @@ describe('ManagePositionBlock host slots',()=>{
   const caption=document.querySelector('.hig-position-caption')!;expect(caption.textContent).toBe('Estimated, funding unavailable');expect(caption.previousElementSibling).toBe(row);expect(caption.id).toBe('');
   const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-caption {'))??'';expect(rule).toContain('margin:-8px 0 0');
  });
- it('makes the position row one button named by the host label and described by its figures and caption',async()=>{
+ it('makes the position row one button named by the host label and its figures, and described by its caption',async()=>{
   const open=vi.fn();
   render(<ManagePositionBlock {...base} position={{name:'Bitcoin',leverage:40,pnl:-0.0247,pnlPercent:-0.0025,caption:'Stale',label:'View Bitcoin',onSelect:open}}/>);
-  const button=screen.getByRole('button',{name:'View Bitcoin'});expect(button.classList.contains('hig-position-row')).toBe(true);
+  const button=document.querySelector<HTMLButtonElement>('button.hig-position-row')!;
+  const named=button.getAttribute('aria-labelledby')!.split(' ').map(id=>document.getElementById(id)!);
+  expect(named[0].textContent).toBe('View Bitcoin,');expect(named.slice(1).map(node=>node.className)).toEqual(['hig-asset-row-identity','hig-asset-row-amounts']);expect(spoken(named[2])).toBe('-$0.0247-0.25%');
+  expect(screen.getByRole('button',{name:/^View Bitcoin, Bitcoin/})).toBe(button);
   const described=button.getAttribute('aria-describedby')!.split(' ').map(id=>document.getElementById(id)!);
-  expect(described.map(node=>node.className)).toEqual(['hig-asset-row-identity','hig-asset-row-amounts','hig-position-caption']);expect(spoken(described[1])).toBe('-$0.0247-0.25%');expect(described[2].textContent).toBe('Stale');
+  expect(described.map(node=>node.className)).toEqual(['hig-position-caption']);expect(described[0].textContent).toBe('Stale');
   await userEvent.click(button);expect(open).toHaveBeenCalledTimes(1);
+ });
+ it('draws the symbol as the initials, and a host fallback when the icon fails (Unreleased)',()=>{
+  const view=render(<ManagePositionBlock {...base} position={{name:'Bitcoin',symbol:'BTC'}}/>);
+  expect(document.querySelector('.hig-asset-row-icon')!.textContent).toBe('BTC');
+  view.rerender(<ManagePositionBlock {...base} position={{name:'Bitcoin',symbol:'BTC',icon:failed=><img data-testid='art' alt='' src='/btc.svg' onError={failed}/>,iconFallback:<span data-testid='fallback'/>}}/>);
+  const art=screen.getByTestId('art');expect(screen.queryByTestId('fallback')).toBeNull();
+  fireEvent.error(art);
+  expect(screen.queryByTestId('art')).toBeNull();expect(screen.getByTestId('fallback')).toBeTruthy();
+  view.rerender(<ManagePositionBlock {...base} position={{name:'Bitcoin',symbol:'BTC',icon:'/btc.png'}}/>);
+  fireEvent.error(document.querySelector('.hig-asset-row-icon img')!);
+  expect(document.querySelector('.hig-asset-row-icon')!.textContent).toBe('BTC');
+ });
+ it('animates a host-formatted action value and reads it (Unreleased)',()=>{
+  render(<ManagePositionBlock {...base} actions={[{id:'tp',label:'Take Profit',onSelect:()=>{},value:{value:66000,formattedValue:'66 000 $'}}]}/>);
+  const value=document.querySelector('.hig-manage-action-value')!;
+  expect(value.querySelector('.hig-sr-only')!.textContent).toBe('66 000 $');
+  expect(value.querySelectorAll('.hig-animated-number-visual > span').length).toBeGreaterThan(1);
  });
  it('formats the profit and loss with pnlOptions merged over the default',()=>{
   const view=render(<ManagePositionBlock {...base} position={{name:'Bitcoin',pnl:5.1234}} pnlOptions={{maximumFractionDigits:3}}/>);

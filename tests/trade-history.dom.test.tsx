@@ -136,12 +136,25 @@ describe('trade history host slots (Unreleased)',()=>{
   render(<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><TradeHistoryDetailBlock {...base} symbol='AMZN' leverageNote='actuel' badge='Démo' note='Une partie est manquante.' summaryRef={ref}
    pnlOptions={{style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:2}} percentOptions={{style:'percent',maximumFractionDigits:1,signDisplay:'exceptZero'}}
    actions={[{id:'share',label:'Partager',onSelect:()=>{}}]}/></HIGProvider>);
-  const heading=screen.getByRole('heading',{name:'Trade Démo'});expect(heading.querySelector('.hig-badge')!.textContent).toBe('Démo');
+  const heading=screen.getByRole('heading',{name:/^Trade ?, Démo$/});expect(heading.querySelector('.hig-badge')!.textContent).toBe('Démo');
   expect(document.querySelector('.hig-trade-avatar')!.textContent).toBe('AMZN');expect(document.querySelector('.hig-trade-leverage-note')!.textContent).toBe('actuel');
   const plain=(element:Element)=>spoken(element)!.replace(/\s/g,' ');
   expect(plain(document.querySelector('.hig-trade-figure')!)).toBe('Net PnL +1,42 $');expect(plain(document.querySelector('.hig-trade-return')!)).toBe('+2,8 % on margin');
   expect(ref.current).toBe(document.querySelector('.hig-trade-result'));
   const note=document.querySelector('.hig-trade-note')!;expect(note.textContent).toBe('Une partie est manquante.');expect(note.parentElement!.className).toBe('hig-trade-summary');
   expect(note.compareDocumentPosition(document.querySelector('.hig-trade-actions')!)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ });
+ it('formats one trade with its own pnlOptions, over the block format (Unreleased)',()=>{
+  render(<TradeHistoryListBlock labels={list} trades={[{id:'a',name:'Amazon',side:'long',pnl:0.00001234,pnlOptions:{style:'currency',currency:'USD',signDisplay:'exceptZero',maximumSignificantDigits:4}},{id:'b',name:'NVIDIA',side:'long',pnl:17.9}]} onSelect={()=>{}}/>);
+  const rows=screen.getAllByRole('button');
+  expect(spoken(rows[0].querySelector('.hig-trade-pnl')!)).toBe('+$0.00001234');expect(rows[0].getAttribute('aria-label')).toContain('+$0.00001234');
+  expect(spoken(rows[1].querySelector('.hig-trade-pnl')!)).toBe('+$17.90');
+ });
+ it('fills the captured summary with summaryBackground and draws host-formatted details (Unreleased)',()=>{
+  const ref=React.createRef<HTMLDivElement>();
+  const view=render(<TradeHistoryDetailBlock {...base} summaryRef={ref}/>);expect(ref.current!.style.background).toBe('');
+  view.rerender(<TradeHistoryDetailBlock {...base} summaryRef={ref} summaryBackground/>);expect(ref.current!.style.background).toBe('var(--hig-background)');
+  view.rerender(<TradeHistoryDetailBlock {...base} summaryRef={ref} summaryBackground='var(--hig-overlay)' details={[{label:'Size',value:3.734,formattedValue:'3,734',suffix:' AMZN'}]}/>);
+  expect(ref.current!.style.background).toBe('var(--hig-overlay)');expect(spoken(document.querySelector('.hig-trade-details dd')!)).toBe('3,734 AMZN');
  });
 });

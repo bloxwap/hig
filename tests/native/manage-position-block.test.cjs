@@ -152,10 +152,11 @@ it('adds a badge after the name and a caption under the row',()=>{
  expect(host(view,'manage-position-row').props.accessibilityRole).toBeUndefined();
 });
 
-it('makes the position row one button named by the host label, with its figures and caption as the hint',()=>{
+it('makes the position row one button named by the host label and its figures, with the caption as the hint',()=>{
  const open=jest.fn();
  const view=mount({position:{name:'Bitcoin',leverage:40,pnl:-0.0247,caption:'Stale',label:'View Bitcoin',onSelect:open}});
- const row=host(view,'manage-position-row');expect(row.props.accessibilityRole).toBe('button');expect(row.props.accessibilityLabel).toBe('View Bitcoin');expect(row.props.accessibilityHint).toBe('Bitcoin, Long, 40×, -$0.0247. Stale');
+ // The figures stay in the label, so they are read with hints turned off.
+ const row=host(view,'manage-position-row');expect(row.props.accessibilityRole).toBe('button');expect(row.props.accessibilityLabel).toBe('View Bitcoin, Bitcoin, Long, 40×, -$0.0247');expect(row.props.accessibilityHint).toBe('Stale');
  act(()=>{all(view,'manage-position-row').find(node=>typeof node.type!=='string'&&'onPress' in node.props).props.onPress({});});expect(open).toHaveBeenCalledTimes(1);
 });
 
@@ -167,6 +168,22 @@ it('falls back to the initials when the icon fails to load, and tries a new icon
  expect(view.findAllByType(Image)).toHaveLength(0);expect(text(host(view,'manage-position-initials'))).toBe('Bit');
  act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(ManagePositionBlock,{...base,position:{name:'Bitcoin',icon:'https://example.test/btc-2.png'}})));});
  view=root.root;expect(view.findAllByType(Image)).toHaveLength(1);
+});
+
+it('draws the symbol as the initials, and a host fallback when a host element reports a failure (Unreleased)',()=>{
+ const {Text:RNText}=require('react-native');
+ let view=mount({position:{name:'Bitcoin',symbol:'BTC'}});
+ expect(view.findAllByType(RNText).some(node=>node.props.children==='BTC')).toBe(true);
+ let failed;
+ view=mount({position:{name:'Bitcoin',symbol:'BTC',icon:fail=>{failed=fail;return h(View,{testID:'host-art'});},iconFallback:h(View,{testID:'host-fallback'})}});
+ expect(has(view,'host-art')).toBe(true);expect(has(view,'host-fallback')).toBe(false);
+ act(()=>failed());
+ expect(has(view,'host-art')).toBe(false);expect(has(view,'host-fallback')).toBe(true);
+});
+
+it('draws a host-formatted action value place by place and reads it (Unreleased)',()=>{
+ const view=mount({actions:[{id:'tp',label:'Take Profit',onSelect:()=>{},value:{value:66000,formattedValue:'66 000 $'}}]});
+ const flow=flows(view,'manage-action-tp')[0];expect(flow.props).toMatchObject({value:66000,formattedValue:'66 000 $',animateFormatted:true});
 });
 
 it('formats the profit and loss with pnlOptions merged over the default, and names the heading with headingId',()=>{

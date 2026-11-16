@@ -1,11 +1,11 @@
 import React from 'react';
-import {Image,View,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {Image,View,type ScrollViewProps,type ViewStyle} from 'react-native';
+import {useColors,useFills,useHIG,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
 import {BarPnl} from './bar-pnl.js';
-import {Button,IconButton} from './button.js';
-import {ChevronIcon} from './icons.js';
-import {Badge} from './status.js';
+import {Button} from './button.js';
+import {ScreenHeader} from './screen-header.js';
+import {StickyHeaderLayout} from './sticky-header.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import type {AssetArtwork} from './asset-balance-row.js';
@@ -22,7 +22,9 @@ export interface TradeHistoryDetailLabels {
  long:string;short:string;
 }
 /** One label and value row. A number is formatted with `options` between `prefix` and `suffix` and updates place by place; a string is drawn as given. */
-export interface TradeHistoryDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string}
+export interface TradeHistoryDetail {label:string;value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;
+ /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */
+ formattedValue?:string}
 export interface TradeHistoryAction {id:string;label:string;onSelect:()=>void;intent?:'primary'|'secondary';disabled?:boolean;busy?:boolean}
 export interface TradeHistoryDetailBlockProps {
  labels:TradeHistoryDetailLabels;
@@ -59,6 +61,14 @@ export interface TradeHistoryDetailBlockProps {
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. */
  headerAction?:React.ReactNode;
+ /** Fills the View drawn with `summaryRef`, so an image captured from it is not transparent: `true` for the background role, or a colour such as the sheet's `useColors().overlay`. */
+ summaryBackground?:boolean|string;
+ /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container. */
+ stickyHeader?:boolean;
+ /** Fill behind the pinned header once content scrolls under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
  testID?:string;
 }
 const pnlUsd:Intl.NumberFormatOptions={style:'currency',currency:'USD',signDisplay:'exceptZero',maximumFractionDigits:4};
@@ -81,8 +91,8 @@ function Sentence({template,text,value,options,tone,testID}:{template:(amount:st
  </View>;
 }
 /** The full record of one closed trade, drawn on the screen without cards because none of it is pressable: the asset with its side and leverage on one line, the net profit and loss with its return on margin, a bar from the entry price to the exit price, the host's other figures as a compact grid, and the host's actions side by side. */
-export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,leverageNote,pnl,pnlOptions=pnlUsd,pnlPercent,percentOptions=pnlShare,entry,exit,priceOptions,details,note,badge,summaryRef,actions=[],onBack,headerAction,testID}:TradeHistoryDetailBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
+export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,leverageNote,pnl,pnlOptions=pnlUsd,pnlPercent,percentOptions=pnlShare,entry,exit,priceOptions,details,note,badge,summaryRef,summaryBackground,actions=[],onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TradeHistoryDetailBlockProps){
+ const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale();
  const long=side==='long',word=long?labels.long:labels.short,tint=long?colors.up:colors.down;
  const tone:Tone=known(pnl)&&pnl>0?'up':known(pnl)&&pnl<0?'down':'text';
  const turns=known(leverage)?formatNumberReadout(leverage,locale,gearing).text+times:null;
@@ -90,21 +100,15 @@ export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,l
  const art=typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} style={shape as object}/>:<View style={shape}>{icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:9,lineHeight:12,fontWeight:'600',color:colors.muted}}>{symbol??name.slice(0,3)}</Text>}</View>;
  const meta={fontSize:14,lineHeight:20} as const;
  // The summary gets a wrapper only when the host asks for a ref to capture it, so the default tree is unchanged.
- const wrap=(summary:React.ReactElement)=>summaryRef?<View ref={summaryRef} collapsable={false} testID='trade-summary'>{summary}</View>:summary;
+ const fill=summaryBackground===true?colors.background:typeof summaryBackground==='string'&&summaryBackground?summaryBackground:undefined;
+ const wrap=(summary:React.ReactElement)=>summaryRef?<View ref={summaryRef} collapsable={false} testID='trade-summary' style={fill?{backgroundColor:fill}:undefined}>{summary}</View>:summary;
  // Three figures to a line: a small label over its value.
  const rows=details.map(detail=><View key={detail.label} testID={`trade-detail-${detail.label}`} style={{width:'33.333%',paddingEnd:8,gap:2}}>
   <Text numberOfLines={1} style={{fontSize:12,lineHeight:16,color:colors.muted}}>{detail.label}</Text>
-  {typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} tone='text' style={{fontSize:15,lineHeight:22,fontWeight:'600'}}/>:<Text style={{fontSize:15,lineHeight:22,fontWeight:'600',color:colors.text}}>{detail.value}</Text>}
+  {typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} tone='text' style={{fontSize:15,lineHeight:22,fontWeight:'600'}}/>:<Text style={{fontSize:15,lineHeight:22,fontWeight:'600',color:colors.text}}>{detail.value}</Text>}
  </View>);
- return <View testID={testID} style={{padding:16}}>
-  <View testID='trade-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
-   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='trade-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
-   {badge?<View accessible accessibilityRole='header' accessibilityLabel={`${labels.title}, ${badge}`} style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,minWidth:0}}>
-    <Text testID='trade-title' accessible={false} numberOfLines={1} style={{flexShrink:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
-    <View testID='trade-badge' style={{flexShrink:0}}><Badge><Text style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.text}}>{badge}</Text></Badge></View>
-   </View>:<Text testID='trade-title' accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>}
-   <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
-  </View>
+ const header=<ScreenHeader testID='trade' title={labels.title} badge={badge} onBack={onBack} action={headerAction}/>;
+ const body=<>
   {wrap(<><View testID='trade-asset' accessible accessibilityLabel={[name,word,turns,leverageNote].filter(Boolean).join(', ')} style={{direction,flexDirection:'row',flexWrap:'wrap',alignItems:'center',justifyContent:'center',gap:8,marginTop:16}}>
    <View {...hidden}>{art}</View>
    <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{name}</Text>
@@ -129,5 +133,10 @@ export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,l
   {actions.length>0?<View testID='trade-actions' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>
    {actions.map(action=><View key={action.id} style={{flex:1,minWidth:0}}><Button fullWidth testID={`trade-action-${action.id}`} intent={action.intent??'secondary'} disabled={action.disabled} busy={action.busy} onPress={action.onSelect}>{action.label}</Button></View>)}
   </View>:null}
+ </>;
+ if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='trade-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{padding:16}}>
+  {header}
+  {body}
  </View>;
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
 import type {HIGMessages} from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
+import {useHIG,useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {BarMark,type BarMarkElement} from '../bar-mark.js';
@@ -49,7 +49,7 @@ const usd={style:'currency',currency:'USD'} as const,unitsFormat={maximumFractio
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>={}):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token and what can be done with it: where it is held, which chains it sits on, and the actions as equal full-width buttons. */
 export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptions=unitsFormat,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',className,...rest}:TokenActionBlockProps){
- const {messages,locale}=useHIG();
+ const {messages}=useHIG();const locale=useNumberLocale();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
  const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<AnimatedNumberReadout key='value' value={total} options={usd}/>;

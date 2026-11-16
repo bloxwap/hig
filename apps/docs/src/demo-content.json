@@ -1135,7 +1135,8 @@
         "default",
         "profit",
         "at-risk",
-        "triggers"
+        "triggers",
+        "symbol"
       ]
     },
     {
@@ -1179,7 +1180,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "minimal"
+        "minimal",
+        "unavailable"
       ]
     },
     {
@@ -1191,7 +1193,8 @@
         "default",
         "sweepstakes",
         "loading",
-        "paged"
+        "paged",
+        "no-header"
       ]
     },
     {
