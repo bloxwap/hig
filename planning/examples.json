@@ -56,10 +56,17 @@
       "native": "<C.Stack><C.Text>Review the amount and asset before confirming.</C.Text><C.Text style={{letterSpacing:1}}>BLOXWAP</C.Text><C.Text style={{letterSpacing:1}}>한국어 · 中文</C.Text><C.NumberReadout label='Price' value={67234.56} options={{maximumFractionDigits:2}} maxFontSizeMultiplier={2}/></C.Stack>",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "muted-caption"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "muted-caption": {
+          "web": "<C.Text tone='muted' size='caption'>Cleared to balance in about 2 seconds.</C.Text>",
+          "native": "<C.Text tone='muted' size='caption'>Cleared to balance in about 2 seconds.</C.Text>"
+        }
+      }
     },
     {
       "name": "Heading",
@@ -215,10 +222,17 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "clear"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "clear": {
+          "web": "<C.Field label='Search markets'><C.SearchInput value={amount} onChange={e=>setAmount(e.target.value)} onClear={()=>setAmount('')}/></C.Field>",
+          "native": "<C.Field label='Search markets'><C.SearchInput value={amount} onChangeText={setAmount} onClear={()=>setAmount('')}/></C.Field>"
+        }
+      }
     },
     {
       "name": "Checkbox",
@@ -275,10 +289,17 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "hidden-label"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "hidden-label": {
+          "web": "<C.SegmentedControl label='Market direction' hideLabel options={choices} value={value} onValueChange={setValue}/>",
+          "native": "<C.SegmentedControl label='Market direction' hideLabel options={choices} value={value} onValueChange={setValue}/>"
+        }
+      }
     },
     {
       "name": "Filter",
@@ -519,7 +540,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "untitled"
+        "untitled",
+        "heading-slots"
       ],
       "a11y": "Titled group of rows; a selectable row is one button named by its label and value; a static row leaves its control as the only target; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -527,6 +549,10 @@
         "untitled": {
           "web": "<C.ListGroup><C.ListRow label='Accounts' value='$0.00' onSelect={()=>setMessage('The host opens Accounts')}/><C.ListRow label='History' trailing={<C.Badge>Live</C.Badge>} onSelect={()=>setMessage('The host opens History')}/></C.ListGroup>",
           "native": "<C.ListGroup><C.ListRow label='Accounts' value='$0.00' onSelect={()=>setMessage('The host opens Accounts')}/><C.ListRow label='History' trailing={<C.Badge>Live</C.Badge>} onSelect={()=>setMessage('The host opens History')}/></C.ListGroup>"
+        },
+        "heading-slots": {
+          "web": "<C.ListGroup title='Orders' titleAccessory='2' action={{label:'Cancel all',onSelect:()=>setMessage('The host cancels all orders')}} intro={<C.Text tone='muted' size='caption'>Resting orders fill at their limit price.</C.Text>}><C.ListRow label='BTC limit' value='$60,000'/><C.ListRow label='ETH limit' value='$3,000'/></C.ListGroup>",
+          "native": "<C.ListGroup title='Orders' titleAccessory='2' action={{label:'Cancel all',onSelect:()=>setMessage('The host cancels all orders')}} intro={<C.Text tone='muted' size='caption'>Resting orders fill at their limit price.</C.Text>}><C.ListRow label='BTC limit' value='$60,000'/><C.ListRow label='ETH limit' value='$3,000'/></C.ListGroup>"
         }
       }
     },
@@ -535,20 +561,36 @@
       "slug": "list-row",
       "entry": "list-group",
       "family": "navigation",
-      "web": "<C.ListGroup><C.ListRow label='Notifications' value='Off' disabled={disabled} onSelect={()=>setMessage('The host opens Notifications')}/></C.ListGroup>",
-      "native": "<C.ListGroup><C.ListRow label='Notifications' value='Off' disabled={disabled} onSelect={()=>setMessage('The host opens Notifications')}/></C.ListGroup>",
+      "web": "<C.ListGroup><C.ListRow label='Notifications' value='Off' disabled={disabled} busy={busy} onSelect={()=>setMessage('The host opens Notifications')}/></C.ListGroup>",
+      "native": "<C.ListGroup><C.ListRow label='Notifications' value='Off' disabled={disabled} busy={busy} onSelect={()=>setMessage('The host opens Notifications')}/></C.ListGroup>",
       "nativeSupport": "renderer",
       "states": [
         "default",
         "disabled",
-        "static"
+        "static",
+        "busy",
+        "details",
+        "choice",
+        "switch"
       ],
-      "a11y": "A selectable row is one button named by its label and value, with a decorative disclosure chevron; a static row is plain content; device observations pending",
+      "a11y": "A selectable row is one button named by its label, description and value, with a decorative disclosure; a choice row exposes selected, a busy row exposes busy; a switch row is one switch named by its label; a static row is plain content; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
         "static": {
           "web": "<C.ListGroup><C.ListRow label='Version' value='0.6.0'/></C.ListGroup>",
           "native": "<C.ListGroup><C.ListRow label='Version' value='0.6.0'/></C.ListGroup>"
+        },
+        "details": {
+          "web": "<C.ListGroup><C.ListRow label='Card' description='Instant card deposit' value='$5 min' onSelect={()=>setMessage('The host opens card deposit')}/><C.ListRow label='Help centre' disclosure='external' onSelect={()=>setMessage('The host opens the help centre')}/><C.ListRow label='Delete account' tone='destructive' onSelect={()=>setMessage('The host confirms deletion')}/></C.ListGroup>",
+          "native": "<C.ListGroup><C.ListRow label='Card' description='Instant card deposit' value='$5 min' onSelect={()=>setMessage('The host opens card deposit')}/><C.ListRow label='Help centre' disclosure='external' onSelect={()=>setMessage('The host opens the help centre')}/><C.ListRow label='Delete account' tone='destructive' onSelect={()=>setMessage('The host confirms deletion')}/></C.ListGroup>"
+        },
+        "choice": {
+          "web": "<C.ListGroup><C.ListRow label='Embedded wallet' description='0x12…7a9c' selected={value==='buy'} onSelect={()=>setValue('buy')}/><C.ListRow label='External wallet' description='0x9f…31d0' selected={value==='sell'} onSelect={()=>setValue('sell')}/></C.ListGroup>",
+          "native": "<C.ListGroup><C.ListRow label='Embedded wallet' description='0x12…7a9c' selected={value==='buy'} onSelect={()=>setValue('buy')}/><C.ListRow label='External wallet' description='0x9f…31d0' selected={value==='sell'} onSelect={()=>setValue('sell')}/></C.ListGroup>"
+        },
+        "switch": {
+          "web": "<C.ListGroup><C.ListRow label='Swing alerts' description='At most one a day' checked={checked} onCheckedChange={setChecked}/></C.ListGroup>",
+          "native": "<C.ListGroup><C.ListRow label='Swing alerts' description='At most one a day' checked={checked} onCheckedChange={setChecked}/></C.ListGroup>"
         }
       }
     },

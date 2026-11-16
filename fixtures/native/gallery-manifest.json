@@ -29,7 +29,8 @@
     {
       "name": "Text",
       "states": [
-        "default"
+        "default",
+        "muted-caption"
       ],
       "support": "renderer"
     },
@@ -111,7 +112,8 @@
       "name": "SearchInput",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "clear"
       ],
       "support": "renderer"
     },
@@ -143,7 +145,8 @@
       "name": "SegmentedControl",
       "states": [
         "default",
-        "disabled"
+        "disabled",
+        "hidden-label"
       ],
       "support": "renderer"
     },
@@ -268,7 +271,8 @@
       "name": "ListGroup",
       "states": [
         "default",
-        "untitled"
+        "untitled",
+        "heading-slots"
       ],
       "support": "renderer"
     },
@@ -277,7 +281,11 @@
       "states": [
         "default",
         "disabled",
-        "static"
+        "static",
+        "busy",
+        "details",
+        "choice",
+        "switch"
       ],
       "support": "renderer"
     },

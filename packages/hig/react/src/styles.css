@@ -45,6 +45,8 @@
 .hig-surface > :first-child { margin-block-start:0; }
 .hig-surface > :last-child { margin-block-end:0; }
 .hig-text { font-size:1rem;line-height:1.5; }
+.hig-text[data-tone='muted'] { color:var(--hig-muted); }
+.hig-text[data-size='caption'] { font-size:var(--hig-type-caption-size,.75rem);line-height:var(--hig-type-caption-line-height,1.125rem); }
 .hig-heading { line-height:1.25; }
 .hig-input { width:100%;min-width:0;min-height:var(--hig-button);border-radius:9999px;border:1px solid transparent;padding: max(4px,calc((var(--hig-button) - 1.5em - 2px)/2)) 20px;background:var(--hig-fill);color:var(--hig-text);font:inherit;line-height:1.5; }
 .hig-input::placeholder { color:var(--hig-muted);opacity:1; }
@@ -857,6 +859,35 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-list-row-chevron { flex:none;color:var(--hig-muted); }
 [dir='rtl'] .hig-list-row-chevron { transform:scaleX(-1); }
 @media(hover:hover) and (pointer:fine) { button.hig-list-row:hover,a.hig-list-row:hover { background:var(--hig-fill-raised); } }
+/* Additions: a description line, label tones, the selected check, the busy spinner and the whole-row switch. */
+.hig-list-row-text { flex:1;display:flex;flex-direction:column;min-width:0;padding-block:6px; }
+.hig-list-row-text > .hig-list-row-label { flex:none; }
+.hig-list-row-description { min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;overflow-wrap:anywhere; }
+.hig-list-row:has(> .hig-list-row-trailing .hig-switch) > .hig-list-row-text { padding-block:calc((48px - 1.5em)/2); }
+.hig-list-row-label[data-tone='destructive'] { color:var(--hig-negative); }
+.hig-list-row-label[data-tone='muted'] { color:var(--hig-muted); }
+.hig-list-row-check { flex:none;color:var(--hig-text); }
+.hig-list-row-spinner { margin:2px;color:var(--hig-muted); }
+.hig-list-row[aria-busy='true'] { cursor:progress; }
+.hig-list-row[data-switch]:not([aria-disabled='true']) { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-list-group-header { display:flex;align-items:center;gap:12px;min-width:0; }
+.hig-list-group-header > .hig-list-group-title { flex:1;min-width:0; }
+.hig-list-group-header > .hig-list-group-action:first-child { margin-inline-start:auto; }
+.hig-list-group-title[data-accessory] { display:flex;flex-wrap:wrap;align-items:baseline;gap:8px; }
+.hig-list-group-title-accessory { min-width:0;font-variant-numeric:tabular-nums; }
+.hig-list-group-action { appearance:none;position:relative;flex:none;min-width:44px;min-height:44px;margin-block:-12px;padding:0 4px;border:0;border-radius:var(--hig-radius-sm,6px);background:transparent;color:var(--hig-text);font:inherit;font-size:.875rem;line-height:1.43;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-list-group-action:disabled { opacity:.5;cursor:not-allowed; }
+.hig-list-group-action:active:not(:disabled) { color:var(--hig-muted); }
+.hig-list-group-intro { min-width:0;padding-inline:4px; }
+.hig-segment > span.hig-press-decoration[data-kind] { min-height:0; }
+.hig-field p[data-tone='positive'] { color:var(--hig-positive); }
+.hig-search-input[data-trailing] > .hig-input { padding-inline-end:48px; }
+.hig-search-input[data-trailing] > .hig-input::-webkit-search-cancel-button { display:none;-webkit-appearance:none; }
+.hig-search-trailing { position:absolute;inset-block:0;inset-inline-end:0;display:flex;align-items:center;gap:4px; }
+.hig-search-clear { appearance:none;position:relative;display:grid;place-items:center;min-width:var(--hig-button,44px);height:100%;margin:0;padding:0;border:0;border-radius:9999px;background:transparent;color:var(--hig-muted);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+.hig-search-clear > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round; }
+.hig-search-clear:active:not(:disabled) { color:var(--hig-text); }
+.hig-search-clear:disabled { opacity:.5;cursor:not-allowed; }
 .hig-bar-pnl { display:flex;flex-direction:column;gap:12px;--hig-bar-pnl-tone:var(--hig-muted); }
 .hig-bar-pnl[data-result='profit'] { --hig-bar-pnl-tone:var(--hig-positive); }
 .hig-bar-pnl[data-result='loss'] { --hig-bar-pnl-tone:var(--hig-negative); }
