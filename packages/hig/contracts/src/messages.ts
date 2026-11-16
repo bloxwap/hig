@@ -240,6 +240,8 @@ export interface HIGMessages {
  noPositions: string;
  /** AssetsBlock: empty Trend view. */
  noTrend: string;
+ /** AssetsBlock: before the countdown to when a closed legacy market opens, as in “Opens in 2:14:33”. */
+ opensIn: string;
 }
 // Canonical English copy, one export per key. Hosts translate these; they do not edit them.
 export const close = 'Close';
@@ -358,8 +360,9 @@ export const signalUp = 'Rising';
 export const signalDown = 'Falling';
 export const noPositions = 'No open positions';
 export const noTrend = 'No trending markets';
+export const opensIn = 'Opens in';
 /** The complete English catalog. */
-export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete, account, deposit, accountBalance, showAddress, editName, changeProfilePicture, language, searchLanguages, receive, stake, unstake, clearSearch, assets, searchMarkets, marketCategories, assetsView, assetsAll, assetsPositions, assetsTrend, signalWatch, signalUp, signalDown, noPositions, noTrend};
+export const defaultMessages: Readonly<HIGMessages> = {close, cancel, dismiss, dismissNotice, busy, notifications, loading, loadingContent, loadingItems, loadingChart, noItems, noRows, retry, loadMore, stale, required, breadcrumb, pagination, previous, next, pageOf, search, searching, noResults, resultCount, back, menuDescription, choose, chooseOne, inProgress, progressValue, copied, copyFailed, copyInstallCommand, reviewAssetOrder, amountInAsset, availableAmount, reviewOrder, confirmOrder, confirmOrderDescription, orderUnavailable, statusOnline, statusOffline, statusStale, increase, decrease, swapFrom, swapTo, swapSelectToken, swapAmount, swapSwitchDenomination, swapFlip, swapActionSend, swapActionSwap, swapActionBridge, swapChooseToken, swapChooseDestination, swapEnterAmount, swapInsufficient, swapSendFromWallet, swapReset, swapSettings, swapMax, swapTest, swapSlippage, swapSlippageTitle, swapSlippageCustom, swapFee, swapFees, swapFeeTotal, swapDenomination, swapDollars, swapUnits, swapSearchTokens, swapChains, swapAllChains, swapHot, swapAllTokens, swapNoTokens, swapSelected, swapConnectWallet, swapDisconnect, swapGenerateAddress, swapRecipient, swapScan, copyAddress, addressCopied, tapToCopy, qrCode, swapControlKey, swapKeypad, swapDelete, account, deposit, accountBalance, showAddress, editName, changeProfilePicture, language, searchLanguages, receive, stake, unstake, clearSearch, assets, searchMarkets, marketCategories, assetsView, assetsAll, assetsPositions, assetsTrend, signalWatch, signalUp, signalDown, noPositions, noTrend, opensIn};
 /** Every message key, in documentation order. */
 export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as readonly (keyof HIGMessages)[];
 /**

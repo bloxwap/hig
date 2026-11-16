@@ -304,7 +304,7 @@
       },
       "AssetCategory": {
         "entry": "blocks/assets-block",
-        "signature": "export interface AssetCategory {\n    id: string;\n    /** Crypto. */\n    label: string;\n    /** A badge on the section heading's trailing edge, such as the session state: OPEN or CLOSED. */\n    status?: {\n        label: string;\n        tone?: 'positive' | 'negative' | 'warning' | 'info';\n    };\n}"
+        "signature": "export interface AssetCategory {\n    id: string;\n    /** Crypto. */\n    label: string;\n    /** A badge on the section heading's trailing edge, such as OPEN. Bloxwap trades around the clock, so there is no closed badge: use `opensAt` for a legacy market that is shut. */\n    status?: {\n        label: string;\n        tone?: 'positive' | 'negative' | 'warning' | 'info';\n    };\n    /** When the legacy market behind this category next opens, as epoch milliseconds or a `Date`. While it is ahead, the badge counts down to it (“Opens in 2:14:33”) in place of `status`, and the heading reads it in words. Once it passes, `status` shows again. */\n    opensAt?: number | Date;\n}"
       },
       "AssetSignal": {
         "entry": "blocks/assets-block",
@@ -1214,7 +1214,7 @@
       },
       "AssetCategory": {
         "entry": "assets-block",
-        "signature": "export interface AssetCategory {\n    id: string;\n    /** Crypto. */\n    label: string;\n    /** A badge on the section heading's trailing edge, such as the session state: OPEN or CLOSED. */\n    status?: {\n        label: string;\n        tone?: 'positive' | 'negative' | 'warning' | 'info';\n    };\n}"
+        "signature": "export interface AssetCategory {\n    id: string;\n    /** Crypto. */\n    label: string;\n    /** A badge on the section heading's trailing edge, such as OPEN. Bloxwap trades around the clock, so there is no closed badge: use `opensAt` for a legacy market that is shut. */\n    status?: {\n        label: string;\n        tone?: 'positive' | 'negative' | 'warning' | 'info';\n    };\n    /** When the legacy market behind this category next opens, as epoch milliseconds or a `Date`. While it is ahead, the badge counts down to it (“Opens in 2:14:33”) in place of `status`, and the heading reads it in words. Once it passes, `status` shows again. */\n    opensAt?: number | Date;\n}"
       },
       "AssetsBlockProps": {
         "entry": "assets-block",

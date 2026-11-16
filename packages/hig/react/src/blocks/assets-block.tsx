@@ -1,6 +1,7 @@
 "use client";
-import React,{useId,useMemo,useState} from 'react';
-import {PressDecoration,useMessages} from '../provider.js';
+import React,{useEffect,useId,useMemo,useState} from 'react';
+import {formatCountdown} from '@bloxwap/hig/contracts';
+import {PressDecoration,useHIG,useMessages} from '../provider.js';
 import {SearchInput} from '../field.js';
 import {Filter,SegmentedControl} from '../selection.js';
 import {Badge} from '../status.js';
@@ -36,8 +37,10 @@ export interface AssetCategory {
  id:string;
  /** Crypto. */
  label:string;
- /** A badge on the section heading's trailing edge, such as the session state: OPEN or CLOSED. */
+ /** A badge on the section heading's trailing edge, such as OPEN. Bloxwap trades around the clock, so there is no closed badge: use `opensAt` for a legacy market that is shut. */
  status?:{label:string;tone?:'positive'|'negative'|'warning'|'info'};
+ /** When the legacy market behind this category next opens, as epoch milliseconds or a `Date`. While it is ahead, the badge counts down to it (“Opens in 2:14:33”) in place of `status`, and the heading reads it in words. Once it passes, `status` shows again. */
+ opensAt?:number|Date;
 }
 export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'|'onSelect'> {
  /** Heading. Defaults to the built-in “Assets”. */
@@ -77,12 +80,20 @@ function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):
  const [local,setLocal]=useState(initial);const current=value===undefined?local:value;
  return [current,next=>{if(Object.is(next,current))return;if(value===undefined)setLocal(next);onChange?.(next);}];
 }
+/** The current time, ticking each second while `active`. `null` until mounted, so server HTML never carries a clock that hydration would contradict. */
+function useNow(active:boolean):number|null{
+ const [now,setNow]=useState<number|null>(null);
+ useEffect(()=>{if(!active)return;setNow(Date.now());const tick=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(tick);},[active]);
+ return active?now:null;
+}
+const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+category.opensAt;
 /**
  * Choose a market as one screen: a header, a search field, category capsules, the All / Positions / Trend views, then the
  * markets in sections by category, each with its icon, name, symbol and detail, and its signal disc. The host owns the data.
  */
 export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,className,...rest}:AssetsBlockProps){
- const t=useMessages();const id=useId();
+ const t=useMessages();const {locale}=useHIG();const id=useId();
+ const now=useNow(categories.some(entry=>{const at=opensAtTime(entry);return at!=null&&at>Date.now();}));
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
  const [currentCategory,setCategory]=useHostState(category,defaultCategory,onCategoryChange);
  const [currentQuery,setQuery]=useHostState(query,defaultQuery,onQueryChange);
@@ -101,6 +112,11 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   </button></li>;
  };
  const showFilter=(categoryFilter??true)&&categories.length>1;
+ const sectionHeader=(entry:AssetCategory)=>{
+  const at=opensAtTime(entry);const countdown=now!=null&&at!=null&&at>now?formatCountdown(at-now,locale):null;
+  const badge=countdown?{visible:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,tone:'neutral' as const}:entry.status?{visible:entry.status.label,spoken:entry.status.label,tone:entry.status.tone??'positive'}:null;
+  return <div className='hig-assets-section-header'><h3 id={`${id}-${entry.id}`} aria-label={badge?`${entry.label}, ${badge.spoken}`:undefined}>{entry.label}</h3>{badge&&<Badge aria-hidden='true' className='hig-assets-status' data-countdown={countdown?'':undefined} tone={badge.tone}>{badge.visible}</Badge>}</div>;
+ };
  return <section {...rest} className={`hig-assets-block${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
   <SearchInput aria-label={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
@@ -109,7 +125,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   <div className='hig-assets-list' aria-busy={loading||undefined}>
    {sections.length===0&&<p className='hig-assets-empty' role='status'>{empty}</p>}
    {sections.map(section=><section key={section.category.id} className='hig-assets-section' aria-labelledby={`${id}-${section.category.id}`}>
-    <div className='hig-assets-section-header'><h3 id={`${id}-${section.category.id}`} aria-label={section.category.status?`${section.category.label}, ${section.category.status.label}`:undefined}>{section.category.label}</h3>{section.category.status&&<Badge aria-hidden='true' className='hig-assets-status' tone={section.category.status.tone??'positive'}>{section.category.status.label}</Badge>}</div>
+    {sectionHeader(section.category)}
     <ul>{section.assets.map(row)}</ul>
    </section>)}
   </div>

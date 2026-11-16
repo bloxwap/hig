@@ -8,7 +8,7 @@ const {AssetsBlock,filterAssets}=require('../../packages/hig/native/src/assets-b
 const blocks=require('../../packages/hig/native/src/blocks');
 const h=React.createElement;
 let root;
-const categories=[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',status:{label:'CLOSED',tone:'negative'}},{id:'stocks',label:'Stocks'}];
+const categories=[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',status:{label:'OPEN'}},{id:'stocks',label:'Stocks'}];
 const assets=[
  {id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},
  {id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},
@@ -38,7 +38,7 @@ test('draws sections with the status read in the heading, and rows named by mark
  expect(has(view,'assets-section-stocks')).toBe(false);
  const header=view.findAll(n=>n.props.accessibilityRole==='header'&&n.props.accessibilityLabel==='Crypto, OPEN');
  expect(header.length).toBeGreaterThan(0);
- expect(text(host(view,'assets-status-commodities'))).toBe('CLOSED');
+ expect(text(host(view,'assets-status-commodities'))).toBe('OPEN');
  const btc=all(view,'assets-BTC').find(n=>n.props.accessibilityRole==='button');
  expect(btc.props.accessibilityLabel).toBe('Bitcoin, BTC · 40×, Watch');
  expect(btc.props.accessibilityState).toEqual({selected:true,disabled:false});
@@ -66,4 +66,17 @@ test('views and search narrow the list and show the right empty text; controlled
  view=root.root;act(()=>root.update(h(HIGProvider,{reducedMotion:true,messages:{signalUp:'En hausse',assets:'Actifs'}},h(blocks.AssetsBlock,{testID:'assets',assets,categories,onSelect:()=>{},view:'trend'}))));
  expect(all(root.root,'assets-ETH')[0].props.accessibilityLabel).toBe('Ethereum, ETH · 25×, En hausse');
  expect(root.root.findAll(n=>typeof n.type==='string'&&n.props.accessibilityRole==='header').some(n=>text(n)==='Actifs')).toBe(true);
+});
+
+test('counts down to a legacy market reopening, reads it in words, then falls back to status',()=>{
+ jest.useFakeTimers();jest.setSystemTime(new Date('2026-11-16T12:00:00Z'));
+ const opensAt=Date.now()+((2*60+14)*60+33)*1000;
+ const view=mount({categories:[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]});
+ expect(text(host(view,'assets-status-commodities'))).toBe('Opens in 2:14:33');
+ expect(view.findAll(n=>n.props.accessibilityRole==='header'&&n.props.accessibilityLabel==='Commodities, Opens in 2 hours 14 minutes').length).toBeGreaterThan(0);
+ act(()=>{jest.advanceTimersByTime(1000);});
+ expect(text(host(root.root,'assets-status-commodities'))).toBe('Opens in 2:14:32');
+ act(()=>{jest.setSystemTime(opensAt+1);jest.advanceTimersByTime(1000);});
+ expect(text(host(root.root,'assets-status-commodities'))).toBe('OPEN');
+ jest.useRealTimers();
 });

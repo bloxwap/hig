@@ -7,7 +7,7 @@ import {HIGProvider} from '../packages/hig/react/src/provider';
 import {AssetsBlock,filterAssets,type AssetCategory,type AssetItem} from '../packages/hig/react/src/blocks/assets-block';
 import * as blocks from '../packages/hig/react/src/blocks';
 afterEach(cleanup);
-const categories:AssetCategory[]=[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',status:{label:'CLOSED',tone:'negative'}},{id:'stocks',label:'Stocks'}];
+const categories:AssetCategory[]=[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',status:{label:'OPEN'}},{id:'stocks',label:'Stocks'}];
 const assets:AssetItem[]=[
  {id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},
  {id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},
@@ -65,5 +65,28 @@ describe('AssetsBlock',()=>{
   render(<HIGProvider messages={{assetsTrend:'Tendance',signalUp:'En hausse'}}><blocks.AssetsBlock assets={assets} categories={categories} onSelect={()=>{}} view='trend' category='crypto' query='eth'/></HIGProvider>);
   expect(screen.getByRole('radio',{name:'Tendance'})).toHaveProperty('checked',true);
   expect(screen.getAllByRole('button',{name:/,/}).map(b=>b.getAttribute('aria-label'))).toEqual(['Ethereum, ETH · 25×, En hausse']);
+ });
+});
+describe('AssetsBlock opening countdown',()=>{
+ it('counts down to a legacy market reopening in place of status, reads it in words, then falls back to status',async()=>{
+  vi.useFakeTimers({toFake:['setInterval','clearInterval','Date']});
+  const {act}=await import('@testing-library/react');
+  vi.setSystemTime(new Date('2026-11-16T12:00:00Z'));
+  const opensAt=Date.now()+((2*60+14)*60+33)*1000;
+  render(<HIGProvider><AssetsBlock assets={assets} categories={[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]} onSelect={()=>{}}/></HIGProvider>);
+  const badge=()=>document.querySelector('[data-countdown]');
+  expect(badge()?.textContent).toBe('Opens in 2:14:33');
+  expect(screen.getByRole('heading',{level:3,name:'Commodities, Opens in 2 hours 14 minutes'})).toBeTruthy();
+  act(()=>{vi.advanceTimersByTime(1000);});
+  expect(badge()?.textContent).toBe('Opens in 2:14:32');
+  act(()=>{vi.setSystemTime(opensAt+1);vi.advanceTimersByTime(1000);});
+  expect(badge()).toBeNull();
+  expect(screen.getByRole('heading',{level:3,name:'Commodities, OPEN'})).toBeTruthy();
+  vi.useRealTimers();
+ });
+ it('never renders a clock in server HTML',async()=>{
+  const {renderToString}=await import('react-dom/server');
+  const html=renderToString(<HIGProvider><AssetsBlock assets={assets} categories={[{id:'crypto',label:'Crypto',opensAt:Date.now()+60000}]} onSelect={()=>{}}/></HIGProvider>);
+  expect(html).not.toContain('Opens in');
  });
 });
