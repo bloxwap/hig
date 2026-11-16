@@ -4,7 +4,7 @@
 
 ### Tokens
 
-- `safeArea` offsets (`tokens.safeArea`, `nativeMetrics.safeArea`, `--hig-safe-area-*`): `chromeGutter` 8, `sheetContentGutter` 16, `toastOffset` 60 (44 + 16, matching the website's Sonner toaster), `fullscreenMin` 20, `axisChromeTop` 56, and `axisChromeBottom` 88. These are the values the native mobile app uses today, added on top of runtime device insets. They do not include the insets themselves. See [Safe area](docs/foundations/safe-area.md). The native Switch bundle budget rises from 2,460 to 2,560 bytes gzipped because `nativeMetrics` now includes `safeArea`.
+- `safeArea` offsets (`tokens.safeArea`, `nativeMetrics.safeArea`, `--hig-safe-area-*`): `chromeGutter` 8, `sheetContentGutter` 16, `toastOffset` 60 (44 + 16, matching the website's Sonner toaster), `fullscreenMin` 20 (QR scanner fullscreen modal chrome: `Math.max(insets.top|bottom, 20)` and `insets.left|right + 20`), `axisChromeTop` 56, and `axisChromeBottom` 88. These are the values the native mobile app uses today, added on top of runtime device insets. They do not include the insets themselves. See [Safe area](docs/foundations/safe-area.md). The native Switch bundle budget rises from 2,460 to 2,560 bytes gzipped because `nativeMetrics` now includes `safeArea`.
 
 ### Blocks
 
