@@ -39,6 +39,12 @@ it('defaults to one row and wraps into equal-width rows with columns, holding th
  const cells=rows[1].findAll(node=>typeof node.type==='string'&&node.children.length===0&&flat(node)?.flex===1);expect(cells).toHaveLength(2);expect(cells.every(cell=>flat(cell).flex===1)).toBe(true);
 });
 
+it('keeps the column width in one row when columns outnumber the options, like the web grid',()=>{
+ const tree=mount({options:sizes.slice(0,3),columns:4,testID:'size'});
+ const group=host(tree,'size');expect(flat(group).flexDirection).toBe('row');expect(chips(tree)).toHaveLength(3);
+ expect(group.findAll(node=>typeof node.type==='string'&&node.children.length===0&&flat(node)?.flex===1)).toHaveLength(1);
+});
+
 it('follows the provider direction',()=>{
  expect(flat(host(mount({testID:'size'},{direction:'rtl'}),'size')).direction).toBe('rtl');
 });

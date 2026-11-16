@@ -31,8 +31,8 @@ export function PresetGroup<T extends string|number=string>({label,options,value
  const count=Math.max(1,Math.floor(columns??options.length)||1),rows:PresetOption<T>[][]=[];
  for(let index=0;index<options.length;index+=count)rows.push(options.slice(index,index+count));
  const chip=(option:PresetOption<T>)=>{const selected=current!==null&&Object.is(current,option.value),blocked=!!disabled||!!option.disabled;return <Button key={String(option.value)} testID={option.testID??(testID===undefined?undefined:`${testID}-${option.value}`)} intent={selected?selectedIntent:'secondary'} disabled={blocked||undefined} accessibilityState={{selected}} suppressFeedback onPress={()=>{if(!blocked&&!selected)set(option.value);}} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{option.label}</Button>;};
- // A short last row keeps the column width: empty cells hold the place of the missing chips.
- const row=(items:PresetOption<T>[],key?:number,own?:object)=><View key={key} {...own} style={[{direction,flexDirection:'row',gap:8},key===undefined?{alignSelf:'stretch'}:null,key===undefined?style:null]}>{items.map(chip)}{rows.length>1?Array.from({length:count-items.length},(_,cell)=><View key={`cell-${cell}`} style={{flex:1}}/>):null}</View>;
+ // A short row keeps the column width, as the web grid does: empty cells hold the place of the missing chips, also in a single row with more columns than options.
+ const row=(items:PresetOption<T>[],key?:number,own?:object)=><View key={key} {...own} style={[{direction,flexDirection:'row',gap:8},key===undefined?{alignSelf:'stretch'}:null,key===undefined?style:null]}>{items.map(chip)}{Array.from({length:items.length>0?count-items.length:0},(_,cell)=><View key={`cell-${cell}`} style={{flex:1}}/>)}</View>;
  const group={testID,accessibilityLabel:label};
  return rows.length>1?<View {...group} style={[{alignSelf:'stretch',gap:8},style]}>{rows.map((items,index)=>row(items,index))}</View>:row(rows[0]??[],undefined,group);
 }
