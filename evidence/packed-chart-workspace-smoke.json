@@ -1,12 +1,12 @@
 {
-  "version": "0.2.0",
+  "version": "0.7.0",
   "issue": "bloxwap/hig#96",
   "evidence": "automated (local tarballs, clean temporary npm workspaces); no publication",
   "platform": "darwin arm64",
   "node": "v24.22.1",
   "host": {
     "shape": "npm workspace like bloxwap/chart: packages/chart provides @bloxwap/chart, apps/docs depends on it by version and on HIG tarballs through file: specs",
-    "chart": "@bloxwap/chart 0.4.0 (published build copied into packages/chart)",
+    "chart": "@bloxwap/chart 0.5.0 (published build copied into packages/chart)",
     "install": "rm package-lock.json + node_modules; npm install with legacy-peer-deps=false, strict-peer-deps=true; then npm ci; then npm install (no lockfile change)"
   },
   "runs": [

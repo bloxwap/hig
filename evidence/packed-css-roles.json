@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.7.0",
   "issue": "bloxwap/hig#66",
   "kind": "automated browser (headless Playwright); no physical-device claim",
   "platform": "darwin arm64",

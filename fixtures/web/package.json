@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@bloxwap/haptic": "^0.4.0",
-    "@bloxwap/hig": "0.6.0",
+    "@bloxwap/hig": "0.7.0",
     "@bloxwap/sfx": "^0.3.0",
     "@radix-ui/react-dialog": "1.1.15",
     "@radix-ui/react-dropdown-menu": "2.1.16",

@@ -1,8 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.7.0
 
 Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, grouped by block below. Web and native unless noted; every word stays host text. Everything is additive and optional: without the new props, every component renders exactly as in 0.6.0, except the changes the app teams asked for that are marked below (a `ProfileBlock` switch row's label now toggles it on web, an `AccountBlock` asset with an unknown value and a known balance headlines its units, a native `RewardBlock` given a `testID` prefixes its inner test IDs with it, and a web `ManagePositionBlock` icon URL that fails to load shows the initials).
+
+Upgrading from 0.6.x:
+
+- Nothing was removed or renamed, so 0.6.0 imports keep working.
+- Check the four default changes named above. The native `RewardBlock` one is most likely to show up in your tests: once the block has a `testID`, selectors for its inner test IDs (`header`, `back`, `row-<id>`) need that prefix.
 
 ### Provider and shared pieces
 
