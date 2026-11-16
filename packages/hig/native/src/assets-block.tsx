@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {formatCountdown} from '@bloxwap/hig/contracts';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
@@ -8,6 +8,7 @@ import {Filter,SegmentedControl} from './radio-group.js';
 import {ScreenHeader,HeaderClose} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 import {EyeIcon,TrendIcon} from './icons.js';
+import {Button} from './button.js';
 /** A market's live heat signal: `watch` while it is being watched, `up` or `down` once it trends. */
 export type AssetSignal='watch'|'up'|'down';
 /** The three views of the list: every market, the markets with an open position, and the markets with a signal. */
@@ -79,8 +80,18 @@ export interface AssetsBlockProps {
  scrollComponent?:React.ComponentType<ScrollViewProps>;
  /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android), as `GestureSheet labelledBy` does. */
  headingId?:string;
+ /** Freezes the opening countdown at the text it last showed and stops its timer, for example while the sheet is closed or the app is in the background. */
+ paused?:boolean;
+ /** The host's clock in epoch milliseconds, read for the opening countdown. Defaults to `Date.now`. */
+ now?:()=>number;
+ /** A button under the empty text, drawn only while the list is empty and not `loading`, such as Browse all markets on an empty Positions view. Test ID `testID`, else `<testID>-empty-action`. */
+ emptyAction?:AssetsEmptyAction;
+ /** Focuses the search field on mount, raising the keyboard, so typing filters at once. */
+ autoFocusSearch?:boolean;
  testID?:string;
 }
+/** The empty list's action. */
+export interface AssetsEmptyAction {label:string;onPress:()=>void;testID?:string}
 const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 /** The markets a view, category and query leave, grouped by category in the host's order. Empty sections are dropped. */
 export function filterAssets(assets:readonly AssetItem[],categories:readonly AssetCategory[],{view='all',category='',query=''}:{view?:AssetsView;category?:string;query?:string}={}):{category:AssetCategory;assets:AssetItem[]}[]{
@@ -93,11 +104,11 @@ function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):
  const [local,setLocal]=useState(initial);const current=value===undefined?local:value;
  return [current,next=>{if(Object.is(next,current))return;if(value===undefined)setLocal(next);onChange?.(next);}];
 }
-/** The current time, ticking each second while `active`. */
-function useNow(active:boolean):number{
- const [now,setNow]=useState(()=>Date.now());
- useEffect(()=>{if(!active)return;setNow(Date.now());const tick=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(tick);},[active]);
- return now;
+/** The host clock, ticking each second while `active` and not `paused`; paused keeps the last reading (or takes one). */
+function useNow(active:boolean,paused:boolean,clock:()=>number):number|null{
+ const [now,setNow]=useState<number|null>(()=>active?clock():null);const read=useRef(clock);read.current=clock;
+ useEffect(()=>{if(!active){setNow(null);return;}if(paused){setNow(last=>last??read.current());return;}setNow(read.current());const tick=setInterval(()=>setNow(read.current()),1000);return()=>clearInterval(tick);},[active,paused]);
+ return active?now:null;
 }
 const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+category.opensAt;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
@@ -107,14 +118,15 @@ const disc=44;
  * markets in sections by category, each with its icon, name, symbol and detail on one line each, and its signal disc. The host
  * owns the data and the scrolling, unless `stickyHeader` makes the block its own scroll view.
  */
-export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,clearable,testID}:AssetsBlockProps){
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,clearable,paused=false,now:clock=Date.now,emptyAction,autoFocusSearch,testID}:AssetsBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
- const now=useNow(categories.some(entry=>{const at=opensAtTime(entry);return at!=null&&at>Date.now();}));
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
  const [currentCategory,setCategory]=useHostState(category,defaultCategory,onCategoryChange);
  const [currentQuery,setQuery]=useHostState(query,defaultQuery,onQueryChange);
  const sections=useMemo(()=>filterAssets(assets,categories,{view:currentView,category:currentCategory,query:currentQuery}),[assets,categories,currentView,currentCategory,currentQuery]);
+ // The clock runs only while a section on screen has an opening still ahead.
+ const reading=sections.length?clock():0;const now=useNow(sections.some(section=>{const at=opensAtTime(section.category);return at!=null&&at>reading;}),paused,clock);
  const signalName:Record<AssetSignal,string>={watch:t.signalWatch,up:t.signalUp,down:t.signalDown};
  const signalColor:Record<AssetSignal,string>={watch:colors.warning,up:colors.positive,down:colors.negative};
  const toneColor={positive:colors.positive,negative:colors.negative,warning:colors.warning,info:colors.info};
@@ -124,27 +136,31 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   const second=asset.detail?`${asset.symbol} · ${asset.detail}`:asset.symbol;
   const selected=asset.id===selectedId;
   const style=({pressed}:{pressed:boolean}):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:64,padding:8,borderRadius:32,backgroundColor:pressed||selected?fills.well:'transparent',opacity:asset.disabled?0.5:1});
-  return <Pressable key={asset.id} testID={id(asset.id)} accessibilityRole='button' accessibilityLabel={[asset.name,second,asset.trailingLabel,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ')} accessibilityState={{selected,disabled:!!asset.disabled}} disabled={asset.disabled} onPress={()=>onSelect(asset)} style={style}>
+  return <Pressable key={asset.id} testID={id(asset.id)} accessibilityRole='button' accessibilityLabel={[asset.name,second,asset.trailingLabel,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ')} accessibilityState={{selected,disabled:!!asset.disabled}} disabled={asset.disabled} onPress={()=>onSelect(asset)} style={style}>{({pressed})=><>
    <View {...hidden}>{typeof asset.icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:asset.icon}} style={round as object}/>:<View style={[round,{backgroundColor:fills.raised}]}>{asset.icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{asset.symbol.slice(0,4)}</Text>}</View>}</View>
    <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
     <Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{asset.name}</Text>
     <Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{second}</Text>
    </View>
    {asset.trailing!=null&&asset.trailing!==false?<View {...hidden} testID={id(`${asset.id}-trailing`)} style={{flexShrink:0,alignItems:'flex-end'}}>{asset.trailing}</View>:null}
-   {asset.signal===undefined?null:<View {...hidden} testID={id(`${asset.id}-signal`)} style={[round,{backgroundColor:asset.signal?`${signalColor[asset.signal]}26`:fills.well}]}>
+   {/* The empty disc sits on the row's well once the row fills, so it steps up to the raised fill. */}
+   {asset.signal===undefined?null:<View {...hidden} testID={id(`${asset.id}-signal`)} style={[round,{backgroundColor:asset.signal?`${signalColor[asset.signal]}26`:pressed||selected?fills.raised:fills.well}]}>
     {asset.signal==='watch'?<EyeIcon color={colors.warning}/>:asset.signal?<TrendIcon color={signalColor[asset.signal]} direction={asset.signal}/>:null}
    </View>}
-  </Pressable>;
+  </>}</Pressable>;
  };
  const showFilter=(categoryFilter??true)&&categories.length>1;
  const header=<ScreenHeader title={title??t.assets} testID={id('header')} headingId={headingId} action={onClose?<HeaderClose onClose={onClose} label={t.close} testID={id('close')}/>:undefined}/>;
  const body=<>
-  <SearchInput testID={id('search')} accessibilityLabel={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChangeText={setQuery} onClear={clearable?()=>setQuery(''):undefined} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>
+  <SearchInput testID={id('search')} accessibilityLabel={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChangeText={setQuery} onClear={clearable?()=>setQuery(''):undefined} autoFocus={autoFocusSearch} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>
   {showFilter?<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory} scrollComponent={filterScrollComponent}/>:null}
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
-  {sections.length===0?<Text testID={id('empty')} accessibilityLiveRegion='polite' style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{empty}</Text>:
+  {sections.length===0?<View style={{gap:16,alignItems:'center'}}>
+   <Text testID={id('empty')} accessibilityLiveRegion='polite' style={{alignSelf:'stretch',paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{empty}</Text>
+   {!loading&&emptyAction?<Button intent='secondary' testID={emptyAction.testID??id('empty-action')} onPress={emptyAction.onPress}>{emptyAction.label}</Button>:null}
+  </View>:
   <View testID={id('list')} style={{gap:16}}>
-   {sections.map(section=>{const at=opensAtTime(section.category);const countdown=at!=null&&at>now?formatCountdown(at-now,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
+   {sections.map(section=>{const at=opensAtTime(section.category);const countdown=now!=null&&at!=null&&at>now?formatCountdown(at-now,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
     <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:32,paddingHorizontal:4}}>
      <Text accessibilityRole='header' accessibilityLabel={status?`${section.category.label}, ${status.spoken}`:undefined} style={{flexShrink:1,fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{section.category.label}</Text>
      {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:status.fill}}><Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:countdown?0.25:1,fontVariant:['tabular-nums'],color:status.color}}>{status.label}</Text></View>:null}

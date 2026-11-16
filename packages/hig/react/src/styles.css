@@ -896,7 +896,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-language-list,.hig-assets-section { display:flex;flex-direction:column;gap:4px;min-width:0; }
 .hig-language-row,.hig-assets-row { appearance:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;margin:0;padding:8px 16px 8px 8px;border:0;border-radius:9999px;background:transparent;color:var(--hig-text);font:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 .hig-assets-row { position:relative;min-height:64px;padding:8px; }
-.hig-language-row:active,.hig-language-row[data-active='true'],.hig-assets-row:active,.hig-assets-row[aria-current='true'] { background:var(--hig-fill); }
+.hig-language-row:active,.hig-language-row[data-active='true'],.hig-assets-row:active,.hig-assets-row[aria-current='true'],.hig-assets-row[data-active] { background:var(--hig-fill); }
 .hig-language-flag,.hig-assets-icon { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:9999px;overflow:hidden;background:var(--hig-fill-raised);color:var(--hig-muted);font-size:.75rem;font-weight:600; }
 .hig-language-flag > :is(img,svg),.hig-assets-icon > :is(img,svg) { width:100%;height:100%;object-fit:cover; }
 .hig-language-text,.hig-assets-text { flex:1;display:flex;flex-direction:column;min-width:0;font-size:.875rem;line-height:1.43;color:var(--hig-muted);overflow-wrap:anywhere; }
@@ -904,7 +904,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 /* A market row is one line each: the name and the symbol line truncate. */
 .hig-assets-text > * { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .hig-language-row:disabled,.hig-assets-row:disabled { opacity:.5;cursor:not-allowed; }
-@media(hover:hover) and (pointer:fine) { .hig-language-row:not(:disabled):hover,.hig-assets-row:not(:disabled):hover { background:var(--hig-fill); } }
+@media(hover:hover) and (pointer:fine) { .hig-language-row:not(:disabled):hover,.hig-assets-row:not(:disabled):hover { background:var(--hig-fill); } .hig-assets-row:not(:disabled):hover .hig-assets-signal:not([data-signal]) { background:var(--hig-fill-raised); } }
 .hig-assets-section > ul { display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none; }
 .hig-assets-section-header { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;padding-inline:4px; }
 .hig-assets-section-header > h3 { margin:0;min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500;overflow-wrap:anywhere; }
@@ -917,6 +917,9 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-assets-signal[data-signal='watch'] { --hig-signal:var(--hig-warning); }
 .hig-assets-signal[data-signal='up'] { --hig-signal:var(--hig-positive); }
 .hig-assets-signal[data-signal='down'] { --hig-signal:var(--hig-negative); }
+/* The empty disc sits on the row's well once the row fills, so it steps up to the raised fill. */
+.hig-assets-row:is(:active,[aria-current='true'],[data-active]) .hig-assets-signal:not([data-signal]) { background:var(--hig-fill-raised); }
+.hig-assets-list > .hig-button { align-self:center; }
 .hig-assets-empty { margin:0;padding-block:32px;text-align:center;color:var(--hig-muted);font-size:.875rem;line-height:1.43; }
 /* Press decoration: the host layer HIGProvider pressDecoration draws inside a pressable control. Out of flow, so it changes no
    layout; it catches no pointer events itself, its children do. Zero specificity keeps a control that is already positioned as it is. */

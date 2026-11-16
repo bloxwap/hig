@@ -115,4 +115,68 @@ describe('AssetsBlock opening countdown',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');
   expect(css).toContain('.hig-assets-text > * { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }');
  });
+ it('reads the host clock, freezes while paused, and runs no timer while no countdown section is shown',async()=>{
+  vi.useFakeTimers({toFake:['setInterval','clearInterval']});
+  const {act}=await import('@testing-library/react');
+  let clock=1_000_000;const now=()=>clock;const opensAt=clock+65_000;
+  const spy=vi.spyOn(globalThis,'setInterval');
+  const cats=[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}];
+  const props={assets,categories:cats,onSelect:()=>{},now};
+  // Filtered to crypto, the countdown section is not on screen, so nothing ticks.
+  const {rerender}=render(<HIGProvider><AssetsBlock {...props} category='crypto'/></HIGProvider>);
+  expect(spy).not.toHaveBeenCalled();
+  rerender(<HIGProvider><AssetsBlock {...props} category=''/></HIGProvider>);
+  const badge=()=>document.querySelector('[data-countdown]')?.textContent;
+  expect(badge()).toBe('Opens in 0:01:05');expect(spy).toHaveBeenCalledTimes(1);
+  act(()=>{clock+=1000;vi.advanceTimersByTime(1000);});expect(badge()).toBe('Opens in 0:01:04');
+  rerender(<HIGProvider><AssetsBlock {...props} paused/></HIGProvider>);
+  act(()=>{clock+=5000;vi.advanceTimersByTime(5000);});expect(badge()).toBe('Opens in 0:01:04');expect(spy).toHaveBeenCalledTimes(1);
+  rerender(<HIGProvider><AssetsBlock {...props}/></HIGProvider>);expect(badge()).toBe('Opens in 0:00:59');
+  spy.mockRestore();vi.useRealTimers();
+ });
+});
+describe('AssetsBlock empty action, selected disc and keyboard',()=>{
+ it('draws emptyAction under the empty text only while the list is empty and not loading',async()=>{
+  const press=vi.fn();const action={label:'Browse all markets',onPress:press,testID:'browse-all'};
+  mount({view:'positions',category:'commodities',emptyAction:action});
+  const button=screen.getByRole('button',{name:'Browse all markets'});
+  expect(button.getAttribute('data-testid')).toBe('browse-all');expect(button.classList.contains('hig-button')).toBe(true);
+  expect(screen.getByRole('status').nextElementSibling).toBe(button);
+  await userEvent.click(button);expect(press).toHaveBeenCalledOnce();
+  cleanup();mount({assets:[],loading:true,emptyAction:action});expect(screen.queryByRole('button',{name:'Browse all markets'})).toBeNull();
+  cleanup();mount({emptyAction:action});expect(screen.queryByRole('button',{name:'Browse all markets'})).toBeNull();
+ });
+ it('steps the empty disc up to the raised fill on a filled row',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');
+  expect(css).toContain(".hig-assets-row:is(:active,[aria-current='true'],[data-active]) .hig-assets-signal:not([data-signal]) { background:var(--hig-fill-raised); }");
+  mount({selectedId:'XRP'});
+  const xrp=screen.getByRole('button',{name:'Ripple, XRP'});
+  expect(xrp.matches("[aria-current='true']")).toBe(true);expect(xrp.querySelector('.hig-assets-signal:not([data-signal])')).toBeTruthy();
+ });
+ it('moves an active row with the arrow keys from the search field, skips disabled rows, and chooses it with Enter',async()=>{
+  const select=vi.fn();
+  const {container}=mount({onSelect:select,assets:[assets[0],{...assets[1],disabled:true},assets[2],assets[3]]});
+  expect([...container.querySelectorAll('[data-asset-id]')].map(row=>row.getAttribute('data-asset-id'))).toEqual(['BTC','ETH','XRP','GOLD']);
+  const search=screen.getByRole('searchbox');search.focus();
+  const active=()=>container.querySelector('[data-active]');
+  expect(active()).toBeNull();expect(search.hasAttribute('aria-activedescendant')).toBe(false);
+  await userEvent.keyboard('{ArrowDown}');expect(active()?.getAttribute('data-asset-id')).toBe('BTC');
+  expect(search.getAttribute('aria-activedescendant')).toBe(active()?.id);
+  await userEvent.keyboard('{ArrowDown}');expect(active()?.getAttribute('data-asset-id')).toBe('XRP');
+  await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');expect(active()?.getAttribute('data-asset-id')).toBe('GOLD');
+  await userEvent.keyboard('{ArrowUp}');expect(active()?.getAttribute('data-asset-id')).toBe('XRP');
+  await userEvent.keyboard('{Enter}');expect(select).toHaveBeenCalledWith(assets[2]);
+  expect(document.activeElement).toBe(search);
+  // Typing resets the cursor; Enter then chooses the only match.
+  await userEvent.type(search,'gold');expect(active()).toBeNull();
+  await userEvent.keyboard('{Enter}');expect(select).toHaveBeenLastCalledWith(assets[3]);
+ });
+ it('focuses the search field on mount with autoFocusSearch and a fine pointer, and not by default',()=>{
+  const media=vi.fn(()=>({matches:true,addEventListener(){},removeEventListener(){}}));Object.defineProperty(window,'matchMedia',{configurable:true,value:media});
+  mount();expect(document.activeElement).not.toBe(screen.getByRole('searchbox'));
+  cleanup();mount({autoFocusSearch:true});expect(document.activeElement).toBe(screen.getByRole('searchbox'));
+  expect(media).toHaveBeenCalledWith('(pointer: fine)');
+  Reflect.deleteProperty(window,'matchMedia');
+ });
 });

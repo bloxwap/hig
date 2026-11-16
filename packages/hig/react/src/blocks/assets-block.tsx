@@ -1,10 +1,11 @@
 "use client";
-import React,{useEffect,useId,useMemo,useState} from 'react';
+import React,{useEffect,useId,useMemo,useRef,useState} from 'react';
 import {formatCountdown} from '@bloxwap/hig/contracts';
 import {PressDecoration,useHIG,useMessages} from '../provider.js';
 import {SearchInput} from '../field.js';
 import {Filter,SegmentedControl} from '../selection.js';
 import {Badge} from '../status.js';
+import {Button} from '../button.js';
 import {ScreenHeader,HeaderClose} from './screen-header.js';
 /** A market's live heat signal: `watch` while it is being watched, `up` or `down` once it trends. */
 export type AssetSignal='watch'|'up'|'down';
@@ -71,7 +72,17 @@ export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  stickyHeader?:boolean;
  /** `id` of the heading, so a dialog or sheet around the block can name itself by it (`aria-labelledby`, `GestureSheet labelledBy`). */
  headingId?:string;
+ /** Freezes the opening countdown at the text it last showed and stops its timer, for example while the block is off screen. */
+ paused?:boolean;
+ /** The host's clock in epoch milliseconds, read for the opening countdown. Defaults to `Date.now`. */
+ now?:()=>number;
+ /** A button under the empty text, drawn only while the list is empty and not `loading`, such as Browse all markets on an empty Positions view. `testID` becomes its `data-testid`. */
+ emptyAction?:AssetsEmptyAction;
+ /** With a hardware pointer, focus the search field on mount so typing filters at once. */
+ autoFocusSearch?:boolean;
 }
+/** The empty list's action. */
+export interface AssetsEmptyAction {label:string;onPress:()=>void;testID?:string}
 const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 /** The markets a view, category and query leave, grouped by category in the host's order. Empty sections are dropped. */
 export function filterAssets(assets:readonly AssetItem[],categories:readonly AssetCategory[],{view='all',category='',query=''}:{view?:AssetsView;category?:string;query?:string}={}):{category:AssetCategory;assets:AssetItem[]}[]{
@@ -90,10 +101,10 @@ function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):
  const [local,setLocal]=useState(initial);const current=value===undefined?local:value;
  return [current,next=>{if(Object.is(next,current))return;if(value===undefined)setLocal(next);onChange?.(next);}];
 }
-/** The current time, ticking each second while `active`. `null` until mounted, so server HTML never carries a clock that hydration would contradict. */
-function useNow(active:boolean):number|null{
- const [now,setNow]=useState<number|null>(null);
- useEffect(()=>{if(!active)return;setNow(Date.now());const tick=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(tick);},[active]);
+/** The host clock, ticking each second while `active` and not `paused`; paused keeps the last reading (or takes one). `null` until mounted, so server HTML never carries a clock that hydration would contradict. */
+function useNow(active:boolean,paused:boolean,clock:()=>number):number|null{
+ const [now,setNow]=useState<number|null>(null);const read=useRef(clock);read.current=clock;
+ useEffect(()=>{if(!active){setNow(null);return;}if(paused){setNow(last=>last??read.current());return;}setNow(read.current());const tick=setInterval(()=>setNow(read.current()),1000);return()=>clearInterval(tick);},[active,paused]);
  return active?now:null;
 }
 const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+category.opensAt;
@@ -101,20 +112,32 @@ const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+categor
  * Choose a market as one screen: a header, a search field, category capsules, the All / Positions / Trend views, then the
  * markets in sections by category, each with its icon, name, symbol and detail, and its signal disc. The host owns the data.
  */
-export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,stickyHeader,headingId,clearable,className,...rest}:AssetsBlockProps){
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,stickyHeader,headingId,clearable,paused=false,now:clock=Date.now,emptyAction,autoFocusSearch,className,...rest}:AssetsBlockProps){
  const t=useMessages();const {locale}=useHIG();const id=useId();
- const now=useNow(categories.some(entry=>{const at=opensAtTime(entry);return at!=null&&at>Date.now();}));
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
  const [currentCategory,setCategory]=useHostState(category,defaultCategory,onCategoryChange);
  const [currentQuery,setQuery]=useHostState(query,defaultQuery,onQueryChange);
  const sections=useMemo(()=>filterAssets(assets,categories,{view:currentView,category:currentCategory,query:currentQuery}),[assets,categories,currentView,currentCategory,currentQuery]);
+ // The clock runs only while a section on screen has an opening still ahead.
+ const reading=sections.length?clock():0;const now=useNow(sections.some(section=>{const at=opensAtTime(section.category);return at!=null&&at>reading;}),paused,clock);
+ const rows=useMemo(()=>sections.flatMap(section=>section.assets),[sections]);
+ const [active,setActive]=useState(-1);const field=useRef<HTMLInputElement>(null),list=useRef<HTMLDivElement>(null);
+ useEffect(()=>{if(autoFocusSearch&&window.matchMedia?.('(pointer: fine)').matches)field.current?.focus();},[]);
+ useEffect(()=>{setActive(-1);},[currentQuery,currentCategory,currentView]);
+ useEffect(()=>{if(active>=0)list.current?.querySelector('[data-active]')?.scrollIntoView?.({block:'nearest'});},[active]);
+ // From the search field the arrow keys move through the enabled rows and Enter chooses one: the only row, or the one the arrows reached.
+ const step=(from:number,by:number)=>{for(let index=from+by;index>=0&&index<rows.length;index+=by)if(!rows[index].disabled)return index;return from;};
+ const onKeyDown=(event:React.KeyboardEvent<HTMLInputElement>)=>{
+  if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();setActive(index=>step(Math.min(index,rows.length),event.key==='ArrowDown'?1:-1));}
+  else if(event.key==='Enter'){const choice=rows[active]??(rows.length===1?rows[0]:undefined);if(choice&&!choice.disabled){event.preventDefault();onSelect(choice);}}
+ };
  const heading=title??t.assets;const signalName:Record<AssetSignal,string>={watch:t.signalWatch,up:t.signalUp,down:t.signalDown};
  const empty=loading?`${t.loading}…`:currentQuery.trim()!==''?t.noResults:currentView==='positions'?t.noPositions:currentView==='trend'?t.noTrend:t.noItems;
- const row=(asset:AssetItem)=>{
+ const row=(asset:AssetItem,index:number)=>{
   const second=asset.detail?`${asset.symbol} · ${asset.detail}`:asset.symbol;
   const signal=asset.signal===undefined?null:<span className='hig-assets-signal' data-signal={asset.signal??undefined}>{asset.signal?signalIcons[asset.signal]:null}</span>;
   const name=[asset.name,second,asset.trailingLabel,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ');
-  return <li key={asset.id}><button type='button' className='hig-assets-row' aria-label={name} aria-current={asset.id===selectedId||undefined} disabled={asset.disabled} onClick={()=>onSelect(asset)}>
+  return <li key={asset.id}><button type='button' id={`${id}-row-${index}`} className='hig-assets-row' data-asset-id={asset.id} data-active={index===active||undefined} aria-label={name} aria-current={asset.id===selectedId||undefined} disabled={asset.disabled} onClick={()=>onSelect(asset)}>
    <span className='hig-assets-icon' aria-hidden='true'>{typeof asset.icon==='string'?<img src={asset.icon} alt=''/>:asset.icon??asset.symbol.slice(0,4)}</span>
    <span className='hig-assets-text' aria-hidden='true'><strong>{asset.name}</strong><span>{second}</span></span>
    {asset.trailing!=null&&asset.trailing!==false?<span className='hig-assets-trailing' aria-hidden='true'>{asset.trailing}</span>:null}
@@ -130,15 +153,16 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  };
  return <section {...rest} className={`hig-assets-block${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} headingId={headingId} stickyHeader={stickyHeader} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
-  <SearchInput aria-label={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} onClear={clearable?()=>setQuery(''):undefined} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
+  <SearchInput ref={field} aria-label={t.searchMarkets} aria-activedescendant={rows[active]?`${id}-row-${active}`:undefined} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} onClear={clearable?()=>setQuery(''):undefined} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
   {showFilter&&<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory}/>}
   <SegmentedControl hideLabel label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
-  <div className='hig-assets-list' aria-busy={loading||undefined}>
+  <div ref={list} className='hig-assets-list' aria-busy={loading||undefined}>
    {sections.length===0&&<p className='hig-assets-empty' role='status'>{empty}</p>}
-   {sections.map(section=><section key={section.category.id} className='hig-assets-section' aria-labelledby={`${id}-${section.category.id}`}>
+   {sections.length===0&&!loading&&emptyAction&&<Button intent='secondary' data-testid={emptyAction.testID} onClick={emptyAction.onPress}>{emptyAction.label}</Button>}
+   {sections.map(section=>{const first=rows.indexOf(section.assets[0]);return <section key={section.category.id} className='hig-assets-section' aria-labelledby={`${id}-${section.category.id}`}>
     {sectionHeader(section.category)}
-    <ul>{section.assets.map(row)}</ul>
-   </section>)}
+    <ul>{section.assets.map((asset,offset)=>row(asset,first+offset))}</ul>
+   </section>;})}
   </div>
  </section>;
 }
