@@ -8,6 +8,7 @@ const {ConfirmBlock}=require('../../packages/hig/native/src/confirm-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {ListRow}=require('../../packages/hig/native/src/list-group');
+const labels=view=>host(view,'confirm-details').children.map(line=>line.props.accessibilityLabel);
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
@@ -26,7 +27,9 @@ it('shows the heading, the amount with its ticker, the address in full, the netw
  const view=mount();
  expect(text(host(view,'confirm-title'))).toBe('Confirm Send');expect(has(view,'confirm-back')).toBe(false);
  expect(view.findAllByType(AnimatedNumberReadout)[0].props).toMatchObject({value:2.5,options:{maximumFractionDigits:6}});expect(text(host(view,'confirm-amount'))).toBe('2.5');expect(text(host(view,'confirm-symbol'))).toBe('HYPE');
- const rows=view.findAllByType(ListRow);expect(rows.map(row=>row.props.label)).toEqual(['To','Network']);expect(rows[0].props.description).toBe(address);expect(rows[1].props.value).toBe('HyperEVM');
+ expect(text(host(view,'confirm-to'))).toBe(address);expect(text(host(view,'confirm-network'))).toBe('HyperEVM');expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM']);
+ // The details are read-only text: no rows and nothing to press.
+ expect(view.findAllByType(ListRow)).toHaveLength(0);
  expect(text(host(view,'confirm-warning-title'))).toBe('Double-check the address.');expect(flat(host(view,'confirm-warning-title')).color).toBe(nativeSrgb.warning);
  expect(text(host(view,'confirm-warning-body'))).toBe("HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong.");
  expect(button(view,'confirm-confirm').props.intent??'primary').toBe('primary');expect(has(view,'confirm-cancel')).toBe(false);
@@ -50,7 +53,7 @@ it('reports Confirm, Cancel and Back, and blocks all three while busy',()=>{
 it('adds detail rows, takes host text, drops the warning on null, and prefixes test IDs',()=>{
  let view=mount({title:'Review',confirmLabel:'Send HYPE',cancelLabel:'Not now',onCancel:()=>{},warningTitle:'Check it',warning:'This cannot be undone.',details:[{label:'Network fee',value:'0.0001 HYPE'}],headingId:'send-title'});
  expect(text(host(view,'confirm-title'))).toBe('Review');expect(host(view,'confirm-title').props.nativeID).toBe('send-title');
- expect(view.findAllByType(ListRow).map(row=>row.props.label)).toEqual(['To','Network','Network fee']);
+ expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM','Network fee, 0.0001 HYPE']);expect(text(host(view,'confirm-detail-0'))).toBe('0.0001 HYPE');
  expect(text(host(view,'confirm-warning-title'))).toBe('Check it');expect(text(host(view,'confirm-warning-body'))).toBe('This cannot be undone.');
  expect(button(view,'confirm-confirm').props.children).toBe('Send HYPE');expect(button(view,'confirm-cancel').props.children).toBe('Not now');
  view=mount({warning:null});expect(has(view,'confirm-warning')).toBe(false);
@@ -60,7 +63,7 @@ it('adds detail rows, takes host text, drops the warning on null, and prefixes t
 it('takes translated messages, pins its header with stickyHeader, and is exported from the blocks aggregate',()=>{
  expect(blocks.ConfirmBlock).toBe(ConfirmBlock);
  let view=mount({onCancel:()=>{}},{messages:{confirmSend:'Confirmer',sendTo:'À',sendNetwork:'Réseau',sendWarningTitle:'Vérifiez.',sendWarning:(symbol,network)=>`${symbol} sur ${network}`,cancel:'Annuler'}});
- expect(text(host(view,'confirm-title'))).toBe('Confirmer');expect(view.findAllByType(ListRow).map(row=>row.props.label)).toEqual(['À','Réseau']);
+ expect(text(host(view,'confirm-title'))).toBe('Confirmer');expect(labels(view)).toEqual([`À, ${address}`,'Réseau, HyperEVM']);
  expect(text(host(view,'confirm-warning-body'))).toBe('HYPE sur HyperEVM');expect(button(view,'confirm-cancel').props.children).toBe('Annuler');
  view=mount({stickyHeader:true});expect(has(view,'confirm-sticky-header')).toBe(true);expect(text(host(view,'confirm-title'))).toBe('Confirm Send');
 });

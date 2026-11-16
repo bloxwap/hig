@@ -912,6 +912,9 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-assets-section-header > h3 { margin:0;min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500;overflow-wrap:anywhere; }
 .hig-confirm-amount { margin:0;font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere; }
 .hig-confirm-symbol { font-size:.5em;font-weight:600;letter-spacing:0;color:var(--hig-muted); }
+.hig-confirm-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:4px; }
+.hig-confirm-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
+.hig-confirm-details dd { margin:0;color:var(--hig-text);font-weight:500;text-align:end;overflow-wrap:anywhere; }
 .hig-confirm-warning { padding:20px;border-radius:20px;background:color-mix(in srgb,var(--hig-warning) 16%,transparent); }
 .hig-confirm-warning > strong { font-size:1.5rem;line-height:1.25;font-weight:700;color:var(--hig-warning); }
 .hig-confirm-warning > p { margin:0;line-height:1.5; }

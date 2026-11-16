@@ -10,7 +10,7 @@ afterEach(cleanup);
 const address='0x1111111111111111111111111111111111111111';
 const base={amount:2.5,symbol:'HYPE',address,network:'HyperEVM',onConfirm:()=>{}};
 const amount=()=>document.querySelector('.hig-confirm-amount')!;
-const rows=()=>[...document.querySelectorAll('.hig-list-group-rows > li')];
+const rows=()=>[...document.querySelectorAll('.hig-confirm-details > div')];
 describe('ConfirmBlock',()=>{
  it('shows the heading, the amount with its ticker, the address in full, the network, the warning, then Cancel beside Confirm',async()=>{
   const confirm=vi.fn(),cancel=vi.fn(),back=vi.fn();
@@ -18,8 +18,10 @@ describe('ConfirmBlock',()=>{
   expect(screen.getByRole('heading',{name:'Confirm Send'})).toBeTruthy();
   expect(amount().querySelector('.hig-animated-number-visual')!.textContent).toBe('2.5');expect(amount().querySelector('.hig-confirm-symbol')!.textContent).toBe('HYPE');
   expect(rows()).toHaveLength(2);
-  expect(rows()[0].querySelector('.hig-list-row-label')!.textContent).toBe('To');expect(rows()[0].querySelector('.hig-list-row-description')!.textContent).toBe(address);
-  expect(rows()[1].querySelector('.hig-list-row-label')!.textContent).toBe('Network');expect(rows()[1].querySelector('.hig-list-row-value')!.textContent).toBe('HyperEVM');
+  expect(rows()[0].querySelector('dt')!.textContent).toBe('To');expect(rows()[0].querySelector('dd')!.textContent).toBe(address);
+  expect(rows()[1].querySelector('dt')!.textContent).toBe('Network');expect(rows()[1].querySelector('dd')!.textContent).toBe('HyperEVM');
+  // The details are read-only text: a description list with no row container and nothing to press.
+  expect(document.querySelector('.hig-confirm-details')!.tagName).toBe('DL');expect(document.querySelector('.hig-list-group')).toBeNull();expect(document.querySelector('.hig-confirm-details button')).toBeNull();
   const note=screen.getByRole('note');expect(within(note).getByText('Double-check the address.')).toBeTruthy();
   expect(note.querySelector('p')!.textContent).toBe("HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong.");
   const actions=[...document.querySelectorAll<HTMLButtonElement>('.hig-confirm-actions > button')];
@@ -27,7 +29,7 @@ describe('ConfirmBlock',()=>{
   await userEvent.click(actions[0]);await userEvent.click(actions[1]);await userEvent.click(screen.getByRole('button',{name:'Back'}));
   expect(confirm).toHaveBeenCalledTimes(1);expect(cancel).toHaveBeenCalledTimes(1);expect(back).toHaveBeenCalledTimes(1);
   // The rows come before the warning, and the warning before the actions.
-  expect(document.querySelector('.hig-list-group')!.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(document.querySelector('.hig-confirm-details')!.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   expect(note.compareDocumentPosition(document.querySelector('.hig-confirm-actions')!)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
  });
  it('draws no Back or Cancel without their handlers, formats the amount, and reads an unknown amount as the dash',()=>{
@@ -57,7 +59,7 @@ describe('ConfirmBlock',()=>{
  it('takes translated messages from the provider and is exported from the blocks aggregate',()=>{
   expect(blocks.ConfirmBlock).toBe(ConfirmBlock);
   render(<HIGProvider messages={{confirmSend:'Confirmer',sendTo:'À',sendNetwork:'Réseau',sendWarningTitle:'Vérifiez.',sendWarning:(symbol,network)=>`${symbol} sur ${network}`,cancel:'Annuler'}}><ConfirmBlock {...base} onCancel={()=>{}}/></HIGProvider>);
-  expect(screen.getByRole('heading',{name:'Confirmer'})).toBeTruthy();expect(rows().map(row=>row.querySelector('.hig-list-row-label')!.textContent)).toEqual(['À','Réseau']);
+  expect(screen.getByRole('heading',{name:'Confirmer'})).toBeTruthy();expect(rows().map(row=>row.querySelector('dt')!.textContent)).toEqual(['À','Réseau']);
   expect(screen.getByRole('note').textContent).toBe('Vérifiez.HYPE sur HyperEVM');expect(screen.getByRole('button',{name:'Annuler'})).toBeTruthy();
  });
 });

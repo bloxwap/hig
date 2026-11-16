@@ -5,10 +5,9 @@ import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
 import {AnimatedNumberReadout} from './animated-number.js';
-import {ListGroup,ListRow} from './list-group.js';
 import {ScreenHeader} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
-/** One more row under Network, such as a fee: host text on both edges. */
+/** One more line under Network, such as a fee: host text on both edges. */
 export interface ConfirmDetail {label:string;value:React.ReactNode;
  /** What a `value` that is not text reads as. */
  valueLabel?:string}
@@ -19,11 +18,11 @@ export interface ConfirmBlockProps {
  symbol:string;
  /** Format of the amount; default `{maximumFractionDigits:6}`. */
  amountOptions?:Intl.NumberFormatOptions;
- /** The destination address, shown in full under "To" so it can be checked character by character. */
+ /** The destination address, shown in full beside "To", wrapping where it must, so it can be checked character by character. */
  address:string;
  /** The network the send moves on: HyperEVM. */
  network:string;
- /** More rows under Network, such as a fee. */
+ /** More lines under Network, such as a fee. */
  details?:readonly ConfirmDetail[];
  /** Heading. Defaults to the built-in "Confirm Send". */
  title?:string;
@@ -64,17 +63,21 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,n
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const note=warning===undefined?t.sendWarning(symbol,network):warning;
+ // Read-only lines, each read as one: "To, 0x…".
+ const line=(part:string,label:string,value:React.ReactNode,spoken?:string)=><View key={part} accessible accessibilityLabel={spoken!==undefined||typeof value==='string'||typeof value==='number'?`${label}, ${spoken??value}`:undefined} style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
+  <Text style={{fontSize:16,lineHeight:24,color:colors.muted}}>{label}</Text>
+  {typeof value==='string'||typeof value==='number'?<Text testID={id(part)} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',textAlign:'right',color:colors.text}}>{value}</Text>:<View testID={id(part)} style={{flexShrink:1}}>{value}</View>}
+ </View>;
+ const toPart='to',networkPart='network',lines=[line(toPart,t.sendTo,address),line(networkPart,t.sendNetwork,network),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
  const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} testID={testID}/>;
  const body=<>
   <View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>
    <AnimatedNumberReadout testID={id('amount')} value={amount} options={amountOptions} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
    <Text testID={id('symbol')} style={{fontSize:24,lineHeight:32,fontWeight:'600',color:colors.muted}}>{symbol}</Text>
   </View>
-  <ListGroup testID={id('rows')}>
-   <ListRow testID={id('to')} label={t.sendTo} description={address}/>
-   <ListRow testID={id('network')} label={t.sendNetwork} value={network}/>
-   {details?.map((detail,index)=><ListRow key={detail.label} testID={id(`detail-${index}`)} label={detail.label} value={detail.value} valueLabel={detail.valueLabel}/>)}
-  </ListGroup>
+  <View testID={id('details')} style={{gap:12,paddingHorizontal:4}}>
+   {lines}
+  </View>
   {note!=null&&note!==false?<View testID={id('warning')} accessible style={{gap:8,paddingVertical:20,paddingHorizontal:20,borderRadius:20,backgroundColor:withAlpha(colors.warning,0.16)}}>
    <Text testID={id('warning-title')} style={{fontSize:24,lineHeight:30,fontWeight:'700',color:colors.warning}}>{warningTitle??t.sendWarningTitle}</Text>
    <Text testID={id('warning-body')} style={{fontSize:16,lineHeight:24,color:colors.text}}>{note}</Text>

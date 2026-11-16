@@ -4,9 +4,8 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
-import {ListGroup,ListRow} from '../list-group.js';
 import {ScreenHeader} from './screen-header.js';
-/** One more row under Network, such as a fee: host text on both edges. */
+/** One more line under Network, such as a fee: host text on both edges. */
 export interface ConfirmDetail {label:string;value:React.ReactNode;
  /** What a `value` that is not text reads as. */
  valueLabel?:string}
@@ -17,11 +16,11 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  symbol:string;
  /** Format of the amount. Defaults to at most six fraction digits. */
  amountOptions?:Intl.NumberFormatOptions;
- /** The destination address, shown in full under “To” so it can be checked character by character. */
+ /** The destination address, shown in full beside “To”, wrapping where it must, so it can be checked character by character. */
  address:string;
  /** The network the send moves on: HyperEVM. */
  network:string;
- /** More rows under Network, such as a fee. */
+ /** More lines under Network, such as a fee. */
  details?:readonly ConfirmDetail[];
  /** Heading. Defaults to the built-in “Confirm Send”. */
  title?:string;
@@ -59,11 +58,11 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,n
  return <section {...rest} className={`hig-confirm${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   <p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions}/> <span className='hig-confirm-symbol'>{symbol}</span></p>
-  <ListGroup>
-   <ListRow label={messages.sendTo??en.sendTo} description={address}/>
-   <ListRow label={messages.sendNetwork??en.sendNetwork} value={network}/>
-   {details?.map(detail=><ListRow key={detail.label} label={detail.label} value={detail.value} valueLabel={detail.valueLabel}/>)}
-  </ListGroup>
+  <dl className='hig-confirm-details'>
+   <div><dt>{messages.sendTo??en.sendTo}</dt><dd>{address}</dd></div>
+   <div><dt>{messages.sendNetwork??en.sendNetwork}</dt><dd>{network}</dd></div>
+   {details?.map(detail=><div key={detail.label}><dt>{detail.label}</dt><dd>{detail.valueLabel?<><span className='hig-sr-only'>{detail.valueLabel}</span><span aria-hidden='true'>{detail.value}</span></>:detail.value}</dd></div>)}
+  </dl>
   {body!=null&&body!==false&&<div className='hig-confirm-warning' role='note'><strong>{warningTitle??messages.sendWarningTitle??en.sendWarningTitle}</strong><p>{body}</p></div>}
   <div className='hig-confirm-actions'>
    {onCancel&&<Button intent='secondary' disabled={busy} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}
