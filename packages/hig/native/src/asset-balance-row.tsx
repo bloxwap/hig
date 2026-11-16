@@ -4,6 +4,7 @@ import {useColors,useFills,useHIG,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
+import {plainText} from './text-content.js';
 /** Asset artwork: an image URL, or the host's own element. */
 export type AssetArtwork=string|React.ReactElement;
 export interface AssetBalanceRowProps {
@@ -24,8 +25,10 @@ export interface AssetBalanceRowProps {
  amounts?:boolean;
  /** Short muted host text under the figures, such as the ledger a holding sits in. Read after them. */
  tag?:string;
- /** Host content on the trailing edge, after the figures. Inside a pressable row it must not be interactive; it is hidden from assistive technology, which reads the row's label. */
+ /** Host content on the trailing edge, after the figures. Inside a pressable row it must not be interactive. The row reads it as one label, last: its text, or `trailingLabel`. */
  trailing?:React.ReactNode;
+ /** What the row reads for `trailing`, in place of its text, for an icon or a figure whose text is not what should be heard. */
+ trailingLabel?:string;
  /** Marks the row in use: a check on the trailing edge and `accessibilityState.selected`. */
  selected?:boolean;
  /** Dims the row, ignores presses and reads as unavailable. */
@@ -39,12 +42,12 @@ const units:Intl.NumberFormatOptions={maximumFractionDigits:6};
 const avatar=40;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** One holding as a capsule row: a round avatar, the asset's name over its symbol, and its dollar value over its units. The avatar is padded equally on every side, so the capsule end is concentric with it, and both numbers update place by place. */
-export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,selected,disabled,onSelect,testID}:AssetBalanceRowProps){
+export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,trailingLabel,selected,disabled,onSelect,testID}:AssetBalanceRowProps){
  const colors=useColors(),fills=useFills(),{locale}=useHIG(),present=usePresentNumber();
  const unitsFirst=headline==='units',hasUnits=amounts&&!unitsFirst&&balance!==undefined;
  const unitsText=()=>formatNumberReadout(balance,locale,balanceOptions,undefined,undefined,unitsSuffix).text;
  const headlineText=amounts?unitsFirst?unitsText():formatNumberReadout(value,locale,present(usd)).text:null;
- const label=[name,symbol,headlineText,hasUnits?unitsText():null,tag||null].filter(Boolean).join(', ');
+ const label=[name,symbol,headlineText,hasUnits?unitsText():null,tag||null,trailingLabel??(trailing!=null&&trailing!==false?plainText(trailing):null)].filter(Boolean).join(', ');
  const state=selected||disabled?{...(selected?{selected:true}:{}),...(disabled?{disabled:true}:{})}:undefined;
  const strong=disabled?colors.muted:colors.text;
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};

@@ -4,6 +4,7 @@ import {useColors,useFills} from './provider.js';
 import {Button} from './button.js';
 import {Text} from './surface.js';
 import {Row,Usd,Percent} from './data.js';
+import {plainText} from './text-content.js';
 interface MarketRowContent {
  symbol:string;name:string;
  /** Leave out to draw no price (no dash); `null` reads as unknown. */
@@ -20,8 +21,8 @@ interface MarketRowContent {
  favorite?:React.ReactNode;
  /** Host-formatted volume after the change. */
  volume?:React.ReactNode;
- /** A muted second line under the name, such as the maximum leverage. In action mode it is read with the name. */
- detail?:string;
+ /** A muted second line under the name, such as the maximum leverage. Text, or host nodes (text nodes are drawn muted; an element is drawn as given). In action mode its text is read with the name. */
+ detail?:React.ReactNode;
  /** Host content on the trailing edge, after the figures, such as a held position's result. */
  trailing?:React.ReactNode;
  /** The market in use: a check on the trailing edge and `accessibilityState.selected` on the name button (the row in presentation mode). */
@@ -40,10 +41,11 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
 export const MarketRow:React.ForwardRefExoticComponent<MarketRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,MarketRowProps>(function MarketRow({symbol,name,price,change,priceOptions,changeOptions,mode='action',onSelect,identity,icon,favorite,volume,detail,trailing,selected,disabled,active,onPressIn,testID,style},ref){
  const colors=useColors(),fills=useFills();
  const label=`${name} (${symbol})`;
- const lines=detail===undefined?null:<View style={{alignItems:'flex-start'}}><Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:disabled?colors.muted:colors.text}}>{label}</Text><Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text></View>;
+ const lines=detail===undefined?null:<View style={{alignItems:'flex-start'}}><Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:disabled?colors.muted:colors.text}}>{label}</Text>{typeof detail==='string'||typeof detail==='number'?<Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:detail}</View>;
+ const detailText=detail===undefined?'':plainText(detail);
  const title=mode==='presentation'
   ?<View style={disabled?{opacity:0.5,flexShrink:1}:{flexShrink:1}}>{identity??lines??<Text>{label}</Text>}</View>
-  :lines?<Button intent='ghost' contentMode='custom' accessibilityLabel={`${label}, ${detail}`} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start'}}>{lines}</Button>
+  :lines?<Button intent='ghost' contentMode='custom' accessibilityLabel={detailText?`${label}, ${detailText}`:label} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start'}}>{lines}</Button>
   :<Button intent='ghost' accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined}>{label}</Button>;
  const leading=favorite!==undefined||icon!==undefined;
  const identityCell=leading?<View style={{flexDirection:'row',alignItems:'center',gap:8,flexShrink:1,minWidth:0}}>{favorite!==undefined?favorite:null}{icon!==undefined?<View {...hidden}>{icon}</View>:null}{title}</View>:title;

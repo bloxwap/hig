@@ -46,6 +46,12 @@ describe('AssetBalanceRow',()=>{
   expect(flows(view)[1].props.suffix).toBe(' HYPE');expect(reading(view,'row-tag')).toBe('Spot');expect(StyleSheet.flatten(host(view,'row-tag').props.style)).toMatchObject({fontSize:12});
   expect(host(view,'trail')).toBeDefined();expect(host(view,'row-trailing').props.accessibilityElementsHidden).toBe(true);
  });
+ it('reads the trailing slot last in the label: its text, or trailingLabel in its place',()=>{
+  let view=mount(h(AssetBalanceRow,{name:'USD Coin',symbol:'USDC',value:5,tag:'Base',trailing:h(RNText,null,'Fee $0.10'),onSelect:()=>{},testID:'row'}));
+  expect(outer(view,'row').props.accessibilityLabel).toBe('USD Coin, USDC, $5.00, Base, Fee $0.10');
+  view=mount(h(AssetBalanceRow,{name:'USD Coin',symbol:'USDC',value:5,trailing:h(View,{testID:'warn'}),trailingLabel:'Network busy',testID:'row'}));
+  expect(outer(view,'row').props.accessibilityLabel).toBe('USD Coin, USDC, $5.00, Network busy');
+ });
 });
 describe('AccountBlock',()=>{
  const perp={id:'perp',name:'USD Coin',symbol:'USDC',value:500,units:false,tag:'Perp'};
@@ -113,6 +119,8 @@ describe('WalletAddress',()=>{
   // The main entry takes the same qr and then encodes nothing.
   const main=require('../../packages/hig/native/src/wallet-address');
   mount(h(main.WalletAddress,{address:ethereum,qr:h(View,{testID:'host-qr'})}));expect(host(root.root,'host-qr')).toBeDefined();
+  // As on web, qr={null} is the same as leaving it out: the cuer code is drawn.
+  mount(h(main.WalletAddress,{address:ethereum,qr:null}));expect(root.root.findAll(node=>typeof node.type==='function'&&node.type.name==='CuerCode')).toHaveLength(1);
  });
  it('announce={false} shows no notice after a copy',async()=>{
   const copy=jest.fn();
@@ -139,6 +147,10 @@ describe('MarketRow',()=>{
   act(()=>{button.props.onPressIn({});button.props.onPress();});expect(pressIn).toHaveBeenCalledTimes(1);expect(select).toHaveBeenCalledTimes(1);
   expect(StyleSheet.flatten(host(view,'market').props.style).backgroundColor).toBeDefined();
   view=mount(h(MarketRow,{symbol:'BTC',name:'Bitcoin',disabled:true,onSelect:select}));expect(view.findAllByType(Button)[0].props.disabled).toBe(true);
+  // A node detail, as web takes, is drawn as given and its text is read with the name.
+  view=mount(h(MarketRow,{symbol:'BTC',name:'Bitcoin',detail:h(RNText,{testID:'lev'},'Up to 40×'),onSelect:select}));
+  expect(host(view,'lev')).toBeDefined();expect(view.findAllByType(Button)[0].props.accessibilityLabel).toBe('Bitcoin (BTC), Up to 40×');
+  view=mount(h(MarketRow,{symbol:'BTC',name:'Bitcoin',active:true,onSelect:select,testID:'market'}));expect(StyleSheet.flatten(host(view,'market').props.style).borderRadius).toBe(14);
  });
  it('has the presentation mode the web row has: host identity, favourite, volume and formats, with no button',()=>{
   const view=mount(h(MarketRow,{mode:'presentation',symbol:'BTC',name:'Bitcoin',price:0.00001234,priceOptions:{style:'decimal',maximumFractionDigits:8},change:2.345,changeOptions:{minimumFractionDigits:2,maximumFractionDigits:2},identity:h(RNText,{testID:'identity'},'BTC'),favorite:h(View,{testID:'fav'}),volume:h(RNText,{testID:'vol'},'1.2M'),selected:true,testID:'p'}));

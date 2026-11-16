@@ -48,6 +48,7 @@ function CuerCode({value,arena,size}: {value:string;arena?:string;size:number}){
  * `react-native-svg` peers; the encoder comes from `cuer/QrCode`, so React DOM is never loaded.
  */
 export function WalletAddress({qrValue,arena,qr,...props}:WalletAddressProps){
- if(qr!==undefined)return <WalletAddressCore {...props} qr={qr}/>;
+ // As on web, `null` falls back to the cuer code like a missing `qr`.
+ if(qr!=null)return <WalletAddressCore {...props} qr={qr}/>;
  return <WalletAddressFrame {...props} code={<CuerCode value={qrValue??props.address} arena={arena} size={props.size??196}/>}/>;
 }

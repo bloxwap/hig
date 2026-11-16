@@ -26,6 +26,9 @@ describe('AssetBalanceRow host options',()=>{
   expect((screen.getByRole('button') as HTMLButtonElement).disabled).toBe(true);expect(screen.getByRole('button').hasAttribute('aria-current')).toBe(false);
   await userEvent.click(screen.getByRole('button'));expect(select).not.toHaveBeenCalled();
   view.rerender(<AssetBalanceRow name='Solana' symbol='SOL' value={0} disabled/>);expect(document.querySelector('.hig-asset-row')!.getAttribute('aria-disabled')).toBe('true');
+  // A generic div cannot carry aria-disabled, so the static disabled row is a group; enabled, it stays a plain div.
+  expect(screen.getByRole('group').getAttribute('aria-disabled')).toBe('true');
+  view.rerender(<AssetBalanceRow name='Solana' symbol='SOL' value={0}/>);expect(document.querySelector('.hig-asset-row')!.hasAttribute('role')).toBe(false);
   expect(rule('.hig-asset-row:is(:disabled,[aria-disabled=\'true\']) strong {')).toContain('color:var(--hig-muted)');
  });
  it('draws no figures for an item to pick, a muted tag under the figures, a units suffix and a trailing slot',()=>{
@@ -37,6 +40,12 @@ describe('AssetBalanceRow host options',()=>{
   view.rerender(<AssetBalanceRow name='Hyperliquid' symbol='HYPE' value={57.97} balance={1.005} unitsSuffix=' HYPE'/>);expect(spoken(document.querySelector('.hig-asset-row-amounts')!)).toBe('$57.971.005 HYPE');
   view.rerender(<AssetBalanceRow name='Hyperliquid' symbol='HYPE' value={null} balance={null} unitsSuffix=' HYPE'/>);expect(spoken(document.querySelector('.hig-asset-row-amounts')!)).toBe('——');
   expect(rule('.hig-asset-row-tag {')).toContain('font-size:.75rem');
+ });
+ it('reads trailing content in place, or trailingLabel in its place',()=>{
+  const view=render(<AssetBalanceRow name='USD Coin' symbol='USDC' value={5} trailing={<span>Fee</span>} onSelect={()=>{}}/>);
+  expect(document.querySelector('.hig-asset-row-trailing')!.hasAttribute('aria-hidden')).toBe(false);expect(document.querySelector('.hig-asset-row-trailing-label')).toBeNull();
+  view.rerender(<AssetBalanceRow name='USD Coin' symbol='USDC' value={5} trailing={<svg/>} trailingLabel='Network busy' onSelect={()=>{}}/>);
+  expect(document.querySelector('.hig-asset-row-trailing')!.getAttribute('aria-hidden')).toBe('true');expect(screen.getByRole('button').querySelector('.hig-asset-row-trailing-label')!.textContent).toBe('Network busy');
  });
 });
 describe('AccountBlock host options',()=>{
@@ -130,5 +139,7 @@ describe('MarketRow host options',()=>{
   view.rerender(<MarketRow symbol='BTC' name='Bitcoin' price={null} change={2.5} onSelect={select}/>);
   const plain=document.querySelector('.hig-market-row')!;expect(plain.hasAttribute('data-flow')).toBe(false);expect(plain.querySelector('.hig-market-price')!.textContent).toBe('—');
   expect(rule('.hig-market-row[data-mode=\'presentation\'][data-flow] {')).toContain('grid-auto-flow:column');
+  // The active highlight has native's 14 radius, with a fallback.
+  expect(rule('.hig-market-row[data-active] {')).toContain('border-radius:var(--hig-radius-xl,14px)');
  });
 });

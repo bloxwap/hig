@@ -27,7 +27,7 @@ Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, 
 ### AssetBalanceRow
 
 - `headline='units'` puts the units on the headline line with no second line, read as name, symbol, units. The default is unchanged. Catalog state `units-headline`.
-- `selected` (a check on the trailing edge; web `aria-current`, native `accessibilityState.selected`), `disabled` (muted text and half-strength artwork on the well fill, presses ignored, read as unavailable), `trailing` (host content after the figures), `amounts={false}` (no figures, for a row that is just an item to pick, such as a method or a chain), `tag` (short muted text under the figures, read after them) and `unitsSuffix` (host text after the units figure, such as ` HYPE`). Catalog state `picker`.
+- `selected` (a check on the trailing edge; web `aria-current`, native `accessibilityState.selected`), `disabled` (muted text and half-strength artwork on the well fill, presses ignored, read as unavailable; a static web row becomes `role="group"` so its `aria-disabled` is read), `trailing` (host content after the figures, read last: on web in place, on native its text appended to the row's label) with `trailingLabel` (what is read for it instead, on both platforms), `amounts={false}` (no figures, for a row that is just an item to pick, such as a method or a chain), `tag` (short muted text under the figures, read after them) and `unitsSuffix` (host text after the units figure, such as ` HYPE`). Catalog state `picker`.
 
 ### BarMark
 
@@ -62,11 +62,11 @@ Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, 
 
 ### WalletAddress
 
-- `qr` draws the host's own code in place of the Cuer one. New entries `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` with `qr` required and import neither `cuer` nor `react-native-svg`, for a host without the peer. `announce={false}` raises no “Address copied” notice, for a host that shows its own. Web: the copy button draws the `pressDecoration` layer (`kind: 'row'`). Catalog state `host-qr`.
+- `qr` draws the host's own code in place of the Cuer one. New entries `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` with `qr` required and import neither `cuer` nor `react-native-svg`, for a host without the peer. On both platforms `qr={null}` is the same as leaving it out. `announce={false}` raises no “Address copied” notice, for a host that shows its own. Web: the copy button draws the `pressDecoration` layer (`kind: 'row'`). Catalog state `host-qr`.
 
 ### MarketRow
 
-- `price` and `change` are optional: left out, the cell is not drawn and no dash is shown. `detail` (a muted line under the name, read with it), `trailing`, `selected` (a check; `aria-current` / `accessibilityState.selected`), `disabled` and `active` (the well fill, for a host keyboard cursor). Web forwards the ref and any other attribute or handler (`data-*`, `onPointerDown`) to the row's root; native forwards the ref to the root view and takes `testID` and `onPressIn`.
+- `price` and `change` are optional: left out, the cell is not drawn and no dash is shown. `detail` (a muted line under the name, text or host nodes on both platforms, read with it), `trailing`, `selected` (a check; `aria-current` / `accessibilityState.selected`), `disabled` and `active` (the well fill with the 14 corner radius on both platforms, for a host keyboard cursor). Web forwards the ref and any other attribute or handler (`data-*`, `onPointerDown`) to the row's root; native forwards the ref to the root view and takes `testID` and `onPressIn`.
 - Native gains the web's presentation mode (`mode='presentation'` with `identity`, `icon`, `favorite`, `volume`) and `priceOptions` / `changeOptions`; type `MarketRowProps` is exported on both platforms. Catalog state `picker`.
 
 ### ManagePositionBlock

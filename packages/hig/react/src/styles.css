@@ -144,7 +144,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-market-detail { font-size:.875rem;line-height:1.43;font-weight:400;color:var(--hig-muted); }
 .hig-market-trailing { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0; }
 .hig-market-check { flex:none;color:var(--hig-text); }
-.hig-market-row[data-active] { border-radius:var(--hig-radius-lg);background:var(--hig-fill); }
+.hig-market-row[data-active] { border-radius:var(--hig-radius-xl,14px);background:var(--hig-fill); }
 .hig-market-row[data-disabled] :is(.hig-market-name,.hig-market-price,.hig-market-change,.hig-market-volume,.hig-market-trailing,.hig-market-icon) { opacity:.5; }
 .hig-badge { display:inline-flex;align-items:center;gap:4px;width:fit-content;max-width:100%;min-width:0;padding:4px 10px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);line-height:1.5;vertical-align:middle;overflow-wrap:anywhere; }
 .hig-badge[data-tone='positive'] { color:var(--hig-positive);background:color-mix(in srgb,var(--hig-positive) 15%,transparent); }
