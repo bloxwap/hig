@@ -213,6 +213,37 @@ describe('AssetsBlock empty action, selected disc and keyboard',()=>{
   // The arrows still work from there.
   await userEvent.keyboard('{ArrowDown}');expect(active()).toBe('BTC');
  });
+ it('with enterChoosesFirst, Enter chooses the first enabled match of a query the arrows have not entered',async()=>{
+  const select=vi.fn();
+  const {container}=mount({onSelect:select,enterChoosesFirst:true,assets:[{...assets[0],disabled:true},assets[1],assets[2],assets[3]]});
+  const search=screen.getByRole('searchbox');
+  // No query: Enter is not a choice.
+  search.focus();await userEvent.keyboard('{Enter}');expect(select).not.toHaveBeenCalled();
+  // Two matches, the first disabled: the first enabled one is the top hit.
+  await userEvent.type(search,'t');
+  expect([...container.querySelectorAll('[data-asset-id]')].map(row=>row.getAttribute('data-asset-id'))).toEqual(['BTC','ETH']);
+  await userEvent.keyboard('{Enter}');expect(select).toHaveBeenLastCalledWith(assets[1]);
+  // The arrows still win once they move.
+  await userEvent.clear(search);await userEvent.type(search,'r');
+  expect([...container.querySelectorAll('[data-asset-id]')].map(row=>row.getAttribute('data-asset-id'))).toEqual(['ETH','XRP']);
+  await userEvent.keyboard('{ArrowDown}{ArrowDown}');expect(container.querySelector('[data-active]')?.getAttribute('data-asset-id')).toBe('XRP');
+  await userEvent.keyboard('{Enter}');expect(select).toHaveBeenLastCalledWith(assets[2]);
+ });
+ it('without enterChoosesFirst, Enter does not choose among several matches',async()=>{
+  const select=vi.fn();mount({onSelect:select});
+  const search=screen.getByRole('searchbox');await userEvent.type(search,'r');
+  await userEvent.keyboard('{Enter}');expect(select).not.toHaveBeenCalled();
+ });
+ it('moves focus between enabled rows with the arrow keys once a row has focus, and back to the field from the first',async()=>{
+  const {container}=mount({assets:[assets[0],{...assets[1],disabled:true},assets[2],assets[3]]});
+  const row=(id:string)=>container.querySelector<HTMLButtonElement>(`[data-asset-id="${id}"]`)!;
+  row('BTC').focus();
+  await userEvent.keyboard('{ArrowDown}');expect(document.activeElement).toBe(row('XRP'));
+  await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');expect(document.activeElement).toBe(row('GOLD'));
+  await userEvent.keyboard('{ArrowUp}{ArrowUp}');expect(document.activeElement).toBe(row('BTC'));
+  await userEvent.keyboard('{ArrowUp}');expect(document.activeElement).toBe(screen.getByRole('searchbox'));
+  expect(container.querySelector('[data-active]')).toBeNull();
+ });
  it('ignores Enter while an IME composition is open',()=>{
   const select=vi.fn();mount({onSelect:select,query:'gold'});
   const search=screen.getByRole('searchbox');

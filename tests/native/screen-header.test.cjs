@@ -92,6 +92,16 @@ describe('host slots (Unreleased)',()=>{
   view=mount(h(header.ScreenHeader,{testID:'pane',title:'Trade',badge:'Demo',hideTitle:true,titleRef:ref}));
   expect(all(view,'pane-badge')).toHaveLength(0);expect(view.findAll(node=>node.props.accessibilityLabel==='Trade, Demo'&&typeof node.type==='string')).toHaveLength(1);
  });
+ it('reads description after the heading as its accessibility hint, never drawn',()=>{
+  let view=mount(h(header.ScreenHeader,{testID:'pane',title:'Log in',description:'Choose a sign-in method'}));
+  const title=all(view,'pane-title').find(node=>typeof node.type==='string');
+  expect(title.props.accessibilityRole).toBe('header');expect(title.props.accessibilityHint).toBe('Choose a sign-in method');
+  expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('Choose a sign-in method'))).toHaveLength(0);
+  view=mount(h(header.ScreenHeader,{testID:'pane',title:'Trade',badge:'Demo',description:'Practice money'}));
+  expect(view.findAll(node=>typeof node.type==='string'&&node.props.accessibilityRole==='header'&&node.props.accessibilityHint==='Practice money')).toHaveLength(1);
+  view=mount(h(header.ScreenHeader,{testID:'pane',title:'Pane'}));
+  expect(all(view,'pane-title').find(node=>typeof node.type==='string').props.accessibilityHint).toBeUndefined();
+ });
  it('fills a pinned header only once its scroller reports content under it',()=>{
   const fill=view=>flat(all(view,'pane-header')[0]).backgroundColor;
   let view=mount(h(header.ScreenHeader,{testID:'pane',title:'Pane'}));expect(fill(view)).toBeUndefined();

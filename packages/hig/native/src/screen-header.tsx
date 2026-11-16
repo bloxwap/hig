@@ -31,6 +31,8 @@ export interface ScreenHeaderProps {
  badge?:string;
  /** Hides the title visually while it stays the accessible heading, for a host that draws its own visible title and must not have it read twice. The header keeps its height. */
  hideTitle?:boolean;
+ /** Host text that describes the pane, never drawn and read after the heading as its accessibility hint, such as a sheet's description. */
+ description?:string;
  /** Marks the header as pinned in the host's scroller: it is transparent at rest and takes `stickyHeaderBackground` once `scrolled` is true. Get `scrolled` from `useStickyHeaderScroll()` on that scroller. */
  stickyHeader?:boolean;
  /** With `stickyHeader`: content has scrolled under the header, so it draws its fill. */
@@ -52,7 +54,7 @@ export function HeaderClose({onClose,label,testID,closeProps}:{onClose:()=>void;
  * edge. The settings blocks (Notifications, Signals, Sound & Haptics) draw it; the other native blocks draw a header that matches
  * it. Import it from `@bloxwap/hig/native/screen-header` for a host pane that has no block.
  */
-export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,hideTitle,stickyHeader,scrolled,stickyHeaderBackground,inset,style}:ScreenHeaderProps){
+export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,hideTitle,description,stickyHeader,scrolled,stickyHeaderBackground,inset,style}:ScreenHeaderProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  // Clear white stays in the accessibility tree where opacity 0 might not; the title keeps its line so the header keeps its height.
@@ -62,10 +64,10 @@ export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,
  const pad=stickyHeader&&inset?inset:0,height=44+pad;
  const row=<View testID={id('header')} style={[{flexDirection:'row',alignItems:'center',minHeight:height},pad?{paddingTop:pad,paddingHorizontal:pad}:undefined,fill,stickyHeader?undefined:style]}>
   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton {...backProps} intent='ghost' label={t.back} disabled={backDisabled} suppressFeedback testID={id('back')} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={backDisabled?colors.faint:colors.text}/></View></IconButton>:null}</View>
-  {badge?<View ref={titleRef} nativeID={headingId} accessible accessibilityRole='header' accessibilityLabel={`${title}, ${badge}`} style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,minWidth:0}}>
+  {badge?<View ref={titleRef} nativeID={headingId} accessible accessibilityRole='header' accessibilityLabel={`${title}, ${badge}`} accessibilityHint={description} style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,minWidth:0}}>
    <Text testID={id('title')} accessible={false} numberOfLines={1} style={{...heading,flexShrink:1}}>{title}</Text>
    {hideTitle?null:<View testID={id('badge')} style={{flexShrink:0}}><Badge><Text style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.text}}>{badge}</Text></Badge></View>}
-  </View>:<Text ref={titleRef as unknown as React.Ref<React.ComponentRef<typeof Text>>} testID={id('title')} nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,...heading}}>{title}</Text>}
+  </View>:<Text ref={titleRef as unknown as React.Ref<React.ComponentRef<typeof Text>>} testID={id('title')} nativeID={headingId} accessibilityRole='header' accessibilityHint={description} numberOfLines={1} style={{flex:1,...heading}}>{title}</Text>}
   <View style={{minWidth:44,alignItems:'flex-end'}}>{action}</View>
  </View>;
  // A pinned header is the host scroller's sticky child: React Native moves its `style` prop onto the slot's own wrapper and passes flex:1 in its

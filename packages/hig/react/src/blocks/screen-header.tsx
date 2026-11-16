@@ -23,6 +23,8 @@ export interface ScreenHeaderProps {
  badge?:string;
  /** Hides the title visually while it stays the accessible heading, for a host that draws its own visible title and must not have it read twice. The header keeps its height and its two sides. */
  hideTitle?:boolean;
+ /** Host text that describes the pane, never drawn and read after the heading: a visually hidden paragraph that follows it, `id` `<headingId>-description` when `headingId` is set, so a dialog can point `aria-describedby` at it. */
+ description?:string;
  /** Pins the header to the top of the nearest scrolling container. It is transparent at rest and takes its fill (`--hig-sticky-header-background`) only once content has scrolled under it. */
  stickyHeader?:boolean;
 }
@@ -31,12 +33,13 @@ export function HeaderClose({onClose,label,closeProps}:{onClose:()=>void;label:s
  return <button {...closeProps} type='button' className='hig-swap-back' aria-label={label} onClick={onClose}><SwapIcon name='close'/><PressDecoration kind='back'/></button>;
 }
 /** Header of a card that is its own screen: Back on the leading edge, the title centred, and an optional control on the trailing edge. The title stays centred with either, both or neither. Every block draws it; import it from `@bloxwap/hig/react/blocks/screen-header` for a host pane that has no block. */
-export function ScreenHeader({title,onBack,backDisabled,backProps,action,headingId,badge,hideTitle,stickyHeader}:ScreenHeaderProps){
+export function ScreenHeader({title,onBack,backDisabled,backProps,action,headingId,badge,hideTitle,description,stickyHeader}:ScreenHeaderProps){
  const {messages}=useHIG();const header=useRef<HTMLDivElement>(null);
  useStickyHeader(header,!!stickyHeader);
  return <div ref={header} className='hig-screen-header' data-sticky={stickyHeader||undefined}>
   <span className='hig-screen-header-side'>{onBack&&<button {...backProps} type='button' className='hig-swap-back' aria-label={messages.back??en.back} disabled={backDisabled||undefined} onClick={onBack}><SwapIcon name='back'/><PressDecoration kind='back' disabled={!!backDisabled}/></button>}</span>
   <h2 id={headingId} className={`hig-screen-title${hideTitle?' hig-sr-only':''}`}>{badge?<>{title}<span className='hig-sr-only'>,</span> <span className='hig-badge hig-screen-badge'>{badge}</span></>:title}</h2>
+  {description?<p id={headingId?`${headingId}-description`:undefined} className='hig-sr-only'>{description}</p>:null}
   <span className='hig-screen-header-side'>{action}</span>
  </div>;
 }

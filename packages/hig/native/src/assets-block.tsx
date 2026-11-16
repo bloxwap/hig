@@ -88,6 +88,8 @@ export interface AssetsBlockProps {
  emptyAction?:AssetsEmptyAction;
  /** Focuses the search field on mount, raising the keyboard, so typing filters at once. */
  autoFocusSearch?:boolean;
+ /** While the search field holds a query, the keyboard's Search key chooses the first enabled match, as a search box's top hit. By default it only closes the keyboard. */
+ enterChoosesFirst?:boolean;
  testID?:string;
 }
 /** The empty list's action. */
@@ -119,7 +121,7 @@ const disc=44;
  * markets in sections by category, each with its icon, name, symbol and detail on one line each, and its signal disc. The host
  * owns the data and the scrolling, unless `stickyHeader` makes the block its own scroll view.
  */
-export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,clearable,paused=false,now:clock=Date.now,emptyAction,autoFocusSearch,testID}:AssetsBlockProps){
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,clearable,paused=false,now:clock=Date.now,emptyAction,autoFocusSearch,enterChoosesFirst,testID}:AssetsBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
@@ -153,7 +155,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  const showFilter=(categoryFilter??true)&&categories.length>1;
  const header=<ScreenHeader title={title??t.assets} testID={id('header')} headingId={headingId} action={onClose?<HeaderClose onClose={onClose} label={t.close} testID={id('close')}/>:undefined}/>;
  const body=<>
-  <SearchInput testID={id('search')} accessibilityLabel={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChangeText={setQuery} onClear={clearable?()=>setQuery(''):undefined} autoFocus={autoFocusSearch} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>
+  <SearchInput testID={id('search')} accessibilityLabel={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChangeText={setQuery} onClear={clearable?()=>setQuery(''):undefined} autoFocus={autoFocusSearch} returnKeyType='search' onSubmitEditing={enterChoosesFirst?()=>{const first=currentQuery.trim()===''?undefined:sections.flatMap(section=>section.assets).find(asset=>!asset.disabled);if(first)onSelect(first);}:undefined} autoCapitalize='none' autoCorrect={false} spellCheck={false}/>
   {showFilter?<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory} scrollComponent={filterScrollComponent} bleed={16}/>:null}
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   {sections.length===0?<View style={{gap:16,alignItems:'center'}}>

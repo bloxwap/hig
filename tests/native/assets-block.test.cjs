@@ -175,6 +175,15 @@ test('autoFocusSearch focuses the search field on mount',()=>{
  view=mount({autoFocusSearch:true});expect(view.findByType(TextInput).props.autoFocus).toBe(true);
 });
 
+test('enterChoosesFirst makes the Search key choose the first enabled match of a query, and only then',()=>{
+ const {TextInput}=require('react-native');const select=jest.fn();
+ let view=mount({onSelect:select});expect(view.findByType(TextInput).props.onSubmitEditing).toBeUndefined();
+ view=mount({onSelect:select,enterChoosesFirst:true});
+ act(()=>view.findByType(TextInput).props.onSubmitEditing());expect(select).not.toHaveBeenCalled();
+ view=mount({onSelect:select,enterChoosesFirst:true,query:'r',assets:assets.map(asset=>asset.id==='ETH'?{...asset,disabled:true}:asset)});
+ act(()=>view.findByType(TextInput).props.onSubmitEditing());expect(select).toHaveBeenCalledTimes(1);expect(select.mock.calls[0][0].id).toBe('XRP');
+});
+
 test('scrolls the selected category capsule fully into view on mount and on change, through a host filterScrollComponent',()=>{
  const {ScrollView}=require('react-native');const scrollTo=jest.fn();
  const Host=React.forwardRef((props,ref)=>{React.useImperativeHandle(ref,()=>({scrollTo}));return h(ScrollView,{...props,testID:'host-filter'});});

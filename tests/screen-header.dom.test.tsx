@@ -53,6 +53,14 @@ describe('ScreenHeader',()=>{
   expect(container.querySelector('.hig-screen-header-side:last-child')!.textContent).toBe('Close');
   expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('.hig-screen-header > .hig-screen-header-side:last-child { grid-column:3; }');
  });
+ it('reads description after the heading, visually hidden, with an id a dialog can describe itself by (Unreleased)',()=>{
+  const {container,rerender}=render(<ScreenHeader title='Log in' headingId='login-title' description='Choose a sign-in method'/>);
+  const heading=screen.getByRole('heading',{level:2,name:'Log in'});const description=container.querySelector('p.hig-sr-only')!;
+  expect(description.textContent).toBe('Choose a sign-in method');expect(description.id).toBe('login-title-description');
+  expect(heading.compareDocumentPosition(description)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  rerender(<ScreenHeader title='Log in' description='Choose a sign-in method'/>);expect(container.querySelector('p.hig-sr-only')!.hasAttribute('id')).toBe(false);
+  rerender(<ScreenHeader title='Log in'/>);expect(container.querySelector('p')).toBeNull();
+ });
  it('pins the header transparent at rest and fills it once content scrolls under it (Unreleased)',()=>{
   const {container}=render(<div data-testid='scroller' style={{overflowY:'auto'}}><section><ScreenHeader title='Signals' stickyHeader/><p>Rows</p></section></div>);
   const header=container.querySelector<HTMLElement>('.hig-screen-header')!,scroller=screen.getByTestId('scroller'),content=header.parentElement!;

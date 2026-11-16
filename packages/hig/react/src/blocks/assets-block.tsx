@@ -80,6 +80,8 @@ export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  emptyAction?:AssetsEmptyAction;
  /** With a hardware pointer, focus the search field on mount so typing filters at once. */
  autoFocusSearch?:boolean;
+ /** While the search field holds a query and the arrows have not moved, Enter chooses the first enabled match, as a search box's top hit. By default Enter then chooses only a lone match. */
+ enterChoosesFirst?:boolean;
 }
 /** The empty list's action. */
 export interface AssetsEmptyAction {label:string;onPress:()=>void;testID?:string}
@@ -113,7 +115,7 @@ const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+categor
  * Choose a market as one screen: a header, a search field, category capsules, the All / Positions / Trend views, then the
  * markets in sections by category, each with its icon, name, symbol and detail, and its signal disc. The host owns the data.
  */
-export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,stickyHeader,headingId,clearable,paused=false,now:clock=Date.now,emptyAction,autoFocusSearch,className,...rest}:AssetsBlockProps){
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,stickyHeader,headingId,clearable,paused=false,now:clock=Date.now,emptyAction,autoFocusSearch,enterChoosesFirst,className,...rest}:AssetsBlockProps){
  const t=useMessages();const {locale}=useHIG();const id=useId();
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
  const [currentCategory,setCategory]=useHostState(category,defaultCategory,onCategoryChange);
@@ -128,12 +130,21 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  useEffect(()=>{if(autoFocusSearch&&window.matchMedia?.('(pointer: fine)').matches)field.current?.focus();},[]);
  useEffect(()=>{setActiveId(null);},[currentQuery,currentCategory,currentView]);
  useEffect(()=>{if(active>=0)list.current?.querySelector('[data-active]')?.scrollIntoView?.({block:'nearest'});},[active]);
- // From the search field the arrow keys move through the enabled rows and Enter chooses one: the one the arrows reached, or the only row if they have not moved.
+ // From the search field the arrow keys move through the enabled rows and Enter chooses one: the one the arrows reached, or, if they have not moved, the only row (or with `enterChoosesFirst` and a query, the first enabled one).
  const step=(from:number,by:number)=>{for(let index=from+by;index>=0&&index<rows.length;index+=by)if(!rows[index].disabled)return index;return from;};
  const onKeyDown=(event:React.KeyboardEvent<HTMLInputElement>)=>{
   if(event.nativeEvent.isComposing||event.keyCode===229)return;// An IME commit is not a choice.
   if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();const next=step(active,event.key==='ArrowDown'?1:-1);setActiveId(rows[next]?.id??null);}
-  else if(event.key==='Enter'){const choice=activeId!=null?rows[active]:rows.length===1?rows[0]:undefined;if(choice&&!choice.disabled){event.preventDefault();onSelect(choice);}}
+  else if(event.key==='Enter'){const choice=activeId!=null?rows[active]:enterChoosesFirst&&currentQuery.trim()!==''?rows.find(asset=>!asset.disabled):rows.length===1?rows[0]:undefined;if(choice&&!choice.disabled){event.preventDefault();onSelect(choice);}}
+ };
+ // With a row focused (by Tab or a click) the arrow keys move focus to the next or previous enabled row; Up from the first returns to the search field. Focus is then the cursor, so the field's highlight steps aside.
+ const onListKeyDown=(event:React.KeyboardEvent<HTMLDivElement>)=>{
+  if(event.key!=='ArrowDown'&&event.key!=='ArrowUp')return;
+  const current=(event.target as Element).closest?.('.hig-assets-row');if(!current||!list.current)return;
+  const buttons=[...list.current.querySelectorAll<HTMLButtonElement>('.hig-assets-row:not(:disabled)')];const index=buttons.indexOf(current as HTMLButtonElement);
+  event.preventDefault();setActiveId(null);
+  if(event.key==='ArrowUp'&&index<=0){field.current?.focus();return;}
+  buttons[event.key==='ArrowDown'?Math.min(buttons.length-1,index+1):index-1]?.focus();
  };
  const heading=title??t.assets;const signalName:Record<AssetSignal,string>={watch:t.signalWatch,up:t.signalUp,down:t.signalDown};
  const empty=loading?`${t.loading}…`:currentQuery.trim()!==''?t.noResults:currentView==='positions'?t.noPositions:currentView==='trend'?t.noTrend:t.noItems;
@@ -164,7 +175,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   <SegmentedControl hideLabel label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   {/* Focus stays in the field, so the row the arrows reach is spoken here: the rows are buttons, not options a searchbox could own through aria-activedescendant. */}
   <span className='hig-sr-only hig-assets-cursor' aria-live='polite' aria-atomic='true'>{rows[active]?rowName(rows[active]):''}</span>
-  <div ref={list} className='hig-assets-list' aria-busy={loading||undefined}>
+  <div ref={list} className='hig-assets-list' aria-busy={loading||undefined} onKeyDown={onListKeyDown}>
    {sections.length===0&&<p className='hig-assets-empty' role='status'>{empty}</p>}
    {sections.length===0&&!loading&&emptyAction&&<Button intent='secondary' data-testid={emptyAction.testID} onClick={emptyAction.onPress}>{emptyAction.label}</Button>}
    {sections.map(section=>{const first=rows.indexOf(section.assets[0]);return <section key={section.category.id} className='hig-assets-section' aria-labelledby={`${id}-${section.category.id}`}>
