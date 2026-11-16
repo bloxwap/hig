@@ -3,6 +3,7 @@ import {formatCountdown} from '@bloxwap/hig/contracts';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
+import {AnimatedNumberReadout} from './animated-number.js';
 import {SearchInput} from './field.js';
 import {Filter,SegmentedControl} from './radio-group.js';
 import {ScreenHeader,HeaderClose} from './screen-header.js';
@@ -144,10 +145,10 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   {sections.length===0?<Text testID={id('empty')} accessibilityLiveRegion='polite' style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{empty}</Text>:
   <View testID={id('list')} style={{gap:16}}>
-   {sections.map(section=>{const at=opensAtTime(section.category);const countdown=at!=null&&at>now?formatCountdown(at-now,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
+   {sections.map(section=>{const at=opensAtTime(section.category);const remaining=at!=null&&at>now?at-now:null,countdown=remaining!=null?formatCountdown(remaining,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
     <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:32,paddingHorizontal:4}}>
      <Text accessibilityRole='header' accessibilityLabel={status?`${section.category.label}, ${status.spoken}`:undefined} style={{flexShrink:1,fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{section.category.label}</Text>
-     {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:status.fill}}><Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:countdown?0.25:1,fontVariant:['tabular-nums'],color:status.color}}>{status.label}</Text></View>:null}
+     {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:status.fill}}>{countdown&&remaining!=null?<AnimatedNumberReadout value={Math.ceil(remaining/1000)} formattedValue={countdown.visible} animateFormatted prefix={`${t.opensIn} `} testID={id(`countdown-${section.category.id}`)} tone='muted' maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:0.25}}/>:<Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:1,fontVariant:['tabular-nums'],color:status.color}}>{status.label}</Text>}</View>:null}
     </View>
     <View style={{gap:4}}>{section.assets.map(row)}</View>
    </View>;})}
