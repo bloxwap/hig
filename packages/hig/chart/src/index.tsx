@@ -11,3 +11,8 @@ const Chart=lazy(()=>import('@bloxwap/chart/react').then(m=>({default:m.Chart}))
 export const chartTheme:DeepPartial<ChartConfig>={theme:{background:tokens.colors.surface.srgb,textColor:tokens.colors.text.srgb,borderColor:tokens.colors.border.srgb,fontFamily:'Bloxwap Sans, system-ui, sans-serif',monoFamily:'Bloxwap Mono, monospace'},grid:{color:tokens.colors.border.srgb},crosshair:{color:tokens.colors.muted.srgb,labelBackground:tokens.colors.action.srgb,labelColor:tokens.colors.onAction.srgb},series:{upColor:tokens.colors.buy.srgb,downColor:tokens.colors.sell.srgb}};
 /** Web canvas only. Native uses labeled price rows; no embedded engine or WebView claim. */
 export function PriceChart({summary,...props}:ChartProps & {summary:string}){const {messages}=useHIG();const colors=useColors();const theme=useMemo(()=>({...chartTheme,crosshair:{...chartTheme.crosshair,labelBackground:colors.action,labelColor:colors.onAction}}),[colors]);return <figure><figcaption>{summary}</figcaption><Suspense fallback={<p role='status'>{messages.loadingChart??en.loadingChart}</p>}><Chart {...props} preset={theme}/></Suspense></figure>;}
+export {AltimeterChart,type AltimeterChartProps} from './altimeter-chart.js';
+export {bitcoinPrice,type AltimeterFeed} from './bitcoin-price.js';
+export {OutcomeChart,type OutcomeChartProps} from './outcome-chart.js';
+export {outcomeColors,type Outcome,type OutcomeFeed} from './outcome-model.js';
+export {championsLeagueWinner} from './champions-league.js';

@@ -481,8 +481,12 @@
       "title": "MarketingHero"
     },
     {
-      "route": "components/price-chart",
-      "title": "PriceChart"
+      "route": "components/altimeter-chart",
+      "title": "AltimeterChart"
+    },
+    {
+      "route": "components/outcome-chart",
+      "title": "OutcomeChart"
     }
   ],
   "catalog": [
@@ -1385,8 +1389,18 @@
       ]
     },
     {
-      "name": "PriceChart",
-      "route": "components/price-chart",
+      "name": "AltimeterChart",
+      "route": "components/altimeter-chart",
+      "family": "chart",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "OutcomeChart",
+      "route": "components/outcome-chart",
       "family": "chart",
       "nativeSupport": "alternative",
       "states": [

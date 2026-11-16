@@ -1705,11 +1705,26 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
-      "name": "PriceChart",
-      "slug": "price-chart",
+      "name": "AltimeterChart",
+      "slug": "altimeter-chart",
       "entry": "@bloxwap/hig/chart",
       "family": "chart",
-      "web": "<C.PriceChart summary='Sample Bitcoin candles; no live feed. Price values also available as text.' data={empty?[]:[{time:1700000000,open:67000,high:68000,low:66800,close:67500},{time:1700000060,open:67500,high:68100,low:67200,close:67900}]} height={240}/>",
+      "web": "<C.AltimeterChart summary='Live Bitcoin price from Hyperliquid. The current price is also shown as text.' price={empty?null:undefined} height={320}/>",
+      "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "OutcomeChart",
+      "slug": "outcome-chart",
+      "entry": "@bloxwap/hig/chart",
+      "family": "chart",
+      "web": "<C.OutcomeChart summary='UEFA Champions League winner on Hyperliquid: the live chance of each club, also shown as text.' outcomes={empty?null:undefined} height={360}/>",
       "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
       "nativeSupport": "alternative",
       "states": [

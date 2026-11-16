@@ -12,7 +12,7 @@ npm install @bloxwap/hig@0.7.0
 | `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements and messages |
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
-| `@bloxwap/hig/chart` | `PriceChart` and `chartTheme` for `@bloxwap/chart` |
+| `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
 | `@bloxwap/hig/feedback`, `@bloxwap/hig/feedback/<adapter>` | Optional sound and haptic feedback |
 | `@bloxwap/hig/native-fonts` | Static native TTFs and their manifest |
 | `@bloxwap/hig/og-fonts`, `@bloxwap/hig/og-fonts/node` | Satori / `next/og` card faces |

@@ -142,7 +142,11 @@
       "issue": 20,
       "module": "@bloxwap/hig/chart",
       "components": [
-        "PriceChart (DOM only)",
+        "AltimeterChart (DOM only)",
+        "bitcoinPrice (default live feed)",
+        "OutcomeChart (DOM only)",
+        "championsLeagueWinner (default live feed); outcomeColors",
+        "PriceChart (DOM only; not in the catalog)",
         "chartTheme; native readout/list summary"
       ],
       "docs": "docs/components/chart.md",

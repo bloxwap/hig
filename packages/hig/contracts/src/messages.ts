@@ -26,7 +26,7 @@ export interface HIGMessages {
  loadingContent: string;
  /** List loading row. */
  loadingItems: string;
- /** Web PriceChart fallback while the chart engine loads. */
+ /** Web chart fallback: AltimeterChart and OutcomeChart while they wait for data, PriceChart while the chart engine loads. */
  loadingChart: string;
  /** List default empty text. */
  noItems: string;

@@ -900,8 +900,18 @@
       ]
     },
     {
-      "name": "PriceChart",
-      "route": "components/price-chart",
+      "name": "AltimeterChart",
+      "route": "components/altimeter-chart",
+      "entry": "@bloxwap/hig/chart",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "empty"
+      ]
+    },
+    {
+      "name": "OutcomeChart",
+      "route": "components/outcome-chart",
       "entry": "@bloxwap/hig/chart",
       "nativeSupport": "alternative",
       "states": [

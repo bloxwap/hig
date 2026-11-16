@@ -1,0 +1,37 @@
+import {it,expect} from 'vitest';
+import {ALTIMETER_FLOW_PX,easeInOut,gridPhase,labelDecimalsFor,ladderPrices,smoothTrail,tickSpacingFor,trailPoints} from '../packages/hig/chart/src/altimeter-model';
+
+it('the grid and trail travel 50px a second, and the grid wraps every tile',()=>{
+ expect(ALTIMETER_FLOW_PX).toBe(50);
+ expect(gridPhase(0)).toBe(0);expect(gridPhase(500)).toBe(-25);expect(gridPhase(999)).toBeCloseTo(-49.95);expect(gridPhase(1000)).toBe(0);expect(gridPhase(1500)).toBe(-25);
+ const y=()=>0;
+ // A sample one second old sits 50px left of the trail's end.
+ expect(trailPoints([{t:9000,p:1},{t:10_000,p:1}],10_000,0,400,y)).toEqual([[350,0],[400,0]]);
+});
+
+it('trail points drop samples that scrolled off and enter on the left edge at the interpolated price',()=>{
+ const points=trailPoints([{t:0,p:100},{t:4000,p:200},{t:6000,p:300}],6000,0,200,price=>price);
+ // 200px is four seconds of trail: the edge is t=2000, halfway between the first two samples.
+ expect(points).toEqual([[0,150],[100,200],[200,300]]);
+ expect(trailPoints([],6000,0,200,price=>price)).toEqual([]);
+});
+
+it('ladder spacing is about one basis point and its labels keep enough digits',()=>{
+ expect(tickSpacingFor(65_262)).toBe(6.53);expect(tickSpacingFor(100)).toBe(0.01);expect(tickSpacingFor(0.5)).toBeCloseTo(0.00005);expect(tickSpacingFor(0)).toBe(0.01);expect(tickSpacingFor(NaN)).toBe(0.01);
+ expect(labelDecimalsFor(6.53,65_262)).toBe(2);expect(labelDecimalsFor(0.00005,0.5)).toBe(5);expect(labelDecimalsFor(0,0.5)).toBe(4);
+ expect(ladderPrices(100,10,75,125)).toEqual([80,90,100,110,120]);expect(ladderPrices(100,0,75,125)).toEqual([]);
+});
+
+it('the price tween eases in and out between its ends',()=>{
+ expect(easeInOut(0)).toBe(0);expect(easeInOut(1)).toBe(1);expect(easeInOut(2)).toBe(1);expect(easeInOut(.5)).toBeCloseTo(.5,3);
+ expect(easeInOut(.25)).toBeLessThan(.25);expect(easeInOut(.75)).toBeGreaterThan(.75);
+});
+
+it('the smoothed trail passes through every sample and never overshoots a price',()=>{
+ const calls:number[][]=[];const sink={moveTo:(x:number,y:number)=>calls.push([x,y]),lineTo:(x:number,y:number)=>calls.push([x,y]),bezierCurveTo:(...values:number[])=>calls.push(values)};
+ const points=[[0,10],[10,10],[20,40],[30,40],[40,5]] as const;
+ smoothTrail(points,sink);
+ expect(calls[0]).toEqual([0,10]);expect(calls.slice(1).map(c=>c.slice(-2))).toEqual(points.slice(1).map(p=>[...p]));
+ for(const [i,call] of calls.slice(1).entries()){const low=Math.min(points[i][1],points[i+1][1]),high=Math.max(points[i][1],points[i+1][1]);for(const y of [call[1],call[3]]){expect(y).toBeGreaterThanOrEqual(low-1e-9);expect(y).toBeLessThanOrEqual(high+1e-9);}}
+ calls.length=0;smoothTrail([[0,1],[5,2]],sink);expect(calls).toEqual([[0,1],[5,2]]);
+});

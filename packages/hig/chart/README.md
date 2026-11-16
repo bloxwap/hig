@@ -1,6 +1,11 @@
 # @bloxwap/hig/chart
 
-Version 0.7.0, an entry of `@bloxwap/hig`. The HIG adapter for [`@bloxwap/chart`](https://github.com/bloxwap/chart): `PriceChart` (a
+Version 0.7.0, an entry of `@bloxwap/hig`. `AltimeterChart` is the Bloxwap live chart on its
+own: a plus grid and price trail that flow left at 50px per second, a price ladder centered on the current price,
+and the current price at the trail's tip. Pass `price` or a `feed`; with neither it shows live Bitcoin through
+`bitcoinPrice`. `OutcomeChart` shows a question with two to ten
+outcomes live, as one flowing trail each on a 0 to 100% ladder, ending in a stroked capsule with the label and chance; with no `outcomes` or `feed` it shows the
+UEFA Champions League winner market through `championsLeagueWinner`. The entry is also the HIG adapter for [`@bloxwap/chart`](https://github.com/bloxwap/chart): `PriceChart` (a
 `<figure>` with a required text `summary`, lazy-loading `@bloxwap/chart/react` inside `Suspense`) and
 `chartTheme` (HIG token colors in sRGB for the canvas). Web only; React Native uses labeled readouts and lists
 from `@bloxwap/hig/native/data`.
@@ -10,7 +15,7 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 ```
 
 ```tsx
-import {PriceChart, chartTheme} from '@bloxwap/hig/chart';
+import {AltimeterChart, OutcomeChart, PriceChart, chartTheme} from '@bloxwap/hig/chart';
 ```
 
 Needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline); `HIGProvider` from `@bloxwap/hig/react/provider` supplies the
