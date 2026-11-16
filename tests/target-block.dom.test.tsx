@@ -83,6 +83,12 @@ describe('TargetBlock',()=>{
   view.rerender(<TargetBlock {...base} unit='percent' value={0.1} presets={[0.05,0.1,0.25]}/>);expect(presets().map(button=>button.textContent)).toEqual(['+5%','+10%','+25%']);
   view.rerender(<TargetBlock {...base}/>);expect(document.querySelector('.hig-target-presets')).toBeNull();
  });
+ it('names the quick choices\' group by the title, or by the host\'s own name for it',()=>{
+  const view=render(<TargetBlock {...base} presets={[1,2]}/>);
+  expect(document.querySelector('.hig-target-presets')).toBe(screen.getByRole('group',{name:'Take Profit'}));
+  view.rerender(<TargetBlock {...base} labels={{...labels,presets:'Quick targets'}} presets={[1,2]}/>);
+  expect(document.querySelector('.hig-target-presets')).toBe(screen.getByRole('group',{name:'Quick targets'}));
+ });
  it('confirms in the role of its kind, with Cancel beside it only when the host handles it',async()=>{
   const submit=vi.fn(),cancel=vi.fn();const view=render(<TargetBlock {...base} onSubmit={submit} onCancel={cancel}/>);
   const actions=()=>[...document.querySelectorAll<HTMLButtonElement>('.hig-target-actions > button')];

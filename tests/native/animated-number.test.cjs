@@ -120,3 +120,21 @@ it('keeps RTL and invalid native metrics on the static final reading',()=>{
  act(()=>{for(const probe of probes)probe.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:0,height:28}}});});
  expect(StyleSheet.flatten(finalText().props.style).opacity).toBeUndefined();expect(global.__numberReanimated.timing).not.toHaveBeenCalled();
 });
+
+it('grows the readout to the measured reel row so a proportional reading never clips the first or last glyph (Android)',()=>{
+ jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
+ mount(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28,textAlign:'right'}}));
+ const container=()=>root.root.findAllByType(RNView).find(node=>node.props.collapsable===false&&StyleSheet.flatten(node.props.style)?.position==='relative');
+ expect(StyleSheet.flatten(container().props.style).minWidth).toBeUndefined();
+ measure(14,28);
+ const row=root.root.findAllByType(RNView).find(node=>typeof node.props.onLayout==='function'&&StyleSheet.flatten(node.props.style)?.flexShrink===0);
+ expect(row).toBeTruthy();expect(StyleSheet.flatten(row.props.style).flexDirection).toBe('row');
+ expect(StyleSheet.flatten(container().props.style).minWidth).toBeUndefined();
+ act(()=>row.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:73.5,height:28}}}));
+ expect(StyleSheet.flatten(container().props.style).minWidth).toBe(73.5);
+ act(()=>row.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:0,height:28}}}));
+ expect(StyleSheet.flatten(container().props.style).minWidth).toBe(73.5);
+ // The static fallback (no reels) keeps the reading's own width.
+ update(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28}},{direction:'rtl'}));
+ expect(StyleSheet.flatten(container().props.style).minWidth).toBeUndefined();
+});

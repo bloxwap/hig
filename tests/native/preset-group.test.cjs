@@ -20,11 +20,29 @@ it('draws one Button per option in the selected intent, reading selected, with p
  expect(chips(tree).map(chip=>[chip.props.children,chip.props.intent,chip.props.accessibilityState.selected,chip.props.disabled])).toEqual([['$10','secondary',false,undefined],['$25','primary',true,undefined],['$50','secondary',false,undefined],['$100','secondary',false,undefined],['$1,000','secondary',false,true],['Max','secondary',false,undefined]]);
  // An option's own test ID wins; otherwise `<group>-<value>`.
  expect(chips(tree).map(chip=>chip.props.testID)).toEqual(['size-10','size-25','size-50','size-100','size-1000','size-max']);
- expect(host(tree,'size').props.accessibilityLabel).toBe('Size');
+ // React Native has no named group, so the group's name is each chip's hint, and the container is not read.
+ expect(host(tree,'size').props.accessibilityLabel).toBeUndefined();
+ expect(chips(tree).map(chip=>chip.props.accessibilityHint)).toEqual(Array(6).fill('Size'));
+ expect(host(tree,'size-25').props.accessibilityHint).toBe('Size');
  // Each chip is a 44dp Button with its 48dp touch target, the label in the provider's interface face.
- expect(chips(tree).every(chip=>chip.props.suppressFeedback===true&&chip.props.hitSlop===undefined)).toBe(true);
+ expect(chips(tree).every(chip=>chip.props.suppressFeedback===true)).toBe(true);
  expect(flat(host(tree,'size-25'))).toMatchObject({minHeight:44,flex:1,alignSelf:'auto',paddingHorizontal:8});
- expect(host(tree,'size-25').props.hitSlop).toEqual({top:2,bottom:2});
+ expect(host(tree,'size-25').props.hitSlop).toEqual({top:2,bottom:2,left:4,right:4});
+});
+
+it('gives every chip a 48dp touch target whose slop meets, but never overlaps, its neighbours 8 apart',()=>{
+ const tree=mount({value:null,testID:'size',columns:4});
+ const slop=host(tree,'size-25').props.hitSlop,height=flat(host(tree,'size-25')).minHeight;
+ // 44 + 2 + 2 = 48 tall.
+ expect(height+slop.top+slop.bottom).toBe(48);
+ // Chips and rows are 8 apart: the two slops between neighbours add to no more than the gap.
+ const rows=host(tree,'size').children.filter(node=>typeof node!=='string');
+ const columnGap=flat(rows[0]).gap,rowGap=flat(host(tree,'size')).gap;
+ expect(slop.left+slop.right).toBeLessThanOrEqual(columnGap);expect(slop.top+slop.bottom).toBeLessThanOrEqual(rowGap);
+ // A chip squeezed under 48 wide (seven columns in 320dp: (320 - 6 x 8) / 7 = 38.9) still reaches its column pitch.
+ const chipWidth=(320-6*columnGap)/7;expect(chipWidth+slop.left+slop.right).toBeCloseTo(chipWidth+columnGap);
+ // Without a label no hint is set.
+ expect(mount({value:null,testID:'plain'}).findAllByType(Button).every(chip=>chip.props.accessibilityHint===undefined)).toBe(true);
 });
 
 it('defaults to one row and wraps into equal-width rows with columns, holding the short row\'s empty cells',()=>{

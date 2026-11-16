@@ -140,12 +140,13 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
   return onSelect?<Pressable key={trade.id} testID={testID?`${testID}-${trade.id}`:undefined} accessibilityRole='button' accessibilityLabel={reading} onPress={()=>onSelect(trade)} style={({pressed})=>row(pressed)}>{content}<View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View></Pressable>
    :<View key={trade.id} testID={testID?`${testID}-${trade.id}`:undefined} accessible accessibilityLabel={reading} style={row(false)}>{content}</View>;
  };
- const plain={paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20} as const;
+ // The empty and error lines keep 32 above them and none below: the block's (or the host sheet's) 16 bottom inset is the only space under the text.
+ const plain={paddingTop:32,paddingBottom:0,textAlign:'center',fontSize:14,lineHeight:20} as const;
  const body=loading?<View testID={testID?`${testID}-loading`:undefined} accessible={!!loadingLabel} accessibilityLabel={loadingLabel} accessibilityState={{busy:true}} style={{gap:8}}>{skeletons.map(index=><View key={index} style={{minHeight:56,borderRadius:28,backgroundColor:fills.raised}}/>)}</View>
   :error?<Text testID={testID?`${testID}-error`:undefined} accessibilityRole='alert' accessibilityLiveRegion='polite' style={{...plain,color:colors.negative}}>{error}</Text>
-  :trades.length===0?(labels.emptyDescription?<View testID={testID?`${testID}-empty`:undefined} accessible accessibilityLabel={`${labels.empty}, ${labels.emptyDescription}`} style={{paddingVertical:32,gap:4}}>
-   <Text style={{...plain,paddingVertical:0,fontWeight:'600',color:colors.text}}>{labels.empty}</Text>
-   <Text style={{...plain,paddingVertical:0,color:colors.muted}}>{labels.emptyDescription}</Text>
+  :trades.length===0?(labels.emptyDescription?<View testID={testID?`${testID}-empty`:undefined} accessible accessibilityLabel={`${labels.empty}, ${labels.emptyDescription}`} style={{paddingTop:32,gap:4}}>
+   <Text style={{...plain,paddingTop:0,fontWeight:'600',color:colors.text}}>{labels.empty}</Text>
+   <Text style={{...plain,paddingTop:0,color:colors.muted}}>{labels.emptyDescription}</Text>
   </View>:<Text testID={testID?`${testID}-empty`:undefined} style={{...plain,color:colors.muted}}>{labels.empty}</Text>)
   :null;
  const header=<ScreenHeader testID={testID} title={labels.title} onBack={onBack} action={headerAction}/>;

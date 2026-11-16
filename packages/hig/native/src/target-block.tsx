@@ -34,6 +34,8 @@ export interface TargetBlockLabels {
  custom:string;
  /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */
  info?:string;
+ /** Accessible name of the quick choices, not drawn: Quick targets. Defaults to `title`. */
+ presets?:string;
 }
 export interface TargetBlockProps {
  kind:TargetKind;
@@ -173,7 +175,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
     <View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
    </View>
   </Pressable>:null}
-  {presets.length>0?<PresetGroup testID='target-presets' selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,testID:`target-preset-${preset}`,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)} style={{marginTop:16}}/>:null}
+  {presets.length>0?<PresetGroup testID='target-presets' label={labels.presets??labels.title} selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,testID:`target-preset-${preset}`,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)} style={{marginTop:16}}/>:null}
   {info&&open?<Pressable testID='target-popover-dismiss' {...hidden} onPress={()=>setOpen(false)} style={{position:'absolute',top:0,bottom:0,left:0,right:0,zIndex:1}}/>:null}
   {info&&open?<View testID='target-popover' accessibilityLiveRegion='polite' style={{position:'absolute',top:sticky?4:64,...(direction==='rtl'?{left:16}:{right:16}),maxWidth:280,zIndex:2,padding:12,borderRadius:14,backgroundColor:colors.nested}}><Text testID='target-note' style={{color:colors.text,fontSize:14,lineHeight:21}}>{note}</Text></View>:null}
   <View testID='target-actions' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>

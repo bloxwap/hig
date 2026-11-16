@@ -130,6 +130,11 @@ describe('trade history host slots (Unreleased)',()=>{
   view.rerender(<TradeHistoryListBlock labels={list} trades={trades} error='History is unavailable'/>);expect(screen.getByRole('alert').textContent).toBe('History is unavailable');expect(screen.queryByRole('list')).toBeNull();
   view.rerender(<TradeHistoryListBlock labels={{...list,emptyDescription:'Closed trades appear here.'}} trades={[]}/>);
   const empty=screen.getByRole('status');expect(empty.querySelector('strong')!.textContent).toBe('No closed trades yet');expect(empty.textContent).toBe('No closed trades yetClosed trades appear here.');
+  // The empty and error lines keep 32px above and none below inside the list block (the shared picker empty line keeps both).
+  expect(empty.parentElement!.className).toBe('hig-trade-history-list');expect(empty.classList.contains('hig-swap-empty')).toBe(true);
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');
+  expect(css).toContain('.hig-trade-history-list>.hig-swap-empty { padding-bottom:0; }');
+  expect(css.find(line=>line.startsWith('.hig-swap-empty {'))).toContain('padding:32px 0;');
  });
  it('detail: a badge beside the title, a note under the details, a leverage note, and host formats for the headline and return',()=>{
   const ref=React.createRef<HTMLDivElement>();

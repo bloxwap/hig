@@ -17,6 +17,8 @@ const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHe
 // Android Fabric reads colour 0 as "unset", so 'transparent' (0x00000000) drew the hidden reading in the default
 // black under the reels. Clear white is non-zero there and still invisible.
 const hiddenReading={color:'#ffffff00'};
+// The reel row keeps its content width (no shrink), so it can be measured wider than the readout.
+const reelRowStyle={flexDirection:'row',alignItems:'center',flexShrink:0} as const;
 const clampedDuration=(duration:number)=>Number.isFinite(duration)&&duration>0?Math.min(duration,600):0;
 
 interface DigitReelProps {digits:readonly string[];digit:number;trend:-1|0|1;duration:number;reducedMotion:boolean;width:number;height:number;style:StyleProp<TextStyle>;script:TextScript;maxFontSizeMultiplier?:number}
@@ -73,13 +75,22 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  const activeMetrics=activeModel?metrics:null;
  const justifyContent=typography.textAlign==='right'?'flex-end':typography.textAlign==='center'?'center':'flex-start';
  const visualProps={accessible:false,script,maxFontSizeMultiplier};
- return <View collapsable={false} style={{position:'relative'}}>
+ // Every reel takes the widest digit's advance, while the hidden reading keeps the font's own digit advances wherever
+ // `tabular-nums` is not honoured (Android's custom faces), so the reel row can be wider than the reading. The row is
+ // measured at its own width and the readout grows to it, so the clipping overlay never cuts the first or last glyph.
+ // Where the reading is already as wide as the reels (iOS), the minimum is at most its width and changes nothing.
+ const [reelRowWidth,setReelRowWidth]=useState(0);
+ const minWidth=activeModel&&activeMetrics&&reelRowWidth>0?reelRowWidth:undefined;
+ const recordReelRow=(event:LayoutChangeEvent)=>{const {width}=event.nativeEvent.layout;if(Number.isFinite(width)&&width>0)setReelRowWidth(current=>current===width?current:width);};
+ return <View collapsable={false} style={minWidth===undefined?{position:'relative'}:{position:'relative',minWidth}}>
   <Text accessibilityLabel={label?`${label}: ${reading.text}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[textStyle,activeModel?hiddenReading:undefined]}>{reading.text}{staleSuffix}</Text>
   {safeModel&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={{position:'absolute',opacity:0,flexDirection:'row'}}>{safeModel.digits.map((glyph,index)=><Text {...visualProps} key={`${measurementKey}:${index}`} onLayout={event=>recordGlyph(measurements,measurementKey,index,event,setMetrics)} style={textStyle}>{glyph}</Text>)}</View>}
   {activeModel&&activeMetrics&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={[StyleSheet.absoluteFill,{overflow:'hidden',flexDirection:'row',direction:'ltr',alignItems:'center',justifyContent}]}>
-   {prefix&&<Text {...visualProps} style={textStyle}>{prefix}</Text>}
-   {activeModel.tokens.map(token=>token.kind==='static'?<Text {...visualProps} key={token.key} style={textStyle}>{token.value}</Text>:<DigitReel key={token.key} digits={activeModel.digits} digit={token.digit??0} trend={directionTrend} duration={duration} reducedMotion={reducedMotion} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>)}
-   {(suffix||staleSuffix)&&<Text {...visualProps} style={textStyle}>{`${suffix??''}${staleSuffix}`}</Text>}
+   <View collapsable={false} onLayout={recordReelRow} style={reelRowStyle}>
+    {prefix&&<Text {...visualProps} style={textStyle}>{prefix}</Text>}
+    {activeModel.tokens.map(token=>token.kind==='static'?<Text {...visualProps} key={token.key} style={textStyle}>{token.value}</Text>:<DigitReel key={token.key} digits={activeModel.digits} digit={token.digit??0} trend={directionTrend} duration={duration} reducedMotion={reducedMotion} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>)}
+    {(suffix||staleSuffix)&&<Text {...visualProps} style={textStyle}>{`${suffix??''}${staleSuffix}`}</Text>}
+   </View>
   </View>}
  </View>;
 }

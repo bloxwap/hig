@@ -19,8 +19,10 @@ export function SettingSwitch({label,description,checked:requested,onCheckedChan
  const colors=useColors(),fills=useFills(),{direction}=useHIG();const checked=locked?true:requested;
  const name=<Text style={{fontSize:16,lineHeight:24,color:colors.text}}>{label}</Text>;
  const named=labelAccessoryLabel&&labelAccessory!=null&&labelAccessory!==false?`${label}, ${labelAccessoryLabel}`:label;
- return <SwitchRow testID={testID} label={named}accessibilityHint={description} checked={checked} disabled={locked?true:disabled} onCheckedChange={onCheckedChange} style={{minHeight:32,opacity:disabled?0.5:1}}>
-  <View style={{direction,flex:1,flexDirection:'row',alignItems:'flex-start',gap:12}}>
+ // As on web: the switch is a 48dp target (SwitchRow's own minimum) with 12 above and below the text, and the track sits on
+ // the first line. A row is 56dp in its card, 79dp with a one-line description (24 + 2 + 21 + 12 + 12, plus the card's 4 + 4).
+ return <SwitchRow testID={testID} label={named}accessibilityHint={description} checked={checked} disabled={locked?true:disabled} onCheckedChange={onCheckedChange} style={{opacity:disabled?0.5:1}}>
+  <View style={{direction,flex:1,flexDirection:'row',alignItems:'flex-start',gap:12,paddingVertical:12}}>
    <View style={{flex:1,minWidth:0,gap:2}}>
     {labelAccessory!=null&&labelAccessory!==false?<View testID={testID?`${testID}-label`:undefined} style={{direction,flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:8}}>{name}{labelAccessory}</View>:name}
     {description?<Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{description}</Text>:null}
@@ -29,10 +31,10 @@ export function SettingSwitch({label,description,checked:requested,onCheckedChan
   </View>
  </SwitchRow>;
 }
-/** The card a setting sits in. Inside a list the cards share one rounded container, so they drop their own radius. */
+/** The card a setting sits in, as on web: 4 above and below the switch's own 48dp row, and 16 at the foot when content follows the switch (a channel's body, a signal's hint or error), 12 under the switch. Inside a list the cards share one rounded container, so they drop their own radius. */
 export function SettingCard({children,joined,testID}:React.PropsWithChildren<{joined?:boolean;testID?:string}>){
- const fills=useFills();
- return <View testID={testID} style={{gap:12,paddingVertical:12,paddingHorizontal:20,borderRadius:joined?0:20,backgroundColor:fills.well}}>{children}</View>;
+ const fills=useFills();const extended=React.Children.toArray(children).length>1;
+ return <View testID={testID} style={{gap:12,paddingTop:4,paddingBottom:extended?16:4,paddingHorizontal:20,borderRadius:joined?0:20,backgroundColor:fills.well}}>{children}</View>;
 }
 /** The shared header of a settings screen: Back on the leading edge, the title centred, a host control on the trailing edge. */
 export {SettingHeader} from './setting-header.js';

@@ -769,6 +769,7 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-trade-row-tag { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .hig-trade-skeleton { min-height:56px;border-radius:28px; }
 .hig-trade-error { color:var(--hig-negative); }
+.hig-trade-history-list>.hig-swap-empty { padding-bottom:0; }
 .hig-trade-empty-title,.hig-trade-empty-description { display:block; }
 .hig-trade-empty-title { color:var(--hig-text);font-weight:600; }
 .hig-trade-notice,.hig-trade-footer { display:flex;flex-direction:column;gap:8px;min-width:0; }

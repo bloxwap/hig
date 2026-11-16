@@ -86,11 +86,14 @@ it('draws the quick choices in the unit format, selects the one equal to the tar
  const choices=()=>view.findAllByType(Button).filter(node=>String(node.props.testID).startsWith('target-preset-'));
  expect(choices().map(node=>[node.props.children,node.props.intent,node.props.accessibilityState.selected])).toEqual([['+$1','secondary',false],['+$2','primary',true],['+$5','secondary',false],['+$10','secondary',false]]);
  expect(flat(host(view,'target-presets'))).toMatchObject({flexDirection:'row',gap:8,marginTop:16});
+ // The quick choices are named by the title unless the host names them; native reads the name as each chip's hint.
+ expect(choices().map(node=>node.props.accessibilityHint)).toEqual(Array(4).fill('Take Profit'));
  act(()=>{choices()[2].props.onPress({});});expect(change).toHaveBeenCalledWith(5);
  const row=host(view,'target-custom');expect(row.props.accessibilityRole).toBe('button');expect(row.findAll(node=>node.type==='Text'&&node.props.children==='Custom')).toHaveLength(1);
  act(()=>{all(view,'target-custom').find(node=>'onPress' in node.props).props.onPress({});});expect(custom).toHaveBeenCalledTimes(1);
  view=mount({kind:'stop-loss',value:-0.5,presets:[-0.5,-1,-2,-5]});expect(choices().map(node=>[node.props.children,node.props.intent])).toEqual([['-$0.50','destructive'],['-$1','secondary'],['-$2','secondary'],['-$5','secondary']]);
  view=mount({unit:'percent',value:0.1,presets:[0.05,0.1,0.25]});expect(choices().map(node=>node.props.children)).toEqual(['+5%','+10%','+25%']);
+ view=mount({labels:{...labels,presets:'Quick targets'},presets:[1,2]});expect(choices().map(node=>node.props.accessibilityHint)).toEqual(['Quick targets','Quick targets']);
 });
 
 it('confirms in the role of its kind, with Cancel beside it only when the host handles it',()=>{

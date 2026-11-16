@@ -33,6 +33,8 @@ export interface TargetBlockLabels {
  custom:string;
  /** Accessible name of the info button that shows `note`: How this order fills. Without it the note is always shown. */
  info?:string;
+ /** Accessible name of the quick choices' group, not drawn: Quick targets. Defaults to `title`. */
+ presets?:string;
 }
 export interface TargetBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  kind:TargetKind;
@@ -139,7 +141,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
   </section>
   {units.length>1&&<SegmentedControl label={labels.unit} options={targetUnits(units).map(option=>({value:option.unit,label:labels.units[option.unit],disabled:option.disabled}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
   {onCustom&&(custom===null?<button type='button' className='hig-swap-setting' aria-pressed={customValue!==undefined?false:undefined} onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>:<button type='button' className='hig-swap-setting' aria-pressed='true' onClick={onCustom}><span>{labels.custom}</span><span className='hig-swap-setting-value'>{formatNumber(custom,locale,present(targetFormat(unit,priceOptions)))}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>)}
-  {presets.length>0&&<PresetGroup className='hig-target-presets' selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)}/>}
+  {presets.length>0&&<PresetGroup className='hig-target-presets' label={labels.presets??labels.title} selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)}/>}
   <div className='hig-target-actions'>
    {onCancel&&<Button fullWidth intent='secondary' onClick={onCancel}>{labels.cancel??messages.cancel??en.cancel}</Button>}
    <Button fullWidth intent={intent} disabled={submitDisabled??value===null} busy={busy} onClick={onSubmit}>{labels.submit}</Button>
