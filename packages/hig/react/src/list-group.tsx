@@ -81,7 +81,6 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
  const [on,setOn]=useControllable(checked,defaultChecked??false,onCheckedChange);
  const pressable=onSelect!=null||href!=null;
  const toggles=!pressable&&(checked!==undefined||defaultChecked!==undefined||onCheckedChange!=null);
- const action=!disabled&&!busy&&pressable;
  const text=typeof value==='string'||typeof value==='number';
  const busyText=busyLabel??messages.busy??en.busy;
  const name=<span className='hig-list-row-label' data-tone={tone}>{label}</span>;
@@ -103,7 +102,8 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
   const toggle=(event:React.MouseEvent<HTMLDivElement>)=>{const target=event.target as Element;if(disabled||busy||target.closest('.hig-switch')||target.closest('a[href],button,input,select,textarea,label'))return;input.current?.click();};
   return <div {...rest} ref={ref as React.Ref<HTMLDivElement>} className={classes} data-switch='' aria-disabled={disabled||undefined} onClick={event=>{rest.onClick?.(event);if(!event.defaultPrevented)toggle(event);}}>{content}<PressDecoration kind='switch' disabled={!!disabled||!!busy} input={input}/></div>;
  }
- if(action&&href!=null)return <a {...current} {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)} ref={ref as React.Ref<HTMLAnchorElement>} className={classes} href={href} onClick={onSelect}>{content}<PressDecoration kind='row'/></a>;
+ // A busy link stays the same element, so the focus the press left on it stays; it only stops navigating.
+ if(!disabled&&href!=null)return <a {...current} {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)} ref={ref as React.Ref<HTMLAnchorElement>} className={classes} href={href} aria-disabled={busy||undefined} aria-busy={busy||undefined} onClick={busy?event=>event.preventDefault():onSelect}>{content}<PressDecoration kind='row' disabled={!!busy}/></a>;
  if(onSelect)return <button type='button' {...current} {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)} ref={ref as React.Ref<HTMLButtonElement>} className={classes} disabled={disabled} aria-busy={busy||undefined} onClick={busy?undefined:onSelect}>{content}<PressDecoration kind='row' disabled={!!disabled||!!busy}/></button>;
  return <div {...current} {...rest} ref={ref as React.Ref<HTMLDivElement>} className={classes} aria-disabled={disabled||undefined} aria-busy={busy||undefined}>{content}</div>;
 });

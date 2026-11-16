@@ -44,6 +44,15 @@ describe('ListRow additions',()=>{
   view.rerender(<HIGProvider messages={{busy:'En cours'}}><ListRow label='Link account' busy busyLabel='' onSelect={select}/></HIGProvider>);
   expect(screen.getByRole('button',{name:'Link account'}).getAttribute('aria-busy')).toBe('true');
  });
+ it('keeps a linked row the same focused element while it turns busy, and stops it navigating',()=>{
+  const select=vi.fn();
+  const view=render(<ListRow label='Docs' href='/docs' onSelect={select}/>);
+  const link=screen.getByRole('link',{name:'Docs'});link.focus();expect(document.activeElement).toBe(link);
+  view.rerender(<ListRow label='Docs' href='/docs' onSelect={select} busy/>);
+  expect(document.activeElement).toBe(link);expect(link.getAttribute('aria-busy')).toBe('true');expect(link.getAttribute('aria-disabled')).toBe('true');
+  const event=new MouseEvent('click',{bubbles:true,cancelable:true});link.dispatchEvent(event);expect(event.defaultPrevented).toBe(true);expect(select).not.toHaveBeenCalled();
+  view.rerender(<ListRow label='Docs' href='/docs' disabled/>);expect(screen.queryByRole('link')).toBeNull();
+ });
  it('draws the external arrow or no glyph through disclosure',()=>{
   const view=render(<ListRow label='Docs' href='https://example.com' disclosure='external'/>);
   expect(screen.getByRole('link',{name:'Docs'}).querySelector('.hig-list-row-chevron')?.getAttribute('data-glyph')).toBe('external');
@@ -124,6 +133,11 @@ describe('Small primitives',()=>{
   expect(screen.queryByRole('button')).toBeNull();expect(document.querySelector('.hig-search-input')?.hasAttribute('data-trailing')).toBe(true);
   view.rerender(<HIGProvider messages={{clearSearch:'Effacer'}}><SearchInput aria-label='Search' value='e' onChange={()=>{}} onClear={clear}/></HIGProvider>);expect(screen.getByRole('button',{name:'Effacer'})).toBeTruthy();
   view.rerender(<SearchInput aria-label='Search'/>);expect(document.querySelector('.hig-search-input')?.hasAttribute('data-trailing')).toBe(false);expect(document.querySelector('.hig-search-trailing')).toBeNull();
+ });
+ it('SearchInput disables its clear button inside a disabled Field',()=>{
+  render(<HIGProvider pressDecoration={haptic}><Field label='Search' disabled><SearchInput value='btc' onChange={()=>{}} onClear={()=>{}}/></Field></HIGProvider>);
+  const button=screen.getByRole('button',{name:'Clear search'}) as HTMLButtonElement;expect(button.disabled).toBe(true);
+  expect(button.querySelector('.host-haptic')?.getAttribute('data-disabled')).toBe('true');expect((screen.getByRole('searchbox') as HTMLInputElement).disabled).toBe(true);
  });
  it('Switch and SegmentedControl can hide their visible label; segments draw the segment decoration aimed at their radio',async()=>{
   const change=vi.fn();

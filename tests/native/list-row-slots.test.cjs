@@ -69,6 +69,15 @@ describe('ListRow',()=>{
   tree=mount(h(ListRow,{label:'Swing alerts',checked:true,busy:true,onCheckedChange:change,testID:'row'}));
   expect(pressable(tree,'row').props.accessibilityState).toMatchObject({busy:true,disabled:true});act(()=>{pressable(tree,'row').props.onPress({});});expect(change).toHaveBeenCalledTimes(1);
  });
+ it('makes a static row with a state one element that reads the state; a trailing control keeps it open',()=>{
+  let tree=mount(h(ListRow,{label:'Embedded',value:'Active',selected:true,testID:'row'}));
+  let row=host(tree,'row');expect(row.props).toMatchObject({accessible:true,accessibilityLabel:'Embedded, Active',accessibilityState:{selected:true}});
+  expect(host(tree,'row-value').props).toMatchObject({accessible:false,importantForAccessibility:'no-hide-descendants'});
+  tree=mount(h(ListRow,{label:'Syncing',busy:true,testID:'row'}));row=host(tree,'row');
+  expect(row.props).toMatchObject({accessible:true,accessibilityState:{busy:true},accessibilityLabel:Platform.OS==='android'?'Syncing':'Syncing · Working'});
+  tree=mount(h(ListRow,{label:'Alerts',selected:true,trailing:h(View,{testID:'ctl',accessible:true}),testID:'row'}));expect(host(tree,'row').props.accessible).toBeUndefined();
+  tree=mount(h(ListRow,{label:'Version',value:'0.6.0',testID:'row'}));expect(host(tree,'row').props.accessible).toBeUndefined();expect(host(tree,'row').props.accessibilityState).toBeUndefined();
+ });
  it('keeps the 0.6.0 tree when none of the new props are given',()=>{
   const tree=mount(h(ListRow,{label:'Notifications',value:'Off',testID:'row',onSelect(){}}));
   const row=host(tree,'row');expect(row.props.accessibilityLabel).toBe('Notifications, Off');expect(row.props.accessibilityState).toEqual({disabled:false});
@@ -79,10 +88,20 @@ describe('ListGroup',()=>{
  it('takes a node title, a title accessory and a heading action with a 48dp target',()=>{
   const cancel=jest.fn();
   let tree=mount(h(ListGroup,{title:h(Text,null,'Tasks'),titleAccessory:'2/3',action:{label:'Cancel all',onSelect:cancel},testID:'group'},h(ListRow,{label:'Verify email'})));
-  expect(host(tree,'group-title').props).toMatchObject({accessible:true,accessibilityRole:'header'});expect(text(host(tree,'group-title-accessory'))).toBe('2/3');
+  const heading=host(tree,'group-heading');expect(heading.props).toMatchObject({accessible:true,accessibilityRole:'header',accessibilityLabel:'Tasks, 2/3'});
+  expect(heading.findAll(node=>node.props.testID==='group-title-accessory').length).toBeGreaterThan(0);expect(text(host(tree,'group-title-accessory'))).toBe('2/3');
+  expect(host(tree,'group-title').props.accessibilityRole).toBeUndefined();expect(host(tree,'group-title').props.accessible).toBeUndefined();
+  expect(heading.findAll(node=>node.props.testID==='group-action')).toHaveLength(0);
   const action=pressable(tree,'group-action');expect(action.props).toMatchObject({accessibilityRole:'button',accessibilityLabel:'Cancel all',hitSlop:{top:12,bottom:12,left:8,right:8}});
+  expect(flat(action)).toMatchObject({minWidth:32,alignItems:'center',paddingHorizontal:4});
   act(()=>{action.props.onPress({});});expect(cancel).toHaveBeenCalledTimes(1);
   tree=mount(h(ListGroup,{title:'Orders',action:{label:'Cancel all',onSelect:cancel,disabled:true},testID:'group'}));expect(pressable(tree,'group-action').props.disabled).toBe(true);
+  expect(host(tree,'group-title').props.accessibilityRole).toBe('header');expect(host(tree,'group-heading')).toBeUndefined();
+ });
+ it('reads a string title and its accessory as one header',()=>{
+  const tree=mount(h(ListGroup,{title:'Positions',titleAccessory:'3',testID:'group'}));
+  const heading=host(tree,'group-heading');expect(heading.props).toMatchObject({accessible:true,accessibilityRole:'header',accessibilityLabel:'Positions, 3'});
+  expect(heading.findAll(node=>node.type==='Text').map(text)).toEqual(['Positions','3']);expect(host(tree,'group-title').props.accessibilityRole).toBeUndefined();
  });
  it('holds host content under the title, with no row container when there are no rows',()=>{
   let tree=mount(h(ListGroup,{title:'Custom code',intro:h(Text,null,'Unlocks at 10 referrals'),testID:'group'}));
@@ -107,6 +126,11 @@ describe('Small primitives',()=>{
   act(()=>{button.props.onPress({});});expect(clear).toHaveBeenCalledTimes(1);
   tree=mount(h(SearchInput,{testID:'search',value:'',onChangeText(){},onClear:clear}),{messages:{clearSearch:'Effacer'}});expect(pressable(tree,'search-clear')).toBeUndefined();
   tree=mount(h(SearchInput,{testID:'search',value:'e',onChangeText(){},onClear:clear}),{messages:{clearSearch:'Effacer'}});expect(pressable(tree,'search-clear').props.accessibilityLabel).toBe('Effacer');
+ });
+ it('SearchInput disables its clear button inside a disabled Field',()=>{
+  const clear=jest.fn();
+  const tree=mount(h(Field,{label:'Search',disabled:true},h(SearchInput,{testID:'search',value:'btc',onChangeText(){},onClear:clear})));
+  const button=pressable(tree,'search-clear');expect(button.props.disabled).toBe(true);expect(button.props.accessibilityState).toEqual({disabled:true});expect(flat(button).opacity).toBe(0.5);
  });
  it('Switch takes a testID and can hide its visible label',()=>{
   const tree=mount(h(Switch,{label:'Live Mode',hideLabel:true,testID:'live'}));

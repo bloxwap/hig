@@ -34,14 +34,20 @@ export function ListGroup({title,titleAccessory,action,intro,children,testID}:Li
  const titled=shown(title),accessory=shown(titleAccessory);
  const titleStyle={color:colors.muted,fontSize:14,lineHeight:20,fontWeight:'500' as const};
  const titleTestID=testID?`${testID}-title`:undefined;
- // A string title keeps its 0.6.0 anatomy; an element title is one header node.
+ // A string title keeps its 0.6.0 anatomy; an element title is one header node. With an accessory, the title and the accessory are one header node instead.
+ const joined=titled&&accessory;
+ const role=joined?{}:{accessibilityRole:'header' as const};
  const name=!titled?null:typeof title==='string'||typeof title==='number'
-  ?<Text accessibilityRole='header' testID={titleTestID} style={accessory||action?{flexShrink:1,...titleStyle}:{paddingHorizontal:4,...titleStyle}}>{title}</Text>
-  :<View accessible accessibilityRole='header' testID={titleTestID} style={accessory||action?{flexShrink:1}:{paddingHorizontal:4}}>{title}</View>;
+  ?<Text {...role} testID={titleTestID} style={accessory||action?{flexShrink:1,...titleStyle}:{paddingHorizontal:4,...titleStyle}}>{title}</Text>
+  :<View {...(joined?{}:{accessible:true,...role})} testID={titleTestID} style={accessory||action?{flexShrink:1}:{paddingHorizontal:4}}>{title}</View>;
+ const extra=accessory?<View testID={testID?`${testID}-title-accessory`:undefined} style={{flexShrink:1}}>{typeof titleAccessory==='string'||typeof titleAccessory==='number'?<Text style={titleStyle}>{titleAccessory}</Text>:titleAccessory}</View>:null;
+ // An element with no text of its own, such as a live figure, leaves the platform to read the node's children.
+ const titleText=joined?plainText(title):'',accessoryText=joined?plainText(titleAccessory):'';
+ const heading=joined?<View accessible accessibilityRole='header' accessibilityLabel={titleText&&accessoryText?`${titleText}, ${accessoryText}`:undefined} testID={testID?`${testID}-heading`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8,flexShrink:1,minWidth:0}}>{name}{extra}</View>:<>{name}{extra}</>;
+ // The action stays outside the header node, so it remains its own button.
  const header=!accessory&&!action?name:<View testID={testID?`${testID}-header`:undefined} style={{direction,flexDirection:'row',alignItems:'center',gap:8,paddingHorizontal:4,minWidth:0}}>
-  {name}
-  {accessory?<View testID={testID?`${testID}-title-accessory`:undefined} style={{flexShrink:1}}>{typeof titleAccessory==='string'||typeof titleAccessory==='number'?<Text style={titleStyle}>{titleAccessory}</Text>:titleAccessory}</View>:null}
-  {action?<Pressable testID={testID?`${testID}-action`:undefined} accessibilityRole='button' accessibilityLabel={action.label} accessibilityState={{disabled:!!action.disabled}} disabled={action.disabled} hitSlop={actionSlop} onPress={action.onSelect} style={({pressed})=>({marginStart:'auto',paddingVertical:4,paddingHorizontal:4,opacity:action.disabled?0.5:pressed?0.6:1})}>
+  {heading}
+  {action?<Pressable testID={testID?`${testID}-action`:undefined} accessibilityRole='button' accessibilityLabel={action.label} accessibilityState={{disabled:!!action.disabled}} disabled={action.disabled} hitSlop={actionSlop} onPress={action.onSelect} style={({pressed})=>({marginStart:'auto',minWidth:32,alignItems:'center',paddingVertical:4,paddingHorizontal:4,opacity:action.disabled?0.5:pressed?0.6:1})}>
    <Text accessible={false} style={{fontSize:14,lineHeight:20,fontWeight:'600',color:colors.text}}>{action.label}</Text>
   </Pressable>:null}
  </View>;
@@ -106,7 +112,9 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
  const spoken=busy&&busyText&&Platform.OS!=='android'?`${reading} · ${busyText}`:reading;
  // Everything aligns to the first line of the label, so a trailing switch stays at the top when the label wraps.
  const first:ViewStyle={minHeight:40,justifyContent:'center'};
- const quiet=onSelect||toggles?hidden:{};
+ // A static row with a state is one element, so the state is read; a trailing control keeps the row open so the control stays its own target.
+ const announced=!onSelect&&!toggles&&(selected!==undefined||!!busy)&&trailing==null;
+ const quiet=onSelect||toggles||announced?hidden:{};
  const lead=leading==null?null:<View {...hidden} style={first}>{leading}</View>;
  const labelColor=tone==='destructive'?colors.negative:tone==='muted'?colors.muted:colors.text;
  const name=described
@@ -115,7 +123,7 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
    <Text testID={testID?`${testID}-description`:undefined} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{description}</Text>
   </View>
   :<Text {...quiet} style={{flex:1,flexShrink:1,minWidth:0,paddingVertical:8,fontSize:16,lineHeight:24,color:labelColor}}>{label}</Text>;
- const amount=value==null||value===false?null:text?<Text {...quiet} testID={testID?`${testID}-value`:undefined} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',paddingVertical:8,fontSize:16,lineHeight:24,color:colors[valueTone??'muted'],textAlign:'right'}}>{value}</Text>:<View {...(!onSelect&&!toggles&&valueLabel?{accessible:true,accessibilityLabel:valueLabel}:{})} style={first}>{value}</View>;
+ const amount=value==null||value===false?null:text?<Text {...quiet} testID={testID?`${testID}-value`:undefined} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',paddingVertical:8,fontSize:16,lineHeight:24,color:colors[valueTone??'muted'],textAlign:'right'}}>{value}</Text>:<View {...(!onSelect&&!toggles&&!announced&&valueLabel?{accessible:true,accessibilityLabel:valueLabel}:{})} style={first}>{value}</View>;
  const extra=trailing==null?null:<View pointerEvents={onSelect||toggles?'none':'auto'} {...quiet} style={{flexDirection:'row',alignItems:'center',gap:8,minHeight:40}}>{trailing}</View>;
  const chevron=<View testID={testID?`${testID}-chevron`:undefined} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>;
  const glyphKind=disclosure??(selected!==undefined?'none':'chevron');
@@ -132,7 +140,7 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
   </SwitchRow>;
  }
  const state={...(selected!==undefined?{selected}:{}),...(busy?{busy:true}:{})};
- if(!onSelect)return <View {...(rest as ViewProps)} ref={ref} testID={testID} accessibilityState={Object.keys(state).length?state:undefined} style={row(false)}>{lead}{name}{amount}{extra}{end}</View>;
+ if(!onSelect)return <View {...(rest as ViewProps)} ref={ref} testID={testID} {...(announced?{accessible:true,accessibilityLabel:spoken}:{})} accessibilityState={Object.keys(state).length?state:undefined} style={row(false)}>{lead}{name}{amount}{extra}{end}</View>;
  return <Pressable {...rest} ref={ref} testID={testID} accessibilityRole='button' accessibilityLabel={spoken} accessibilityState={{disabled:!!disabled,...state}} aria-busy={busy||undefined} disabled={disabled} onPress={busy?undefined:onSelect} style={({pressed})=>row(pressed&&!busy)}>
   {lead}{name}{amount}{extra}{end}
  </Pressable>;

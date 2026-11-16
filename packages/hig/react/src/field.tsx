@@ -22,9 +22,9 @@ export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputEle
  clearLabel?:string;
 }
 export const SearchInput=/* @__PURE__ */forwardRef<HTMLInputElement,SearchInputProps>(function SearchInput({trailing,onClear,clearLabel,...props},ref){
- const {messages}=useHIG();const inner=useRef<HTMLInputElement|null>(null);
+ const {messages}=useHIG();const inner=useRef<HTMLInputElement|null>(null);const off=!!useContext(Context).disabled||!!props.disabled;
  const attach=(node:HTMLInputElement|null)=>{inner.current=node;if(typeof ref==='function')ref(node);else if(ref)ref.current=node;};
- const clear=onClear&&props.value!=null&&String(props.value)!==''?<button type='button' className='hig-search-clear' aria-label={clearLabel??messages.clearSearch??en.clearSearch} disabled={props.disabled} onClick={()=>{onClear();inner.current?.focus();}}><svg aria-hidden='true' focusable='false' viewBox='0 0 16 16'><path d='m4 4 8 8m0-8-8 8'/></svg><PressDecoration kind='icon-button' disabled={!!props.disabled}/></button>:null;
+ const clear=onClear&&props.value!=null&&String(props.value)!==''?<button type='button' className='hig-search-clear' aria-label={clearLabel??messages.clearSearch??en.clearSearch} disabled={off} onClick={()=>{onClear();inner.current?.focus();}}><svg aria-hidden='true' focusable='false' viewBox='0 0 16 16'><path d='m4 4 8 8m0-8-8 8'/></svg><PressDecoration kind='icon-button' disabled={off}/></button>:null;
  const extra=trailing!=null&&trailing!==false;
  const end=extra||clear?<span className='hig-search-trailing'>{trailing}{clear}</span>:null;
  // The end padding stays while the clear button comes and goes, so typed text never reflows.

@@ -26,20 +26,20 @@ Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, 
 - `description`: a muted second line under the label; the row grows, and it is read with the label (a switch row's hint).
 - `tone` (`destructive`, `muted`) colours the label.
 - `selected`: a row in a list that selects and closes. `true` draws a check on the trailing edge in place of the chevron and sets `aria-current` (web) or `accessibilityState.selected` (native); with `selected` set, true or false, no chevron is drawn unless `disclosure` asks for one.
-- `busy` (with `busyLabel`): a spinner in place of the disclosure, `aria-busy` / `accessibilityState.busy`, the busy text added to a selectable row's name as `Button` does, and presses ignored, without dimming.
+- `busy` (with `busyLabel`): a spinner in place of the disclosure, `aria-busy` / `accessibilityState.busy`, the busy text added to a selectable row's name as `Button` does, and presses ignored, without dimming. A busy linked row (web) stays the same `<a>`, marked `aria-disabled` and not navigating, so it keeps the focus the press left on it. A static native row with `selected` or `busy` and no `trailing` is one element named by its label and value, so the state is read.
 - `disclosure`: `chevron` (default), `external` (an arrow for something outside the app, mirrored in right-to-left layouts) or `none`.
 - A whole-row switch: `checked` (or `defaultChecked`) with `onCheckedChange` and no `onSelect`/`href`. The row is the target, the switch on the trailing edge is named by `label`, and on web the host's press decoration covers the row as one `'switch'` layer aimed at the input. Catalog state `switch`.
 - The ref reaches the row's element on both platforms. Web already passed other attributes (`data-*`, `aria-*`) through; native now passes Pressable props such as `android_disableSound`, `hitSlop`, `onLongPress` and `accessibilityHint` to the row. Catalog states `details` and `choice`.
 
 ### ListGroup
 
-- `title` may be an element; `titleAccessory` (a count or figure read with the heading, while the group stays named by the title); `action={{label, onSelect, disabled}}` (a text action on the trailing edge of the heading, 44 units tall on web without growing it, 48dp through `hitSlop` on native, with the `'button'` press decoration on web); `intro` (host content between the heading and the rows; with no rows there is no row container). Type `ListGroupAction`. Catalog state `heading-slots`.
+- `title` may be an element; `titleAccessory` (a count or figure read with the heading, while the group stays named by the title; on native the title and accessory are one header element, and the action stays its own button); `action={{label, onSelect, disabled}}` (a text action on the trailing edge of the heading, 44 units tall on web without growing it, at least 48dp each way on native through `minWidth` and `hitSlop`, with the `'button'` press decoration on web); `intro` (host content between the heading and the rows; with no rows there is no row container). Type `ListGroupAction`. Catalog state `heading-slots`.
 
 ### Small primitives
 
 - `Text`: `tone='muted'` and `size='caption'` (12/18), web and native. Catalog state `muted-caption`.
 - `Field`: `descriptionTone='positive'` draws the description as a success line and announces it when it changes. (No catalog state: every Field state carries a visual baseline per platform, and this one needs Linux captures first.)
-- `SearchInput`: `trailing` (host content inside the trailing edge) and `onClear` with `clearLabel` (a clear button while the controlled value is not empty; it returns focus to the field). New message key `clearSearch` (“Clear search”). Catalog state `clear`.
+- `SearchInput`: `trailing` (host content inside the trailing edge) and `onClear` with `clearLabel` (a clear button while the controlled value is not empty; it returns focus to the field, and it is disabled with the input, including inside a disabled `Field`). New message key `clearSearch` (“Clear search”). Catalog state `clear`.
 - `Switch`: `hideLabel` draws the track alone, keeping `label` as the name (web and native); native `testID`. Native `SwitchRow` forwards a ref. Type `SwitchProps` from the selection entries.
 - `SegmentedControl`: `hideLabel` (web: a visually hidden legend); native `testID`; on web each segment draws the provider's press decoration with the new kind `'segment'`, aimed at its radio. `PressDecorationKind` gains `'segment'`. Type `SegmentedControlProps`. Catalog state `hidden-label`.
 - Native `Filter`: `scrollComponent`, the host's horizontal scroll view (for a sheet library's scroller).
