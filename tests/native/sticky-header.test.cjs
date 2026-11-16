@@ -41,3 +41,38 @@ describe('StickyHeaderLayout in a sticky slot',()=>{
   expect(pinned()).toMatchObject({paddingTop:16,backgroundColor:nativeSrgb.background});expect(flat(wrapper.props.style).backgroundColor).toBeUndefined();
  });
 });
+describe('ScreenHeader with stickyHeader in a host sticky slot',()=>{
+ const {ScreenHeader,useStickyHeaderScroll}=require('../../packages/hig/native/src/screen-header');
+ const host=id=>view=>view.findAll(node=>node.props.testID===id&&typeof node.type==='string')[0];
+ const header=host('pane-header');
+ // The sticky child here is the ScreenHeader element itself, so what React Native moves is ScreenHeader's own `style` prop.
+ function Pane({scroll:Scroll=ScrollView,style,inset=16}){const scroll=useStickyHeaderScroll();return h(Scroll,{testID:'scroller',stickyHeaderIndices:[0],onScroll:scroll.onScroll,scrollEventThrottle:scroll.scrollEventThrottle},h(ScreenHeader,{testID:'pane',title:'Pane',onBack:()=>{},action:h(Text,{testID:'pane-action'},'X'),stickyHeader:true,scrolled:scroll.scrolled,stickyHeaderBackground:'#111111',inset,style}),h(View,null));}
+ const slotOf=row=>{let slot=row.parent;while(typeof slot.type!=='string')slot=slot.parent;return slot;};
+ it('puts the row, the inset and the fill on the inner view, and only the host style and the row height on the pinned slot',()=>{
+  const view=mount(h(Pane,{style:{marginBottom:4}}));
+  const row=header(view),slot=slotOf(row);
+  expect(flat(slot.props.style)).toEqual({minHeight:60,marginBottom:4});expect(slot.props.testID).toBeUndefined();
+  expect(flat(row.props.style)).toEqual({flexDirection:'row',alignItems:'center',minHeight:60,paddingTop:16,paddingHorizontal:16,backgroundColor:'transparent'});
+  for(const id of ['pane-back','pane-title','pane-action'])expect([id,!!host(id)(view)]).toEqual([id,true]);
+  for(const id of ['pane-back','pane-title','pane-action']){let node=host(id)(view);while(node&&node!==row)node=node.parent;expect([id,node===row]).toEqual([id,true]);}
+ });
+ it('keeps the row, the inset and the scrolled fill on the header once React Native moves the pinned child style',()=>{
+  const view=mount(h(Pane,{scroll:PinningScroll,style:{marginBottom:4}}));
+  const wrapper=host('rn-sticky-wrapper')(view);
+  // The host style travels to the wrapper; nothing HIG draws does.
+  expect(flat(wrapper.props.style)).toEqual({marginBottom:4,zIndex:10});
+  // The slot keeps the row's whole height whatever flex:1 does in the wrapper's column.
+  expect(flat(slotOf(header(view)).props.style)).toEqual({minHeight:60,flex:1});
+  const row=()=>flat(header(view).props.style);
+  expect(row()).toEqual({flexDirection:'row',alignItems:'center',minHeight:60,paddingTop:16,paddingHorizontal:16,backgroundColor:'transparent'});
+  act(()=>{view.findByType(ScrollView).props.onScroll({nativeEvent:{contentOffset:{y:24}}});});
+  expect(row()).toMatchObject({flexDirection:'row',paddingTop:16,paddingHorizontal:16,backgroundColor:'#111111'});expect(flat(wrapper.props.style).backgroundColor).toBeUndefined();
+ });
+ it('keeps a 44dp slot without an inset, and leaves a header without stickyHeader as one view with the host style on it',()=>{
+  let view=mount(h(Pane,{scroll:PinningScroll,inset:0}));
+  expect(flat(slotOf(header(view)).props.style)).toEqual({minHeight:44,flex:1});expect(flat(header(view).props.style)).toEqual({flexDirection:'row',alignItems:'center',minHeight:44,backgroundColor:'transparent'});
+  view=mount(h(ScreenHeader,{testID:'pane',title:'Pane',inset:16,style:{marginBottom:4}}));
+  expect(flat(header(view).props.style)).toEqual({flexDirection:'row',alignItems:'center',minHeight:44,marginBottom:4});
+  expect(view.findAll(node=>typeof node.type==='string'&&flat(node.props.style).minHeight===44&&node.props.testID===undefined&&node.children.some(child=>child.props?.testID==='pane-header'))).toHaveLength(0);
+ });
+});

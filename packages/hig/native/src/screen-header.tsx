@@ -37,7 +37,9 @@ export interface ScreenHeaderProps {
  scrolled?:boolean;
  /** With `stickyHeader`: the fill once content is under the header. Defaults to the background role; in a sheet pass the sheet's fill (`useColors().overlay`). */
  stickyHeaderBackground?:string;
- /** Style of the header's container, such as padding when it sits in a scroller's sticky slot. */
+ /** With `stickyHeader`: space kept inside the fill above the row and to each side of it, such as the blocks' 16, so the inset fills with the header once content scrolls under it. Pass the inset here, not as `style` padding: React Native moves a sticky child's `style` onto its own wrapper, outside the fill. */
+ inset?:number;
+ /** Style of the header's container. With `stickyHeader` it sits outside the fill (React Native moves it onto the sticky slot's wrapper once pinned); put an inset in `inset`. */
  style?:StyleProp<ViewStyle>;
 }
 /** The block header's Close control, shared by the blocks that draw one. */
@@ -50,14 +52,15 @@ export function HeaderClose({onClose,label,testID,closeProps}:{onClose:()=>void;
  * edge. The settings blocks (Notifications, Signals, Sound & Haptics) draw it; the other native blocks draw a header that matches
  * it. Import it from `@bloxwap/hig/native/screen-header` for a host pane that has no block.
  */
-export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,hideTitle,stickyHeader,scrolled,stickyHeaderBackground,style}:ScreenHeaderProps){
+export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,hideTitle,stickyHeader,scrolled,stickyHeaderBackground,inset,style}:ScreenHeaderProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  // Clear white stays in the accessibility tree where opacity 0 might not; the title keeps its line so the header keeps its height.
  const ink=hideTitle?'#ffffff00':colors.text;
  const heading={textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:ink} as const;
  const fill=stickyHeader?stickyHeaderFill(!!scrolled,stickyHeaderBackground??colors.background):undefined;
- return <View testID={id('header')} style={[{flexDirection:'row',alignItems:'center',minHeight:44},fill,style]}>
+ const pad=stickyHeader&&inset?inset:0,height=44+pad;
+ const row=<View testID={id('header')} style={[{flexDirection:'row',alignItems:'center',minHeight:height},pad?{paddingTop:pad,paddingHorizontal:pad}:undefined,fill,stickyHeader?undefined:style]}>
   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton {...backProps} intent='ghost' label={t.back} disabled={backDisabled} suppressFeedback testID={id('back')} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={backDisabled?colors.faint:colors.text}/></View></IconButton>:null}</View>
   {badge?<View ref={titleRef} nativeID={headingId} accessible accessibilityRole='header' accessibilityLabel={`${title}, ${badge}`} style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,minWidth:0}}>
    <Text testID={id('title')} accessible={false} numberOfLines={1} style={{...heading,flexShrink:1}}>{title}</Text>
@@ -65,4 +68,8 @@ export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,
   </View>:<Text ref={titleRef as unknown as React.Ref<React.ComponentRef<typeof Text>>} testID={id('title')} nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,...heading}}>{title}</Text>}
   <View style={{minWidth:44,alignItems:'flex-end'}}>{action}</View>
  </View>;
+ // A pinned header is the host scroller's sticky child: React Native moves its `style` prop onto the slot's own wrapper and passes flex:1 in its
+ // place, which in that column measures the child at its minimum height alone (0 plus padding). So the outer view carries only what may move
+ // (the host's style) and a minimum height of the whole row, and the row, the inset and the fill sit on the inner view, pinned or not.
+ return stickyHeader?<View style={[{minHeight:height},style]}>{row}</View>:row;
 }
