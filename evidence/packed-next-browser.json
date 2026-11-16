@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.7.0",
   "framework": "Next 16.4.0 webpack",
   "consumer": "packed tarballs in a clean temporary app",
   "checks": [
