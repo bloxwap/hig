@@ -34,6 +34,8 @@ export interface NotificationsBlockProps extends Omit<React.HTMLAttributes<HTMLE
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
  stickyHeader?:boolean;
 }
@@ -53,9 +55,9 @@ function Group({group}:{group:NotificationsGroup}){
  </section>;
 }
 /** The notifications the viewer receives: each kind is a card with a switch and a line of explanation, and a failure to turn one on reads under its card. */
-export function NotificationsBlock({title,description,items=[],groups,onBack,headerAction,stickyHeader,className,...rest}:NotificationsBlockProps){
+export function NotificationsBlock({title,description,items=[],groups,onBack,headerAction,stickyHeader,headingId,className,...rest}:NotificationsBlockProps){
  return <section {...rest} className={`hig-settings-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {description&&<p className='hig-settings-description'>{description}</p>}
   {items.length>0&&<div className='hig-setting-cards'>{items.map(item=><Item key={item.id} item={item}/>)}</div>}
   {groups?.map(group=><Group key={group.id} group={group}/>)}

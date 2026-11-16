@@ -3,7 +3,9 @@ import React,{forwardRef,useId,useRef} from 'react';
 import type {Intent} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,type PressDecorationKind} from './provider.js';
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>{intent?:Intent;/** Shows a leading spinner and blocks activation. */busy?:boolean;/** Busy text appended to the accessible name (not drawn; the spinner is the visible cue); defaults to HIGProvider `messages.busy`. `''` omits it (busy state stays exposed). */busyLabel?:string;fullWidth?:boolean;suppressFeedback?:boolean}
+/** A button's intent: the shared `Intent`, or a market-direction fill, `up` (buy, long) or `down` (sell, short), that follows `HIGProvider marketColors` (default the buy and sell colours) with a dark label. */
+export type ButtonIntent=Intent|'up'|'down';
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>{intent?:ButtonIntent;/** Shows a leading spinner and blocks activation. */busy?:boolean;/** Busy text appended to the accessible name (not drawn; the spinner is the visible cue); defaults to HIGProvider `messages.busy`. `''` omits it (busy state stays exposed). */busyLabel?:string;fullWidth?:boolean;suppressFeedback?:boolean}
 function useButton({intent='primary',busy=false,busyLabel,disabled,fullWidth,suppressFeedback,onClick,children,type='button',...props}:ButtonProps,ref:React.ForwardedRef<HTMLButtonElement>,kind:PressDecorationKind){
  // The provider puts its press layer on the context (see PressDecoration); calling it here keeps the layer out of a lone Button bundle.
  const context=useHIG() as ReturnType<typeof useHIG>&{drawPress?:(kind:PressDecorationKind,disabled:boolean)=>React.ReactNode};const id=useId();const sequence=useRef(0);const busyText=busyLabel??context.messages.busy??en.busy;

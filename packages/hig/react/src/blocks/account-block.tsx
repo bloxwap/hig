@@ -55,6 +55,10 @@ export interface AccountBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  onShowAddress?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. Replaces the QR button. */
  headerAction?:React.ReactNode;
+ /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */
+ stickyHeader?:boolean;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** Total in dollars. Defaults to the sum of the asset values (with `sections`, the sum of the totals of the sections that are drawn, which is unknown when any of those totals is); `null` reads as unknown. */
  balance?:number|null;
  /** Every holding as one list: the pinned asset, then the rest by value. Ignored when `sections` is set. */
@@ -96,7 +100,7 @@ export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol='
  const {pinned,rest}=accountRows(assets,pinnedSymbol,options);return {pinned:assets.includes(pinned)?pinned:null,rest};
 }
 /** An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. */
-export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol='USDC',pinnedId,order,onDeposit,depositLabel,onAssetSelect,className,...rest}:AccountBlockProps){
+export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,assets=[],sections,pinnedSymbol='USDC',pinnedId,order,onDeposit,depositLabel,onAssetSelect,stickyHeader,headingId,className,...rest}:AccountBlockProps){
  const {messages}=useHIG();const id=useId();
  const shown=sections?.filter(section=>section.assets.length>0);
  const total=balance!==undefined?balance:shown?accountSectionsTotal(shown):sum(assets);
@@ -117,7 +121,7 @@ export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,as
  })}</div>;
  else{const {pinned,rest:others}=accountRows(assets,pinnedSymbol,{order,pinnedId});list=<ul className='hig-account-assets'>{row(pinned,true,pinnedId)}{others.map(asset=>row(asset,false,pinnedId))}</ul>;}
  return <section {...rest} className={`hig-account-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title??messages.account??en.account} onBack={onBack} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}<PressDecoration kind='back'/></button>)}/>
+  <ScreenHeader title={title??messages.account??en.account} onBack={onBack} headingId={headingId} stickyHeader={stickyHeader} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}<PressDecoration kind='back'/></button>)}/>
   <div className='hig-account-summary'>
    <div className='hig-account-balance'><AnimatedNumberReadout value={total} label={messages.accountBalance??en.accountBalance} options={usd}/></div>
    {onDeposit&&<Button onClick={onDeposit}>{depositLabel??messages.deposit??en.deposit}</Button>}

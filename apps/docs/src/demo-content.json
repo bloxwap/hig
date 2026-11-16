@@ -1110,7 +1110,8 @@
       "states": [
         "default",
         "empty",
-        "picker"
+        "picker",
+        "one-line"
       ]
     },
     {

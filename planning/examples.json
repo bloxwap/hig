@@ -1058,11 +1058,16 @@
       "states": [
         "default",
         "empty",
-        "picker"
+        "picker",
+        "one-line"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "one-line": {
+          "web": "<C.Stack><C.MarketRow symbol='HYPESTRAT' name='Hyperliquid Strategies Holdings' detail='Up to 10× leverage on the perpetual' icon={<C.Avatar name='HS'/>} trailing={<C.Badge>-$1,204.88</C.Badge>} selected onSelect={()=>setMessage('Hyperliquid Strategies selected')}/><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} onSelect={()=>setMessage('Bitcoin selected')}/></C.Stack>",
+          "native": "<C.Stack><C.MarketRow symbol='HYPESTRAT' name='Hyperliquid Strategies Holdings' detail='Up to 10× leverage on the perpetual' icon={<C.Avatar name='HS'/>} trailing={<C.Badge>-$1,204.88</C.Badge>} selected onSelect={()=>setMessage('Hyperliquid Strategies selected')}/><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} onSelect={()=>setMessage('Bitcoin selected')}/></C.Stack>"
+        },
         "picker": {
           "web": "<C.Stack><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} selected onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25×' icon={<C.Avatar name='ETH'/>} active onSelect={()=>setMessage('Ether selected')}/><C.MarketRow symbol='SOL' name='Solana' detail='20×' icon={<C.Avatar name='SOL'/>} disabled onSelect={()=>setMessage('Solana selected')}/></C.Stack>",
           "native": "<C.Stack><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} selected onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25×' icon={<C.Avatar name='ETH'/>} active onSelect={()=>setMessage('Ether selected')}/><C.MarketRow symbol='SOL' name='Solana' detail='20×' icon={<C.Avatar name='SOL'/>} disabled onSelect={()=>setMessage('Solana selected')}/></C.Stack>"

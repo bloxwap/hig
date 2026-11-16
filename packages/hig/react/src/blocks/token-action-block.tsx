@@ -41,6 +41,10 @@ export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLEle
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
+ /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */
+ stickyHeader?:boolean;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapPanelBlock`. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
 }
@@ -48,13 +52,13 @@ const usd={style:'currency',currency:'USD'} as const,unitsFormat={maximumFractio
 /** The text of an action: its `label`, the built-in label for a known id, or the id itself. */
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>={}):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token and what can be done with it: where it is held, which chains it sits on, and the actions as equal full-width buttons. */
-export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptions=unitsFormat,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',className,...rest}:TokenActionBlockProps){
+export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptions=unitsFormat,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',stickyHeader,headingId,className,...rest}:TokenActionBlockProps){
  const {messages}=useHIG();const locale=useNumberLocale();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
  const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<AnimatedNumberReadout key='value' value={total} options={usd}/>;
  return <section {...rest} className={`hig-token-card${className?` ${className}`:''}`}>
-  <ScreenHeader title={symbol} onBack={onBack} action={headerAction}/>
+  <ScreenHeader title={symbol} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {(assets||chains)&&<div className='hig-token-bars'>
    {assets&&<BarMark surface={false} title={name??symbol} description={headline} elements={assets}/>}
    {chains&&<BarMark surface={false} title={chainsTitle??messages.swapChains??en.swapChains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)} elements={chains}/>}

@@ -26,7 +26,8 @@ export type MarketRowProps=MarketRowContent&({/** Default: HIG owns the name but
 const check=<svg className='hig-market-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
 /** A market as one row: its name (a button, or the host's identity in presentation mode), price and change. Other attributes, pointer handlers and the ref reach the row's root. */
 export const MarketRow=forwardRef<HTMLDivElement,MarketRowProps>(function MarketRow({symbol,name,price,change,onSelect,priceOptions,changeOptions,mode='action',identity,icon,favorite,volume,detail,trailing,selected,disabled,active,className,style,...rest},ref){
- const title=detail===undefined?<>{name} ({symbol})</>:<span className='hig-market-text'><span>{name} ({symbol})</span><span className='hig-market-detail'>{detail}</span></span>;
+ // The name sits in its own span so an action row can truncate it on one line instead of wrapping.
+ const title=detail===undefined?<span className='hig-market-label'>{name} ({symbol})</span>:<span className='hig-market-text'><span className='hig-market-label'>{name} ({symbol})</span><span className='hig-market-detail'>{detail}</span></span>;
  const current=selected?'true' as const:undefined;
  const content=<>{favorite!==undefined&&<span className='hig-market-favorite'>{favorite}</span>}{icon!==undefined&&<span className='hig-market-icon'>{icon}</span>}{mode==='presentation'?<span className='hig-market-name'>{identity===undefined?title:identity}</span>:<Button intent='ghost' onClick={onSelect} disabled={disabled} aria-current={current}>{title}</Button>}</>;
  const hasTrailing=trailing!==undefined&&trailing!==null&&trailing!==false;

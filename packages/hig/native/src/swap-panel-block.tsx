@@ -9,7 +9,8 @@ import {figureProps} from './figure.js';
 import {Toast,useTransientNotice} from './status.js';
 import {VerticalAddress,addressKind} from './data.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
-import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHeader,SwapHostContext,SwapKeypad,SwapNumberText,TokenArt} from './swap-parts.js';
+import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHostContext,SwapKeypad,SwapNumberText,TokenArt} from './swap-parts.js';
+import {ScreenHeader} from './screen-header.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
 import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
@@ -75,8 +76,10 @@ export interface SwapPanelBlockProps {
  details?:readonly SwapDetail[];
  /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
- /** Heading above the cards, for a panel that is its own screen or sheet. `onBack` adds a Back control before it. */
+ /** Heading above the cards, for a panel that is its own screen or sheet, drawn as the shared `ScreenHeader` (the title centred, 17/24, in a 44dp row) like every other block. `onBack` adds Back on its leading edge. Test IDs `swap-header`, `swap-back` and `swap-title`. */
  title?:string;onBack?:()=>void;
+ /** With `title`: `nativeID` of the heading, so a sheet around the panel can name itself with `accessibilityLabelledBy` (Android). */
+ headingId?:string;
  /** `false` leaves the action button on its own, full width: no settings and no reset button. */
  controls?:boolean;
  /** Decoration before the action text. */
@@ -117,7 +120,7 @@ export interface SwapPanelBlockProps {
  * or token units through the keypad, token pickers, settings, and one action that names itself from the chosen pair.
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
-export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelBlockProps){
+export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelBlockProps){
  const env=useHIG();const {direction}=env;const locale=useNumberLocale();const present=usePresentNumber();const colors=useColors();const t=useMessages();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
@@ -256,7 +259,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  const fromCard=card('from'),toCard=fixedCard()??card('to');
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
  const main=<View testID='swap-view-main'>
-  {title?<View style={{marginBottom:12}}><SwapHeader title={title} onBack={onBack}/></View>:null}
+  {title?<View style={{marginBottom:12}}><ScreenHeader testID='swap' title={title} onBack={onBack} headingId={headingId}/></View>:null}
   {banner?<View testID='swap-banner' style={{marginBottom:8}}>{banner}</View>:null}
   {fromCard}
   <View style={{height:8,zIndex:1,alignItems:'center'}}>

@@ -1,5 +1,6 @@
 import React from 'react';
-import {Image,Pressable,View,type ViewStyle} from 'react-native';
+import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
+import {StickyHeaderLayout} from './sticky-header.js';
 import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
@@ -59,6 +60,14 @@ export interface ProfileBlockProps {
  sections:readonly ProfileSection[];
  /** Host content under the sections on the block's inset, such as legal links. */
  footer?:React.ReactNode;
+ /** Keeps the top bar (address and Close) pinned while the rest scrolls: the block becomes its own scroll view with the bar as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */
+ stickyHeader?:boolean;
+ /** With `stickyHeader`: the bar's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
+ /** `nativeID` of the name heading, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */
+ headingId?:string;
  testID?:string;
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
@@ -95,22 +104,22 @@ function ProfileListRow({row}:{row:ProfileRow}){
  return <ListRow testID={testID} label={row.label} leading={row.leading} value={value as React.ReactNode} valueTone={tone} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
 }
 /** A person's profile as one screen: the address and close controls, the avatar with its status, the name, then the host's sections of rows. */
-export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,avatarLabel,status,onEditName,onShowAddress,onClose,action,sections,footer,testID}:ProfileBlockProps){
+export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,avatarLabel,status,onEditName,onShowAddress,onClose,action,sections,footer,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:ProfileBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
  const art=typeof avatar==='string'?<Image source={{uri:avatar}} style={{width:144,height:144}}/>:avatar??(address?null:<Text style={{fontSize:40,lineHeight:48,fontWeight:'600',color:colors.muted}}>{name?.slice(0,2)}</Text>);
  const shown=sections.filter(section=>section.rows.length>0);
  const disc=<View {...hidden} testID='profile-avatar' style={{width:144,height:144,borderRadius:72,overflow:'hidden',alignItems:'center',justifyContent:'center',backgroundColor:avatar==null&&address?addressColor(address):fills.well}}>{art}</View>;
- return <View testID={testID} style={{direction,padding:16}}>
-  <View testID='profile-bar' style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:44}}>
-   <View style={{minWidth:44,alignItems:'flex-start'}}>{onShowAddress?<RoundButton label={t.showAddress} testID='profile-address' onPress={onShowAddress}><QrIcon color={colors.text}/></RoundButton>:null}</View>
-   <View style={{minWidth:44,alignItems:'flex-end'}}>{onClose?<RoundButton label={t.close} testID='profile-close' onPress={onClose}><CloseIcon color={colors.text}/></RoundButton>:null}</View>
-  </View>
+ const bar=<View testID='profile-bar' style={stickyHeader?{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:44}:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:44}}>
+  <View style={{minWidth:44,alignItems:'flex-start'}}>{onShowAddress?<RoundButton label={t.showAddress} testID='profile-address' onPress={onShowAddress}><QrIcon color={colors.text}/></RoundButton>:null}</View>
+  <View style={{minWidth:44,alignItems:'flex-end'}}>{onClose?<RoundButton label={t.close} testID='profile-close' onPress={onClose}><CloseIcon color={colors.text}/></RoundButton>:null}</View>
+ </View>;
+ const body=<>
   <View style={{alignSelf:'center',width:144,height:144,marginTop:8}}>
    {onAvatarPress?<Pressable testID='profile-avatar-button' accessibilityRole='button' accessibilityLabel={avatarLabel??name??t.changeProfilePicture} onPress={onAvatarPress} style={({pressed})=>({borderRadius:72,opacity:pressed?0.85:1})}>{disc}</Pressable>:disc}
    {status?<View testID='profile-status' accessible accessibilityLabel={status.label} style={{position:'absolute',top:10,end:10,width:20,height:20,borderRadius:10,borderWidth:3,borderColor:colors.background,backgroundColor:colors[status.tone??'warning']}}/>:null}
   </View>
   {name!=null?<View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:4,marginTop:16}}>
-   <Text testID='profile-name' accessibilityRole='header' numberOfLines={1} style={{flexShrink:1,fontSize:28,lineHeight:34,fontWeight:'700',color:colors.text}}>{name}</Text>
+   <Text testID='profile-name' nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flexShrink:1,fontSize:28,lineHeight:34,fontWeight:'700',color:colors.text}}>{name}</Text>
    {nameAccessory!=null?<View testID='profile-name-accessory' style={{flexShrink:0}}>{nameAccessory}</View>:null}
    {onEditName?<Pressable testID='profile-edit' accessibilityRole='button' accessibilityLabel={t.editName} onPress={onEditName} hitSlop={targetSlop} style={({pressed})=>({width:44,height:44,alignItems:'center',justifyContent:'center',opacity:pressed?0.6:1})}><EditIcon color={colors.muted}/></Pressable>:null}
   </View>:null}
@@ -121,5 +130,10 @@ export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,av
    </ListGroup>)}
   </View>:null}
   {footer!=null?<View testID='profile-footer' style={{marginTop:24}}>{footer}</View>:null}
+ </>;
+ if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='profile-sticky-header' header={bar} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction}}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{direction,padding:16}}>
+  {bar}
+  {body}
  </View>;
 }

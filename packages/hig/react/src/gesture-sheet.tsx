@@ -23,6 +23,8 @@ interface GestureSheetCommonProps extends Omit<DialogProps,'contentProps'> {
  handleProps?:GestureSheetHandleProps;
  handleRef?:React.Ref<HTMLDivElement>;
  overlayProps?:GestureSheetOverlayProps;
+ /** `id` of a heading inside the sheet that names it, such as a block's `headingId`: the sheet is then named by that heading (`aria-labelledby`) and its own `title` is kept for the backend but hidden from assistive technology, so the name is read once. */
+ labelledBy?:string;
 }
 export type GestureSheetProps=GestureSheetCommonProps&(
  /** Backend defaults are retained, including autoFocus=false and repositionInputs=true. */
@@ -67,7 +69,7 @@ const BACKGROUND_PROPERTIES=[...MOTION_PROPERTIES,'border-radius','overflow','tr
 const BODY_POSITION=['position','top','left','right','height'];
 
 /** Optional web gesture backend. Install vaul separately; the core overlay entry never imports it. */
-export function GestureSheet({open,onOpenChange,title,description,trigger,children,titleHidden,descriptionHidden,contentProps,contentRef,closeButton,closeLabel,backendProps,contentMode='default',handle=true,handleProps,handleRef,overlayProps,enableDynamicSizing=false,maxDynamicContentSize}:GestureSheetProps){
+export function GestureSheet({open,onOpenChange,title,description,trigger,children,titleHidden,descriptionHidden,contentProps,contentRef,closeButton,closeLabel,backendProps,contentMode='default',handle=true,handleProps,handleRef,overlayProps,enableDynamicSizing=false,maxDynamicContentSize,labelledBy}:GestureSheetProps){
  if(enableDynamicSizing&&Object.entries(backendProps??{}).some(([key,value])=>value!==undefined&&DYNAMIC_BACKEND.has(key as SnapPointBackendProp)))throw new Error('Dynamic GestureSheet does not accept Vaul snap-point props.');
  if(maxDynamicContentSize!==undefined&&(!Number.isFinite(maxDynamicContentSize)||maxDynamicContentSize<=0))throw new Error('GestureSheet maxDynamicContentSize must be finite and greater than zero.');
  const {messages,direction,locale,reducedMotion}=useHIG();
@@ -102,7 +104,7 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
  };
  const body=<>
   {handle&&<Drawer.Handle {...grip} ref={handleRef} className={['hig-gesture-handle',handleClass].filter(Boolean).join(' ')}/>}
-  <Drawer.Title className={titleHidden?'hig-sr-only':undefined}>{title}</Drawer.Title>
+  <Drawer.Title className={titleHidden||labelledBy?'hig-sr-only':undefined} aria-hidden={labelledBy?true:undefined}>{title}</Drawer.Title>
   {description&&<Drawer.Description className={descriptionHidden?'hig-sr-only':undefined}>{description}</Drawer.Description>}
   {children}
   {closeButton!==null&&<Drawer.Close asChild>{closeButton??<Button intent='secondary' suppressFeedback>{closeLabel??messages.close??en.close}</Button>}</Drawer.Close>}
@@ -112,7 +114,7 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
   {trigger&&<Drawer.Trigger asChild>{trigger}</Drawer.Trigger>}
   <Drawer.Portal>
    <Drawer.Overlay {...overlay} ref={backdrop} className={['hig-backdrop','hig-gesture-backdrop',overlayClass].filter(Boolean).join(' ')} data-hig-motion={reducedMotion?'reduced':'full'}/>
-   <Drawer.Content {...content} {...(!description?{'aria-describedby':undefined}:{})} ref={setPanel}
+   <Drawer.Content {...content} {...(!description?{'aria-describedby':undefined}:{})} {...(labelledBy?{'aria-labelledby':labelledBy}:{})} ref={setPanel}
     className={['hig-gesture-sheet',className].filter(Boolean).join(' ')} role='dialog' dir={direction} lang={locale} style={{...themeStyle,...style,...(dynamic&&maxDynamicContentSize!==undefined&&{maxHeight:maxDynamicContentSize})}}
     onPointerDownCapture={event=>{const restorePanel=snapshotStyles(panel.current,MOTION_PROPERTIES),restoreOverlay=snapshotStyles(backdrop.current,['opacity','transition']),restoreBackground=backend.shouldScaleBackground?snapshotStyles(document.querySelector<HTMLElement>('[data-vaul-drawer-wrapper]'),BACKGROUND_PROPERTIES):()=>{};motion.current=()=>{restorePanel();restoreOverlay();restoreBackground();};onPointerDownCapture?.(event);}}
     onInteractOutside={event=>{if(event.detail.originalEvent.type==='focusin')onFocusOutside?.(event as Parameters<NonNullable<GestureSheetContentProps['onFocusOutside']>>[0]);onInteractOutside?.(event);}}

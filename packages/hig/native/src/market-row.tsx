@@ -41,15 +41,17 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
 export const MarketRow:React.ForwardRefExoticComponent<MarketRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,MarketRowProps>(function MarketRow({symbol,name,price,change,priceOptions,changeOptions,mode='action',onSelect,identity,icon,favorite,volume,detail,trailing,selected,disabled,active,onPressIn,testID,style},ref){
  const colors=useColors(),fills=useFills();
  const label=`${name} (${symbol})`;
- const lines=detail===undefined?null:<View style={{alignItems:'flex-start'}}><Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:disabled?colors.muted:colors.text}}>{label}</Text>{typeof detail==='string'||typeof detail==='number'?<Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:detail}</View>;
+ // A row with host options is one line: the name and its detail truncate rather than wrap, so the trailing cells keep their place.
+ const lines=detail===undefined?null:<View style={{alignItems:'flex-start',flexShrink:1,minWidth:0}}><Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:disabled?colors.muted:colors.text}}>{label}</Text>{typeof detail==='string'||typeof detail==='number'?<Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:detail}</View>;
  const detailText=detail===undefined?'':plainText(detail);
  const title=mode==='presentation'
   ?<View style={disabled?{opacity:0.5,flexShrink:1}:{flexShrink:1}}>{identity??lines??<Text>{label}</Text>}</View>
-  :lines?<Button intent='ghost' contentMode='custom' accessibilityLabel={detailText?`${label}, ${detailText}`:label} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start'}}>{lines}</Button>
-  :<Button intent='ghost' accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined}>{label}</Button>;
+  :lines?<Button intent='ghost' contentMode='custom' accessibilityLabel={detailText?`${label}, ${detailText}`:label} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start',flexShrink:1,minWidth:0,paddingVertical:0}}>{lines}</Button>
+  :<Button intent='ghost' contentMode='custom' accessibilityLabel={label} accessibilityState={selected?{selected:true}:undefined} disabled={disabled} onPress={onSelect} onPressIn={onPressIn} testID={testID?`${testID}-select`:undefined} style={{alignItems:'flex-start',flexShrink:1,minWidth:0}}><Text numberOfLines={1} style={{fontSize:16,fontWeight:'600',color:disabled?colors.faint:colors.muted}}>{label}</Text></Button>;
  const leading=favorite!==undefined||icon!==undefined;
- const identityCell=leading?<View style={{flexDirection:'row',alignItems:'center',gap:8,flexShrink:1,minWidth:0}}>{favorite!==undefined?favorite:null}{icon!==undefined?<View {...hidden}>{icon}</View>:null}{title}</View>:title;
- const dim=disabled?{opacity:0.5}:undefined;
+ const identityCell=leading?<View style={{flexDirection:'row',alignItems:'center',gap:8,flex:1,flexShrink:1,minWidth:0}}>{favorite!==undefined?favorite:null}{icon!==undefined?<View {...hidden}>{icon}</View>:null}{title}</View>:<View style={{flex:1,flexShrink:1,minWidth:0,alignItems:'flex-start'}}>{title}</View>;
+ // The figures and trailing content keep their width; only the identity shrinks.
+ const dim=disabled?{opacity:0.5,flexShrink:0}:{flexShrink:0};
  const cells=<>
   {identityCell}
   {price!==undefined?<View style={dim}><Usd value={price} options={priceOptions}/></View>:null}
@@ -62,5 +64,5 @@ export const MarketRow:React.ForwardRefExoticComponent<MarketRowProps&React.RefA
  // Without host options the row is exactly the 0.6.0 one: the name button, the price and the change in a wrapping Row.
  if(plain)return <Row><Button intent='ghost' onPress={onSelect}>{name} ({symbol})</Button><Usd value={price} options={priceOptions}/><Percent value={change} options={changeOptions}/></Row>;
  const state=mode==='presentation'&&(selected||disabled)?{...(selected?{selected:true}:{}),...(disabled?{disabled:true}:{})}:undefined;
- return <View ref={ref} testID={testID} accessibilityState={state} style={[{flexDirection:'row',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,paddingVertical:12},active?{backgroundColor:fills.well,borderRadius:14}:null,style]}>{cells}</View>;
+ return <View ref={ref} testID={testID} accessibilityState={state} style={[{flexDirection:'row',alignItems:'center',justifyContent:'space-between',flexWrap:'nowrap',gap:12,paddingVertical:8},active?{backgroundColor:fills.well,borderRadius:14}:null,style]}>{cells}</View>;
 });

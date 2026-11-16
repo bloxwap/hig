@@ -90,6 +90,8 @@ export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an `IconButton` that shares. */
  headerAction?:React.ReactNode;
+ /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
+ headingId?:string;
  /** Keeps the header pinned to the top of the scrolling container. It is transparent at rest and fills with `--hig-sticky-header-background` (`--hig-background` by default) once the standings scroll under it; inside a sheet remap it, for example `--hig-sticky-header-background: var(--hig-overlay)`. */
  stickyHeader?:boolean;
  /** Set false to leave the header out, when the host pins its own `ScreenHeader` above the block. */
@@ -119,13 +121,13 @@ function Onward({link,className,children}:{link:RewardLink;className:string;chil
   :<button type='button' className={className} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></button>;
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,header=true,className,...rest}:RewardBlockProps){
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,headingId,header=true,className,...rest}:RewardBlockProps){
  const locale=useNumberLocale();const present=usePresentNumber();
  const money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(promo.amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
  const pinned=you&&<Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>;
  return <section {...rest} className={`hig-reward-block${className?` ${className}`:''}`}>
-  {header&&<ScreenHeader title={title} onBack={onBack} action={headerAction} stickyHeader={stickyHeader}/>}
+  {header&&<ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
   {promo&&<section className='hig-surface hig-reward-promo'>
    <div className='hig-reward-promo-top'><span className='hig-reward-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<Onward link={promo.rules} className='hig-reward-rules'>{promo.rules.label}<SwapIcon name='chevron' size={16}/></Onward>}</div>
    <p className='hig-reward-amount'><AnimatedNumberReadout value={promo.amount} options={money}/></p>

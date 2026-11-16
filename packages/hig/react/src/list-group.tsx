@@ -83,10 +83,12 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
  const toggles=!pressable&&(checked!==undefined||defaultChecked!==undefined||onCheckedChange!=null);
  const text=typeof value==='string'||typeof value==='number';
  const busyText=busyLabel??messages.busy??en.busy;
- const name=<span className='hig-list-row-label' data-tone={tone}>{label}</span>;
+ const labelId=useId();
+ // A switch row's input is named by this visible label (aria-labelledby), so the name is drawn and read once.
+ const name=<span id={toggles?labelId:undefined} className='hig-list-row-label' data-tone={tone}>{label}</span>;
  const glyphKind=disclosure??(selected!==undefined?'none':'chevron');
  const glyph=busy&&!toggles?<span className='hig-button-spinner hig-list-row-spinner' aria-hidden='true'/>:selected?check:pressable?(glyphKind==='chevron'?chevron:glyphKind==='external'?external:null):null;
- const swatch=toggles?<label className='hig-choice hig-switch'><input ref={input} role='switch' type='checkbox' checked={on} disabled={disabled} aria-busy={busy||undefined} aria-describedby={shown(description)?descriptionId:undefined} onChange={event=>{if(!busy)setOn(event.target.checked);}}/><span>{label}</span></label>:null;
+ const swatch=toggles?<label className='hig-choice hig-switch'><input ref={input} role='switch' type='checkbox' checked={on} disabled={disabled} aria-busy={busy||undefined} aria-labelledby={labelId} aria-describedby={shown(description)?descriptionId:undefined} onChange={event=>{if(!busy)setOn(event.target.checked);}}/></label>:null;
  const content=<>
   {leading!=null&&<span className='hig-list-row-leading' aria-hidden='true'>{leading}</span>}
   {shown(description)?<span className='hig-list-row-text'>{name}<span id={descriptionId} className='hig-list-row-description'>{description}</span></span>:name}

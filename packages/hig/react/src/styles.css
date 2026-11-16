@@ -26,6 +26,9 @@
 .hig-button > svg,.hig-icon-button > span { display:inline-flex;align-items:center;justify-content:center;flex:none; }
 .hig-icon-button { min-width:var(--hig-button);padding-inline:8px; }
 .hig-button[data-intent='destructive'] { background:var(--hig-negative);color:var(--hig-background); }
+/* Market-direction fills follow HIGProvider marketColors (default buy and sell), with the dark label destructive uses. */
+.hig-button[data-intent='up'] { background:var(--hig-up,var(--hig-buy));color:var(--hig-background); }
+.hig-button[data-intent='down'] { background:var(--hig-down,var(--hig-sell));color:var(--hig-background); }
 .hig-button[data-full] { width:100%; }
 .hig-button-spinner { flex:none;width:1em;height:1em;border:2px solid color-mix(in srgb,currentColor 30%,transparent);border-top-color:currentColor;border-radius:50%;animation:hig-spin .8s linear infinite; }
 .hig-icon-button[aria-busy='true'] > .hig-button-spinner ~ span[aria-hidden='true'] { display:none; }
@@ -133,6 +136,18 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
    insets the name, which lines the row up with the content of the cards around it. */
 .hig-market-row[data-mode='action'] { padding-inline-end:20px; }
 .hig-market-row[data-mode='action'] .hig-button[data-intent='ghost'] { color:var(--hig-text); }
+/* Action mode is one line: the identity (favourite, icon, then the name over its detail) holds the leading edge and shrinks, the
+   figures, trailing content and check keep their width on the trailing edge, and the name truncates instead of wrapping. The name
+   button is a 44px target with no block padding, so a row is 56px (58px with a detail line) like the other capsule rows. */
+.hig-market-row[data-mode='action'] { flex-wrap:nowrap;padding-block:6px; }
+.hig-market-row[data-mode='action'] .hig-market-identity { display:flex;align-items:center;flex:1 1 auto;min-width:0; }
+.hig-market-row[data-mode='action'] .hig-market-identity > .hig-button { flex:0 1 auto;min-width:0;justify-content:flex-start;padding-block:0;padding-inline-end:8px;text-align:start;overflow:hidden; }
+.hig-market-row[data-mode='action'] :is(.hig-market-favorite,.hig-market-icon) { flex:none;display:inline-flex;align-items:center; }
+.hig-market-row[data-mode='action'] .hig-market-icon + .hig-button { padding-inline-start:12px; }
+.hig-market-row[data-mode='action'] :is(.hig-market-price,.hig-market-change,.hig-market-volume,.hig-market-trailing) { flex:none;white-space:nowrap; }
+.hig-market-row[data-mode='action'] :is(.hig-market-text,.hig-market-label,.hig-market-detail) { max-width:100%;min-width:0; }
+.hig-market-row[data-mode='action'] :is(.hig-market-label,.hig-market-detail) { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.hig-market-row[data-mode='action'] .hig-market-label { display:block; }
 .hig-market-row[data-mode='presentation'] { display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--hig-gap);padding-block:0; }
 .hig-market-row[data-mode='presentation'][data-has-volume] { grid-template-columns:minmax(0,1fr) auto auto auto; }
 .hig-market-row[data-mode='presentation'] .hig-market-identity { display:flex;align-items:center;gap:8px;min-width:0; }
@@ -432,6 +447,8 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-swap-note[data-tone='warning'] { --hig-swap-tone:var(--hig-warning); }
 .hig-swap-note[data-tone='negative'] { --hig-swap-tone:var(--hig-negative); }
 .hig-swap-panel > .hig-swap-view > .hig-swap-view-header { margin-block-end:12px; }
+/* A titled panel draws the shared ScreenHeader, 12px above the cards as the pushed views' headers are. */
+.hig-swap-panel > .hig-swap-view > .hig-screen-header { margin-block-end:12px; }
 .hig-swap-view-header[data-plain] { margin-inline-start:4px;min-height:44px; }
 /* A compact card is the slot row alone: a fixed destination with no amount. */
 .hig-swap-card[data-compact] > .hig-swap-slot { border-radius:24px; }
@@ -575,6 +592,16 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 }
 @media(prefers-reduced-motion:reduce) { .hig-screen-header[data-sticky] { transition:none;animation:none; } }
 [data-hig-motion='reduced'] .hig-screen-header[data-sticky] { transition:none;animation:none; }
+/* ProfileBlock's top bar pins the same way. */
+.hig-profile-bar[data-sticky] { position:sticky;inset-block-start:0;z-index:1;background-color:transparent;transition:background-color var(--hig-motion-duration-fast) var(--hig-motion-easing-standard,ease); }
+.hig-profile-bar[data-sticky][data-scrolled] { background-color:var(--hig-sticky-header-background,var(--hig-screen-background,var(--hig-background))); }
+@media(prefers-reduced-motion:reduce) { .hig-profile-bar[data-sticky] { transition:none; } }
+[data-hig-motion='reduced'] .hig-profile-bar[data-sticky] { transition:none; }
+/* No jump when it pins: a header that leads its pane sticks where it rests (--hig-sticky-inset, the padding between it and the
+   scroller's content edge, measured by the script), and its fill reaches up to the scroller's edge (--hig-sticky-cover) so content
+   does not show through above it. An inset header fills on the script's data-scrolled, which marks the moment it pins. */
+:is(.hig-screen-header,.hig-profile-bar)[data-sticky][data-sticky-inset] { inset-block-start:var(--hig-sticky-inset,0px);animation:none; }
+:is(.hig-screen-header,.hig-profile-bar)[data-sticky]::before { content:'';position:absolute;inset-inline:0;inset-block-end:100%;block-size:var(--hig-sticky-cover,0px);background-color:inherit;pointer-events:none; }
 .hig-account-summary { display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px; }
 .hig-account-balance { min-width:0;font-size:2rem;line-height:1.25;font-weight:600; }
 .hig-account-balance .hig-number { font-family:inherit; }
@@ -877,6 +904,8 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-list-row-leading { flex:none;display:grid;place-items:center;color:var(--hig-muted); }
 .hig-list-row-label { flex:1;min-width:0;overflow-wrap:anywhere; }
 .hig-list-row-value { flex:none;max-width:50%;color:var(--hig-muted);text-align:end;overflow-wrap:anywhere; }
+/* A number in a row value is read like the row's other text: the interface face, still with tabular digits, not the mono face. */
+.hig-list-row-value .hig-number { font-family:inherit; }
 .hig-list-row-value[data-tone='positive'] { color:var(--hig-positive); }
 .hig-list-row-value[data-tone='warning'] { color:var(--hig-warning); }
 .hig-list-row-value[data-tone='negative'] { color:var(--hig-negative); }

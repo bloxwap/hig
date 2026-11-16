@@ -1,5 +1,6 @@
 import React,{useState} from 'react';
-import {Image,Pressable,View,type ViewStyle} from 'react-native';
+import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
+import {StickyHeaderLayout} from './sticky-header.js';
 import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
@@ -76,6 +77,12 @@ export interface ManagePositionBlockProps {
  headerAction?:React.ReactNode;
  /** Sets `nativeID` on the title, so a sheet around the pane can name itself with `accessibilityLabelledBy` (Android). */
  headingId?:string;
+ /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */
+ stickyHeader?:boolean;
+ /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */
+ stickyHeaderBackground?:string;
+ /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */
+ scrollComponent?:React.ComponentType<ScrollViewProps>;
  testID?:string;
 }
 const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
@@ -106,7 +113,7 @@ function Sentence({template,text,value,options,suffix,testID}:{template:(amount:
  </View>;
 }
 /** One open position as a screen: margin and notional under the share left before liquidation, then the liquidation, mark and entry prices as a `BarPnl`, what can be done, and the position itself. Both bars are drawn without a card, because nothing in them can be pressed. */
-export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,pnlOptions,onBack,headerAction,headingId,testID}:ManagePositionBlockProps){
+export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,pnlOptions,onBack,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:ManagePositionBlockProps){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
  // The artwork that failed to draw (its URL, or the position for a host element); it then shows the fallback or the initials until the artwork changes.
  const [broken,setBroken]=useState<string|null>(null);
@@ -156,12 +163,12 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
   if(typeof figure==='string')return {value:figure,valueTone:action.tone};
   return {value:<AnimatedNumberReadout {...figureProps(figure)} tone={action.tone??'muted'} testID={`manage-action-${action.id}-value`} style={{fontSize:16,lineHeight:24}}/>,valueLabel:figureReading(figure,locale,present(figure.options))};
  };
- return <View testID={testID} style={{padding:16}}>
-  <View testID='manage-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
-   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='manage-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
-   <Text testID='manage-title' nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
-   <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
-  </View>
+ const header=<View testID='manage-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
+  <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='manage-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
+  <Text testID='manage-title' nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.title}</Text>
+  <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
+ </View>;
+ const body=<>
   <View style={{gap:20,marginTop:16,paddingHorizontal:4}}>
    <BarMark testID='manage-margin' surface={false} title={mode??labels.margin} elements={marginBar} description={<Sentence testID='manage-to-liquidation' template={labels.toLiquidation} text={left===null?unknown:formatNumberReadout(left,locale,tenth).text+percent} value={left} options={tenth} suffix={percent}/>}/>
    <BarPnl testID='manage-liquidation' surface={false} compact side={side} entry={entry} mark={mark} liquidation={liquidation} labels={{liquidation:labels.liquidation,mark:labels.mark,entry:labels.entry}} priceOptions={priceOptions}/>
@@ -170,5 +177,10 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
    <ListGroup>{actions.map(action=><ListRow key={action.id} testID={`manage-action-${action.id}`} label={action.label} disabled={action.disabled} onSelect={action.onSelect} {...actionValue(action)}/>)}</ListGroup>
   </View>:null}
   {row()}
+ </>;
+ if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='manage-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{padding:16}}>
+  {header}
+  {body}
  </View>;
 }
