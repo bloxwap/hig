@@ -41,7 +41,9 @@ const sheetPaddingBottom = insets.bottom + safeArea.sheetContentGutter;
 
 ## `SafeAreaView` for non-trade screens
 
-Use `SafeAreaView` on non-trade screens such as settings, 404, bootstrap, and fullscreen modals. Those screens can also add `fullscreenMin` (20) as a minimum side or edge gutter on top of the view's insets. A trade route-gate may apply left and right safe-area edges only, so a blocked trade view is not full-bleed into the system insets.
+Use `SafeAreaView` on non-trade screens such as settings, 404, bootstrap, and fullscreen modals. A trade route-gate may apply left and right safe-area edges only, so a blocked trade view is not full-bleed into the system insets.
+
+`fullscreenMin` (20) comes from the QR scanner's fullscreen modal chrome: `Math.max(insets.top|bottom, 20)` and `insets.left|right + 20`. It is not the settings screen, which uses a Tailwind `px-5` gutter.
 
 ## Side gutters
 
@@ -49,7 +51,7 @@ The app currently uses side gutters of 8, 16, and 20 in different places. Docume
 
 - `chromeGutter` (8): trade top bar and tap controls (`paddingLeft` / `paddingRight` / `paddingTop` or `paddingBottom` of `insets.* + 8`).
 - `sheetContentGutter` (16): sheet card and similar content padding, and the trade share overlay (`insets.* + 16`).
-- `fullscreenMin` (20): the larger gutter used on some non-trade and fullscreen surfaces.
+- `fullscreenMin` (20): the QR scanner's fullscreen modal chrome (`Math.max(insets.top|bottom, 20)` and `insets.left|right + 20`). Not the settings screen's Tailwind `px-5` gutter.
 
 ## Fixture and store-capture exceptions
 
@@ -68,3 +70,4 @@ These values come from the private `bloxwap/monorepo` native app. Paths, not pub
 - `apps/mobile/src/profile/lib/sheet-card-padding.ts` — sheet content gutter of 16.
 - `apps/mobile/src/components/live-chart.tsx` — `AXIS_CHROME_TOP` 56 and `AXIS_CHROME_BOTTOM` 88; fixture and store-capture exceptions.
 - `apps/mobile/app/trade/[asset].tsx` — full-bleed trade screen whose chrome adds insets itself; chrome gutter 8, share overlay gutter 16, toast offset, and the same fixture exceptions.
+- `apps/mobile/src/components/qr-scanner.tsx` — fullscreen modal chrome: `Math.max(insets.top|bottom, 20)` and `insets.left|right + 20` (`fullscreenMin`).
