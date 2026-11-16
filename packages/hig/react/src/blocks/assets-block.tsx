@@ -101,9 +101,10 @@ function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):
  const [local,setLocal]=useState(initial);const current=value===undefined?local:value;
  return [current,next=>{if(Object.is(next,current))return;if(value===undefined)setLocal(next);onChange?.(next);}];
 }
-/** The host clock, ticking each second while `active` and not `paused`; paused keeps the last reading (or takes one). `null` until mounted, so server HTML never carries a clock that hydration would contradict. */
-function useNow(active:boolean,paused:boolean,clock:()=>number):number|null{
+/** The host clock, ticking each second while one of `openings` is still ahead and not `paused`; paused keeps the last reading (or takes one) and judges "ahead" against it, so a host re-render after an opening passes keeps the frozen text. `null` until mounted, so server HTML never carries a clock that hydration would contradict. */
+function useNow(openings:number[],paused:boolean,clock:()=>number):number|null{
  const [now,setNow]=useState<number|null>(null);const read=useRef(clock);read.current=clock;
+ const reading=paused&&now!=null?now:openings.length?clock():0;const active=openings.some(at=>at>reading);
  useEffect(()=>{if(!active){setNow(null);return;}if(paused){setNow(last=>last??read.current());return;}setNow(read.current());const tick=setInterval(()=>setNow(read.current()),1000);return()=>clearInterval(tick);},[active,paused]);
  return active?now:null;
 }
@@ -119,25 +120,30 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  const [currentQuery,setQuery]=useHostState(query,defaultQuery,onQueryChange);
  const sections=useMemo(()=>filterAssets(assets,categories,{view:currentView,category:currentCategory,query:currentQuery}),[assets,categories,currentView,currentCategory,currentQuery]);
  // The clock runs only while a section on screen has an opening still ahead.
- const reading=sections.length?clock():0;const now=useNow(sections.some(section=>{const at=opensAtTime(section.category);return at!=null&&at>reading;}),paused,clock);
+ const now=useNow(sections.flatMap(section=>{const at=opensAtTime(section.category);return at==null?[]:[at];}),paused,clock);
  const rows=useMemo(()=>sections.flatMap(section=>section.assets),[sections]);
- const [active,setActive]=useState(-1);const field=useRef<HTMLInputElement>(null),list=useRef<HTMLDivElement>(null);
+ // The cursor follows an asset, not a position, so a live update that reorders or drops rows never moves it onto another market.
+ const [activeId,setActiveId]=useState<string|null>(null);const active=activeId==null?-1:rows.findIndex(asset=>asset.id===activeId);
+ const field=useRef<HTMLInputElement>(null),list=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(autoFocusSearch&&window.matchMedia?.('(pointer: fine)').matches)field.current?.focus();},[]);
- useEffect(()=>{setActive(-1);},[currentQuery,currentCategory,currentView]);
+ useEffect(()=>{setActiveId(null);},[currentQuery,currentCategory,currentView]);
  useEffect(()=>{if(active>=0)list.current?.querySelector('[data-active]')?.scrollIntoView?.({block:'nearest'});},[active]);
- // From the search field the arrow keys move through the enabled rows and Enter chooses one: the only row, or the one the arrows reached.
+ // From the search field the arrow keys move through the enabled rows and Enter chooses one: the one the arrows reached, or the only row if they have not moved.
  const step=(from:number,by:number)=>{for(let index=from+by;index>=0&&index<rows.length;index+=by)if(!rows[index].disabled)return index;return from;};
  const onKeyDown=(event:React.KeyboardEvent<HTMLInputElement>)=>{
-  if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();setActive(index=>step(Math.min(index,rows.length),event.key==='ArrowDown'?1:-1));}
-  else if(event.key==='Enter'){const choice=rows[active]??(rows.length===1?rows[0]:undefined);if(choice&&!choice.disabled){event.preventDefault();onSelect(choice);}}
+  if(event.nativeEvent.isComposing||event.keyCode===229)return;// An IME commit is not a choice.
+  if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();const next=step(active,event.key==='ArrowDown'?1:-1);setActiveId(rows[next]?.id??null);}
+  else if(event.key==='Enter'){const choice=activeId!=null?rows[active]:rows.length===1?rows[0]:undefined;if(choice&&!choice.disabled){event.preventDefault();onSelect(choice);}}
  };
  const heading=title??t.assets;const signalName:Record<AssetSignal,string>={watch:t.signalWatch,up:t.signalUp,down:t.signalDown};
  const empty=loading?`${t.loading}…`:currentQuery.trim()!==''?t.noResults:currentView==='positions'?t.noPositions:currentView==='trend'?t.noTrend:t.noItems;
+ const secondLine=(asset:AssetItem)=>asset.detail?`${asset.symbol} · ${asset.detail}`:asset.symbol;
+ const rowName=(asset:AssetItem)=>[asset.name,secondLine(asset),asset.trailingLabel,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ');
  const row=(asset:AssetItem,index:number)=>{
-  const second=asset.detail?`${asset.symbol} · ${asset.detail}`:asset.symbol;
+  const second=secondLine(asset);
   const signal=asset.signal===undefined?null:<span className='hig-assets-signal' data-signal={asset.signal??undefined}>{asset.signal?signalIcons[asset.signal]:null}</span>;
-  const name=[asset.name,second,asset.trailingLabel,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ');
-  return <li key={asset.id}><button type='button' id={`${id}-row-${index}`} className='hig-assets-row' data-asset-id={asset.id} data-active={index===active||undefined} aria-label={name} aria-current={asset.id===selectedId||undefined} disabled={asset.disabled} onClick={()=>onSelect(asset)}>
+  const name=rowName(asset);
+  return <li key={asset.id}><button type='button' className='hig-assets-row' data-asset-id={asset.id} data-active={index===active||undefined} aria-label={name} aria-current={asset.id===selectedId||undefined} disabled={asset.disabled} onClick={()=>onSelect(asset)}>
    <span className='hig-assets-icon' aria-hidden='true'>{typeof asset.icon==='string'?<img src={asset.icon} alt=''/>:asset.icon??asset.symbol.slice(0,4)}</span>
    <span className='hig-assets-text' aria-hidden='true'><strong>{asset.name}</strong><span>{second}</span></span>
    {asset.trailing!=null&&asset.trailing!==false?<span className='hig-assets-trailing' aria-hidden='true'>{asset.trailing}</span>:null}
@@ -153,9 +159,11 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  };
  return <section {...rest} className={`hig-assets-block${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} headingId={headingId} stickyHeader={stickyHeader} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
-  <SearchInput ref={field} aria-label={t.searchMarkets} aria-activedescendant={rows[active]?`${id}-row-${active}`:undefined} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} onClear={clearable?()=>setQuery(''):undefined} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
+  <SearchInput ref={field} aria-label={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} onKeyDown={onKeyDown} onClear={clearable?()=>setQuery(''):undefined} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
   {showFilter&&<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory}/>}
   <SegmentedControl hideLabel label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
+  {/* Focus stays in the field, so the row the arrows reach is spoken here: the rows are buttons, not options a searchbox could own through aria-activedescendant. */}
+  <span className='hig-sr-only hig-assets-cursor' aria-live='polite' aria-atomic='true'>{rows[active]?rowName(rows[active]):''}</span>
   <div ref={list} className='hig-assets-list' aria-busy={loading||undefined}>
    {sections.length===0&&<p className='hig-assets-empty' role='status'>{empty}</p>}
    {sections.length===0&&!loading&&emptyAction&&<Button intent='secondary' data-testid={emptyAction.testID} onClick={emptyAction.onPress}>{emptyAction.label}</Button>}

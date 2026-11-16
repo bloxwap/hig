@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen,within} from '@testing-library/react';
+import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {AssetsBlock,filterAssets,type AssetCategory,type AssetItem} from '../packages/hig/react/src/blocks/assets-block';
@@ -132,6 +132,11 @@ describe('AssetsBlock opening countdown',()=>{
   rerender(<HIGProvider><AssetsBlock {...props} paused/></HIGProvider>);
   act(()=>{clock+=5000;vi.advanceTimersByTime(5000);});expect(badge()).toBe('Opens in 0:01:04');expect(spy).toHaveBeenCalledTimes(1);
   rerender(<HIGProvider><AssetsBlock {...props}/></HIGProvider>);expect(badge()).toBe('Opens in 0:00:59');
+  // Paused past the opening, a host re-render (new assets) keeps the frozen text; unpausing shows the status.
+  rerender(<HIGProvider><AssetsBlock {...props} paused/></HIGProvider>);clock+=120_000;
+  rerender(<HIGProvider><AssetsBlock {...props} assets={[...assets]} paused/></HIGProvider>);expect(badge()).toBe('Opens in 0:00:59');
+  rerender(<HIGProvider><AssetsBlock {...props}/></HIGProvider>);expect(badge()).toBeUndefined();
+  expect(screen.getByRole('heading',{name:/^Commodities/}).getAttribute('aria-label')).toBe('Commodities, OPEN');
   spy.mockRestore();vi.useRealTimers();
  });
 });
@@ -160,9 +165,11 @@ describe('AssetsBlock empty action, selected disc and keyboard',()=>{
   expect([...container.querySelectorAll('[data-asset-id]')].map(row=>row.getAttribute('data-asset-id'))).toEqual(['BTC','ETH','XRP','GOLD']);
   const search=screen.getByRole('searchbox');search.focus();
   const active=()=>container.querySelector('[data-active]');
-  expect(active()).toBeNull();expect(search.hasAttribute('aria-activedescendant')).toBe(false);
+  // Focus stays in the field, so the active row is spoken through a polite live line, not an aria-activedescendant the rows cannot honour.
+  const spoken=()=>container.querySelector('.hig-assets-cursor[aria-live="polite"]')?.textContent;
+  expect(active()).toBeNull();expect(spoken()).toBe('');expect(search.hasAttribute('aria-activedescendant')).toBe(false);
   await userEvent.keyboard('{ArrowDown}');expect(active()?.getAttribute('data-asset-id')).toBe('BTC');
-  expect(search.getAttribute('aria-activedescendant')).toBe(active()?.id);
+  expect(spoken()).toBe(active()?.getAttribute('aria-label'));expect(search.hasAttribute('aria-activedescendant')).toBe(false);
   await userEvent.keyboard('{ArrowDown}');expect(active()?.getAttribute('data-asset-id')).toBe('XRP');
   await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');expect(active()?.getAttribute('data-asset-id')).toBe('GOLD');
   await userEvent.keyboard('{ArrowUp}');expect(active()?.getAttribute('data-asset-id')).toBe('XRP');
@@ -171,6 +178,29 @@ describe('AssetsBlock empty action, selected disc and keyboard',()=>{
   // Typing resets the cursor; Enter then chooses the only match.
   await userEvent.type(search,'gold');expect(active()).toBeNull();
   await userEvent.keyboard('{Enter}');expect(select).toHaveBeenLastCalledWith(assets[3]);
+ });
+ it('keeps the active row on its market when the host reorders or drops rows',async()=>{
+  const select=vi.fn();const crypto=[assets[0],assets[1],assets[2]];
+  const props={categories,onSelect:select};
+  const {container,rerender}=render(<HIGProvider><AssetsBlock {...props} assets={crypto}/></HIGProvider>);
+  const active=()=>container.querySelector('[data-active]')?.getAttribute('data-asset-id');
+  screen.getByRole('searchbox').focus();
+  await userEvent.keyboard('{ArrowDown}{ArrowDown}');expect(active()).toBe('ETH');
+  // A live update moves ETH to the end: the cursor follows it.
+  rerender(<HIGProvider><AssetsBlock {...props} assets={[assets[2],assets[0],assets[1]]}/></HIGProvider>);
+  expect(active()).toBe('ETH');await userEvent.keyboard('{Enter}');expect(select).toHaveBeenLastCalledWith(assets[1]);
+  // ETH drops out, leaving one row: no highlight, and Enter does not pick the market the user never reached.
+  select.mockClear();rerender(<HIGProvider><AssetsBlock {...props} assets={[assets[0]]}/></HIGProvider>);
+  expect(active()).toBeUndefined();await userEvent.keyboard('{Enter}');expect(select).not.toHaveBeenCalled();
+  // The arrows still work from there.
+  await userEvent.keyboard('{ArrowDown}');expect(active()).toBe('BTC');
+ });
+ it('ignores Enter while an IME composition is open',()=>{
+  const select=vi.fn();mount({onSelect:select,query:'gold'});
+  const search=screen.getByRole('searchbox');
+  fireEvent.keyDown(search,{key:'Enter',isComposing:true});fireEvent.keyDown(search,{key:'Enter',keyCode:229});
+  expect(select).not.toHaveBeenCalled();
+  fireEvent.keyDown(search,{key:'Enter'});expect(select).toHaveBeenCalledWith(assets[3]);
  });
  it('focuses the search field on mount with autoFocusSearch and a fine pointer, and not by default',()=>{
   const media=vi.fn(()=>({matches:true,addEventListener(){},removeEventListener(){}}));Object.defineProperty(window,'matchMedia',{configurable:true,value:media});

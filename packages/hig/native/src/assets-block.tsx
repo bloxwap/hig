@@ -104,9 +104,10 @@ function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):
  const [local,setLocal]=useState(initial);const current=value===undefined?local:value;
  return [current,next=>{if(Object.is(next,current))return;if(value===undefined)setLocal(next);onChange?.(next);}];
 }
-/** The host clock, ticking each second while `active` and not `paused`; paused keeps the last reading (or takes one). */
-function useNow(active:boolean,paused:boolean,clock:()=>number):number|null{
- const [now,setNow]=useState<number|null>(()=>active?clock():null);const read=useRef(clock);read.current=clock;
+/** The host clock, ticking each second while one of `openings` is still ahead and not `paused`; paused keeps the last reading (or takes one) and judges "ahead" against it, so a host re-render after an opening passes keeps the frozen text. */
+function useNow(openings:number[],paused:boolean,clock:()=>number):number|null{
+ const [now,setNow]=useState<number|null>(()=>{const first=clock();return openings.some(at=>at>first)?first:null;});const read=useRef(clock);read.current=clock;
+ const reading=paused&&now!=null?now:openings.length?clock():0;const active=openings.some(at=>at>reading);
  useEffect(()=>{if(!active){setNow(null);return;}if(paused){setNow(last=>last??read.current());return;}setNow(read.current());const tick=setInterval(()=>setNow(read.current()),1000);return()=>clearInterval(tick);},[active,paused]);
  return active?now:null;
 }
@@ -126,7 +127,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  const [currentQuery,setQuery]=useHostState(query,defaultQuery,onQueryChange);
  const sections=useMemo(()=>filterAssets(assets,categories,{view:currentView,category:currentCategory,query:currentQuery}),[assets,categories,currentView,currentCategory,currentQuery]);
  // The clock runs only while a section on screen has an opening still ahead.
- const reading=sections.length?clock():0;const now=useNow(sections.some(section=>{const at=opensAtTime(section.category);return at!=null&&at>reading;}),paused,clock);
+ const now=useNow(sections.flatMap(section=>{const at=opensAtTime(section.category);return at==null?[]:[at];}),paused,clock);
  const signalName:Record<AssetSignal,string>={watch:t.signalWatch,up:t.signalUp,down:t.signalDown};
  const signalColor:Record<AssetSignal,string>={watch:colors.warning,up:colors.positive,down:colors.negative};
  const toneColor={positive:colors.positive,negative:colors.negative,warning:colors.warning,info:colors.info};

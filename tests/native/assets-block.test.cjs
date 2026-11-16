@@ -139,6 +139,10 @@ test('reads the host clock, freezes while paused, and runs no timer while no cou
  act(()=>root.update(tree({paused:true})));
  act(()=>{clock+=5000;jest.advanceTimersByTime(5000);});expect(badge()).toBe('Opens in 0:01:04');expect(spy).toHaveBeenCalledTimes(1);
  act(()=>root.update(tree({})));expect(badge()).toBe('Opens in 0:00:59');
+ // Paused past the opening, a host re-render (new assets) keeps the frozen text; unpausing shows the status.
+ act(()=>root.update(tree({paused:true})));clock+=120_000;
+ act(()=>root.update(tree({paused:true,assets:[...assets]})));expect(badge()).toBe('Opens in 0:00:59');
+ act(()=>root.update(tree({})));expect(badge()).toBe('OPEN');
  spy.mockRestore();jest.useRealTimers();
 });
 
