@@ -130,6 +130,26 @@ export function formatZonedTime(value: Date | number | null | undefined, locale:
  return new Intl.DateTimeFormat(locale, {timeZoneName: 'short', ...options, timeZone}).format(time);
 }
 /** Font 0.1.2 publishes CSS/Next loaders, native faces are derived by the optional pinned HIG font generator. */
+/** Formats one unit with Intl (`2 hours`, `1d`), falling back to plain digits and the unit name where the runtime lacks unit formatting. */
+function formatUnit(value: number, unit: 'day' | 'hour' | 'minute' | 'second', locale: string, unitDisplay: 'long' | 'narrow'): string {
+ try { return new Intl.NumberFormat(locale, {style: 'unit', unit, unitDisplay}).format(value); }
+ catch { return unitDisplay === 'narrow' ? `${value}${unit[0]}` : `${value} ${unit}${value === 1 ? '' : 's'}`; }
+}
+/**
+ * Time left until a market opens, rounded up to the second. `visible` is a clock: `2:14:33`, or `1d 04:12:09` past a day.
+ * `spoken` names the largest units in words without seconds (`2 hours, 14 minutes`), so it changes once a minute and is
+ * calm in an accessible name; under a minute it reads the seconds. Negative time reads as zero.
+ */
+export function formatCountdown(remainingMs: number, locale = 'en-US'): {visible: string; spoken: string} {
+ const total = Math.max(0, Math.ceil(remainingMs / 1000));
+ const days = Math.floor(total / 86400), hours = Math.floor(total % 86400 / 3600), minutes = Math.floor(total % 3600 / 60), seconds = total % 60;
+ const pad = (n: number) => String(n).padStart(2, '0');
+ const visible = days > 0 ? `${formatUnit(days, 'day', locale, 'narrow')} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${hours}:${pad(minutes)}:${pad(seconds)}`;
+ const words = total < 60 ? [formatUnit(seconds, 'second', locale, 'long')] : [days ? formatUnit(days, 'day', locale, 'long') : '', hours ? formatUnit(hours, 'hour', locale, 'long') : '', minutes ? formatUnit(minutes, 'minute', locale, 'long') : ''].filter(Boolean);
+ let spoken: string;
+ try { spoken = new Intl.ListFormat(locale, {style: 'narrow', type: 'unit'}).format(words); } catch { spoken = words.join(', '); }
+ return {visible, spoken};
+}
 export interface FontManifest { version: string; faces: ReadonlyArray<{family:string; weight:number; asset:string; script:string; registration?:string}> }
 export function nativeFont(manifest: FontManifest, family: string, weight: number, script = 'latin'): string {
  const face = manifest.faces.find(f=>f.family===family && f.weight===weight && f.script===script);

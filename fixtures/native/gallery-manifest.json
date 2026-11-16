@@ -561,6 +561,15 @@
       "support": "renderer"
     },
     {
+      "name": "AssetsBlock",
+      "states": [
+        "default",
+        "trend",
+        "empty"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "ProfileBlock",
       "states": [
         "default",

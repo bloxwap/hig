@@ -1221,6 +1221,28 @@
       }
     },
     {
+      "name": "AssetsBlock",
+      "slug": "assets-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.AssetsBlock categories={[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',opensAt:Date.now()+8073000},{id:'stocks',label:'Stocks',opensAt:Date.now()+101529000}]} assets={empty?[]:[{id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},{id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},{id:'XRP',name:'Ripple',symbol:'XRP',detail:'20×',category:'crypto',signal:null},{id:'SOL',name:'Solana',symbol:'SOL',detail:'20×',category:'crypto',signal:'down',position:true},{id:'GOLD',name:'Gold',symbol:'GOLD',detail:'20×',category:'commodities',signal:null},{id:'NVDA',name:'Nvidia',symbol:'NVDA',detail:'10×',category:'stocks',signal:null}]} selectedId='BTC' onClose={()=>setMessage('The host closes the sheet')} onSelect={asset=>setMessage(`The host opens ${asset.name}`)}/>",
+      "native": "<C.AssetsBlock categories={[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',opensAt:Date.now()+8073000},{id:'stocks',label:'Stocks',opensAt:Date.now()+101529000}]} assets={empty?[]:[{id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},{id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},{id:'XRP',name:'Ripple',symbol:'XRP',detail:'20×',category:'crypto',signal:null},{id:'SOL',name:'Solana',symbol:'SOL',detail:'20×',category:'crypto',signal:'down',position:true},{id:'GOLD',name:'Gold',symbol:'GOLD',detail:'20×',category:'commodities',signal:null},{id:'NVDA',name:'Nvidia',symbol:'NVDA',detail:'10×',category:'stocks',signal:null}]} selectedId='BTC' onClose={()=>setMessage('The host closes the sheet')} onSelect={asset=>setMessage(`The host opens ${asset.name}`)}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "trend",
+        "empty"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "trend": {
+          "web": "<C.AssetsBlock categories={[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',opensAt:Date.now()+8073000},{id:'stocks',label:'Stocks',opensAt:Date.now()+101529000}]} assets={empty?[]:[{id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},{id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},{id:'XRP',name:'Ripple',symbol:'XRP',detail:'20×',category:'crypto',signal:null},{id:'SOL',name:'Solana',symbol:'SOL',detail:'20×',category:'crypto',signal:'down',position:true},{id:'GOLD',name:'Gold',symbol:'GOLD',detail:'20×',category:'commodities',signal:null},{id:'NVDA',name:'Nvidia',symbol:'NVDA',detail:'10×',category:'stocks',signal:null}]} selectedId='BTC' defaultView='trend' onClose={()=>setMessage('The host closes the sheet')} onSelect={asset=>setMessage(`The host opens ${asset.name}`)}/>",
+          "native": "<C.AssetsBlock categories={[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',opensAt:Date.now()+8073000},{id:'stocks',label:'Stocks',opensAt:Date.now()+101529000}]} assets={empty?[]:[{id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},{id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},{id:'XRP',name:'Ripple',symbol:'XRP',detail:'20×',category:'crypto',signal:null},{id:'SOL',name:'Solana',symbol:'SOL',detail:'20×',category:'crypto',signal:'down',position:true},{id:'GOLD',name:'Gold',symbol:'GOLD',detail:'20×',category:'commodities',signal:null},{id:'NVDA',name:'Nvidia',symbol:'NVDA',detail:'10×',category:'stocks',signal:null}]} selectedId='BTC' defaultView='trend' onClose={()=>setMessage('The host closes the sheet')} onSelect={asset=>setMessage(`The host opens ${asset.name}`)}/>"
+        }
+      }
+    },
+    {
       "name": "ProfileBlock",
       "slug": "profile-block",
       "entry": "blocks",

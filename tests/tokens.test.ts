@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {tokens,nativeColors,withAlpha} from '../packages/hig/tokens/src/index';
+import {tokens,nativeColors,nativeMetrics,withAlpha} from '../packages/hig/tokens/src/index';
 import {formatNumber,nativeFont} from '../packages/hig/contracts/src/index';
 import contrast from '../evidence/contrast.json';
 import {fontManifest} from '../packages/hig/native-fonts/src/index';
@@ -16,8 +16,10 @@ describe('platform contracts',()=>{
 describe('token CSS roles (#65, #66)',()=>{
  const css=readFileSync('packages/hig/tokens/generated/tokens.css','utf8');
  const root=css.slice(0,css.indexOf('}'));
- it('defines radius, type, motion and density roles from source.json',()=>{
+ it('defines radius, type, motion, density and safe-area roles from source.json',()=>{
   for(const [k,v] of Object.entries(tokens.radius))expect(root).toContain(`--hig-radius-${k}: ${v>=9999?`${v}px`:`${v/16}rem`};`);
+  for(const [k,v] of Object.entries(tokens.safeArea))expect(root).toContain(`--hig-safe-area-${k}: ${v/16}rem;`);
+  expect(nativeMetrics.safeArea).toEqual(tokens.safeArea);
   for(const [k,v] of Object.entries(tokens.type)){expect(root).toContain(`--hig-type-${k}-size: ${v.size/16}rem;`);expect(root).toContain(`--hig-type-${k}-line-height: ${v.lineHeight/16}rem;`);expect(root).toContain(`--hig-type-${k}-weight: ${v.weight};`);expect(root).toContain(`--hig-type-${k}: ${v.weight} ${v.size/16}rem/${v.lineHeight/16}rem var(--hig-font-sans);`);}
   for(const [k,v] of Object.entries(tokens.motion))expect(root).toContain(`--hig-motion-duration-${k}: ${v}ms;`);
   expect(root).toContain('--hig-motion-easing-standard: cubic-bezier(0.22, 1, 0.36, 1);');

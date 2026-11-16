@@ -6,7 +6,7 @@ import {spawnSync} from 'node:child_process';
 import source from '../packages/hig/tokens/source.json';
 
 describe('token source validation (#187)',()=>{
- function generate(mutate:(tokens:{colors:Record<string,Record<string,unknown>>;density:Record<string,Record<string,number>>;motion:Record<string,unknown>;space:Record<string,unknown>})=>void){
+ function generate(mutate:(tokens:{colors:Record<string,Record<string,unknown>>;density:Record<string,Record<string,number>>;motion:Record<string,unknown>;space:Record<string,unknown>;safeArea:Record<string,unknown>})=>void){
   const cwd=mkdtempSync(join(tmpdir(),'hig-token-source-'));
   try{
    const dir=join(cwd,'packages/hig/tokens');
@@ -31,7 +31,7 @@ describe('token source validation (#187)',()=>{
    else tokens.density.dense={control:24};
   })).toMatchObject({status:1,stderr:expect.stringContaining('must have the same keys as density.comfortable'),wroteOutput:false});
  });
- for(const group of ['motion','space'] as const)it.each([0,-1,'12',null])(`rejects non-positive/non-numeric ${group}: %j`,value=>{
+ for(const group of ['motion','space','safeArea'] as const)it.each([0,-1,'12',null])(`rejects non-positive/non-numeric ${group}: %j`,value=>{
   expect(generate(tokens=>{tokens[group][Object.keys(tokens[group])[0]]=value;})).toMatchObject({status:1,stderr:expect.stringContaining('must be a positive finite number'),wroteOutput:false});
  });
 });

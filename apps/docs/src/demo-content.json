@@ -85,6 +85,10 @@
       "title": "Principles and content"
     },
     {
+      "route": "guides/foundations/safe-area",
+      "title": "Safe area"
+    },
+    {
       "route": "guides/foundations/source-reconciliation",
       "title": "Pinned source reconciliation"
     },
@@ -407,6 +411,10 @@
     {
       "route": "components/position-block",
       "title": "PositionBlock"
+    },
+    {
+      "route": "components/assets-block",
+      "title": "AssetsBlock"
     },
     {
       "route": "components/profile-block",
@@ -1175,6 +1183,17 @@
         "default",
         "paper-trade",
         "farming"
+      ]
+    },
+    {
+      "name": "AssetsBlock",
+      "route": "components/assets-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "trend",
+        "empty"
       ]
     },
     {

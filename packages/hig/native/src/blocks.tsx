@@ -26,6 +26,7 @@ export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type 
 export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './trade-history-list-block.js';
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './trade-history-detail-block.js';
 export {TargetBlock,targetLayout,targetFormat,targetPresets,targetUnits,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice,type TargetPreset,type TargetUnitOption} from './target-block.js';
+export {AssetsBlock,filterAssets,type AssetsBlockProps,type AssetItem,type AssetCategory,type AssetSignal,type AssetsView} from './assets-block.js';
 export {ProfileBlock,type ProfileBlockProps,type ProfileRow,type ProfileSection,type ProfileStatus,type ProfileAction,type ProfileFigure} from './profile-block.js';
 export {PositionBlock,PositionBlockHeader,type PositionBlockProps,type PositionBlockHeaderProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag,type PositionBlockFlagAction} from './position-block.js';
 export {RewardBlock,rewardProgress,type RewardBlockProps,type RewardPromo,type RewardEntry} from './reward-block.js';

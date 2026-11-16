@@ -44,6 +44,8 @@ interface GestureSheetCommonProps {
  handleIndicatorStyle?:BottomSheetModalProps['handleIndicatorStyle'];
  backgroundComponent?:BottomSheetModalProps['backgroundComponent'];
  backgroundStyle?:BottomSheetModalProps['backgroundStyle'];
+ /** Content sits one elevation up, so wells, list rows and quiet fills step up one shade to stay visible on HIG's `overlay` fill. Pass `false` when `backgroundStyle` or `backgroundComponent` paints the page `background` instead; the fills then match the page. Defaults to `true`. */
+ raised?:boolean;
  /** Screen-level inline hosts may retain their existing sibling overlay order. */
  containerStyle?:BottomSheetModalProps['containerStyle'];
  /** Optional host animation and backdrop policies; HIG reduced-motion mapping remains applied. */
@@ -64,7 +66,7 @@ export type GestureSheetProps=GestureSheetCommonProps&(
  |{enableDynamicSizing:true;snapPoints?:never;initialIndex?:never;maxDynamicContentSize?:BottomSheetModalProps['maxDynamicContentSize']}
 );
 /** Optional backend: host supplies GestureHandlerRootView, SafeAreaProvider and BottomSheetModalProvider. */
-export function GestureSheet({open,onOpenChange,title,description,children,contentMode='default',titleRef,presentation='modal',sheetRef,snapPoints,enableDynamicSizing=false,maxDynamicContentSize,enableContentPanningGesture,keyboardBehavior='interactive',keyboardBlurBehavior='restore',android_keyboardInputMode='adjustResize',initialIndex=0,dismissible=true,returnFocusRef,closeLabel,onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,modalRef,handleComponent,handleStyle,handleIndicatorStyle,backgroundComponent,backgroundStyle,containerStyle,animateOnMount,animationConfigs,backdropComponent,labelledBy}:GestureSheetProps){
+export function GestureSheet({open,onOpenChange,title,description,children,contentMode='default',raised=true,titleRef,presentation='modal',sheetRef,snapPoints,enableDynamicSizing=false,maxDynamicContentSize,enableContentPanningGesture,keyboardBehavior='interactive',keyboardBlurBehavior='restore',android_keyboardInputMode='adjustResize',initialIndex=0,dismissible=true,returnFocusRef,closeLabel,onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,modalRef,handleComponent,handleStyle,handleIndicatorStyle,backgroundComponent,backgroundStyle,containerStyle,animateOnMount,animationConfigs,backdropComponent,labelledBy}:GestureSheetProps){
  if(enableDynamicSizing&&snapPoints!==undefined)throw new Error('Content-sized GestureSheet does not accept fixed snapPoints.');
  const fixedSnapPoints=snapPoints??[];
  if(!enableDynamicSizing&&fixedSnapPoints.length===0)throw new Error('GestureSheet requires at least one snap point.');
@@ -125,5 +127,6 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
  // No stroke: the sheet is the `overlay` fill, darker than a card, lifted by a soft shadow.
  const sheetFill={backgroundColor:colors.overlay,borderRadius:tokens.radius.xl,boxShadow:'0 -8px 32px #0008'};
  const backendProps={accessible:false,accessibilityLabel:title,index:presentation==='inline'&&!open?-1:presented.current?Math.max(0,Math.min(activeIndex.current,detentCount-1)):startingIndex,snapPoints:enableDynamicSizing?undefined:[...fixedSnapPoints],enableDynamicSizing,maxDynamicContentSize:enableDynamicSizing?maxDynamicContentSize:undefined,enableContentPanningGesture,enablePanDownToClose:dismissible,topInset:topInset??insets.top,bottomInset:bottomInset??insets.bottom,keyboardBehavior,keyboardBlurBehavior,android_keyboardInputMode,overrideReduceMotion:env.reducedMotion?ReduceMotion.Always:ReduceMotion.System,animateOnMount,animationConfigs,backdropComponent:backdropComponent===undefined?backdrop:backdropComponent,handleComponent,handleStyle,backgroundComponent,containerStyle,backgroundStyle:backgroundStyle?[sheetFill,backgroundStyle]:sheetFill,handleIndicatorStyle:handleIndicatorStyle?[{backgroundColor:colors.action},handleIndicatorStyle]:{backgroundColor:colors.action},onChange:handleChange};
- return presentation==='inline'?<BottomSheet {...backendProps} ref={inline} accessibilityElementsHidden={!open} importantForAccessibility={open?'auto':'no-hide-descendants'} onClose={handleSettledClose}><Raised>{content}</Raised></BottomSheet>:<BottomSheetModal {...backendProps} ref={sheet} enableDismissOnClose stackBehavior='push' onDismiss={handleSettledClose}><Raised>{content}</Raised></BottomSheetModal>;
+ const lifted=raised?<Raised>{content}</Raised>:content;
+ return presentation==='inline'?<BottomSheet {...backendProps} ref={inline} accessibilityElementsHidden={!open} importantForAccessibility={open?'auto':'no-hide-descendants'} onClose={handleSettledClose}>{lifted}</BottomSheet>:<BottomSheetModal {...backendProps} ref={sheet} enableDismissOnClose stackBehavior='push' onDismiss={handleSettledClose}>{lifted}</BottomSheetModal>;
 }

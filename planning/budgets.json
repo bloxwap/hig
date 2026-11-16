@@ -6,16 +6,16 @@
     "gzip": 400
   },
   "nativeSwitch": {
-    "gzip": 2460
+    "gzip": 2560
   },
   "feedbackContract": {
     "gzip": 1200
   },
   "docsJS": {
-    "gzip": 665000
+    "gzip": 670000
   },
   "docsCSS": {
-    "raw": 185000
+    "raw": 190000
   },
   "fonts": {
     "raw": 600000

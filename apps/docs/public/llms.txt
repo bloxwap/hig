@@ -189,7 +189,7 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -212,6 +212,7 @@ All data and actions are supplied by the host application.
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
+| `AssetsBlock` | Choose a market: a search field, category capsules, All / Positions / Trend views, then the markets in sections by category, each with its signal disc. Details below. |
 | `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
 | `RewardBlock` | A competition: a prize pool or sweepstakes promotion, a choice of standings, the viewer's own standing, and the ranked list. Details below. |
 | `SoundHapticsBlock` | Sound, microphone, haptics and flash settings: one card per channel with a switch, and for a channel that is on its device, input meter and volume steps. Details below. |
@@ -601,6 +602,26 @@ Three settings screens share one anatomy: the shared header, then settings as ca
 - **Description.** `description` on each of the three blocks, and on `LanguageBlock`, is a muted line under the header that explains the screen.
 - **State.** Every switch is controlled: the host holds `checked` and decides in `onCheckedChange` whether the change takes, for example after the system permission prompt. `disabled` dims a row and blocks it.
 - **Ownership.** The blocks never play a sound, read the microphone, vibrate, request a permission or subscribe to anything.
+
+### AssetsBlock
+
+`AssetsBlock` is the market chooser as one screen, usually in a sheet: the header with an optional Close, a search field, the category capsules (`Filter`), the All / Positions / Trend views (`SegmentedControl`), then the markets in sections by category. Each row shows the market's round icon, its name over its symbol and detail, and an optional signal disc on the trailing edge. It is available from `@bloxwap/hig/react/blocks/assets-block`, `@bloxwap/hig/native/assets-block` and the `blocks` aggregates.
+
+```tsx
+<AssetsBlock onClose={close} selectedId={market.id} onSelect={openMarket}
+  categories={[{id: 'crypto', label: 'Crypto', status: {label: 'OPEN'}},
+               {id: 'commodities', label: 'Commodities', opensAt: session.commodities.opensAt}]}
+  assets={[{id: 'BTC', name: 'Bitcoin', symbol: 'BTC', detail: '40×', category: 'crypto', signal: 'watch', position: true},
+           {id: 'GOLD', name: 'Gold', symbol: 'GOLD', detail: '20×', category: 'commodities', signal: null}]}/>
+```
+
+- **Markets.** Each asset is `{id, name, symbol, category}` plus optional `detail` (short text after the symbol, such as the maximum leverage `40×`), `icon` (an image URL or a host element; without it the disc shows the symbol's first letters), `keywords` for search, and `disabled`. A selectable row is one button named by its name, symbol line and signal.
+- **Signal.** `signal` is `'watch'` (an eye on a warning tint), `'up'` or `'down'` (a trend arrow on a positive or negative tint), or `null` for an empty disc. Leave it out to draw no disc. The signal is read after the market (built-in `signalWatch`, `signalUp`, `signalDown`), so it is never colour alone.
+- **Categories.** `categories` orders the sections and the capsules; a market whose category is not listed is not shown, and an empty section is not drawn. `status={{label, tone}}` puts a badge on the section heading, such as OPEN, read with the heading. `tone` is `positive` by default.
+- **Opening countdown.** Bloxwap trades around the clock, so a section never says closed. When the legacy market behind a category is shut, pass `opensAt` (epoch milliseconds or a `Date`) and the badge counts down to it in a neutral tone: “Opens in 2:14:33”, or “Opens in 1d 04:12:09” past a day, ticking each second. The heading reads it in words without seconds (“Commodities, Opens in 2 hours, 14 minutes”), so the accessible name changes at most once a minute and nothing is announced on its own. The countdown takes the place of `status` while it runs; once `opensAt` passes, `status` shows again, so a host can pass both. On web the countdown appears after hydration, so server HTML carries no clock. `formatCountdown` from `@bloxwap/hig/contracts` exports the same formatting. The capsules are left out with one category or `categoryFilter={false}`; on native, `filterScrollComponent` reaches `Filter`'s `scrollComponent`.
+- **Views.** All shows every market, Positions those with `position: true`, and Trend those with a signal (not `null`). Each view, the category (`''` is All) and the search query are uncontrolled by default (`defaultView`, `defaultCategory`, `defaultQuery`) or controlled with `view`/`onViewChange`, `category`/`onCategoryChange` and `query`/`onQueryChange`, for example to restore the last choice. The search matches name, symbol and `keywords`, ignoring case and accents. `filterAssets` exports the same filtering for a host that needs the counts.
+- **Empty and loading.** With nothing to show, the list reads `noResults` for a search, `noPositions` or `noTrend` for those views, and `noItems` otherwise; `loading` shows the loading text instead.
+- **Ownership.** The block never reads a market, a position or a signal. The host passes the data and opens the market on `onSelect`; on native the host also owns the scrolling, as for the other blocks.
 
 ### ProfileBlock
 
@@ -1190,7 +1211,7 @@ For content-sized native cards, set `enableDynamicSizing` and omit `snapPoints`.
 
 Close, Android Back and iOS accessibility escape use the same controlled close request. If the host rejects the request and controlled `open` remains true, HIG retries presentation after host state settles, retaining the card and its state instead of leaving a backend-dismissed but logically open sheet. Rejected closes and interrupted reopenings do not return focus or call `onDismiss`; hosts may use that settled callback to clear retained state only after an accepted close. `onHardwareBackPress` can consume Android Back (`true`) or defer to the host's nested-card dispatcher (`false`); omitting it keeps the default dismissal behavior. Accessibility escape is a platform contract, not a physical VoiceOver certification.
 
-`topInset` and `bottomInset` default to safe-area values; use `0` for an intentional flush edge. `handleComponent` (including `null` for an overlay handle), `handleStyle`, `handleIndicatorStyle`, `backgroundComponent` and `backgroundStyle` retain host geometry and decoration. The backend measures the rendered handle. Use `useColors()` in custom backgrounds. `modalRef` exposes the optional backend's imperative motion methods; hosts must keep controlled `open` in sync with `present()`/`dismiss()`. Focus return and settled `onDismiss` remain controlled by the HIG wrapper. `animateOnMount`, `animationConfigs` and `backdropComponent` retain host entry motion and backdrop styling; the reduced-motion mapping still applies. A custom backdrop must honor the host dismissal policy.
+`topInset` and `bottomInset` default to safe-area values; use `0` for an intentional flush edge. `handleComponent` (including `null` for an overlay handle), `handleStyle`, `handleIndicatorStyle`, `backgroundComponent` and `backgroundStyle` retain host geometry and decoration. Sheet content is raised by default, so wells, list rows and quiet fills step up one shade against HIG's `overlay` fill; a host whose background paints the page `background` passes `raised={false}` so those fills match the page. The backend measures the rendered handle. Use `useColors()` in custom backgrounds. `modalRef` exposes the optional backend's imperative motion methods; hosts must keep controlled `open` in sync with `present()`/`dismiss()`. Focus return and settled `onDismiss` remain controlled by the HIG wrapper. `animateOnMount`, `animationConfigs` and `backdropComponent` retain host entry motion and backdrop styling; the reduced-motion mapping still applies. A custom backdrop must honor the host dismissal policy.
 
 Keyboard policies are typed backend options: `keyboardBehavior`, `keyboardBlurBehavior` and `android_keyboardInputMode`. Defaults remain HIG's `interactive`, `restore` and `adjustResize`. A host retaining an existing Gorhom policy can explicitly pass `none` for blur and `adjustPan` on Android. See [Gorhom keyboard handling](https://gorhom.dev/react-native-bottom-sheet/keyboard-handling).
 
@@ -1951,6 +1972,19 @@ Rules:
 | `stake` | Stake | TokenActionBlock: built-in label of the `stake` action | — |
 | `unstake` | Unstake | TokenActionBlock: built-in label of the `unstake` action | — |
 | `clearSearch` | Clear search | SearchInput: accessible name of the clear button when the host gives no `clearLabel` | — |
+| `assets` | Assets | AssetsBlock: the default heading | — |
+| `searchMarkets` | Search markets | AssetsBlock: search placeholder (with a trailing ellipsis) and accessible name | — |
+| `marketCategories` | Market categories | AssetsBlock: accessible name of the category filter | — |
+| `assetsView` | View | AssetsBlock: accessible name of the All / Positions / Trend control | — |
+| `assetsAll` | All | AssetsBlock: the unfiltered category capsule and view | — |
+| `assetsPositions` | Positions | AssetsBlock: the view of markets with an open position | — |
+| `assetsTrend` | Trend | AssetsBlock: the view of markets with a signal | — |
+| `signalWatch` | Watch | AssetsBlock: a row's watch signal, read after the market | — |
+| `signalUp` | Rising | AssetsBlock: a row's upward signal, read after the market | — |
+| `signalDown` | Falling | AssetsBlock: a row's downward signal, read after the market | — |
+| `noPositions` | No open positions | AssetsBlock: empty Positions view | — |
+| `noTrend` | No trending markets | AssetsBlock: empty Trend view | — |
+| `opensIn` | Opens in | AssetsBlock: before the countdown to when a closed legacy market opens | — |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 
@@ -2119,7 +2153,7 @@ Fast 180ms, base 260ms, slow 320ms; web easing `cubic-bezier(.22,1,.36,1)`. CSS 
 
 ## Accessibility and localization (#10)
 
-Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. The [contrast report nonText section](https://github.com/bloxwap/hig/blob/main/evidence/contrast.json) checks focus, faint, negative and action against background, surface and nested at 3:1. Decorative border is excluded; it must not be the sole meaningful state indicator. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Intl display is not money arithmetic. Vocabulary is locked in the [trading glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/) (`docs/foundations/glossary.json`) before any locale translation. Number, currency, date, leverage, percent and RTL formatting is in the [localization guide](https://bloxwap.github.io/hig/docs/guides/foundations/localization/).
+Baseline: [WCAG 2.2 AA, Recommendation 12 December 2024](https://www.w3.org/TR/2024/REC-WCAG22-20241212/). Normal text 4.5:1; large text and meaningful non-text UI 3:1. The [contrast report nonText section](https://github.com/bloxwap/hig/blob/main/evidence/contrast.json) checks focus, faint, negative and action against background, surface and nested at 3:1. Decorative border is excluded; it must not be the sole meaningful state indicator. Touch baseline 48 logical units exceeds the web minimum. Provide visible focus, semantic labels/descriptions, logical keyboard order and non-drag alternatives. Native roles/state/value map to VoiceOver/TalkBack. No tooltip-only critical text. Restore trigger focus on modal dismissal; Escape/native back closes topmost cancellable overlay. Host owns safe-area, locale, parsing, route and keyboard adapters. Device insets come from the device at runtime; the `safeArea` tokens are only the offsets added on top of them (see [safe area](https://bloxwap.github.io/hig/docs/guides/foundations/safe-area/)). Intl display is not money arithmetic. Vocabulary is locked in the [trading glossary](https://bloxwap.github.io/hig/docs/guides/foundations/glossary/) (`docs/foundations/glossary.json`) before any locale translation. Number, currency, date, leverage, percent and RTL formatting is in the [localization guide](https://bloxwap.github.io/hig/docs/guides/foundations/localization/).
 
 Component review checklist: keyboard completion; labeled controls/errors; busy/disabled; focus restoration; narrow viewport; 200% text; long translations; Arabic/Hebrew RTL; mixed scripts; reduced motion; sound off; haptics off; unknown/stale/error values; VoiceOver/TalkBack on physical devices. Automated results and physical observations must be separate. Exception requires owner, affected surface, reason, alternative and expiry. No observed device evidence means pending, never pass.
 
@@ -2173,6 +2207,81 @@ The preceding rules map to Bloxwap-owned examples, without treating host demo ou
 - State tells the truth: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/ui-native/src/components/toast.tsx), [HIG pattern](https://bloxwap.github.io/hig/docs/guides/components/status/). Source notification severity and persistent readable outcomes; HIG preserves undismissed bursts.
 - Content and precision: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/ui-native/src/components/number-format.ts), [HIG pattern](https://bloxwap.github.io/hig/docs/guides/components/fields/). Source display formatting stays separate from raw amount input and host arithmetic.
 - Composition and progressive disclosure: [pinned Bloxwap source](https://github.com/bloxwap/monorepo/blob/d47cef4c40363184bdfda8d8c263ead108ef9ff6/packages/ui-native/src/components/sheet.tsx), [HIG pattern](https://bloxwap.github.io/hig/docs/guides/components/overlays/). Source back/dismissal and safe-area behavior; basic HIG Modal alternative has an explicit close action.
+
+
+## Safe area
+Source: docs/foundations/safe-area.md
+
+# Safe area
+
+Device insets come from the device at runtime (`useSafeAreaInsets()`, `SafeAreaView`, or `env(safe-area-inset-*)` on the web). The `safeArea` tokens are only the offsets added on top of those insets. They do not include, replace, or approximate the inset values themselves. Do not put raw device inset values in `packages/hig/tokens/source.json`.
+
+The tokens record the offsets the native mobile app uses today. They are not a single standardized gutter. Compose them with the live insets:
+
+```ts
+import {nativeMetrics} from '@bloxwap/hig/tokens';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+const insets = useSafeAreaInsets();
+const toastTop = insets.top + nativeMetrics.safeArea.toastOffset;
+```
+
+```css
+padding-top: calc(env(safe-area-inset-top) + var(--hig-safe-area-toastOffset));
+```
+
+`toastOffset` is 44 + 16, to match the website's Sonner toaster: the website adds `env(safe-area-inset-top) + 44px` on top of Sonner's 16px `--mobile-offset-top`, so toast cards land at safe-area + 60.
+
+## Trade screens stay full-bleed
+
+Trade screens stay full-bleed. Their chrome adds the insets itself: the top bar, tap controls, toasts, share overlay, and chart axis reserves all compose `insets.*` with a `safeArea` offset. Do not wrap a trade screen in `SafeAreaView`, and do not also pad the chart canvas by the same insets.
+
+```ts
+const {safeArea} = nativeMetrics;
+
+// Trade chrome gutters (8).
+const paddingTop = insets.top + safeArea.chromeGutter;
+const paddingLeft = insets.left + safeArea.chromeGutter;
+const paddingRight = insets.right + safeArea.chromeGutter;
+const paddingBottom = insets.bottom + safeArea.chromeGutter;
+
+// Chart axis chrome reserved by the trade screen (8 + 48 pill; 80 + 8 tap controls).
+const axisTop = insets.top + safeArea.axisChromeTop;
+const axisBottom = insets.bottom + safeArea.axisChromeBottom;
+
+// Sheet card content (16), when the sheet does not already apply insets.
+const sheetPaddingBottom = insets.bottom + safeArea.sheetContentGutter;
+```
+
+## `SafeAreaView` for non-trade screens
+
+Use `SafeAreaView` on non-trade screens such as settings, 404, bootstrap, and fullscreen modals. Those screens can also add `fullscreenMin` (20) as a minimum side or edge gutter on top of the view's insets. A trade route-gate may apply left and right safe-area edges only, so a blocked trade view is not full-bleed into the system insets.
+
+## Side gutters
+
+The app currently uses side gutters of 8, 16, and 20 in different places. Document and keep that as-is; do not collapse them to one token.
+
+- `chromeGutter` (8): trade top bar and tap controls (`paddingLeft` / `paddingRight` / `paddingTop` or `paddingBottom` of `insets.* + 8`).
+- `sheetContentGutter` (16): sheet card and similar content padding, and the trade share overlay (`insets.* + 16`).
+- `fullscreenMin` (20): the larger gutter used on some non-trade and fullscreen surfaces.
+
+## Fixture and store-capture exceptions
+
+Fixture and store-capture exceptions stay in the app. Snapshot and fixture builds may zero chrome insets so layout is stable; store-capture builds keep the device insets. Do not encode those exceptions in HIG tokens.
+
+## Do not pad `GestureSheet` twice
+
+`GestureSheet` already applies safe-area insets to its content padding (`tokens.space.xl` plus the bottom inset). Do not add `sheetContentGutter` or another inset on top of that default padding, or the sheet will be padded twice. Pass an explicit inset only when you intend to replace the default, including `0` for a flush edge.
+
+## Source references
+
+These values come from the private `bloxwap/monorepo` native app. Paths, not public links:
+
+- `apps/mobile/src/components/tap-controls.tsx` — trade chrome gutter of 8; fixture and store-capture inset exceptions.
+- `packages/ui-native/src/components/toast.tsx` — `TOAST_TOP_OFFSET = 44 + 16`.
+- `apps/mobile/src/profile/lib/sheet-card-padding.ts` — sheet content gutter of 16.
+- `apps/mobile/src/components/live-chart.tsx` — `AXIS_CHROME_TOP` 56 and `AXIS_CHROME_BOTTOM` 88; fixture and store-capture exceptions.
+- `apps/mobile/app/trade/[asset].tsx` — full-bleed trade screen whose chrome adds insets itself; chrome gutter 8, share overlay gutter 16, toast offset, and the same fixture exceptions.
 
 
 ## Pinned source reconciliation
@@ -2680,6 +2789,7 @@ Install the tokens package alone and import CSS variables or typed tokens. No Re
 | --- | --- | --- |
 | Color | `--hig-surface`, `--hig-action` | sRGB, then OKLCH/P3 in `@supports` |
 | Space | `--hig-space-md` | `xs`–`xxxl`, `section`, in rem |
+| Safe area | `--hig-safe-area-toastOffset` | `chromeGutter` `sheetContentGutter` `toastOffset` `fullscreenMin` `axisChromeTop` `axisChromeBottom`, in rem; offsets added on top of device insets, see [safe area](https://bloxwap.github.io/hig/docs/guides/foundations/safe-area/) |
 | Font | `--hig-font-sans`, `--hig-font-mono` | `@bloxwap/font` Next variable, then literal family |
 | Radius | `--hig-radius-md`, `--hig-radius-pill` | `sm` `md` `lg` `xl` in rem; `pill` 9999px |
 | Type | `--hig-type-body-size`, `--hig-type-body-line-height`, `--hig-type-body-weight`, `--hig-type-body` | `caption` `label` `body` `title` `display`; the bare role is a `font` shorthand in Sans |

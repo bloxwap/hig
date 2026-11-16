@@ -35,6 +35,7 @@
     "tradehistorydetailblock",
     "rewardblock",
     "soundhapticsblock-signalsblock-and-notificationsblock",
+    "assetsblock",
     "profileblock",
     "screenheader",
     "pinned-headers",
@@ -167,6 +168,14 @@
     "content-and-precision",
     "composition-and-progressive-disclosure",
     "concrete-source-and-pattern-references"
+  ],
+  "/docs/guides/foundations/safe-area/": [
+    "trade-screens-stay-full-bleed",
+    "safeareaview-for-non-trade-screens",
+    "side-gutters",
+    "fixture-and-store-capture-exceptions",
+    "do-not-pad-gesturesheet-twice",
+    "source-references"
   ],
   "/docs/guides/foundations/source-reconciliation/": [
     "tokens-and-platform-units",
