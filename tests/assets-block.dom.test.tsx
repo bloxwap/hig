@@ -1,0 +1,69 @@
+// @vitest-environment jsdom
+import React from 'react';
+import {afterEach,describe,expect,it,vi} from 'vitest';
+import {cleanup,render,screen,within} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {HIGProvider} from '../packages/hig/react/src/provider';
+import {AssetsBlock,filterAssets,type AssetCategory,type AssetItem} from '../packages/hig/react/src/blocks/assets-block';
+import * as blocks from '../packages/hig/react/src/blocks';
+afterEach(cleanup);
+const categories:AssetCategory[]=[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',status:{label:'CLOSED',tone:'negative'}},{id:'stocks',label:'Stocks'}];
+const assets:AssetItem[]=[
+ {id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},
+ {id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},
+ {id:'XRP',name:'Ripple',symbol:'XRP',category:'crypto',signal:null},
+ {id:'GOLD',name:'Gold',symbol:'GOLD',category:'commodities',signal:null,keywords:'XAU'},
+ {id:'ORPHAN',name:'Orphan',symbol:'ORP',category:'unlisted'},
+];
+const mount=(props:Partial<React.ComponentProps<typeof AssetsBlock>>={})=>render(<HIGProvider><AssetsBlock assets={assets} categories={categories} onSelect={()=>{}} {...props}/></HIGProvider>);
+describe('filterAssets',()=>{
+ it('groups by category in host order, drops empty and unlisted sections, and filters by view, category and query',()=>{
+  const ids=(sections:ReturnType<typeof filterAssets>)=>sections.map(s=>[s.category.id,s.assets.map(a=>a.id)]);
+  expect(ids(filterAssets(assets,categories))).toEqual([['crypto',['BTC','ETH','XRP']],['commodities',['GOLD']]]);
+  expect(ids(filterAssets(assets,categories,{view:'positions'}))).toEqual([['crypto',['BTC']]]);
+  expect(ids(filterAssets(assets,categories,{view:'trend'}))).toEqual([['crypto',['BTC','ETH']]]);
+  expect(ids(filterAssets(assets,categories,{category:'commodities'}))).toEqual([['commodities',['GOLD']]]);
+  expect(ids(filterAssets(assets,categories,{query:'xau'}))).toEqual([['commodities',['GOLD']]]);
+  expect(ids(filterAssets(assets,categories,{query:' éth '}))).toEqual([['crypto',['ETH']]]);
+ });
+});
+describe('AssetsBlock',()=>{
+ it('draws the header, search, capsules, views and sections with status read in the heading',async()=>{
+  const close=vi.fn();mount({onClose:close});
+  expect(screen.getByRole('heading',{level:2,name:'Assets'})).toBeTruthy();
+  await userEvent.click(screen.getByRole('button',{name:'Close'}));expect(close).toHaveBeenCalledOnce();
+  expect(screen.getByRole('searchbox',{name:'Search markets'})).toBeTruthy();
+  expect(within(screen.getByRole('radiogroup',{name:'Market categories'})).getAllByRole('radio').map(r=>r.closest('label')?.textContent)).toEqual(['All','Crypto','Commodities','Stocks']);
+  expect(within(screen.getByRole('group',{name:'View'})).getAllByRole('radio')).toHaveLength(3);
+  expect(screen.getByRole('heading',{level:3,name:'Crypto, OPEN'})).toBeTruthy();
+  expect(screen.queryByRole('heading',{name:/Stocks/})).toBeNull();
+  expect(screen.queryByText('Orphan')).toBeNull();
+ });
+ it('names each row by market, symbol line and signal, and reports the press',async()=>{
+  const select=vi.fn();mount({onSelect:select,selectedId:'BTC'});
+  const btc=screen.getByRole('button',{name:'Bitcoin, BTC · 40×, Watch'});
+  expect(btc.getAttribute('aria-current')).toBe('true');
+  expect(screen.getByRole('button',{name:'Ethereum, ETH · 25×, Rising'})).toBeTruthy();
+  expect(screen.getByRole('button',{name:'Ripple, XRP'}).querySelector('.hig-assets-signal')).toBeTruthy();
+  await userEvent.click(btc);expect(select).toHaveBeenCalledWith(assets[0]);
+ });
+ it('switches views and categories, searches, and shows the empty text for each case',async()=>{
+  const onView=vi.fn();mount({onViewChange:onView});
+  const views=within(screen.getByRole('group',{name:'View'})),capsules=within(screen.getByRole('radiogroup',{name:'Market categories'}));
+  await userEvent.click(views.getByRole('radio',{name:'Positions'}));
+  expect(onView).toHaveBeenCalledWith('positions');
+  expect(screen.queryByRole('button',{name:/Ethereum/})).toBeNull();
+  await userEvent.click(capsules.getByRole('radio',{name:'Commodities'}));
+  expect(screen.getByRole('status').textContent).toBe('No open positions');
+  await userEvent.click(views.getByRole('radio',{name:'Trend'}));
+  expect(screen.getByRole('status').textContent).toBe('No trending markets');
+  await userEvent.click(views.getByRole('radio',{name:'All'}));await userEvent.click(capsules.getByRole('radio',{name:'All'}));
+  await userEvent.type(screen.getByRole('searchbox'),'zzz');
+  expect(screen.getByRole('status').textContent).toBe('No results');
+ });
+ it('takes controlled state, host translations and the blocks aggregate',()=>{
+  render(<HIGProvider messages={{assetsTrend:'Tendance',signalUp:'En hausse'}}><blocks.AssetsBlock assets={assets} categories={categories} onSelect={()=>{}} view='trend' category='crypto' query='eth'/></HIGProvider>);
+  expect(screen.getByRole('radio',{name:'Tendance'})).toHaveProperty('checked',true);
+  expect(screen.getAllByRole('button',{name:/,/}).map(b=>b.getAttribute('aria-label'))).toEqual(['Ethereum, ETH · 25×, En hausse']);
+ });
+});

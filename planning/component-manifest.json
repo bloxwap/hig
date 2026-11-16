@@ -163,6 +163,7 @@
         "TargetBlock",
         "PositionBlock",
         "RewardBlock",
+        "AssetsBlock",
         "ProfileBlock",
         "ScreenHeader",
         "SoundHapticsBlock",

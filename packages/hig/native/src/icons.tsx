@@ -23,3 +23,7 @@ export function SeverityIcon({kind,color}: {kind:SeverityIconKind;color:string})
 }
 /** Neutral mark for an empty state: an empty tray. */
 export function EmptyIcon({color}: {color:string}){return <View {...hidden} style={{width:48,height:48,...centre}}><View style={{width:40,height:30,borderRadius:10,borderWidth:2,borderColor:color,justifyContent:'flex-end',alignItems:'center',paddingBottom:7}}><View style={{width:16,height:2,borderRadius:1,backgroundColor:color}}/></View></View>;}
+/** An eye: an almond outline around a pupil. */
+export function EyeIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><View style={{width:18,height:11,borderRadius:9,borderWidth:stroke,borderColor:color,...centre}}><View style={{width:5,height:5,borderRadius:2.5,borderWidth:stroke,borderColor:color}}/></View></View>;}
+/** A rising line ending in an arrowhead; `down` mirrors it to fall. */
+export function TrendIcon({color,direction}: {color:string;direction:'up'|'down'}){return <View {...hidden} style={{width:20,height:20,...centre,transform:direction==='down'?[{scaleY:-1}]:undefined}}><Bar length={16} color={color} angle='-40deg'/><View style={{position:'absolute',top:4,right:2,width:6,height:6,borderTopWidth:stroke,borderRightWidth:stroke,borderColor:color}}/></View>;}

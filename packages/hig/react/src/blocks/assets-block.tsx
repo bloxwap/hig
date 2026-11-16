@@ -1,0 +1,117 @@
+"use client";
+import React,{useId,useMemo,useState} from 'react';
+import {PressDecoration,useMessages} from '../provider.js';
+import {SearchInput} from '../field.js';
+import {Filter,SegmentedControl} from '../selection.js';
+import {Badge} from '../status.js';
+import {ScreenHeader,HeaderClose} from './screen-header.js';
+/** A market's live heat signal: `watch` while it is being watched, `up` or `down` once it trends. */
+export type AssetSignal='watch'|'up'|'down';
+/** The three views of the list: every market, the markets with an open position, and the markets with a signal. */
+export type AssetsView='all'|'positions'|'trend';
+/** One market the host offers. Every word is host text. */
+export interface AssetItem {
+ /** Stable id the host switches on. */
+ id:string;
+ /** Bitcoin. */
+ name:string;
+ /** BTC. */
+ symbol:string;
+ /** `id` of the `AssetCategory` whose section the market sits in. */
+ category:string;
+ /** Short host text after the symbol on the second line, such as the maximum leverage: `40×`. */
+ detail?:string;
+ /** Round artwork: an image URL or a host element. Without it the row shows the first letters of the symbol. */
+ icon?:string|React.ReactElement;
+ /** The trailing signal disc. `null` draws an empty disc, for a market with no signal yet; leave it out to draw no disc. */
+ signal?:AssetSignal|null;
+ /** The viewer holds an open position in this market, so it shows under Positions. */
+ position?:boolean;
+ /** More text the search matches, such as an alias or a ticker on another venue. */
+ keywords?:string;
+ disabled?:boolean;
+}
+/** A market type: a section of the list and a capsule in the category filter. */
+export interface AssetCategory {
+ id:string;
+ /** Crypto. */
+ label:string;
+ /** A badge on the section heading's trailing edge, such as the session state: OPEN or CLOSED. */
+ status?:{label:string;tone?:'positive'|'negative'|'warning'|'info'};
+}
+export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'|'onSelect'> {
+ /** Heading. Defaults to the built-in “Assets”. */
+ title?:string;
+ /** Shows Close on the trailing edge of the header. */
+ onClose?:()=>void;
+ assets:readonly AssetItem[];
+ /** Sections and filter capsules, in order. A market whose category is not listed is not shown. */
+ categories:readonly AssetCategory[];
+ onSelect:(asset:AssetItem)=>void;
+ /** `id` of the market in use: its row is marked current. */
+ selectedId?:string|null;
+ view?:AssetsView;defaultView?:AssetsView;onViewChange?:(view:AssetsView)=>void;
+ /** `id` of the chosen category; `''` is All. */
+ category?:string;defaultCategory?:string;onCategoryChange?:(category:string)=>void;
+ query?:string;defaultQuery?:string;onQueryChange?:(query:string)=>void;
+ /** `false` leaves out the category filter. Defaults to `true` when there is more than one category. */
+ categoryFilter?:boolean;
+ /** Shows the loading text in place of the empty text while the list is empty. */
+ loading?:boolean;
+}
+const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+/** The markets a view, category and query leave, grouped by category in the host's order. Empty sections are dropped. */
+export function filterAssets(assets:readonly AssetItem[],categories:readonly AssetCategory[],{view='all',category='',query=''}:{view?:AssetsView;category?:string;query?:string}={}):{category:AssetCategory;assets:AssetItem[]}[]{
+ const needle=fold(query.trim());
+ const keep=(asset:AssetItem)=>(view==='all'||(view==='positions'?!!asset.position:asset.signal!=null))&&(needle===''||fold(`${asset.name} ${asset.symbol} ${asset.keywords??''}`).includes(needle));
+ return categories.filter(entry=>category===''||entry.id===category).map(entry=>({category:entry,assets:assets.filter(asset=>asset.category===entry.id&&keep(asset))})).filter(section=>section.assets.length>0);
+}
+const stroke={fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round' as const,strokeLinejoin:'round' as const};
+const signalIcons:Record<AssetSignal,React.ReactNode>={
+ watch:<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' {...stroke}><path d='M1.8 10s3-5.8 8.2-5.8 8.2 5.8 8.2 5.8-3 5.8-8.2 5.8S1.8 10 1.8 10Z'/><circle cx='10' cy='10' r='2.6'/></svg>,
+ up:<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' {...stroke}><path d='m2.5 14.5 5-5 3.5 3.5 6.5-6.5M12.5 6.5h5v5'/></svg>,
+ down:<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' {...stroke}><path d='m2.5 5.5 5 5 3.5-3.5 6.5 6.5M12.5 13.5h5v-5'/></svg>,
+};
+/** Controlled when `value` is set, otherwise local. No feedback: the filter and segmented control emit their own, and typing emits none. */
+function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):[T,(next:T)=>void]{
+ const [local,setLocal]=useState(initial);const current=value===undefined?local:value;
+ return [current,next=>{if(Object.is(next,current))return;if(value===undefined)setLocal(next);onChange?.(next);}];
+}
+/**
+ * Choose a market as one screen: a header, a search field, category capsules, the All / Positions / Trend views, then the
+ * markets in sections by category, each with its icon, name, symbol and detail, and its signal disc. The host owns the data.
+ */
+export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,loading,className,...rest}:AssetsBlockProps){
+ const t=useMessages();const id=useId();
+ const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
+ const [currentCategory,setCategory]=useHostState(category,defaultCategory,onCategoryChange);
+ const [currentQuery,setQuery]=useHostState(query,defaultQuery,onQueryChange);
+ const sections=useMemo(()=>filterAssets(assets,categories,{view:currentView,category:currentCategory,query:currentQuery}),[assets,categories,currentView,currentCategory,currentQuery]);
+ const heading=title??t.assets;const signalName:Record<AssetSignal,string>={watch:t.signalWatch,up:t.signalUp,down:t.signalDown};
+ const empty=loading?`${t.loading}…`:currentQuery.trim()!==''?t.noResults:currentView==='positions'?t.noPositions:currentView==='trend'?t.noTrend:t.noItems;
+ const row=(asset:AssetItem)=>{
+  const second=asset.detail?`${asset.symbol} · ${asset.detail}`:asset.symbol;
+  const signal=asset.signal===undefined?null:<span className='hig-assets-signal' data-signal={asset.signal??undefined}>{asset.signal?signalIcons[asset.signal]:null}</span>;
+  const name=[asset.name,second,asset.signal?signalName[asset.signal]:null].filter(Boolean).join(', ');
+  return <li key={asset.id}><button type='button' className='hig-assets-row' aria-label={name} aria-current={asset.id===selectedId||undefined} disabled={asset.disabled} onClick={()=>onSelect(asset)}>
+   <span className='hig-assets-icon' aria-hidden='true'>{typeof asset.icon==='string'?<img src={asset.icon} alt=''/>:asset.icon??asset.symbol.slice(0,4)}</span>
+   <span className='hig-assets-text' aria-hidden='true'><strong>{asset.name}</strong><span>{second}</span></span>
+   {signal}
+   <PressDecoration kind='row' disabled={!!asset.disabled}/>
+  </button></li>;
+ };
+ const showFilter=(categoryFilter??true)&&categories.length>1;
+ return <section {...rest} className={`hig-assets-block${className?` ${className}`:''}`}>
+  <ScreenHeader title={heading} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>
+  <SearchInput aria-label={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChange={event=>setQuery(event.target.value)} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false}/>
+  {showFilter&&<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory}/>}
+  <SegmentedControl hideLabel label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
+  <div className='hig-assets-list' aria-busy={loading||undefined}>
+   {sections.length===0&&<p className='hig-assets-empty' role='status'>{empty}</p>}
+   {sections.map(section=><section key={section.category.id} className='hig-assets-section' aria-labelledby={`${id}-${section.category.id}`}>
+    <div className='hig-assets-section-header'><h3 id={`${id}-${section.category.id}`} aria-label={section.category.status?`${section.category.label}, ${section.category.status.label}`:undefined}>{section.category.label}</h3>{section.category.status&&<Badge aria-hidden='true' className='hig-assets-status' tone={section.category.status.tone??'positive'}>{section.category.status.label}</Badge>}</div>
+    <ul>{section.assets.map(row)}</ul>
+   </section>)}
+  </div>
+ </section>;
+}

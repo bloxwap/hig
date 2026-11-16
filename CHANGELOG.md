@@ -6,6 +6,14 @@
 
 - `safeArea` offsets (`tokens.safeArea`, `nativeMetrics.safeArea`, `--hig-safe-area-*`): `chromeGutter` 8, `sheetContentGutter` 16, `toastOffset` 60 (44 + 16, matching the website's Sonner toaster), `fullscreenMin` 20, `axisChromeTop` 56, and `axisChromeBottom` 88. These are the values the native mobile app uses today, added on top of runtime device insets. They do not include the insets themselves. See [Safe area](docs/foundations/safe-area.md). The native Switch bundle budget rises from 2,460 to 2,560 bytes gzipped because `nativeMetrics` now includes `safeArea`.
 
+### Blocks
+
+- `AssetsBlock` (web and native): the market chooser as one screen, with a search field, category capsules, All / Positions / Trend views, sections by category with a status badge, and a signal disc per market. New built-in messages: `assets`, `searchMarkets`, `marketCategories`, `assetsView`, `assetsAll`, `assetsPositions`, `assetsTrend`, `signalWatch`, `signalUp`, `signalDown`, `noPositions`, `noTrend`.
+
+### GestureSheet
+
+- Native `raised` (default `true`): `raised={false}` keeps page fills inside the sheet for a host whose `backgroundStyle` or `backgroundComponent` paints the page `background`, so list rows, switch tracks and disabled buttons no longer step up one shade (#240).
+
 ## 0.7.0
 
 Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, grouped by block below. Web and native unless noted; every word stays host text. Everything is additive and optional: without the new props, every component renders exactly as in 0.6.0, except the changes the app teams asked for that are marked below (a `ProfileBlock` switch row's label now toggles it on web, an `AccountBlock` asset with an unknown value and a known balance headlines its units, a native `RewardBlock` given a `testID` prefixes its inner test IDs with it, and a web `ManagePositionBlock` icon URL that fails to load shows the initials).

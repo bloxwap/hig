@@ -409,6 +409,10 @@
       "title": "PositionBlock"
     },
     {
+      "route": "components/assets-block",
+      "title": "AssetsBlock"
+    },
+    {
       "route": "components/profile-block",
       "title": "ProfileBlock"
     },
@@ -1163,6 +1167,17 @@
         "default",
         "paper-trade",
         "farming"
+      ]
+    },
+    {
+      "name": "AssetsBlock",
+      "route": "components/assets-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "trend",
+        "empty"
       ]
     },
     {
