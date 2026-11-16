@@ -90,11 +90,11 @@ describe('AssetsBlock opening countdown',()=>{
   vi.setSystemTime(new Date('2026-11-16T12:00:00Z'));
   const opensAt=Date.now()+((2*60+14)*60+33)*1000;
   render(<HIGProvider><AssetsBlock assets={assets} categories={[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]} onSelect={()=>{}}/></HIGProvider>);
-  const badge=()=>document.querySelector('[data-countdown]');
-  expect(badge()?.textContent).toBe('Opens in 2:14:33');
+  const badge=()=>document.querySelector('[data-countdown]');const shown=()=>badge()?.querySelector('.hig-animated-number-visual')?.textContent;
+  expect(shown()).toBe('Opens in 2:14:33');
   expect(screen.getByRole('heading',{level:3,name:'Commodities, Opens in 2 hours 14 minutes'})).toBeTruthy();
   act(()=>{vi.advanceTimersByTime(1000);});
-  expect(badge()?.textContent).toBe('Opens in 2:14:32');
+  expect(shown()).toBe('Opens in 2:14:32');
   act(()=>{vi.setSystemTime(opensAt+1);vi.advanceTimersByTime(1000);});
   expect(badge()).toBeNull();
   expect(screen.getByRole('heading',{level:3,name:'Commodities, OPEN'})).toBeTruthy();
