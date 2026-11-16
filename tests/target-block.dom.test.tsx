@@ -168,7 +168,7 @@ describe('TargetBlock host slots',()=>{
   expect(presets().map(button=>button.getAttribute('aria-pressed'))).toEqual(['false','false']);
   await userEvent.click(row());expect(custom).toHaveBeenCalledTimes(1);
   view.rerender(<TargetBlock {...base} unit='percent' value={0.035} onCustom={custom} customValue={0.035}/>);expect(row().querySelector('.hig-swap-setting-value')!.textContent).toBe('+3.5%');
-  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain(".hig-target-block .hig-swap-setting[aria-pressed='true'] { box-shadow:inset 0 0 0 2px var(--hig-target-tone); }");
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain("{ background:var(--hig-target-fill,var(--hig-action));color:var(--hig-target-on-fill,var(--hig-onAction)); }");expect(css).toContain("--hig-target-fill:var(--hig-negative);--hig-target-on-fill:var(--hig-background);");expect(css).not.toContain('box-shadow:inset 0 0 0 2px var(--hig-target-tone)');
  });
  it('formats dollar presets, the custom value and the headline with the provider money presentation',()=>{
   render(<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><TargetBlock {...base} value={2} presets={[1,2]} onCustom={()=>{}} customValue={2.5}/></HIGProvider>);
