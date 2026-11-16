@@ -48,7 +48,9 @@ it('falls back for opaque, unknown, RTL, bidi, unmappable, and missing-part layo
  expect(safeNumberLayout('\u202e123','ltr')).toBe(false);expect(safeNumberLayout('مبلغ 123','ltr')).toBe(false);
  const Original=Intl.NumberFormat;
  jest.spyOn(Intl,'NumberFormat').mockImplementation(function(locale,options){const formatter=new Original(locale,options);return {format:formatter.format.bind(formatter),resolvedOptions:formatter.resolvedOptions.bind(formatter)};});
- expect(createNumberReelModel(12,'en-US',{},undefined,'ltr')).toBeNull();
+ // Without formatToParts (Hermes on iOS) the reels are read from the text (tests/native/sign-display.test.cjs); scientific notation stays static.
+ expect(createNumberReelModel(12,'en-US',{},undefined,'ltr').tokens.map(token=>token.key)).toEqual(['integer:1','integer:0']);
+ expect(createNumberReelModel(-1234.5,'en-US',{notation:'scientific'},undefined,'ltr')).toBeNull();
 });
 
 it('resolves explicit and callback trends from previous and current finite values',()=>{

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View,type ScrollViewProps} from 'react-native';
 import {StickyHeaderLayout} from './sticky-header.js';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import type {HIGMessages} from '@bloxwap/hig/contracts/messages';

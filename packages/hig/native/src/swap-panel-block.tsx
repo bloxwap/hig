@@ -1,6 +1,6 @@
 import React,{useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {Raised,useColors,useControllable,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';

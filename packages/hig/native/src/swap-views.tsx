@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {Pressable,View} from 'react-native';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Field,Input} from './field.js';

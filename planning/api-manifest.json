@@ -2316,6 +2316,10 @@
         "entry": "icons",
         "signature": "export declare function EmptyIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
+      "formatNumber": {
+        "entry": "number-format",
+        "signature": "export declare function formatNumber(value: number | null | undefined, locale?: string, options?: Intl.NumberFormatOptions): string;"
+      },
       "accentRoles": {
         "entry": "roles",
         "signature": "export declare const accentRoles: readonly ['action', 'positive', 'negative', 'warning', 'info', 'buy', 'sell'];"

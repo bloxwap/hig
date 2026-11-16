@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {Pressable,View,type ScrollViewProps} from 'react-native';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 import {Surface,Text} from './surface.js';

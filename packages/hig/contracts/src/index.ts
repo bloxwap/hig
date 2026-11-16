@@ -49,9 +49,69 @@ export function presentNumberFormat<T extends Intl.NumberFormatOptions | undefin
  for (const [key, value] of Object.entries(options)) if (value !== undefined) merged[key] = value;
  return merged as T;
 }
-/** Display only. Keep raw decimal strings in transaction logic. */
+/**
+ * Display only. Keep raw decimal strings in transaction logic. A `signDisplay` the runtime's Intl ignores (Hermes on iOS draws
+ * `12.34%` for `exceptZero`) is composed by {@link formatSignedNumber}, so every engine draws the same string; engines whose Intl
+ * honours it format exactly as before.
+ */
 export function formatNumber(value: number | null | undefined, locale = 'en-US', options: Intl.NumberFormatOptions = {}): string {
- return value == null || !Number.isFinite(value) ? '—' : new Intl.NumberFormat(locale, options).format(value);
+ if (value == null || !Number.isFinite(value)) return '—';
+ const sign = options.signDisplay as SignDisplay | undefined;
+ return sign !== undefined && sign !== 'auto' && !intlSignDisplaySupported(sign) ? formatSignedNumber(value, locale, options) : new Intl.NumberFormat(locale, options).format(value);
+}
+/** `Intl.NumberFormatOptions['signDisplay']`, with ES2023's `negative`, which the TypeScript lib in use may not list. */
+export type SignDisplay = NonNullable<Intl.NumberFormatOptions['signDisplay']> | 'negative';
+const signSupport = new Map<string, boolean>();
+/** Whether this runtime's `Intl.NumberFormat` draws `signDisplay` (each mode is checked once, in decimal, currency and percent). */
+export function intlSignDisplaySupported(mode: SignDisplay): boolean {
+ const known = signSupport.get(mode);
+ if (known !== undefined) return known;
+ const expected: Record<string, ReadonlyArray<readonly [number, string, string, string]>> = {
+  always: [[1, '+1', '+$1.00', '+100%'], [0, '+0', '+$0.00', '+0%'], [-1, '-1', '-$1.00', '-100%']],
+  exceptZero: [[1, '+1', '+$1.00', '+100%'], [0, '0', '$0.00', '0%'], [-0, '0', '$0.00', '0%'], [-1, '-1', '-$1.00', '-100%']],
+  negative: [[1, '1', '$1.00', '100%'], [-0, '0', '$0.00', '0%'], [-1, '-1', '-$1.00', '-100%']],
+  never: [[1, '1', '$1.00', '100%'], [-1, '1', '$1.00', '100%']],
+ };
+ let supported = false;
+ try {
+  const cases = expected[mode];
+  if (cases) {
+   const signed = (options: Intl.NumberFormatOptions) => new Intl.NumberFormat('en-US', {...options, signDisplay: mode} as Intl.NumberFormatOptions);
+   const decimal = signed({}), money = signed({style: 'currency', currency: 'USD'}), share = signed({style: 'percent'});
+   supported = cases.every(([value, plain, usd, percent]) => decimal.format(value) === plain && money.format(value) === usd && share.format(value) === percent);
+  }
+ } catch { supported = false; }
+ signSupport.set(mode, supported);
+ return supported;
+}
+const minusSign = /[-−‐-―﹣－]/u;
+/**
+ * `Intl.NumberFormat` with `signDisplay`, composed without asking Intl to draw the sign: the magnitude and the locale's own negative
+ * form are formatted with `signDisplay` left out, and a plus takes the minus sign's place, so the sign keeps its side of the currency
+ * sign, percent sign and digits and any bidi marks around it (`+$12.50`, `12,50 $` → `+12,50 $`, `$+12.50` in de-CH, `؜+١٢` in
+ * Arabic). Zero follows the rounded figure: `exceptZero` draws `0.00` for 0.001 at two places, as Intl does. Where the negative form
+ * has no minus (accounting parentheses), the locale's plus leads the positive form. Matches ICU's output for decimal, currency,
+ * percent, unit and compact formats; display only.
+ */
+export function formatSignedNumber(value: number | null | undefined, locale = 'en-US', options: Intl.NumberFormatOptions = {}): string {
+ if (value == null || !Number.isFinite(value)) return '—';
+ const {signDisplay: requested, ...rest} = options, signDisplay = requested as SignDisplay | undefined;
+ const formatter = new Intl.NumberFormat(locale, rest);
+ if (signDisplay === undefined || signDisplay === 'auto') return formatter.format(value);
+ const magnitude = Math.abs(value), negative = value < 0 || Object.is(value, -0), absolute = formatter.format(magnitude), zero = absolute === formatter.format(0);
+ const plus = () => {
+  const minus = formatter.format(-magnitude), at = minus.search(minusSign);
+  if (at >= 0) return `${minus.slice(0, at)}+${minus.slice(at + 1)}`;
+  const digits = new Intl.NumberFormat(locale, {maximumFractionDigits: 0, useGrouping: false}), sign = digits.format(-1).replace(digits.format(1), '');
+  return `${minusSign.test(sign) ? sign.replace(minusSign, '+') : '+'}${absolute}`;
+ };
+ switch (signDisplay) {
+  case 'never': { const {currencySign, ...plain} = rest; return currencySign === undefined ? absolute : new Intl.NumberFormat(locale, plain).format(magnitude); }
+  case 'negative': return negative && !zero ? formatter.format(-magnitude) : absolute;
+  case 'exceptZero': return zero ? absolute : negative ? formatter.format(-magnitude) : plus();
+  case 'always': return negative ? formatter.format(-magnitude) : plus();
+  default: return formatter.format(value);
+ }
 }
 /** Leverage multiplier display (`10×`). Never percent-styled; the `×` suffix is untranslated. Unknown → `—`. */
 export function formatLeverage(value: number | null | undefined, locale = 'en-US', options: Intl.NumberFormatOptions = {maximumFractionDigits: 2}): string {

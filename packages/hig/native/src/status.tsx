@@ -4,7 +4,7 @@ import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
 import {ActivityIndicator,Animated,Easing,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType,type ViewProps,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from './number-format.js';
 import {Button} from './button.js';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useFills,useHIG} from './provider.js';
