@@ -24,7 +24,7 @@ afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
 it('shows the heading, the amount with its ticker, the address in full, the network and the warning',()=>{
  const view=mount();
- expect(text(host(view,'confirm-title'))).toBe('Confirm send');expect(has(view,'confirm-back')).toBe(false);
+ expect(text(host(view,'confirm-title'))).toBe('Confirm Send');expect(has(view,'confirm-back')).toBe(false);
  expect(view.findAllByType(AnimatedNumberReadout)[0].props).toMatchObject({value:2.5,options:{maximumFractionDigits:6}});expect(text(host(view,'confirm-amount'))).toBe('2.5');expect(text(host(view,'confirm-symbol'))).toBe('HYPE');
  const rows=view.findAllByType(ListRow);expect(rows.map(row=>row.props.label)).toEqual(['To','Network']);expect(rows[0].props.description).toBe(address);expect(rows[1].props.value).toBe('HyperEVM');
  expect(text(host(view,'confirm-warning-title'))).toBe('Double-check the address.');expect(flat(host(view,'confirm-warning-title')).color).toBe(nativeSrgb.warning);
@@ -62,5 +62,5 @@ it('takes translated messages, pins its header with stickyHeader, and is exporte
  let view=mount({onCancel:()=>{}},{messages:{confirmSend:'Confirmer',sendTo:'À',sendNetwork:'Réseau',sendWarningTitle:'Vérifiez.',sendWarning:(symbol,network)=>`${symbol} sur ${network}`,cancel:'Annuler'}});
  expect(text(host(view,'confirm-title'))).toBe('Confirmer');expect(view.findAllByType(ListRow).map(row=>row.props.label)).toEqual(['À','Réseau']);
  expect(text(host(view,'confirm-warning-body'))).toBe('HYPE sur HyperEVM');expect(button(view,'confirm-cancel').props.children).toBe('Annuler');
- view=mount({stickyHeader:true});expect(has(view,'confirm-sticky-header')).toBe(true);expect(text(host(view,'confirm-title'))).toBe('Confirm send');
+ view=mount({stickyHeader:true});expect(has(view,'confirm-sticky-header')).toBe(true);expect(text(host(view,'confirm-title'))).toBe('Confirm Send');
 });

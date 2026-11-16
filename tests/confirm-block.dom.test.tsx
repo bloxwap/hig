@@ -15,7 +15,7 @@ describe('ConfirmBlock',()=>{
  it('shows the heading, the amount with its ticker, the address in full, the network, the warning, then Cancel beside Confirm',async()=>{
   const confirm=vi.fn(),cancel=vi.fn(),back=vi.fn();
   render(<ConfirmBlock {...base} onConfirm={confirm} onCancel={cancel} onBack={back}/>);
-  expect(screen.getByRole('heading',{name:'Confirm send'})).toBeTruthy();
+  expect(screen.getByRole('heading',{name:'Confirm Send'})).toBeTruthy();
   expect(amount().querySelector('.hig-animated-number-visual')!.textContent).toBe('2.5');expect(amount().querySelector('.hig-confirm-symbol')!.textContent).toBe('HYPE');
   expect(rows()).toHaveLength(2);
   expect(rows()[0].querySelector('.hig-list-row-label')!.textContent).toBe('To');expect(rows()[0].querySelector('.hig-list-row-description')!.textContent).toBe(address);
@@ -23,7 +23,7 @@ describe('ConfirmBlock',()=>{
   const note=screen.getByRole('note');expect(within(note).getByText('Double-check the address.')).toBeTruthy();
   expect(note.querySelector('p')!.textContent).toBe("HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong.");
   const actions=[...document.querySelectorAll<HTMLButtonElement>('.hig-confirm-actions > button')];
-  expect(actions.map(button=>button.textContent)).toEqual(['Cancel','Confirm send']);expect(actions.map(button=>button.dataset.intent)).toEqual(['secondary','primary']);
+  expect(actions.map(button=>button.textContent)).toEqual(['Cancel','Confirm Send']);expect(actions.map(button=>button.dataset.intent)).toEqual(['secondary','primary']);
   await userEvent.click(actions[0]);await userEvent.click(actions[1]);await userEvent.click(screen.getByRole('button',{name:'Back'}));
   expect(confirm).toHaveBeenCalledTimes(1);expect(cancel).toHaveBeenCalledTimes(1);expect(back).toHaveBeenCalledTimes(1);
   // The rows come before the warning, and the warning before the actions.
@@ -49,10 +49,10 @@ describe('ConfirmBlock',()=>{
   const confirm=vi.fn(),cancel=vi.fn(),back=vi.fn();
   const view=render(<ConfirmBlock {...base} busy onConfirm={confirm} onCancel={cancel} onBack={back}/>);
   const button=(name:RegExp)=>screen.getByRole('button',{name}) as HTMLButtonElement;
-  expect(button(/^Confirm send/).getAttribute('aria-busy')).toBe('true');expect(button(/^Confirm send/).disabled).toBe(true);expect(button(/^Cancel$/).disabled).toBe(true);expect(button(/^Back$/).disabled).toBe(true);
-  await userEvent.click(button(/^Confirm send/));expect(confirm).not.toHaveBeenCalled();
+  expect(button(/^Confirm Send/).getAttribute('aria-busy')).toBe('true');expect(button(/^Confirm Send/).disabled).toBe(true);expect(button(/^Cancel$/).disabled).toBe(true);expect(button(/^Back$/).disabled).toBe(true);
+  await userEvent.click(button(/^Confirm Send/));expect(confirm).not.toHaveBeenCalled();
   view.rerender(<ConfirmBlock {...base} confirmDisabled onConfirm={confirm} onCancel={cancel} onBack={back}/>);
-  expect(button(/^Confirm send$/).disabled).toBe(true);expect(button(/^Cancel$/).disabled).toBe(false);expect(button(/^Back$/).disabled).toBe(false);
+  expect(button(/^Confirm Send$/).disabled).toBe(true);expect(button(/^Cancel$/).disabled).toBe(false);expect(button(/^Back$/).disabled).toBe(false);
  });
  it('takes translated messages from the provider and is exported from the blocks aggregate',()=>{
   expect(blocks.ConfirmBlock).toBe(ConfirmBlock);

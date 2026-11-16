@@ -241,7 +241,7 @@ Rules:
 | `noPositions` | No open positions | AssetsBlock: empty Positions view | — |
 | `noTrend` | No trending markets | AssetsBlock: empty Trend view | — |
 | `opensIn` | Opens in | AssetsBlock: before the countdown to when a closed legacy market opens | — |
-| `confirmSend` | Confirm send | ConfirmBlock: the default heading and confirming action | — |
+| `confirmSend` | Confirm Send | ConfirmBlock: the default heading and confirming action | — |
 | `sendTo` | To | ConfirmBlock: label of the destination address row | — |
 | `sendNetwork` | Network | ConfirmBlock: label of the network row | — |
 | `sendWarningTitle` | Double-check the address. | ConfirmBlock: heading of the warning above the actions | — |

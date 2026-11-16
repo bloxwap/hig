@@ -23,7 +23,7 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  network:string;
  /** More rows under Network, such as a fee. */
  details?:readonly ConfirmDetail[];
- /** Heading. Defaults to the built-in “Confirm send”. */
+ /** Heading. Defaults to the built-in “Confirm Send”. */
  title?:string;
  /** Heading of the warning. Defaults to the built-in “Double-check the address.” */
  warningTitle?:string;
@@ -31,7 +31,7 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  warning?:React.ReactNode;
  /** Called when the user confirms. The host signs and sends. */
  onConfirm:()=>void;
- /** Text of the confirming action. Defaults to the built-in “Confirm send”. */
+ /** Text of the confirming action. Defaults to the built-in “Confirm Send”. */
  confirmLabel?:string;
  /** The send is in progress: the confirming action shows a spinner and ignores presses, and Cancel is unavailable. */
  busy?:boolean;
