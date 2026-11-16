@@ -10,7 +10,7 @@ hosts normally set `HIGProvider primaryColor` instead.
 
 ## Source validation and React density
 
-`npm run generate` rejects colours without a non-empty `srgb` or `oklch`, density modes with keys that differ from `comfortable`, and motion/space values that are not positive finite numbers. Reduced-motion CSS still overrides generated durations to zero.
+`npm run generate` rejects colours without a non-empty `srgb` or `oklch`, density modes with keys that differ from `comfortable`, and motion/space/safeArea values that are not positive finite numbers. Reduced-motion CSS still overrides generated durations to zero.
 
 React CSS keeps pixel-based `--hig-control` and `--hig-gap` values for existing layout behavior; `tests/token-source.test.ts` compares both density modes directly with `source.json` so token changes require matching CSS updates.
 

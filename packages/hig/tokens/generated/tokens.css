@@ -24,6 +24,12 @@
   --hig-space-xxl: 1.5rem;
   --hig-space-xxxl: 2rem;
   --hig-space-section: 3rem;
+  --hig-safe-area-chromeGutter: 0.5rem;
+  --hig-safe-area-sheetContentGutter: 1rem;
+  --hig-safe-area-toastOffset: 3.75rem;
+  --hig-safe-area-fullscreenMin: 1.25rem;
+  --hig-safe-area-axisChromeTop: 3.5rem;
+  --hig-safe-area-axisChromeBottom: 5.5rem;
   --hig-font-sans: var(--font-bloxwap-sans, 'Bloxwap Sans'), system-ui, sans-serif;
   --hig-font-mono: var(--font-bloxwap-mono, 'Bloxwap Mono'), ui-monospace, monospace;
   --hig-radius-sm: 0.375rem;

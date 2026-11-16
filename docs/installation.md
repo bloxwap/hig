@@ -135,6 +135,7 @@ Install the tokens package alone and import CSS variables or typed tokens. No Re
 | --- | --- | --- |
 | Color | `--hig-surface`, `--hig-action` | sRGB, then OKLCH/P3 in `@supports` |
 | Space | `--hig-space-md` | `xs`–`xxxl`, `section`, in rem |
+| Safe area | `--hig-safe-area-toastOffset` | `chromeGutter` `sheetContentGutter` `toastOffset` `fullscreenMin` `axisChromeTop` `axisChromeBottom`, in rem; offsets added on top of device insets, see [safe area](foundations/safe-area.md) |
 | Font | `--hig-font-sans`, `--hig-font-mono` | `@bloxwap/font` Next variable, then literal family |
 | Radius | `--hig-radius-md`, `--hig-radius-pill` | `sm` `md` `lg` `xl` in rem; `pill` 9999px |
 | Type | `--hig-type-body-size`, `--hig-type-body-line-height`, `--hig-type-body-weight`, `--hig-type-body` | `caption` `label` `body` `title` `display`; the bare role is a `font` shorthand in Sans |

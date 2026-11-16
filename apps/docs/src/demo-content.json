@@ -85,6 +85,10 @@
       "title": "Principles and content"
     },
     {
+      "route": "guides/foundations/safe-area",
+      "title": "Safe area"
+    },
+    {
       "route": "guides/foundations/source-reconciliation",
       "title": "Pinned source reconciliation"
     },
