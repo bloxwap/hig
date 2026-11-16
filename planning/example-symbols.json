@@ -1,7 +1,8 @@
 {
   "react": {
     "ScreenHeader": "blocks/screen-header",
-    "PriceChart": "@bloxwap/hig/chart",
+    "AltimeterChart": "@bloxwap/hig/chart",
+    "OutcomeChart": "@bloxwap/hig/chart",
     "MarketRow": "blocks",
     "AccountBlock": "blocks",
     "TokenActionBlock": "blocks",
