@@ -18,9 +18,11 @@ for(const [mode,metrics] of Object.entries(tokens.density)){
  const keys=Object.keys(record(metrics,`density.${mode}`)).sort();
  if(JSON.stringify(keys)!==JSON.stringify(comfortableKeys))throw new Error(`density.${mode} must have the same keys as density.comfortable (${comfortableKeys.join(', ')})`);
 }
-for(const group of ['motion','space'])for(const [name,value] of Object.entries(record(tokens[group],group))){
+for(const group of ['motion','space','safeArea'])for(const [name,value] of Object.entries(record(tokens[group],group))){
  if(typeof value!=='number'||!Number.isFinite(value)||value<=0)throw new Error(`${group}.${name} must be a positive finite number`);
 }
+// notes are documentation in source.json only (toastOffset is 44 + 16 to match the website's Sonner toaster).
+delete tokens.notes;
 mkdirSync('packages/hig/tokens/generated',{recursive:true});mkdirSync('evidence',{recursive:true});mkdirSync('packages/hig/tokens/src',{recursive:true});
 for(const color of Object.values(tokens.colors)){if(color.oklch)color.srgb=oklchToSrgb(color.oklch);}
 const srgb=Object.fromEntries(Object.entries(tokens.colors).map(([k,v])=>[k,v.srgb]));
@@ -33,7 +35,7 @@ export const tokens = ${JSON.stringify(tokens,null,2)} as const;
 export const nativeSrgb = ${JSON.stringify(srgb,null,2)} as const;
 // iOS Display P3 hosts (HIGProvider colorSpace='display-p3'): the same roles as P3 channel hex, kept small for the same reason.
 export const nativeDisplayP3 = ${JSON.stringify(displayP3,null,2)} as const;
-export const nativeMetrics = ${JSON.stringify({space:tokens.space,radius:tokens.radius,density:tokens.density,motion:tokens.motion},null,2)} as const;
+export const nativeMetrics = ${JSON.stringify({space:tokens.space,radius:tokens.radius,density:tokens.density,motion:tokens.motion,safeArea:tokens.safeArea},null,2)} as const;
 export const sourceColors = ${JSON.stringify(sourceColors,null,2)} as const;
 export const nativeColors = ${JSON.stringify({android:srgb,ios:srgb,iosDisplayP3:'__NATIVE_DISPLAY_P3__',iosP3},null,2).replace('"__NATIVE_DISPLAY_P3__"','nativeDisplayP3')} as const;
 export function withAlpha(hex: string, alpha: number): string { if (!/^#[a-fA-F0-9]{6}$/.test(hex) || !Number.isFinite(alpha) || alpha<0 || alpha>1) throw new Error('Invalid sRGB/alpha'); return hex + Math.round(alpha*255).toString(16).padStart(2,'0'); }
@@ -43,6 +45,7 @@ const p3=Object.entries(tokens.colors).filter(([,v])=>v.p3).map(([k,v])=>`  --hi
 const oklch=Object.entries(tokens.colors).filter(([,v])=>v.oklch).map(([k,v])=>`  --hig-${k}: ${v.oklch};`).join('\n');
 const sourceVars=Object.entries(upstream.semanticOklch).map(([k,v])=>`  --hig-source-${k}: ${v};`).join('\n');
 const space=Object.entries(tokens.space).map(([k,v])=>`  --hig-space-${k}: ${v/16}rem;`).join('\n');
+const safeArea=Object.entries(tokens.safeArea).map(([k,v])=>`  --hig-safe-area-${k}: ${v/16}rem;`).join('\n');
 const rem=px=>`${px/16}rem`;
 // Font roles prefer the @bloxwap/font Next loader variables when a host sets them on <html>, then the literal families plain @font-face hosts register (#65).
 const fonts=Object.entries(tokens.font).map(([k,v])=>`  --hig-font-${k}: var(${v.loaderVariable}, '${v.family}'), ${v.fallback.join(', ')};`).join('\n');
@@ -56,6 +59,7 @@ const density=[...Object.entries(tokens.density).flatMap(([mode,metrics])=>Objec
 writeFileSync('packages/hig/tokens/generated/tokens.css',`:root { color-scheme: dark;
 ${vars}
 ${space}
+${safeArea}
 ${fonts}
 ${radius}
 ${type}

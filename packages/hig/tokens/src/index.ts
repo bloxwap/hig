@@ -122,6 +122,14 @@ export const tokens = {
     "xxxl": 32,
     "section": 48
   },
+  "safeArea": {
+    "chromeGutter": 8,
+    "sheetContentGutter": 16,
+    "toastOffset": 60,
+    "fullscreenMin": 20,
+    "axisChromeTop": 56,
+    "axisChromeBottom": 88
+  },
   "radius": {
     "sm": 6,
     "md": 8,
@@ -274,6 +282,14 @@ export const nativeMetrics = {
     "fast": 180,
     "base": 260,
     "slow": 320
+  },
+  "safeArea": {
+    "chromeGutter": 8,
+    "sheetContentGutter": 16,
+    "toastOffset": 60,
+    "fullscreenMin": 20,
+    "axisChromeTop": 56,
+    "axisChromeBottom": 88
   }
 } as const;
 export const sourceColors = {
