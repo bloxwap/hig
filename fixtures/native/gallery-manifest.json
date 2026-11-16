@@ -437,7 +437,8 @@
     {
       "name": "WalletAddress",
       "states": [
-        "default"
+        "default",
+        "host-qr"
       ],
       "support": "renderer"
     },
@@ -467,7 +468,8 @@
       "states": [
         "default",
         "value-only",
-        "units-headline"
+        "units-headline",
+        "picker"
       ],
       "support": "renderer"
     },
@@ -503,7 +505,8 @@
       "name": "MarketRow",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "picker"
       ],
       "support": "renderer"
     },
@@ -513,7 +516,8 @@
         "default",
         "empty",
         "local-money",
-        "sections"
+        "sections",
+        "ledgers"
       ],
       "support": "renderer"
     },
@@ -624,7 +628,8 @@
       "states": [
         "default",
         "single",
-        "actions-only"
+        "actions-only",
+        "units"
       ],
       "support": "renderer"
     },
@@ -669,7 +674,8 @@
         "connected",
         "no-logout",
         "whitelist",
-        "empty"
+        "empty",
+        "short-list"
       ],
       "support": "renderer"
     },
@@ -678,7 +684,8 @@
       "states": [
         "default",
         "tokens",
-        "no-chain"
+        "no-chain",
+        "labelled"
       ],
       "support": "renderer"
     },

@@ -12,12 +12,17 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data`
 | --- | --- |
 | Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
 | `VerticalAddress` | `address`, optional `kind` (`'ethereum'` or `'solana'`, inferred from a `0x` prefix) and `rowHeight`. The address in fixed-width monospace rows, always left to right: 6 characters per row for Ethereum-style addresses (42 characters make 7 rows) and 4 for Solana (44 make 11). The leading row and the trailing four characters, the ones people compare, are emphasised; the middle is dimmed. Assistive technology and copying get the plain address. |
-| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`. |
+| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”; `announce={false}` leaves the notice to the host. `qr` draws the host's own code in place of Cuer's. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`; without `cuer`, `wallet-address-core`. |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
 | `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
-| `MarketRow` (web) | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
+| `MarketRow` | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. `price` and `change` are optional, and `detail`, `trailing`, `selected`, `disabled` and `active` serve a market picker (below). Web and native. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
 
 `WalletAddress` needs the optional `cuer` peer (`>=0.0.3 <0.1.0`), and on native also `react-native-svg`; `VerticalAddress` needs neither and lives in the `data` entry. HIG never reads or writes the clipboard itself.
+
+- **Host QR.** `qr` takes the host's own drawing of the code, laid out in the `size` square and named by the built-in “QR code” label (web: inside the `role="img"` wrapper, so keep the drawing `aria-hidden`; native: one image element). `qrValue` and `arena` are then unused and nothing is encoded. On both platforms `qr={null}` is the same as leaving it out: the Cuer code is drawn.
+- **Without `cuer`.** `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` (props `WalletAddressCoreProps`) with `qr` required. They import neither `cuer` nor, on native, `react-native-svg`, so a host that does not install them (a Metro app that cannot reach a root `node_modules`, for example) still gets the address column, the copy button, its hint and the notice.
+- **Notice.** `announce={false}` raises no “Address copied” after a copy: no toast or status text on web and no notice on native. Use it when the host confirms the copy with its own toast, so a screen reader does not hear it twice.
+- **Press decoration (web).** The copy button draws the `HIGProvider pressDecoration` layer (`kind: 'row'`), so a host haptic reaches it like the other pressable rows.
 
 ```tsx
 import {WalletAddress} from '@bloxwap/hig/react/wallet-address';
@@ -68,6 +73,22 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 </CommandItem>
 ```
 
+Native `MarketRow` has the same presentation mode, with `identity`, `icon`, `favorite`, `volume`, `priceOptions` and `changeOptions`; the host's own `Pressable` then owns the press.
+
+A market picker uses the options below on both platforms. Without them the row renders exactly as before.
+
+```tsx
+<MarketRow ref={rowRef} symbol={m.symbol} name={m.name} icon={<MarketIcon symbol={m.symbol}/>} detail={t.maxLeverage(m.maxLeverage)}
+  trailing={held&&<HeldPnl value={held.pnl}/>} selected={m.symbol===current} active={index===cursor} disabled={!m.tradable}
+  data-testid={`market-${m.symbol}`} onPointerDown={()=>prime(m.symbol)} onSelect={()=>open(m.symbol)}/>
+```
+
+- **Optional figures.** Leave out `price` or `change` and that cell is not drawn, with no dash; `null` still reads as unknown. On web a presentation row whose cells differ from the default set flows into as many grid columns as it has (`data-flow`), so a host `gridTemplateColumns` still applies.
+- **Detail.** `detail` is a muted second line under the name, such as the maximum leverage. In action mode it is part of the name button and read with it (native: `name (symbol), detail`, with the detail's text). Both platforms take text or host nodes; on native a string or number is drawn muted and an element is drawn as given.
+- **Trailing.** `trailing` is host content after the figures, such as a held position's result or a heat mark.
+- **States.** `selected` draws a check on the trailing edge and sets `aria-current="true"` on the name button (web) or `accessibilityState.selected` (native); in presentation mode they go on the row. `disabled` disables the name button and dims the other cells. `active` paints the row with the well fill, for the row under a host's keyboard cursor; HIG does not move it.
+- **Pass-through.** On web the ref and every other attribute and handler (`data-*`, `id`, `onPointerDown`, `onMouseEnter`) reach the row's root `div`; pointer events from the name button bubble to it. On native the ref reaches the root view, `testID` names it (the button is `<testID>-select`) and `onPressIn` reaches the name button.
+
 ### AssetBalanceRow
 
 `AssetBalanceRow` is one holding in a list: round artwork, the asset's `name` over its `symbol`, and on the trailing edge its dollar `value` over its `balance` in token units. It is the row `AccountBlock` is made of, and lives in its own entry: `@bloxwap/hig/react/asset-balance-row` and `@bloxwap/hig/native/asset-balance-row`.
@@ -80,6 +101,12 @@ Web `MarketRow` keeps its name button and USD formatting by default. A command p
 - **Artwork.** `icon` is an image URL or a host element; without one the row shows the first letters of the symbol.
 - **Amounts.** `value` is in dollars; `null` reads as unknown. `balance` is in token units, formatted with `balanceOptions` (at most six fraction digits by default). Omit `balance` to show the value alone, as for a dollar stablecoin.
 - **Units headline.** `headline='units'` puts the units on the headline line in place of the value and draws no second line, for a holding the host has no dollar price for. It is read the same way: name, symbol, units. The default, `'value'`, is the value over the units.
+- **Units suffix.** `unitsSuffix` is host text after the units figure, such as ` HYPE`, so `1.005` reads `1.005 HYPE`. It is drawn and read only when the units are known; unknown units stay the dash.
+- **Tag.** `tag` is short muted host text under the figures, in the caption size, such as the ledger a holding sits in (Perp, Spot, Staked), so two rows of the same asset read apart. It is read after the figures.
+- **Items to pick.** `amounts={false}` draws no figures at all, for a row that is only an item to choose, such as a deposit method or a chain. The row keeps its avatar, name and second line, and reads as name and symbol.
+- **Trailing.** `trailing` is host content on the trailing edge after the figures, such as a status icon. In a pressable row it must not be interactive. It is read last: on web in place, on native as its text appended to the row's one label. `trailingLabel` replaces what is read for it on both platforms, for an icon or a figure whose visible text is not what should be heard.
+- **Selected.** `selected` draws a check on the trailing edge, in the text colour as in `LanguageBlock`, for the source or destination in use. Web sets `aria-current="true"`; native sets `accessibilityState.selected`.
+- **Disabled.** `disabled` keeps the well fill, turns the name, figures and check muted and the artwork to half strength, and ignores presses: a pressable row becomes a disabled button on web and a disabled `Pressable` on native, and a plain row reads as unavailable (on web a `role="group"` with `aria-disabled`, since a plain `div` cannot carry the state; `accessibilityState.disabled` on native).
 - **Anatomy.** A capsule concentric with its 40-unit avatar: 8 units of padding, 56 units high, a 28-unit end radius, on the well fill. Rows in a list sit 8 units apart.
 - **Interaction.** `onSelect` makes the whole row a button; without it the row is not interactive.
 - **Live numbers.** Both figures update through `AnimatedNumberReadout`, so the native entry needs the optional Reanimated and Worklets peers.

@@ -881,10 +881,17 @@
       "native": "<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>setMessage('Copy requested; the host owns the clipboard')}/>",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "host-qr"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "host-qr": {
+          "web": "<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={140} announce={false} qr={<svg aria-hidden='true' viewBox='0 0 7 7' width='100%' height='100%' fill='currentColor'><rect x='0' y='0' width='3' height='3'/><rect x='4' y='0' width='3' height='3'/><rect x='0' y='4' width='3' height='3'/><rect x='4' y='4' width='1' height='1'/></svg>} onCopy={()=>setMessage('Copied; the host confirms it with its own toast')}/>",
+          "native": "<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={140} announce={false} qr={<View style={{flex:1,borderRadius:12,borderWidth:8}}/>} onCopy={()=>setMessage('Copied; the host confirms it with its own toast')}/>"
+        }
+      }
     },
     {
       "name": "BarMark",
@@ -964,11 +971,16 @@
       "states": [
         "default",
         "value-only",
-        "units-headline"
+        "units-headline",
+        "picker"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "picker": {
+          "web": "<C.Stack><C.AssetBalanceRow name='Hyperliquid' symbol='HYPE' value={57.97} balance={1.005} unitsSuffix=' HYPE' tag='Spot' selected onSelect={()=>setMessage('Hyperliquid selected')}/><C.AssetBalanceRow name='Solana' symbol='SOL' value={0} balance={0} unitsSuffix=' SOL' disabled onSelect={()=>setMessage('Solana selected')}/><C.AssetBalanceRow name='Card' symbol='Instant' amounts={false} onSelect={()=>setMessage('Card selected')}/></C.Stack>",
+          "native": "<C.Stack><C.AssetBalanceRow name='Hyperliquid' symbol='HYPE' value={57.97} balance={1.005} unitsSuffix=' HYPE' tag='Spot' selected onSelect={()=>setMessage('Hyperliquid selected')}/><C.AssetBalanceRow name='Solana' symbol='SOL' value={0} balance={0} unitsSuffix=' SOL' disabled onSelect={()=>setMessage('Solana selected')}/><C.AssetBalanceRow name='Card' symbol='Instant' amounts={false} onSelect={()=>setMessage('Card selected')}/></C.Stack>"
+        },
         "value-only": {
           "web": "<C.AssetBalanceRow name='USD Coin' symbol='USDC' value={100.33}/>",
           "native": "<C.AssetBalanceRow name='USD Coin' symbol='USDC' value={100.33}/>"
@@ -1045,10 +1057,17 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "picker"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "picker": {
+          "web": "<C.Stack><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} selected onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25×' icon={<C.Avatar name='ETH'/>} active onSelect={()=>setMessage('Ether selected')}/><C.MarketRow symbol='SOL' name='Solana' detail='20×' icon={<C.Avatar name='SOL'/>} disabled onSelect={()=>setMessage('Solana selected')}/></C.Stack>",
+          "native": "<C.Stack><C.MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<C.Avatar name='BTC'/>} trailing={<C.Badge>+$12.40</C.Badge>} selected onSelect={()=>setMessage('Bitcoin selected')}/><C.MarketRow symbol='ETH' name='Ether' detail='25×' icon={<C.Avatar name='ETH'/>} active onSelect={()=>setMessage('Ether selected')}/><C.MarketRow symbol='SOL' name='Solana' detail='20×' icon={<C.Avatar name='SOL'/>} disabled onSelect={()=>setMessage('Solana selected')}/></C.Stack>"
+        }
+      }
     },
     {
       "name": "AccountBlock",
@@ -1062,7 +1081,8 @@
         "default",
         "empty",
         "local-money",
-        "sections"
+        "sections",
+        "ledgers"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1078,6 +1098,10 @@
         "sections": {
           "web": "<C.AccountBlock onDeposit={()=>setMessage('The host opens its deposit flow')} onAssetSelect={(asset,section)=>setMessage(asset.name+' in '+(section?.title??''))} sections={[{id:'exchange',title:'Exchange',assets:[{id:'perp',name:'USD Coin',symbol:'USDC',value:500,units:false},{id:'held',name:'Hyperliquid',symbol:'HYPE',balance:13.2,price:57.5,unitsOptions:{minimumFractionDigits:2,maximumFractionDigits:2}}]},{id:'wallet',title:'Wallet',assets:[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'blox',name:'Bloxwap',symbol:'BLOX',balance:1234.5,value:null},{id:'paper',name:'Paper',symbol:'PAPER',balance:50,value:null,selectable:false}]}]}/>",
           "native": "<C.AccountBlock onDeposit={()=>setMessage('The host opens its deposit flow')} onAssetSelect={(asset,section)=>setMessage(asset.name+' in '+(section?.title??''))} sections={[{id:'exchange',title:'Exchange',assets:[{id:'perp',name:'USD Coin',symbol:'USDC',value:500,units:false},{id:'held',name:'Hyperliquid',symbol:'HYPE',balance:13.2,price:57.5,unitsOptions:{minimumFractionDigits:2,maximumFractionDigits:2}}]},{id:'wallet',title:'Wallet',assets:[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'blox',name:'Bloxwap',symbol:'BLOX',balance:1234.5,value:null},{id:'paper',name:'Paper',symbol:'PAPER',balance:50,value:null,selectable:false}]}]}/>"
+        },
+        "ledgers": {
+          "web": "<C.AccountBlock onAssetSelect={(asset,section)=>setMessage(asset.name+' '+(asset.tag??'')+' in '+(section?.title??''))} sections={[{id:'exchange',title:'Exchange',order:'given',pinnedId:'perp',assets:[{id:'perp',name:'USD Coin',symbol:'USDC',value:500,units:false,tag:'Perp'},{id:'spot',name:'USD Coin',symbol:'USDC',value:20,units:false,tag:'Spot'},{id:'hype-spot',name:'Hyperliquid',symbol:'HYPE',balance:2,price:40,tag:'Spot'},{id:'hype-staked',name:'Hyperliquid',symbol:'HYPE',balance:10,price:40,tag:'Staked'}]},{id:'wallet',title:'Wallet',assets:[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'paper',name:'Paper',symbol:'PAPER',balance:1000,value:null,unitsSuffix:' PAPER',unknownValue:'dash'}]}]}/>",
+          "native": "<C.AccountBlock onAssetSelect={(asset,section)=>setMessage(asset.name+' '+(asset.tag??'')+' in '+(section?.title??''))} sections={[{id:'exchange',title:'Exchange',order:'given',pinnedId:'perp',assets:[{id:'perp',name:'USD Coin',symbol:'USDC',value:500,units:false,tag:'Perp'},{id:'spot',name:'USD Coin',symbol:'USDC',value:20,units:false,tag:'Spot'},{id:'hype-spot',name:'Hyperliquid',symbol:'HYPE',balance:2,price:40,tag:'Spot'},{id:'hype-staked',name:'Hyperliquid',symbol:'HYPE',balance:10,price:40,tag:'Staked'}]},{id:'wallet',title:'Wallet',assets:[{id:'usdc',name:'USD Coin',symbol:'USDC',balance:100.33,price:1},{id:'paper',name:'Paper',symbol:'PAPER',balance:1000,value:null,unitsSuffix:' PAPER',unknownValue:'dash'}]}]}/>"
         }
       }
     },
@@ -1393,7 +1417,8 @@
       "states": [
         "default",
         "single",
-        "actions-only"
+        "actions-only",
+        "units"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -1405,6 +1430,10 @@
         "actions-only": {
           "web": "<C.TokenActionBlock symbol='SOL' onBack={()=>setMessage('The host goes back')} actions={[{id:'receive',onSelect:()=>setMessage('The host opens receive')}]} note='View-only account: send from the wallet that holds it.' noteTone='warning'/>",
           "native": "<C.TokenActionBlock symbol='SOL' onBack={()=>setMessage('The host goes back')} actions={[{id:'receive',onSelect:()=>setMessage('The host opens receive')}]} note='View-only account: send from the wallet that holds it.' noteTone='warning'/>"
+        },
+        "units": {
+          "web": "<C.TokenActionBlock symbol='BLOX' name='Bloxwap' units={1234.5} unitsSuffix=' BLOX' assets={[{label:'Wallet',value:1000,detail:{value:1000,suffix:' BLOX'}},{label:'Staked',value:234.5,detail:{value:234.5,suffix:' BLOX'}}]} actions={[{id:'send',onSelect:()=>setMessage('The host opens send')},{id:'receive',onSelect:()=>setMessage('The host opens receive')}]}/>",
+          "native": "<C.TokenActionBlock symbol='BLOX' name='Bloxwap' units={1234.5} unitsSuffix=' BLOX' assets={[{label:'Wallet',value:1000,detail:{value:1000,suffix:' BLOX'}},{label:'Staked',value:234.5,detail:{value:234.5,suffix:' BLOX'}}]} actions={[{id:'send',onSelect:()=>setMessage('The host opens send')},{id:'receive',onSelect:()=>setMessage('The host opens receive')}]}/>"
         }
       }
     },
@@ -1526,7 +1555,8 @@
         "connected",
         "no-logout",
         "whitelist",
-        "empty"
+        "empty",
+        "short-list"
       ],
       "variants": {
         "connected": {
@@ -1544,6 +1574,10 @@
         "empty": {
           "web": "<C.FromPickerBlock wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={()=>setMessage('The host disconnects the wallet')} tokens={[]} chains={[{chainId:1,name:'Ethereum'},{chainId:8453,name:'Base'},{chainId:42161,name:'Arbitrum'}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
           "native": "<C.FromPickerBlock wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={()=>setMessage('The host disconnects the wallet')} tokens={[]} chains={[{chainId:1,name:'Ethereum'},{chainId:8453,name:'Base'},{chainId:42161,name:'Arbitrum'}]} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        },
+        "short-list": {
+          "web": "<C.FromPickerBlock search={false} zeroBalances tokens={[{id:'usdc',symbol:'USDC',name:'USD Coin',chain:'Hyperliquid',chainId:999,balance:12.5,unitsSuffix:' USDC',detail:'USDC'},{id:'hype',symbol:'HYPE',name:'Hyperliquid',chain:'Hyperliquid',chainId:999,balance:0,unitsSuffix:' HYPE',detail:'HYPE'}]} onSelect={token=>setMessage(`${token.name} selected`)}/>",
+          "native": "<C.FromPickerBlock search={false} zeroBalances tokens={[{id:'usdc',symbol:'USDC',name:'USD Coin',chain:'Hyperliquid',chainId:999,balance:12.5,unitsSuffix:' USDC',detail:'USDC'},{id:'hype',symbol:'HYPE',name:'Hyperliquid',chain:'Hyperliquid',chainId:999,balance:0,unitsSuffix:' HYPE',detail:'HYPE'}]} onSelect={token=>setMessage(`${token.name} selected`)}/>"
         }
       }
     },
@@ -1560,7 +1594,8 @@
       "states": [
         "default",
         "tokens",
-        "no-chain"
+        "no-chain",
+        "labelled"
       ],
       "variants": {
         "tokens": {
@@ -1570,6 +1605,10 @@
         "no-chain": {
           "web": "<C.ToPickerBlock address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'1-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Ethereum',chainId:1}]} chainFilter={false} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>",
           "native": "<C.ToPickerBlock address={message} onAddressChange={setMessage} addressPlaceholder='DMzeeN…Xb32' onScan={()=>setMessage('The host opens its scanner')} tokens={[{id:'1-apx',symbol:'apxUSD',name:'apxUSD',chain:'Ethereum',chainId:1},{id:'1-ausd',symbol:'AUSD',name:'AUSD',chain:'Ethereum',chainId:1},{id:'1-cbbtc',symbol:'cbBTC',name:'Coinbase Wrapped BTC',chain:'Ethereum',chainId:1},{id:'1-dai',symbol:'DAI',name:'Dai Stablecoin',chain:'Ethereum',chainId:1}]} chainFilter={false} onSelect={token=>setMessage(`${token.name} on ${token.chain} selected`)}/>"
+        },
+        "labelled": {
+          "web": "<C.ToPickerBlock address={message} onAddressChange={setMessage} addressLabel='Recipient' addressInputProps={{name:'recipient',autoComplete:'off','data-1p-ignore':true,'data-lpignore':'true'}} onScan={()=>setMessage('The host opens its scanner')}/>",
+          "native": "<C.ToPickerBlock address={message} onAddressChange={setMessage} addressLabel='Recipient' addressInputProps={{textContentType:'none'}} onScan={()=>setMessage('The host opens its scanner')}/>"
         }
       }
     },

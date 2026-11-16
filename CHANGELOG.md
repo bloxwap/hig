@@ -6,7 +6,7 @@ Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, 
 
 ### Provider and shared pieces
 
-- `HIGProvider pressDecoration` (web): `({kind, disabled}) => node` draws a host element, such as the native switch input iOS Safari needs for a haptic, inside these controls: `Button`, `IconButton`, pressable and linked `ListRow`s, `Switch` and the settings switch rows, a pressable `AssetBalanceRow`, the block rows, capsules and action buttons, the header's Back, Close, address and info controls, and the swap panel's token pickers, flip button, keypad keys, destination row and receive address. It sits in one absolutely positioned layer that changes no layout and passes pointer events to the host's element; a press on that element reaches the control once with its default action (a submit `Button` submits, a linked `ListRow` navigates, a switch toggles). `PressDecoration` from the provider entry draws the same layer in a host control.
+- `HIGProvider pressDecoration` (web): `({kind, disabled}) => node` draws a host element, such as the native switch input iOS Safari needs for a haptic, inside these controls: `Button`, `IconButton`, pressable and linked `ListRow`s, `Switch` and the settings switch rows, a pressable `AssetBalanceRow`, the `WalletAddress` copy button, the block rows, capsules and action buttons, the header's Back, Close, address and info controls, and the swap panel's token pickers, flip button, keypad keys, destination row and receive address. It sits in one absolutely positioned layer that changes no layout and passes pointer events to the host's element; a press on that element reaches the control once with its default action (a submit `Button` submits, a linked `ListRow` navigates, a switch toggles). `PressDecoration` from the provider entry draws the same layer in a host control.
 - `HIGProvider numberFormat`: `{currencyDisplay, useGrouping}` merged under every currency format HIG draws (the blocks, `BarMark`, `BarPnl`, `AssetBalanceRow`, the swap pieces and the number readouts), with a format's own options still winning. `{currencyDisplay:'narrowSymbol'}` makes French read `12,50 $` instead of `12,50 $US`. `presentNumberFormat` in `@bloxwap/hig/contracts` returns the same merge for host figures.
 - `HIGProvider marketColors` (web): `{up, down}` like native; it sets `--hig-up`/`--hig-down` on the provider's wrapper, and `useThemeStyle()` returns them for a host portal.
 - Native readouts (`NumberReadout`, `AnimatedNumberReadout` and friends) accept `tone='warning'` and `tone='faint'`.
@@ -49,6 +49,7 @@ Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, 
 ### AssetBalanceRow
 
 - `headline='units'` puts the units on the headline line with no second line, read as name, symbol, units. The default is unchanged. Catalog state `units-headline`.
+- `selected` (a check on the trailing edge; web `aria-current`, native `accessibilityState.selected`), `disabled` (muted text and half-strength artwork on the well fill, presses ignored, read as unavailable; a static web row becomes `role="group"` so its `aria-disabled` is read), `trailing` (host content after the figures, read last: on web in place, on native its text appended to the row's label) with `trailingLabel` (what is read for it instead, on both platforms), `amounts={false}` (no figures, for a row that is just an item to pick, such as a method or a chain), `tag` (short muted text under the figures, read after them) and `unitsSuffix` (host text after the units figure, such as ` HYPE`). Catalog state `picker`.
 
 ### BarMark
 
@@ -67,10 +68,28 @@ Shared pieces and host slots the app conversions to the 0.6.0 blocks asked for, 
 
 - `sections=[{id, title, total, assets}]` draws titled groups, 24 apart, each with its own total, in place of the flat list; `onAssetSelect` then also receives the section, and `accountSectionRows` / `accountSectionTotal` (and the `AccountSection` type) are exported. `assets` becomes optional. Per asset: `units: false` hides the units line, `selectable: false` keeps the row plain, and `unitsOptions` formats the units. Catalog states `sections` and `local-money`.
 - An asset whose value is unknown but whose balance is known now shows its units as the headline figure instead of the unknown dash over the units; that is the one rendering change for existing props, and only for that case.
+- `order: 'value' | 'given'` on the block and on each section (`given` keeps the host's order after the pinned row), `pinnedId` on the block and on each section (pins by asset id, for a dollar ledger whose symbol is not unique; a row pinned by id keeps its units), and per asset `tag` (muted text under the figures, such as Perp or Staked), `unitsSuffix` and `unknownValue: 'units' | 'dash'` (`dash` keeps the 0.6.0 unknown dash over the units, for a price that is still loading). `accountRows` and `accountSectionRows` take `{order, pinnedId}` as a third argument; new types `AccountOrder` and `AccountRowsOptions`. Catalog state `ledgers`.
 
 ### TokenActionBlock
 
 - `note` with `noteTone` (`muted`, `warning`, `negative`, as in `SwapPanelBlock`) draws a line 8 under the actions (16 under the bars when there are none); `assets` and `chains` are each optional, so a card can be actions only, and `name` is needed only with `assets`. Catalog state `actions-only`.
+- `units` with `unitsSuffix` and `unitsOptions`: for a token with no dollar value (`value` left out or `null`), the units take the total's place on the assets bar and update place by place. Catalog state `units`.
+
+### FromPickerBlock and ToPickerBlock
+
+- `search={false}` leaves out the search field; `zeroBalances` draws a known zero balance; a token's `unitsSuffix` follows its balance and its `detail` replaces the chain on the row's second line (both new optional `SwapToken` fields, used only by the picker rows).
+- `searchInputProps` / `searchRef`, and on `ToPickerBlock` `addressInputProps` / `addressRef`: host attributes and the input ref (web: any `<input>` attribute, such as `name`, `autoComplete`, `data-1p-ignore` or `onFocus`/`onBlur`; native: any `TextInput` prop, such as `onFocus`/`onBlur` for a bottom sheet's keyboard handling). The value and its change handler stay the block's; type `PickerInputProps`.
+- `searchLabel` and `addressLabel` draw a visible label over the field, which then names it.
+- Native: `listComponent` renders the rows through the host's list (such as a bottom sheet's `FlatList`) so they scroll inside a host sheet, and `SwapHostContext` is exported from `@bloxwap/hig/native/pickers` and the `blocks` aggregate. Catalog states `short-list` (From) and `labelled` (To).
+
+### WalletAddress
+
+- `qr` draws the host's own code in place of the Cuer one. New entries `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` with `qr` required and import neither `cuer` nor `react-native-svg`, for a host without the peer. On both platforms `qr={null}` is the same as leaving it out. `announce={false}` raises no “Address copied” notice, for a host that shows its own. Web: the copy button draws the `pressDecoration` layer (`kind: 'row'`). Catalog state `host-qr`.
+
+### MarketRow
+
+- `price` and `change` are optional: left out, the cell is not drawn and no dash is shown. `detail` (a muted line under the name, text or host nodes on both platforms, read with it), `trailing`, `selected` (a check; `aria-current` / `accessibilityState.selected`), `disabled` and `active` (the well fill with the 14 corner radius on both platforms, for a host keyboard cursor). Web forwards the ref and any other attribute or handler (`data-*`, `onPointerDown`) to the row's root; native forwards the ref to the root view and takes `testID` and `onPressIn`.
+- Native gains the web's presentation mode (`mode='presentation'` with `identity`, `icon`, `favorite`, `volume`) and `priceOptions` / `changeOptions`; type `MarketRowProps` is exported on both platforms. Catalog state `picker`.
 
 ### ManagePositionBlock
 

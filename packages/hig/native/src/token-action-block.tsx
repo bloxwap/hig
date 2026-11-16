@@ -27,6 +27,12 @@ export interface TokenActionBlockProps {
  name?:string;
  /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */
  value?:number|null;
+ /** The holding in token units, for a token with no dollar value: with `value` left out or null it is drawn in place of the dollar total. */
+ units?:number|null;
+ /** Host text after the units, such as ` BLOX`. */
+ unitsSuffix?:string;
+ /** Format of the units; default `{maximumFractionDigits:6}`. */
+ unitsOptions?:Intl.NumberFormatOptions;
  /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */
  assets?:readonly BarMarkElement[];
  /** The chains the token sits on. Leave it out to draw no chains bar. */
@@ -43,15 +49,18 @@ export interface TokenActionBlockProps {
  testID?:string;
 }
 const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
+const unitsFormat:Intl.NumberFormatOptions={maximumFractionDigits:6};
 const held=(value:number)=>Number.isFinite(value)&&value>0;
 /** An action's text: its own `label`, else the built-in name of its id, else the id. */
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token as a screen: a header, where it is held, which chains it sits on, then what the user can do with it. */
 /** Legend figures inside the block move place by place, like its total. */
 const animatedFigure:BarMarkFigureRenderer=(figure,{testID})=><AnimatedNumberReadout value={figure.value} options={figure.options} prefix={figure.prefix} suffix={figure.suffix} tone='faint' testID={testID} style={{fontSize:14,lineHeight:21}}/>;
-export function TokenActionBlock({symbol,name,value,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',testID}:TokenActionBlockProps){
+export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptions=unitsFormat,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',testID}:TokenActionBlockProps){
  const colors=useColors(),t=useMessages(),{direction,locale}=useHIG();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
+ // With no dollar value the units are the headline, as an AccountBlock row headlines them.
+ const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix} tone='muted' testID='token-units' style={{fontSize:14,lineHeight:21}}/>:<AnimatedNumberReadout key='value' value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>;
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
  return <View testID={testID} style={{padding:16}}>
   <View testID='token-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
@@ -60,7 +69,7 @@ export function TokenActionBlock({symbol,name,value,assets,chains,chainsTitle,ac
    <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
   </View>
   {assets||chains?<BarMarkFigureContext.Provider value={animatedFigure}><View testID='token-bars' style={{gap:20,marginTop:16,paddingHorizontal:4}}>
-   {assets?<BarMark testID='token-assets' surface={false} title={name??symbol} elements={assets} description={<AnimatedNumberReadout value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>}/>:null}
+   {assets?<BarMark testID='token-assets' surface={false} title={name??symbol} elements={assets} description={headline}/>:null}
    {chains?<BarMark testID='token-chains' surface={false} title={chainsTitle??t.swapChains} elements={chains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)}/>:null}
   </View></BarMarkFigureContext.Provider>:null}
   {actions.length>0?<View testID='token-actions' style={{gap:8,marginTop:16}}>

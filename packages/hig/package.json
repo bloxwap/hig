@@ -258,6 +258,11 @@
       "import": "./react/dist/wallet-address.js",
       "default": "./react/dist/wallet-address.js"
     },
+    "./react/wallet-address-core": {
+      "types": "./react/dist/wallet-address-core.d.ts",
+      "import": "./react/dist/wallet-address-core.js",
+      "default": "./react/dist/wallet-address-core.js"
+    },
     "./react/asset-balance-row": {
       "types": "./react/dist/asset-balance-row.d.ts",
       "import": "./react/dist/asset-balance-row.js",
@@ -362,6 +367,11 @@
       "types": "./native/dist/wallet-address.d.ts",
       "import": "./native/dist/wallet-address.js",
       "default": "./native/dist/wallet-address.js"
+    },
+    "./native/wallet-address-core": {
+      "types": "./native/dist/wallet-address-core.d.ts",
+      "import": "./native/dist/wallet-address-core.js",
+      "default": "./native/dist/wallet-address-core.js"
     },
     "./native/asset-balance-row": {
       "types": "./native/dist/asset-balance-row.d.ts",

@@ -1025,7 +1025,8 @@
       "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "host-qr"
       ]
     },
     {
@@ -1061,7 +1062,8 @@
       "states": [
         "default",
         "value-only",
-        "units-headline"
+        "units-headline",
+        "picker"
       ]
     },
     {
@@ -1107,7 +1109,8 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "picker"
       ]
     },
     {
@@ -1119,7 +1122,8 @@
         "default",
         "empty",
         "local-money",
-        "sections"
+        "sections",
+        "ledgers"
       ]
     },
     {
@@ -1254,7 +1258,8 @@
       "states": [
         "default",
         "single",
-        "actions-only"
+        "actions-only",
+        "units"
       ]
     },
     {
@@ -1307,7 +1312,8 @@
         "connected",
         "no-logout",
         "whitelist",
-        "empty"
+        "empty",
+        "short-list"
       ]
     },
     {
@@ -1318,7 +1324,8 @@
       "states": [
         "default",
         "tokens",
-        "no-chain"
+        "no-chain",
+        "labelled"
       ]
     },
     {

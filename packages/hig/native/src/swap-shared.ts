@@ -20,6 +20,10 @@ export interface SwapToken {
  caption?:string|SwapFigure;
  /** Extra text matched by the picker search, such as the contract address. */
  keywords?:string;
+ /** Picker rows: host text after the balance figure, such as ` HYPE`. */
+ unitsSuffix?:string;
+ /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */
+ detail?:string;
 }
 /** An image URL, or an element the host draws. */
 export type SwapArtwork=string|React.ReactElement;
