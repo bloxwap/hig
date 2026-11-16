@@ -1,4 +1,5 @@
-import React,{useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useState} from 'react';
+import {formatCountdown} from '@bloxwap/hig/contracts';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
@@ -37,8 +38,10 @@ export interface AssetCategory {
  id:string;
  /** Crypto. */
  label:string;
- /** A badge on the section heading's trailing edge, such as the session state: OPEN or CLOSED. */
+ /** A badge on the section heading's trailing edge, such as OPEN. Bloxwap trades around the clock, so there is no closed badge: use `opensAt` for a legacy market that is shut. */
  status?:{label:string;tone?:'positive'|'negative'|'warning'|'info'};
+ /** When the legacy market behind this category next opens, as epoch milliseconds or a `Date`. While it is ahead, the badge counts down to it (“Opens in 2:14:33”) in place of `status`, and the heading reads it in words. Once it passes, `status` shows again. */
+ opensAt?:number|Date;
 }
 export interface AssetsBlockProps {
  /** Heading. Defaults to the built-in “Assets”. */
@@ -75,6 +78,13 @@ function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):
  const [local,setLocal]=useState(initial);const current=value===undefined?local:value;
  return [current,next=>{if(Object.is(next,current))return;if(value===undefined)setLocal(next);onChange?.(next);}];
 }
+/** The current time, ticking each second while `active`. */
+function useNow(active:boolean):number{
+ const [now,setNow]=useState(()=>Date.now());
+ useEffect(()=>{if(!active)return;setNow(Date.now());const tick=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(tick);},[active]);
+ return now;
+}
+const opensAtTime=(category:AssetCategory)=>category.opensAt==null?null:+category.opensAt;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const disc=44;
 /**
@@ -83,7 +93,8 @@ const disc=44;
  * and the scrolling.
  */
 export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,testID}:AssetsBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
+ const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
+ const now=useNow(categories.some(entry=>{const at=opensAtTime(entry);return at!=null&&at>Date.now();}));
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
  const [currentCategory,setCategory]=useHostState(category,defaultCategory,onCategoryChange);
@@ -117,10 +128,10 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   {sections.length===0?<Text testID={id('empty')} accessibilityLiveRegion='polite' style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{empty}</Text>:
   <View testID={id('list')} style={{gap:16}}>
-   {sections.map(section=>{const status=section.category.status;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
+   {sections.map(section=>{const at=opensAtTime(section.category);const countdown=at!=null&&at>now?formatCountdown(at-now,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
     <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:32,paddingHorizontal:4}}>
-     <Text accessibilityRole='header' accessibilityLabel={status?`${section.category.label}, ${status.label}`:undefined} style={{flexShrink:1,fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{section.category.label}</Text>
-     {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:`${toneColor[status.tone??'positive']}26`}}><Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:1,color:toneColor[status.tone??'positive']}}>{status.label}</Text></View>:null}
+     <Text accessibilityRole='header' accessibilityLabel={status?`${section.category.label}, ${status.spoken}`:undefined} style={{flexShrink:1,fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{section.category.label}</Text>
+     {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:status.fill}}><Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:countdown?0.25:1,fontVariant:['tabular-nums'],color:status.color}}>{status.label}</Text></View>:null}
     </View>
     <View style={{gap:4}}>{section.assets.map(row)}</View>
    </View>;})}

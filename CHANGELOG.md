@@ -9,6 +9,7 @@
 ### Blocks
 
 - `AssetsBlock` (web and native): the market chooser as one screen, with a search field, category capsules, All / Positions / Trend views, sections by category with a status badge, and a signal disc per market. New built-in messages: `assets`, `searchMarkets`, `marketCategories`, `assetsView`, `assetsAll`, `assetsPositions`, `assetsTrend`, `signalWatch`, `signalUp`, `signalDown`, `noPositions`, `noTrend`.
+- `AssetsBlock` categories take `opensAt`: while a legacy market is shut, its section badge counts down to the reopening (“Opens in 2:14:33”) instead of showing a closed state, because Bloxwap is always open. New `formatCountdown` in `@bloxwap/hig/contracts` and the `opensIn` message.
 
 ### GestureSheet
 
