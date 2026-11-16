@@ -884,11 +884,11 @@
       },
       "FilterProps": {
         "entry": "selection",
-        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void;\n}"
+        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void; /** Pixels the row scrolls out past its container on each side (`--hig-filter-bleed`), so the capsules are cut by the container's edge, while the first and last capsule rest this far in: pass the container's side padding. Default 0, or what an ancestor sets in `--hig-filter-bleed`. */\n    bleed?: number;\n}"
       },
       "Filter": {
         "entry": "selection",
-        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange }: FilterProps): React.JSX.Element;"
+        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange, bleed }: FilterProps): React.JSX.Element;"
       },
       "Select": {
         "entry": "selection",
@@ -2070,11 +2070,11 @@
       },
       "FilterProps": {
         "entry": "radio-group",
-        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void; /** The horizontal scroll view the capsules sit in, such as a sheet library's ScrollView that keeps sideways drags from the sheet. It receives the same props as React Native's `ScrollView`, which is the default. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n}"
+        "signature": "export interface FilterProps {\n    label: string;\n    options: readonly FilterOption[];\n    value?: string;\n    defaultValue?: string;\n    disabled?: boolean;\n    onValueChange?: (value: string) => void; /** The horizontal scroll view the capsules sit in, such as a sheet library's ScrollView that keeps sideways drags from the sheet. It receives the same props as React Native's `ScrollView`, which is the default. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>; /** Units the row scrolls out past its container on each side, so the capsules are cut by the container's edge, while the first and last capsule rest this far in: pass the container's side padding. Default 0. */\n    bleed?: number;\n}"
       },
       "Filter": {
         "entry": "radio-group",
-        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange, scrollComponent }: FilterProps): React.JSX.Element;"
+        "signature": "export declare function Filter({ label, options, value, defaultValue, disabled, onValueChange, scrollComponent, bleed }: FilterProps): React.JSX.Element;"
       },
       "RewardFigure": {
         "entry": "reward-block",

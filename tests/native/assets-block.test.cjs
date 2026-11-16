@@ -105,6 +105,8 @@ test('counts down to a legacy market reopening, reads it in words, then falls ba
 test('rows are one line each, headingId names the title, and stickyHeader pins the header in the block\'s own scroll view',()=>{
  const {ScrollView}=require('react-native');
  let view=mount({assets:[{id:'LONG',name:'A market with a name far too long for one line',symbol:'LONGSYMBOL',detail:'40×',category:'crypto'}],headingId:'assets-title'});
+ // The section heading lines up with the row content: 8 in, as the row's own padding, on both edges.
+ expect(flat(host(view,'assets-section-crypto-header'))).toMatchObject({paddingHorizontal:8});expect(flat(host(view,'assets-LONG'))).toMatchObject({padding:8});
  const lines=host(view,'assets-LONG').findAll(node=>typeof node.type==='string'&&node.props.numberOfLines!==undefined);
  expect(lines.map(node=>[node.props.numberOfLines,text(node)])).toEqual([[1,'A market with a name far too long for one line'],[1,'LONGSYMBOL · 40×']]);
  expect(view.findAll(node=>node.props.nativeID==='assets-title'&&node.props.accessibilityRole==='header').length).toBeGreaterThan(0);
@@ -121,6 +123,9 @@ test('rows are one line each, headingId names the title, and stickyHeader pins t
  expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-search')).toHaveLength(0);expect(has(view,'assets-list')).toBe(true);
  // A host scroll view, such as a sheet library's, takes ScrollView's place.
  const Sheet=props=>h(ScrollView,{...props,testID:'sheet-scroll'});view=mount({stickyHeader:true,scrollComponent:Sheet});expect(has(view,'sheet-scroll')).toBe(true);
+ // The scroller fills a bounded parent and shrinks below its content, so it scrolls in a sheet body even when the host's scroll view carries no flex of its own.
+ const Bare=props=>{Bare.style=props.style;return h(ScrollView,{...props,testID:'bare-scroll'});};view=mount({stickyHeader:true,scrollComponent:Bare});
+ expect(StyleSheet.flatten(Bare.style)).toEqual({flexGrow:1,flexShrink:1,minHeight:0});
  // Without a test ID the pinned header is `assets-sticky-header`.
  act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{assets,categories,onSelect:()=>{},stickyHeader:true})));});expect(has(root.root,'assets-sticky-header')).toBe(true);
 });
@@ -177,11 +182,13 @@ test('scrolls the selected category capsule fully into view on mount and on chan
  const scroller=host(view,'host-filter');
  const chips=view.findAll(n=>n.props.accessibilityRole==='radio'&&typeof n.props.onLayout==='function'&&typeof n.props.onPress==='function');
  const layout=(node,x,width)=>act(()=>node.props.onLayout({nativeEvent:{layout:{x,y:0,width,height:40}}}));
- // All, Crypto, Commodities, Stocks at 100 wide with 8 between, in a 260-wide row: Stocks (324 to 424) ends the view.
- chips.forEach((chip,index)=>layout(chip,index*108,100));
+ // The row bleeds 16 past the block's padding on each side and insets its content by 16, so the capsules run to the container's edge.
+ expect(flat(scroller)).toMatchObject({marginHorizontal:-16});expect(StyleSheet.flatten(scroller.props.contentContainerStyle)).toMatchObject({paddingHorizontal:16});
+ // All, Crypto, Commodities, Stocks at 100 wide with 8 between after the 16 inset, in a 260-wide row: Stocks (340 to 440) ends the view, 16 clear of its edge.
+ chips.forEach((chip,index)=>layout(chip,16+index*108,100));
  act(()=>scroller.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:260,height:40}}}));
- expect(scrollTo).toHaveBeenLastCalledWith({x:164,animated:false});
- // Choosing a capsule left of the view scrolls back to it.
+ expect(scrollTo).toHaveBeenLastCalledWith({x:196,animated:false});
+ // Choosing a capsule left of the view scrolls back to it, keeping the 16 inset clear.
  act(()=>chips[1].props.onPress());expect(scrollTo).toHaveBeenLastCalledWith({x:108,animated:false});
  // A capsule already whole on screen does not scroll.
  scrollTo.mockClear();act(()=>chips[2].props.onPress());expect(scrollTo).not.toHaveBeenCalled();

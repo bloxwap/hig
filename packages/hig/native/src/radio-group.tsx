@@ -53,7 +53,7 @@ export function SegmentedControl({label,options,value,defaultValue='',disabled,h
  </View>;
 }
 export interface FilterOption {value:string;label:string;disabled?:boolean;/** Image URL shown in the option's circle until it is selected. */icon?:string}
-export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void;/** The horizontal scroll view the capsules sit in, such as a sheet library's ScrollView that keeps sideways drags from the sheet. It receives the same props as React Native's `ScrollView`, which is the default. */scrollComponent?:React.ComponentType<ScrollViewProps>}
+export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void;/** The horizontal scroll view the capsules sit in, such as a sheet library's ScrollView that keeps sideways drags from the sheet. It receives the same props as React Native's `ScrollView`, which is the default. */scrollComponent?:React.ComponentType<ScrollViewProps>;/** Units the row scrolls out past its container on each side, so the capsules are cut by the container's edge, while the first and last capsule rest this far in: pass the container's side padding. Default 0. */bleed?:number}
 /** Chips are 40dp; the slop restores a 44dp touch target. */
 const filterSlop={top:2,bottom:2};
 const hiddenMark={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const,pointerEvents:'none' as const};
@@ -84,7 +84,7 @@ function FilterChip({option,checked,blocked,reducedMotion,onSelect,onLayout}: {o
  * The row scrolls the selected chip fully into view on mount and whenever the selection changes, through the scroll view's
  * `scrollTo` (a host `scrollComponent` receives the ref and `onLayout`/`onScroll`; one without `scrollTo` simply does not scroll).
  */
-export function Filter({label,options,value,defaultValue='',disabled,onValueChange,scrollComponent=ScrollView}:FilterProps){
+export function Filter({label,options,value,defaultValue='',disabled,onValueChange,scrollComponent=ScrollView,bleed=0}:FilterProps){
  const [current,set]=useControllable(value,defaultValue,onValueChange);const {direction,reducedMotion}=useHIG();
  const Scroll=scrollComponent as React.ComponentType<ScrollViewProps&{ref?:React.Ref<ScrollView>}>;
  const scroller=useRef<ScrollView|null>(null),chips=useRef(new Map<string,{x:number;width:number}>()),viewport=useRef({width:0,offset:0}),mounted=useRef(false);
@@ -92,12 +92,13 @@ export function Filter({label,options,value,defaultValue='',disabled,onValueChan
  const reveal=(animated:boolean)=>{
   const chip=chips.current.get(current),{width,offset}=viewport.current;
   if(!chip||width<=0||direction==='rtl')return;
-  const x=chip.x<offset?chip.x:chip.x+chip.width>offset+width?chip.x+chip.width-width:null;
+  // With a bleed the chip's x includes the leading inset, and a revealed chip keeps the inset clear on either side.
+  const x=chip.x-bleed<offset?chip.x-bleed:chip.x+chip.width+bleed>offset+width?chip.x+chip.width+bleed-width:null;
   if(x===null)return;
   viewport.current.offset=Math.max(0,x);scroller.current?.scrollTo?.({x:viewport.current.offset,animated:animated&&!reducedMotion});
  };
  useEffect(()=>{if(mounted.current)reveal(true);mounted.current=true;},[current]);
- return <Scroll ref={scroller} horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' accessibilityRole='radiogroup' accessibilityLabel={label} style={{flexGrow:0,direction}} contentContainerStyle={{direction,gap:8}}
+ return <Scroll ref={scroller} horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' accessibilityRole='radiogroup' accessibilityLabel={label} style={{flexGrow:0,direction,...(bleed?{marginHorizontal:-bleed}:null)}} contentContainerStyle={{direction,gap:8,...(bleed?{paddingHorizontal:bleed}:null)}}
   onLayout={event=>{viewport.current.width=event.nativeEvent.layout.width;reveal(false);}} onScroll={event=>{viewport.current.offset=event.nativeEvent.contentOffset.x;}} scrollEventThrottle={16}>
   {options.map(option=><FilterChip key={option.value} option={option} checked={current===option.value} blocked={!!disabled||!!option.disabled} reducedMotion={!!reducedMotion} onSelect={()=>set(option.value)}
    onLayout={event=>{const {x,width}=event.nativeEvent.layout;chips.current.set(option.value,{x,width});if(option.value===current)reveal(false);}}/>)}

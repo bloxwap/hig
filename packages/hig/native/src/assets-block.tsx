@@ -154,7 +154,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  const header=<ScreenHeader title={title??t.assets} testID={id('header')} headingId={headingId} action={onClose?<HeaderClose onClose={onClose} label={t.close} testID={id('close')}/>:undefined}/>;
  const body=<>
   <SearchInput testID={id('search')} accessibilityLabel={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChangeText={setQuery} onClear={clearable?()=>setQuery(''):undefined} autoFocus={autoFocusSearch} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>
-  {showFilter?<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory} scrollComponent={filterScrollComponent}/>:null}
+  {showFilter?<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory} scrollComponent={filterScrollComponent} bleed={16}/>:null}
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   {sections.length===0?<View style={{gap:16,alignItems:'center'}}>
    <Text testID={id('empty')} accessibilityLiveRegion='polite' style={{alignSelf:'stretch',paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{empty}</Text>
@@ -162,7 +162,8 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   </View>:
   <View testID={id('list')} style={{gap:16}}>
    {sections.map(section=>{const at=opensAtTime(section.category);const countdown=now!=null&&at!=null&&at>now?formatCountdown(at-now,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
-    <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:32,paddingHorizontal:4}}>
+    {/* The heading and its badge line up with the row content (the icon's leading edge, the disc's trailing edge), as the token pickers' sections do. */}
+    <View testID={id(`section-${section.category.id}-header`)} style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:32,paddingHorizontal:8}}>
      <Text accessibilityRole='header' accessibilityLabel={status?`${section.category.label}, ${status.spoken}`:undefined} style={{flexShrink:1,fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{section.category.label}</Text>
      {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:status.fill}}><Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:countdown?0.25:1,fontVariant:['tabular-nums'],color:status.color}}>{status.label}</Text></View>:null}
     </View>

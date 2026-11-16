@@ -25,11 +25,11 @@ export function SegmentedControl({label,options,value,defaultValue='',disabled,h
  </fieldset>;
 }
 export interface FilterOption extends Choice {/** Image URL shown in the option's circle until it is selected. */icon?:string}
-export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void}
+export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void;/** Pixels the row scrolls out past its container on each side (`--hig-filter-bleed`), so the capsules are cut by the container's edge, while the first and last capsule rest this far in: pass the container's side padding. Default 0, or what an ancestor sets in `--hig-filter-bleed`. */bleed?:number}
 /** One row of filter capsules that scrolls sideways. Single choice with radio semantics; the chosen capsule inverts and a check draws into its circle. */
-export function Filter({label,options,value,defaultValue='',disabled,onValueChange}:FilterProps){
+export function Filter({label,options,value,defaultValue='',disabled,onValueChange,bleed}:FilterProps){
  const name=useId();const [current,set]=useControllable(value,defaultValue,onValueChange);
- return <div className='hig-filter' role='radiogroup' aria-label={label} aria-disabled={disabled||undefined}>
+ return <div className='hig-filter' role='radiogroup' aria-label={label} aria-disabled={disabled||undefined} style={bleed==null?undefined:{'--hig-filter-bleed':`${bleed}px`} as React.CSSProperties}>
   {options.map(o=><label key={o.value} className='hig-filter-chip'><input type='radio' name={name} value={o.value} checked={current===o.value} disabled={disabled||o.disabled} onChange={()=>{if(!disabled&&!o.disabled)set(o.value);}}/><span className='hig-filter-mark' aria-hidden='true'>{o.icon&&<img src={o.icon} alt='' loading='lazy'/>}<svg viewBox='0 0 16 16' focusable='false'><path pathLength='1' d='m3.75 8.5 2.75 2.75 5.75-6.25'/></svg></span><span>{o.label}</span></label>)}
  </div>;
 }

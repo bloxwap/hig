@@ -151,6 +151,24 @@ describe('AssetsBlock empty action, selected disc and keyboard',()=>{
   cleanup();mount({assets:[],loading:true,emptyAction:action});expect(screen.queryByRole('button',{name:'Browse all markets'})).toBeNull();
   cleanup();mount({emptyAction:action});expect(screen.queryByRole('button',{name:'Browse all markets'})).toBeNull();
  });
+ it('lines the section heading up with the row content and runs the capsules out to the sheet gutter',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');
+  // The heading and badge sit 8 in, as the row's padding (`.hig-assets-row { ...padding:8px }`), so they align with the icon and the disc.
+  expect(css).toContain('.hig-assets-section-header { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;padding-inline:8px; }');
+  expect(css).toContain('.hig-assets-row { position:relative;min-height:64px;padding:8px; }');
+  // The capsule row bleeds by --hig-filter-bleed (16 in AssetsBlock, the sheet content gutter) and insets its first and last capsule by as much.
+  expect(css).toContain('.hig-assets-block { --hig-filter-bleed:16px; }');
+  expect(css).toContain('margin:-4px calc(-4px - var(--hig-filter-bleed,0px));padding:4px calc(4px + var(--hig-filter-bleed,0px));scroll-padding-inline:var(--hig-filter-bleed,0px);');
+  // The block leaves the inline variable to the stylesheet, so a host can set it on the block.
+  mount({style:{'--hig-filter-bleed':'0px'} as React.CSSProperties});
+  const strip=screen.getByRole('radiogroup',{name:'Market categories'});expect(strip.getAttribute('style')).toBeNull();
+  expect(strip.closest('.hig-assets-block')?.getAttribute('style')).toContain('--hig-filter-bleed: 0px');
+  cleanup();
+  const {Filter}=await import('../packages/hig/react/src/selection');
+  render(<HIGProvider><Filter label='Chains' bleed={20} options={[{value:'',label:'All'},{value:'1',label:'Ethereum'}]}/></HIGProvider>);
+  expect(screen.getByRole('radiogroup',{name:'Chains'}).style.getPropertyValue('--hig-filter-bleed')).toBe('20px');
+ });
  it('steps the empty disc up to the raised fill on a filled row',async()=>{
   const {readFileSync}=await import('node:fs');
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');
