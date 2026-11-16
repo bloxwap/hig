@@ -61,6 +61,22 @@ describe('AssetsBlock',()=>{
   await userEvent.type(screen.getByRole('searchbox'),'zzz');
   expect(screen.getByRole('status').textContent).toBe('No results');
  });
+ it('draws host trailing content before the disc, read through trailingLabel, and clears the query when clearable',async()=>{
+  const onQuery=vi.fn();
+  const {container}=mount({assets:[{...assets[0],trailing:<b data-testid='pnl'>+$12.50</b>,trailingLabel:'open position'},assets[1]],query:'b',onQueryChange:onQuery});
+  const btc=screen.getByRole('button',{name:'Bitcoin, BTC · 40×, open position, Watch'});
+  const trailing=btc.querySelector('.hig-assets-trailing');
+  expect(trailing?.getAttribute('aria-hidden')).toBe('true');expect(trailing?.textContent).toBe('+$12.50');
+  expect(trailing?.nextElementSibling?.classList.contains('hig-assets-signal')).toBe(true);
+  expect(container.querySelectorAll('.hig-assets-trailing')).toHaveLength(1);
+  // Without clearable the field has no clear button; with it, the button empties the query.
+  expect(screen.queryByRole('button',{name:'Clear search'})).toBeNull();
+  cleanup();mount({clearable:true,query:'b',onQueryChange:onQuery});
+  await userEvent.click(screen.getByRole('button',{name:'Clear search'}));
+  expect(onQuery).toHaveBeenCalledWith('');
+  expect(document.activeElement).toBe(screen.getByRole('searchbox'));
+  cleanup();mount({clearable:true,query:''});expect(screen.queryByRole('button',{name:'Clear search'})).toBeNull();
+ });
  it('takes controlled state, host translations and the blocks aggregate',()=>{
   render(<HIGProvider messages={{assetsTrend:'Tendance',signalUp:'En hausse'}}><blocks.AssetsBlock assets={assets} categories={categories} onSelect={()=>{}} view='trend' category='crypto' query='eth'/></HIGProvider>);
   expect(screen.getByRole('radio',{name:'Tendance'})).toHaveProperty('checked',true);

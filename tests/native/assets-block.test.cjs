@@ -68,6 +68,27 @@ test('views and search narrow the list and show the right empty text; controlled
  expect(root.root.findAll(n=>typeof n.type==='string'&&n.props.accessibilityRole==='header').some(n=>text(n)==='Actifs')).toBe(true);
 });
 
+test('draws host trailing content before the disc, read through trailingLabel, and clears the query when clearable',()=>{
+ const onQuery=jest.fn();const {Text:RNText}=require('react-native');
+ let view=mount({assets:[{...assets[0],trailing:h(RNText,{testID:'pnl'},'+$12.50'),trailingLabel:'open position'},assets[1]],query:'b',onQueryChange:onQuery});
+ const btc=all(view,'assets-BTC').find(n=>n.props.accessibilityRole==='button');
+ expect(btc.props.accessibilityLabel).toBe('Bitcoin, BTC · 40×, open position, Watch');
+ const trailing=host(view,'assets-BTC-trailing');
+ expect(trailing.props.accessible).toBe(false);expect(trailing.props.importantForAccessibility).toBe('no-hide-descendants');
+ expect(text(host(view,'pnl'))).toBe('+$12.50');expect(flat(trailing).flexShrink).toBe(0);
+ // The trailing content sits before the signal disc.
+ const row=host(view,'assets-BTC'),order=row.children.map(child=>child.props?.testID).filter(Boolean);
+ expect(order).toEqual(['assets-BTC-trailing','assets-BTC-signal']);
+ expect(has(view,'assets-ETH-trailing')).toBe(false);
+ // Without clearable the field has no clear button; with it, the button empties the query.
+ expect(has(view,'assets-search-clear')).toBe(false);
+ view=mount({clearable:true,query:'b',onQueryChange:onQuery});
+ const clear=all(view,'assets-search-clear').find(n=>n.props.onPress);
+ expect(clear.props.accessibilityLabel).toBe('Clear search');
+ act(()=>clear.props.onPress());expect(onQuery).toHaveBeenCalledWith('');
+ view=mount({clearable:true,query:''});expect(has(view,'assets-search-clear')).toBe(false);
+});
+
 test('counts down to a legacy market reopening, reads it in words, then falls back to status',()=>{
  jest.useFakeTimers();jest.setSystemTime(new Date('2026-11-16T12:00:00Z'));
  const opensAt=Date.now()+((2*60+14)*60+33)*1000;

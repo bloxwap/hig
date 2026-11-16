@@ -912,6 +912,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-assets-status[data-countdown] { color:var(--hig-muted);letter-spacing:.02em;font-variant-numeric:tabular-nums; }
 .hig-assets-icon,.hig-assets-signal { width:44px;height:44px; }
 .hig-assets-signal { flex:none;display:grid;place-items:center;border-radius:9999px;background:var(--hig-fill); }
+.hig-assets-trailing { flex:none;display:flex;align-items:center; }
 .hig-assets-signal[data-signal] { color:var(--hig-signal);background:color-mix(in srgb,var(--hig-signal) 15%,transparent); }
 .hig-assets-signal[data-signal='watch'] { --hig-signal:var(--hig-warning); }
 .hig-assets-signal[data-signal='up'] { --hig-signal:var(--hig-positive); }
