@@ -39,7 +39,7 @@ export function Save() {
 | `@bloxwap/hig/contracts` | Platform-neutral types, formatting, and messages |
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
-| `@bloxwap/hig/chart` | `PriceChart` and `chartTheme` for `@bloxwap/chart` |
+| `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
 | `@bloxwap/hig/feedback` | Optional sound and haptic feedback |
 | `@bloxwap/hig/native-fonts` | Static TTFs for React Native and Expo |
 | `@bloxwap/hig/og-fonts` | Satori and `next/og` faces |

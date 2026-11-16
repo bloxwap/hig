@@ -757,11 +757,11 @@ Source: docs/components/chart.md
 
 # Charts
 
-Web price charts with text summaries and native readout alternatives.
+Live price and outcome charts for the web, with text summaries and native readout alternatives.
 
-Includes web-only `PriceChart` and `chartTheme`. Native uses readouts, lists, and text summaries.
+Includes web-only `AltimeterChart` and `OutcomeChart`, with their default `bitcoinPrice` and `championsLeagueWinner` feeds. The entry also exports the `PriceChart` candle adapter and `chartTheme`, which are no longer in the catalog. Native uses readouts, lists, and text summaries.
 
-Issues #20 and #96. Entry: `@bloxwap/hig/chart`. Import `PriceChart` and `chartTheme` from `@bloxwap/hig/chart` for the DOM canvas integration only. Native consumers use `@bloxwap/hig/native/data` for summary/readout/list alternatives. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issues #20 and #96. Entry: `@bloxwap/hig/chart`. Import `AltimeterChart` and `OutcomeChart` from `@bloxwap/hig/chart` for the DOM canvas only. Native consumers use `@bloxwap/hig/native/data` for summary/readout/list alternatives. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ```sh
 npm install @bloxwap/hig @bloxwap/chart@^0.5.0
@@ -773,16 +773,75 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 
 | Component | Key props and behavior |
 | --- | --- |
-| `PriceChart` | `data`, required `summary`, `height`, and chart SDK props. |
+| `AltimeterChart` | Required `summary`; `price` (host-owned, `null` while unknown) or `feed`; `height` (default 320); `priceOptions`. |
+| `bitcoinPrice` | The default `feed`: the Bitcoin mid price from Hyperliquid's public best-bid/offer WebSocket. |
+| `OutcomeChart` | Required `summary`; `outcomes` (host-owned, `null` while unknown) or `feed`; `height` (default 360). |
+| `championsLeagueWinner` | The default `feed`: the UEFA Champions League winner market on Hyperliquid's outcome markets. |
+| `outcomeColors` | The ten default trail and capsule colors, in order. |
+| `PriceChart` | `data`, required `summary`, `height`, and chart SDK props. Not in the catalog. |
 | `chartTheme` | Token-based colors in sRGB for canvas compatibility. |
+
+`AltimeterChart` is the Bloxwap app's live chart on its own. It draws four things and nothing else:
+
+- **Grid.** Plus marks on 50px tiles that flow left one tile (50px) per second.
+- **Trail.** The price line. It flows left at the same 50px per second, fades toward the leading edge, and is sampled five times a second so it keeps moving on a quiet market.
+- **Ladder.** Price ticks 44px apart, about one basis point of price each. The current price stays at the vertical center, so the ladder moves down as the price rises and up as it falls.
+- **Current price.** A pill at the trail's tip. Each new price eases in over 300ms, and its changed digits roll through `AnimatedNumberReadout`.
+
+It draws no positions, entry or target lines, and no controls.
+
+```tsx
+import {AltimeterChart} from '@bloxwap/hig/chart';
+
+// Reference default: live Bitcoin.
+<AltimeterChart summary='Live Bitcoin price from Hyperliquid.'/>
+
+// Product: the host owns the price.
+<AltimeterChart summary='Ether mark price.' price={mark}/>
+```
+
+A `feed` is `(onPrice) => stop`: call `onPrice` with each new price and return a function that stops the source. It runs only while `price` is omitted. Keep its identity stable (define it outside the component or memoize it), because a new function resubscribes.
+
+`OutcomeChart` shows one question with two to ten outcomes, live, in the same style as `AltimeterChart`:
+
+- **Grid.** The same plus marks, flowing left at 50px per second behind everything else. Columns are 50px apart; there is one row per ladder tick.
+- **Ladder.** Percent ticks labeled on the trailing edge as in `AltimeterChart`, with matching marks on the leading edge. It zooms to the range the chances occupy, plus a tenth on each side, on steps of 1, 2, 5 or 10 percent (four to twelve of them), so small moves are visible: clubs between 5% and 22% get a ladder from 2% to 24%. It holds still while chances move inside it and refits when one leaves it or they close in to a third of it. Chances far apart keep the whole 0 to 100%.
+- **Trails.** One per outcome: its chance, where a share price of 24¢ sits at 24% on the ladder. Each flows left at 50px per second, fades toward the leading edge, is sampled five times a second, and eases to a new chance over 300ms.
+- **Capsules.** One per outcome at the tip of its trail, on the trailing edge over the ladder's labels as `AltimeterChart`'s pill is, stroked in the outcome's color like `AltimeterChart`'s price pill, with the outcome's `label` on the left and its chance as a percentage to three decimals on the right, whose changed digits roll through `AnimatedNumberReadout`. Capsules whose chances are close move apart so none overlap (ten fit in the default height), and a short curve joins each to its trail.
+
+It draws no positions, order entry or selection, and no price history: a trail starts flat and holds only what happened while the chart was on screen (twelve seconds across 600px). Outcomes past the tenth are dropped; group the smallest into one outcome first.
+
+```tsx
+import {OutcomeChart} from '@bloxwap/hig/chart';
+
+// Reference default: the Champions League winner (six clubs and Other).
+<OutcomeChart summary='UEFA Champions League winner on Hyperliquid.'/>
+
+// Product: the host owns the outcomes.
+<OutcomeChart summary='Next FOMC rate decision.' outcomes={[
+ {id:'hold',label:'No change',price:.62},
+ {id:'cut',label:'Cut',price:.35},
+ {id:'hike',label:'Hike',price:.03},
+]}/>
+```
+
+An outcome is `{id, label, price, color?}`. `price` is the price of one share in dollars, from 0 to 1, or `null` while unknown; pass a new array whenever a price changes. Colors default to `outcomeColors` in order. A `feed` is `(onOutcomes) => stop`, used only while `outcomes` is omitted.
+
+`championsLeagueWinner` finds the open UEFA Champions League winner market that resolves first by name, the venue's most traded market, and follows the live order book of each listed club (the midpoint of the best bid and offer), reporting at most twice a second. Clubs appear under short codes, favorite first as of loading; the order then stays fixed so each keeps its color. `Other` is not traded on its own: it is one minus the listed clubs' prices, shown once every club has a price. The feed checks again every 15 minutes, so when a season settles and leaves the listing it moves to the next one without a reload.
 
 ## When to use and examples
 
-Do: provide host-generated price/trend summary and lazy-load chart on demand. Don’t: play effects on ticks or present web canvas as RN.
+Do: pass the product's own `price`, `outcomes` or `feed`, and write a `summary` that names the market and the source. Don’t: ship the default `bitcoinPrice` or `championsLeagueWinner` feeds in a product screen (they are reference feeds that call `api.hyperliquid.xyz`), play effects on ticks, or present the web charts as RN.
 
 ## States, interaction and accessibility
 
-@bloxwap/chart/react loads only on PriceChart render, in Suspense. Token theme covers surface/text/border/grid/crosshair/up/down/fonts; engine owns gestures and cleanup.
+`AltimeterChart` is a `<figure>` whose caption is the `summary`. The canvas is hidden from assistive technology; the current price is real text, updated at most five times a second and never announced. Until the first price arrives (or while `price` is `null`) it shows the `loadingChart` message as a status over the moving grid. With reduced motion the grid holds still and prices snap without easing; the trail still advances, because it is the data. Frames stop while the tab is hidden, and the trail restarts flat afterward. Colors come from `useColors()`: the line and pill follow the primary accent, the ladder is `muted` and the grid is `nested`. Prices format as US dollars in the provider's locale unless `priceOptions` says otherwise. It has no pointer or keyboard interaction.
+
+`OutcomeChart` is a `<figure>` whose caption is the `summary`. The canvas and ladder are hidden from assistive technology; the capsules are a real list, so every label and chance is text, never announced as it changes. With no outcomes it shows the `loadingChart` message as a status over the moving grid; an outcome with no price shows a dash and no trail, and waits stacked with the others at the bottom. When its first price arrives its capsule glides from the stack to its place over 600ms. With reduced motion the grid holds still, chances snap without easing and capsules take their places at once; the trails still advance. Frames stop while the tab is hidden, and the trails restart flat afterward. Capsule text is the outcome's color on the `background` color; a host `color` must keep 4.5:1 against it. Percentages format in the provider's locale: three decimals in the capsules, whole percents on the ladder. It has no pointer or keyboard interaction.
+
+Both charts set their numbers in the mono face through `--hig-font-mono`, so they follow the font the page loaded (import `@bloxwap/hig/tokens/css`). The rolling digits need `@bloxwap/hig/react/css`; with reduced motion they change in place.
+
+`PriceChart`: @bloxwap/chart/react loads only on PriceChart render, in Suspense. Token theme covers surface/text/border/grid/crosshair/up/down/fonts; engine owns gestures and cleanup.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -805,7 +864,7 @@ RN canvas is unsupported in this candidate. Use NumberReadout/List plus host sum
 
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/altimeter-chart.dom.test.tsx`, `tests/altimeter-model.test.ts`, `tests/outcome-chart.dom.test.tsx`, `tests/outcome-model.test.ts`, `tests/chart.dom.test.tsx`, `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
 ## Fields & inputs
@@ -1884,7 +1943,7 @@ Rules:
 | `loading` | Loading | Spinner label (web appends `…`) | `label` |
 | `loadingContent` | Loading content | Skeleton label | `label` |
 | `loadingItems` | Loading items | List loading row | — |
-| `loadingChart` | Loading chart… | PriceChart fallback (web, `@bloxwap/hig/chart`) | — |
+| `loadingChart` | Loading chart… | AltimeterChart and OutcomeChart waiting for data, and PriceChart fallback (web, `@bloxwap/hig/chart`) | — |
 | `noItems` | No items | List empty text | `empty` |
 | `noRows` | No rows | Table empty text (web) | — |
 | `retry` | Retry | List retry button | — |
@@ -2262,7 +2321,9 @@ const sheetPaddingBottom = insets.bottom + safeArea.sheetContentGutter;
 
 ## `SafeAreaView` for non-trade screens
 
-Use `SafeAreaView` on non-trade screens such as settings, 404, bootstrap, and fullscreen modals. Those screens can also add `fullscreenMin` (20) as a minimum side or edge gutter on top of the view's insets. A trade route-gate may apply left and right safe-area edges only, so a blocked trade view is not full-bleed into the system insets.
+Use `SafeAreaView` on non-trade screens such as settings, 404, bootstrap, and fullscreen modals. A trade route-gate may apply left and right safe-area edges only, so a blocked trade view is not full-bleed into the system insets.
+
+`fullscreenMin` (20) comes from the QR scanner's fullscreen modal chrome: `Math.max(insets.top|bottom, 20)` and `insets.left|right + 20`. It is not the settings screen, which uses a Tailwind `px-5` gutter.
 
 ## Side gutters
 
@@ -2270,7 +2331,7 @@ The app currently uses side gutters of 8, 16, and 20 in different places. Docume
 
 - `chromeGutter` (8): trade top bar and tap controls (`paddingLeft` / `paddingRight` / `paddingTop` or `paddingBottom` of `insets.* + 8`).
 - `sheetContentGutter` (16): sheet card and similar content padding, and the trade share overlay (`insets.* + 16`).
-- `fullscreenMin` (20): the larger gutter used on some non-trade and fullscreen surfaces.
+- `fullscreenMin` (20): the QR scanner's fullscreen modal chrome (`Math.max(insets.top|bottom, 20)` and `insets.left|right + 20`). Not the settings screen's Tailwind `px-5` gutter.
 
 ## Fixture and store-capture exceptions
 
@@ -2289,6 +2350,7 @@ These values come from the private `bloxwap/monorepo` native app. Paths, not pub
 - `apps/mobile/src/profile/lib/sheet-card-padding.ts` — sheet content gutter of 16.
 - `apps/mobile/src/components/live-chart.tsx` — `AXIS_CHROME_TOP` 56 and `AXIS_CHROME_BOTTOM` 88; fixture and store-capture exceptions.
 - `apps/mobile/app/trade/[asset].tsx` — full-bleed trade screen whose chrome adds insets itself; chrome gutter 8, share overlay gutter 16, toast offset, and the same fixture exceptions.
+- `apps/mobile/src/components/qr-scanner.tsx` — fullscreen modal chrome: `Math.max(insets.top|bottom, 20)` and `insets.left|right + 20` (`fullscreenMin`).
 
 
 ## Pinned source reconciliation
@@ -2673,7 +2735,7 @@ npm install @bloxwap/hig@0.7.0
 | `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements and messages |
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
-| `@bloxwap/hig/chart` | `PriceChart` and `chartTheme` for `@bloxwap/chart` |
+| `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
 | `@bloxwap/hig/feedback`, `@bloxwap/hig/feedback/<adapter>` | Optional sound and haptic feedback |
 | `@bloxwap/hig/native-fonts` | Static native TTFs and their manifest |
 | `@bloxwap/hig/og-fonts`, `@bloxwap/hig/og-fonts/node` | Satori / `next/og` card faces |

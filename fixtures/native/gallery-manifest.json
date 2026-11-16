@@ -726,7 +726,15 @@
       "support": "renderer"
     },
     {
-      "name": "PriceChart",
+      "name": "AltimeterChart",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "support": "alternative"
+    },
+    {
+      "name": "OutcomeChart",
       "states": [
         "default",
         "empty"

@@ -129,7 +129,8 @@
     "axisChromeBottom": 88
   },
   "notes": {
-    "safeArea.toastOffset": "44 + 16, to match the website's Sonner toaster."
+    "safeArea.toastOffset": "44 + 16, to match the website's Sonner toaster.",
+    "safeArea.fullscreenMin": "QR scanner fullscreen modal chrome: Math.max(insets.top|bottom, 20) and insets.left|right + 20. Not the settings screen's Tailwind px-5 gutter."
   },
   "radius": {
     "sm": 6,

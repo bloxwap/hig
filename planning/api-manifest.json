@@ -2573,6 +2573,174 @@
       "PriceChart": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function PriceChart({ summary, ...props }: ChartProps & {\n    summary: string;\n}): React.JSX.Element;"
+      },
+      "AltimeterChart": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, style, ...props }: AltimeterChartProps): React.JSX.Element;"
+      },
+      "AltimeterChartProps": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n}"
+      },
+      "bitcoinPrice": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const bitcoinPrice: AltimeterFeed;"
+      },
+      "AltimeterFeed": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type AltimeterFeed = (onPrice: (price: number) => void) => () => void;"
+      },
+      "OutcomeChart": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function OutcomeChart({ summary, outcomes, feed, height, style, ...props }: OutcomeChartProps): React.JSX.Element;"
+      },
+      "OutcomeChartProps": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface OutcomeChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example the question and where its prices come from. */\n    summary: string;\n    /** Two to ten outcomes, owned by the host. `null` or empty reads as waiting. Omit it to use `feed`. */\n    outcomes?: readonly Outcome[] | null;\n    /** Live source of outcomes, used only while `outcomes` is omitted. Defaults to `championsLeagueWinner`. Keep its identity stable. */\n    feed?: OutcomeFeed;\n    /** Chart height in pixels. Default 360. */\n    height?: number;\n}"
+      },
+      "outcomeColors": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const outcomeColors: readonly string[];"
+      },
+      "Outcome": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface Outcome {\n    /** Stable key. */\n    id: string;\n    /** Host text for the capsule, such as a team code or `Cut`. */\n    label: string;\n    /** Current price of one share in dollars, 0 to 1, read as its chance from 0 to 100%. `null` while unknown. */\n    price: number | null;\n    /** Host hex color. Defaults to `outcomeColors` in order. */\n    color?: string;\n}"
+      },
+      "OutcomeFeed": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type OutcomeFeed = (onOutcomes: (outcomes: readonly Outcome[]) => void) => () => void;"
+      },
+      "championsLeagueWinner": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const championsLeagueWinner: OutcomeFeed;"
+      },
+      "AltimeterFrame": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface AltimeterFrame {\n    width: number;\n    height: number;\n    now: number;\n    /** Grid offset in (-50, 0]. */\n    phase: number;\n    ticks: readonly AltimeterTick[];\n    /** Eased price held at the vertical center; `NaN` while waiting. */\n    display: number;\n    anchor: number;\n    spacing: number;\n    colors: {\n        grid: string;\n        ladder: string;\n        line: string;\n    };\n    label: (price: number) => string;\n    /** Resolved font stack for the ladder labels. Defaults to the mono family by name. */\n    font?: string;\n}"
+      },
+      "drawAltimeter": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function drawAltimeter(ctx: CanvasRenderingContext2D, frame: AltimeterFrame): number;"
+      },
+      "AltimeterTick": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type AltimeterTick = {\n    t: number;\n    p: number;\n};"
+      },
+      "ALTIMETER_FLOW_PX": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_FLOW_PX = 50;"
+      },
+      "ALTIMETER_TICK_PX": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_TICK_PX = 44;"
+      },
+      "ALTIMETER_SAMPLE_MS": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_SAMPLE_MS = 200;"
+      },
+      "ALTIMETER_EASE_MS": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_EASE_MS = 300;"
+      },
+      "ALTIMETER_MARK_ARM": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_MARK_ARM = 3;"
+      },
+      "tickSpacingFor": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function tickSpacingFor(price: number): number;"
+      },
+      "labelDecimalsFor": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function labelDecimalsFor(spacing: number, price: number): number;"
+      },
+      "gridPhase": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function gridPhase(now: number): number;"
+      },
+      "easeInOut": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function easeInOut(t: number): number;"
+      },
+      "AltimeterPoint": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type AltimeterPoint = readonly [number, number];"
+      },
+      "AltimeterPathSink": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface AltimeterPathSink {\n    moveTo(x: number, y: number): void;\n    lineTo(x: number, y: number): void;\n    bezierCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number): void;\n}"
+      },
+      "smoothTrail": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function smoothTrail(points: readonly AltimeterPoint[], sink: AltimeterPathSink): void;"
+      },
+      "trailPoints": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailPoints(ticks: readonly AltimeterTick[], now: number, trailStart: number, trailEnd: number, yFor: (price: number) => number): AltimeterPoint[];"
+      },
+      "ladderPrices": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function ladderPrices(anchor: number, spacing: number, low: number, high: number): number[];"
+      },
+      "nextChampionsLeagueQuestion": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function nextChampionsLeagueQuestion(questions: readonly Question[]): Question | undefined;"
+      },
+      "remainder": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function remainder(prices: readonly (number | null)[]): number | null;"
+      },
+      "OutcomeTrail": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface OutcomeTrail {\n    color: string;\n    ticks: readonly AltimeterTick[];\n    /** Eased chance at the trail's tip, 0 to 1. */\n    value: number;\n    /** Vertical center of the capsule the trail ends in. */\n    capsule: number;\n}"
+      },
+      "drawOutcomes": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function drawOutcomes(ctx: CanvasRenderingContext2D, frame: {\n    width: number;\n    height: number;\n    now: number;\n    phase: number;\n    grid: string;\n    scale?: OutcomeScale;\n    trails: readonly OutcomeTrail[];\n}): void;"
+      },
+      "OUTCOME_LIMIT": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const OUTCOME_LIMIT = 10;"
+      },
+      "outcomeChance": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function outcomeChance(price: number | null | undefined): number | null;"
+      },
+      "OutcomeScale": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface OutcomeScale {\n    low: number;\n    high: number;\n    step: number;\n}"
+      },
+      "fullScale": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const fullScale: OutcomeScale;"
+      },
+      "outcomeScale": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function outcomeScale(chances: readonly (number | null)[], previous?: OutcomeScale): OutcomeScale;"
+      },
+      "outcomeTicks": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function outcomeTicks(scale?: OutcomeScale): number[];"
+      },
+      "outcomeY": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function outcomeY(chance: number, height: number, inset: number, scale?: OutcomeScale): number;"
+      },
+      "capsuleCenters": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function capsuleCenters(wanted: readonly number[], height: number, size?: number, gap?: number): number[];"
+      },
+      "monoFont": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const monoFont: string;"
+      },
+      "monoFallback": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const monoFallback: string;"
+      },
+      "drawPlusGrid": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function drawPlusGrid(ctx: CanvasRenderingContext2D, width: number, height: number, phase: number, color: string, rows?: readonly number[]): void;"
       }
     }
   }

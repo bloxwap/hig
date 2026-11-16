@@ -34,7 +34,7 @@ Fixes and gaps from the browser and native audits of the app conversions to the 
 
 ### Tokens
 
-- `safeArea` offsets (`tokens.safeArea`, `nativeMetrics.safeArea`, `--hig-safe-area-*`): `chromeGutter` 8, `sheetContentGutter` 16, `toastOffset` 60 (44 + 16, matching the website's Sonner toaster), `fullscreenMin` 20, `axisChromeTop` 56, and `axisChromeBottom` 88. These are the values the native mobile app uses today, added on top of runtime device insets. They do not include the insets themselves. See [Safe area](docs/foundations/safe-area.md). The native Switch bundle budget rises from 2,460 to 2,560 bytes gzipped because `nativeMetrics` now includes `safeArea`.
+- `safeArea` offsets (`tokens.safeArea`, `nativeMetrics.safeArea`, `--hig-safe-area-*`): `chromeGutter` 8, `sheetContentGutter` 16, `toastOffset` 60 (44 + 16, matching the website's Sonner toaster), `fullscreenMin` 20 (QR scanner fullscreen modal chrome: `Math.max(insets.top|bottom, 20)` and `insets.left|right + 20`), `axisChromeTop` 56, and `axisChromeBottom` 88. These are the values the native mobile app uses today, added on top of runtime device insets. They do not include the insets themselves. See [Safe area](docs/foundations/safe-area.md). The native Switch bundle budget rises from 2,460 to 2,560 bytes gzipped because `nativeMetrics` now includes `safeArea`.
 
 ### Blocks
 
@@ -44,6 +44,7 @@ Fixes and gaps from the browser and native audits of the app conversions to the 
 ### GestureSheet
 
 - Native `raised` (default `true`): `raised={false}` keeps page fills inside the sheet for a host whose `backgroundStyle` or `backgroundComponent` paints the page `background`, so list rows, switch tracks and disabled buttons no longer step up one shade (#240).
+- **New: `AltimeterChart` and `OutcomeChart` (web `@bloxwap/hig/chart`).** `AltimeterChart` is the Bloxwap live chart on its own: a plus grid and price trail that flow left at 50px per second, a price ladder centered on the current price, and the current price at the trail's tip. Pass `price` or a `feed`; with neither it shows live Bitcoin through `bitcoinPrice`. `OutcomeChart` shows a question with two to ten outcomes live, one flowing trail each on a 0 to 100% ladder, ending in a stroked capsule with the label and chance; with no `outcomes` or `feed` it shows the UEFA Champions League winner market through `championsLeagueWinner`. Both default feeds read Hyperliquid's public API from the browser. New exports `AltimeterChartProps`, `AltimeterFeed`, `OutcomeChartProps`, `Outcome`, `OutcomeFeed` and `outcomeColors`; `PriceChart` and `chartTheme` are unchanged.
 
 ## 0.7.0
 
