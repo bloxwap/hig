@@ -162,7 +162,16 @@ describe('settings host slots (Unreleased)',()=>{
  });
  it('SettingSwitch: labelAccessoryLabel names the accessory in place of its content, as on native (Unreleased)',()=>{
   render(<SignalsBlock title='Signals' groups={[{id:'trend',title:'Trend',items:[{id:'feed',label:'Feed',checked:true,onCheckedChange:noop,labelAccessory:<span>★</span>,labelAccessoryLabel:'New'}]}]}/>);
-  expect(screen.getByRole('switch',{name:/^Feed ?, New$/})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
+  expect(screen.getByRole('switch',{name:'Feed, New'})).toBeTruthy();expect(q('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
+ });
+ it('SettingSwitch: with labelAccessoryLabel the name is one text node, so browsers read no space before the comma',()=>{
+  // A visually hidden span beside the label is laid out apart, and Chromium and WebKit read `Swing notifications , Genesis`; one hidden text node reads as written.
+  render(<NotificationsBlock title='Notifications' items={[{id:'swing',label:'Swing notifications',checked:true,onCheckedChange:noop,labelAccessory:<span>G</span>,labelAccessoryLabel:'Genesis'}]}/>);
+  const input=screen.getByRole('switch',{name:'Swing notifications, Genesis'});
+  const ids=input.getAttribute('aria-labelledby')!.split(' ');expect(ids).toHaveLength(1);
+  const spoken=document.getElementById(ids[0])!;expect(spoken.hidden).toBe(true);expect(spoken.childNodes).toHaveLength(1);expect(spoken.textContent).toBe('Swing notifications, Genesis');
+  // Nothing visually hidden is left inside the drawn label, and the drawn label is still the label text and the hidden accessory.
+  const row=input.closest('label')!;expect(row.querySelector('.hig-sr-only')).toBeNull();expect(row.querySelector('.hig-setting-switch-accessory')!.getAttribute('aria-hidden')).toBe('true');
  });
  it('keeps provider feedback on section and item actions unless feedback is false (Unreleased)',async()=>{
   const emit=vi.fn(),feedback={emit};
