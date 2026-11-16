@@ -33,11 +33,16 @@ export const MarketRow=forwardRef<HTMLDivElement,MarketRowProps>(function Market
  const hasTrailing=trailing!==undefined&&trailing!==null&&trailing!==false;
  // The default three or four columns keep their grid; any other set of cells flows into as many columns as it has.
  const flow=price===undefined||change===undefined||hasTrailing||!!selected||undefined;
- return <div ref={ref} {...rest} className={`hig-row hig-market-row${className?` ${className}`:''}`} style={style} data-mode={mode} data-has-volume={volume!==undefined||undefined} data-flow={flow} data-selected={selected||undefined} data-active={active||undefined} data-disabled={disabled||undefined} aria-current={mode==='presentation'?current:undefined} aria-disabled={mode==='presentation'&&disabled?true:undefined}>
-  <div className='hig-market-identity'>{content}</div>
+ // Presentation mode places each figure in its own grid column. An action row groups them so that, when the row is too narrow for
+ // everything, whole figures drop from the end (volume, then change, then price) instead of the name collapsing or cells overlapping.
+ const figures=price===undefined&&change===undefined&&volume===undefined?null:<>
   {price!==undefined&&<span className='hig-market-price'><Usd value={price} options={priceOptions}/></span>}
   {change!==undefined&&<span className='hig-market-change'><Percent value={change} options={changeOptions}/></span>}
   {volume!==undefined&&<span className='hig-market-volume'>{volume}</span>}
+ </>;
+ return <div ref={ref} {...rest} className={`hig-row hig-market-row${className?` ${className}`:''}`} style={style} data-mode={mode} data-has-volume={volume!==undefined||undefined} data-flow={flow} data-selected={selected||undefined} data-active={active||undefined} data-disabled={disabled||undefined} aria-current={mode==='presentation'?current:undefined} aria-disabled={mode==='presentation'&&disabled?true:undefined}>
+  <div className='hig-market-identity'>{content}</div>
+  {mode==='action'&&figures!==null?<span className='hig-market-figures'>{figures}</span>:figures}
   {hasTrailing&&<span className='hig-market-trailing'>{trailing}</span>}
   {selected&&check}
  </div>;

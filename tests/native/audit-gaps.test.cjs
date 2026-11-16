@@ -33,12 +33,21 @@ describe('MarketRow is one line (defect fix)',()=>{
   const row=flat(host(view,'market'));expect(row.flexWrap).toBe('nowrap');expect(row.paddingVertical).toBe(8);
   const lines=view.findAll(node=>node.type==='Text'&&node.props.numberOfLines===1).map(node=>node.props.children);
   expect(lines).toEqual(expect.arrayContaining(['Hyperliquid Strategies Holdings (HYPESTRAT)','Up to 10×']));
-  expect(flat(host(view,'market-trailing')).flexShrink).toBe(0);
+  // The name cell has a 96dp floor and never shrinks; the trailing content is the last to give up space (clipped).
+  expect(flat(view.findAllByType(Button)[0])).toMatchObject({flexGrow:1,flexShrink:0,flexBasis:96});
+  expect(flat(host(view,'market-trailing'))).toMatchObject({flexShrink:1,minWidth:0,overflow:'hidden'});
+  expect(host(view,'market-figures')).toBeUndefined();
   // The name button has no vertical padding, so a two-line name is a 44 row inside 8 + 8: 60 at most.
   expect(flat(view.findAllByType(Button)[0]).paddingVertical).toBe(0);
   // Without a detail line the name still truncates on one line.
   const plain=mount(h(blocks.MarketRow,{symbol:'SOL',name:'Solana',icon:h(View),selected:true,onSelect:jest.fn()}));
   expect(plain.findAll(node=>node.type==='Text'&&node.props.numberOfLines===1).map(node=>node.props.children)).toContain('Solana (SOL)');
+ });
+ it('groups the figures in one clipped wrapping line that gives up its space first, so whole figures drop when the row is narrow',()=>{
+  const view=mount(h(blocks.MarketRow,{symbol:'BTC',name:'Bitcoin',icon:h(View),price:64321.12,change:-1.23,trailing:h(View),selected:true,onSelect:jest.fn(),testID:'market'}));
+  expect(flat(host(view,'market-figures'))).toMatchObject({flexDirection:'row',flexWrap:'wrap',height:44,overflow:'hidden',flexShrink:1000,minWidth:0});
+  // A zero-width first item, then the price and the change.
+  const kids=host(view,'market-figures').children;expect(kids).toHaveLength(3);expect(flat(kids[0])).toMatchObject({width:0,height:44});
  });
 });
 

@@ -136,15 +136,25 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
    insets the name, which lines the row up with the content of the cards around it. */
 .hig-market-row[data-mode='action'] { padding-inline-end:20px; }
 .hig-market-row[data-mode='action'] .hig-button[data-intent='ghost'] { color:var(--hig-text); }
-/* Action mode is one line: the identity (favourite, icon, then the name over its detail) holds the leading edge and shrinks, the
-   figures, trailing content and check keep their width on the trailing edge, and the name truncates instead of wrapping. The name
-   button is a 44px target with no block padding, so a row is 56px (58px with a detail line) like the other capsule rows. */
+/* Action mode is one line: the identity (favourite, icon, then the name over its detail) holds the leading edge, the figures,
+   trailing content and check sit on the trailing edge, and the name truncates instead of wrapping. The name button is a 44px target
+   with no block padding, so a row is 56px (58px with a detail line) like the other capsule rows.
+   When the row is too narrow for everything, space is given up in this order: the name truncates down to a floor (the button keeps
+   5em, so the icon never leaves the identity and the start of the name stays readable); then whole figures drop from the end of
+   .hig-market-figures (volume, change, price): the group is one 44px line that wraps and clips, so a figure that does not fit moves to
+   the hidden second line instead of being cut (the empty ::before item lets even the first figure wrap away); then the trailing content
+   is clipped (the figures' shrink factor of 1000 makes them give up their space first; the trailing content's 6px padding keeps the
+   fraction of a pixel it gives up meanwhile, and a focus ring, inside its clip). The check always keeps its place. The identity's basis is 0 and the button has inline-size containment, so the floor is
+   the favourite + icon + 5em, not the full name. */
 .hig-market-row[data-mode='action'] { flex-wrap:nowrap;padding-block:6px; }
-.hig-market-row[data-mode='action'] .hig-market-identity { display:flex;align-items:center;flex:1 1 auto;min-width:0; }
-.hig-market-row[data-mode='action'] .hig-market-identity > .hig-button { flex:0 1 auto;min-width:0;justify-content:flex-start;padding-block:0;padding-inline-end:8px;text-align:start;overflow:hidden; }
+.hig-market-row[data-mode='action'] .hig-market-identity { display:flex;align-items:center;flex:1 1 0;min-width:min-content; }
+.hig-market-row[data-mode='action'] .hig-market-identity > .hig-button { flex:1 1 0;min-width:5em;contain:inline-size;justify-content:flex-start;padding-block:0;padding-inline-end:8px;text-align:start;overflow:hidden; }
 .hig-market-row[data-mode='action'] :is(.hig-market-favorite,.hig-market-icon) { flex:none;display:inline-flex;align-items:center; }
 .hig-market-row[data-mode='action'] .hig-market-icon + .hig-button { padding-inline-start:12px; }
-.hig-market-row[data-mode='action'] :is(.hig-market-price,.hig-market-change,.hig-market-volume,.hig-market-trailing) { flex:none;white-space:nowrap; }
+.hig-market-row[data-mode='action'] .hig-market-figures { display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:flex-end;flex:0 1000 auto;min-width:0;height:var(--hig-button);margin-inline-start:-12px;overflow:hidden; }
+.hig-market-row[data-mode='action'] .hig-market-figures::before { content:'';flex:none;width:0;height:var(--hig-button); }
+.hig-market-row[data-mode='action'] .hig-market-figures > * { display:inline-flex;align-items:center;flex:none;height:var(--hig-button);margin-inline-start:12px;white-space:nowrap; }
+.hig-market-row[data-mode='action'] .hig-market-trailing { flex:0 1 auto;justify-content:safe flex-end;min-width:0;padding:6px;margin:-6px;overflow:hidden;white-space:nowrap; }
 .hig-market-row[data-mode='action'] :is(.hig-market-text,.hig-market-label,.hig-market-detail) { max-width:100%;min-width:0; }
 .hig-market-row[data-mode='action'] :is(.hig-market-label,.hig-market-detail) { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .hig-market-row[data-mode='action'] .hig-market-label { display:block; }
@@ -156,7 +166,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 /* Host options: a row without price or change, or with trailing content or a check, flows into as many columns as it has cells. */
 .hig-market-row[data-mode='presentation'][data-flow] { grid-template-columns:minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:auto; }
 .hig-market-row[data-mode='presentation'] .hig-market-trailing { text-align:end; }
-.hig-market-row[data-flow] .hig-market-identity { flex:1 1 auto;min-width:0; }
+.hig-market-row[data-mode='presentation'][data-flow] .hig-market-identity { flex:1 1 auto;min-width:0; }
 .hig-market-text { display:flex;flex-direction:column;align-items:flex-start;min-width:0;text-align:start; }
 .hig-market-detail { font-size:.875rem;line-height:1.43;font-weight:400;color:var(--hig-muted); }
 .hig-market-trailing { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0; }
