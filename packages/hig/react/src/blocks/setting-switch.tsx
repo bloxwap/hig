@@ -14,13 +14,14 @@ export interface SettingSwitchProps {
 }
 /** One setting as a switch: the label over an optional description on the leading edge, the track on the trailing edge. The whole row is the `label.hig-choice` hit target, at least `--hig-control` tall, and toggles it; the label names the switch and the description describes it. */
 export function SettingSwitch({label,description,checked,onCheckedChange,disabled,locked,labelAccessory,labelAccessoryLabel}:SettingSwitchProps){
- const id=useId(),name=`${id}-label`,about=`${id}-description`,spoken=`${id}-name`;const input=useRef<HTMLInputElement>(null);
+ const id=useId(),name=`${id}-label`,about=`${id}-description`,spoken=`${id}-name`,extra=`${id}-accessory`;const input=useRef<HTMLInputElement>(null);
  const accessory=labelAccessory!=null&&labelAccessory!==false,worded=accessory&&!!labelAccessoryLabel;
  // The comma is read, not drawn, so the name pauses between the label and the accessory instead of running them together.
- // With host words the name is one hidden text node: a visually hidden span beside the label is laid out apart, and Chromium and WebKit read a space before its comma (`Swing notifications , Genesis`).
+ // The label and its comma are one hidden text node: a visually hidden comma beside the label is laid out apart, and Chromium and WebKit read a space before it (`Swing notifications , Genesis`).
+ // With host words that node is the whole name; otherwise the name is that node then the accessory's own content, which the name computation joins with one space (`Feed, New`).
  return <label className='hig-choice hig-setting-switch' data-disabled={disabled||undefined} data-locked={locked||undefined}>
-  <span className='hig-setting-switch-text'><span id={name}>{label}{accessory&&<>{!worded&&<span className='hig-sr-only'>, </span>}<span className='hig-setting-switch-accessory' aria-hidden={worded||undefined}>{labelAccessory}</span></>}</span>{worded&&<span id={spoken} hidden>{`${label}, ${labelAccessoryLabel}`}</span>}{description&&<span id={about} className='hig-setting-switch-description'>{description}</span>}</span>
-  <span className='hig-switch'><input ref={input} type='checkbox' role='switch' aria-labelledby={worded?spoken:name} aria-describedby={description?about:undefined} aria-disabled={locked||undefined} checked={locked?true:checked} disabled={disabled} onChange={event=>{if(!locked)onCheckedChange(event.target.checked);}}/></span>
+  <span className='hig-setting-switch-text'><span id={name}>{label}{accessory&&<span id={worded?undefined:extra} className='hig-setting-switch-accessory' aria-hidden={worded||undefined}>{labelAccessory}</span>}</span>{accessory&&<span id={spoken} hidden>{worded?`${label}, ${labelAccessoryLabel}`:`${label},`}</span>}{description&&<span id={about} className='hig-setting-switch-description'>{description}</span>}</span>
+  <span className='hig-switch'><input ref={input} type='checkbox' role='switch' aria-labelledby={!accessory?name:worded?spoken:`${spoken} ${extra}`} aria-describedby={description?about:undefined} aria-disabled={locked||undefined} checked={locked?true:checked} disabled={disabled} onChange={event=>{if(!locked)onCheckedChange(event.target.checked);}}/></span>
   <PressDecoration kind='switch' disabled={!!disabled||!!locked} input={input}/>
  </label>;
 }

@@ -114,7 +114,7 @@ describe('numbers in a row value use the row face',()=>{
  it('inherits the interface face, not the mono face',()=>{
   render(<ListRow label='Leverage' value={<Usd value={1000}/>} valueLabel='$1,000.00'/>);
   expect(document.querySelector('.hig-list-row-value .hig-number')).toBeTruthy();
-  expect(css).toContain('.hig-list-row-value .hig-number { font-family:inherit; }');
+  expect(css.split('\n').find(line=>line.endsWith(' { font-family:inherit; }'))?.split(' {')[0].split(',')).toContain('.hig-list-row-value .hig-number');
  });
 });
 

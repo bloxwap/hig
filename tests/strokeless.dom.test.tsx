@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {readFileSync} from 'node:fs';
+import postcss from 'postcss';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {act,cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -16,6 +17,8 @@ afterEach(()=>{dismissToast();cleanup();});
 const css='\n'+readFileSync('packages/hig/react/src/styles.css','utf8');
 /** Every declaration block written for exactly this selector, joined. */
 const rule=(selector:string)=>{const blocks=css.split(`\n${selector} {`).slice(1).map(rest=>rest.slice(0,rest.indexOf('}')));if(!blocks.length)throw new Error(`No rule for ${selector}`);return blocks.join(';');};
+/** Whether `prop: none` stops `selector` in a reduced-motion media rule and, prefixed with `[data-hig-motion='reduced']`, in a provider rule. */
+const stopped=(selector:string,prop:'transition'|'animation')=>{const found={media:false,provider:false};postcss.parse(css).walkDecls(prop,decl=>{if(decl.value!=='none')return;const parent=decl.parent as postcss.Rule;const media=parent.parent?.type==='atrule'&&/prefers-reduced-motion:\s*reduce/.test((parent.parent as postcss.AtRule).params);if(media&&parent.selectors.includes(selector))found.media=true;if(!media&&parent.selectors.includes(`[data-hig-motion='reduced'] ${selector}`))found.provider=true;});return found;};
 describe('fill and space instead of strokes',()=>{
  it('draws no resting stroke on surfaces, inputs, overlays or tables',()=>{
   for(const selector of ['.hig-surface,.hig-dialog,.hig-select-list','.hig-input','.hig-popover','.hig-table-scroll','.hig-toast-item']){const body=rule(selector);expect(body).toContain('border:1px solid transparent');expect(body).not.toMatch(/solid var\(--hig-border\)/);}
@@ -111,8 +114,7 @@ describe('reviewed component changes',()=>{
  it('pulses skeletons and live status dots, and stops both for reduced motion',()=>{
   expect(rule('.hig-skeleton')).toContain('animation:hig-pulse');
   expect(rule(".hig-status-indicator:is([data-state='online'],[data-state='stale'])::before")).toContain('animation:hig-status-pulse');
-  expect(css).toMatch(/prefers-reduced-motion:reduce\)\s*\{[^@]*\.hig-skeleton,\.hig-status-indicator::before \{ animation:none; \}/);
-  expect(rule("[data-hig-motion='reduced'] .hig-status-indicator::before")).toContain('animation:none');
+  for(const selector of ['.hig-skeleton',".hig-status-indicator:is([data-state='online'],[data-state='stale'])::before"])expect(stopped(selector,'animation'),selector).toEqual({media:true,provider:true});
  });
  it('raises a capsule through Sonner and dismisses it from its close button',async()=>{
   render(<HIGProvider><Toaster/></HIGProvider>);
@@ -170,8 +172,7 @@ describe('Filter',()=>{
   expect(rule('.hig-filter-mark path')).toContain('stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset');
   expect(rule('.hig-filter-chip:has(input:checked) .hig-filter-mark path')).toContain('stroke-dashoffset:0;opacity:1');
   expect(rule('.hig-filter-chip:has(input:checked) .hig-filter-mark')).toContain('background:currentColor');
-  expect(css).toMatch(/prefers-reduced-motion:reduce\)\s*\{[^@]*\.hig-filter-chip,\.hig-filter-mark,\.hig-filter-mark > img,\.hig-filter-mark path \{ transition:none; \}/);
-  expect(rule("[data-hig-motion='reduced'] :is(.hig-filter-chip,.hig-filter-mark,.hig-filter-mark > img,.hig-filter-mark path)")).toContain('transition:none');
+  for(const selector of ['.hig-filter-chip','.hig-filter-mark','.hig-filter-mark > img','.hig-filter-mark path'])expect(stopped(selector,'transition'),selector).toEqual({media:true,provider:true});
  });
  it('spaces side-by-side actions 8px apart through one token, at every density',()=>{
   expect(rule(':root')).toContain('--hig-action-gap:var(--hig-space-sm,8px)');
@@ -190,7 +191,9 @@ describe('Filter',()=>{
   expect(rule('.hig-select-list,.hig-popover')).toContain('animation:hig-present');
   // Durations come from the motion tokens, and every one has a stop in both preference paths (tests/motion-css.test.ts).
   expect(rule('.hig-switch input')).toContain('transition:background-color var(--hig-motion-duration-fast) ease');
-  expect(css).toMatch(/prefers-reduced-motion:reduce\)\s*\{[^@]*\.hig-button,\.hig-switch input,\.hig-switch input::before \{ transition:none; \}/);
-  expect(rule("[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'].hig-popover")).toContain('animation:none');
+  for(const selector of ['.hig-button','.hig-switch input','.hig-switch input::before'])expect(stopped(selector,'transition'),selector).toEqual({media:true,provider:true});
+  for(const selector of ['.hig-select-list','.hig-popover'])expect(stopped(selector,'animation'),selector).toEqual({media:true,provider:true});
+  // A popover portalled out of the provider carries data-hig-motion itself.
+  expect(css).toMatch(/\[data-hig-motion='reduced'\]\.hig-popover[,{ ][^}]*\{ animation:none; \}/);
  });
 });

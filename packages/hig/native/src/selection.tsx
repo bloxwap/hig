@@ -6,3 +6,4 @@ export {Select} from './select.js';
 export {Slider} from './slider.js';
 export {SegmentedControl,type SegmentedControlProps} from './radio-group.js';
 export {Filter,type FilterOption,type FilterProps} from './radio-group.js';
+export {PresetGroup,type PresetGroupProps,type PresetOption} from './preset-group.js';

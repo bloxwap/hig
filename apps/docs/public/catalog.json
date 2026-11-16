@@ -199,6 +199,17 @@
       ]
     },
     {
+      "name": "PresetGroup",
+      "route": "components/preset-group",
+      "entry": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "grid"
+      ]
+    },
+    {
       "name": "Select",
       "route": "components/select",
       "entry": "selection",

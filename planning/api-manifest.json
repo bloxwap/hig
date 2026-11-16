@@ -812,7 +812,7 @@
       },
       "useControllable": {
         "entry": "provider",
-        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent): [T, (next: T) => void];"
+        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent | null): [T, (next: T) => void];"
       },
       "Choice": {
         "entry": "selection",
@@ -865,6 +865,18 @@
       "Slider": {
         "entry": "selection",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (value: number) => void;\n}): React.JSX.Element;"
+      },
+      "PresetGroup": {
+        "entry": "selection",
+        "signature": "export declare function PresetGroup<T extends string | number = string>({ label, options, value, defaultValue, onValueChange, columns, selectedIntent, disabled, suppressFeedback, className, testID }: PresetGroupProps<T>): React.JSX.Element;"
+      },
+      "PresetGroupProps": {
+        "entry": "selection",
+        "signature": "export interface PresetGroupProps<T extends string | number = string> {\n    /** Accessible name of the group; not drawn, so a heading or row above it names it on screen. */\n    label?: string;\n    options: readonly PresetOption<T>[];\n    /** The selected choice; `null` selects none. Omit it, with `defaultValue`, to let the group keep its own selection. */\n    value?: T | null;\n    defaultValue?: T | null;\n    /** Called with the choice taken. A press on the selected chip, or on a dimmed one, does nothing. */\n    onValueChange?: (value: T) => void;\n    /** Chips per row. Defaults to every option in one row; with fewer columns the chips wrap onto equal-width rows. */\n    columns?: number;\n    /** Fill of the selected chip. Defaults to `primary`; TargetBlock passes `destructive` for a stop loss. */\n    selectedIntent?: 'primary' | 'destructive' | 'up' | 'down';\n    disabled?: boolean;\n    /** Keeps the provider's `selection` feedback off this group, for a host that plays its own cue. By default a new choice plays it like a SegmentedControl. */\n    suppressFeedback?: boolean;\n    className?: string;\n    /** The group's `data-testid`. */\n    testID?: string;\n}"
+      },
+      "PresetOption": {
+        "entry": "selection",
+        "signature": "export interface PresetOption<T extends string | number = string> {\n    value: T;\n    label: string;\n    disabled?: boolean;\n    testID?: string;\n}"
       },
       "BadgeTone": {
         "entry": "status",
@@ -1974,7 +1986,7 @@
       },
       "useControllable": {
         "entry": "provider",
-        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent): [T, (next: T) => void];"
+        "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent | null): [T, (next: T) => void];"
       },
       "RadioGroup": {
         "entry": "radio-group",
@@ -2071,6 +2083,18 @@
       "Slider": {
         "entry": "slider",
         "signature": "export declare function Slider({ label, value, defaultValue, min, max, step, disabled, onValueChange }: {\n    label: string;\n    value?: number;\n    defaultValue?: number;\n    min?: number;\n    max?: number;\n    step?: number;\n    disabled?: boolean;\n    onValueChange?: (v: number) => void;\n}): React.JSX.Element;"
+      },
+      "PresetGroup": {
+        "entry": "selection",
+        "signature": "export declare function PresetGroup<T extends string | number = string>({ label, options, value, defaultValue, onValueChange, columns, selectedIntent, disabled, suppressFeedback, style, testID }: PresetGroupProps<T>): React.JSX.Element;"
+      },
+      "PresetGroupProps": {
+        "entry": "selection",
+        "signature": "export interface PresetGroupProps<T extends string | number = string> {\n    /** Accessible name of the group; not drawn, so a heading or row above it names it on screen. */\n    label?: string;\n    options: readonly PresetOption<T>[];\n    /** The selected choice; `null` selects none. Omit it, with `defaultValue`, to let the group keep its own selection. */\n    value?: T | null;\n    defaultValue?: T | null;\n    /** Called with the choice taken. A press on the selected chip, or on a dimmed one, does nothing. */\n    onValueChange?: (value: T) => void;\n    /** Chips per row. Defaults to every option in one row; with fewer columns the chips wrap onto equal-width rows. */\n    columns?: number;\n    /** Fill of the selected chip. Defaults to `primary`; TargetBlock passes `destructive` for a stop loss. */\n    selectedIntent?: 'primary' | 'destructive' | 'up' | 'down';\n    disabled?: boolean;\n    /** Keeps the provider's `selection` feedback off this group, for a host that plays its own cue. By default a new choice plays it like a SegmentedControl. */\n    suppressFeedback?: boolean;\n    /** Layout of the group, such as a top margin. */\n    style?: StyleProp<ViewStyle>;\n    testID?: string;\n}"
+      },
+      "PresetOption": {
+        "entry": "selection",
+        "signature": "export interface PresetOption<T extends string | number = string> {\n    value: T;\n    label: string;\n    disabled?: boolean;\n    testID?: string;\n}"
       },
       "SoundChoices": {
         "entry": "sound-haptics-block",

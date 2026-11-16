@@ -209,6 +209,10 @@
       "title": "Filter"
     },
     {
+      "route": "components/preset-group",
+      "title": "PresetGroup"
+    },
+    {
       "route": "components/select",
       "title": "Select"
     },
@@ -669,6 +673,17 @@
       "states": [
         "default",
         "disabled"
+      ]
+    },
+    {
+      "name": "PresetGroup",
+      "route": "components/preset-group",
+      "family": "selection",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "grid"
       ]
     },
     {

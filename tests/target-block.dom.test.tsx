@@ -135,7 +135,7 @@ describe('TargetBlock price card surface',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');const rule=(selector:string)=>css.split('\n').find(line=>line.startsWith(selector+' {'))??'';
   const size=(line:string)=>line.match(/font-size:[^;]+;line-height:[^;]+;font-weight:[^;]+;letter-spacing:[^;]+/)?.[0];
   expect(size(rule('.hig-target-amount'))).toBe(size(rule('.hig-swap-amount')));expect(size(rule('.hig-target-amount'))).toBeTruthy();
-  expect(rule('.hig-target-amount .hig-number')).toContain('font-family:inherit');
+  expect(css.split('\n').find(line=>line.endsWith(' { font-family:inherit; }'))?.split(' {')[0].split(',')).toContain('.hig-target-amount .hig-number');
  });
 });
 describe('TargetBlock host slots',()=>{

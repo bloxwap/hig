@@ -317,6 +317,28 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "PresetGroup",
+      "slug": "preset-group",
+      "entry": "selection",
+      "family": "selection",
+      "web": "<C.PresetGroup label='Order size' options={[{value:10,label:'$10'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'}]} defaultValue={25} disabled={disabled} onValueChange={size=>setMessage(`$${size} selected`)}/>",
+      "native": "<C.PresetGroup label='Order size' options={[{value:10,label:'$10'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'}]} defaultValue={25} disabled={disabled} onValueChange={size=>setMessage(`$${size} selected`)}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "disabled",
+        "grid"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "grid": {
+          "web": "<C.PresetGroup label='Leverage' columns={4} options={[{value:1,label:'1x'},{value:2,label:'2x'},{value:3,label:'3x'},{value:5,label:'5x'},{value:10,label:'10x'},{value:20,label:'20x'},{value:40,label:'40x',disabled:true}]} defaultValue={5} onValueChange={leverage=>setMessage(`${leverage}x selected`)}/>",
+          "native": "<C.PresetGroup label='Leverage' columns={4} options={[{value:1,label:'1x'},{value:2,label:'2x'},{value:3,label:'3x'},{value:5,label:'5x'},{value:10,label:'10x'},{value:20,label:'20x'},{value:40,label:'40x',disabled:true}]} defaultValue={5} onValueChange={leverage=>setMessage(`${leverage}x selected`)}/>"
+        }
+      }
+    },
+    {
       "name": "Select",
       "slug": "select",
       "entry": "selection",

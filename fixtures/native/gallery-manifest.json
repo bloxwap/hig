@@ -159,6 +159,15 @@
       "support": "renderer"
     },
     {
+      "name": "PresetGroup",
+      "states": [
+        "default",
+        "disabled",
+        "grid"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Select",
       "states": [
         "default",

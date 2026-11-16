@@ -5,6 +5,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,usePresentNumber,useHIG,useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
 import {SegmentedControl} from '../selection.js';
+import {PresetGroup} from '../preset-group.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapIcon} from './swap/shared.js';
@@ -138,7 +139,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
   </section>
   {units.length>1&&<SegmentedControl label={labels.unit} options={targetUnits(units).map(option=>({value:option.unit,label:labels.units[option.unit],disabled:option.disabled}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
   {onCustom&&(custom===null?<button type='button' className='hig-swap-setting' aria-pressed={customValue!==undefined?false:undefined} onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>:<button type='button' className='hig-swap-setting' aria-pressed='true' onClick={onCustom}><span>{labels.custom}</span><span className='hig-swap-setting-value'>{formatNumber(custom,locale,present(targetFormat(unit,priceOptions)))}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>)}
-  {presets.length>0&&<div className='hig-target-presets'>{targetPresets(presets).map(({value:preset,disabled})=>{const selected=custom===null&&preset===value;return <Button key={preset} fullWidth intent={selected?intent:'secondary'} aria-pressed={selected} disabled={disabled} onClick={()=>onValueChange?.(preset)}>{formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}</Button>;})}</div>}
+  {presets.length>0&&<PresetGroup className='hig-target-presets' selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)}/>}
   <div className='hig-target-actions'>
    {onCancel&&<Button fullWidth intent='secondary' onClick={onCancel}>{labels.cancel??messages.cancel??en.cancel}</Button>}
    <Button fullWidth intent={intent} disabled={submitDisabled??value===null} busy={busy} onClick={onSubmit}>{labels.submit}</Button>
