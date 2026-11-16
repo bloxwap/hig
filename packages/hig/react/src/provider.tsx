@@ -19,18 +19,19 @@ export interface HIGContext extends Environment { onAccepted?: (id:string)=>void
 /** Host colours for the market-direction roles. An omitted, empty or non-string role keeps `buy`/`sell`. */
 export interface HIGMarketColors {up?:string;down?:string}
 export interface HIGProviderProps extends Partial<Omit<HIGContext,'messages'>> { /** Translations for HIG's built-in strings; omitted keys fall back to the enclosing provider, then English. */ messages?:Partial<HIGMessages> }
-const Context=createContext<HIGContext>({...defaultEnvironment,messages:{}});
+const Context=createContext<HIGContext&{drawPress?:DrawPressLayer}>({...defaultEnvironment,messages:{}});
 const marketColor=(value:unknown)=>typeof value==='string'&&value!==''?value:undefined;
 export function HIGProvider({children,density='comfortable',locale='en-US',direction='ltr',reducedMotion,onAccepted,feedback,primaryColor,messages,pressDecoration,numberFormat,marketColors}:React.PropsWithChildren<HIGProviderProps>){
  const parent=useContext(Context);const inherited=parent.messages;const resolved=useMemo(()=>resolveMessages(inherited,messages),[inherited,messages]);
  const market=marketColors??parent.marketColors;const up=marketColor(market?.up),down=marketColor(market?.down);
  const inheritedMarket=useMemo(()=>up===undefined&&down===undefined?undefined:{up,down},[up,down]);
  const accent=primaryColor??parent.primaryColor;const theme=useMemo(()=>marketStyle(primaryStyle(accent),up,down),[accent,up,down]);
+ const decorate=pressDecoration??parent.pressDecoration;const drawPress=useMemo(()=>decorate?pressLayer(decorate):undefined,[decorate]);
  const [osReduced,setOSReduced]=useState(false);
  useEffect(()=>{const query=window.matchMedia?.('(prefers-reduced-motion: reduce)');if(!query)return;const update=()=>setOSReduced(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update);},[]);
- return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,primaryColor:accent,messages:resolved,pressDecoration:pressDecoration??parent.pressDecoration,numberFormat:numberFormat??parent.numberFormat,marketColors:inheritedMarket}}><div style={theme} data-hig-density={density} data-hig-motion={reducedMotion??osReduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
+ return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,primaryColor:accent,messages:resolved,pressDecoration:decorate,numberFormat:numberFormat??parent.numberFormat,marketColors:inheritedMarket,drawPress}}><div style={theme} data-hig-density={density} data-hig-motion={reducedMotion??osReduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
 }
-export const useHIG=()=>useContext(Context);
+export const useHIG=():HIGContext=>useContext(Context);
 /** Number options with the nearest provider's `numberFormat` merged under them; only currency formats change. */
 export function usePresentNumber():<T extends Intl.NumberFormatOptions|undefined>(options:T)=>T {const {numberFormat}=useContext(Context);return useMemo(()=><T extends Intl.NumberFormatOptions|undefined>(options:T)=>presentNumberFormat(options,numberFormat),[numberFormat]);}
 /** The locale numbers are formatted in: the nearest provider's `numberFormat.locale`, else its `locale`. */
@@ -47,9 +48,13 @@ const interactive='a[href],button,input,select,textarea,label';
  * control comes through next. A disabled control gets nothing.
  */
 export function PressDecoration({kind,disabled=false,input}:{kind:PressDecorationKind;disabled?:boolean;input?:React.RefObject<HTMLInputElement|null>}){
- const {pressDecoration}=useContext(Context);if(!pressDecoration)return null;
- const content=pressDecoration({kind,disabled});if(content==null||content===false)return null;
- return <span className='hig-press-decoration' data-kind={kind} onClick={event=>forwardPress(event,input)}>{content}</span>;
+ const draw=useContext(Context).drawPress;return draw?draw(kind,disabled,input):null;
+}
+// The layer and its click forwarding reach controls through context from HIGProvider, so a lone Button import does not bundle them.
+type DrawPressLayer=(kind:PressDecorationKind,disabled:boolean,input?:React.RefObject<HTMLInputElement|null>)=>React.JSX.Element|null;
+function pressLayer(decorate:NonNullable<HIGContext['pressDecoration']>):DrawPressLayer{
+ return (kind,disabled,input)=>{const content=decorate({kind,disabled});if(content==null||content===false)return null;
+  return <span className='hig-press-decoration' data-kind={kind} onClick={event=>forwardPress(event,input)}>{content}</span>;};
 }
 function forwardPress(event:React.MouseEvent<HTMLSpanElement>,input?:React.RefObject<HTMLInputElement|null>){
  const layer=event.currentTarget;
