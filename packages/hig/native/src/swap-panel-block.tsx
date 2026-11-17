@@ -16,6 +16,7 @@ import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapPa
 export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 /** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet, and sizes itself, so the panel does not animate its own height. */
 export {SwapHostContext} from './swap-parts.js';
+export {SwapAmountCard,SwapPill,type SwapAmountCardProps,type SwapPillProps} from './swap-amount-card.js';
 /** A fixed place the assets go, in place of a token the user picks: a wallet, a staking pool, a trading account. Shown as a compact To card with no amount. */
 export interface SwapDestination {
  title:string;

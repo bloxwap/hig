@@ -103,6 +103,14 @@ Stake and unstake are one example each: the asset changes only the token data, n
   actions={<SwapPill onClick={useMax}>Max</SwapPill>} meta="1,000 USDC" />
 ```
 
+Native has the same two from `@bloxwap/hig/native/blocks` (and the native swap panel module): `SwapAmountCard` takes the same props (`name`, `symbol`, `icon` as a URL or element, `chainIcon`, `context`, `actions`, `meta`, `value`, `amountLabel`, `prefix`, `suffix`, `fractionDigits`, `trailingDot`, `maximumFractionDigits` default 8, `conversion`, `onSelect`, `selectLabel`, `style`) and draws the panel's From card: a string `context` or `meta` is drawn small and muted and a node as given, the `actions` stay their own targets on the trailing edge, and the amount is one element named by `amountLabel` whose value is the drawn text (`$1.50`, `12.` while a dot is typed). `testID` (default `swap-amount-card`) prefixes `-slot`, `-select`, `-name`, `-context`, `-actions`, `-meta`, `-amount` and `-conversion`. `SwapPill` is the capsule (32dp, a 44dp target): `children` as text drawn small and muted, or nodes as given; `onPress`; `disabled` dims it and reads as unavailable; other Pressable props such as `accessibilityLabel`, `testID` or `android_disableSound` reach it.
+
+```tsx
+<SwapAmountCard name="USD Coin" symbol="USDC" context="Hyperliquid" value={Number(entry)} prefix="$"
+  fractionDigits={typedDecimals} trailingDot={entry.endsWith('.')} amountLabel="Size"
+  actions={<SwapPill onPress={useMax}>Max</SwapPill>} meta="1,000 USDC"/>
+```
+
 `SwapSheet` presents the panel in a gesture sheet: `@bloxwap/hig/react/blocks/swap-sheet` on web (Vaul) and `@bloxwap/hig/native/swap-sheet` on native (the native `GestureSheet` backend). It takes every `SwapPanelBlock` prop plus `open`, `onOpenChange`, a required accessible `title` and, on web, an optional `trigger`. Views push inside that one sheet, which follows the height of the view on show. Escape and Back pop a pushed view first; from the cards, Escape, the scrim and a downward drag close the sheet, and a reopened sheet starts on the cards. The native `SwapSheet` needs the optional `@gorhom/bottom-sheet` peer and the host's sheet providers, exactly as `GestureSheet` does; on Android the hardware Back button pops a pushed view before it closes the sheet.
 
 ```tsx

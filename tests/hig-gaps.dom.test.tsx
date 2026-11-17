@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /** Gaps the app conversions found: small optional props on shared components (web). */
 import React from 'react';
-import {afterEach,describe,expect,it} from 'vitest';
+import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -32,5 +32,20 @@ describe('ListRow parity with native: aria-label and a rich description',()=>{
   render(<HIGProvider><ListRow label='BTC' aria-label='Long BTC, 10×, 0.5 BTC' onSelect={()=>{}} description={<><svg data-testid='arrow'/><span>10×</span><span> • 0.5</span></>}/></HIGProvider>);
   const row=screen.getByRole('button',{name:'Long BTC, 10×, 0.5 BTC'});
   const description=row.querySelector('.hig-list-row-description')!;expect(description.querySelectorAll('span')).toHaveLength(2);expect(description.querySelector('[data-testid="arrow"]')).toBeTruthy();
+ });
+});
+
+describe('AssetBalanceRow trailingInteractive (web parity)',()=>{
+ it('puts a trailing control beside the row button, never inside it',async()=>{
+  const {AssetBalanceRow}=await import('../packages/hig/react/src/asset-balance-row');
+  const select=vi.fn(),copy=vi.fn();
+  render(<HIGProvider><AssetBalanceRow name='USD Coin' symbol='USDC' value={12} selected onSelect={select} trailingInteractive trailing={<button type='button' onClick={copy}>Copy</button>} data-testid='usdc'/></HIGProvider>);
+  const row=screen.getByTestId('usdc');expect(row.tagName).toBe('DIV');expect(row.className).toBe('hig-asset-row');
+  const main=row.querySelector<HTMLButtonElement>(':scope > button.hig-asset-row-main')!;expect(main.getAttribute('aria-current')).toBe('true');expect(main.querySelector('button')).toBeNull();
+  const control=screen.getByRole('button',{name:'Copy'});expect(control.closest('.hig-asset-row-main')).toBeNull();expect(control.closest('[aria-hidden]')).toBeNull();
+  await userEvent.click(main);expect(select).toHaveBeenCalledOnce();await userEvent.click(control);expect(copy).toHaveBeenCalledOnce();expect(select).toHaveBeenCalledOnce();
+  cleanup();
+  render(<HIGProvider><AssetBalanceRow name='USD Coin' symbol='USDC' value={12} onSelect={select} trailing='Main' data-testid='plain'/></HIGProvider>);
+  expect(screen.getByTestId('plain').tagName).toBe('BUTTON');
  });
 });

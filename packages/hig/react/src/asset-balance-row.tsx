@@ -26,6 +26,8 @@ export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElem
  trailing?:React.ReactNode;
  /** What assistive technology reads for `trailing`, in place of its content, for an icon or a figure whose text is not what should be heard. */
  trailingLabel?:string;
+ /** `trailing` holds a control, such as a Copy or Remove button. With `onSelect`, the row becomes a `div.hig-asset-row` holding the row's button (`button.hig-asset-row-main`: the artwork, name and figures) and the control beside it, so the control is never inside the button; it is never hidden from assistive technology. A static row already keeps it reachable. */
+ trailingInteractive?:boolean;
  /** Marks the row in use: a check on the trailing edge, and `aria-current` for assistive technology. */
  selected?:boolean;
  /** Dims the row and ignores presses. */
@@ -36,19 +38,24 @@ export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElem
 const usd={style:'currency',currency:'USD'} as const,units={maximumFractionDigits:6} as const;
 const check=<svg className='hig-asset-row-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
 /** One holding in a list: round artwork, the asset's name over its symbol, and its dollar value over its units. Both numbers update place by place. */
-export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,trailingLabel,selected,disabled,onSelect,className,...rest}:AssetBalanceRowProps){
- const unitsFirst=headline==='units';
+export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,trailingLabel,trailingInteractive,selected,disabled,onSelect,className,...rest}:AssetBalanceRowProps){
+ const unitsFirst=headline==='units',hasTrailing=trailing!=null&&trailing!==false,split=!!trailingInteractive&&hasTrailing;
  const figures=amounts&&<><strong>{unitsFirst?<AnimatedNumberReadout value={balance} options={balanceOptions} suffix={unitsSuffix}/>:<AnimatedNumberReadout value={value} options={usd}/>}</strong>{!unitsFirst&&balance!==undefined&&<span><AnimatedNumberReadout value={balance} options={balanceOptions} suffix={unitsSuffix}/></span>}</>;
- const content=<>
+ const main=<>
   <span className='hig-asset-row-icon' aria-hidden='true'>{typeof icon==='string'?<img src={icon} alt=''/>:icon??symbol.slice(0,3)}</span>
   <span className='hig-asset-row-identity'><strong>{name}</strong><span>{symbol}</span></span>
   {(amounts||tag)&&<span className='hig-asset-row-amounts'>{figures}{tag&&<small className='hig-asset-row-tag'>{tag}</small>}</span>}
-  {trailing!=null&&trailing!==false&&<span className='hig-asset-row-trailing' aria-hidden={trailingLabel!==undefined||undefined}>{trailing}</span>}
-  {trailingLabel!==undefined&&trailing!=null&&trailing!==false&&<span className='hig-sr-only hig-asset-row-trailing-label'>{trailingLabel}</span>}
+ </>;
+ const end=<>
+  {hasTrailing&&<span className='hig-asset-row-trailing' aria-hidden={!trailingInteractive&&trailingLabel!==undefined||undefined}>{trailing}</span>}
+  {!trailingInteractive&&trailingLabel!==undefined&&hasTrailing&&<span className='hig-sr-only hig-asset-row-trailing-label'>{trailingLabel}</span>}
   {selected&&check}
  </>;
+ const content=<>{main}{end}</>;
  const classes=`hig-asset-row${className?` ${className}`:''}`;
  const state={'aria-current':selected?'true' as const:undefined,'data-selected':selected||undefined};
+ // A control in the trailing slot sits beside the row's button, never inside it.
+ if(onSelect&&split)return <div {...(rest as React.HTMLAttributes<HTMLDivElement>)} data-selected={state['data-selected']} aria-disabled={disabled||undefined} className={classes}><button type='button' {...(state['aria-current']?{'aria-current':state['aria-current']}:{})} className='hig-asset-row-main' disabled={disabled} onClick={onSelect}>{main}<PressDecoration kind='row' disabled={disabled}/></button>{end}</div>;
  return onSelect
   ?<button type='button' {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)} {...state} className={classes} disabled={disabled} onClick={onSelect}>{content}<PressDecoration kind='row' disabled={disabled}/></button>
   // A static row is a generic div, where aria-disabled is not read; disabled, it becomes a group, which carries the state.

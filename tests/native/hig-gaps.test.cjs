@@ -65,3 +65,50 @@ describe('ListRow accessibilityLabel and a rich description',()=>{
   const control=view.findAll(node=>node.props.accessibilityRole==='switch'&&typeof node.type==='string')[0];expect(control.props.accessibilityLabel).toBe('Price alerts');expect(control.props.accessibilityHint).toBe('Price moves');
  });
 });
+
+describe('SwapAmountCard and SwapPill (native, as web)',()=>{
+ const {SwapAmountCard,SwapPill}=require('../../packages/hig/native/src/swap-amount-card');
+ const blocks=require('../../packages/hig/native/src/blocks');
+ const panel=require('../../packages/hig/native/src/swap-panel-block');
+ const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+ it('is exported from the blocks aggregate and the swap panel module',()=>{expect(blocks.SwapAmountCard).toBe(SwapAmountCard);expect(blocks.SwapPill).toBe(SwapPill);expect(panel.SwapAmountCard).toBe(SwapAmountCard);expect(panel.SwapPill).toBe(SwapPill);});
+ it('draws the slot (context over name, actions and meta trailing) and the amount with prefix, typed fraction digits and a trailing dot',()=>{
+  const max=jest.fn(),select=jest.fn();
+  const view=mount(h(SwapAmountCard,{testID:'burn',name:'Bloxwap',symbol:'BLOX',context:'Hyperliquid',value:1.5,fractionDigits:2,trailingDot:false,prefix:'$',amountLabel:'Burn amount',onSelect:select,selectLabel:'Choose token',actions:h(SwapPill,{testID:'burn-max',onPress:max},'Max'),meta:'12.5 BLOX',conversion:h(SwapPill,{testID:'burn-usd'},'= $3.00')}));
+  expect(text(host(view,'burn-name'))).toBe('Bloxwap');expect(text(host(view,'burn-context'))).toBe('Hyperliquid');expect(text(host(view,'burn-meta'))).toBe('12.5 BLOX');
+  const amount=host(view,'burn-amount');expect(amount.props.accessibilityLabel).toBe('Burn amount');expect(amount.props.accessibilityValue).toEqual({text:'$1.50'});
+  const readout=view.findAllByType(AnimatedNumberReadout)[0];expect(readout.props).toMatchObject({value:1.5,prefix:'$',suffix:''});expect(readout.props.options).toMatchObject({minimumFractionDigits:2,maximumFractionDigits:8,useGrouping:false});
+  const slot=view.findAll(node=>node.props.testID==='burn-select'&&typeof node.props.onPress==='function')[0];expect(slot.props.accessibilityLabel).toBe('Choose token');act(()=>slot.props.onPress());expect(select).toHaveBeenCalledTimes(1);
+  const pill=view.findAll(node=>node.props.testID==='burn-max'&&node.props.accessibilityRole==='button'&&typeof node.type!=='string')[0];expect(pill.props.accessibilityRole).toBe('button');act(()=>pill.props.onPress());expect(max).toHaveBeenCalledTimes(1);
+  expect(all(host(view,'burn-conversion'),'burn-usd').length).toBeGreaterThan(0);
+  const dotted=mount(h(SwapAmountCard,{testID:'d',name:'USD Coin',symbol:'USDC',value:12,trailingDot:true,suffix:'%',amountLabel:'Amount'}));
+  expect(host(dotted,'d-amount').props.accessibilityValue).toEqual({text:'12.%'});expect(dotted.findAllByType(AnimatedNumberReadout)[0].props.suffix).toBe('.%');
+  expect(all(dotted,'d-select')).toHaveLength(0);expect(all(dotted,'d-actions')).toHaveLength(0);
+ });
+ it('SwapPill draws text muted, passes Pressable props and reads as unavailable when disabled',()=>{
+  const press=jest.fn();
+  const view=mount(h(SwapPill,{testID:'pill',onPress:press,disabled:true,accessibilityLabel:'Use maximum',android_disableSound:true},'Max'));
+  const pill=view.findAll(node=>node.props.testID==='pill'&&node.props.accessibilityRole==='button'&&typeof node.type!=='string')[0];
+  expect(pill.props).toMatchObject({accessibilityLabel:'Use maximum',accessibilityState:{disabled:true},disabled:true,android_disableSound:true});expect(flat(pill).opacity).toBe(0.5);expect(flat(pill).minHeight).toBe(32);
+  expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('Max')).map(node=>flat(node).color)).toContain(nativeSrgb.muted);
+ });
+});
+
+describe('AssetBalanceRow trailingInteractive',()=>{
+ const {AssetBalanceRow}=require('../../packages/hig/native/src/asset-balance-row');
+ const {Button}=require('../../packages/hig/native/src/button');
+ it('keeps a trailing control its own target beside the row button, out of the row reading',()=>{
+  const select=jest.fn(),copy=jest.fn();
+  const view=mount(h(AssetBalanceRow,{testID:'usdc',name:'USD Coin',symbol:'USDC',value:12,onSelect:select,trailing:h(Button,{testID:'usdc-copy',onPress:copy},'Copy'),trailingInteractive:true}));
+  const main=view.findAll(node=>node.props.testID==='usdc-main'&&typeof node.props.onPress==='function'&&typeof node.type!=='string')[0];
+  expect(main.props.accessibilityRole).toBe('button');expect(main.props.accessibilityLabel).toBe('USD Coin, USDC, $12.00');
+  act(()=>main.props.onPress());expect(select).toHaveBeenCalledTimes(1);
+  expect(all(main,'usdc-copy')).toHaveLength(0);
+  const trailing=host(view,'usdc-trailing');expect(trailing.props.accessibilityElementsHidden).toBeUndefined();
+  const copyButton=view.findAll(node=>node.props.testID==='usdc-copy'&&typeof node.props.onPress==='function'&&typeof node.type!=='string')[0];act(()=>copyButton.props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(copy).toHaveBeenCalledTimes(1);
+ });
+ it('without it, folds the trailing text into the row reading as before',()=>{
+  const view=mount(h(AssetBalanceRow,{testID:'u',name:'USD Coin',symbol:'USDC',value:12,onSelect:()=>{},trailing:'Main'}));
+  const row=view.findAll(node=>node.props.testID==='u'&&typeof node.props.onPress==='function'&&typeof node.type!=='string')[0];expect(row.props.accessibilityLabel).toBe('USD Coin, USDC, $12.00, Main');expect(all(view,'u-main')).toHaveLength(0);
+ });
+});
