@@ -917,6 +917,9 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-confirm-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:4px; }
 .hig-confirm-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
 .hig-confirm-details dd { margin:0;color:var(--hig-text);font-weight:500;text-align:end;overflow-wrap:anywhere; }
+/* oneLineDetails: the lines after the address keep the label whole and truncate the value. */
+.hig-confirm-details[data-one-line] > div + div > dt { flex:none; }
+.hig-confirm-details[data-one-line] > div + div > dd { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .hig-confirm-address { display:inline-flex;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);color:var(--hig-muted);text-align:start;white-space:pre; }
 .hig-confirm-address > [aria-hidden] { display:flex;flex-direction:column; }
 .hig-confirm-address [data-anchor] { font-weight:700;color:var(--hig-text); }

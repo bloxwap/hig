@@ -22,6 +22,8 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  network:string;
  /** More lines under Network, such as a fee. */
  details?:readonly ConfirmDetail[];
+ /** Draws the Network line and each of `details` on one line: the label keeps its width and the value truncates with an ellipsis instead of wrapping. The address keeps its two rows. Off by default. */
+ oneLineDetails?:boolean;
  /** Heading. Defaults to the built-in “Confirm Send”. */
  title?:string;
  /** Heading of the warning. Defaults to the built-in “Double-check the address.” */
@@ -58,14 +60,14 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,oneLineDetails,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
  const {messages}=useHIG();
  const heading=title??messages.confirmSend??en.confirmSend;
  const body=warning===undefined?(messages.sendWarning??en.sendWarning)(symbol,network):warning;
  return <section {...rest} className={`hig-confirm${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   <p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions}/> <span className='hig-confirm-symbol'>{symbol}</span></p>
-  <dl className='hig-confirm-details'>
+  <dl className='hig-confirm-details' data-one-line={oneLineDetails||undefined}>
    <div><dt>{messages.sendTo??en.sendTo}</dt><dd><span className='hig-confirm-address' dir='ltr' translate='no'><span className='hig-sr-only'>{address}</span><span aria-hidden='true'>{confirmAddressRows(address).map((row,index)=><span key={index}>{row.map((part,offset)=><span key={offset} data-anchor={part.anchor||undefined}>{part.text}</span>)}</span>)}</span></span></dd></div>
    <div><dt>{messages.sendNetwork??en.sendNetwork}</dt><dd>{network}</dd></div>
    {details?.map(detail=><div key={detail.label}><dt>{detail.label}</dt><dd>{detail.valueLabel?<><span className='hig-sr-only'>{detail.valueLabel}</span><span aria-hidden='true'>{detail.value}</span></>:detail.value}</dd></div>)}

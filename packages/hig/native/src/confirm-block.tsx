@@ -24,6 +24,8 @@ export interface ConfirmBlockProps {
  network:string;
  /** More lines under Network, such as a fee. */
  details?:readonly ConfirmDetail[];
+ /** Draws the Network line and each of `details` on one line: the label keeps its width and the value truncates with an ellipsis instead of wrapping (the whole line is still read in full). The address keeps its two rows. Off by default. */
+ oneLineDetails?:boolean;
  /** Heading. Defaults to the built-in "Confirm Send". */
  title?:string;
  /** Heading of the warning. Defaults to the built-in "Double-check the address." */
@@ -66,15 +68,16 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,oneLineDetails,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
  const colors=useColors(),t=useMessages(),{direction,monoFontFamily}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const note=warning===undefined?t.sendWarning(symbol,network):warning;
  // Read-only lines, each read as one: "To, 0x…".
- const line=(part:string,label:string,value:React.ReactNode,spoken?:string)=><View key={part} accessible accessibilityLabel={spoken!==undefined||typeof value==='string'||typeof value==='number'?`${label}, ${spoken??value}`:undefined} style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
-  <Text style={{fontSize:16,lineHeight:24,color:colors.muted}}>{label}</Text>
-  {typeof value==='string'||typeof value==='number'?<Text testID={id(part)} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',textAlign:'right',color:colors.text}}>{value}</Text>:<View testID={id(part)} style={{flexShrink:1}}>{value}</View>}
- </View>;
+ // With oneLineDetails every line but the address is one line: the label keeps its width, the value truncates.
+ const line=(part:string,label:string,value:React.ReactNode,spoken?:string)=>{const one=!!oneLineDetails&&part!==toPart,lines=one?1:undefined;return <View key={part} accessible accessibilityLabel={spoken!==undefined||typeof value==='string'||typeof value==='number'?`${label}, ${spoken??value}`:undefined} style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
+  <Text numberOfLines={lines} style={{...(one?{flexShrink:0}:null),fontSize:16,lineHeight:24,color:colors.muted}}>{label}</Text>
+  {typeof value==='string'||typeof value==='number'?<Text testID={id(part)} numberOfLines={lines} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',textAlign:'right',color:colors.text}}>{value}</Text>:<View testID={id(part)} style={one?{flexShrink:1,overflow:'hidden'}:{flexShrink:1}}>{value}</View>}
+ </View>;};
  const toPart='to',networkPart='network',mono=monoFontFamily??Platform.select({ios:'Menlo',default:'monospace'}),type={fontFamily:mono,fontSize:15,lineHeight:22},
   shown=<Text accessible={false} maxFontSizeMultiplier={1.2} style={{...type,writingDirection:'ltr',textAlign:'left'}}>{confirmAddressRows(address).map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((part,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:part.anchor?colors.text:colors.muted,fontWeight:part.anchor?'700':'500'}}>{part.text}</Text>)}</React.Fragment>)}</Text>,
   lines=[line(toPart,t.sendTo,shown,address),line(networkPart,t.sendNetwork,network),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];

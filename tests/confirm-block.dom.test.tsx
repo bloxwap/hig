@@ -72,4 +72,11 @@ describe('ConfirmBlock',()=>{
   expect(screen.getByRole('heading',{name:'Confirmer'})).toBeTruthy();expect(rows().map(row=>row.querySelector('dt')!.textContent)).toEqual(['À','Réseau']);
   expect(screen.getByRole('note').textContent).toBe('Vérifiez.HYPE sur HyperEVM');expect(screen.getByRole('button',{name:'Annuler'})).toBeTruthy();
  });
+ it('marks its details one line only with oneLineDetails',()=>{
+  const view=render(<ConfirmBlock {...base} details={[{label:'Network fee',value:'0.0001 HYPE'}]}/>);
+  expect(document.querySelector('.hig-confirm-details')!.hasAttribute('data-one-line')).toBe(false);
+  view.rerender(<ConfirmBlock {...base} details={[{label:'Network fee',value:'0.0001 HYPE'}]} oneLineDetails/>);
+  expect(document.querySelector('.hig-confirm-details')!.hasAttribute('data-one-line')).toBe(true);expect(rows()).toHaveLength(3);
+  expect(rows()[0].querySelector('dd .hig-sr-only')!.textContent).toBe(address);expect(rows()[2].querySelector('dd')!.textContent).toBe('0.0001 HYPE');
+ });
 });

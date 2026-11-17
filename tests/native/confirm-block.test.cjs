@@ -69,3 +69,14 @@ it('takes translated messages, pins its header with stickyHeader, and is exporte
  expect(text(host(view,'confirm-warning-body'))).toBe('HYPE sur HyperEVM');expect(button(view,'confirm-cancel').props.children).toBe('Annuler');
  view=mount({stickyHeader:true});expect(has(view,'confirm-sticky-header')).toBe(true);expect(text(host(view,'confirm-title'))).toBe('Confirm Send');
 });
+
+it('draws the lines after the address on one line with oneLineDetails, and wraps by default',()=>{
+ const details=[{label:'Network fee',value:'0.0001 HYPE'}];
+ let view=mount({details});
+ expect(host(view,'confirm-network').props.numberOfLines).toBeUndefined();expect(host(view,'confirm-detail-0').props.numberOfLines).toBeUndefined();
+ view=mount({details,oneLineDetails:true});
+ expect(host(view,'confirm-network').props.numberOfLines).toBe(1);expect(host(view,'confirm-detail-0').props.numberOfLines).toBe(1);
+ // The address keeps its two rows, and every line is still read in full.
+ expect(host(view,'confirm-to').props.numberOfLines).toBeUndefined();expect(text(host(view,'confirm-to'))).toBe('0x1111111111111111111\n111111111111111111111');
+ expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM','Network fee, 0.0001 HYPE']);
+});
