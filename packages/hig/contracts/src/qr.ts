@@ -300,14 +300,12 @@ export function encodeQR(value:string,options:QREncodeOptions={}):QRMatrix{
  if(options.version===undefined)while(version<=40&&!fits(version))version++;
  if(version>40||!fits(version))throw new QRCapacityError(`QR value of ${length} ${mode==='byte'?'bytes':'characters'} does not fit ${options.version===undefined?'a version 40 symbol':`version ${version}`} at ${level} error correction`);
  const size=17+4*version,{modules,reserved}=template(version),stream=codewords(value,bytes,mode,version,level);
- // Two-module columns from the right edge, alternately upward and downward, skipping the vertical timing column.
- const cells:number[]=[];
- for(let right=size-1,upward=true;right>=1;right-=2,upward=!upward){
+ // Two-module columns from the right edge, alternately upward and downward, skipping the vertical timing column. Each cell
+ // that is not reserved takes the next bit of the stream; the remainder bits past the last codeword stay light.
+ for(let right=size-1,step=-size,bit=0,bits=stream.length*8;right>=1;right-=2,step=-step){
   if(right===6)right=5;
-  for(let i=0;i<size;i++){const row=upward?size-1-i:i;for(let j=0;j<2;j++){const at=row*size+right-j;if(!reserved[at])cells.push(at);}}
+  for(let i=0,at=(step<0?size-1:0)*size+right;i<size;i++,at+=step)for(let cell=at;cell>at-2;cell--)if(!reserved[cell]){if(bit<bits)modules[cell]=stream[bit>>>3]!>>>(7-(bit&7))&1;bit++;}
  }
- // Remainder bits past the last codeword stay light.
- for(let i=0;i<cells.length&&i<stream.length*8;i++)modules[cells[i]!]=stream[i>>>3]!>>>(7-(i&7))&1;
  // The candidates are scored from the symbol as bits; only the mask that wins is applied to the modules.
  let mask=options.mask;
  if(mask===undefined){
