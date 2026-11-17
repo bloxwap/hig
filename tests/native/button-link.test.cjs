@@ -43,6 +43,14 @@ describe('Button glow',()=>{
   expect(shadow({intent:'secondary'})).toBeUndefined();expect(shadow({intent:'ghost'})).toBeUndefined();expect(shadow({disabled:true})).toBeUndefined();
   expect(shadow({glow:false})).toBeUndefined();
  });
+ it('market colours in any React Native format still glow, as they do on web',()=>{
+  const shadow=(up,props)=>{let tree;act(()=>{tree=create(React.createElement(HIGProvider,{marketColors:{up}},React.createElement(Button,{glow:true,intent:'up',...props},'Buy')));});try{return RN.StyleSheet.flatten(control(tree.root).props.style({pressed:false})).boxShadow;}finally{act(()=>tree.unmount());}};
+  expect(shadow('#0a0')).toBe('0 0 60px 8px rgba(0,170,0,0.45), 0 0 120px 20px rgba(0,170,0,0.2)');
+  expect(shadow('rgb(10, 20, 30)')).toBe('0 0 60px 8px rgba(10,20,30,0.45), 0 0 120px 20px rgba(10,20,30,0.2)');
+  expect(shadow('rgba(10, 20, 30, 0.5)')).toBe('0 0 60px 8px rgba(10,20,30,0.226), 0 0 120px 20px rgba(10,20,30,0.1)');
+  expect(shadow('green')).toBe('0 0 60px 8px rgba(0,128,0,0.45), 0 0 120px 20px rgba(0,128,0,0.2)');
+  expect(shadow('#00aa00')).toBe('0 0 60px 8px #00aa0073, 0 0 120px 20px #00aa0033');
+ });
 });
 describe('Badge tone and dot',()=>{
  it('neutral keeps the well chip; a tone colours the label over a 15% wash',()=>{
