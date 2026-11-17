@@ -1,6 +1,6 @@
 # @bloxwap/hig/chart
 
-Version 0.7.0, an entry of `@bloxwap/hig`. `AltimeterChart` is the Bloxwap live chart on its
+Version 0.8.0, an entry of `@bloxwap/hig`. `AltimeterChart` is the Bloxwap live chart on its
 own: a plus grid and price trail that flow left at 50px per second, a price ladder centered on the current price,
 and the current price at the trail's tip. Pass `price` or a `feed`; with neither it shows live Bitcoin through
 `bitcoinPrice`. `OutcomeChart` shows a question with two to ten
