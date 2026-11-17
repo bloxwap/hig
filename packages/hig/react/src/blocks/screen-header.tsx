@@ -21,6 +21,8 @@ export interface ScreenHeaderProps {
  headingId?:string;
  /** Short host text in a badge beside the title, read as part of the heading after a pause: Demo. */
  badge?:string;
+ /** A kicker over the title, centred in small muted capitals: Builder fee. Host text, read before the heading as its own line. The header grows to fit it. */
+ eyebrow?:string;
  /** Hides the title visually while it stays the accessible heading, for a host that draws its own visible title and must not have it read twice. The header keeps its height and its two sides. */
  hideTitle?:boolean;
  /** Host text that describes the pane, never drawn and read after the heading: a visually hidden paragraph that follows it, `id` `<headingId>-description` when `headingId` is set, so a dialog can point `aria-describedby` at it. */
@@ -28,17 +30,21 @@ export interface ScreenHeaderProps {
  /** Pins the header to the top of the nearest scrolling container. It is transparent at rest and takes its fill (`--hig-sticky-header-background`) only once content has scrolled under it. */
  stickyHeader?:boolean;
 }
+/** Attributes for a header Close `<button>`: those of `ScreenHeaderControlProps`, plus `disabled`, which draws Close unavailable (dimmed, `disabled`, not pressable), for example while the pane's action is being signed. */
+export type HeaderCloseProps=ScreenHeaderControlProps&{disabled?:boolean};
 /** The block header's Close control, shared by the blocks that draw one. */
-export function HeaderClose({onClose,label,closeProps}:{onClose:()=>void;label:string;closeProps?:ScreenHeaderControlProps}){
- return <button {...closeProps} type='button' className='hig-swap-back' aria-label={label} onClick={onClose}><SwapIcon name='close'/><PressDecoration kind='back'/></button>;
+export function HeaderClose({onClose,label,closeProps}:{onClose:()=>void;label:string;closeProps?:HeaderCloseProps}){
+ const off=!!closeProps?.disabled;
+ return <button {...closeProps} type='button' className='hig-swap-back' aria-label={label} disabled={off||undefined} onClick={onClose}><SwapIcon name='close'/><PressDecoration kind='back' disabled={off}/></button>;
 }
 /** Header of a card that is its own screen: Back on the leading edge, the title centred, and an optional control on the trailing edge. The title stays centred with either, both or neither. Every block draws it; import it from `@bloxwap/hig/react/blocks/screen-header` for a host pane that has no block. */
-export function ScreenHeader({title,onBack,backDisabled,backProps,action,headingId,badge,hideTitle,description,stickyHeader}:ScreenHeaderProps){
+export function ScreenHeader({title,onBack,backDisabled,backProps,action,headingId,badge,eyebrow,hideTitle,description,stickyHeader}:ScreenHeaderProps){
  const {messages}=useHIG();const header=useRef<HTMLDivElement>(null);
  useStickyHeader(header,!!stickyHeader);
+ const heading=<h2 id={headingId} className={`hig-screen-title${hideTitle?' hig-sr-only':''}`}>{badge?<>{title}<span className='hig-sr-only'>,</span> <span className='hig-badge hig-screen-badge'>{badge}</span></>:title}</h2>;
  return <div ref={header} className='hig-screen-header' data-sticky={stickyHeader||undefined}>
   <span className='hig-screen-header-side'>{onBack&&<button {...backProps} type='button' className='hig-swap-back' aria-label={messages.back??en.back} disabled={backDisabled||undefined} onClick={onBack}><SwapIcon name='back'/><PressDecoration kind='back' disabled={!!backDisabled}/></button>}</span>
-  <h2 id={headingId} className={`hig-screen-title${hideTitle?' hig-sr-only':''}`}>{badge?<>{title}<span className='hig-sr-only'>,</span> <span className='hig-badge hig-screen-badge'>{badge}</span></>:title}</h2>
+  {eyebrow?<div className='hig-screen-heading'><p className='hig-screen-eyebrow'>{eyebrow}</p>{heading}</div>:heading}
   {description?<p id={headingId?`${headingId}-description`:undefined} className='hig-sr-only'>{description}</p>:null}
   <span className='hig-screen-header-side'>{action}</span>
  </div>;

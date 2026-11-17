@@ -35,10 +35,18 @@ export interface ExplainerAction {
  busy?:boolean;
  /** The button's `data-testid`. */
  testID?:string;
+ /** A glyph after the label, such as an arrow for an action that opens something outside the app. Decorative: hidden from assistive technology, so the label alone names the button. */
+ icon?:React.ReactNode;
 }
 export interface ExplainerBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  /** Heading of the header. Leave it out inside a host dialog or sheet that draws its own title. */
  title?:string;
+ /** A kicker above the title in small muted capitals: Builder fee. With `title` it is centred in the header over the heading; without one it is the block's first line. Host text. */
+ eyebrow?:string;
+ /** Short host text in a badge beside the title, as `ScreenHeader` `badge` (needs `title`): Demo. */
+ badge?:string;
+ /** A large figure or host media centred under the header and before the lead, such as a 68px “4% off” or a donut. Drawn as given; the host sets its size and colour, and hides decorative media from assistive technology. */
+ hero?:React.ReactNode;
  /** A lead paragraph under the header, muted. */
  description?:React.ReactNode;
  /** The titled sections, in order. */
@@ -47,6 +55,8 @@ export interface ExplainerBlockProps extends Omit<React.HTMLAttributes<HTMLEleme
  steps?:readonly React.ReactNode[];
  /** A small note after the sections and steps, such as what the whole explanation does not promise. */
  caveat?:React.ReactNode;
+ /** Host content after the sections, steps and closing note and before the actions, such as a field, a link or a share card. Drawn as given. */
+ children?:React.ReactNode;
  /** The main action: Got it, Copy link. */
  primaryAction?:ExplainerAction;
  /** A second action on the leading side of the main one, the two sharing the row equally: Not now. */
@@ -71,11 +81,12 @@ const primaryIntent='primary',secondaryIntent='secondary';
  * tone, a heading, media, a body and a caveat), numbered steps, a closing note, then one or two actions. Draws the “How Swing works” and
  * “How Trend works” sheets and short task dialogs such as inviting a friend.
  */
-export function ExplainerBlock({title,description,sections=[],steps=[],caveat,primaryAction,secondaryAction,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,className,...rest}:ExplainerBlockProps){
+export function ExplainerBlock({title,eyebrow,badge,hero,description,sections=[],steps=[],caveat,children,primaryAction,secondaryAction,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,className,...rest}:ExplainerBlockProps){
  const id=useId();
- const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=><Button intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} data-testid={entry.testID} onClick={entry.onSelect}>{entry.label}</Button>;
+ const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=><Button intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} data-testid={entry.testID} onClick={entry.onSelect}>{entry.label}{entry.icon!=null&&entry.icon!==false?<span className='hig-explainer-action-icon' aria-hidden='true'>{entry.icon}</span>:null}</Button>;
  return <section {...rest} className={`hig-explainer${className?` ${className}`:''}`}>
-  {title!==undefined&&<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
+  {title!==undefined?<ScreenHeader title={title} eyebrow={eyebrow} badge={badge} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>:eyebrow?<p className='hig-explainer-eyebrow'>{eyebrow}</p>:null}
+  {hero!=null&&hero!==false&&<div className='hig-explainer-hero'>{hero}</div>}
   {description!=null&&description!==false&&<p className='hig-explainer-text'>{description}</p>}
   {sections.length>0&&<div className='hig-explainer-sections'>{sections.map(section=>{const heading=section.title!==undefined?`${id}-${section.id}`:undefined;return <div key={section.id} className='hig-explainer-section' data-tone={section.tone} data-testid={section.testID}>
    {section.icon!=null&&<span className='hig-explainer-icon' aria-hidden='true'>{section.icon}</span>}
@@ -88,6 +99,7 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
   </div>;})}</div>}
   {steps.length>0&&<ol className='hig-explainer-steps hig-explainer-text'>{steps.map((step,index)=><li key={index}>{step}</li>)}</ol>}
   {caveat!=null&&caveat!==false&&<p className='hig-explainer-text' data-caveat=''>{caveat}</p>}
+  {children}
   {(primaryAction||secondaryAction)&&<div className='hig-confirm-actions'>{secondaryAction&&action(secondaryAction,secondaryIntent)}{primaryAction&&action(primaryAction,primaryIntent)}</div>}
  </section>;
 }

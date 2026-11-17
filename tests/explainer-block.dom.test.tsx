@@ -51,5 +51,22 @@ describe('ExplainerBlock',()=>{
   expect(actions.map(button=>button.dataset.intent)).toEqual(['secondary','primary']);expect(actions[0].textContent).toBe('Not now');expect(actions[1].textContent).toContain('Copy link');expect(actions[1].getAttribute('aria-busy')).toBe('true');
   await userEvent.click(screen.getByTestId('invite-later'));expect(later).toHaveBeenCalledOnce();
  });
+ it('draws an eyebrow over the title, a badge, a hero under the header, host children before the actions, and a trailing action icon',async()=>{
+  const open=vi.fn();
+  render(<ExplainerBlock title='Keep the lights on.' eyebrow='Builder fee' badge='Demo' hero={<span data-testid='donut'>4% off</span>} description='A small fee on each trade.' sections={[{id:'fee',title:'Fee'}]} caveat='Fees can change.' primaryAction={{label:'Approve',onSelect:open,icon:<svg data-testid='arrow'/>,testID:'approve'}}><div data-testid='extra'>Field</div></ExplainerBlock>);
+  const heading=screen.getByRole('heading',{level:2});expect(heading.textContent).toBe('Keep the lights on., Demo');
+  const eyebrow=screen.getByText('Builder fee');expect(eyebrow.className).toBe('hig-screen-eyebrow');expect(eyebrow.nextElementSibling).toBe(heading);expect(eyebrow.parentElement!.className).toBe('hig-screen-heading');
+  const hero=screen.getByTestId('donut').parentElement!;expect(hero.className).toBe('hig-explainer-hero');expect(hero.previousElementSibling!.className).toBe('hig-screen-header');expect(hero.nextElementSibling!.textContent).toBe('A small fee on each trade.');
+  const extra=screen.getByTestId('extra');expect(extra.previousElementSibling!.hasAttribute('data-caveat')).toBe(true);expect(extra.nextElementSibling!.className).toBe('hig-confirm-actions');
+  const approve=screen.getByTestId('approve');expect(screen.getByRole('button',{name:'Approve'})).toBe(approve);
+  const icon=approve.querySelector('.hig-explainer-action-icon')!;expect(icon.getAttribute('aria-hidden')).toBe('true');expect(icon.querySelector('[data-testid="arrow"]')).toBeTruthy();expect(icon.previousSibling!.textContent).toBe('Approve');
+  await userEvent.click(approve);expect(open).toHaveBeenCalledOnce();
+ });
+ it('draws the eyebrow as the first line when there is no title, and leaves the header unchanged without one',()=>{
+  const {unmount}=render(<ExplainerBlock eyebrow='Builder fee' description='Lead.'/>);
+  const eyebrow=screen.getByText('Builder fee');expect(eyebrow.className).toBe('hig-explainer-eyebrow');expect(eyebrow.parentElement!.firstElementChild).toBe(eyebrow);expect(screen.queryByRole('heading')).toBeNull();
+  unmount();render(<ExplainerBlock title='Plain'/>);
+  expect(document.querySelector('.hig-screen-heading')).toBeNull();expect(screen.getByRole('heading',{level:2}).parentElement!.className).toBe('hig-screen-header');expect(document.querySelector('.hig-explainer-hero')).toBeNull();
+ });
  it('is exported from the blocks aggregate',()=>{expect(blocks.ExplainerBlock).toBe(ExplainerBlock);});
 });

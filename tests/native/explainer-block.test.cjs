@@ -69,3 +69,22 @@ it('draws a task dialog: Back with backProps, numbered steps, two actions with t
  expect(host(rich,'rich-step-0').props.accessible).toBe(true);expect(host(rich,'rich-step-1').props.accessible).toBe(false);expect(has(host(rich,'rich-step-1'),'rich-copy')).toBe(true);
  expect(blocks.ExplainerBlock).toBe(ExplainerBlock);
 });
+
+it('draws an eyebrow over the title, a badge, a hero, host children before the actions, a trailing action icon and forwards titleRef',()=>{
+ const ref=React.createRef(),approve=jest.fn();
+ const view=mount({testID:'builder',title:'Keep the lights on.',eyebrow:'Builder fee',badge:'Demo',titleRef:ref,hero:glyph('donut'),description:'A small fee.',caveat:'Fees can change.',children:glyph('extra'),primaryAction:{label:'Approve',onSelect:approve,icon:glyph('arrow')}});
+ const eyebrow=host(view,'builder-eyebrow');expect(text(eyebrow)).toBe('Builder fee');expect(flat(eyebrow)).toMatchObject({color:nativeSrgb.muted,textTransform:'uppercase',textAlign:'center'});
+ // The eyebrow sits over the heading in the header's middle; the badge joins the heading's name.
+ expect(has(host(view,'builder-header'),'builder-eyebrow')).toBe(true);
+ expect(view.findAll(node=>node.props.accessibilityLabel==='Keep the lights on., Demo'&&node.props.accessibilityRole==='header'&&typeof node.type==='string')).toHaveLength(1);
+ expect(ref.current).toBeTruthy();
+ expect(has(host(view,'builder-hero'),'donut')).toBe(true);
+ // Order: header, hero, lead, caveat, children, actions.
+ const order=['builder-header','builder-hero','builder-description','builder-caveat','extra','builder-actions'];
+ const ids=[];const walk=node=>{if(typeof node==='string')return;if(typeof node.type==='string'&&order.includes(node.props.testID)&&!ids.includes(node.props.testID))ids.push(node.props.testID);node.children.forEach(walk);};walk(view);expect(ids).toEqual(order);
+ const icon=host(view,'builder-primary-icon');expect(icon.props.accessibilityElementsHidden).toBe(true);expect(has(icon,'arrow')).toBe(true);
+ act(()=>button(view,'builder-primary').props.onPress());expect(approve).toHaveBeenCalledTimes(1);
+ // Without a title the eyebrow is the first line; without the new props nothing new is drawn.
+ const bare=mount({testID:'bare',eyebrow:'Builder fee',description:'Lead.'});expect(text(host(bare,'bare-eyebrow'))).toBe('Builder fee');expect(has(bare,'bare-header')).toBe(false);
+ const plain=mount({testID:'plain',title:'Plain'});expect(has(plain,'plain-eyebrow')).toBe(false);expect(has(plain,'plain-hero')).toBe(false);
+});

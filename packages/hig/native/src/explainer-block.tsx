@@ -41,10 +41,20 @@ export interface ExplainerAction {
  testID?:string;
  /** Pressable props for the button (native), such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state and press. */
  pressProps?:ScreenHeaderControlProps;
+ /** A glyph after the label, such as an arrow for an action that opens something outside the app (test ID `<button test ID>-icon`). Decorative: hidden from assistive technology, so the label alone names the button. */
+ icon?:React.ReactNode;
 }
 export interface ExplainerBlockProps {
  /** Heading of the header. Leave it out inside a host sheet that draws its own title. */
  title?:string;
+ /** A kicker above the title in small muted capitals: Builder fee. With `title` it is centred in the header over the heading (`<testID>-eyebrow`); without one it is the block's first line (`<testID>-eyebrow` too). Host text. */
+ eyebrow?:string;
+ /** Short host text in a badge beside the title, as `ScreenHeader` `badge` (needs `title`): Demo. */
+ badge?:string;
+ /** A ref to the header's title (the title and badge as one header with `badge`), for example to move accessibility focus to it when the sheet opens. Needs `title`. */
+ titleRef?:React.Ref<React.ComponentRef<typeof View>>;
+ /** A large figure or host media centred under the header and before the lead (`<testID>-hero`), such as a 68pt “4% off” or a donut. Drawn as given; the host sets its size and colour, and hides decorative media from assistive technology. */
+ hero?:React.ReactNode;
  /** A lead paragraph under the header, muted. A string is drawn as Text; anything else as given. */
  description?:React.ReactNode;
  /** The titled sections, in order. */
@@ -53,6 +63,8 @@ export interface ExplainerBlockProps {
  steps?:readonly React.ReactNode[];
  /** A small note after the sections and steps. */
  caveat?:React.ReactNode;
+ /** Host content after the sections, steps and closing note and before the actions, such as a field, a link or a share card. Drawn as given. */
+ children?:React.ReactNode;
  /** The main action: Got it, Copy link. */
  primaryAction?:ExplainerAction;
  /** A second action on the leading side of the main one, the two sharing the row equally: Not now. */
@@ -84,16 +96,18 @@ const primaryPart='primary',secondaryPart='secondary',descriptionPart='descripti
  * icon and tone, a heading, media, a body and a caveat), numbered steps, a closing note, then one or two actions. Draws the "How Swing
  * works" and "How Trend works" sheets and short task dialogs such as inviting a friend.
  */
-export function ExplainerBlock({title,description,sections=[],steps=[],caveat,primaryAction,secondaryAction,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID='explainer'}:ExplainerBlockProps){
+export function ExplainerBlock({title,eyebrow,badge,titleRef,hero,description,sections=[],steps=[],caveat,children,primaryAction,secondaryAction,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID='explainer'}:ExplainerBlockProps){
  const colors=useColors(),fills=useFills(),{direction}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const muted={fontSize:14,lineHeight:20,color:colors.muted} as const;
  // Host text is drawn as muted Text; host nodes are drawn as given.
  const prose=(content:React.ReactNode,part:string)=>typeof content==='string'||typeof content==='number'?<Text testID={id(part)} style={muted}>{content}</Text>:<View testID={id(part)}>{content}</View>;
  const shown=(content:React.ReactNode)=>content!=null&&content!==false;
- const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=><Button {...entry.pressProps} testID={entry.testID??id(fallback)} intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} onPress={entry.onSelect} style={{flex:1,alignSelf:'auto'}}>{entry.label}</Button>;
- const header=title!==undefined?<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
+ const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=>{const button=entry.testID??id(fallback);return <Button {...entry.pressProps} testID={button} intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} onPress={entry.onSelect} style={{flex:1,alignSelf:'auto'}}>{entry.label}{shown(entry.icon)?<View key='icon' {...hidden} testID={`${button}-icon`}>{entry.icon}</View>:null}</Button>;};
+ const header=title!==undefined?<ScreenHeader title={title} eyebrow={eyebrow} badge={badge} titleRef={titleRef} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
+  {header===null&&eyebrow?<Text testID={id('eyebrow')} style={{fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase',color:colors.muted}}>{eyebrow}</Text>:null}
+  {shown(hero)?<View testID={id('hero')} style={{alignItems:'center'}}>{hero}</View>:null}
   {shown(description)?prose(description,descriptionPart):null}
   {sections.length>0?<View testID={id('sections')} style={{gap:12}}>{sections.map(section=>{const part=`section-${section.id}`,bodyPart=`${part}-body`,sectionCaveatPart=`${part}-caveat`,tone=section.tone?colors[section.tone]:undefined;return <View key={section.id} testID={section.testID??id(part)} style={{direction,flexDirection:'row',alignItems:'center',gap:12,padding:12,borderRadius:16,backgroundColor:tone?withAlpha(tone,0.1):fills.well}}>
    {section.icon!=null?<View {...hidden} testID={id(`${part}-icon`)} style={{width:40,height:40,borderRadius:20,alignItems:'center',justifyContent:'center',backgroundColor:withAlpha(tone??colors.text,0.15)}}>{section.icon}</View>:null}
@@ -109,6 +123,7 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
    {typeof step==='string'||typeof step==='number'?<Text style={{...muted,flexShrink:1}}>{step}</Text>:<View style={{flexShrink:1}}>{step}</View>}
   </View>)}</View>:null}
   {shown(caveat)?prose(caveat,caveatPart):null}
+  {children}
   {primaryAction||secondaryAction?<View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
    {secondaryAction?action(secondaryAction,secondaryPart):null}
    {primaryAction?action(primaryAction,primaryPart):null}
