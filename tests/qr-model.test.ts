@@ -1,9 +1,11 @@
 // HIG's QR encoder and drawing geometry (@bloxwap/hig/contracts/qr), checked against the specification's published
-// constants, against the encoders installed in this workspace (Cuer's, and Kazuhiko Arase's where present), and by decoding.
+// constants, against the encoders installed in this workspace (Cuer's, and Kazuhiko Arase's where present), and by decoding:
+// from a bitmap of the modules, and from the SVG a renderer writes, rasterised by librsvg (sharp).
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import {describe,expect,it} from 'vitest';
 import {create as cuer} from 'cuer/QrCode';
+import sharp from 'sharp';
 import {QRCapacityError,QR_QUIET_ZONE,encodeQR,qrAlignmentCentres,qrArenaSize,qrCodeGeometry,qrErrorCorrection,qrErrorCorrectionCodewords,qrFormatBits,qrFrame,qrGeometry,qrMaskAt,qrMode,qrPenalty,qrRows,qrUtf8,qrVersionBits,type QRErrorCorrection,type QRMatrix} from '../packages/hig/contracts/src/qr';
 const require=createRequire(import.meta.url);
 // `qr` is Cuer's encoder, installed as its dependency: resolved from Cuer so the test does not lean on hoisting.
@@ -202,6 +204,27 @@ describe('QR codes read back',()=>{
   for(let index=0;index<40;index++){let value='';const length=1+Math.floor(next()*120);for(let k=0;k<length;k++)value+=String.fromCharCode(33+Math.floor(next()*90));expect(decodeQR(dots(qrCodeGeometry(value,{arena:true})!)),`generated ${index}: ${value}`).toBe(value);}
  },slow);
 });
+describe('QR codes read back from the SVG a renderer writes',()=>{
+ /** The drawing as both renderers write it: a tile over the quiet zone and the one path, in the frame's view box. Rasterised by librsvg. */
+ async function scan(geometry:NonNullable<ReturnType<typeof qrCodeGeometry>>,edge:number,ink='#000',tile='#fff'){
+  const frame=qrFrame(geometry,edge);
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${edge}" height="${edge}" viewBox="${frame.viewBox}"><rect x="${-frame.quietZone}" y="${-frame.quietZone}" width="${frame.span}" height="${frame.span}" rx="${frame.tileRadius}" fill="${tile}"/><path d="${geometry.path}" fill="${ink}"/></svg>`;
+  const {data,info}=await sharp(Buffer.from(svg)).flatten({background:'#808080'}).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+  expect(info.width).toBe(edge);
+  return decodeQR({width:info.width,height:info.height,data:new Uint8Array(data)});
+ }
+ it('reads the path at every size class of symbol: the non-zero fill leaves each finder ring open and each dot round',async()=>{
+  for(const version of [1,2,6,7,10,14,20,27,40]){const matrix=encodeQR(`hig version ${version}`,{version});expect(await scan(qrGeometry(matrix),Math.max(196,(matrix.size+8)*4)),`version ${version}`).toBe(`hig version ${version}`);}
+ },slow);
+ it('reads wallet payloads at the default size, dark on light and in HIG’s default light on dark, with the centre cleared for an arena',async()=>{
+  for(const value of [eth,sol,`ethereum:${eth}@8453`,`solana:${sol}?amount=1&label=Bloxwap`,'bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq?amount=0.001']){
+   expect(await scan(qrCodeGeometry(value)!,196),value).toBe(value);
+   expect(await scan(qrCodeGeometry(value)!,196,'#fafafa','#0a0a0a'),`${value} reversed`).toBe(value);
+   expect(await scan(qrCodeGeometry(value,{arena:true})!,196),`${value} with an arena`).toBe(value);
+   expect(await scan(qrCodeGeometry(value,{arena:true,errorCorrection:'low'})!,196,'#fafafa','#0a0a0a'),`${value} with an arena at the raised level, reversed`).toBe(value);
+  }
+ },slow);
+});
 describe('QR drawing geometry',()=>{
  const matrix=encodeQR(eth),geometry=qrGeometry(matrix);
  it('draws every dark data module as one round dot and leaves the finder modules to the finder patterns',()=>{
@@ -248,9 +271,13 @@ describe('QR drawing geometry',()=>{
   expect(qrFrame(geometry,290,-3).viewBox).toBe('0 0 29 29');expect(qrFrame(geometry,290,Number.NaN).span).toBe(29);
   const cleared=qrGeometry(matrix,{arena:true});
   // Half a module inside the cleared 7×7: a 6-module box from 11.5, centred on the symbol's centre at 14.5.
-  expect(qrFrame(cleared,290,0).arena).toEqual({x:11.5,size:6,radius:1,left:115,edge:60,corner:10});
-  const padded=qrFrame(cleared,370,4).arena!;expect(padded).toMatchObject({x:11.5,size:6,left:155,edge:60,corner:10});
+  expect(qrFrame(cleared,290,0).arena).toEqual({x:11.5,size:6,radius:1,left:115,edge:60,corner:10,inset:11.5/29,extent:6/29});
+  const padded=qrFrame(cleared,370,4).arena!;expect(padded).toMatchObject({x:11.5,size:6,left:155,edge:60,corner:10,inset:15.5/37,extent:6/37});
   // The box is centred in the square whatever the quiet zone, so mirroring the layout cannot move it.
-  expect(padded.left+padded.edge/2).toBe(185);
+  expect(padded.left+padded.edge/2).toBe(185);expect(padded.inset+padded.extent/2).toBeCloseTo(0.5,12);
+  // The fractions do not depend on the edge, so a renderer that lays out in percentages keeps the box over the cleared modules at any size, including none.
+  for(const edge of [0,1,64,4096]){const box=qrFrame(cleared,edge,4).arena!;expect([box.inset,box.extent]).toEqual([15.5/37,6/37]);expect(box.left).toBeCloseTo(box.inset*edge,9);expect(box.edge).toBeCloseTo(box.extent*edge,9);}
+  // Every version's box is centred, and never reaches a finder pattern or the timing patterns' crossing.
+  for(let version=1;version<=40;version++){const size=17+4*version,arena=qrArenaSize(size),origin=(size-arena)/2;expect(Number.isInteger(origin),`version ${version}`).toBe(true);expect(origin,`version ${version}`).toBeGreaterThanOrEqual(8);expect(arena%2).toBe(1);expect(arena/size).toBeLessThanOrEqual(0.3);}
  });
 });

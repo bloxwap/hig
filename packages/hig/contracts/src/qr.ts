@@ -355,13 +355,14 @@ export interface QRFrame {
  tileRadius:number;
  /**
   * The arena's box, half a module inside the cleared square with a one-module corner radius; `null` without an arena.
-  * `x`, `size` and `radius` are in modules from the symbol's corner (for the SVG); `left`, `edge` and `corner` are the same
-  * box in pixels from the square's corner (for an overlay).
+  * `x`, `size` and `radius` are in modules from the symbol's corner (for a drawing inside the SVG); `left`, `edge` and
+  * `corner` are the same box in pixels from the square's corner (for an overlay of fixed size); `inset` and `extent` are
+  * its offset and edge as fractions of the square's edge (for an overlay that scales with the square).
   */
- arena:{x:number;size:number;radius:number;left:number;edge:number;corner:number}|null;
+ arena:{x:number;size:number;radius:number;left:number;edge:number;corner:number;inset:number;extent:number}|null;
 }
 /** Lays a geometry out in a square: the view box, the module size and the arena's box. A `quietZone` below zero or not finite counts as zero. */
 export function qrFrame(geometry:Pick<QRGeometry,'size'|'arena'>,edge:number,quietZone:number=QR_QUIET_ZONE):QRFrame{
  const quiet=Number.isFinite(quietZone)&&quietZone>0?quietZone:0,span=geometry.size+2*quiet,unit=edge/span,arena=geometry.arena;
- return {quietZone:quiet,span,viewBox:`${-quiet} ${-quiet} ${span} ${span}`,unit,tileRadius:quiet/2,arena:arena?{x:arena.origin+0.5,size:arena.size-1,radius:1,left:(quiet+arena.origin+0.5)*unit,edge:(arena.size-1)*unit,corner:unit}:null};
+ return {quietZone:quiet,span,viewBox:`${-quiet} ${-quiet} ${span} ${span}`,unit,tileRadius:quiet/2,arena:arena?{x:arena.origin+0.5,size:arena.size-1,radius:1,left:(quiet+arena.origin+0.5)*unit,edge:(arena.size-1)*unit,corner:unit,inset:(quiet+arena.origin+0.5)/span,extent:(arena.size-1)/span}:null};
 }

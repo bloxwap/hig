@@ -119,3 +119,32 @@ it('is the code of WalletAddress from wallet-address-core: hidden itself, named 
  // 140dp code, 7 rows: 20dp each.
  expect(flat(host(tree,'wallet-address-column')).lineHeight).toBe(20);
 });
+it('draws edge values without throwing: an empty value, a zero size, and no arena over an empty square',()=>{
+ // An empty value is a valid, empty symbol: version 1.
+ let tree=mount(h(QRCode,{value:'',testID:'qr'}));
+ expect(tree.findByType(Svg).props.viewBox).toBe('-4 -4 29 29');expect(host(tree,'qr').props.accessibilityLabel).toBe('QR code');
+ tree=mount(h(QRCode,{value:ethereum,size:0,arena:'https://example.test/eth.png',testID:'qr'}));
+ expect(flat(host(tree,'qr'))).toMatchObject({width:0,height:0});expect(flat(host(tree,'qr-arena'))).toEqual({width:0,height:0,borderRadius:0});
+ // A value no code holds has no cleared centre, so nothing floats over the empty square.
+ tree=mount(h(QRCode,{value:'a'.repeat(3000),arena:'https://example.test/eth.png',testID:'qr'}));
+ expect(tree.findAllByType(Image)).toHaveLength(0);expect(host(tree,'qr-arena')).toBeUndefined();expect(host(tree,'qr').props.accessible).toBe(false);
+});
+it('hides the arena with the code when decorative, and keeps one accessible element when named',()=>{
+ let tree=mount(h(QRCode,{value:ethereum,arena:h(View,{testID:'mark',accessible:true,accessibilityLabel:'Ether'}),testID:'qr'}));
+ // The arena sits in a layer hidden from assistive technology: the code is one image.
+ const layer=tree.findAll(node=>node.type==='View'&&node.props.pointerEvents==='none')[0];
+ expect(layer.props.accessibilityElementsHidden).toBe(true);expect(layer.props.importantForAccessibility).toBe('no-hide-descendants');
+ expect(host(tree,'qr').props.accessibilityRole).toBe('image');
+ tree=mount(h(QRCode,{value:ethereum,arena:'https://example.test/eth.png',decorative:true,testID:'qr'}));
+ expect(host(tree,'qr').props.importantForAccessibility).toBe('no-hide-descendants');expect(host(tree,'qr').props.accessibilityRole).toBeUndefined();
+});
+it('draws the latest value after rapid changes, encodes once for a changing arena node, and unmounts cleanly',()=>{
+ act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(QRCode,{value:'1'})));});
+ for(const value of ['22','333',solana])act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(QRCode,{value})));});
+ expect(root.root.findByType(Path).props.d).toBe(geometry(solana).path);
+ qr.qrCodeGeometry.mockClear();
+ for(const key of ['a','b','c'])act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(QRCode,{value:solana,arena:h(View,{key})})));});
+ // A different node is still an arena: one encoding for the three renders.
+ expect(qr.qrCodeGeometry).toHaveBeenCalledTimes(1);expect(qr.qrCodeGeometry).toHaveBeenLastCalledWith(solana,{errorCorrection:undefined,arena:true});
+ expect(()=>act(()=>{root.unmount();root=undefined;})).not.toThrow();
+});
