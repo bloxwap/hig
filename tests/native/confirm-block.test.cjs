@@ -102,3 +102,20 @@ it('truncates a value that is not text with an ellipsis under oneLineDetails, an
  const value=host(view,'confirm-detail-0');expect(value.type).toBe('Text');expect(value.props.numberOfLines).toBe(1);expect(value.props.ellipsizeMode).toBe('tail');
  expect(text(value)).toBe('0.0001 HYPE ($0.01)');expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM','Network fee, 0.0001 HYPE']);
 });
+
+it('confirms something that is not a send: no amount, lines or warning, the body and points, a destructive Confirm and a tertiary action',()=>{
+ const anyway=jest.fn(),confirm=jest.fn();
+ if(root)act(()=>root.unmount());
+ act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Delete account?',confirmLabel:'Delete',confirmIntent:'destructive',onConfirm:confirm,onCancel:()=>{},points:['Keys are erased','Profile is removed'],tertiaryAction:{label:'Delete anyway',tone:'destructive',onSelect:anyway}},h('Text',{testID:'host-body'},'This cannot be undone.'))));});
+ const view=root.root;
+ expect(text(host(view,'confirm-title'))).toBe('Delete account?');
+ for(const part of ['confirm-amount','confirm-symbol','confirm-details','confirm-to','confirm-network','confirm-warning'])expect(has(view,part)).toBe(false);
+ expect(has(view,'host-body')).toBe(true);expect(text(host(view,'confirm-point-1'))).toContain('Profile is removed');
+ expect(button(view,'confirm-confirm').props.intent).toBe('destructive');
+ const tertiary=button(view,'confirm-tertiary');expect(tertiary.props.intent).toBe('ghost');expect(tertiary.props.accessibilityLabel).toBe('Delete anyway');
+ expect(flat(tertiary.findAll(node=>node.type==='Text'&&node.props.children==='Delete anyway')[0]).color).toBe(nativeSrgb.negative);
+ act(()=>tertiary.props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(anyway).toHaveBeenCalledTimes(1);
+ // Busy holds the tertiary action.
+ act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Delete account?',busy:true,onConfirm:confirm,tertiaryAction:{label:'Delete anyway',onSelect:anyway}}))));
+ expect(button(root.root,'confirm-tertiary').props.disabled).toBe(true);
+});

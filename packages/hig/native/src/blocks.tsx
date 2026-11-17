@@ -36,4 +36,4 @@ export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} 
 export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps,type PickerInputProps,type PickerRowProps,SwapHostContext} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel-block.js';
-export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail} from './confirm-block.js';
+export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './confirm-block.js';

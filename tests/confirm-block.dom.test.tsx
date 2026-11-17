@@ -92,4 +92,23 @@ describe('ConfirmBlock',()=>{
   const dd=rows()[2].querySelector('dd')!;
   expect(dd.querySelector('.hig-sr-only')!.textContent).toBe('0.0001 HYPE');expect(dd.querySelector('[aria-hidden] b')!.textContent).toBe('0.0001 HYPE ($0.01)');
  });
+ it('confirms something that is not a send: no amount, lines or warning, the body and points, a destructive Confirm and a tertiary action',async()=>{
+  const confirm=vi.fn(),cancel=vi.fn(),anyway=vi.fn();
+  const {rerender}=render(<HIGProvider><ConfirmBlock title='Delete account?' confirmLabel='Delete' confirmIntent='destructive' onConfirm={confirm} onCancel={cancel} points={['Keys are erased','Profile is removed']} tertiaryAction={{label:'Delete anyway',tone:'destructive',onSelect:anyway}}><p>This cannot be undone.</p></ConfirmBlock></HIGProvider>);
+  expect(screen.getByRole('heading',{name:'Delete account?'})).toBeTruthy();
+  expect(document.querySelector('.hig-confirm-amount')).toBeNull();expect(document.querySelector('.hig-confirm-details')).toBeNull();expect(screen.queryByRole('note')).toBeNull();
+  const body=document.querySelector('.hig-confirm-body')!;expect(body.querySelector('p')!.textContent).toBe('This cannot be undone.');
+  expect([...body.querySelectorAll('.hig-confirm-points > li')].map(li=>li.textContent)).toEqual(['Keys are erased','Profile is removed']);
+  const actions=[...document.querySelectorAll<HTMLButtonElement>('.hig-confirm-actions > button')];
+  expect(actions.map(button=>button.textContent)).toEqual(['Cancel','Delete']);expect(actions[1].dataset.intent).toBe('destructive');
+  const tertiary=screen.getByRole('button',{name:'Delete anyway'});expect(tertiary.dataset.intent).toBe('ghost');expect(tertiary.dataset.tone).toBe('destructive');expect(tertiary.closest('.hig-confirm-actions')).toBeNull();
+  await userEvent.click(tertiary);expect(anyway).toHaveBeenCalledTimes(1);
+  await userEvent.click(actions[1]);expect(confirm).toHaveBeenCalledTimes(1);
+  // Busy holds the tertiary action with Cancel.
+  rerender(<HIGProvider><ConfirmBlock title='Delete account?' busy onConfirm={confirm} onCancel={cancel} tertiaryAction={{label:'Delete anyway',onSelect:anyway}}/></HIGProvider>);
+  expect((screen.getByRole('button',{name:'Delete anyway'}) as HTMLButtonElement).disabled).toBe(true);expect((screen.getByRole('button',{name:'Cancel'}) as HTMLButtonElement).disabled).toBe(true);
+  // An amount without an address still draws the headline, but no default warning.
+  rerender(<HIGProvider><ConfirmBlock title='Close all' amount={12.5} onConfirm={confirm}/></HIGProvider>);
+  expect(document.querySelector('.hig-confirm-amount .hig-animated-number-visual')!.textContent).toBe('12.5');expect(document.querySelector('.hig-confirm-symbol')).toBeNull();expect(screen.queryByRole('note')).toBeNull();
+ });
 });

@@ -220,7 +220,16 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Actions.** `onConfirm` reports the press on the confirming action, which is the primary button; `confirmLabel` replaces the built-in “Confirm Send”. `onCancel` shows Cancel on its leading side (`cancelLabel`), the two sharing the row equally as in `TargetBlock`; without it the confirming action takes the full width. `confirmDisabled` draws the confirming action unavailable.
 - **Busy.** While `busy`, the confirming action shows a spinner and ignores presses, and Back and Cancel are unavailable, so a send that is being signed cannot be left half way.
 - **Header.** `title` replaces the built-in “Confirm Send”. `onBack` shows Back and `headerAction` is the trailing control, with the same `stickyHeader` and `headingId` as the other blocks.
-- **Native test IDs.** `testID` (default `confirm`) prefixes `-header`, `-back`, `-title`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`.
+- **Confirmations that are not sends.** Every send part is optional, so the block also draws the last look before signing out, deleting an account, closing positions or turning on an experiment. Leave out `amount` for no headline (an amount without `symbol` draws the figure alone), and `address` and `network` for no lines; without `address` there is no built-in warning (pass `warning` for one). `children` is what is being confirmed, drawn as given under the header and any send parts, in a column 12 apart: usually a muted `Text`, an `Alert` or a `ListGroup` of figures. `points` adds a bulleted list in the muted colour under it, such as what deleting an account loses. `confirmIntent='destructive'` fills the confirming action with the negative role, for an action that deletes or ends something. `tertiaryAction={{label, onSelect, tone, disabled}}` adds a full-width ghost button 8 under Cancel and Confirm, such as “Delete anyway”; `tone='destructive'` draws its label in the negative colour, and it is unavailable while `busy`.
+
+```tsx
+<ConfirmBlock title="Delete account?" confirmLabel="Delete" confirmIntent="destructive"
+  points={[keysErased, profileRemoved]} onCancel={close} onConfirm={remove}>
+  <Text tone="muted">This cannot be undone.</Text>
+</ConfirmBlock>
+```
+
+- **Native test IDs.** `testID` (default `confirm`) prefixes `-header`, `-back`, `-title`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-body`, `-point-<index>`, `-warning`, `-confirm`, `-cancel` and `-tertiary`.
 - **Ownership.** The block never validates an address, reads a wallet or sends. The host checks the address before showing the block, and signs and sends on `onConfirm`.
 
 ### LanguageBlock

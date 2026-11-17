@@ -11,19 +11,29 @@ import {StickyHeaderLayout} from './sticky-header.js';
 export interface ConfirmDetail {label:string;value:React.ReactNode;
  /** What a `value` that is not text reads as. */
  valueLabel?:string}
+/** A full-width action under Cancel and Confirm, such as "Delete anyway": a ghost button, in the negative colour with `tone='destructive'`. */
+export interface ConfirmTertiaryAction {label:string;onSelect:()=>void;tone?:'destructive';disabled?:boolean}
 export interface ConfirmBlockProps {
- /** The amount being sent, in token units. `null` reads as unknown. */
- amount:number|null;
+ /** The amount being sent, in token units. `null` reads as unknown. Leave it out, with `symbol`, `address` and `network`, for a confirmation that is not a send, such as signing out: the block then draws only the header, `children`, the notice and the actions. */
+ amount?:number|null;
  /** The token's ticker, after the amount: HYPE. */
- symbol:string;
+ symbol?:string;
  /** Format of the amount; default `{maximumFractionDigits:6}`. */
  amountOptions?:Intl.NumberFormatOptions;
  /** What the amount is read as before the figure, such as "Amount" ("Amount: 2.5", then the ticker). Without it the figure is read alone. */
  amountLabel?:string;
  /** The destination address, shown in full beside "To", always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */
- address:string;
+ address?:string;
  /** The network the send moves on: HyperEVM. */
- network:string;
+ network?:string;
+ /** What is being confirmed, drawn as given under the header (and under the amount and lines of a send): usually a muted `Text`, an `Alert` or a `ListGroup`. */
+ children?:React.ReactNode;
+ /** A bulleted list under `children`, in the muted colour, such as what deleting an account loses. */
+ points?:readonly React.ReactNode[];
+ /** The confirming action's intent: `primary` (the default) or `destructive`, for an action that deletes or ends something. */
+ confirmIntent?:'primary'|'destructive';
+ /** A full-width action under Cancel and Confirm, such as "Delete anyway". Unavailable while `busy`. */
+ tertiaryAction?:ConfirmTertiaryAction;
  /** More lines under Network, such as a fee. */
  details?:readonly ConfirmDetail[];
  /** Draws the Network line and each of `details` on one line: the label keeps its width and the value truncates with an ellipsis instead of wrapping (the whole line is still read in full). A value that is not text is set inside that one line of text, so pass inline text content, such as a Text. The address keeps its two rows. Off by default. */
@@ -32,7 +42,7 @@ export interface ConfirmBlockProps {
  title?:string;
  /** Heading of the warning. Defaults to the built-in "Double-check the address." */
  warningTitle?:string;
- /** Body of the warning. Defaults to the built-in sentence naming the token and network; `null` or `false` draws no warning. */
+ /** Body of the warning. Defaults to the built-in sentence naming the token and network when `address` is given, and to none otherwise; `null` or `false` draws no warning. */
  warning?:React.ReactNode;
  /** A notice between the warning and the actions, drawn as given, such as an error `Alert` when a fee cannot be read or the send failed. Nothing by default. */
  notice?:React.ReactNode;
@@ -60,7 +70,7 @@ export interface ConfirmBlockProps {
  scrollComponent?:React.ComponentType<ScrollViewProps>;
  /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */
  headingId?:string;
- /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`. Defaults to `confirm`. */
+ /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-body`, `-point-<index>`, `-warning`, `-confirm`, `-cancel` and `-tertiary`. Defaults to `confirm`. */
  testID?:string;
 }
 const amountFormat:Intl.NumberFormatOptions={maximumFractionDigits:6};
@@ -71,11 +81,11 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   row.forEach((character,index)=>{const position=rowIndex*split+index,anchor=position<head||position>=tail,last=parts[parts.length-1];if(last&&last.anchor===anchor)last.text+=character;else parts.push({text:character,anchor});});
   return parts;});
 }
-/** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
+/** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. Without an amount, address or network it confirms anything else, such as signing out or deleting an account: the header, `children`, then the actions. */
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
  const colors=useColors(),t=useMessages(),{direction,monoFontFamily}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
- const note=warning===undefined?t.sendWarning(symbol,network):warning;
+ const note=warning===undefined?(address!==undefined?t.sendWarning(symbol??'',network??''):null):warning;
  // Read-only lines, each read as one: "To, 0x…".
  // With oneLineDetails every line but the address is one line: the label keeps its width, the value truncates.
  // A value that is not text is set inside the one-line Text too, so its text content truncates with an ellipsis as on web.
@@ -84,17 +94,26 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
   {one||typeof value==='string'||typeof value==='number'?<Text testID={id(part)} numberOfLines={lines} ellipsizeMode={one?'tail':undefined} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',textAlign:'right',color:colors.text}}>{value}</Text>:<View testID={id(part)} style={{flexShrink:1}}>{value}</View>}
  </View>;};
  const toPart='to',networkPart='network',mono=monoFontFamily??Platform.select({ios:'Menlo',default:'monospace'}),type={fontFamily:mono,fontSize:15,lineHeight:22},
-  shown=<Text accessible={false} maxFontSizeMultiplier={1.2} style={{...type,writingDirection:'ltr',textAlign:'left'}}>{confirmAddressRows(address).map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((part,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:part.anchor?colors.text:colors.muted,fontWeight:part.anchor?'700':'500'}}>{part.text}</Text>)}</React.Fragment>)}</Text>,
-  lines=[line(toPart,t.sendTo,shown,address),line(networkPart,t.sendNetwork,network),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
+  shown=address===undefined?null:<Text accessible={false} maxFontSizeMultiplier={1.2} style={{...type,writingDirection:'ltr',textAlign:'left'}}>{confirmAddressRows(address).map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((part,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:part.anchor?colors.text:colors.muted,fontWeight:part.anchor?'700':'500'}}>{part.text}</Text>)}</React.Fragment>)}</Text>,
+  lines=[...(address!==undefined?[line(toPart,t.sendTo,shown,address)]:[]),...(network!==undefined?[line(networkPart,t.sendNetwork,network)]:[]),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
  const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} testID={testID}/>;
+ const hasBody=(children!=null&&children!==false)||!!points?.length;
+ const tertiaryInert=!!busy||!!tertiaryAction?.disabled;
  const body=<>
-  <View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>
+  {amount!==undefined?<View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>
    <AnimatedNumberReadout testID={id('amount')} value={amount} options={amountOptions} label={amountLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
-   <Text testID={id('symbol')} style={{fontSize:24,lineHeight:32,fontWeight:'600',color:colors.muted}}>{symbol}</Text>
-  </View>
-  <View testID={id('details')} style={{gap:12,paddingHorizontal:4}}>
+   {symbol?<Text testID={id('symbol')} style={{fontSize:24,lineHeight:32,fontWeight:'600',color:colors.muted}}>{symbol}</Text>:null}
+  </View>:null}
+  {lines.length?<View testID={id('details')} style={{gap:12,paddingHorizontal:4}}>
    {lines}
-  </View>
+  </View>:null}
+  {hasBody?<View testID={id('body')} style={{gap:12}}>
+   {children}
+   {points?.length?<View style={{gap:8}}>{points.map((point,index)=><View key={index} testID={id(`point-${index}`)} accessible style={{direction,flexDirection:'row',gap:8,paddingStart:4}}>
+    <Text aria-hidden accessibilityElementsHidden importantForAccessibility='no' style={{fontSize:16,lineHeight:24,color:colors.muted}}>{'•'}</Text>
+    <Text style={{flexShrink:1,fontSize:16,lineHeight:24,color:colors.muted}}>{point}</Text>
+   </View>)}</View>:null}
+  </View>:null}
   {note!=null&&note!==false?<View testID={id('warning')} accessible style={{gap:8,paddingVertical:20,paddingHorizontal:20,borderRadius:20,backgroundColor:withAlpha(colors.warning,0.16)}}>
    <Text testID={id('warning-title')} style={{fontSize:24,lineHeight:30,fontWeight:'700',color:colors.warning}}>{warningTitle??t.sendWarningTitle}</Text>
    <Text testID={id('warning-body')} style={{fontSize:16,lineHeight:24,color:colors.text}}>{note}</Text>
@@ -102,8 +121,11 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
   {notice}
   <View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
    {onCancel?<Button testID={id('cancel')} intent='secondary' disabled={busy} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
-   <Button testID={id('confirm')} busy={busy} disabled={confirmDisabled} onPress={onConfirm} style={{flex:1,alignSelf:'auto'}}>{confirmLabel??t.confirmSend}</Button>
+   <Button testID={id('confirm')} intent={confirmIntent} busy={busy} disabled={confirmDisabled} onPress={onConfirm} style={{flex:1,alignSelf:'auto'}}>{confirmLabel??t.confirmSend}</Button>
   </View>
+  {tertiaryAction?<Button testID={id('tertiary')} intent='ghost' fullWidth disabled={tertiaryInert} onPress={tertiaryAction.onSelect} accessibilityLabel={tertiaryAction.label} contentMode='custom' style={{marginTop:-8}}>
+   <Text style={{fontSize:16,fontWeight:'600',textAlign:'center',color:tertiaryInert?colors.faint:tertiaryAction.tone==='destructive'?colors.negative:colors.muted}}>{tertiaryAction.label}</Text>
+  </Button>:null}
  </>;
  // The sticky layout puts the header and the body in separate views, so the body's first gap is its top padding.
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID={id('sticky-header')} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>{body}</StickyHeaderLayout>;
