@@ -606,6 +606,22 @@
         "entry": "button",
         "signature": "export declare const Link: React.ForwardRefExoticComponent<React.AnchorHTMLAttributes<HTMLAnchorElement> & React.RefAttributes<HTMLAnchorElement>>;"
       },
+      "ConfettiFire": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiFire {\n    /** Fires one burst and resolves when it has finished, or at once when nothing is drawn: under reduced motion (unless `disableForReducedMotion` is false), with no pieces, or on a server. Colours and reduced motion come from the most recently mounted `Confetti`, else from the document. */\n    (options?: ConfettiOptions): Promise<void>;\n    /** Stops every burst now, also one still waiting for its host, removes the canvas and resolves their promises. */\n    reset(): void;\n}"
+      },
+      "confetti": {
+        "entry": "confetti",
+        "signature": "export declare const confetti: ConfettiFire;"
+      },
+      "ConfettiProps": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiProps {\n    /** Fires `options` whenever it is truthy: on mount, and each time it changes to another truthy value. A win count or an order id works. Leave it out to fire only through `confetti()`. */\n    trigger?: unknown;\n    /** The burst `trigger` fires, or several fired together. Read when `trigger` changes, so it need not be a stable object. */\n    options?: ConfettiOptions | readonly ConfettiOptions[];\n}"
+      },
+      "Confetti": {
+        "entry": "confetti",
+        "signature": "export declare function Confetti({ trigger, options }: ConfettiProps): React.JSX.Element;"
+      },
       "NumberProps": {
         "entry": "data",
         "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n    prefix?: string;\n    suffix?: string;\n}"
@@ -1883,6 +1899,22 @@
       "Checkbox": {
         "entry": "checkbox",
         "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): React.JSX.Element;"
+      },
+      "ConfettiFire": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiFire {\n    /** Fires one burst in the most recently mounted `Confetti` and resolves when it has finished, or at once when nothing is drawn: no `Confetti` is mounted, reduced motion is on (unless `disableForReducedMotion` is false) or the burst has no pieces. */\n    (options?: ConfettiOptions): Promise<void>;\n    /** Stops every burst now, also one still waiting for its layer, removes its views and resolves their promises. */\n    reset(): void;\n}"
+      },
+      "confetti": {
+        "entry": "confetti",
+        "signature": "export declare const confetti: ConfettiFire;"
+      },
+      "ConfettiProps": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiProps {\n    /** Fires `options` whenever it is truthy: on mount, and each time it changes to another truthy value. A win count or an order id works. Leave it out to fire only through `confetti()`. */\n    trigger?: unknown;\n    /** The burst `trigger` fires, or several fired together. Read when `trigger` changes, so it need not be a stable object. */\n    options?: ConfettiOptions | readonly ConfettiOptions[];\n    /** Merged over the layer, which fills its parent and takes no touches. */\n    style?: StyleProp<ViewStyle>;\n    /** Test ID of the layer. */\n    testID?: string;\n}"
+      },
+      "Confetti": {
+        "entry": "confetti",
+        "signature": "export declare function Confetti({ trigger, options, style, testID }: ConfettiProps): React.JSX.Element;"
       },
       "confirmAddressRows": {
         "entry": "confirm-block",

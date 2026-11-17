@@ -29,6 +29,6 @@ try{
  for(const engine of ['chromium','webkit'])await run(['scripts/browser-smoke.mjs','m5'],{...process.env,HIG_BROWSER:engine});
  await run(['scripts/expo-web-browser-smoke.mjs']);
  await run(['scripts/acceptance-browser-smoke.mjs']);
- for(const script of ['native-action-browser-smoke','native-switch-browser-smoke','segmented-control-browser-smoke','select-browser-smoke','css-isolation-browser-smoke','pro-data-browser-smoke','number-flow-browser-smoke','gesture-sheet-browser-smoke','feedback-browser-smoke','docs-browser-smoke','catalog-browser-smoke','next-browser-smoke'])await run([`scripts/${script}.mjs`,'m5']);
+ for(const script of ['native-action-browser-smoke','native-switch-browser-smoke','segmented-control-browser-smoke','select-browser-smoke','css-isolation-browser-smoke','pro-data-browser-smoke','number-flow-browser-smoke','gesture-sheet-browser-smoke','confetti-browser-smoke','feedback-browser-smoke','docs-browser-smoke','catalog-browser-smoke','next-browser-smoke'])await run([`scripts/${script}.mjs`,'m5']);
  }
 }finally{for(const child of servers)child.kill('SIGTERM');}

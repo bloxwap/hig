@@ -379,6 +379,13 @@
       "support": "renderer"
     },
     {
+      "name": "Confetti",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "NumberReadout",
       "states": [
         "default",
