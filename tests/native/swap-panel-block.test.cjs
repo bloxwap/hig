@@ -481,3 +481,14 @@ it('keeps the action named while submitting with the amount cleared: the burn bu
  tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submittingLabel:'Burning…'});
  expect(actionText(tree)).toBe('Enter an amount');
 });
+
+it('keeps a held action status while submitting, and leaves the amount alone until the submit settles',()=>{
+ let tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submitting:true,actionDisabled:true,actionStatus:'Signing…'});
+ expect(actionText(tree)).toBe('Signing…');
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submitting:true,submittingLabel:'Burning…',actionDisabled:true,actionStatus:'Signing…'});
+ expect(actionText(tree)).toBe('Burning…');
+ const onAmountChange=jest.fn();
+ tree=mount({defaultFrom:eth,defaultTo:usdc,onAmountChange,submitting:true});
+ type(tree,'12');press(tree,'swap-max');
+ expect(amount(tree)).toBe('$0');expect(onAmountChange).not.toHaveBeenCalled();
+});

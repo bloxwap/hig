@@ -3,7 +3,8 @@ import {View,type ScrollViewProps} from 'react-native';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
-import {Button} from './button.js';
+import * as en from '@bloxwap/hig/contracts/messages';
+import {Button,busyAccessibilityLabel} from './button.js';
 import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 /** The colour of a section: its tint, its icon disc and its heading. */
@@ -97,13 +98,13 @@ const primaryPart='primary',secondaryPart='secondary',descriptionPart='descripti
  * works" and "How Trend works" sheets and short task dialogs such as inviting a friend.
  */
 export function ExplainerBlock({title,eyebrow,badge,titleRef,hero,description,sections=[],steps=[],caveat,children,primaryAction,secondaryAction,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID='explainer'}:ExplainerBlockProps){
- const colors=useColors(),fills=useFills(),{direction}=useHIG();
+ const colors=useColors(),fills=useFills(),{direction,messages}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const muted={fontSize:14,lineHeight:20,color:colors.muted} as const;
  // Host text is drawn as muted Text; host nodes are drawn as given.
  const prose=(content:React.ReactNode,part:string)=>typeof content==='string'||typeof content==='number'?<Text testID={id(part)} style={muted}>{content}</Text>:<View testID={id(part)}>{content}</View>;
  const shown=(content:React.ReactNode)=>content!=null&&content!==false;
- const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=>{const button=entry.testID??id(fallback);return <Button {...entry.pressProps} testID={button} intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} onPress={entry.onSelect} style={{flex:1,alignSelf:'auto'}}>{entry.label}{shown(entry.icon)?<View key='icon' {...hidden} testID={`${button}-icon`}>{entry.icon}</View>:null}</Button>;};
+ const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=>{const button=entry.testID??id(fallback);/* With an icon, the label alone names the button (and its busy reading), so a Text glyph is never read into it. */const named=shown(entry.icon)?{accessibilityLabel:entry.busy?busyAccessibilityLabel(entry.label,messages.busy??en.busy):entry.label}:{};return <Button {...entry.pressProps} {...named} testID={button} intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} onPress={entry.onSelect} style={{flex:1,alignSelf:'auto'}}>{entry.label}{shown(entry.icon)?<View key='icon' {...hidden} testID={`${button}-icon`}>{entry.icon}</View>:null}</Button>;};
  const header=title!==undefined?<ScreenHeader title={title} eyebrow={eyebrow} badge={badge} titleRef={titleRef} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
   {header===null&&eyebrow?<Text testID={id('eyebrow')} style={{fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase',color:colors.muted}}>{eyebrow}</Text>:null}

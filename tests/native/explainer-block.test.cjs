@@ -88,3 +88,16 @@ it('draws an eyebrow over the title, a badge, a hero, host children before the a
  const bare=mount({testID:'bare',eyebrow:'Builder fee',description:'Lead.'});expect(text(host(bare,'bare-eyebrow'))).toBe('Builder fee');expect(has(bare,'bare-header')).toBe(false);
  const plain=mount({testID:'plain',title:'Plain'});expect(has(plain,'plain-eyebrow')).toBe(false);expect(has(plain,'plain-hero')).toBe(false);
 });
+
+it('names an action with a Text glyph icon by its label alone, busy or not',()=>{
+ const {Text}=require('react-native');
+ const glyph=h(Text,null,'↗');
+ const named=view=>view.findAll(node=>node.props.testID==='open'&&node.props.accessibilityRole==='button'&&typeof node.type==='string')[0].props.accessibilityLabel;
+ let view=mount({title:'Open',primaryAction:{label:'Open',icon:glyph,testID:'open',onSelect(){}}});
+ expect(named(view)).toBe('Open');
+ view=mount({title:'Open',primaryAction:{label:'Open',icon:glyph,busy:true,testID:'open',onSelect(){}}});
+ expect(named(view)).toMatch(/^Open( · Working)?$/);expect(named(view)).not.toContain('↗');
+ // Without an icon the Button names itself, as before.
+ view=mount({title:'Open',primaryAction:{label:'Open',busy:true,testID:'open',onSelect(){}}});
+ expect(named(view)).toMatch(/^Open( · Working)?$/);
+});

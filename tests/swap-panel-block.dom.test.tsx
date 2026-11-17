@@ -395,6 +395,20 @@ describe('SwapPanelBlock host control',()=>{
   view.unmount();render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submittingLabel='Burning…'/>);
   expect(action().textContent).toBe('Enter an amount');
  });
+ it('keeps a held action status while submitting, and leaves the amount alone until the submit settles',()=>{
+  const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
+  let view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submitting actionDisabled actionStatus='Signing…'/>);
+  expect(action().textContent).toBe('Signing… · Working');
+  view.unmount();view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submitting submittingLabel='Burning…' actionDisabled actionStatus='Signing…'/>);
+  expect(action().textContent).toBe('Burning… · Working');
+  const onAmountChange=vi.fn();
+  view.unmount();view=render(<Host initialFrom={eth} initialTo={usdc} keypad='always' onAmountChange={onAmountChange} submitting/>);
+  const pad=within(screen.getByRole('group',{name:'Keypad'}));
+  fireEvent.click(pad.getByRole('button',{name:'7'}));type('5');fireEvent.paste(amount(),{clipboardData:{getData:()=>'12'}});fireEvent.click(screen.getByRole('button',{name:'Max'}));
+  expect(reading(amount())).toBe('$0');expect(onAmountChange).not.toHaveBeenCalled();
+  view.rerender(<Host initialFrom={eth} initialTo={usdc} keypad='always' onAmountChange={onAmountChange}/>);
+  fireEvent.click(pad.getByRole('button',{name:'7'}));expect(reading(amount())).toBe('$7');
+ });
  it('caps typed decimals per token and refuses keys past the balance when asked',()=>{
   expect(applyAmountKey('1.123456','7','token',6)).toBe('1.123456');expect(applyAmountKey('1.123456','7','token')).toBe('1.1234567');expect(applyAmountKey('1.12','3','usd',6)).toBe('1.12');
   const account:SwapToken={...usdc,balance:100,caption:'$100 available'};

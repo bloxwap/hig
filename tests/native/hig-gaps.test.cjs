@@ -50,6 +50,13 @@ describe('ListRow accessibilityLabel and a rich description',()=>{
   expect(view.findAll(node=>node.props.accessibilityLabel==='Wallet, 0x12…34'&&typeof node.type!=='string').length).toBeGreaterThan(0);
   view=mount(h(ListRow,{testID:'b',label:'Wallet',description:h(Text,null,'Pending'),onSelect:()=>{}}));expect(host(view,'b-description').type).toBe('Text');
  });
+ it('keeps a fragment or an array holding bare text in the muted line, so no string lands in a View',()=>{
+  let view=mount(h(ListRow,{testID:'f',label:'Round',description:h(React.Fragment,null,'Ends in ',h(Text,null,'3m'))}));
+  let line=host(view,'f-description');expect(line.type).toBe('Text');expect(flat(line).color).toBe(nativeSrgb.muted);
+  view=mount(h(ListRow,{testID:'n',label:'Round',description:h(React.Fragment,null,h(React.Fragment,null,['Ends in ',h(Text,{key:'t'},'3m')]))}));expect(host(view,'n-description').type).toBe('Text');
+  view=mount(h(ListRow,{testID:'r',label:'Round',description:['Ends in ',h(Text,{key:'t'},'3m')]}));expect(host(view,'r-description').type).toBe('Text');
+  view=mount(h(ListRow,{testID:'s',label:'Withdrawal',description:h(React.Fragment,null,h(Text,null,'0x12…34'),h(Text,null,'Tx 0xab…cd'))}));expect(host(view,'s-description').type).toBe('View');
+ });
  it('makes a static row one element named by accessibilityLabel, and keeps a trailing control its own target',()=>{
   let view=mount(h(ListRow,{testID:'s',label:'Withdrawal',description:rich,value:'$40',accessibilityLabel:'Withdrawal, $40, pending'}));
   const row=host(view,'s');expect(row.props.accessible).toBe(true);expect(row.props.accessibilityLabel).toBe('Withdrawal, $40, pending');

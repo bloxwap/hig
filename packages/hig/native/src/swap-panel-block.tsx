@@ -66,7 +66,7 @@ export interface SwapPanelBlockProps {
  receive?:SwapReceive;receiving?:boolean;onReceivingChange?:(receiving:boolean)=>void;
  /** The host validates, quotes and executes. HIG never submits a transaction. */
  onSubmit:(action:SwapAction)=>void;
- /** The host's submit is in flight: the action shows a spinner and ignores presses, and keeps its ready name (or `submittingLabel`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */
+ /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */
  submitting?:boolean;
  /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */
  submittingLabel?:string;
@@ -95,7 +95,7 @@ export interface SwapPanelBlockProps {
  actionLabel?:string;
  /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */
  actionDisabled?:boolean;
- /** What the held action says, for example “Below minimum”. Without it the action keeps its ready name. */
+ /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */
  actionStatus?:string;
  /** `destructive` for an action that cannot be undone, such as a burn. */
  actionIntent?:'primary'|'destructive';
@@ -157,14 +157,16 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
  const readyText=actionLabel??(action==='swap'&&!fixed?t.swapActionSwap:action==='bridge'&&!fixed?t.swapActionBridge:t.swapActionSend);
  // While the host's submit is in flight the amount may already be cleared: the action keeps its name rather than asking for an amount.
- const actionText=showReceive?t.swapSendFromWallet:!from||(!to&&!fixed)?t.swapChooseToken:destination?.pending?t.swapChooseDestination:submitting?submittingLabel??readyText:units<=0?t.swapEnterAmount:insufficient?t.swapInsufficient(from.symbol):actionDisabled&&actionStatus?actionStatus:readyText;
+ const actionText=showReceive?t.swapSendFromWallet:!from||(!to&&!fixed)?t.swapChooseToken:destination?.pending?t.swapChooseDestination:submitting?submittingLabel??(actionDisabled&&actionStatus?actionStatus:readyText):units<=0?t.swapEnterAmount:insufficient?t.swapInsufficient(from.symbol):actionDisabled&&actionStatus?actionStatus:readyText;
  const pristine=(lockFrom||!from)&&(lockTo||!to)&&input===0;
  // Updater form: several keys can land before the next render, and each must build on the last.
  const latest=useRef(fromMode);latest.current=fromMode;
  // Read at key time: several keys can land in one render.
  const limits=useRef({decimals:from?.decimals,balance:from?.balance??0,price:from?.price??0,cap:limitToBalance});limits.current={decimals:from?.decimals,balance:from?.balance??0,price:from?.price??0,cap:limitToBalance};
  const over=(next:string)=>{const {balance,price,cap}=limits.current;if(!cap||!(balance>0))return false;const value=Number(next)||0;return (latest.current==='token'?value:price>0?value/price:0)>balance;};
- const press=(key:string)=>setEntry(current=>{const next=applyAmountKey(current,key,latest.current,limits.current.decimals);return key!=='back'&&over(next)?current:next;});
+ // While the host's submit is in flight the keypad, Max and Test leave the amount as it is.
+ const typed:typeof setEntry=next=>{if(!submitting)setEntry(next);};
+ const press=(key:string)=>typed(current=>{const next=applyAmountKey(current,key,latest.current,limits.current.decimals);return key!=='back'&&over(next)?current:next;});
  const switchFromMode=(mode:SwapDenomination)=>{if(mode===fromMode)return;setEntry(mode==='usd'?trimNumber(usd,2):trimNumber(units));setFromMode(mode);};
  const changeDenomination=(mode:SwapDenomination)=>{setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
  // A new default applies to an untouched entry at once; a typed amount keeps its denomination until reset.
@@ -189,7 +191,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
     {typeof token.caption==='object'?<AnimatedNumberReadout testID='swap-caption' {...figureProps(token.caption)} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
    </View>
   </View>
-  {side==='from'&&(token.balance??0)>0?<SwapCapsule testID='swap-max' onPress={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
+  {side==='from'&&(token.balance??0)>0?<SwapCapsule testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
  </>;
  const header=(side:'from'|'to',token:SwapToken)=><>
   <View pointerEvents='none' style={{flex:1,minWidth:0,flexDirection:'row',alignItems:'flex-start',gap:12}}>
@@ -200,8 +202,8 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   </View>
   {side==='from'?((token.balance??0)>0?<View pointerEvents='box-none' style={{alignItems:'flex-end',gap:8,maxWidth:'60%'}}>
     <View pointerEvents='box-none' style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'flex-end',gap:8}}>
-     <SwapCapsule testID='swap-test' onPress={()=>setEntry(unitsToEntry(testAmount(token),fromMode,fromPrice))}><Text style={small}>{t.swapTest}</Text></SwapCapsule>
-     <SwapCapsule testID='swap-max' onPress={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>
+     <SwapCapsule testID='swap-test' onPress={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><Text style={small}>{t.swapTest}</Text></SwapCapsule>
+     <SwapCapsule testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>
     </View>
     <View pointerEvents='none'><AnimatedNumberReadout testID='swap-balance' value={token.balance} options={{maximumFractionDigits:6}} suffix={` ${token.symbol}`} tone='muted' style={smallType}/></View>
    </View>:null)

@@ -67,7 +67,7 @@ export interface SwapPanelBlockProps {
  receive?:SwapReceive;receiving?:boolean;onReceivingChange?:(receiving:boolean)=>void;
  /** The host validates, quotes and executes. HIG never submits a transaction. */
  onSubmit:(action:SwapAction)=>void;
- /** The host's submit is in flight: the action shows a spinner and ignores presses, and keeps its ready name (or `submittingLabel`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */
+ /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, typed keys, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */
  submitting?:boolean;
  /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */
  submittingLabel?:string;
@@ -95,7 +95,7 @@ export interface SwapPanelBlockProps {
  actionLabel?:string;
  /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */
  actionDisabled?:boolean;
- /** What the held action says, for example “Below minimum”. Without it the action keeps its ready name. */
+ /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */
  actionStatus?:string;
  /** `destructive` for an action that cannot be undone, such as a burn. */
  actionIntent?:'primary'|'destructive';
@@ -161,15 +161,17 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
  const readyText=actionLabel??(action==='swap'&&!fixed?messages.swapActionSwap??en.swapActionSwap:action==='bridge'&&!fixed?messages.swapActionBridge??en.swapActionBridge:messages.swapActionSend??en.swapActionSend);
  // While the host's submit is in flight the amount may already be cleared: the action keeps its name rather than asking for an amount.
- const actionText=showReceive?(messages.swapSendFromWallet??en.swapSendFromWallet):!from||(!to&&!fixed)?(messages.swapChooseToken??en.swapChooseToken):destination?.pending?(messages.swapChooseDestination??en.swapChooseDestination):submitting?submittingLabel??readyText:units<=0?(messages.swapEnterAmount??en.swapEnterAmount):insufficient?(messages.swapInsufficient??en.swapInsufficient)(from.symbol):actionDisabled&&actionStatus?actionStatus:readyText;
+ const actionText=showReceive?(messages.swapSendFromWallet??en.swapSendFromWallet):!from||(!to&&!fixed)?(messages.swapChooseToken??en.swapChooseToken):destination?.pending?(messages.swapChooseDestination??en.swapChooseDestination):submitting?submittingLabel??(actionDisabled&&actionStatus?actionStatus:readyText):units<=0?(messages.swapEnterAmount??en.swapEnterAmount):insufficient?(messages.swapInsufficient??en.swapInsufficient)(from.symbol):actionDisabled&&actionStatus?actionStatus:readyText;
  const pristine=(lockFrom||!from)&&(lockTo||!to)&&input===0;
  // Updater form: several keys can land before the next render, and each must build on the last.
  const latest=useRef(fromMode);latest.current=fromMode;const latestView=useRef(view);latestView.current=view;
  // Read at key time: several keys can land in one render.
  const limits=useRef({decimals:from?.decimals,balance:from?.balance??0,price:fromPrice,cap:limitToBalance});limits.current={decimals:from?.decimals,balance:from?.balance??0,price:fromPrice,cap:limitToBalance};
  const over=(next:string)=>{const {balance,price,cap}=limits.current;if(!cap||!(balance>0))return false;const value=Number(next)||0;return (latest.current==='token'?value:price>0?value/price:0)>balance;};
- const press=(key:string)=>setEntry(current=>{const next=applyAmountKey(current,key,latest.current,limits.current.decimals);return key!=='back'&&over(next)?current:next;});
- const paste=(text:string)=>{const clean=text.trim().replace(/,/g,'');if(clean===''||!/^[0-9]*\.?[0-9]*$/.test(clean))return false;const next=sanitizeAmount(clean);setEntry(latest.current==='usd'?trimNumber(Number(next)||0,2):next);return true;};
+ // While the host's submit is in flight the keypad, typed keys, a paste, Max and Test leave the amount as it is.
+ const typed:typeof setEntry=next=>{if(!submitting)setEntry(next);};
+ const press=(key:string)=>typed(current=>{const next=applyAmountKey(current,key,latest.current,limits.current.decimals);return key!=='back'&&over(next)?current:next;});
+ const paste=(text:string)=>{const clean=text.trim().replace(/,/g,'');if(clean===''||!/^[0-9]*\.?[0-9]*$/.test(clean))return false;const next=sanitizeAmount(clean);typed(latest.current==='usd'?trimNumber(Number(next)||0,2):next);return true;};
  const switchFromMode=(mode:SwapDenomination)=>{if(mode===fromMode)return;setEntry(mode==='usd'?trimNumber(usd,2):trimNumber(units));applyFromMode(mode);};
  const changeDenomination=(mode:SwapDenomination)=>{setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
  // A new default applies to an untouched entry at once; a typed amount keeps its denomination until reset.
@@ -202,12 +204,12 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  const account=(side:'from'|'to',token:SwapToken,locked:boolean)=><div className='hig-swap-selected' data-account='true'>
   <span className='hig-swap-stack' aria-hidden='true'>{token.icon?swapArt(token.icon):<span className='hig-swap-initials'>{token.symbol.slice(0,3)}</span>}</span>
   <span className='hig-swap-identity'><strong>{token.name}{!locked&&<SwapIcon name='expand' size={16}/>}</strong><span>{swapFigure(token.caption??'')}</span></span>
-  {side==='from'&&(token.balance??0)>0&&<span className='hig-swap-meta'><SwapPill onClick={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span>}
+  {side==='from'&&(token.balance??0)>0&&<span className='hig-swap-meta'><SwapPill onClick={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span>}
  </div>;
  const header=(side:'from'|'to',token:SwapToken)=><div className='hig-swap-selected'>
   <span className='hig-swap-stack' aria-hidden='true'>{wallet?.address&&<span className='hig-swap-avatar' style={{background:addressGradient(wallet.address)}}/>}{token.chainIcon&&swapArt(token.chainIcon)}{token.icon?swapArt(token.icon):<span className='hig-swap-initials'>{token.symbol.slice(0,3)}</span>}</span>
   <span className='hig-swap-identity'>{wallet?.address&&<span>{shortAddress(wallet.address)}</span>}<span>{token.chain}</span><strong>{token.name}</strong></span>
-  {side==='from'?(token.balance??0)>0&&<span className='hig-swap-meta'><span className='hig-swap-pills'><SwapPill onClick={()=>setEntry(unitsToEntry(testAmount(token),fromMode,fromPrice))}><SwapIcon name='flask' size={14}/>{(messages.swapTest??en.swapTest)}</SwapPill><SwapPill onClick={()=>setEntry(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span><SwapNumber value={token.balance} suffix={' '+token.symbol} options={{maximumFractionDigits:6}}/></span>
+  {side==='from'?(token.balance??0)>0&&<span className='hig-swap-meta'><span className='hig-swap-pills'><SwapPill onClick={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><SwapIcon name='flask' size={14}/>{(messages.swapTest??en.swapTest)}</SwapPill><SwapPill onClick={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span><SwapNumber value={token.balance} suffix={' '+token.symbol} options={{maximumFractionDigits:6}}/></span>
    :<span className='hig-swap-meta'><SwapPill onClick={()=>show(onSlippageChange?'slippage':'settings')}><SwapIcon name='sliders' size={14}/><SwapNumber template={messages.swapSlippage??en.swapSlippage} {...percentNumber(slippage)}/></SwapPill><span>{feeLine}</span></span>}
  </div>;
  const receiveView=(view:SwapReceive)=>{const content=<>{view.qr&&<span className='hig-swap-qr'>{view.qr}</span>}<VerticalAddress address={view.address}/></>;return view.onCopy?<button type='button' className='hig-swap-receive' aria-label={(messages.copyAddress??en.copyAddress)+': '+view.address} onClick={copyAddress}>{content}<PressDecoration kind='row'/></button>:<div className='hig-swap-receive'>{content}</div>;};

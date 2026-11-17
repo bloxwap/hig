@@ -27,6 +27,9 @@ export interface ListGroupProps {
  testID?:string;
 }
 const shown=(node:React.ReactNode)=>node!=null&&node!==false&&node!=='';
+const bare=(node:React.ReactNode)=>typeof node==='string'||typeof node==='number';
+/** A fragment or array with a bare string or number among its children (through nested fragments and arrays). */
+const loose=(node:React.ReactNode):boolean=>Array.isArray(node)?node.some(child=>bare(child)||loose(child)):React.isValidElement(node)&&node.type===React.Fragment&&loose(([] as React.ReactNode[]).concat((node.props as {children?:React.ReactNode}).children));
 const actionSlop={top:12,bottom:12,left:8,right:8};
 /** A grouped list for menus and settings: an optional heading over rows that share one rounded container. */
 export function ListGroup({title,titleAccessory,action,intro,children,testID}:ListGroupProps){
@@ -60,7 +63,7 @@ export function ListGroup({title,titleAccessory,action,intro,children,testID}:Li
 }
 export interface ListRowProps extends Omit<PressableProps,'children'|'style'|'onPress'|'disabled'|'role'|'accessibilityRole'|'accessibilityLabel'|'accessibilityState'|'aria-label'|'aria-checked'|'aria-disabled'|'aria-busy'|'aria-selected'> {
  label:string;
- /** A muted second line under the label, such as a subtitle or an address. The row grows to fit it, and it is read with the label (as the hint of a switch row). A string, a number or one Text element is drawn in the muted Text; any other node (several Text elements, a row with an icon, a live figure) is drawn as given in a View, styled by the host. Its text is read as concatenated, so give such a row `accessibilityLabel`. */
+ /** A muted second line under the label, such as a subtitle or an address. The row grows to fit it, and it is read with the label (as the hint of a switch row). A string, a number, one Text element, or a fragment or array with bare text among its children (`<>Ends in <Text>3m</Text></>`) is drawn in the muted Text; any other node (several Text elements, a row with an icon, a live figure) is drawn as given in a View, styled by the host. A component of the host's own that renders bare strings must be wrapped in a Text, as anywhere in a View. Its text is read as concatenated, so give such a row `accessibilityLabel`. */
  description?:React.ReactNode;
  /** What the row reads as, in place of its label, description and value: Long BTC, 10×, 0.5 BTC, up $12. A pressable row keeps its busy text after it, a switch row is named by it (its description and value stay its hint), and a static row becomes one element named by it (with a `trailing` control, the label, description and value become that element and the control stays its own target). */
  accessibilityLabel?:string;
@@ -123,8 +126,8 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
  const lead=leading==null?null:<View {...hidden} style={first}>{leading}</View>;
  const labelColor=tone==='destructive'?colors.negative:tone==='muted'?colors.muted:colors.text;
  const descriptionStyle={fontSize:14,lineHeight:20,color:colors.muted};
- // Text, or one Text element, keeps the muted line; richer host content is laid out as given.
- const inline=typeof description==='string'||typeof description==='number'||(React.isValidElement(description)&&(description.type===Text||description.type===NativeText));
+ // Text, one Text element, or a fragment or array holding bare text (`<>Ends in <Text>3m</Text></>`) keeps the muted line, since a bare string cannot sit in a View; richer host content is laid out as given.
+ const inline=bare(description)||loose(description)||(React.isValidElement(description)&&(description.type===Text||description.type===NativeText));
  const descriptionTestID=testID?`${testID}-description`:undefined;
  const nameBox={flex:1,flexShrink:1,minWidth:0,paddingVertical:8} as const;
  const nameRole=grouped?{accessible:true,accessibilityLabel}:quiet;
