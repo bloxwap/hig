@@ -57,6 +57,13 @@
 .hig-input[aria-invalid='true'] { border-color:var(--hig-negative); }
 .hig-input[aria-invalid='true']:focus-visible { box-shadow:0 0 0 1px var(--hig-negative); }
 textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
+/* A prefixed input: the capsule carries the fill, stroke and ring, and the prefix sits in flow before the text. */
+.hig-input-affix { display:flex;align-items:center;width:100%;min-width:0;border-radius:9999px;border:1px solid transparent;padding-inline-start:20px;background:var(--hig-fill); }
+.hig-input-prefix { flex:none;color:var(--hig-muted);line-height:1.5; }
+.hig-input-affix > input.hig-input.hig-input { min-height:calc(var(--hig-button) - 2px);border:0;padding-inline-start:4px;background:transparent;box-shadow:none;opacity:1; }
+.hig-input-affix:has(> .hig-input:focus-visible) { border-color:var(--hig-input-ring,var(--hig-faint));box-shadow:0 0 0 1px var(--hig-input-ring,var(--hig-faint)); }
+.hig-input-affix:has(> [aria-invalid='true']) { --hig-input-ring:var(--hig-negative);border-color:var(--hig-negative); }
+.hig-input-affix:has(> :disabled) { opacity:.5;cursor:not-allowed; }
 /* Text fields are as tall as a button (44 touch, 36 compact). */
 .hig-search-input { position:relative;display:block;width:100%;min-width:0; }
 .hig-search-icon { position:absolute;inset-inline-start:16px;inset-block-start:50%;translate:0 -50%;width:20px;height:20px;color:var(--hig-muted);pointer-events:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }

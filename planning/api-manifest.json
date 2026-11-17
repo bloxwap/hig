@@ -714,9 +714,13 @@
         "entry": "field",
         "signature": "export declare const Label: (props: React.LabelHTMLAttributes<HTMLLabelElement>) => React.JSX.Element;"
       },
+      "InputProps": {
+        "entry": "field",
+        "signature": "export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {\n    /** Host text on the leading edge inside the field, before what is typed, such as `@` for a handle or `$` for an amount. Drawn muted and not part of the value; the input names it in its description (`aria-describedby`, before the field's help and error), so it is read after the label. The text starts after it. */\n    prefix?: string;\n}"
+      },
       "Input": {
         "entry": "field",
-        "signature": "export declare const Input: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;"
+        "signature": "export declare const Input: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<HTMLInputElement>>;"
       },
       "TextArea": {
         "entry": "field",
@@ -2004,9 +2008,13 @@
         "entry": "field",
         "signature": "export declare const Label: typeof Text;"
       },
+      "InputProps": {
+        "entry": "field",
+        "signature": "export interface InputProps extends TextInputProps {\n    /** Host text on the leading edge inside the field, before what is typed, such as `@` for a handle or `$` for an amount (test ID `<testID>-prefix`). Drawn muted and not part of the value; it leads the input's accessibility hint, before the field's description and error, so it is read after the label. The text starts after it. */\n    prefix?: string;\n}"
+      },
       "Input": {
         "entry": "field",
-        "signature": "export declare const Input: React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
+        "signature": "export declare const Input: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
       "TextArea": {
         "entry": "field",
