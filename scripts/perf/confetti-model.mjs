@@ -2,15 +2,19 @@
 // Run: node scripts/perf/confetti-model.mjs. It starts itself again with --expose-gc and a large young generation, so a
 // heap reading between two forced collections is what the loop allocated. Prints one JSON object.
 // It measures, for bursts of 100, 300 and 1000 pieces over the full default life (ticks 1 to 200):
-//  create  createConfettiBurst, the launch
-//  flight  confettiTravel once a frame and confettiFlight for every piece: what the web canvas runs each frame
-//  pose    confettiPose for every piece: what each native piece's worklet runs each frame
-//  style   confettiPose, confettiOpacity and the style object a native piece returns each frame. This repeats the body of
-//          `Piece`'s useAnimatedStyle in packages/hig/native/src/confetti.tsx; keep the two in step.
-// as pieces stepped per second and bytes allocated per piece step. With the Hermes binary React Native ships
+//  create    createConfettiBurst, the launch
+//  flight    confettiTravel once a frame and confettiFlight for every piece: what the web canvas runs each frame
+//  pose      confettiPose for every piece: what each native piece's worklet runs each frame
+//  starPose  the same for a burst of stars
+//  style     confettiPose, confettiOpacity and the style object a native piece returns each frame. This repeats the body of
+//            `Piece`'s useAnimatedStyle in packages/hig/native/src/confetti.tsx; keep the two in step.
+// as pieces stepped per second and bytes allocated per piece step (exact in Hermes, from its allocation counter; in Node a
+// heap reading, which V8 takes in whole buffers, so small differences there mean nothing). With the Hermes binary React Native ships
 // (node_modules/react-native/sdks/hermesc) it runs the same bundle there too: Hermes is the engine that runs native worklets,
 // here as an interpreter on this machine's CPU. That shows what the engine allocates and how the costs compare. It is not a
 // phone, and none of it is a frame rate.
+// To compare another version of the physics, point HIG_CONFETTI_MODEL at its source file (a path esbuild can resolve from
+// the repository root).
 import {spawnSync} from 'node:child_process';
 import {existsSync,mkdirSync,writeFileSync} from 'node:fs';
 import {runInThisContext} from 'node:vm';
@@ -20,7 +24,7 @@ if(typeof globalThis.gc!=='function'){
  const again=spawnSync(process.execPath,['--expose-gc','--min-semi-space-size=64','--max-semi-space-size=64',...process.argv.slice(1)],{stdio:'inherit'});
  process.exit(again.status??1);
 }
-const source=`import {CONFETTI_FIRST_TICK,confettiBox,confettiFlight,confettiOpacity,confettiPose,confettiTravel,createConfettiBurst} from './packages/hig/contracts/src/confetti';
+const source=`import {CONFETTI_FIRST_TICK,confettiBox,confettiFlight,confettiOpacity,confettiPose,confettiTravel,createConfettiBurst} from ${JSON.stringify(process.env.HIG_CONFETTI_MODEL??'./packages/hig/contracts/src/confetti')};
 var palette=['a','b','c','d','e'];
 /** A repeatable random source (mulberry32): every run steps the same pieces. */
 function seeded(seed){return function(){seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
@@ -34,7 +38,7 @@ globalThis.confettiModelBench=function(env){
   var physics=burst.physics,particles=burst.particles,count=particles.length,left=195,top=590;
   for(var t=CONFETTI_FIRST_TICK;t<physics.ticks;t++)for(var index=0;index<count;index++){
    var particle=particles[index],half=confettiBox(particle.shape,physics)/2,at=confettiPose(particle,physics,t);
-   var made={opacity:confettiOpacity(physics,t),transform:[{translateX:left+at.x-half},{translateY:top+at.y-half},{rotate:at.rotate+'rad'},{scaleX:at.scaleX},{scaleY:at.scaleY}]};
+   var made={opacity:confettiOpacity(physics,t),transform:[{translateX:left+at.x-half},{translateY:top+at.y-half},{rotate:\`\${at.rotate}rad\`},{scaleX:at.scaleX},{scaleY:at.scaleY}]};
    sink[0]+=made.opacity+made.transform.length;
   }
  }
