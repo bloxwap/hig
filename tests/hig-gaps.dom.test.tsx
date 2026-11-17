@@ -25,3 +25,12 @@ describe('Input prefix',()=>{
   expect(document.getElementById(input.getAttribute('aria-describedby')!)!.textContent).toBe('Shown on your profile.');
  });
 });
+
+describe('ListRow parity with native: aria-label and a rich description',()=>{
+ it('takes aria-label as the row name and draws a description of several nodes in the muted line',async()=>{
+  const {ListRow}=await import('../packages/hig/react/src/list-group');
+  render(<HIGProvider><ListRow label='BTC' aria-label='Long BTC, 10×, 0.5 BTC' onSelect={()=>{}} description={<><svg data-testid='arrow'/><span>10×</span><span> • 0.5</span></>}/></HIGProvider>);
+  const row=screen.getByRole('button',{name:'Long BTC, 10×, 0.5 BTC'});
+  const description=row.querySelector('.hig-list-row-description')!;expect(description.querySelectorAll('span')).toHaveLength(2);expect(description.querySelector('[data-testid="arrow"]')).toBeTruthy();
+ });
+});
