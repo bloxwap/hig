@@ -67,9 +67,19 @@ describe.each([['NumberFlow',NumberFlow],['AnimatedNumberReadout, sliding',Anima
   expect(cost(()=>{for(let frame=0;frame<60;frame++)act(()=>advance(16));})).toEqual({commits:0,texts:0,formatters:0});
   expect(turning.every(value=>!value.animating)).toBe(true);
  });
- it('formats nothing when its parent draws again with the same value',()=>{
+ it('draws one text again for a new value: the reading, and no glyph of any reel',()=>{
+  mount(figure(Component,{value:1234.56}));measure();
+  // The first turn of a flowing place mounts its strip of eleven glyphs; a sliding place has had its twenty since it was measured.
+  expect(cost(()=>update(figure(Component,{value:1234.57}))).texts).toBe(flowing?12:1);
+  // It was 25 texts for a flowing figure and 134 for a sliding one: every probe, separator and glyph row, changed or not.
+  expect(cost(()=>update(figure(Component,{value:1234.58}))).texts).toBe(1);
+  expect(cost(()=>update(figure(Component,{value:1299.58}))).texts).toBe(flowing?23:1);
+  expect(cost(()=>update(figure(Component,{value:1211.58}))).texts).toBe(1);
+  expect(reading()).toBe('$1,211.58');
+ });
+ it('formats nothing and draws only its reading when its parent draws again with the same value',()=>{
   mount(figure(Component,{value:1234.56}));measure();update(figure(Component,{value:1234.57}));
-  expect(cost(()=>update(figure(Component,{value:1234.57,options:{...usd}})))).toMatchObject({commits:1,formatters:0});
+  expect(cost(()=>update(figure(Component,{value:1234.57,options:{...usd}})))).toEqual({commits:1,texts:1,formatters:0});
  });
  it('builds its formatters once for a format, not for every value or every figure',()=>{
   // The first figure in a format asks Intl for the formatter, the numbering system's digits and the parts.
