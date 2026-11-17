@@ -148,6 +148,31 @@ describe('confetti physics',()=>{
   expect(confettiBox('star',physics)).toBe(16);expect(confettiBox('square',physics)).toBe(10);expect(confettiPose(star,physics,25)).toEqual({x:now.x,y:now.y,rotate:0,scaleX:1,scaleY:1});
   expect(confettiPose(circle,{...physics,size:0},25)).toMatchObject({scaleX:0,scaleY:0});
  });
+ it('poses every shape with exactly the numbers of the flight, worked out without a flight object',()=>{
+  // confettiPose repeats confettiFlight's sums in local variables, so native allocates no flight object for every piece every
+  // frame. This is the pose built from confettiFlight itself: the two must agree to the last bit, not just closely.
+  const fromFlight=(particle:ConfettiParticle,physics:ConfettiPhysics,t:number)=>{
+   const now=flight(particle,physics,t),size=physics.size;
+   if(size<=0)return {x:now.x,y:now.y,rotate:0,scaleX:0,scaleY:0};
+   if(particle.shape==='star')return {x:now.x,y:now.y,rotate:0,scaleX:1,scaleY:1};
+   if(particle.shape==='circle')return {x:now.x,y:now.y,rotate:Math.PI/10*now.wobble,scaleX:Math.abs(now.ux)/size,scaleY:Math.abs(now.vy)/size};
+   const e=(now.ux+now.vy)/2,f=(now.ux-now.vy)/2,g=(now.uy+now.vx)/2,h=(now.uy-now.vx)/2,q=Math.sqrt(e*e+h*h),r=Math.sqrt(f*f+g*g);
+   return {x:now.x+(now.ux+now.vx)/2,y:now.y+(now.uy+now.vy)/2,rotate:(Math.atan2(h,e)+Math.atan2(g,f))/2,scaleX:Math.min(1e6,(q+r)/size),scaleY:Math.min(1e6,Math.abs(q-r)/size)};
+  };
+  let compared=0;
+  for(const options of [{},{flat:true},{scalar:0},{scalar:5e-324},{scalar:2.5,decay:0.93,drift:1.5,gravity:0.6,startVelocity:30},{decay:1},{decay:1.05,ticks:400}])for(const shape of ['square','circle','star'] as const){
+   const burst=createConfettiBurst({...options,particleCount:12,shapes:[shape]},palette,seeded(31));
+   for(const piece of burst.particles)for(const t of [0,1,1.5,17.25,60,120.75,burst.physics.ticks]){
+    const pose=confettiPose(piece,burst.physics,t),expected=fromFlight(piece,burst.physics,t);
+    for(const key of ['x','y','rotate','scaleX','scaleY'] as const)expect(Object.is(pose[key],expected[key]),`${JSON.stringify(options)} ${shape} ${key} at ${t}: ${pose[key]} is not ${expected[key]}`).toBe(true);
+    compared++;
+   }
+  }
+  expect(compared).toBe(7*3*12*7);
+  // The flight itself is written into the object it is given, which a renderer keeps for every piece and frame.
+  const burst=createConfettiBurst({particleCount:1},palette,seeded(32)),out=blank();
+  expect(confettiFlight(burst.particles[0],burst.physics,9,confettiTravel(burst.physics,9),out)).toBe(out);
+ });
  it('gives the star as canvas-confetti\'s ten-point outline, and as five triangles that cover exactly the same shape',()=>{
   expect(CONFETTI_STAR_OUTER).toBe(0.8);expect(CONFETTI_STAR_INNER).toBe(0.4);expect(confettiStarPoints).toHaveLength(10);
   // canvas-confetti: rot starts at 3/2 pi and steps by pi/5, alternately on the outer radius (8 * scalar) and the inner (4 * scalar).
