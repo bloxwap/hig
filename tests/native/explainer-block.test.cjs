@@ -61,5 +61,8 @@ it('draws a task dialog: Back with backProps, numbered steps, two actions with t
  expect(button(view,'invite-copy').props).toMatchObject({busy:true,suppressFeedback:true});
  act(()=>button(view,'invite-secondary').props.onPress());expect(later).toHaveBeenCalledTimes(1);
  const sticky=mount({title:'Invite a friend',stickyHeader:true});expect(has(sticky,'explainer-sticky-header')).toBe(true);
+ // A step drawn from a node may hold its own control, so the row stays open to VoiceOver and TalkBack.
+ const rich=mount({testID:'rich',steps:['Copy your link.',h(Button,{testID:'rich-copy',onPress:()=>{}},'Copy')]});
+ expect(host(rich,'rich-step-0').props.accessible).toBe(true);expect(host(rich,'rich-step-1').props.accessible).toBe(false);expect(has(host(rich,'rich-step-1'),'rich-copy')).toBe(true);
  expect(blocks.ExplainerBlock).toBe(ExplainerBlock);
 });

@@ -44,6 +44,12 @@ it('opens on a mouse hover with openOnHover, without moving focus, and closes af
  act(()=>{vi.advanceTimersByTime(300);});expect(screen.getByText('Hover text')).toBeTruthy();
  fireEvent.pointerLeave(screen.getByRole('dialog'),{pointerType:'mouse'});
  act(()=>{vi.advanceTimersByTime(300);});expect(screen.queryByText('Hover text')).toBeNull();expect(change).toHaveBeenLastCalledWith(false);
+ // The click that follows a hover pins the popover open instead of toggling it shut, and leaving no longer closes it.
+ fireEvent.pointerEnter(trigger,{pointerType:'mouse'});fireEvent.click(trigger);expect(screen.getByText('Hover text')).toBeTruthy();expect(change).toHaveBeenLastCalledWith(true);
+ fireEvent.pointerLeave(trigger,{pointerType:'mouse'});act(()=>{vi.advanceTimersByTime(300);});expect(screen.getByText('Hover text')).toBeTruthy();
+ // A second click on the pinned trigger closes it, and the next hover opens it again.
+ fireEvent.click(trigger);expect(screen.queryByText('Hover text')).toBeNull();expect(change).toHaveBeenLastCalledWith(false);
+ fireEvent.pointerEnter(trigger,{pointerType:'mouse'});expect(screen.getByText('Hover text')).toBeTruthy();
  // Without openOnHover a hover does nothing.
  cleanup();
  render(<Popover label='Help'><p>Hover text</p></Popover>);

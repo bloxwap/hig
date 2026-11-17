@@ -33,15 +33,17 @@ const hoverCloseDelay=150;
 export function Popover({label,children,closeLabel,hideClose,open,defaultOpen=false,onOpenChange,trigger,openOnHover,testID}:PopoverProps){
  const {messages,direction,locale,density}=useHIG();const themeStyle=useThemeStyle();
  const [current,set]=useControllable(open,defaultOpen,onOpenChange,null);
- const timer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),hovered=useRef(false);
+ const timer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),hovered=useRef(false),pinned=useRef(false);
  useEffect(()=>()=>clearTimeout(timer.current),[]);
  // Hover handlers only for a mouse: a touch's pointerenter comes just before its click, which toggles. A hover opens without moving focus into the popover.
  const hover=openOnHover?{
   onPointerEnter:(event:React.PointerEvent)=>{if(event.pointerType!=='mouse')return;clearTimeout(timer.current);if(!current){hovered.current=true;set(true);}},
-  onPointerLeave:(event:React.PointerEvent)=>{if(event.pointerType!=='mouse')return;clearTimeout(timer.current);timer.current=setTimeout(()=>set(false),hoverCloseDelay);},
+  onPointerLeave:(event:React.PointerEvent)=>{if(event.pointerType!=='mouse'||pinned.current)return;clearTimeout(timer.current);timer.current=setTimeout(()=>set(false),hoverCloseDelay);},
  }:undefined;
- return <Pop.Root open={current} onOpenChange={next=>{clearTimeout(timer.current);if(!next)hovered.current=false;set(next);}}>
-  <Pop.Trigger asChild {...hover}>{trigger??<Button intent='secondary' suppressFeedback>{label}</Button>}</Pop.Trigger>
+ // A click on the trigger of a hover-opened popover pins it open instead of toggling it shut: the pointer always hovers before it clicks.
+ const pin=openOnHover?{onClick:(event:React.MouseEvent)=>{if(!hovered.current)return;event.preventDefault();clearTimeout(timer.current);hovered.current=false;pinned.current=true;}}:undefined;
+ return <Pop.Root open={current} onOpenChange={next=>{clearTimeout(timer.current);if(!next){hovered.current=false;pinned.current=false;}set(next);}}>
+  <Pop.Trigger asChild {...hover} {...pin}>{trigger??<Button intent='secondary' suppressFeedback>{label}</Button>}</Pop.Trigger>
   <Pop.Portal><Pop.Content {...hover} className='hig-popover' sideOffset={6} collisionPadding={16} style={themeStyle} dir={direction} lang={locale} data-hig-density={density} aria-label={trigger?label:undefined} data-testid={testID} onOpenAutoFocus={event=>{if(hovered.current)event.preventDefault();}}>
    {children}
    {hideClose?null:<Pop.Close asChild><Button intent='ghost' suppressFeedback>{closeLabel??messages.close??en.close}</Button></Pop.Close>}

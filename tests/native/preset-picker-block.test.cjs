@@ -60,7 +60,8 @@ it('draws the Leverage pane with a suffix, a default chip test ID and an adjusta
  expect(text(host(view,'size-lev-leverage-headline'))).toBe('10×');expect(has(view,'size-lev-leverage-custom')).toBe(false);
  expect(has(view,'size-lev-leverage-preset-40')).toBe(true);
  const adjustable=host(view,'size-lev-sheet-leverage-slider');
- expect(adjustable.props).toMatchObject({accessibilityRole:'adjustable',accessibilityLabel:'Leverage',accessibilityValue:{text:'10×'}});
+ // `accessible` makes the View one element, so VoiceOver and TalkBack focus it and offer the adjust gesture.
+ expect(adjustable.props).toMatchObject({accessible:true,accessibilityRole:'adjustable',accessibilityLabel:'Leverage',accessibilityValue:{text:'10×'}});
  expect(adjustable.props.accessibilityActions).toEqual([{name:'increment',label:'Increase leverage'},{name:'decrement',label:'Decrease leverage'}]);
  act(()=>adjustable.props.onAccessibilityAction({nativeEvent:{actionName:'increment'}}));expect(preset).toHaveBeenLastCalledWith(20);
  act(()=>adjustable.props.onAccessibilityAction({nativeEvent:{actionName:'decrement'}}));expect(preset).toHaveBeenLastCalledWith(5);

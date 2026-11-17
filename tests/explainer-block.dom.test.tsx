@@ -19,8 +19,9 @@ describe('ExplainerBlock',()=>{
   expect(screen.getByTestId('trend-how').className).toBe('hig-explainer');
   expect(screen.getByText('Trend reads each market every minute.').className).toBe('hig-explainer-text');
   const up=screen.getByTestId('trend-up');expect(up.getAttribute('data-tone')).toBe('up');
-  // Each section is named by its heading; the meaning sits muted on the heading's line; the icon is decorative.
-  expect(screen.getByRole('region',{name:'Up → Momentum is rising'})).toBe(up);
+  // Each section is a plain card led by its heading, not a landmark; the meaning sits muted on the heading's line; the icon is decorative.
+  expect(screen.queryAllByRole('region')).toHaveLength(0);expect(up.tagName).toBe('DIV');
+  expect(screen.getByRole('heading',{name:'Up → Momentum is rising',level:3}).closest('.hig-explainer-section')).toBe(up);
   expect(within(up).getByRole('heading',{level:3}).querySelector('span')!.textContent).toBe('→ Momentum is rising');
   expect(up.querySelector('.hig-explainer-icon')!.getAttribute('aria-hidden')).toBe('true');expect(up.querySelector('[data-glyph]')).toBeTruthy();
   expect(within(up).getByText('Price is climbing.').className).toBe('hig-explainer-text');

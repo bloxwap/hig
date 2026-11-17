@@ -102,7 +102,7 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
     {shown(section.caveat)?prose(section.caveat,sectionCaveatPart):null}
    </View>
   </View>;})}</View>:null}
-  {steps.length>0?<View testID={id('steps')} style={{gap:8}}>{steps.map((step,index)=><View key={index} testID={id(`step-${index}`)} accessible style={{direction,flexDirection:'row',gap:8}}>
+  {steps.length>0?<View testID={id('steps')} style={{gap:8}}>{steps.map((step,index)=><View key={index} testID={id(`step-${index}`)} accessible={typeof step==='string'||typeof step==='number'} style={{direction,flexDirection:'row',gap:8}}>
    <Text style={{...muted,minWidth:16,fontVariant:['tabular-nums']}}>{`${index+1}.`}</Text>
    {typeof step==='string'||typeof step==='number'?<Text style={{...muted,flexShrink:1}}>{step}</Text>:<View style={{flexShrink:1}}>{step}</View>}
   </View>)}</View>:null}

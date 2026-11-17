@@ -77,7 +77,7 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
  return <section {...rest} className={`hig-explainer${className?` ${className}`:''}`}>
   {title!==undefined&&<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
   {description!=null&&description!==false&&<p className='hig-explainer-text'>{description}</p>}
-  {sections.length>0&&<div className='hig-explainer-sections'>{sections.map(section=>{const heading=section.title!==undefined?`${id}-${section.id}`:undefined;return <section key={section.id} className='hig-explainer-section' data-tone={section.tone} data-testid={section.testID} aria-labelledby={heading}>
+  {sections.length>0&&<div className='hig-explainer-sections'>{sections.map(section=>{const heading=section.title!==undefined?`${id}-${section.id}`:undefined;return <div key={section.id} className='hig-explainer-section' data-tone={section.tone} data-testid={section.testID}>
    {section.icon!=null&&<span className='hig-explainer-icon' aria-hidden='true'>{section.icon}</span>}
    <div>
     {section.title!==undefined&&<h3 id={heading}>{section.title}{section.meaning?<> <span>{section.meaning}</span></>:null}</h3>}
@@ -85,7 +85,7 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
     {section.body!=null&&section.body!==false&&<div className='hig-explainer-text'>{section.body}</div>}
     {section.caveat!=null&&section.caveat!==false&&<p className='hig-explainer-text' data-caveat=''>{section.caveat}</p>}
    </div>
-  </section>;})}</div>}
+  </div>;})}</div>}
   {steps.length>0&&<ol className='hig-explainer-steps hig-explainer-text'>{steps.map((step,index)=><li key={index}>{step}</li>)}</ol>}
   {caveat!=null&&caveat!==false&&<p className='hig-explainer-text' data-caveat=''>{caveat}</p>}
   {(primaryAction||secondaryAction)&&<div className='hig-confirm-actions'>{secondaryAction&&action(secondaryAction,secondaryIntent)}{primaryAction&&action(primaryAction,primaryIntent)}</div>}
