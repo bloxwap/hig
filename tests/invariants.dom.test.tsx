@@ -110,3 +110,10 @@ it('two controls cannot silently share a Field id',()=>{
 it('duplicate tab identities are rejected',()=>{
  expect(()=>render(<Tabs label='Duplicates' items={[{value:'same',label:'One',content:'1'},{value:'same',label:'Two',content:'2'}]}/>)).toThrow('unique keys');
 });
+it('a rejected extra decimal does not invalidate a precise converted amount',()=>{
+ const change=vi.fn();const props={tokens:[token],from:{...token,balance:1,price:2000,decimals:6},amount:'0.123456',denomination:'usd' as const,captureKeyboard:true,onAmountChange:change,onSubmit:()=>{}};
+ const view=render(<SwapPanelBlock {...props}/>);
+ fireEvent.keyDown(window,{key:'1'});
+ view.rerender(<SwapPanelBlock {...props} title='Updated'/>);
+ expect(change).not.toHaveBeenCalled();
+});

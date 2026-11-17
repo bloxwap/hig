@@ -12,6 +12,8 @@ Fixes and gaps from the browser and native audits of the app conversions to the 
 
 Upgrading from 0.7.x:
 
+- Controlled ownership is fixed at mount. Invalid ranges, duplicate collection keys and invalid sheet detents are rejected. Field owns its control ID and required/error state; nested providers inherit omitted settings. The Input bundle grows from 371 to 426 B gzip for these accessibility checks; its explicit budget is 440 B.
+
 - Nothing was removed or renamed, so 0.7.0 imports keep working.
 - Check the rendering changes named above. The ones most likely to show up in your tests: a native `PresetGroup` `label` is now each chip's `accessibilityHint` rather than the container's label; a web switch row no longer has a visually hidden second copy of its label; a titled `SwapPanelBlock` draws its title as the shared `ScreenHeader`; and a host stylesheet that overrides `.hig-button:disabled` should also match `.hig-button[aria-disabled='true']` if it uses `Button href`.
 

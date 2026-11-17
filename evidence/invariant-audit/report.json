@@ -22,11 +22,48 @@
     ]
   },
   "verification": {
-    "regressionTests": "tests/invariants.dom.test.tsx and tests/numeric-invariants.test.ts, plus native swap/provider and chart/confetti regression cases",
-    "web": "1005 passed before final presentation refinements",
-    "native": "running",
-    "build": "packages passed; production docs running",
-    "note": "Original characterization probes have been replaced with acceptance regressions in the normal test suites."
+    "web": {
+      "command": "npm run test:web",
+      "passed": 1012,
+      "files": 103
+    },
+    "native": {
+      "command": "npm run test:native -- --runInBand",
+      "passed": 751,
+      "skipped": 2,
+      "files": 65
+    },
+    "build": {
+      "command": "npm run build",
+      "result": "passed after retry of the existing Next.js security-upgrade notice"
+    },
+    "lint": {
+      "command": "npm run lint",
+      "result": "passed"
+    },
+    "types": {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    "quality": {
+      "command": "npm run quality",
+      "result": "passed",
+      "inputGzip": 426,
+      "inputBudget": 440,
+      "nativeSwitchGzip": 2668,
+      "nativeSwitchBudget": 2750,
+      "docsJSGzip": 681154,
+      "docsCSSBytes": 207825
+    },
+    "regressions": [
+      "tests/invariants.dom.test.tsx",
+      "tests/numeric-invariants.test.ts",
+      "tests/outcome-chart.dom.test.tsx",
+      "tests/confetti.dom.test.tsx",
+      "tests/native/swap-panel-block.test.cjs",
+      "tests/native/provider-context.test.cjs"
+    ],
+    "note": "Original characterization probes were replaced by acceptance regressions in the normal suites. Native tests run in Jest, not on physical devices."
   },
   "priorTask": {
     "gestureSheetEfficiencyFixes": "implemented",
@@ -65,7 +102,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Asset identity and normalized chain identity determine send/swap/bridge."
       }
     },
@@ -89,7 +126,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Every known balance, including zero, participates in insufficiency checks."
       }
     },
@@ -113,7 +150,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "All edits apply precision and balance caps; capped external resync reports the corrected amount."
       }
     },
@@ -137,7 +174,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Global input handlers always read current submission state."
       }
     },
@@ -165,7 +202,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Bounded decimal-string arithmetic preserves token precision; floats are used only for visual estimates."
       }
     },
@@ -189,7 +226,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Unknown and nonfinite targets cannot be submitted, including when submitDisabled is false."
       }
     },
@@ -213,7 +250,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Nested providers inherit omitted environment, feedback and font settings."
       }
     },
@@ -237,7 +274,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Controlled ownership is fixed at mount with a warning on attempted handoff."
       }
     },
@@ -257,7 +294,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Accordion summary activation requests a state change; native DOM toggles are reconciled to committed state."
       }
     },
@@ -281,7 +318,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Field controls keep contextual identity, descriptions, required and error state; duplicate controls are rejected."
       }
     },
@@ -305,7 +342,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Uncontrolled tabs reconcile missing/disabled selections; controlled invalid values remain empty."
       }
     },
@@ -329,7 +366,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "SearchInput composes callback-ref cleanup and uses a stable callback."
       }
     },
@@ -353,7 +390,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Invalid or unrepresentable dates, durations and Intl options return the unknown marker."
       }
     },
@@ -373,7 +410,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Feedback keys encode source/id/intent as JSON tuples."
       }
     },
@@ -397,7 +434,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Both native sheet backends validate detents and initial indexes; resolved detent indexes are clamped."
       }
     },
@@ -417,7 +454,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Preference storage writes run serially and recover from rejected writes."
       }
     },
@@ -441,7 +478,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Select no longer displays an uncommitted fallback for a controlled missing selection."
       }
     },
@@ -465,7 +502,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Unknown and nonfinite asset values propagate into aggregate totals."
       }
     },
@@ -493,7 +530,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Feed callbacks and consumers reject stale/unsubscribed generations."
       }
     },
@@ -513,7 +550,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Slippage rejects malformed/out-of-range drafts and resets incomplete drafts on blur/back."
       }
     },
@@ -541,7 +578,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Async copy results are scoped to a mounted owner and the latest operation."
       }
     },
@@ -569,7 +606,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Submission blocks operation-changing controls. Execution snapshot and idempotency remain host responsibilities."
       }
     },
@@ -597,7 +634,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Slider validates ranges/step; progress and pagination normalize drawing, accessibility and callbacks."
       }
     },
@@ -625,7 +662,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Collection boundaries reject duplicate keys; OutcomeChart deduplicates outcome IDs."
       }
     },
@@ -649,7 +686,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Confetti caps each burst at 500 particles and simultaneous/pre-mount bursts at eight."
       }
     },
@@ -677,7 +714,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "Thirty-second freshness deadlines clear stale prices and mark the chart stale; built-in streams reconnect."
       }
     },
@@ -701,7 +738,7 @@
         }
       ],
       "resolution": {
-        "status": "implemented",
+        "status": "fixed in HIG",
         "detail": "One visible active panel owns global input, honors handled events, and supports active=false."
       }
     }
@@ -757,5 +794,12 @@
     "I26",
     "I27"
   ],
-  "hostResponsibilitiesNote": "Execution policies are documented in docs/components/blocks.md; no backend or application transaction implementation is present in this repository."
+  "hostResponsibilitiesNote": "Execution policies are documented in docs/components/blocks.md; no backend or application transaction implementation is present in this repository.",
+  "integration": {
+    "includedBranch": "feat/block-gaps",
+    "includedTip": "c952c43f651a505044e25680728cf7beb723c9e0",
+    "version": "0.8.0",
+    "preserved": "Uncommitted icon work and locked worktrees remain untouched."
+  },
+  "remainingEnvironmentIssue": "The installed Next.js reports a security-upgrade recommendation; dependency upgrades were not part of this invariant audit."
 }

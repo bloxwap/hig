@@ -1,6 +1,6 @@
 {
-  "version": "0.7.0",
-  "sourceCommit": "28e23fc22503b1bf34bd7fcb99e637038acd632a",
+  "version": "0.8.0",
+  "sourceCommit": "b9c0613a6f06705ab44cb8727cca25ef71c764b5",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -12,10 +12,12 @@
   },
   "sizes": {
     "button": {
-      "raw": 1536,
-      "gzip": 837,
+      "raw": 1666,
+      "gzip": 903,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
+        "packages/hig/contracts/dist/invariants.js",
+        "packages/hig/contracts/dist/decimal.js",
         "packages/hig/contracts/dist/index.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -25,10 +27,12 @@
       ]
     },
     "field": {
-      "raw": 600,
-      "gzip": 371,
+      "raw": 714,
+      "gzip": 426,
       "inputs": [
         "packages/hig/contracts/dist/messages.js",
+        "packages/hig/contracts/dist/invariants.js",
+        "packages/hig/contracts/dist/decimal.js",
         "packages/hig/contracts/dist/index.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
@@ -38,11 +42,13 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 5128,
-      "gzip": 2523,
+      "raw": 5383,
+      "gzip": 2668,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
+        "packages/hig/contracts/dist/invariants.js",
+        "packages/hig/contracts/dist/decimal.js",
         "packages/hig/contracts/dist/index.js",
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/native/dist/provider.js",
@@ -55,11 +61,13 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 2463,
-      "gzip": 1200,
+      "raw": 2718,
+      "gzip": 1348,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
+        "packages/hig/contracts/dist/invariants.js",
+        "packages/hig/contracts/dist/decimal.js",
         "packages/hig/contracts/dist/index.js",
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/native/dist/provider.js",
@@ -78,6 +86,8 @@
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
+        "packages/hig/contracts/dist/invariants.js",
+        "packages/hig/contracts/dist/decimal.js",
         "packages/hig/contracts/dist/index.js",
         "packages/hig/native/dist/provider.js",
         "packages/hig/native/dist/text-content.js",
@@ -87,8 +97,8 @@
       ]
     },
     "feedbackContract": {
-      "raw": 2955,
-      "gzip": 996,
+      "raw": 2972,
+      "gzip": 1004,
       "inputs": [
         "packages/hig/feedback/dist/presets.js",
         "packages/hig/feedback/dist/contract.js",
@@ -96,11 +106,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2158836,
-      "gzip": 678527
+      "raw": 2166410,
+      "gzip": 681154
     },
     "docsCSS": {
-      "raw": 206898
+      "raw": 207825
     },
     "fonts": {
       "raw": 592796

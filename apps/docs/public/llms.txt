@@ -3135,8 +3135,8 @@ Budgets are regression limits from the initial candidate measurements, not claim
 | Metric | Measured initial | Limit | Reason |
 | --- | --- | --- | --- |
 | Individual DOM Button gzip (React external) | 706 B | 920 B | ~20% API/behavior fix headroom, overlay/audio/chart excluded; raised from 850 B for `href` and `glow` (903 B) |
-| Individual Input gzip | 292 B | 400 B | Small labelled primitive, ~27% headroom |
-| Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67; 2,329 B with the web-drawn capsule | 2,400 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports Raised again for the design review pass: on Expo web the Switch draws the HIG capsule with Space handling instead of react-native-web's Material switch. |
+| Individual Input gzip | 426 B | 440 B | Includes Field ownership validation and merged accessible descriptions; 55 B above the previous 371 B build. |
+| Native Switch gzip (React/RN external) | 2,668 B | 2,750 B | Includes fixed controlled ownership and the transition diagnostic. Verifies no Slider/SVG/overlay/feedback imports. |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
 | Docs CSS | 124,111 B (with resizable drawer and per-place number motion); 139,812 B with SwapPanelBlock, Filter and the review-pass styles; 150,567 B with BarMark, AssetBalanceRow and AccountBlock ; 167,406 B with the blocks added after 0.5.2 (account, token action, manage position, target, position, language, reward and trade history) | 185,000 B | Tight headroom against the current Next CSS output; the gesture example remains lazy-loaded and Vaul injects its own runtime CSS rather than adding a second bundled stylesheet Raised for SwapPanelBlock, Filter and WalletAddress, with about 10 KB of headroom for further components. |
