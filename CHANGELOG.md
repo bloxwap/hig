@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.2
+
+- Preserve text decorations and natural line height for custom font sizes in native numeric readouts.
+
 ## 0.8.1 (2026-11-17)
 
 - Fix the npm lockfile to install shared icons from the published registry archive. The 0.8.0 GitHub tag is preserved; its npm publication failed before publishing. Version 0.8.1 is the npm release of the 0.8 feature set.

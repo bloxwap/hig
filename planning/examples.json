@@ -1891,8 +1891,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.8.1' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.8.1')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.8.1' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.8.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.8.2')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.8.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"

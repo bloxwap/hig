@@ -1,5 +1,5 @@
 {
-  "version": "0.8.1",
+  "version": "0.8.2",
   "api": {
     "react": {
       "AnimatedNumberTrend": {
@@ -2086,7 +2086,7 @@
       },
       "NumberReadoutStyle": {
         "entry": "data",
-        "signature": "export type NumberReadoutStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing' | 'textAlign'>;"
+        "signature": "export type NumberReadoutStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing' | 'textAlign' | 'textDecorationLine' | 'textDecorationColor' | 'textDecorationStyle'>;"
       },
       "NumberProps": {
         "entry": "data",

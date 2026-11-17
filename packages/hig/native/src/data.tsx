@@ -10,13 +10,14 @@ import {Button} from './button.js';
 /** `up`/`down` are market direction (rising/long/gain, falling/short/loss) and follow `HIGProvider marketColors`; `positive`/`negative` stay success/error. */
 export type NumberTone='text'|'positive'|'negative'|'warning'|'muted'|'faint'|'up'|'down';
 /** Typography only: semantic tone owns colour and numeric glyphs remain tabular. */
-export type NumberReadoutStyle=Pick<TextStyle,'fontFamily'|'fontSize'|'fontWeight'|'lineHeight'|'letterSpacing'|'textAlign'>;
-const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
+export type NumberReadoutStyle=Pick<TextStyle,'fontFamily'|'fontSize'|'fontWeight'|'lineHeight'|'letterSpacing'|'textAlign'|'textDecorationLine'|'textDecorationColor'|'textDecorationStyle'>;
+const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign','textDecorationLine','textDecorationColor','textDecorationStyle']);
 export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;/** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */formattedValue?:string;stale?:boolean;label?:string;/** Explicit semantic meaning; sign alone never chooses the tone. */tone?:NumberTone;/** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */style?:StyleProp<NumberReadoutStyle>;testID?:string;/** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */maxFontSizeMultiplier?:number;/** Display-only affixes, omitted for unknown values. */prefix?:string;suffix?:string}
 export function NumberReadout({value,options,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier,prefix,suffix}:NumberProps){
  const {messages,numberFormat}=useHIG();const locale=useNumberLocale();const colors=useColors();const reading=formatNumberReadout(value,locale,presentNumberFormat(options,numberFormat),formattedValue,prefix,suffix).text;const staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  // Keep the same boundary for untyped hosts and registered/array styles: no raw colour, glyph or layout overrides.
- const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key)));
+ const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
+ if(typography.fontSize!==undefined && typography.lineHeight===undefined) typography.lineHeight=undefined;
  const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
  return <Text accessibilityLabel={label?`${label}: ${reading}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[typography,{color,fontVariant:['tabular-nums']}]}>{reading}{staleSuffix}</Text>;
 }
