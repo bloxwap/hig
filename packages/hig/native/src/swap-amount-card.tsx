@@ -8,6 +8,8 @@ import {TokenArt} from './swap-parts.js';
 import type {SwapArtwork} from './swap-shared.js';
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const smallType={fontSize:14,lineHeight:19} as const;
+/** Test ID parts. */
+const contextPart='context',metaPart='meta';
 export interface SwapPillProps extends Omit<PressableProps,'children'|'style'|'accessibilityRole'|'accessibilityState'> {
  /** The pill's text, drawn small and muted, such as Max; or host nodes drawn as given, such as a live figure. */
  children:React.ReactNode;
@@ -85,13 +87,13 @@ export function SwapAmountCard({name,symbol,icon,chainIcon,context,actions,meta,
       <View style={{marginTop:chainIcon?-14:0}}><TokenArt uri={icon} symbol={symbol} size={28} ring={colors.surface}/></View>
      </View>
      <View style={{flex:1,minWidth:0}}>
-      {shown(context)?line(context,'context'):null}
+      {shown(context)?line(context,contextPart):null}
       <Text testID={id('name')} style={{fontWeight:'600',lineHeight:21}}>{name}</Text>
      </View>
     </View>
     {shown(actions)||shown(meta)?<View pointerEvents='box-none' style={{alignItems:'flex-end',gap:8,maxWidth:'60%'}}>
      {shown(actions)?<View testID={id('actions')} pointerEvents='box-none' style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'flex-end',gap:8}}>{actions}</View>:null}
-     {shown(meta)?line(meta,'meta'):null}
+     {shown(meta)?line(meta,metaPart):null}
     </View>:null}
    </View>
   </View>
