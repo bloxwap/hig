@@ -79,4 +79,9 @@ describe('ConfirmBlock',()=>{
   expect(document.querySelector('.hig-confirm-details')!.hasAttribute('data-one-line')).toBe(true);expect(rows()).toHaveLength(3);
   expect(rows()[0].querySelector('dd .hig-sr-only')!.textContent).toBe(address);expect(rows()[2].querySelector('dd')!.textContent).toBe('0.0001 HYPE');
  });
+ it('keeps a node value inline under oneLineDetails and reads its valueLabel',()=>{
+  render(<ConfirmBlock {...base} details={[{label:'Network fee',value:<b>0.0001 HYPE ($0.01)</b>,valueLabel:'0.0001 HYPE'}]} oneLineDetails/>);
+  const dd=rows()[2].querySelector('dd')!;
+  expect(dd.querySelector('.hig-sr-only')!.textContent).toBe('0.0001 HYPE');expect(dd.querySelector('[aria-hidden] b')!.textContent).toBe('0.0001 HYPE ($0.01)');
+ });
 });

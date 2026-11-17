@@ -22,7 +22,7 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  network:string;
  /** More lines under Network, such as a fee. */
  details?:readonly ConfirmDetail[];
- /** Draws the Network line and each of `details` on one line: the label keeps its width and the value truncates with an ellipsis instead of wrapping. The address keeps its two rows. Off by default. */
+ /** Draws the Network line and each of `details` on one line: the label keeps its width and the value truncates with an ellipsis instead of wrapping. A value that is not text should be inline content, such as a span, for the ellipsis to show. The address keeps its two rows. Off by default. */
  oneLineDetails?:boolean;
  /** Heading. Defaults to the built-in “Confirm Send”. */
  title?:string;

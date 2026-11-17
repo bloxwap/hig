@@ -80,3 +80,15 @@ it('draws the lines after the address on one line with oneLineDetails, and wraps
  expect(host(view,'confirm-to').props.numberOfLines).toBeUndefined();expect(text(host(view,'confirm-to'))).toBe('0x1111111111111111111\n111111111111111111111');
  expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM','Network fee, 0.0001 HYPE']);
 });
+
+it('truncates a value that is not text with an ellipsis under oneLineDetails, and reads its valueLabel',()=>{
+ const {Text}=require('react-native');
+ const details=[{label:'Network fee',value:h(Text,{style:{color:'#0a0'}},'0.0001 HYPE ($0.01)'),valueLabel:'0.0001 HYPE'}];
+ let view=mount({details});
+ // Off: the node sits in a plain View and may wrap.
+ expect(host(view,'confirm-detail-0').type).toBe('View');expect(host(view,'confirm-detail-0').props.numberOfLines).toBeUndefined();
+ view=mount({details,oneLineDetails:true});
+ // On: the node is set inside one tail-ellipsized line of text.
+ const value=host(view,'confirm-detail-0');expect(value.type).toBe('Text');expect(value.props.numberOfLines).toBe(1);expect(value.props.ellipsizeMode).toBe('tail');
+ expect(text(value)).toBe('0.0001 HYPE ($0.01)');expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM','Network fee, 0.0001 HYPE']);
+});
