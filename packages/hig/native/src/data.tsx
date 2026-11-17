@@ -16,7 +16,7 @@ export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFo
 export function NumberReadout({value,options,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier,prefix,suffix}:NumberProps){
  const {messages,numberFormat}=useHIG();const locale=useNumberLocale();const colors=useColors();const reading=formatNumberReadout(value,locale,presentNumberFormat(options,numberFormat),formattedValue,prefix,suffix).text;const staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  // Keep the same boundary for untyped hosts and registered/array styles: no raw colour, glyph or layout overrides.
- const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key)));
+ const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
  if(typography.fontSize!==undefined && typography.lineHeight===undefined) typography.lineHeight=undefined;
  const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
  return <Text accessibilityLabel={label?`${label}: ${reading}${staleSuffix}`:undefined} testID={testID} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[typography,{color,fontVariant:['tabular-nums']}]}>{reading}{staleSuffix}</Text>;
