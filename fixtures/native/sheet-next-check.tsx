@@ -15,7 +15,8 @@ type Case='list'|'content';
 /**
  * Device check for HIG's own sheet against the Gorhom-backed one. Run with index-sheet-next.js.
  * `bloxwaphig://run?engine=next|gorhom&case=list|content` opens a case; `content` then switches between a short and a tall
- * pane eight times and closes itself, so a run needs no touch. Frame times on the UI thread are logged as `[sheet-check]`.
+ * pane eight times and closes itself, so a run needs no touch. Add `&manual=1` to switch by touch instead (Switch pane):
+ * that is how a person triggers it, and it is the run to compare engines on. Frame times on the UI thread are logged as `[sheet-check]`.
  */
 const rows=(count:number)=>Array.from({length:count},(_,index)=>index);
 function Row({index}:{index:number}){
@@ -45,15 +46,16 @@ function Check(){
  const [engine,setEngine]=useState<Engine>('next'),[open,setOpen]=useState<Case|null>(null),[tall,setTall]=useState(false),[status,setStatus]=useState('idle');
  const timers=useRef<ReturnType<typeof setTimeout>[]>([]);
  const clear=()=>{for(const timer of timers.current)clearTimeout(timer);timers.current=[];};
- const start=useCallback((next:Engine,which:Case)=>{
-  clear();setEngine(next);setTall(false);setOpen(which);setStatus(`${next} ${which}`);
-  if(which!=='content')return;
+ const start=useCallback((next:Engine,which:Case,manual=false)=>{
+  clear();setEngine(next);setTall(false);setOpen(which);setStatus(`${next} ${which}${manual?' manual':''}`);
+  // Manual: the views are switched by touch (Switch pane), as a person would, so the display is already awake.
+  if(which!=='content'||manual)return;
   // Short pane, tall pane, eight switches, then close: the card-to-card transition that jumps on Android today.
   for(let step=1;step<=8;step++)timers.current.push(setTimeout(()=>setTall(step%2===1),600+step*900));
   timers.current.push(setTimeout(()=>{setOpen(null);setStatus('done');},600+9*900+600));
  },[]);
  useEffect(()=>{
-  const run=(url:string|null)=>{if(!url)return;const match=/engine=(next|gorhom).*case=(list|content)/.exec(url);if(match)start(match[1] as Engine,match[2] as Case);};
+  const run=(url:string|null)=>{if(!url)return;const match=/engine=(next|gorhom).*case=(list|content)/.exec(url);if(match)start(match[1] as Engine,match[2] as Case,/manual=1/.test(url));};
   void Linking.getInitialURL().then(run);const subscription=Linking.addEventListener('url',event=>run(event.url));
   return()=>{subscription.remove();clear();};
  },[start]);
