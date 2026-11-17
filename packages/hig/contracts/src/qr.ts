@@ -167,6 +167,73 @@ export function qrMaskAt(mask:number,column:number,row:number):boolean{
   default:return ((column+row)%2+column*row%3)%2===0;
  }
 }
+/**
+ * The mask search reads a symbol as bits, 32 cells a word, so a mask is scored in a few operations a word, not many a cell.
+ * A line (a row or a column) is cut into words that start every `SPAN` cells and overlap: word k holds cells 21k−1 to 21k+30,
+ * the cell 21k−1+j at bit j. A word answers for the runs and sequences that start in its own cells, bits 1 to 21 (`OWN`):
+ * the bit before them says whether a run began earlier, and the ten after them complete an eleven-cell sequence.
+ */
+const SPAN=21,OWN=0x3ffffe;
+const MASK_COLUMNS=8*12*2;let maskWords:Int32Array|undefined;
+/**
+ * Each mask pattern as words, built when a symbol is first encoded: every pattern repeats each 6 columns and 12 rows. For a
+ * row, by `row % 12` and the word's parity (a word starts 21 columns after the last); then, from `MASK_COLUMNS`, for a column,
+ * by `column % 6` and the word's index modulo 4.
+ */
+function maskPatterns():Int32Array{
+ if(maskWords)return maskWords;
+ const words=maskWords=new Int32Array(MASK_COLUMNS+8*6*4),tile=new Uint8Array(12);
+ for(let mask=0;mask<8;mask++){
+  for(let row=0;row<12;row++){
+   let six=0;for(let column=0;column<6;column++)if(qrMaskAt(mask,column,row))six|=1<<column;
+   tile[row]=six;
+   // Bit j of a row's word is column 21k−1+j: column j+5 of the tile in an even word, j+2 in an odd one. Six bits repeat to fill the word.
+   for(let phase=0;phase<2;phase++){const turn=5-3*phase;words[(mask*12+row)*2+phase]=Math.imul((six>>>turn|six<<6-turn)&63,0x41041041);}
+  }
+  for(let column=0;column<6;column++){
+   let twelve=0;for(let row=0;row<12;row++)twelve|=(tile[row]!>>>column&1)<<row;
+   // Bit j of a column's word is row 21k−1+j: row j+11, j+8, j+5 and j+2 of the tile in words 0 to 3.
+   for(let phase=0;phase<4;phase++){const turn=11-3*phase;words[MASK_COLUMNS+(mask*6+column)*4+phase]=Math.imul((twelve>>>turn|twelve<<12-turn)&4095,0x1001001);}
+  }
+ }
+ return words;
+}
+/** A symbol as words, its rows and then its columns: `lines` holds the modules and `free` the cells that are not reserved, which a mask may invert. */
+function pack(modules:Uint8Array,reserved:Uint8Array,size:number):{lines:Int32Array;free:Int32Array}{
+ const words=Math.ceil(size/SPAN),lines=new Int32Array(2*size*words),free=new Int32Array(2*size*words);
+ for(let pass=0,at=0;pass<2;pass++){
+  const step=pass?size:1,stride=pass?1:size;
+  for(let line=0;line<size;line++,at+=words){
+   // Each cell is read once, into its word's own bits; a word then takes the cell before them and the ten after from its neighbours.
+   for(let word=0,cell=0,index=line*stride;word<words;word++){
+    let dark=0,open=0;
+    for(let bit=1,end=Math.min(cell+SPAN,size);cell<end;cell++,bit++,index+=step){dark|=modules[index]!<<bit;open|=(reserved[index]!^1)<<bit;}
+    lines[at+word]=dark;free[at+word]=open;
+   }
+   for(let word=at,last=at+words-1;word<=last;word++){
+    if(word>at){lines[word]=lines[word]!|lines[word-1]!>>>SPAN&1;free[word]=free[word]!|free[word-1]!>>>SPAN&1;}
+    if(word<last){lines[word]=lines[word]!|(lines[word+1]!&0x7fe)<<SPAN;free[word]=free[word]!|(free[word+1]!&0x7fe)<<SPAN;}
+   }
+  }
+ }
+ return {lines,free};
+}
+/** How many bits of a word are set. */
+function count(word:number):number{word-=word>>>1&0x55555555;word=(word&0x33333333)+(word>>>2&0x33333333);return Math.imul(word+(word>>>4)&0x0f0f0f0f,0x01010101)>>>24;}
+/**
+ * Points of one word of a line for the runs (rule 1) and finder-like sequences (rule 3) that start in its own cells. `equal` has a
+ * bit for each cell that matches the next, `inside` one for each cell of the word that is in the symbol.
+ */
+function wordPenalty(word:number,equal:number,inside:number):number{
+ let score=0;
+ // A run of n ≥ 5 modules holds n−4 windows of five equal modules and scores n−2: one a window, and two more where the run starts.
+ const five=equal&equal>>>1&equal>>>2&equal>>>3&OWN;
+ if(five)score=count(five)+2*count(five&~(equal<<1));
+ // 1011101 with four light modules after it or before it, all eleven inside the symbol.
+ const core=word&~(word>>>1)&word>>>2&word>>>3&word>>>4&~(word>>>5)&word>>>6;
+ if(core){const light=~(word|word>>>1|word>>>2|word>>>3),found=(core&light>>>7|light&core>>>4)&inside>>>10&OWN;if(found)score+=40*count(found);}
+ return score;
+}
 /** The function patterns of a version and the cells they reserve: finders, separators, alignment and timing patterns, with the format and version cells left light. */
 function template(version:number):{modules:Uint8Array;reserved:Uint8Array}{
  const size=17+4*version,modules=new Uint8Array(size*size),reserved=new Uint8Array(size*size);
@@ -188,36 +255,41 @@ function template(version:number):{modules:Uint8Array;reserved:Uint8Array}{
  if(version>=7)for(let i=0;i<18;i++){const a=size-11+i%3,b=Math.floor(i/3);set(a,b,0);set(b,a,0);}
  return {modules,reserved};
 }
-/** Penalty of runs (rule 1) and finder-like sequences (rule 3) along every line in one direction. `step` is the distance between neighbours in a line, `stride` between lines. */
-function linePenalty(modules:Uint8Array,size:number,step:number,stride:number):number{
- let score=0;
- for(let line=0;line<size;line++){
-  const start=line*stride;let run=1,previous=modules[start]!;
-  for(let i=1;i<size;i++){const cell=modules[start+i*step]!;if(cell===previous)run++;else{if(run>=5)score+=run-2;run=1;previous=cell;}}
-  if(run>=5)score+=run-2;
-  // 1011101 with four light modules on either side, each occurrence inside the symbol.
-  for(let i=0;i+11<=size;i++){
-   const at=(k:number)=>modules[start+(i+k)*step]!;
-   if(at(0)&&!at(1)&&at(2)&&at(3)&&at(4)&&!at(5)&&at(6)&&!at(7)&&!at(8)&&!at(9)&&!at(10))score+=40;
-   if(!at(0)&&!at(1)&&!at(2)&&!at(3)&&at(4)&&!at(5)&&at(6)&&at(7)&&at(8)&&!at(9)&&at(10))score+=40;
+/**
+ * The penalty of a symbol under a mask pattern. `lines` is the symbol before masking and `free` the cells the mask may invert,
+ * both as `pack` writes them. No rule takes points away, so a candidate is given up, and `limit` returned, as soon as its
+ * score reaches `limit`: it cannot be lower than a score already found.
+ */
+function maskPenalty(lines:Int32Array,free:Int32Array,size:number,mask:number,limit:number):number{
+ const words=Math.ceil(size/SPAN),inside=new Int32Array(words),above=new Int32Array(2*words),patterns=maskPatterns();
+ for(let word=0;word<words;word++){const cells=size+1-word*SPAN;inside[word]=(cells<32?(1<<cells)-1:-1)&(word?-1:-2);}
+ let score=0,dark=0,at=0;
+ // Along the rows: runs, finder-like sequences, 2×2 blocks against the row above, and the dark count.
+ for(let row=0;row<size;row++){
+  const pattern=(mask*12+row%12)*2;
+  for(let word=0;word<words;word++,at++){
+   const cells=lines[at]!^patterns[pattern+(word&1)]!&free[at]!,valid=inside[word]!,equal=~(cells^cells>>>1)&valid&valid>>>1;
+   const blocks=equal&above[words+word]!&~(cells^above[word]!)&OWN;
+   if(blocks)score+=3*count(blocks);
+   above[word]=cells;above[words+word]=equal;dark+=count(cells&OWN);score+=wordPenalty(cells,equal,valid);
   }
+  if(score>=limit)return limit;
  }
- return score;
+ // Down the columns: runs and finder-like sequences.
+ for(let column=0;column<size;column++){
+  const pattern=MASK_COLUMNS+(mask*6+column%6)*4;
+  for(let word=0;word<words;word++,at++){const cells=lines[at]!^patterns[pattern+(word&3)]!&free[at]!,valid=inside[word]!;score+=wordPenalty(cells,~(cells^cells>>>1)&valid&valid>>>1,valid);}
+  if(score>=limit)return limit;
+ }
+ const total=size*size;
+ return score+10*Math.ceil(Math.max(0,Math.abs(dark*100-total*50)-total*5)/(total*5));
 }
 /**
  * The mask penalty of a symbol (ISO/IEC 18004 §7.8.3): runs of five or more, 2×2 blocks, finder-like sequences and the share of
  * dark modules. `encodeQR` scores each candidate with its format and version cells still light, as the `qr` encoder behind Cuer
  * and python-qrcode do, so HIG picks the same mask they pick.
  */
-export function qrPenalty(modules:Uint8Array,size:number):number{
- let score=linePenalty(modules,size,1,size)+linePenalty(modules,size,size,1),dark=0;
- for(let row=0;row<size;row++)for(let column=0;column<size;column++){
-  const at=row*size+column,cell=modules[at]!;dark+=cell;
-  if(row+1<size&&column+1<size&&cell===modules[at+1]&&cell===modules[at+size]&&cell===modules[at+size+1])score+=3;
- }
- const total=size*size;
- return score+10*Math.ceil(Math.max(0,Math.abs(dark*100-total*50)-total*5)/(total*5));
-}
+export function qrPenalty(modules:Uint8Array,size:number):number{const {lines,free}=pack(modules,new Uint8Array(size*size).fill(1),size);return maskPenalty(lines,free,size,0,Infinity);}
 /** Why a value cannot be encoded: it is longer than a version 40 symbol (or the requested version) holds at the level. */
 export class QRCapacityError extends RangeError {constructor(message:string){super(message);this.name='QRCapacityError';}}
 /**
@@ -239,18 +311,25 @@ export function encodeQR(value:string,options:QREncodeOptions={}):QRMatrix{
  if(options.version===undefined)while(version<=40&&!fits(version))version++;
  if(version>40||!fits(version))throw new QRCapacityError(`QR value of ${length} ${mode==='byte'?'bytes':'characters'} does not fit ${options.version===undefined?'a version 40 symbol':`version ${version}`} at ${level} error correction`);
  const size=17+4*version,{modules,reserved}=template(version),stream=codewords(value,bytes,mode,version,level);
- // Two-module columns from the right edge, alternately upward and downward, skipping the vertical timing column.
- const cells:number[]=[];
- for(let right=size-1,upward=true;right>=1;right-=2,upward=!upward){
+ // Two-module columns from the right edge, alternately upward and downward, skipping the vertical timing column. Each cell
+ // that is not reserved takes the next bit of the stream; the remainder bits past the last codeword stay light.
+ for(let right=size-1,step=-size,bit=0,bits=stream.length*8;right>=1;right-=2,step=-step){
   if(right===6)right=5;
-  for(let i=0;i<size;i++){const row=upward?size-1-i:i;for(let j=0;j<2;j++){const at=row*size+right-j;if(!reserved[at])cells.push(at);}}
+  for(let i=0,at=(step<0?size-1:0)*size+right;i<size;i++,at+=step)for(let cell=at;cell>at-2;cell--)if(!reserved[cell]){if(bit<bits)modules[cell]=stream[bit>>>3]!>>>(7-(bit&7))&1;bit++;}
  }
- // Remainder bits past the last codeword stay light.
- for(let i=0;i<cells.length&&i<stream.length*8;i++)modules[cells[i]!]=stream[i>>>3]!>>>(7-(i&7))&1;
- const masked=(mask:number)=>{const out=modules.slice();for(const at of cells)if(qrMaskAt(mask,at%size,Math.floor(at/size)))out[at]=out[at]!^1;return out;};
- let mask=options.mask,best:Uint8Array|undefined;
- if(mask===undefined){let lowest=Infinity;mask=0;for(let candidate=0;candidate<8;candidate++){const trial=masked(candidate),score=qrPenalty(trial,size);if(score<lowest){lowest=score;mask=candidate;best=trial;}}}
- const result=best??masked(mask),format=qrFormatBits(level,mask);
+ // The candidates are scored from the symbol as bits; only the mask that wins is applied to the modules.
+ let mask=options.mask;
+ if(mask===undefined){
+  const {lines,free}=pack(modules,reserved,size);let lowest=Infinity;mask=0;
+  for(let candidate=0;candidate<8;candidate++){const score=maskPenalty(lines,free,size,candidate,lowest);if(score<lowest){lowest=score;mask=candidate;}}
+ }
+ // A row's pattern words hold its columns 21 a word, from bit 1: the mask inverts each cell that is not reserved.
+ const patterns=maskPatterns();
+ for(let row=0,at=0,end=size;row<size;row++,end+=size){
+  const pattern=(mask*12+row%12)*2;
+  for(let word=0;at<end;word++)for(let inverts=patterns[pattern+(word&1)]!>>>1,stop=Math.min(at+SPAN,end);at<stop;at++,inverts>>>=1)modules[at]=modules[at]!^inverts&(reserved[at]!^1);
+ }
+ const result=modules,format=qrFormatBits(level,mask);
  const set=(column:number,row:number,bit:number)=>{result[row*size+column]=bit;};
  for(let i=0;i<15;i++){
   const bit=format>>>i&1;
@@ -305,13 +384,17 @@ function roundedSquare(x:number,y:number,edge:number,radius:number,clockwise:boo
 export function qrGeometry(matrix:Pick<QRMatrix,'size'|'modules'>,options:QRGeometryOptions={}):QRGeometry{
  const {size,modules}=matrix,far=size-QR_FINDER,cleared=options.arena?qrArenaSize(size):0,origin=(size-cleared)/2,diameter=QR_DOT_RADIUS*2;
  const arc=`a${QR_DOT_RADIUS} ${QR_DOT_RADIUS} 0 1 0 `;
+ // One circle is two half arcs. Every dot of a column starts with the same text and every dot of a row ends with the same text, so each
+ // is written once: no number is formatted a dot. Tenths of a module are exact enough in a double to print without rounding noise.
+ const starts:string[]=[];for(let column=0;column<size;column++)starts.push(`M${(column*10+1)/10} `);
  let path='',dots=0;
- for(let row=0;row<size;row++)for(let column=0;column<size;column++){
-  if(!modules[row*size+column])continue;
-  if((row<QR_FINDER&&(column<QR_FINDER||column>=far))||(row>=far&&column<QR_FINDER))continue;
-  if(cleared&&row>=origin&&row<origin+cleared&&column>=origin&&column<origin+cleared)continue;
-  // One circle as two half arcs. Tenths of a module are exact enough in a double to print without rounding noise.
-  path+=`M${(column*10+1)/10} ${row+0.5}${arc}${diameter} 0${arc}${-diameter} 0`;dots++;
+ for(let row=0;row<size;row++){
+  const tail=`${row+0.5}${arc}${diameter} 0${arc}${-diameter} 0`,hole=cleared>0&&row>=origin&&row<origin+cleared;
+  // The columns of a finder pattern are skipped in the rows it spans, and the arena's in the rows it clears.
+  for(let column=row<QR_FINDER||row>=far?QR_FINDER:0,end=row<QR_FINDER?far:size,at=row*size;column<end;column++){
+   if(hole&&column===origin)column+=cleared;
+   if(modules[at+column]){path+=starts[column]!+tail;dots++;}
+  }
  }
  const finders=[{x:0,y:0},{x:far,y:0},{x:0,y:far}];
  for(const {x,y} of finders)path+=roundedSquare(x,y,7,1.75,true)+roundedSquare(x+1,y+1,5,0.75,false)+roundedSquare(x+2,y+2,3,0.5,true);

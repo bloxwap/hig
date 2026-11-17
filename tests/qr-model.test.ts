@@ -89,6 +89,45 @@ describe('QR specification constants',()=>{
   const row=new Uint8Array(441);for(const column of [0,2,3,4,6])row[column]=1;
   expect(qrPenalty(row,21)-qrPenalty(new Uint8Array(441),21)).toBe(40-7-5-21);
  });
+ it('scores every symbol as the four rules read module by module, at every width of word the scorer packs a line into',()=>{
+  // The rules as the standard words them, one module at a time: the scorer works on 32 modules a word and must agree exactly.
+  const plain=(modules:Uint8Array,size:number)=>{
+   let score=0,dark=0;const at=(column:number,row:number)=>modules[row*size+column]!;
+   for(const cell of [(line:number,i:number)=>at(i,line),(line:number,i:number)=>at(line,i)])for(let line=0;line<size;line++){
+    for(let i=0,run=1;i<size;i++){if(i+1<size&&cell(line,i+1)===cell(line,i))run++;else{if(run>=5)score+=run-2;run=1;}}
+    for(let i=0;i+11<=size;i++){const text=Array.from({length:11},(_,k)=>cell(line,i+k)).join('');if(text==='10111010000'||text==='00001011101')score+=40;}
+   }
+   for(let row=0;row<size;row++)for(let column=0;column<size;column++){dark+=at(column,row);if(row+1<size&&column+1<size&&at(column,row)===at(column+1,row)&&at(column,row)===at(column,row+1)&&at(column,row)===at(column+1,row+1))score+=3;}
+   const total=size*size;return score+10*Math.ceil(Math.max(0,Math.abs(dark*100-total*50)-total*5)/(total*5));
+  };
+  const next=random(1811);
+  // 21 to 41 modules fill one and two words; 45, 61, 65 and 85 cross the next boundaries; 177 is version 40.
+  for(const size of [21,25,29,33,37,41,45,61,65,85,177]){
+   const fills:((column:number,row:number)=>number)[]=[()=>0,()=>1,(column,row)=>(column+row)%2,column=>column%2,(_,row)=>row%2,(column,row)=>Number((column>>2)%2===(row>>2)%2),
+    // The finder-like sequence at every offset of a line, so each one that straddles two words is counted once.
+    (column,row)=>Number('10111010000'[(column+row)%11]),(column,row)=>Number('00001011101'[(column+2*row)%13]??0),column=>Number(column%7<5)];
+   for(const density of [0.5,0.5,0.5,0.2,0.8,0.05,0.95])fills.push(()=>Number(next()<density));
+   for(const [index,fill] of fills.entries()){
+    const modules=new Uint8Array(size*size);for(let row=0;row<size;row++)for(let column=0;column<size;column++)modules[row*size+column]=fill(column,row);
+    expect(qrPenalty(modules,size),`size ${size}, fill ${index}`).toBe(plain(modules,size));
+   }
+  }
+  // Real symbols too, as the encoder leaves them.
+  for(const value of [eth,sol,'x'.repeat(300),'9'.repeat(700)])for(const errorCorrection of levels){const matrix=encodeQR(value,{errorCorrection});expect(qrPenalty(matrix.modules,matrix.size),`${value.slice(0,8)} ${errorCorrection}`).toBe(plain(matrix.modules,matrix.size));}
+ },slow);
+ it('picks the first mask with the lowest penalty, scored with the format and version cells light',()=>{
+  // The search gives a candidate up once it cannot win and applies only the winner: the choice must be the one a full score of all eight gives.
+  for(const value of ['',eth,sol,`ethereum:${eth}@8453`,'HELLO WORLD','0123456789'.repeat(9),'x'.repeat(300),'Zażółć 日本語 🚀'])for(const errorCorrection of levels){
+   const chosen=encodeQR(value,{errorCorrection}),size=chosen.size,version=chosen.version;
+   const scores=Array.from({length:8},(_,mask)=>{
+    const modules=encodeQR(value,{errorCorrection,mask}).modules.slice(),clear=(column:number,row:number)=>{modules[row*size+column]=0;};
+    for(let i=0;i<9;i++){if(i!==6){clear(8,i);clear(i,8);}if(i<8){clear(size-1-i,8);clear(8,size-1-i);}}
+    if(version>=7)for(let i=0;i<18;i++){clear(size-11+i%3,Math.floor(i/3));clear(Math.floor(i/3),size-11+i%3);}
+    return qrPenalty(modules,size);
+   });
+   expect(chosen.mask,`${value.slice(0,12)} ${errorCorrection}: ${scores.join(' ')}`).toBe(scores.indexOf(Math.min(...scores)));
+  }
+ },slow);
 });
 describe('QR payload packing',()=>{
  it('picks the densest mode the whole value fits',()=>{
@@ -237,6 +276,27 @@ describe('QR drawing geometry',()=>{
   expect(geometry.path.startsWith(`M${first}.1 0.5a0.4 0.4 0 1 0 0.8 0a0.4 0.4 0 1 0 -0.8 0`)).toBe(true);
   // No number carries rounding noise.
   expect(geometry.path).not.toMatch(/\d\.\d{3,}/);
+ });
+ it('writes the path dot by dot in row order, exactly as one formula a dot writes it, at every size and with an arena',()=>{
+  // The builder writes each column's start and each row's end once and skips the finder and arena columns by range; the text must not change.
+  const plain=(symbol:QRMatrix,arena:boolean)=>{
+   const {size,modules}=symbol,far=size-7,cleared=arena?qrArenaSize(size):0,origin=(size-cleared)/2;let path='',count=0;
+   for(let row=0;row<size;row++)for(let column=0;column<size;column++){
+    if(!modules[row*size+column]||(row<7&&(column<7||column>=far))||(row>=far&&column<7))continue;
+    if(cleared&&row>=origin&&row<origin+cleared&&column>=origin&&column<origin+cleared)continue;
+    path+=`M${(column*10+1)/10} ${row+0.5}a0.4 0.4 0 1 0 0.8 0a0.4 0.4 0 1 0 -0.8 0`;count++;
+   }
+   return {path,count};
+  };
+  for(const version of [1,2,3,5,7,10,20,40])for(const arena of [false,true]){
+   const symbol=encodeQR(`hig ${version}`,{version}),drawn=qrGeometry(symbol,{arena}),expected=plain(symbol,arena);
+   expect(drawn.dots,`version ${version}`).toBe(expected.count);expect(drawn.path.startsWith(expected.path),`version ${version}${arena?' with an arena':''}`).toBe(true);
+   // Only the three finder patterns follow the dots: nine closed shapes.
+   expect(drawn.path.slice(expected.path.length).match(/z/g),`version ${version}`).toHaveLength(9);expect(drawn.path.slice(expected.path.length).startsWith('M1.75 0h3.5')).toBe(true);
+  }
+  // A symbol that is dark everywhere draws a dot in every cell outside the finder patterns and the arena: no cell is skipped or doubled at a range's edge.
+  const full={size:29,modules:new Uint8Array(841).fill(1)};
+  expect(qrGeometry(full).dots).toBe(841-3*49);expect(qrGeometry(full,{arena:true}).dots).toBe(841-3*49-49);
  });
  it('draws three finder patterns: a ring as an outline with a hole, around a core',()=>{
   expect(geometry.finders).toEqual([{x:0,y:0},{x:22,y:0},{x:0,y:22}]);

@@ -1,18 +1,20 @@
 // @vitest-environment jsdom
-import React from 'react';
+import React,{Profiler} from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {act,cleanup,fireEvent,render,screen} from '@testing-library/react';
 import {hydrateRoot} from 'react-dom/client';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {Avatar,avatarColorRoles} from '../packages/hig/react/src/avatar';
+import {Avatar,avatarColorRoles,type AvatarProps} from '../packages/hig/react/src/avatar';
 import * as status from '../packages/hig/react/src/status';
 import {beamAvatar} from '../packages/hig/contracts/src/avatar';
 import * as model from '@bloxwap/hig/contracts/avatar';
-// The renderer's own import of the model, wrapped so a test can count how often a face is computed.
-vi.mock('@bloxwap/hig/contracts/avatar',async importOriginal=>{const actual=await importOriginal<typeof import('@bloxwap/hig/contracts/avatar')>();return {...actual,beamAvatar:vi.fn(actual.beamAvatar)};});
+// The renderer's own import of the model, wrapped so a test can count how often a face is computed and how often an Avatar renders:
+// every render of Avatar reads its size through `avatarSide` once, and nothing else calls it.
+vi.mock('@bloxwap/hig/contracts/avatar',async importOriginal=>{const actual=await importOriginal<typeof import('@bloxwap/hig/contracts/avatar')>();return {...actual,beamAvatar:vi.fn(actual.beamAvatar),avatarSide:vi.fn(actual.avatarSide)};});
 const computed=()=>vi.mocked(model.beamAvatar).mock.calls.length;
+const rendered=()=>vi.mocked(model.avatarSide).mock.calls.length;
 afterEach(cleanup);
 const address='0x1111111111111111111111111111111111111111';
 const vivid=['#00FF00','#00BBFF','#FF14A0','#FFFA00','#C300FF'];
@@ -137,6 +139,57 @@ describe('Avatar does no work when nothing changed',()=>{
   view.rerender(<Avatar name='Joe' seed='b' colors={['#f0f0f0','#101010']} faceColor='#ff0000'/>);expect(computed()).toBe(before+3);expect(hex(drawn().mouthInk).toUpperCase()).toBe('#FF0000');
   // Colours that only differ in where one ends and the next begins are different palettes.
   view.rerender(<Avatar name='Joe' seed='b' colors={['#f0f0f0']}/>);expect(computed()).toBe(before+4);
+ });
+});
+
+describe('Avatar in a list whose parent renders again',()=>{
+ /** Rows written inline, the way a leaderboard is: every render of the parent makes new elements and a new palette array, and nothing else is new. */
+ function Board({seeds}:{seeds:readonly string[]}){
+  return <ul>{seeds.map((seed,index)=><li key={index}>{[
+   <Avatar name={`Trader ${index}`} seed={seed} decorative/>,
+   <Avatar name={`Trader ${index}`} seed={seed} size={32} colors={[...vivid]} faceColor='#0A0A0A' square/>,
+   <Avatar name={`Trader ${index}`} src='/joe.png'/>,
+   <Avatar name={`Trader ${index}`}/>,
+  ][index%4]}</li>)}</ul>;
+ }
+ it('renders no Avatar, computes no face and writes nothing to the page while every prop is the same',()=>{
+  const seeds=Array.from({length:20},(_,index)=>`0x${String(index).padStart(40,'0')}`);let commits=0;
+  const board=(list:readonly string[])=><Profiler id='board' onRender={()=>{commits++;}}><Board seeds={list}/></Profiler>;
+  const start={renders:rendered(),faces:computed()},view=render(board(seeds));
+  // The counters count what they say: one render for each Avatar, one face for each generated one.
+  expect(commits).toBe(1);expect(rendered()-start.renders).toBe(20);expect(computed()-start.faces).toBe(10);
+  const mounted={renders:rendered(),faces:computed()},records:MutationRecord[]=[];
+  const observer=new MutationObserver(found=>{records.push(...found);});observer.observe(view.container,{attributes:true,childList:true,subtree:true,characterData:true});
+  for(let tick=0;tick<10;tick++)view.rerender(board([...seeds]));
+  // The Profiler saw the parent render ten times; no Avatar under it did.
+  expect(commits).toBe(11);expect(rendered()-mounted.renders).toBe(0);expect(computed()-mounted.faces).toBe(0);expect(records.concat(observer.takeRecords())).toEqual([]);
+  // One row gets a new seed: that Avatar renders and draws one face, and the page is written inside that row only.
+  view.rerender(board(seeds.map((seed,index)=>index===4?address:seed)));
+  expect(commits).toBe(12);expect(rendered()-mounted.renders).toBe(1);expect(computed()-mounted.faces).toBe(1);
+  const written=new Set(records.concat(observer.takeRecords()).map(record=>(record.target as Element).closest('li')));
+  expect([...written]).toEqual([view.container.querySelectorAll('li')[4]]);observer.disconnect();
+ });
+ it('renders again for each prop that changes, and for a palette only when its colours change',()=>{
+  const base={name:'Joe',seed:address,size:40,colors:vivid,faceColor:'#0A0A0A',square:false,decorative:false} as const;
+  const view=render(<Avatar {...base}/>);
+  // Other values for every prop of AvatarProps. The type makes a new prop a compile error here until it has a row, and the row fails until the comparison in avatar.tsx reads that prop.
+  const others:{[Prop in keyof Required<AvatarProps>]:AvatarProps[Prop][]}={name:['Ann'],src:['/joe.png'],seed:['other'],variant:['initials'],size:[41],colors:[[...vivid].reverse(),vivid.slice(1),undefined,[]],faceColor:['#ffffff',undefined],square:[true],decorative:[true]};
+  for(const [prop,values] of Object.entries(others))for(const value of values){
+   view.rerender(<Avatar {...base}/>);const before=rendered();
+   // The same props again, with the palette in a new array: nothing renders.
+   view.rerender(<Avatar {...base} colors={[...vivid]}/>);expect(rendered()-before,'same props').toBe(0);
+   view.rerender(<Avatar {...base} {...{[prop]:value}}/>);expect(rendered()-before,`${prop}: ${JSON.stringify(value)}`).toBe(1);
+  }
+  // A prop that is passed as undefined and one that is left out are the same props.
+  view.rerender(<Avatar name='Joe' seed={address}/>);const before=rendered();
+  view.rerender(<Avatar name='Joe' seed={address} src={undefined} colors={undefined} variant={undefined}/>);expect(rendered()-before).toBe(0);
+ });
+ it('still shows the fallback of an image that fails, and tries a new address',()=>{
+  // The failure is state inside the Avatar: it must render for it although its props are the same.
+  const view=render(<Avatar name='Joe' seed={address} src='/joe.png'/>);
+  fireEvent.error(avatar());expect(avatar().tagName).toBe('SPAN');expect(avatar().dataset.variant).toBe('beam');
+  view.rerender(<Avatar name='Joe' seed={address} src='/joe.png'/>);expect(avatar().tagName).toBe('SPAN');
+  view.rerender(<Avatar name='Joe' seed={address} src='/joe-2.png'/>);expect(avatar().tagName).toBe('IMG');
  });
 });
 

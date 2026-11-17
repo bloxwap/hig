@@ -2,7 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {AvatarFrame,type AvatarFrameProps} from './avatar-frame.js';
+import {AvatarFrame,sameFrame,type AvatarFrameProps} from './avatar-frame.js';
 import {ActivityIndicator,Animated,Easing,View,ScrollView,useWindowDimensions,Platform,type DimensionValue,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
@@ -141,11 +141,14 @@ export function EmptyState({title,description,action,illustration,titleStyle,des
  {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
+/** The Avatar frame, kept while its props are the same: a list that renders again renders no frame for the rows that did not change. */
+const StillFrame=React.memo(AvatarFrame,sameFrame);
 /**
  * A person or account as a 40dp disc: an image, else the first two letters of the name on the well fill (one step lighter inside a Surface, Dialog or sheet).
  * `size`, `square` and `decorative` are as in `@bloxwap/hig/native/avatar`, whose `Avatar` also draws a face generated from a seed; that entry needs `react-native-svg` and this one does not.
+ * It renders again only when one of its props changes.
  */
-export function Avatar(props:AvatarFrameProps){return <AvatarFrame {...props}/>;}
+export function Avatar(props:AvatarFrameProps){return <StillFrame {...props}/>;}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */

@@ -30,6 +30,19 @@ function sourceKey(source:ImageSourcePropType|null|undefined):unknown{
  const uri=(source as {uri?:unknown}).uri;
  return typeof uri==='string'&&uri!==''?uri:undefined;
 }
+/** Whether two sources name the same image the same way: the same value, or objects whose fields are identical (a host often writes `{uri}` inline), or lists of those. */
+function sameSource(a:unknown,b:unknown):boolean{
+ if(Object.is(a,b))return true;
+ if(typeof a!=='object'||typeof b!=='object'||a===null||b===null||Array.isArray(a)!==Array.isArray(b))return false;
+ if(Array.isArray(a))return a.length===(b as unknown[]).length&&a.every((item,index)=>sameSource(item,(b as unknown[])[index]));
+ const keys=Object.keys(a),theirs=b as Record<string,unknown>;
+ return keys.length===Object.keys(b).length&&keys.every(key=>key in theirs&&Object.is((a as Record<string,unknown>)[key],theirs[key]));
+}
+/**
+ * The same frame props: each one identical, and `source` the same image in whichever object.
+ * Each prop is read by name, because walking a list of names costs as much as the render it saves. `tests/native/avatar-typecheck.tsx` lists every prop, so a new one is seen there.
+ */
+export const sameFrame=(a:AvatarFrameProps,b:AvatarFrameProps)=>a.name===b.name&&a.size===b.size&&a.square===b.square&&a.decorative===b.decorative&&sameSource(a.source,b.source);
 /**
  * The box behind every Avatar: the image, else `face` clipped to the box, else the first two letters on the well fill.
  * Internal. `status` renders it with no face and `avatar` with the generated one, so only the `avatar` entry loads `react-native-svg`.

@@ -1,0 +1,1944 @@
+{
+ "chromium": "156.0.8078.4",
+ "react": "19.3.1",
+ "renderer": "native (react-native-web in Chromium, not a device)",
+ "component": "./packages/hig/native/src/avatar",
+ "rows": 500,
+ "renders": 50,
+ "runs": 5,
+ "stat": "min",
+ "scrolls": 0,
+ "viewport": "800x900@2x",
+ "timeDomain": "threadTicks",
+ "rates": {
+  "1x": {
+   "none": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 1,
+     "svgNodesPerAvatar": 0,
+     "inlineStylesPerAvatar": 1,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 15.63,
+     "layoutMs": 6.79,
+     "recalcStyleMs": 1.75,
+     "taskMs": 29.73,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 16.1,
+     "heapBytes": 3850336,
+     "heapBytesPerRow": 7701
+    },
+    "remount": {
+     "scriptMs": 9.66,
+     "layoutMs": 1.18,
+     "recalcStyleMs": 1.64,
+     "taskMs": 16.64,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 10.2
+    },
+    "rerender50": {
+     "scriptMs": 272.78,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 277.4,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 274.3
+    },
+    "reseedOne": {
+     "scriptMs": 5.52,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 6.18,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 5.4
+    },
+    "provider50": {
+     "scriptMs": 3.99,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 4.62,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 4
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 26,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 559.1,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 8.7,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "beam": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 8,
+     "svgNodesPerAvatar": 7,
+     "inlineStylesPerAvatar": 1,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 43.16,
+     "layoutMs": 8.27,
+     "recalcStyleMs": 7.35,
+     "taskMs": 63.53,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 44.8,
+     "heapBytes": 6908516,
+     "heapBytesPerRow": 13817
+    },
+    "remount": {
+     "scriptMs": 31.45,
+     "layoutMs": 3.48,
+     "recalcStyleMs": 7.45,
+     "taskMs": 49.34,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 32.7
+    },
+    "rerender50": {
+     "scriptMs": 214.78,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 215.5,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 216
+    },
+    "reseedOne": {
+     "scriptMs": 5.81,
+     "layoutMs": 0.25,
+     "recalcStyleMs": 0.09,
+     "taskMs": 7.24,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 5.8
+    },
+    "provider50": {
+     "scriptMs": 6.76,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 7.35,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 6.8
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 500,
+      "avatarRenders": 500,
+      "faceRenders": 500,
+      "profilerCommits": 1,
+      "profilerRenderMs": 66.4,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 511.1,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 1,
+      "avatarRenders": 1,
+      "faceRenders": 1,
+      "profilerCommits": 1,
+      "profilerRenderMs": 7.3,
+      "domWrites": 6,
+      "rowsWritten": [
+       250
+      ]
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "palette": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 8,
+     "svgNodesPerAvatar": 7,
+     "inlineStylesPerAvatar": 1,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 44.25,
+     "layoutMs": 8.8,
+     "recalcStyleMs": 8.23,
+     "taskMs": 66.53,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 45.6,
+     "heapBytes": 6927124,
+     "heapBytesPerRow": 13854
+    },
+    "remount": {
+     "scriptMs": 35.14,
+     "layoutMs": 3.36,
+     "recalcStyleMs": 8.72,
+     "taskMs": 55.14,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 36.7
+    },
+    "rerender50": {
+     "scriptMs": 280.39,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 281.25,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 281.6
+    },
+    "reseedOne": {
+     "scriptMs": 8.68,
+     "layoutMs": 0.35,
+     "recalcStyleMs": 0.12,
+     "taskMs": 10.6,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 8.6
+    },
+    "provider50": {
+     "scriptMs": 10.74,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 11.54,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 10.7
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 500,
+      "avatarRenders": 500,
+      "faceRenders": 500,
+      "profilerCommits": 1,
+      "profilerRenderMs": 54.7,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 338.2,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 1,
+      "avatarRenders": 1,
+      "faceRenders": 1,
+      "profilerCommits": 1,
+      "profilerRenderMs": 8.8,
+      "domWrites": 8,
+      "rowsWritten": [
+       250
+      ]
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "image": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 3,
+     "svgNodesPerAvatar": 0,
+     "inlineStylesPerAvatar": 2,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 72.92,
+     "layoutMs": 8.76,
+     "recalcStyleMs": 7.25,
+     "taskMs": 103.34,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 34,
+     "heapBytes": 9498348,
+     "heapBytesPerRow": 18997
+    },
+    "remount": {
+     "scriptMs": 75.67,
+     "layoutMs": 4.29,
+     "recalcStyleMs": 9.87,
+     "taskMs": 102.12,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 37.6
+    },
+    "rerender50": {
+     "scriptMs": 348.74,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 359.58,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 350
+    },
+    "reseedOne": {
+     "scriptMs": 7.97,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 10.82,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 7.3
+    },
+    "provider50": {
+     "scriptMs": 8.48,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 11.57,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 7.9
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 0,
+      "avatarRenders": 500,
+      "faceRenders": 0,
+      "profilerCommits": 56,
+      "profilerRenderMs": 137.4,
+      "domWrites": 1000
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 415.9,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 7.2,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "initials": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 2,
+     "svgNodesPerAvatar": 0,
+     "inlineStylesPerAvatar": 2,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 46.69,
+     "layoutMs": 13.88,
+     "recalcStyleMs": 4.75,
+     "taskMs": 72.96,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 49,
+     "heapBytes": 5739336,
+     "heapBytesPerRow": 11479
+    },
+    "remount": {
+     "scriptMs": 37.89,
+     "layoutMs": 5.2,
+     "recalcStyleMs": 5.32,
+     "taskMs": 56.52,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 41.3
+    },
+    "rerender50": {
+     "scriptMs": 414.42,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 423.1,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 416.7
+    },
+    "reseedOne": {
+     "scriptMs": 7.34,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 8.34,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 7.3
+    },
+    "provider50": {
+     "scriptMs": 381.89,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 383.3,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 382.8
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 0,
+      "avatarRenders": 500,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 39.6,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 421.5,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 5.6,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   }
+  },
+  "4x": {
+   "none": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 1,
+     "svgNodesPerAvatar": 0,
+     "inlineStylesPerAvatar": 1,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 96.6,
+     "layoutMs": 42.06,
+     "recalcStyleMs": 9.33,
+     "taskMs": 168.5,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 95.8,
+     "heapBytes": 3850380,
+     "heapBytesPerRow": 7701
+    },
+    "remount": {
+     "scriptMs": 66.05,
+     "layoutMs": 8.31,
+     "recalcStyleMs": 9.09,
+     "taskMs": 100.87,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 66
+    },
+    "rerender50": {
+     "scriptMs": 2165.03,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 2178.88,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 2172.6
+    },
+    "reseedOne": {
+     "scriptMs": 36.7,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 38.3,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 35.9
+    },
+    "provider50": {
+     "scriptMs": 19.39,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 22.97,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 19.5
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 108.1,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 1551.4,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 32.4,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "beam": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 8,
+     "svgNodesPerAvatar": 7,
+     "inlineStylesPerAvatar": 1,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 227.19,
+     "layoutMs": 50.41,
+     "recalcStyleMs": 44.09,
+     "taskMs": 376.58,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 228.2,
+     "heapBytes": 6912012,
+     "heapBytesPerRow": 13824
+    },
+    "remount": {
+     "scriptMs": 215.26,
+     "layoutMs": 22.77,
+     "recalcStyleMs": 51.1,
+     "taskMs": 325.85,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 210.8
+    },
+    "rerender50": {
+     "scriptMs": 1144.19,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 1147.55,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 1143.7
+    },
+    "reseedOne": {
+     "scriptMs": 25.32,
+     "layoutMs": 1.35,
+     "recalcStyleMs": 0.88,
+     "taskMs": 32.5,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 24.7
+    },
+    "provider50": {
+     "scriptMs": 43.02,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 45.07,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 42.9
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 500,
+      "avatarRenders": 500,
+      "faceRenders": 500,
+      "profilerCommits": 1,
+      "profilerRenderMs": 180.6,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 1182.1,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 1,
+      "avatarRenders": 1,
+      "faceRenders": 1,
+      "profilerCommits": 1,
+      "profilerRenderMs": 34.4,
+      "domWrites": 6,
+      "rowsWritten": [
+       250
+      ]
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "palette": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 8,
+     "svgNodesPerAvatar": 7,
+     "inlineStylesPerAvatar": 1,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 205.2,
+     "layoutMs": 40.25,
+     "recalcStyleMs": 31.9,
+     "taskMs": 315.64,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 204.5,
+     "heapBytes": 6927384,
+     "heapBytesPerRow": 13855
+    },
+    "remount": {
+     "scriptMs": 198.96,
+     "layoutMs": 19.57,
+     "recalcStyleMs": 37.19,
+     "taskMs": 281.58,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 199
+    },
+    "rerender50": {
+     "scriptMs": 1382.94,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 1386.91,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 1385.6
+    },
+    "reseedOne": {
+     "scriptMs": 27.03,
+     "layoutMs": 1.72,
+     "recalcStyleMs": 0.15,
+     "taskMs": 34.99,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 27
+    },
+    "provider50": {
+     "scriptMs": 70.55,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 74.23,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 70.6
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 500,
+      "avatarRenders": 500,
+      "faceRenders": 500,
+      "profilerCommits": 1,
+      "profilerRenderMs": 327.9,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 1718.6,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 1,
+      "avatarRenders": 1,
+      "faceRenders": 1,
+      "profilerCommits": 1,
+      "profilerRenderMs": 20.4,
+      "domWrites": 8,
+      "rowsWritten": [
+       250
+      ]
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "image": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 3,
+     "svgNodesPerAvatar": 0,
+     "inlineStylesPerAvatar": 2,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 402.35,
+     "layoutMs": 49.59,
+     "recalcStyleMs": 37.61,
+     "taskMs": 558.96,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 192.3,
+     "heapBytes": 9431232,
+     "heapBytesPerRow": 18862
+    },
+    "remount": {
+     "scriptMs": 338.68,
+     "layoutMs": 18.78,
+     "recalcStyleMs": 38.94,
+     "taskMs": 458.26,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 156.1
+    },
+    "rerender50": {
+     "scriptMs": 1237.62,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 1255.06,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 1234.3
+    },
+    "reseedOne": {
+     "scriptMs": 29.61,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 37.65,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 27
+    },
+    "provider50": {
+     "scriptMs": 36.52,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 43.38,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 34.9
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 0,
+      "avatarRenders": 500,
+      "faceRenders": 0,
+      "profilerCommits": 3,
+      "profilerRenderMs": 345.7,
+      "domWrites": 1000
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 1403.5,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 27,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   },
+   "initials": {
+    "dom": {
+     "avatars": 500,
+     "nodesPerAvatar": 2,
+     "svgNodesPerAvatar": 0,
+     "inlineStylesPerAvatar": 2,
+     "ids": 0,
+     "uniqueIds": 0,
+     "masksAndClipPaths": 0
+    },
+    "mount": {
+     "scriptMs": 119.81,
+     "layoutMs": 40.35,
+     "recalcStyleMs": 12.02,
+     "taskMs": 186.7,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 115,
+     "heapBytes": 5742896,
+     "heapBytesPerRow": 11486
+    },
+    "remount": {
+     "scriptMs": 96.46,
+     "layoutMs": 15,
+     "recalcStyleMs": 13.54,
+     "taskMs": 139.48,
+     "layouts": 1,
+     "recalcStyles": 1,
+     "syncMs": 91.8
+    },
+    "rerender50": {
+     "scriptMs": 1380.65,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 1394.11,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 1384.4
+    },
+    "reseedOne": {
+     "scriptMs": 17.95,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 20.14,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 17.9
+    },
+    "provider50": {
+     "scriptMs": 941.36,
+     "layoutMs": 0,
+     "recalcStyleMs": 0,
+     "taskMs": 944.03,
+     "layouts": 0,
+     "recalcStyles": 0,
+     "syncMs": 942.6
+    },
+    "counts": {
+     "mount": {
+      "generatorCalls": 0,
+      "avatarRenders": 500,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 165.2,
+      "domWrites": 500
+     },
+     "rerender50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 50,
+      "profilerRenderMs": 1170.3,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "reseedOne": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 1,
+      "profilerRenderMs": 40.8,
+      "domWrites": 0,
+      "rowsWritten": []
+     },
+     "provider50": {
+      "generatorCalls": 0,
+      "avatarRenders": 0,
+      "faceRenders": 0,
+      "profilerCommits": 0,
+      "profilerRenderMs": 0,
+      "domWrites": 0,
+      "rowsWritten": []
+     }
+    }
+   }
+  }
+ },
+ "against": {
+  "component": "packages/hig/native/src/avatar.tsx at f3079e6, before the change",
+  "rates": {
+   "1x": {
+    "none": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 1,
+      "svgNodesPerAvatar": 0,
+      "inlineStylesPerAvatar": 1,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 18.45,
+      "layoutMs": 7.13,
+      "recalcStyleMs": 2.11,
+      "taskMs": 33.74,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 18.8,
+      "heapBytes": 3851040,
+      "heapBytesPerRow": 7702
+     },
+     "remount": {
+      "scriptMs": 11.39,
+      "layoutMs": 1.47,
+      "recalcStyleMs": 1.9,
+      "taskMs": 19.63,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 12
+     },
+     "rerender50": {
+      "scriptMs": 295.13,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 299.67,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 297.3
+     },
+     "reseedOne": {
+      "scriptMs": 5.7,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 6.3,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 5.6
+     },
+     "provider50": {
+      "scriptMs": 3.34,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 3.93,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 3.3
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 23.1,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 423.7,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 8.8,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "beam": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 8,
+      "svgNodesPerAvatar": 7,
+      "inlineStylesPerAvatar": 1,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 40.2,
+      "layoutMs": 8.05,
+      "recalcStyleMs": 7.32,
+      "taskMs": 60.15,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 41.2,
+      "heapBytes": 6770692,
+      "heapBytesPerRow": 13541
+     },
+     "remount": {
+      "scriptMs": 31.81,
+      "layoutMs": 3.68,
+      "recalcStyleMs": 8.21,
+      "taskMs": 50.81,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 33.1
+     },
+     "rerender50": {
+      "scriptMs": 386.5,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 389.69,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 390.4
+     },
+     "reseedOne": {
+      "scriptMs": 8.41,
+      "layoutMs": 0.29,
+      "recalcStyleMs": 0.12,
+      "taskMs": 9.99,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 8.5
+     },
+     "provider50": {
+      "scriptMs": 6.44,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 7.09,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 6.4
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 500,
+       "avatarRenders": 500,
+       "faceRenders": 500,
+       "profilerCommits": 1,
+       "profilerRenderMs": 76.8,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 518,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 1,
+       "avatarRenders": 500,
+       "faceRenders": 1,
+       "profilerCommits": 1,
+       "profilerRenderMs": 15.8,
+       "domWrites": 6,
+       "rowsWritten": [
+        250
+       ]
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "palette": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 8,
+      "svgNodesPerAvatar": 7,
+      "inlineStylesPerAvatar": 1,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 51.4,
+      "layoutMs": 9.86,
+      "recalcStyleMs": 8.37,
+      "taskMs": 75.43,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 53.5,
+      "heapBytes": 6789352,
+      "heapBytesPerRow": 13579
+     },
+     "remount": {
+      "scriptMs": 37.59,
+      "layoutMs": 3.99,
+      "recalcStyleMs": 9.49,
+      "taskMs": 59.3,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 39.1
+     },
+     "rerender50": {
+      "scriptMs": 463.27,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 464.51,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 464
+     },
+     "reseedOne": {
+      "scriptMs": 9.49,
+      "layoutMs": 0.31,
+      "recalcStyleMs": 0.12,
+      "taskMs": 11.26,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 9.5
+     },
+     "provider50": {
+      "scriptMs": 6.98,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 7.55,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 7
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 500,
+       "avatarRenders": 500,
+       "faceRenders": 500,
+       "profilerCommits": 1,
+       "profilerRenderMs": 74.8,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 578.5,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 1,
+       "avatarRenders": 500,
+       "faceRenders": 1,
+       "profilerCommits": 1,
+       "profilerRenderMs": 9.6,
+       "domWrites": 8,
+       "rowsWritten": [
+        250
+       ]
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "image": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 3,
+      "svgNodesPerAvatar": 0,
+      "inlineStylesPerAvatar": 2,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 72.34,
+      "layoutMs": 9.64,
+      "recalcStyleMs": 7.37,
+      "taskMs": 103.84,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 36.1,
+      "heapBytes": 9225180,
+      "heapBytesPerRow": 18450
+     },
+     "remount": {
+      "scriptMs": 69.68,
+      "layoutMs": 3.98,
+      "recalcStyleMs": 9.37,
+      "taskMs": 94.36,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 35.4
+     },
+     "rerender50": {
+      "scriptMs": 727.96,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 736.82,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 732.5
+     },
+     "reseedOne": {
+      "scriptMs": 13.38,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 15.33,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 13
+     },
+     "provider50": {
+      "scriptMs": 5.1,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 7.39,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 4.6
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 3,
+       "profilerRenderMs": 84,
+       "domWrites": 1000
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 1081.8,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 17.8,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "initials": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 2,
+      "svgNodesPerAvatar": 0,
+      "inlineStylesPerAvatar": 2,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 35.51,
+      "layoutMs": 13.35,
+      "recalcStyleMs": 4.68,
+      "taskMs": 63.49,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 37.6,
+      "heapBytes": 5598756,
+      "heapBytesPerRow": 11198
+     },
+     "remount": {
+      "scriptMs": 28.38,
+      "layoutMs": 4.57,
+      "recalcStyleMs": 4.63,
+      "taskMs": 43.91,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 30.1
+     },
+     "rerender50": {
+      "scriptMs": 949.61,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 963.09,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 954.4
+     },
+     "reseedOne": {
+      "scriptMs": 18.89,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 19.8,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 18.9
+     },
+     "provider50": {
+      "scriptMs": 320.9,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 321.83,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 321.2
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 58.9,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 969.5,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 10.7,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    }
+   },
+   "4x": {
+    "none": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 1,
+      "svgNodesPerAvatar": 0,
+      "inlineStylesPerAvatar": 1,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 135.32,
+      "layoutMs": 65.56,
+      "recalcStyleMs": 16.42,
+      "taskMs": 249.13,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 135.3,
+      "heapBytes": 3850516,
+      "heapBytesPerRow": 7701
+     },
+     "remount": {
+      "scriptMs": 66.57,
+      "layoutMs": 7.59,
+      "recalcStyleMs": 10.52,
+      "taskMs": 103.31,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 66.6
+     },
+     "rerender50": {
+      "scriptMs": 1432.21,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 1443.78,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 1434.3
+     },
+     "reseedOne": {
+      "scriptMs": 28.42,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 30.41,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 27.6
+     },
+     "provider50": {
+      "scriptMs": 15.02,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 16.9,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 14.9
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 54.2,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 1448.5,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 32.9,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "beam": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 8,
+      "svgNodesPerAvatar": 7,
+      "inlineStylesPerAvatar": 1,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 189.39,
+      "layoutMs": 38.98,
+      "recalcStyleMs": 31.09,
+      "taskMs": 281.74,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 189.5,
+      "heapBytes": 6771088,
+      "heapBytesPerRow": 13542
+     },
+     "remount": {
+      "scriptMs": 158.95,
+      "layoutMs": 19.15,
+      "recalcStyleMs": 30.35,
+      "taskMs": 230.69,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 158.9
+     },
+     "rerender50": {
+      "scriptMs": 2699.29,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 2710.27,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 2709.3
+     },
+     "reseedOne": {
+      "scriptMs": 33.36,
+      "layoutMs": 1.65,
+      "recalcStyleMs": 0.15,
+      "taskMs": 41.67,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 33.3
+     },
+     "provider50": {
+      "scriptMs": 33.93,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 34.9,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 33.5
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 500,
+       "avatarRenders": 500,
+       "faceRenders": 500,
+       "profilerCommits": 1,
+       "profilerRenderMs": 166.7,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 1926,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 1,
+       "avatarRenders": 500,
+       "faceRenders": 1,
+       "profilerCommits": 1,
+       "profilerRenderMs": 44.6,
+       "domWrites": 6,
+       "rowsWritten": [
+        250
+       ]
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "palette": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 8,
+      "svgNodesPerAvatar": 7,
+      "inlineStylesPerAvatar": 1,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 253.86,
+      "layoutMs": 49.48,
+      "recalcStyleMs": 38.56,
+      "taskMs": 375.86,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 254.4,
+      "heapBytes": 6789492,
+      "heapBytesPerRow": 13579
+     },
+     "remount": {
+      "scriptMs": 198.71,
+      "layoutMs": 19.51,
+      "recalcStyleMs": 34.37,
+      "taskMs": 278.57,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 199.2
+     },
+     "rerender50": {
+      "scriptMs": 2747.41,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 2754.12,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 2766.4
+     },
+     "reseedOne": {
+      "scriptMs": 42.4,
+      "layoutMs": 1.27,
+      "recalcStyleMs": 0.56,
+      "taskMs": 49.83,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 42.5
+     },
+     "provider50": {
+      "scriptMs": 37.81,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 39.93,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 37.4
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 500,
+       "avatarRenders": 500,
+       "faceRenders": 500,
+       "profilerCommits": 1,
+       "profilerRenderMs": 153.1,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 2135.3,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 1,
+       "avatarRenders": 500,
+       "faceRenders": 1,
+       "profilerCommits": 1,
+       "profilerRenderMs": 33.1,
+       "domWrites": 8,
+       "rowsWritten": [
+        250
+       ]
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "image": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 3,
+      "svgNodesPerAvatar": 0,
+      "inlineStylesPerAvatar": 2,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 284.83,
+      "layoutMs": 37.42,
+      "recalcStyleMs": 27.75,
+      "taskMs": 410.33,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 134.7,
+      "heapBytes": 9224496,
+      "heapBytesPerRow": 18449
+     },
+     "remount": {
+      "scriptMs": 242.23,
+      "layoutMs": 13.67,
+      "recalcStyleMs": 31.64,
+      "taskMs": 327.85,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 116.4
+     },
+     "rerender50": {
+      "scriptMs": 3989.33,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 4016.82,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 4049.9
+     },
+     "reseedOne": {
+      "scriptMs": 58.26,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 63.71,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 56.5
+     },
+     "provider50": {
+      "scriptMs": 21.54,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 26.34,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 19.8
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 3,
+       "profilerRenderMs": 175.1,
+       "domWrites": 1000
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 2483.7,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 107.9,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    },
+    "initials": {
+     "dom": {
+      "avatars": 500,
+      "nodesPerAvatar": 2,
+      "svgNodesPerAvatar": 0,
+      "inlineStylesPerAvatar": 2,
+      "ids": 0,
+      "uniqueIds": 0,
+      "masksAndClipPaths": 0
+     },
+     "mount": {
+      "scriptMs": 107.7,
+      "layoutMs": 38.02,
+      "recalcStyleMs": 11.12,
+      "taskMs": 172.23,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 103.2,
+      "heapBytes": 5602728,
+      "heapBytesPerRow": 11205
+     },
+     "remount": {
+      "scriptMs": 101.01,
+      "layoutMs": 16.56,
+      "recalcStyleMs": 14.8,
+      "taskMs": 152.53,
+      "layouts": 1,
+      "recalcStyles": 1,
+      "syncMs": 95.3
+     },
+     "rerender50": {
+      "scriptMs": 2516.72,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 2535.19,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 2523.2
+     },
+     "reseedOne": {
+      "scriptMs": 68.84,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 72.13,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 69.4
+     },
+     "provider50": {
+      "scriptMs": 1353.44,
+      "layoutMs": 0,
+      "recalcStyleMs": 0,
+      "taskMs": 1356.41,
+      "layouts": 0,
+      "recalcStyles": 0,
+      "syncMs": 1356.5
+     },
+     "counts": {
+      "mount": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 222.7,
+       "domWrites": 500
+      },
+      "rerender50": {
+       "generatorCalls": 0,
+       "avatarRenders": 25000,
+       "faceRenders": 0,
+       "profilerCommits": 50,
+       "profilerRenderMs": 3795.3,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "reseedOne": {
+       "generatorCalls": 0,
+       "avatarRenders": 500,
+       "faceRenders": 0,
+       "profilerCommits": 1,
+       "profilerRenderMs": 51,
+       "domWrites": 0,
+       "rowsWritten": []
+      },
+      "provider50": {
+       "generatorCalls": 0,
+       "avatarRenders": 0,
+       "faceRenders": 0,
+       "profilerCommits": 0,
+       "profilerRenderMs": 0,
+       "domWrites": 0,
+       "rowsWritten": []
+      }
+     }
+    }
+   }
+  }
+ }
+}

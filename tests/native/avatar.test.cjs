@@ -6,9 +6,10 @@ const RN=require('react-native');
 const {default:Svg,G,Path,Rect}=require('react-native-svg');
 const {nativeSrgb,nativeDisplayP3}=require('@bloxwap/hig/tokens');
 const mockModel=jest.requireActual('@bloxwap/hig/contracts/avatar');
-// The renderer's own import of the model, wrapped so a test can count how often a face is computed.
-jest.mock('@bloxwap/hig/contracts/avatar',()=>{const actual=jest.requireActual('@bloxwap/hig/contracts/avatar');return {...actual,beamAvatar:jest.fn(actual.beamAvatar)};});
-const {beamAvatar}=require('@bloxwap/hig/contracts/avatar');
+// The renderer's own import of the model, wrapped so a test can count how often a face is computed and how often an Avatar renders:
+// every render of the frame reads its size through `avatarSide` once, and a generated Avatar reads it once more for its face.
+jest.mock('@bloxwap/hig/contracts/avatar',()=>{const actual=jest.requireActual('@bloxwap/hig/contracts/avatar');return {...actual,beamAvatar:jest.fn(actual.beamAvatar),avatarSide:jest.fn(actual.avatarSide)};});
+const {beamAvatar,avatarSide}=require('@bloxwap/hig/contracts/avatar');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {Surface}=require('../../packages/hig/native/src/surface');
 const {Avatar,avatarColorRoles}=require('../../packages/hig/native/src/avatar');
@@ -155,6 +156,72 @@ describe('Avatar edge inputs',()=>{
   act(()=>{root=render(tree(1));});const before=beamAvatar.mock.calls.length;
   for(let tick=2;tick<12;tick++)act(()=>root.update(tree(tick)));
   expect(beamAvatar.mock.calls.length).toBe(before);
+ });
+});
+
+describe('Avatar in a list whose parent renders again',()=>{
+ const sized=()=>avatarSide.mock.calls.length,faces=()=>beamAvatar.mock.calls.length;
+ // Rows written inline, the way a leaderboard is: every render of the parent makes new elements, a new palette array and a new `{uri}` object, and nothing else is new.
+ const kinds=[seed=>({seed,decorative:true}),seed=>({seed,size:32,colors:[...vivid],faceColor:nativeSrgb.text,square:true}),()=>({source:{uri:'https://example.com/joe.png'}}),()=>({})];
+ const board=(seeds,onRender,Component=Avatar)=>h(React.Profiler,{id:'board',onRender},h(RN.View,null,seeds.map((seed,index)=>h(Component,{key:index,name:`Trader ${index}`,...kinds[index%4](seed)}))));
+ /** The props object of every host view under the board: a view that rendered again has a new one. */
+ const hosts=()=>root.root.findAll(node=>typeof node.type==='string').map(node=>node.props);
+ const seeds=Array.from({length:20},(_,index)=>`0x${String(index).padStart(40,'0')}`);
+ it('renders no frame and no face, and computes nothing, while every prop is the same',()=>{
+  let commits=0;const onRender=()=>{commits++;},start={sized:sized(),faces:faces()};
+  act(()=>{root=render(board(seeds,onRender));});
+  // The counters count what they say: 20 frames, 10 of them with a generated face.
+  expect(commits).toBe(1);expect(sized()-start.sized).toBe(30);expect(faces()-start.faces).toBe(10);
+  const mounted={sized:sized(),faces:faces()},before=hosts(),picture=JSON.stringify(root.toJSON());
+  expect(before.length).toBeGreaterThan(20);
+  for(let tick=0;tick<10;tick++)act(()=>root.update(board([...seeds],onRender)));
+  // The Profiler saw the parent render ten times; no Avatar under it did, so no host view was handed new props.
+  expect(commits).toBe(11);expect(sized()-mounted.sized).toBe(0);expect(faces()-mounted.faces).toBe(0);
+  const after=hosts();expect(after).toHaveLength(before.length);
+  // The board's own View is the one host that rendered: it holds the new row elements.
+  expect(after.filter((props,index)=>props!==before[index])).toHaveLength(1);expect(JSON.stringify(root.toJSON())).toBe(picture);
+  // One row gets a new seed: its frame and its face render, and one face is computed.
+  act(()=>root.update(board(seeds.map((seed,index)=>index===4?address:seed),onRender)));
+  expect(commits).toBe(12);expect(sized()-mounted.sized).toBe(2);expect(faces()-mounted.faces).toBe(1);expect(JSON.stringify(root.toJSON())).not.toBe(picture);
+ });
+ it('renders again for each prop that changes, for a palette only when its colours change and for a source only when it names another image',()=>{
+  const base={name:'Joe',seed:address,size:40,colors:vivid,faceColor:nativeSrgb.text,square:false,decorative:false};
+  const photo={name:'Joe',seed:address,source:{uri:'https://example.com/joe.png',width:40}};
+  const cases=[[base,[{name:'Ann'},{seed:'other'},{size:41},{colors:[...vivid].reverse()},{colors:vivid.slice(1)},{colors:undefined},{colors:[]},{faceColor:nativeSrgb.background},{faceColor:undefined},{square:true},{decorative:true},{variant:'initials'},{source:7}]],
+   [photo,[{source:{uri:'https://example.com/joe-2.png',width:40}},{source:{uri:'https://example.com/joe.png',width:80}},{source:{uri:'https://example.com/joe.png'}},{source:[{uri:'https://example.com/joe.png',width:40}]},{source:undefined},{source:7}]]];
+  for(const [props,changes] of cases){
+   mount(props);
+   for(const change of changes){
+    update(props);const before=sized();
+    // The same props again, with the palette and the source written inline: nothing renders.
+    update({...props,...(props.colors?{colors:[...props.colors]}:{}),...(props.source?{source:{...props.source}}:{})});expect(sized()-before).toBe(0);
+    update({...props,...change});expect(sized()-before).toBeGreaterThan(0);
+   }
+  }
+  // A list of sources is compared item by item, and a field that is itself an object (headers) by identity.
+  const list=()=>[{uri:'https://example.com/joe.png',width:40},{uri:'https://example.com/joe@2x.png',width:80}];
+  mount({source:list()});let before=sized();update({source:list()});expect(sized()-before).toBe(0);
+  update({source:list().reverse()});expect(sized()-before).toBeGreaterThan(0);
+  const headers={Authorization:'token'};mount({source:{uri:'https://example.com/joe.png',headers}});before=sized();
+  update({source:{uri:'https://example.com/joe.png',headers}});expect(sized()-before).toBe(0);
+  update({source:{uri:'https://example.com/joe.png',headers:{...headers}}});expect(sized()-before).toBeGreaterThan(0);
+  // A prop that is passed as undefined and one that is left out are the same props.
+  mount({seed:address});before=sized();update({seed:address,source:undefined,colors:undefined,variant:undefined});expect(sized()-before).toBe(0);
+ });
+ it('the status entry does not render again either',()=>{
+  const {Avatar:Plain}=require('../../packages/hig/native/src/status');
+  let commits=0;const onRender=()=>{commits++;};
+  act(()=>{root=render(board(seeds,onRender,Plain));});
+  const mounted=sized(),before=hosts();
+  for(let tick=0;tick<10;tick++)act(()=>root.update(board([...seeds],onRender,Plain)));
+  expect(commits).toBe(11);expect(sized()-mounted).toBe(0);expect(hosts().filter((props,index)=>props!==before[index])).toHaveLength(1);
+  act(()=>root.update(board(seeds,onRender,Plain)));act(()=>root.update(h(React.Profiler,{id:'board',onRender},h(RN.View,null,h(Plain,{name:'Trader 0',size:24})))));
+  expect(sized()-mounted).toBe(1);
+ });
+ it('draws a generated Avatar in nine native views, a photo in one and initials in two',()=>{
+  // Each host view is a native view on a device. The face is react-native-svg's root, the group it wraps its children in, and the six shapes of the web drawing.
+  const views=props=>{mount(props);const count=node=>node===null||typeof node==='string'?0:1+(node.children??[]).reduce((sum,child)=>sum+count(child),0);return count(root.toJSON());};
+  expect(views({seed:address})).toBe(9);expect(views({source:7})).toBe(1);expect(views({})).toBe(2);
  });
 });
 
