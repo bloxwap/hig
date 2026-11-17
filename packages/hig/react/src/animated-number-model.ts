@@ -10,6 +10,18 @@ function digitsFor(formatter:Intl.NumberFormat){
  const glyphs=Array.from({length:10},(_,digit)=>{const text=digitFormatter.format(digit);const parts=digitFormatter.formatToParts(digit);return parts.length===1&&parts[0].type==='integer'&&parts[0].value===text?text:'';});
  return new Set(glyphs).size===10&&glyphs.every(Boolean)?glyphs:null;
 }
+// A formatter and its ten digit glyphs depend on the locale and the options alone, and building them is most of what a new
+// value costs (two formatters and twenty calls into Intl), so each pair is built once and kept. A different `Intl.NumberFormat`
+// (a polyfill installed later, a test double) starts over, and so does a host that goes through more formats than fit.
+interface KeptFormat {formatter:Intl.NumberFormat;glyphs?:readonly string[]|null}
+const keptFormats=new Map<string,KeptFormat>();let keptFormatsFor:unknown;
+function formatFor(locale:string,options?:Intl.NumberFormatOptions):KeptFormat{
+ if(keptFormatsFor!==Intl.NumberFormat){keptFormats.clear();keptFormatsFor=Intl.NumberFormat;}
+ const key=`${locale}\u0000${options?JSON.stringify(options):''}`;let kept=keptFormats.get(key);
+ if(!kept){if(keptFormats.size>=64)keptFormats.clear();kept={formatter:new Intl.NumberFormat(locale,options)};keptFormats.set(key,kept);}
+ return kept;
+}
+const glyphsFor=(kept:KeptFormat)=>kept.glyphs===undefined?kept.glyphs=digitsFor(kept.formatter):kept.glyphs;
 function decodeDigits(text:string,glyphs:readonly string[]){
  const digits:{text:string;value:number}[]=[];let offset=0;
  while(offset<text.length){let match=-1;for(let digit=0;digit<10;digit++)if(text.startsWith(glyphs[digit],offset)&&(match<0||glyphs[digit].length>glyphs[match].length))match=digit;
@@ -19,10 +31,10 @@ function decodeDigits(text:string,glyphs:readonly string[]){
 }
 export function createAnimatedNumberModel(value:number|null|undefined,locale:string,options?:Intl.NumberFormatOptions):AnimatedNumberModel{
  if(value==null||!Number.isFinite(value))return staticModel('—');
- const formatter=new Intl.NumberFormat(locale,options),reading=formatter.format(value);
+ const kept=formatFor(locale,options),formatter=kept.formatter,reading=formatter.format(value);
  if(Number.isInteger(value)&&!Number.isSafeInteger(value))return staticModel(reading);
  const parts=formatter.formatToParts(value);if(parts.map(part=>part.value).join('')!==reading)return staticModel(reading);
- const glyphs=digitsFor(formatter);if(!glyphs)return staticModel(reading);
+ const glyphs=glyphsFor(kept);if(!glyphs)return staticModel(reading);
  const decoded=parts.map(part=>part.type==='integer'||part.type==='fraction'||part.type==='exponentInteger'?decodeDigits(part.value,glyphs):null);
  if(decoded.some((digits,index)=>!digits&&(parts[index].type==='integer'||parts[index].type==='fraction'||parts[index].type==='exponentInteger')))return staticModel(reading);
  const count=(type:string)=>decoded.reduce((total,digits,index)=>total+(parts[index].type===type?digits?.length??0:0),0);
@@ -44,7 +56,7 @@ export function createAnimatedNumberModel(value:number|null|undefined,locale:str
 export function createFormattedAnimatedNumberModel(text:string,locale:string,animate:boolean):AnimatedNumberModel{
  if(!animate)return staticModel(text);
  const ascii=['0','1','2','3','4','5','6','7','8','9'];let local:readonly string[]|null=null;
- try{local=digitsFor(new Intl.NumberFormat(locale));}catch{local=null;}
+ try{local=glyphsFor(formatFor(locale));}catch{local=null;}
  const characters=Array.from(text),values=characters.map(character=>{const own=ascii.indexOf(character);return own>=0?own:local?local.indexOf(character):-1;});
  const count=values.filter(value=>value>=0).length;if(!count)return staticModel(text);
  const tokens:AnimatedNumberToken[]=[];let run='',seen=0;
