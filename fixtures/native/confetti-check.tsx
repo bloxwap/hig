@@ -9,11 +9,12 @@ import {Button} from '@bloxwap/hig/native/button';
 import {Text} from '@bloxwap/hig/native/surface';
 /**
  * Device check for HIG's confetti. Run with index-confetti.js. `bloxwaphig://run?pieces=100` fires one burst of that many
- * pieces from the lower middle of the screen; `pieces=fireworks` fires a five-burst celebration of 200 pieces, so a run
- * needs no touch. Frame times on the UI thread while pieces fly are logged as `[confetti-check]`.
+ * pieces from the lower middle of the screen; `pieces=fireworks` fires a five-burst celebration of 200 pieces and
+ * `pieces=stars` sixty stars (six views each on native), so a run needs no touch. Frame times on the UI thread while pieces fly are logged as `[confetti-check]`.
  */
 const base:ConfettiOptions={origin:{y:0.7}};
 const fireworks:readonly ConfettiOptions[]=[{...base,particleCount:50,spread:26,startVelocity:55},{...base,particleCount:40,spread:60},{...base,particleCount:70,spread:100,decay:0.91,scalar:0.8},{...base,particleCount:20,spread:120,startVelocity:25,decay:0.92,scalar:1.2},{...base,particleCount:20,spread:120,startVelocity:45}];
+const stars:readonly ConfettiOptions[]=[{...base,particleCount:60,spread:70,scalar:2,shapes:['star']}];
 /** Counts UI-thread frames while `running`: logs the frame count, the mean rate and the frames that took longer than 1.5 frames at 60 Hz. */
 function useFrameLog(label:string,running:boolean){
  const frames=useSharedValue(0),slow=useSharedValue(0),worst=useSharedValue(0),elapsed=useSharedValue(0);
@@ -37,7 +38,7 @@ function Check(){
  },[]);
  const pieces=useCallback((count:number)=>run(`${count} pieces`,[{...base,particleCount:count,spread:70}]),[run]);
  useEffect(()=>{
-  const open=(url:string|null|undefined)=>{if(!url)return;const match=/pieces=(\d+|fireworks)/.exec(url);if(!match)return;if(match[1]==='fireworks')run('fireworks',fireworks);else pieces(Number(match[1]));};
+  const open=(url:string|null|undefined)=>{if(!url)return;const match=/pieces=(\d+|fireworks|stars)/.exec(url);if(!match)return;if(match[1]==='fireworks')run('fireworks',fireworks);else if(match[1]==='stars')run('stars',stars);else pieces(Number(match[1]));};
   void Linking.getInitialURL().then(open);const subscription=Linking.addEventListener('url',event=>open(event.url));
   return()=>subscription.remove();
  },[run,pieces]);
@@ -49,6 +50,7 @@ function Check(){
   <Button testID='pieces-100' onPress={()=>pieces(100)}>100 pieces</Button>
   <Button testID='pieces-200' intent='secondary' onPress={()=>pieces(200)}>200 pieces</Button>
   <Button testID='fireworks' intent='secondary' onPress={()=>run('fireworks',fireworks)}>Fireworks: five bursts, 200 pieces</Button>
+  <Button testID='stars' intent='secondary' onPress={()=>run('stars',stars)}>Stars: 60 pieces</Button>
   <Confetti testID='confetti'/>
  </SafeAreaView>;
 }

@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {CONFETTI_FIRST_TICK,CONFETTI_TICKS_PER_SECOND,confettiBox,confettiBursts,confettiDefaults,confettiDuration,confettiFlight,confettiOpacity,confettiPose,confettiSkipped,confettiTravel,createConfettiBurst,mirrorConfetti,type ConfettiFlight,type ConfettiParticle,type ConfettiPhysics} from '../packages/hig/contracts/src/confetti';
+import {CONFETTI_FIRST_TICK,CONFETTI_STAR_INNER,CONFETTI_STAR_OUTER,CONFETTI_TICKS_PER_SECOND,confettiBox,confettiBursts,confettiDefaults,confettiDuration,confettiFlight,confettiOpacity,confettiPose,confettiSkipped,confettiStarPoints,confettiStarWedge,confettiTravel,createConfettiBurst,mirrorConfetti,type ConfettiFlight,type ConfettiParticle,type ConfettiPhysics} from '../packages/hig/contracts/src/confetti';
 const palette=['red','green','blue'];
 /** A repeatable random source (mulberry32), so every burst in this file is the same on every run. */
 const seeded=(seed:number)=>()=>{seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};
@@ -52,6 +52,30 @@ describe('confetti physics',()=>{
   expect(burst.particles).toHaveLength(confettiDefaults.particleCount);expect(burst.physics.ticks).toBe(200);expect(burst.physics.decay).toBe(0);expect(burst.physics.size).toBe(10);expect(burst.origin).toEqual({x:0.5,y:0.7});
   expect(burst.particles.every(p=>p.shape!=='star')).toBe(true);
   expect(createConfettiBurst({ticks:0},palette,seeded(3)).physics.ticks).toBe(1);
+  // A piece cannot have a negative size: a negative scalar is no size at all.
+  expect(createConfettiBurst({scalar:-2},palette,seeded(3)).physics.size).toBe(0);
+ });
+ it('reads colours or shapes that are not a list as none given, and no options at all as the defaults',()=>{
+  const burst=createConfettiBurst({particleCount:6,colors:'red' as unknown as string[],shapes:'star' as unknown as ['star']},palette,seeded(3));
+  expect(burst.colors).toBe(palette);expect(burst.particles).toHaveLength(6);expect(burst.particles.every(p=>p.shape!=='star')).toBe(true);
+  expect(createConfettiBurst(null as unknown as undefined,palette,seeded(3)).particles).toHaveLength(50);
+  expect(mirrorConfetti(null as unknown as undefined)).toEqual({angle:90,drift:0,origin:{x:0.5}});
+ });
+ it('keeps every piece at a finite place, whatever the options',()=>{
+  // Each of these overflowed to Infinity or NaN: a transform React Native cannot apply.
+  const extremes=[{decay:2,ticks:5000},{decay:1e300},{startVelocity:1e308},{startVelocity:-1e308},{gravity:1e308},{gravity:-1e308},{drift:1e308},{scalar:1e308},{scalar:5e-324},{ticks:1e308,decay:1.5},{angle:1e308,spread:1e308},{origin:{x:1e308,y:-1e308}}];
+  for(const options of extremes)for(const shape of ['square','circle','star'] as const){
+   const burst=createConfettiBurst({...options,particleCount:4,shapes:[shape]},palette,seeded(21)),{physics}=burst;
+   expect(Object.values(physics).every(value=>typeof value==='boolean'||Number.isFinite(value)),JSON.stringify(options)).toBe(true);expect(Number.isFinite(burst.origin.x)&&Number.isFinite(burst.origin.y)).toBe(true);
+   expect(Number.isFinite(confettiDuration(physics))).toBe(true);expect(Number.isFinite(confettiBox(shape,physics))).toBe(true);expect(confettiBox(shape,physics)).toBeGreaterThanOrEqual(0);
+   for(const piece of burst.particles)for(const t of [1,1.5,60,physics.ticks/2,physics.ticks]){
+    const pose=confettiPose(piece,physics,t),now=flight(piece,physics,t);
+    for(const value of [...Object.values(pose),...Object.values(now),confettiOpacity(physics,t)])expect(Number.isFinite(value),`${JSON.stringify(options)} ${shape} at ${t}`).toBe(true);
+    expect(pose.scaleX).toBeGreaterThanOrEqual(0);expect(pose.scaleY).toBeGreaterThanOrEqual(0);
+   }
+  }
+  // Within the limits nothing changes: a decay above 1 still gains speed, as in canvas-confetti.
+  const faster=createConfettiBurst({decay:1.05},palette,seeded(21)).physics;expect(faster.decay).toBe(1.05);expect(confettiTravel(faster,20)).toBeCloseTo((Math.pow(1.05,20)-1)/0.05,9);
  });
  it('at every whole tick a piece is where canvas-confetti\'s frame-by-frame update puts it',()=>{
   const burst=createConfettiBurst({particleCount:6,spread:120,startVelocity:55,decay:0.91,gravity:0.8,drift:1.5,scalar:1.2},palette,seeded(11));
@@ -84,7 +108,10 @@ describe('confetti physics',()=>{
  });
  it('fades in a straight line over the burst and lasts its ticks at 60 a second',()=>{
   const physics=createConfettiBurst({ticks:120},palette,seeded(6)).physics;
-  expect(confettiOpacity(physics,0)).toBe(1);expect(confettiOpacity(physics,30)).toBeCloseTo(0.75);expect(confettiOpacity(physics,120)).toBe(0);expect(confettiOpacity(physics,500)).toBe(0);expect(confettiOpacity(physics,-5)).toBe(1);
+  // canvas-confetti draws its first frame, tick 1, at full strength and its last, tick 120, at 1/120.
+  expect(confettiOpacity(physics,CONFETTI_FIRST_TICK)).toBe(1);expect(confettiOpacity(physics,31)).toBeCloseTo(0.75);expect(confettiOpacity(physics,120)).toBeCloseTo(1/120);expect(confettiOpacity(physics,121)).toBe(0);expect(confettiOpacity(physics,500)).toBe(0);expect(confettiOpacity(physics,-5)).toBe(1);
+  // The same numbers as canvas-confetti's own counter, which reads the tick before it adds one.
+  for(let tick=0,frame=1;frame<=120;frame++){const progress=(tick++)/120;expect(confettiOpacity(physics,frame)).toBeCloseTo(1-progress,12);}
   // A burst is drawn from tick 1, so it lasts one tick less than `ticks`.
   expect(CONFETTI_TICKS_PER_SECOND).toBe(60);expect(CONFETTI_FIRST_TICK).toBe(1);expect(confettiDuration(physics)).toBeCloseTo(119*1000/60,9);expect(confettiDuration(createConfettiBurst(undefined,palette).physics)).toBeCloseTo(3316.67,1);expect(confettiDuration({...physics,ticks:1})).toBe(0);
  });
@@ -120,6 +147,24 @@ describe('confetti physics',()=>{
   const star={...circle,shape:'star' as const};
   expect(confettiBox('star',physics)).toBe(16);expect(confettiBox('square',physics)).toBe(10);expect(confettiPose(star,physics,25)).toEqual({x:now.x,y:now.y,rotate:0,scaleX:1,scaleY:1});
   expect(confettiPose(circle,{...physics,size:0},25)).toMatchObject({scaleX:0,scaleY:0});
+ });
+ it('gives the star as canvas-confetti\'s ten-point outline, and as five triangles that cover exactly the same shape',()=>{
+  expect(CONFETTI_STAR_OUTER).toBe(0.8);expect(CONFETTI_STAR_INNER).toBe(0.4);expect(confettiStarPoints).toHaveLength(10);
+  // canvas-confetti: rot starts at 3/2 pi and steps by pi/5, alternately on the outer radius (8 * scalar) and the inner (4 * scalar).
+  let rot=Math.PI/2*3;const step=Math.PI/5;
+  for(let spike=0;spike<5;spike++){
+   expect(confettiStarPoints[spike*2][0]).toBeCloseTo(Math.cos(rot)*0.8,12);expect(confettiStarPoints[spike*2][1]).toBeCloseTo(Math.sin(rot)*0.8,12);rot+=step;
+   expect(confettiStarPoints[spike*2+1][0]).toBeCloseTo(Math.cos(rot)*0.4,12);expect(confettiStarPoints[spike*2+1][1]).toBeCloseTo(Math.sin(rot)*0.4,12);rot+=step;
+  }
+  // The first outer point is straight up, and a triangle's sides run along the star's two edges at its apex.
+  expect(confettiStarPoints[0][0]).toBeCloseTo(0,12);expect(confettiStarPoints[0][1]).toBeCloseTo(-0.8,12);
+  const {width,height}=confettiStarWedge;expect(height).toBe(0.8);
+  const [innerX,innerY]=confettiStarPoints[1];expect(width/2/height).toBeCloseTo(innerX/(innerY+0.8),12);
+  const inside=(point:readonly [number,number],outline:readonly (readonly [number,number])[])=>{let within=false;for(let i=0,j=outline.length-1;i<outline.length;j=i++){const [xi,yi]=outline[i],[xj,yj]=outline[j];if((yi>point[1])!==(yj>point[1])&&point[0]<(xj-xi)*(point[1]-yi)/(yj-yi)+xi)within=!within;}return within;};
+  const wedges=[0,1,2,3,4].map(fifth=>{const turn=fifth*Math.PI*2/5,place=(x:number,y:number)=>[x*Math.cos(turn)-y*Math.sin(turn),x*Math.sin(turn)+y*Math.cos(turn)] as const;return [place(0,-height),place(-width/2,0),place(width/2,0)];});
+  let filled=0,differ=0;
+  for(let x=-0.85;x<=0.85;x+=0.0037)for(let y=-0.85;y<=0.85;y+=0.0037){const star=inside([x,y],confettiStarPoints),drawn=wedges.some(wedge=>inside([x,y],wedge));if(star)filled++;if(star!==drawn)differ++;}
+  expect(filled).toBeGreaterThan(40000);expect(differ).toBe(0);
  });
  it('reads options as a list of bursts',()=>{
   const one={particleCount:3},two=[{spread:26},{spread:60}];

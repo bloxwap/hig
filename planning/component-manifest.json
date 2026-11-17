@@ -112,7 +112,7 @@
       "docs": "docs/components/status.md",
       "web": "implemented",
       "native": "implemented with documented alternatives",
-      "remaining": "Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence. Confetti is HIG's own (no canvas-confetti): web paints one canvas, native moves one view per piece on a Reanimated clock and draws a star as a square; its look in a browser and its frame rate on devices are unobserved."
+      "remaining": "Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence. Confetti is HIG's own (no canvas-confetti): web paints one canvas, native moves one view per piece on a Reanimated clock and builds a star from five border triangles; its look on a GPU-backed display and its look and frame rate on devices are unobserved."
     },
     {
       "slug": "financial-data",

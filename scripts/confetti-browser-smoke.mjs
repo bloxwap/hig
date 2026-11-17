@@ -18,7 +18,7 @@ const source=`import React from 'react';import {createRoot} from 'react-dom/clie
 import {HIGProvider} from './packages/hig/react/src/provider';
 import {Confetti,confetti} from './packages/hig/react/src/confetti';
 window.confetti=confetti;window.presses=0;
-function Example(){return <HIGProvider><button onClick={()=>{window.presses++;}}>Under the confetti</button>{window.host&&<Confetti/>}</HIGProvider>;}
+function Example(){return <HIGProvider><button onClick={()=>{window.presses++;}}>Under the confetti</button>{window.host&&<Confetti trigger={window.trigger} options={{particleCount:60,shapes:['star'],scalar:2,ticks:600,startVelocity:20,gravity:0.2}}/>}</HIGProvider>;}
 createRoot(document.getElementById('root')).render(<Example/>);`;
 const bundle=await build({stdin:{contents:source,resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',alias:{react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"'}});
 const frames=(page,count)=>page.evaluate(async count=>{for(let frame=0;frame<count;frame++)await new Promise(requestAnimationFrame);},count);
@@ -97,6 +97,27 @@ for(const [engine,type] of Object.entries({chromium,webkit})){
     assert.equal(wide.colorSpace,'display-p3','chromium: Display P3 canvas');
     assert.ok(wide.green&&Math.abs(wide.green[2]-61)<=2,`chromium: P3 action green ${JSON.stringify(wide.green)}`);
     await page.evaluate(()=>window.confetti.reset());
+   }
+   if(host){
+    // A burst asked for as the page mounts, the provider and the host together. Under the system's reduced motion setting
+    // the provider has not read the setting yet when the host's effects run: nothing may be drawn, then or later.
+    for(const reducedMotion of ['reduce','no-preference']){
+     const mounting=await browser.newContext({viewport:{width:800,height:600},reducedMotion});
+     try{
+      const fresh=await mounting.newPage();fresh.on('pageerror',error=>{errors.push(error.message);console.error(error.message);});
+      await fresh.setContent(`<!doctype html><html lang="en"><head><style>${css}body{margin:24px;background:var(--hig-background)}</style></head><body><main id="root"></main></body></html>`);
+      await fresh.evaluate(()=>{window.host=true;window.trigger='order-1';const add=Node.prototype.appendChild;window.canvases=0;Node.prototype.appendChild=function(node){if(node instanceof HTMLCanvasElement)window.canvases++;return add.call(this,node);};});
+      await fresh.addScriptTag({content:bundle.outputFiles[0].text});await fresh.getByRole('button').waitFor();await frames(fresh,12);
+      const drawn=await fresh.evaluate(()=>({now:document.querySelectorAll('canvas[data-hig-confetti]').length,ever:window.canvases}));
+      if(reducedMotion==='reduce')assert.deepEqual(drawn,{now:0,ever:0},`${label}: no canvas, not even for a frame, for a burst at mount under reduced motion`);
+      else{
+       assert.deepEqual(drawn,{now:1,ever:1},`${label}: a burst at mount is drawn once`);
+       // Sixty slow stars at twice the size, so all stay in view: enough painted pixels that they are filled outlines, not hairlines.
+       const stars=await painted(fresh);assert.ok(stars.count.any>1500,`${label}: stars painted ${JSON.stringify(stars.count)}`);
+       await fresh.screenshot({path:`${output}/${engine}-stars.png`});
+      }
+     }finally{await mounting.close();}
+    }
    }
    assert.deepEqual(errors,[]);
    console.log(`${label}: canvas, colours ${JSON.stringify(flying.count)}, ${flying.colorSpace}, lasted ${lasted.toFixed(0)} ms, reduced motion, reset; 600 pieces ${cost.mean.toFixed(2)} ms a frame (worst ${cost.worst.toFixed(2)}) over ${cost.frames} frames`);

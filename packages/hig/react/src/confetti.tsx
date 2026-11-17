@@ -1,7 +1,7 @@
 "use client";
-import React,{useEffect,useRef} from 'react';
+import React,{useEffect,useRef,useState} from 'react';
 import {nativeDisplayP3,nativeSrgb} from '@bloxwap/hig/tokens';
-import {CONFETTI_FIRST_TICK,CONFETTI_TICKS_PER_SECOND,confettiBursts,confettiDefaults,confettiFlight,confettiOpacity,confettiSkipped,confettiTravel,createConfettiBurst,type ConfettiBurst,type ConfettiFlight,type ConfettiOptions,type ConfettiParticle} from '@bloxwap/hig/contracts/confetti';
+import {CONFETTI_FIRST_TICK,CONFETTI_TICKS_PER_SECOND,confettiBursts,confettiDefaults,confettiFlight,confettiOpacity,confettiSkipped,confettiStarPoints,confettiTravel,createConfettiBurst,type ConfettiBurst,type ConfettiFlight,type ConfettiOptions,type ConfettiParticle} from '@bloxwap/hig/contracts/confetti';
 import {useHIG} from './provider.js';
 export {mirrorConfetti,type ConfettiOptions,type ConfettiShape} from '@bloxwap/hig/contracts/confetti';
 /**
@@ -11,13 +11,15 @@ export {mirrorConfetti,type ConfettiOptions,type ConfettiShape} from '@bloxwap/h
  * has gone. Nothing renders through React while it flies. The flight itself is `@bloxwap/hig/contracts/confetti`, shared
  * with native.
  */
-interface Host {anchor:()=>Element|null;reducedMotion:()=>boolean}
+interface Wait {options:ConfettiOptions|undefined;resolve:()=>void}
+interface Host {anchor:()=>Element|null;reducedMotion:()=>boolean;/** False until the provider's reduced motion can be trusted: see `Confetti`. */ready:boolean;/** Bursts asked for before then. */waiting:Wait[]}
 interface Run {burst:ConfettiBurst;/** The burst's pieces by colour index, so the fill colour is set once for each colour a frame. */groups:ConfettiParticle[][];/** Timestamp of the first frame, or -1 before it. */start:number;resolve:()=>void}
 interface Layer {canvas:HTMLCanvasElement;context:CanvasRenderingContext2D;runs:Run[];frame:number;width:number;height:number;/** The viewport changed: measure again on the next frame. */stale:boolean}
 const hosts:Host[]=[];
 let layer:Layer|null=null;
 /** The token roles a burst is painted in when the call names no colours: CSS variable, the variable it defaults to, and the token role behind both. */
 const roles=[['--hig-action','','action'],['--hig-info','','info'],['--hig-down','--hig-sell','sell'],['--hig-warning','','warning'],['--hig-up','--hig-buy','buy']] as const;
+const systemReducedMotion=()=>typeof window.matchMedia==='function'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wideGamut=()=>typeof CSS!=='undefined'&&typeof CSS.supports==='function'&&CSS.supports('color','color(display-p3 1 1 1)');
 const displayP3=(hex:string)=>`color(display-p3 ${[1,3,5].map(at=>Number((parseInt(hex.slice(at,at+2),16)/255).toFixed(4))).join(' ')})`;
 /**
@@ -58,9 +60,7 @@ function close(current:Layer):void{
  if(current.frame)cancelAnimationFrame(current.frame);current.frame=0;
  window.removeEventListener('resize',resized);current.canvas.remove();
 }
-const turn=Math.PI*2;
-/** canvas-confetti's star around the origin, for a piece of size 1: ten points, alternately on the outer and the inner radius. */
-const starPoints=Array.from({length:10},(_,index)=>{const angle=Math.PI*1.5+index*Math.PI/5,radius=index%2?0.4:0.8;return [Math.cos(angle)*radius,Math.sin(angle)*radius] as const;});
+const turn=Math.PI*2,starPoints=confettiStarPoints;
 const flight:ConfettiFlight={x:0,y:0,ux:0,uy:0,vx:0,vy:0,wobble:0};
 /**
  * One burst at tick `t`. Each piece is its own small convex path, filled on its own as canvas-confetti fills it, which is
@@ -109,7 +109,9 @@ function frame(now:number):void{
 }
 function fire(options:ConfettiOptions|undefined,host:Host|undefined):Promise<void>{
  if(typeof window==='undefined'||typeof document==='undefined')return Promise.resolve();
- const reduced=host?host.reducedMotion():typeof window.matchMedia==='function'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ // The host cannot answer for reduced motion yet: the burst waits for it, a moment at most.
+ if(host&&!host.ready)return new Promise<void>(resolve=>{host.waiting.push({options,resolve});});
+ const reduced=host?host.reducedMotion():systemReducedMotion();
  if(confettiSkipped(options,reduced))return Promise.resolve();
  const burst=createConfettiBurst(options,()=>themeColors(host?.anchor()??document.documentElement));
  if(burst.particles.length===0)return Promise.resolve();
@@ -124,13 +126,14 @@ function fire(options:ConfettiOptions|undefined,host:Host|undefined):Promise<voi
  });
 }
 function reset():void{
+ for(const host of hosts)for(const wait of host.waiting.splice(0))wait.resolve();
  const current=layer;if(!current)return;
  close(current);for(const run of current.runs.splice(0))run.resolve();
 }
 export interface ConfettiFire {
  /** Fires one burst and resolves when it has finished, or at once when nothing is drawn: under reduced motion (unless `disableForReducedMotion` is false), with no pieces, or on a server. Colours and reduced motion come from the most recently mounted `Confetti`, else from the document. */
  (options?:ConfettiOptions):Promise<void>;
- /** Stops every burst now, removes the canvas and resolves their promises. */
+ /** Stops every burst now, also one still waiting for its host, removes the canvas and resolves their promises. */
  reset():void;
 }
 /** Fires a burst of confetti over the viewport. Call it from an event handler or an effect; it needs no `Confetti` to be mounted on web. */
@@ -145,19 +148,37 @@ export interface ConfettiProps {
  * The confetti host. Mount it once inside HIGProvider: bursts then follow the provider's `reducedMotion`, `primaryColor`
  * and `marketColors`. It draws nothing itself and never renders again for a burst; on web the canvas is added to the
  * document body while pieces fly. With `trigger` it also fires declaratively.
+ *
+ * HIGProvider reads the system's reduced motion setting in an effect, after the effects of what it holds. So where the
+ * system asks for reduced motion, a burst asked for while this host mounts (a truthy `trigger`, or `confetti()` in a mount
+ * effect) waits for the one render that follows, and is then drawn only if the provider itself says motion is wanted.
  */
 export function Confetti({trigger,options}:ConfettiProps){
  const {reducedMotion}=useHIG();
+ const [settled,setSettled]=useState(false);
  const anchor=useRef<HTMLSpanElement>(null),motion=useRef(reducedMotion),latest=useRef(options),fired=useRef<unknown>(undefined),self=useRef<Host|null>(null);
  motion.current=reducedMotion;latest.current=options;
+ // One host for the life of the component, so a burst it holds survives React running the effects twice in development.
+ const host=self.current??={anchor:()=>anchor.current,reducedMotion:()=>motion.current===true,ready:false,waiting:[]};
  useEffect(()=>{
-  const host:Host={anchor:()=>anchor.current,reducedMotion:()=>motion.current===true};self.current=host;hosts.push(host);
-  return()=>{self.current=null;const index=hosts.indexOf(host);if(index>=0)hosts.splice(index,1);};
- },[]);
+  hosts.push(host);
+  // Without a system request for reduced motion the provider has nothing left to learn. With one, this update is rendered
+  // together with the provider's own, and the effect below runs once both are in.
+  if(systemReducedMotion())setSettled(true);else host.ready=true;
+  return()=>{
+   const index=hosts.indexOf(host);if(index>=0)hosts.splice(index,1);
+   // Only a host that stays out is gone; what it still held is over.
+   void Promise.resolve().then(()=>{if(!hosts.includes(host))for(const wait of host.waiting.splice(0))wait.resolve();});
+  };
+ },[host]);
+ useEffect(()=>{
+  if(!settled)return;host.ready=true;
+  for(const wait of host.waiting.splice(0))void fire(wait.options,host).then(wait.resolve);
+ },[settled,host]);
  useEffect(()=>{
   // Each truthy value fires once, also when React runs the effect twice in development.
   if(Object.is(fired.current,trigger))return;fired.current=trigger;if(!trigger)return;
-  for(const burst of confettiBursts(latest.current))void fire(burst,self.current??undefined);
- },[trigger]);
+  for(const burst of confettiBursts(latest.current))void fire(burst,host);
+ },[trigger,host]);
  return <span ref={anchor} hidden data-hig-confetti-host=''/>;
 }

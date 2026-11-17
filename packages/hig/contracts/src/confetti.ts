@@ -14,9 +14,9 @@ export interface ConfettiOptions {
  angle?:number;
  /** How far, in degrees, pieces may stray from `angle` in total. Default 45. */
  spread?:number;
- /** Launch speed in pixels per tick. Each piece starts between half and one and a half times this. Default 45. */
+ /** Launch speed in pixels per tick. Each piece starts between half and one and a half times this. Default 45. `startVelocity`, `gravity`, `drift`, `scalar` and `ticks` are kept within a million either way, so no input can place a piece at infinity. */
  startVelocity?:number;
- /** The share of its launch speed a piece keeps each tick, from 0 to 1. Default 0.9. */
+ /** The share of its launch speed a piece keeps each tick, from 0 to 1; above 1 a piece gains speed. Default 0.9. */
  decay?:number;
  /** Pull downwards: 1 falls at full speed, 0 floats and a negative value rises. Default 1. */
  gravity?:number;
@@ -28,9 +28,9 @@ export interface ConfettiOptions {
  origin?:{x?:number;y?:number};
  /** Colours, dealt to the pieces in turn (repeat one to weight it). Web takes any CSS colour, native any React Native colour. Default: the provider's `action`, `info`, `down`, `warning` and `up` roles. */
  colors?:readonly string[];
- /** Shapes, picked at random for each piece. Default `['square','circle']`. Native draws a `'star'` as a square. */
+ /** Shapes, picked at random for each piece. Default `['square','circle']`. */
  shapes?:readonly ConfettiShape[];
- /** Scales every piece. Default 1. */
+ /** Scales every piece; below 0 reads as 0. Default 1. */
  scalar?:number;
  /** Pieces neither tumble nor wobble. Default false. */
  flat?:boolean;
@@ -83,20 +83,34 @@ export const CONFETTI_TICKS_PER_SECOND=60;
 export const CONFETTI_FIRST_TICK=1;
 /** canvas-confetti's defaults, apart from `colors` (the renderer's token roles) and `disableForReducedMotion` (true here). */
 export const confettiDefaults={particleCount:50,angle:90,spread:45,startVelocity:45,decay:0.9,gravity:1,drift:0,ticks:200,origin:{x:0.5,y:0.5},shapes:['square','circle'] as readonly ConfettiShape[],scalar:1,flat:false,disableForReducedMotion:true,zIndex:100} as const;
-const finite=(value:unknown,fallback:number):number=>typeof value==='number'&&Number.isFinite(value)?value:fallback;
+/** The furthest an option may reach either way, and the furthest a launch speed may carry a piece, in ticks' worth of it. Far beyond any screen, and small enough that every place computed from them is a finite number. */
+const REACH=1e6,TRAVEL=1e9;
+/** A finite number within `low` and `high`; anything else is the default. */
+const finite=(value:unknown,fallback:number,low=-REACH,high=REACH):number=>typeof value==='number'&&Number.isFinite(value)?Math.min(high,Math.max(low,value)):fallback;
+const list=<T,>(value:readonly T[]|undefined):readonly T[]=>Array.isArray(value)?value:[];
 const shapes:readonly ConfettiShape[]=['square','circle','star'];
+/** canvas-confetti's star for a piece of size 1: five outer points this far from its centre and five inner points between them, the first outer point straight up. */
+export const CONFETTI_STAR_OUTER=0.8,CONFETTI_STAR_INNER=0.4;
+/** The star's outline for a piece of size 1, around its centre: ten points, alternately outer and inner. A renderer with paths joins them. */
+export const confettiStarPoints:readonly (readonly [number,number])[]=Array.from({length:10},(_,index)=>{const angle=Math.PI*1.5+index*Math.PI/5,radius=index%2?CONFETTI_STAR_INNER:CONFETTI_STAR_OUTER;return [Math.cos(angle)*radius,Math.sin(angle)*radius] as const;});
+/**
+ * The same star for a renderer without paths: five equal triangles, each with its apex on an outer point, its sides along
+ * the star's two edges there and its base through the centre. Turned a fifth of a turn apart they cover the star exactly,
+ * with nothing outside it. `width` is the base and `height` the apex above it, for a piece of size 1.
+ */
+export const confettiStarWedge={width:2*CONFETTI_STAR_OUTER*CONFETTI_STAR_INNER*Math.sin(Math.PI/5)/(CONFETTI_STAR_OUTER-CONFETTI_STAR_INNER*Math.cos(Math.PI/5)),height:CONFETTI_STAR_OUTER} as const;
 /**
  * Launches a burst: `particleCount` pieces, each with its own direction, speed, wobble and tumble drawn from `random`
  * (seven draws a piece, in the order shape, wobble, wobble speed, speed, direction, tumble, flutter seed). Invalid numbers
- * read as the default. `fallbackColors` (a list, or a function asked only when needed) are used when `options.colors` holds
+ * read as the default, and `colors` or `shapes` that are not a list as none given. `fallbackColors` (a list, or a function asked only when needed) are used when `options.colors` holds
  * no colour. Pass a seeded `random` for a repeatable burst.
  */
 export function createConfettiBurst(options:ConfettiOptions|undefined,fallbackColors:readonly string[]|(()=>readonly string[]),random:()=>number=Math.random):ConfettiBurst{
  const o=options??{},d=confettiDefaults;
- const count=Math.max(0,Math.floor(finite(o.particleCount,d.particleCount)));
+ const count=Math.floor(finite(o.particleCount,d.particleCount,0,Number.MAX_SAFE_INTEGER));
  const angle=finite(o.angle,d.angle)*Math.PI/180,spread=finite(o.spread,d.spread)*Math.PI/180,velocity=finite(o.startVelocity,d.startVelocity);
- const own=(o.colors??[]).filter(color=>typeof color==='string'&&color!=='');const colors=own.length?own:typeof fallbackColors==='function'?fallbackColors():fallbackColors;
- const picked=(o.shapes??[]).filter(shape=>shapes.includes(shape));const pool=picked.length?picked:d.shapes;
+ const own=list(o.colors).filter(color=>typeof color==='string'&&color!=='');const colors=own.length?own:typeof fallbackColors==='function'?fallbackColors():fallbackColors;
+ const picked=list(o.shapes).filter(shape=>shapes.includes(shape));const pool=picked.length?picked:d.shapes;
  const particles:ConfettiParticle[]=[];
  for(let index=count-1;index>=0&&colors.length>0;index--){
   const shape=pool[Math.min(pool.length-1,Math.floor(random()*pool.length))];
@@ -105,29 +119,30 @@ export function createConfettiBurst(options:ConfettiOptions|undefined,fallbackCo
   particles.push({dx:Math.cos(direction)*speed,dy:Math.sin(direction)*speed,wobble,wobbleSpeed,tilt,seed,color:index%colors.length,shape});
  }
  return {particles,colors,origin:{x:finite(o.origin?.x,d.origin.x),y:finite(o.origin?.y,d.origin.y)},
-  physics:{ticks:Math.max(1,finite(o.ticks,d.ticks)),decay:Math.max(0,finite(o.decay,d.decay)),gravity:finite(o.gravity,d.gravity)*3,drift:finite(o.drift,d.drift),size:10*finite(o.scalar,d.scalar),flat:o.flat===true}};
+  physics:{ticks:finite(o.ticks,d.ticks,1),decay:finite(o.decay,d.decay,0),gravity:finite(o.gravity,d.gravity)*3,drift:finite(o.drift,d.drift),size:10*finite(o.scalar,d.scalar,0),flat:o.flat===true}};
 }
 /** True when the burst should not be drawn: reduced motion is on and the call did not opt out with `disableForReducedMotion: false`. */
 export function confettiSkipped(options:ConfettiOptions|undefined,reducedMotion:boolean|undefined):boolean{return reducedMotion===true&&options?.disableForReducedMotion!==false;}
 /** The same burst seen in a mirror: for a cannon that should fire from the leading edge in right-to-left text. Confetti itself is physical and never mirrors on its own. */
-export function mirrorConfetti(options:ConfettiOptions={}):ConfettiOptions{
- const d=confettiDefaults;
- return {...options,angle:180-finite(options.angle,d.angle),drift:0-finite(options.drift,d.drift),origin:{...options.origin,x:1-finite(options.origin?.x,d.origin.x)}};
+export function mirrorConfetti(options?:ConfettiOptions):ConfettiOptions{
+ const o=options??{},d=confettiDefaults;
+ return {...o,angle:180-finite(o.angle,d.angle),drift:0-finite(o.drift,d.drift),origin:{...o.origin,x:1-finite(o.origin?.x,d.origin.x)}};
 }
 /** One burst, several or none as a list: what `Confetti` fires for its `options`. Nothing given is one default burst. */
 export function confettiBursts(options:ConfettiOptions|readonly ConfettiOptions[]|undefined):readonly (ConfettiOptions|undefined)[]{return Array.isArray(options)?options as readonly ConfettiOptions[]:[options as ConfettiOptions|undefined];}
 /** How long a burst is drawn for, in milliseconds: from `CONFETTI_FIRST_TICK` to its last tick. */
 export function confettiDuration(physics:ConfettiPhysics):number{'worklet';return Math.max(0,physics.ticks-CONFETTI_FIRST_TICK)*1000/CONFETTI_TICKS_PER_SECOND;}
-/** How visible a burst is at tick `t`: every piece fades in a straight line from 1 to 0 over the burst. */
-export function confettiOpacity(physics:ConfettiPhysics,t:number):number{'worklet';return Math.max(0,Math.min(1,1-t/physics.ticks));}
+/** How visible a burst is at tick `t`: every piece fades in a straight line over the burst, from 1 on its first tick, as in canvas-confetti, towards 0 one tick after its last. */
+export function confettiOpacity(physics:ConfettiPhysics,t:number):number{'worklet';return Math.max(0,Math.min(1,1-(t-CONFETTI_FIRST_TICK)/physics.ticks));}
 /**
  * How far its launch speed has carried a piece by tick `t`, in ticks' worth of that speed: the sum of `decay` to the power
- * of each tick so far. Every piece of a burst shares it, so a renderer may compute it once a frame.
+ * of each tick so far. Every piece of a burst shares it, so a renderer may compute it once a frame. With a `decay` above 1
+ * it grows without end, so it stops at a distance far off any screen and stays a finite number.
  */
 export function confettiTravel(physics:ConfettiPhysics,t:number):number{
  'worklet';
  const decay=physics.decay;
- return decay===1?t:(1-Math.pow(decay,t))/(1-decay);
+ return Math.min(TRAVEL,decay===1?t:(1-Math.pow(decay,t))/(1-decay));
 }
 /**
  * Where a piece is at tick `t` and the parallelogram it is drawn as, written into `out`. `travel` is `confettiTravel` for the
@@ -150,7 +165,7 @@ export function confettiBox(shape:ConfettiShape,physics:ConfettiPhysics):number{
  * A piece at tick `t` for a renderer that moves boxes and cannot draw a slanted one (React Native drops skew on Android).
  * A circle is exact: canvas-confetti draws it as a turning ellipse. A square's parallelogram becomes the rectangle with the
  * same centre, the same area and the same long and short axes (its singular values), turned to the long axis; a flat square
- * is exact. A star keeps its size and does not turn.
+ * is exact. A star keeps its size and does not turn: the renderer fills its box with `confettiStarWedge` triangles.
  */
 export function confettiPose(particle:ConfettiParticle,physics:ConfettiPhysics,t:number):ConfettiPose{
  'worklet';
@@ -162,5 +177,6 @@ export function confettiPose(particle:ConfettiParticle,physics:ConfettiPhysics,t
  // Singular values of [[ux,vx],[uy,vy]] and the rotation that follows the stretch; the rotation before it only turns a square onto itself.
  const e=(flight.ux+flight.vy)/2,f=(flight.ux-flight.vy)/2,g=(flight.uy+flight.vx)/2,h=(flight.uy-flight.vx)/2;
  const q=Math.sqrt(e*e+h*h),r=Math.sqrt(f*f+g*g);
- return {x:flight.x+(flight.ux+flight.vx)/2,y:flight.y+(flight.uy+flight.vy)/2,rotate:(Math.atan2(h,e)+Math.atan2(g,f))/2,scaleX:(q+r)/size,scaleY:Math.abs(q-r)/size};
+ // The flutter does not shrink with the piece, so a piece far below a pixel would be stretched without end: the stretch stops at REACH.
+ return {x:flight.x+(flight.ux+flight.vx)/2,y:flight.y+(flight.uy+flight.vy)/2,rotate:(Math.atan2(h,e)+Math.atan2(g,f))/2,scaleX:Math.min(REACH,(q+r)/size),scaleY:Math.min(REACH,Math.abs(q-r)/size)};
 }

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import React,{StrictMode} from 'react';
+import React,{StrictMode,useEffect,useState} from 'react';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {act,cleanup,render} from '@testing-library/react';
 import {nativeDisplayP3,nativeSrgb} from '@bloxwap/hig/tokens';
@@ -48,9 +48,10 @@ describe('confetti on web',()=>{
  it('runs on time, resolves when the last piece has gone, then removes the canvas and stops asking for frames',async()=>{
   const remove=vi.spyOn(window,'removeEventListener');
   const promise=confetti({particleCount:4,ticks:60,colors:['red']});
-  step(1000);expect(painted.fills.at(-1)!.alpha).toBeCloseTo(1-1/60);
+  // The first frame is at full strength, as canvas-confetti's is.
+  step(1000);expect(painted.fills.at(-1)!.alpha).toBe(1);
   // Half way: tick 1 + 29.5 of the 59 ticks it is drawn for.
-  step(1000+29.5*1000/60);expect(painted.fills.at(-1)!.alpha).toBeCloseTo(1-30.5/60);expect(painted.fills).toHaveLength(8);
+  step(1000+29.5*1000/60);expect(painted.fills.at(-1)!.alpha).toBeCloseTo(1-29.5/60);expect(painted.fills).toHaveLength(8);
   expect(await settled(promise)).toBe(false);expect(canvases()).toHaveLength(1);
   // Frames at 120 Hz or a single late one end it at the same moment: 59 ticks after the first frame.
   step(1000+58.9*1000/60);expect(await settled(promise)).toBe(false);
@@ -109,6 +110,47 @@ describe('confetti on web',()=>{
   // A host's provider decides instead when one is mounted.
   render(<HIGProvider reducedMotion={false}><Confetti/></HIGProvider>);
   void confetti();expect(canvases()).toHaveLength(1);
+ });
+ it('under the system\'s reduced motion setting a burst asked for while the host mounts is never drawn',async()=>{
+  // HIGProvider reads the system setting in an effect that runs after the effects of what it holds, so at this moment
+  // its reducedMotion is still false. The burst waits for the provider's answer.
+  queries['prefers-reduced-motion: reduce']=true;
+  let asked:Promise<void>|undefined;function Page(){useEffect(()=>{asked=confetti({particleCount:3});},[]);return null;}
+  for(const strict of [false,true]){
+   const tree=<HIGProvider><Confetti trigger='order-1' options={{particleCount:3}}/><Page/></HIGProvider>;
+   const view=render(strict?<StrictMode>{tree}</StrictMode>:tree);
+   expect(canvases(),`strict ${strict}`).toHaveLength(0);expect(frames.size).toBe(0);expect(await settled(asked!)).toBe(true);
+   // Later calls are skipped too, and one that opts out is drawn.
+   expect(await settled(confetti())).toBe(true);expect(canvases()).toHaveLength(0);
+   void confetti({disableForReducedMotion:false});expect(canvases()).toHaveLength(1);
+   confetti.reset();view.unmount();
+  }
+ });
+ it('a provider that asks for motion decides over the system setting, also for a burst asked for while the host mounts',()=>{
+  queries['prefers-reduced-motion: reduce']=true;
+  for(const strict of [false,true]){
+   const tree=<HIGProvider reducedMotion={false}><Confetti trigger='order-1' options={{particleCount:3,colors:['red']}}/></HIGProvider>;
+   painted=fakeContext();const view=render(strict?<StrictMode>{tree}</StrictMode>:tree);
+   // Once, also when React runs the effects twice.
+   expect(canvases(),`strict ${strict}`).toHaveLength(1);step(0);expect(painted.fills).toHaveLength(3);
+   confetti.reset();view.unmount();
+  }
+ });
+ it('a burst still waiting for its host resolves on reset, or when the host goes, without being drawn',async()=>{
+  queries['prefers-reduced-motion: reduce']=true;
+  // A mount effect asks while the host is mounted but not yet settled.
+  let first:Promise<void>|undefined,second:Promise<void>|undefined;
+  function Page(){useEffect(()=>{first=confetti({particleCount:3});confetti.reset();second=confetti({particleCount:3});},[]);return null;}
+  const view=render(<HIGProvider reducedMotion={false}><Confetti/><Page/></HIGProvider>);
+  // Reset resolved the first without a canvas; the second waited and was drawn once the host had settled.
+  expect(await settled(first!)).toBe(true);expect(canvases()).toHaveLength(1);step(0);expect(painted.fills).toHaveLength(3);expect(await settled(second!)).toBe(false);
+  view.unmount();confetti.reset();
+  // The host is removed in the same render that would have settled it: what it held is over.
+  const held:Promise<void>[]=[];
+  function Leaving({onAsked}:{onAsked:()=>void}){useEffect(()=>{held.push(confetti({particleCount:3}));onAsked();},[]);return null;}
+  function Screen(){const [shown,setShown]=useState(true);return <HIGProvider reducedMotion={false}>{shown&&<Confetti/>}<Leaving onAsked={()=>setShown(false)}/></HIGProvider>;}
+  render(<Screen/>);
+  expect(held).toHaveLength(1);expect(document.querySelector('[data-hig-confetti-host]')).toBeNull();expect(canvases()).toHaveLength(0);expect(await settled(held[0])).toBe(true);expect(frames.size).toBe(0);
  });
  it('resolves at once when there is nothing to draw or nothing to draw on',async()=>{
   expect(await settled(confetti({particleCount:0}))).toBe(true);expect(canvases()).toHaveLength(0);
