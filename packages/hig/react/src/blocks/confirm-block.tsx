@@ -52,6 +52,8 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  busy?:boolean;
  /** Draws the confirming action unavailable, for example while a quote refreshes. */
  confirmDisabled?:boolean;
+ /** Keeps Back, Cancel and the tertiary action available while `busy`, for a wait the user may walk away from, such as a wallet signature the host can abandon. Off by default. */
+ cancelWhileBusy?:boolean;
  /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. Without it the confirming action takes the full width. */
  onCancel?:()=>void;
  /** Text of Cancel. Defaults to the built-in “Cancel”. */
@@ -74,13 +76,15 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. Without an amount, address or network it confirms anything else, such as signing out or deleting an account: the header, `children`, then the actions. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,cancelWhileBusy,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
  const {messages}=useHIG();
+ // What busy holds besides the confirming action: Back, Cancel and the tertiary action, unless the host lets them leave the wait.
+ const held=!!busy&&!cancelWhileBusy;
  const heading=title??messages.confirmSend??en.confirmSend;
  const body=warning===undefined?(address!==undefined?(messages.sendWarning??en.sendWarning)(symbol??'',network??''):null):warning;
  const hasLines=address!==undefined||network!==undefined||!!details?.length;
  return <section {...rest} className={`hig-confirm${className?` ${className}`:''}`}>
-  <ScreenHeader title={heading} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={heading} onBack={onBack} backDisabled={held} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {amount!==undefined&&<p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions} label={amountLabel}/>{symbol?<> <span className='hig-confirm-symbol'>{symbol}</span></>:null}</p>}
   {hasLines&&<dl className='hig-confirm-details' data-one-line={oneLineDetails||undefined}>
    {address!==undefined&&<div><dt>{messages.sendTo??en.sendTo}</dt><dd><span className='hig-confirm-address' dir='ltr' translate='no'><span className='hig-sr-only'>{address}</span><span aria-hidden='true'>{confirmAddressRows(address).map((row,index)=><span key={index}>{row.map((part,offset)=><span key={offset} data-anchor={part.anchor||undefined}>{part.text}</span>)}</span>)}</span></span></dd></div>}
@@ -91,9 +95,9 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
   {body!=null&&body!==false&&<div className='hig-confirm-warning' role='note'><strong>{warningTitle??messages.sendWarningTitle??en.sendWarningTitle}</strong><p>{body}</p></div>}
   {notice}
   <div className='hig-confirm-actions'>
-   {onCancel&&<Button intent='secondary' disabled={busy} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}
+   {onCancel&&<Button intent='secondary' disabled={held} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}
    <Button intent={confirmIntent} busy={busy} disabled={confirmDisabled} onClick={onConfirm}>{confirmLabel??messages.confirmSend??en.confirmSend}</Button>
   </div>
-  {tertiaryAction&&<Button className='hig-confirm-tertiary' data-tone={tertiaryAction.tone} intent='ghost' fullWidth disabled={busy||tertiaryAction.disabled} onClick={tertiaryAction.onSelect}>{tertiaryAction.label}</Button>}
+  {tertiaryAction&&<Button className='hig-confirm-tertiary' data-tone={tertiaryAction.tone} intent='ghost' fullWidth disabled={held||tertiaryAction.disabled} onClick={tertiaryAction.onSelect}>{tertiaryAction.label}</Button>}
  </section>;
 }

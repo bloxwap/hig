@@ -54,6 +54,8 @@ export interface ConfirmBlockProps {
  busy?:boolean;
  /** Draws the confirming action unavailable, for example while a quote refreshes. */
  confirmDisabled?:boolean;
+ /** Keeps Back, Cancel and the tertiary action available while `busy`, for a wait the user may walk away from, such as a wallet signature the host can abandon. Off by default. */
+ cancelWhileBusy?:boolean;
  /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. Without it the confirming action takes the full width. */
  onCancel?:()=>void;
  /** Text of Cancel. Defaults to the built-in "Cancel". */
@@ -82,7 +84,9 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. Without an amount, address or network it confirms anything else, such as signing out or deleting an account: the header, `children`, then the actions. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,cancelWhileBusy,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
+ // What busy holds besides the confirming action: Back, Cancel and the tertiary action, unless the host lets them leave the wait.
+ const held=!!busy&&!cancelWhileBusy;
  const colors=useColors(),t=useMessages(),{direction,monoFontFamily}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const note=warning===undefined?(address!==undefined?t.sendWarning(symbol??'',network??''):null):warning;
@@ -96,9 +100,9 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
  const toPart='to',networkPart='network',mono=monoFontFamily??Platform.select({ios:'Menlo',default:'monospace'}),type={fontFamily:mono,fontSize:15,lineHeight:22},
   shown=address===undefined?null:<Text accessible={false} maxFontSizeMultiplier={1.2} style={{...type,writingDirection:'ltr',textAlign:'left'}}>{confirmAddressRows(address).map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((part,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:part.anchor?colors.text:colors.muted,fontWeight:part.anchor?'700':'500'}}>{part.text}</Text>)}</React.Fragment>)}</Text>,
   lines=[...(address!==undefined?[line(toPart,t.sendTo,shown,address)]:[]),...(network!==undefined?[line(networkPart,t.sendNetwork,network)]:[]),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
- const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} testID={testID}/>;
+ const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={held} action={headerAction} headingId={headingId} testID={testID}/>;
  const hasBody=(children!=null&&children!==false)||!!points?.length;
- const tertiaryInert=!!busy||!!tertiaryAction?.disabled;
+ const tertiaryInert=held||!!tertiaryAction?.disabled;
  const body=<>
   {amount!==undefined?<View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>
    <AnimatedNumberReadout testID={id('amount')} value={amount} options={amountOptions} label={amountLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
@@ -120,7 +124,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
   </View>:null}
   {notice}
   <View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
-   {onCancel?<Button testID={id('cancel')} intent='secondary' disabled={busy} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
+   {onCancel?<Button testID={id('cancel')} intent='secondary' disabled={held} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
    <Button testID={id('confirm')} intent={confirmIntent} busy={busy} disabled={confirmDisabled} onPress={onConfirm} style={{flex:1,alignSelf:'auto'}}>{confirmLabel??t.confirmSend}</Button>
   </View>
   {tertiaryAction?<Button testID={id('tertiary')} intent='ghost' fullWidth disabled={tertiaryInert} onPress={tertiaryAction.onSelect} accessibilityLabel={tertiaryAction.label} contentMode='custom' style={{marginTop:-8}}>

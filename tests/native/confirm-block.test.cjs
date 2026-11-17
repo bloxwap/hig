@@ -118,4 +118,7 @@ it('confirms something that is not a send: no amount, lines or warning, the body
  // Busy holds the tertiary action.
  act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Delete account?',busy:true,onConfirm:confirm,tertiaryAction:{label:'Delete anyway',onSelect:anyway}}))));
  expect(button(root.root,'confirm-tertiary').props.disabled).toBe(true);
+ // cancelWhileBusy keeps Back, Cancel and the tertiary action while the confirm spins.
+ act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Enable',busy:true,cancelWhileBusy:true,onBack:()=>{},onCancel:()=>{},onConfirm:confirm,tertiaryAction:{label:'Delete anyway',onSelect:anyway}}))));
+ expect(button(root.root,'confirm-tertiary').props.disabled).toBe(false);expect(button(root.root,'confirm-cancel').props.disabled).toBe(false);expect(button(root.root,'confirm-confirm').props.busy).toBe(true);
 });
