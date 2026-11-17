@@ -2716,6 +2716,10 @@
         "entry": "avatar-frame",
         "signature": "export interface AvatarFrameProps {\n    /** The person or account. It is the accessible name, and the first two letters are the initials. */\n    name: string;\n    /** An image to show instead, cropped to fill the box. If it fails to load, or it names no image (`{uri: undefined}`, an empty address), the fallback shows in its place. */\n    source?: ImageSourcePropType;\n    /** Width and height in dp. Defaults to 40. With it, the initials are drawn at 40% of the size and keep that size at every system text size, so they stay inside the box. A size that is not a finite number of zero or more is ignored. */\n    size?: number;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from VoiceOver and TalkBack, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
       },
+      "sameFrame": {
+        "entry": "avatar-frame",
+        "signature": "export declare const sameFrame: (a: AvatarFrameProps, b: AvatarFrameProps) => boolean;"
+      },
       "AvatarFrame": {
         "entry": "avatar-frame",
         "signature": "export declare function AvatarFrame({ name, source, size, square, decorative, face }: AvatarFrameProps & {\n    face?: React.ReactNode;\n}): React.JSX.Element;"

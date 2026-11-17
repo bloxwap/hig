@@ -44,8 +44,14 @@ function BeamFace({seed,colors,faceColor}: {seed:string;colors?:readonly string[
   // `own` is read through `palette`: the same colours in a new array are the same drawing.
  },[seed,palette,faceColor,roles]);
 }
-/** A person or account as a 40px disc: an image, else the first two letters of the name, else (with `variant='beam'` or a `seed`) a face generated from the seed. The face is an identity picture, so it is the same in right-to-left layouts and it never moves. */
-export function Avatar({name,src,seed,variant,size,colors,faceColor,square,decorative}:AvatarProps){
+const samePalette=(a?:readonly string[],b?:readonly string[])=>a===b||(a!=null&&b!=null&&a.length===b.length&&a.every((color,index)=>color===b[index]));
+/**
+ * The same props: each one identical, and `colors` the same colours in whichever array, because a host often writes its palette inline.
+ * Each prop is read by name, because walking a list of names costs as much as the render it saves. `tests/avatar.dom.test.tsx` changes every prop of AvatarProps in turn, so a prop this does not read fails there.
+ */
+const sameProps=(a:AvatarProps,b:AvatarProps)=>a.name===b.name&&a.seed===b.seed&&a.src===b.src&&a.size===b.size&&a.variant===b.variant&&a.faceColor===b.faceColor&&a.square===b.square&&a.decorative===b.decorative&&samePalette(a.colors,b.colors);
+/** What Avatar draws, kept while its props are the same: a list that renders again runs none of this for the rows that did not change. */
+const Drawing=React.memo(function AvatarDrawing({name,src,seed,variant,size,colors,faceColor,square,decorative}:AvatarProps){
  const [failed,setFailed]=useState<string>();const image=useRef<HTMLImageElement>(null);
  // An image that failed before this component could listen (a server-rendered page that has not hydrated yet) has fired its error event already.
  // It reads as complete with no width; `decode()` tells it from a sound image with no size of its own, such as some SVG files.
@@ -59,4 +65,6 @@ export function Avatar({name,src,seed,variant,size,colors,faceColor,square,decor
  const named=decorative?{'aria-hidden':true}:{role:'img','aria-label':name};
  if((variant??(seed==null?'initials':'beam'))==='beam')return <span {...named} className='hig-avatar' data-variant='beam' data-square={flat} style={box}><BeamFace seed={seed??name} colors={colors} faceColor={faceColor}/></span>;
  return <span {...named} className='hig-avatar' data-square={flat} style={side===undefined?undefined:{width:side,height:side,fontSize:side*0.4,lineHeight:1}}>{avatarInitials(name)}</span>;
-}
+},sameProps);
+/** A person or account as a 40px disc: an image, else the first two letters of the name, else (with `variant='beam'` or a `seed`) a face generated from the seed. The face is an identity picture, so it is the same in right-to-left layouts and it never moves. It renders again only when one of its props changes. */
+export function Avatar({name,src,seed,variant,size,colors,faceColor,square,decorative}:AvatarProps){return <Drawing name={name} src={src} seed={seed} variant={variant} size={size} colors={colors} faceColor={faceColor} square={square} decorative={decorative}/>;}
