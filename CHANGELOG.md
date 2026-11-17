@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0
+
+- Add DepositBlock and LoginBlock for React and React Native, with deposit method artwork, provider selection and optional analytics consent.
+- Rename SwapPanelBlock to SwapBlock. Existing component names, types, and published web import paths remain available.
+- Add the Flow section and interactive TokenActionFlow with account holdings, chain breakdowns, wallet QR codes, and token actions inside a mobile-sized gesture sheet.
+- Omit the chains bar for single-chain holdings and align the upper corners of bottom gesture sheets with their content on web.
+
 ## 0.8.2
 
 - Preserve text decorations and natural line height for custom font sizes in native numeric readouts.

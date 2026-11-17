@@ -252,7 +252,7 @@ it('SwapSheet presents the panel in the gesture sheet, pushes views inside it, a
 });
 it('keeps the sheet backend and Dialog out of the block: only swap-sheet imports them',()=>{
  const {readFileSync}=require('fs');
- for(const file of ['swap-panel-block.tsx','swap-views.tsx','swap-parts.tsx','swap-shared.ts','blocks.tsx']){const source=readFileSync(`packages/hig/native/src/${file}`,'utf8');expect(source).not.toMatch(/gesture-sheet|bottom-sheet|swap-sheet/);if(file!=='blocks.tsx')expect(source).not.toMatch(/overlay\.js/);}
+ for(const file of ['swap-block.tsx','swap-views.tsx','swap-parts.tsx','swap-shared.ts','blocks.tsx']){const source=readFileSync(`packages/hig/native/src/${file}`,'utf8');expect(source).not.toMatch(/gesture-sheet|bottom-sheet|swap-sheet/);if(file!=='blocks.tsx')expect(source).not.toMatch(/overlay\.js/);}
  expect(readFileSync('packages/hig/native/src/swap-sheet.tsx','utf8')).toContain("from './gesture-sheet.js'");
 });
 it('one-way mode shows a down arrow between the cards and offers no flip',()=>{

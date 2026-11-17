@@ -14,7 +14,7 @@ import {ManagePositionBlock} from '../packages/hig/react/src/blocks/manage-posit
 import {TargetBlock} from '../packages/hig/react/src/blocks/target-block';
 import {RewardBlock} from '../packages/hig/react/src/blocks/reward-block';
 import {TradeHistoryListBlock} from '../packages/hig/react/src/blocks/trade-history-list-block';
-import {SwapPanelBlock} from '../packages/hig/react/src/blocks/swap-panel-block';
+import {SwapPanelBlock} from '../packages/hig/react/src/blocks/swap-block';
 afterEach(cleanup);
 const french:HIGProviderProps={locale:'fr-FR',numberFormat:{currencyDisplay:'narrowSymbol'}};
 const nbsp=/[  ]/g,plain=(text:string|null|undefined)=>(text??'').replace(nbsp,' ');

@@ -86,7 +86,8 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-dialog-title { margin:0;font-size:1.25rem;font-weight:600;line-height:1.3; }
 .hig-dialog-description { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-gesture-sheet { position:fixed;z-index:41;display:flex;flex-direction:column;max-height:95dvh;background:var(--hig-overlay,#111);color:var(--hig-text);box-shadow:0 0 64px #000a;outline:none; }
-.hig-gesture-sheet[data-vaul-drawer-direction='bottom'] { inset:auto 0 0;border-radius:14px 14px 0 0; }
+/* Match the card curve at the sheet edge: 24px card radius plus the 24px content inset. */
+.hig-gesture-sheet[data-vaul-drawer-direction='bottom'] { inset:auto 0 0;border-radius:48px 48px 0 0; }
 .hig-gesture-sheet[data-vaul-drawer-direction='top'] { inset:0 0 auto;border-radius:0 0 14px 14px; }
 .hig-gesture-sheet[data-vaul-drawer-direction='left'] { inset:0 auto 0 0;width:min(420px,95vw);max-height:none;border-radius:0 14px 14px 0; }
 .hig-gesture-sheet[data-vaul-drawer-direction='right'] { inset:0 0 0 auto;width:min(420px,95vw);max-height:none;border-radius:14px 0 0 14px; }
@@ -529,7 +530,7 @@ button.hig-swap-receive:active { opacity:.8; }
 .hig-swap-back:active { background:var(--hig-surface);color:var(--hig-text); }
 [dir='rtl'] .hig-swap-back > svg,[dir='rtl'] .hig-swap-setting-value > svg { transform:scaleX(-1); }
 /* In a gesture sheet the panel fills the sheet width and the sheet follows the height of the view on show. */
-.hig-gesture-sheet.hig-swap-sheet { max-width:30rem;margin-inline:auto;border-radius:24px 24px 0 0; }
+.hig-gesture-sheet.hig-swap-sheet { max-width:30rem;margin-inline:auto;border-radius:36px 36px 0 0; }
 .hig-swap-sheet .hig-swap-panel { max-width:none;padding:4px 12px calc(16px + env(safe-area-inset-bottom,0px)); }
 /* From and To pickers: a wallet or address row, the search, the chain filter and the token list, 16 apart. */
 .hig-picker { display:flex;flex-direction:column;gap:16px;width:100%;min-width:0;color:var(--hig-text);line-height:1.5; }
@@ -672,6 +673,18 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-setting-switch[data-locked] { cursor:default; }
 .hig-setting-switch-accessory { display:inline-flex;align-items:center;margin-inline-start:8px;vertical-align:middle; }
 .hig-setting-hint { margin:0;padding-inline:20px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-login-block { display:grid;gap:16px; }
+.hig-login-analytics { display:flex;align-items:center; }
+.hig-login-analytics > .hig-switch { margin-inline-start:auto; }
+.hig-login-providers { display:grid;gap:8px; }
+.hig-login-providers .hig-list-row { border-radius:16px;background:var(--hig-surface); }
+@media (hover: hover) and (pointer: fine) {
+  .hig-login-providers .hig-list-row:hover { background:var(--hig-nested); }
+}
+.hig-login-block > footer { display:flex;flex-wrap:wrap;justify-content:center;gap:16px; }
+.hig-login-block > footer a { color:var(--hig-muted);font-size:.875rem;text-decoration:underline; }
+.hig-deposit-block { display:grid;gap:12px; }
+.hig-deposit-block .hig-settings-description { text-align:center; }
 .hig-settings-description,.hig-reward-status { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-notifications-group { display:flex;flex-direction:column;gap:8px;margin-block-start:8px; }
 .hig-notifications-action { margin-block-start:8px; }

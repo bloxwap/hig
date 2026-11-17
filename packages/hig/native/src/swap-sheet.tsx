@@ -2,14 +2,14 @@ import React,{useEffect,useMemo,useState} from 'react';
 import type {FlatListProps} from 'react-native';
 import {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 import {GestureSheet} from './gesture-sheet.js';
-import {SwapHostContext,SwapPanelBlock,swapParentView,type SwapPanelBlockProps,type SwapToken,type SwapView} from './swap-panel-block.js';
-export interface SwapSheetProps extends SwapPanelBlockProps {
+import {SwapHostContext,SwapBlock,swapParentView,type SwapBlockProps,type SwapToken,type SwapView} from './swap-block.js';
+export interface SwapSheetProps extends SwapBlockProps {
  open:boolean;onOpenChange:(open:boolean)=>void;
  /** Accessible name of the sheet. */
  title:string;
 }
 /**
- * SwapPanelBlock presented in the gesture sheet. Pickers and settings push inside the same sheet, which resizes to the view
+ * SwapBlock presented in the gesture sheet. Pickers and settings push inside the same sheet, which resizes to the view
  * on show. A back press or a dismiss gesture pops a pushed view first and closes the sheet only from the main form;
  * closing always returns to the main form. Needs the optional gesture-sheet backend, which `blocks` does not load.
  */
@@ -21,6 +21,6 @@ export function SwapSheet({open,onOpenChange,title,view:viewProp,onViewChange,st
  const host=useMemo(()=>({listComponent:BottomSheetFlatList as unknown as React.ComponentType<FlatListProps<SwapToken>>,animateHeight:false}),[]);
  const leave=()=>{if(view==='main')return false;show(swapParentView(view));return true;};
  return <GestureSheet open={open} onOpenChange={next=>{if(!next&&leave())return;onOpenChange(next);}} title={title} contentMode='custom' enableDynamicSizing keyboardBehavior='interactive' onHardwareBackPress={()=>{if(!leave())onOpenChange(false);return true;}}>
-  <SwapHostContext.Provider value={host}><SwapPanelBlock {...panel} view={view} onViewChange={show} style={[{paddingHorizontal:12,paddingBottom:16},style]}/></SwapHostContext.Provider>
+  <SwapHostContext.Provider value={host}><SwapBlock {...panel} view={view} onViewChange={show} style={[{paddingHorizontal:12,paddingBottom:16},style]}/></SwapHostContext.Provider>
  </GestureSheet>;
 }

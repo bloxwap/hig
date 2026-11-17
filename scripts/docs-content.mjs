@@ -6,7 +6,7 @@ import {remarkHeading} from 'fumadocs-core/mdx-plugins';
 import GithubSlugger from 'github-slugger';
 
 export const markdownFiles=(dir='docs')=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?markdownFiles(`${dir}/${e.name}`):e.name.endsWith('.md')?[`${dir}/${e.name}`]:[]).sort();
-export const guideRoute=file=>`/docs/guides/${file.slice(5,-3)}/`;
+export const guideRoute=file=>file.startsWith('docs/flow/')?`/${file.slice(0,-3)}/`:`/docs/guides/${file.slice(5,-3)}/`;
 export const chapterBody=markdown=>markdown.replace(/^# .+\r?\n/,'');
 const parse=markdown=>unified().use(remarkParse).use(remarkGfm).parse(markdown);
 function walk(node,fn){fn(node);for(const child of node.children??[])walk(child,fn);}

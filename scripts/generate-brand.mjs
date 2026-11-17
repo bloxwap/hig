@@ -22,3 +22,13 @@ writeFileSync('apps/docs/public/og.svg',og);
 await sharp(Buffer.from(og)).png().toFile('apps/docs/public/og.png');
 writeFileSync('planning/brand-artifacts.json',JSON.stringify({version:workspaceVersion,source,sourceSha256:createHash('sha256').update(svg).digest('hex'),derivatives:['apps/docs/public/favicon.svg','fixtures/next/public/favicon.svg','apps/docs/public/og.svg','apps/docs/public/og.png'],geometry:'Copied from approved source; no independently redrawn logo',socialFormat:'1200×630 PNG and SVG generated from the same approved source; no physical display certification'},null,2)+'\n');
 console.log('Brand favicon/OG derivatives generated from approved SVG');
+
+// Pin the app's funding artwork locally so published web and native blocks use identical SVGs.
+const depositFiles = {'apple-pay':'apple-pay', 'cash-app':'cashapp', exchange:'exchange', crypto:'crypto', bank:'bank', blink:'blink'};
+const depositArtwork = Object.entries(depositFiles).map(([id,file]) => [
+  id, readFileSync(`packages/hig/tokens/assets/onramps/${file}.svg`, 'utf8'),
+]);
+writeFileSync('packages/hig/tokens/src/deposit-icons.ts',
+  '// Generated from the pinned monorepo apps/app/public/onramps artwork.\n' +
+  'const icons = new Map<string, string>(' + JSON.stringify(depositArtwork, null, 2) + ');\n' +
+  'export const depositIcon = (id: string): string | undefined => icons.get(id);\n');

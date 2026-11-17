@@ -19,7 +19,7 @@ export default async function Page({params}:{params:Promise<{slug?:string[]}>}){
  return <DocsPage toc={page.data.toc} footer={{className:'page-nav'}}>
   <DocsTitle>{page.data.title}{newRoutes.has(page.url)&&<span className='docs-new'>New</span>}</DocsTitle>
   <DocsDescription>{page.data.description}</DocsDescription>
-  {route.startsWith('components/')&&<Demo route={route}/>}
+  {(route.startsWith('components/')||route==='flow/token-action-flow')&&<Demo route={route}/>}
   <DocsBody><Content components={getMDXComponents()}/></DocsBody>
   <div className='docs-page-links'><a href={`https://github.com/bloxwap/hig/blob/main/${original?.source??'docs/website.md'}`}>View source</a><EditOnGitHub href={`https://github.com/bloxwap/hig/edit/main/${original?.source??'docs/website.md'}`}/></div>
  </DocsPage>;

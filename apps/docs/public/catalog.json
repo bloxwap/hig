@@ -1,5 +1,5 @@
 {
-  "version": "0.8.2",
+  "version": "0.9.0",
   "components": [
     {
       "name": "Button",
@@ -909,6 +909,24 @@
       ]
     },
     {
+      "name": "LoginBlock",
+      "route": "components/login-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "DepositBlock",
+      "route": "components/deposit-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "LanguageBlock",
       "route": "components/language-block",
       "entry": "blocks",
@@ -931,8 +949,8 @@
       ]
     },
     {
-      "name": "SwapPanelBlock",
-      "route": "components/swap-panel-block",
+      "name": "SwapBlock",
+      "route": "components/swap-block",
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [

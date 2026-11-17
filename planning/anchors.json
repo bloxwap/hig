@@ -24,7 +24,9 @@
   ],
   "/docs/guides/components/blocks/": [
     "api-and-anatomy",
-    "swappanelblock",
+    "loginblock",
+    "depositblock",
+    "swapblock",
     "frompickerblock-and-topickerblock",
     "accountblock",
     "tokenactionblock",
@@ -129,6 +131,9 @@
   ],
   "/docs/guides/feedback/contract/": [],
   "/docs/guides/feedback/preferences/": [],
+  "/docs/flow/token-action-flow/": [
+    "moving-through-the-sheet"
+  ],
   "/docs/guides/foundations/glossary/": [
     "locales",
     "change-process",

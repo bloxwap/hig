@@ -26,6 +26,11 @@ describe('TokenActionBlock',()=>{
   // Bars come before the actions.
   expect(document.querySelector('.hig-token-bars')!.compareDocumentPosition(document.querySelector('.hig-token-actions')!)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
  });
+ it('omits the chain breakdown for a single supported chain',()=>{
+  render(<TokenActionBlock symbol='BLOX' assets={assets} chains={[{label:'Solana',value:50}]} actions={[]}/>);
+  expect(screen.queryByRole('region',{name:'Chains'})).toBeNull();
+ });
+
  it('takes a host total, an unknown total and a chains title',()=>{
   const view=render(<TokenActionBlock symbol='HYPE' name='Hyperliquid' value={800.5} assets={assets} chains={chains} chainsTitle='Networks' actions={[]}/>);
   expect(description(screen.getByRole('region',{name:'Hyperliquid'}))).toBe('$800.50');expect(screen.getByRole('region',{name:'Networks'})).toBeTruthy();expect(document.querySelector('.hig-token-actions')).toBeNull();

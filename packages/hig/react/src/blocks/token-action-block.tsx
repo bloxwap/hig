@@ -45,7 +45,7 @@ export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLEle
  stickyHeader?:boolean;
  /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
  headingId?:string;
- /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapPanelBlock`. */
+ /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapBlock`. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
 }
 const usd={style:'currency',currency:'USD'} as const,unitsFormat={maximumFractionDigits:6} as const,held=(value:number)=>Number.isFinite(value)&&value>0;
@@ -56,12 +56,13 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
  const {messages}=useHIG();const locale=useNumberLocale();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
+ const showChains=chains!==undefined&&chains.length>1;
  const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<AnimatedNumberReadout key='value' value={total} options={usd}/>;
  return <section {...rest} className={`hig-token-card${className?` ${className}`:''}`}>
   <ScreenHeader title={symbol} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
-  {(assets||chains)&&<div className='hig-token-bars'>
+  {(assets||showChains)&&<div className='hig-token-bars'>
    {assets&&<BarMark surface={false} title={name??symbol} description={headline} elements={assets}/>}
-   {chains&&<BarMark surface={false} title={chainsTitle??messages.swapChains??en.swapChains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)} elements={chains}/>}
+   {showChains&&<BarMark surface={false} title={chainsTitle??messages.swapChains??en.swapChains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)} elements={chains}/>}
   </div>}
   {actions.length>0&&<div className='hig-token-actions'>{actions.map(action=><Button key={action.id} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onClick={action.onSelect}>{tokenActionLabel(action,messages)}</Button>)}</div>}
   {note!=null&&note!==false&&<p className='hig-swap-note hig-token-note' data-tone={noteTone} role='note'>{note}</p>}
