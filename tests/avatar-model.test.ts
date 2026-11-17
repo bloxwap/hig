@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
-import {beamAvatar,beamEye,beamHash,beamInk,beamInks,beamSize} from '../packages/hig/contracts/src/avatar';
+import {avatarColorRoles,avatarInitials,avatarSide,beamAvatar,beamEye,beamHash,beamInk,beamInks,beamSize} from '../packages/hig/contracts/src/avatar';
 // Faces recorded from the SVG that boring-avatars 2.0.4 renders for its "beam" variant. The package is not a dependency of this
 // repository, so the recording stands in for it: the model must reproduce every recorded face exactly.
 const recorded=JSON.parse(readFileSync('tests/test-utils/boring-avatars-beam.json','utf8')) as {palettes:Record<string,string[]>;faces:Array<{seed:string;palette:string}&Record<string,unknown>>};
@@ -73,5 +73,25 @@ describe('beam ink',()=>{
  it('takes the host inks in place of black and white',()=>{
   const inks={dark:'var(--hig-background)',light:'var(--hig-text)'};
   expect(beamAvatar('a',['#00FF00'],inks)).toMatchObject({ink:'dark',faceColor:inks.dark});expect(beamAvatar('a',['#101010'],inks)).toMatchObject({ink:'light',faceColor:inks.light});
+ });
+});
+
+describe('avatar frame arithmetic shared by web and native',()=>{
+ it('names the default palette roles once, for both renderers',()=>{
+  expect(avatarColorRoles).toEqual(['action','info','negative','warning']);
+ });
+ it('takes a size that can be drawn and ignores one that cannot',()=>{
+  for(const size of [0,0.5,20,40,144,1e9])expect(avatarSide(size)).toBe(size);
+  for(const size of [undefined,null,NaN,Infinity,-Infinity,-1,-0.01,'20',{},[],true])expect(avatarSide(size),String(size)).toBeUndefined();
+ });
+ it('draws the first two letters, and never half a character',()=>{
+  expect(avatarInitials('Demo account')).toBe('De');expect(avatarInitials('J')).toBe('J');expect(avatarInitials('')).toBe('');
+  expect(avatarInitials('日本語のなまえ')).toBe('日本');expect(avatarInitials('أحمد')).toBe('أح');
+  // One astral character is two units, so it was always drawn whole.
+  expect(avatarInitials('😀😀 x')).toBe('😀');expect(avatarInitials('😀')).toBe('😀');
+  // A letter and an astral character: the cut used to fall inside the pair.
+  expect(avatarInitials('A😀 x')).toBe('A😀');expect('A😀 x'.slice(0,2)).not.toBe('A😀');
+  // An unpaired half is left as the host wrote it.
+  expect(avatarInitials('A\ud83d')).toBe('A\ud83d');expect(avatarInitials('A\ud83dB')).toBe('A\ud83d');
  });
 });

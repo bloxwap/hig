@@ -1,10 +1,10 @@
 import React from 'react';
 import Svg,{G,Path,Rect} from 'react-native-svg';
-import {beamAvatar,beamEye,beamSize} from '@bloxwap/hig/contracts/avatar';
+import {avatarColorRoles as paletteRoles,avatarSide,beamAvatar,beamEye,beamSize} from '@bloxwap/hig/contracts/avatar';
 import {AvatarFrame,avatarSize,type AvatarFrameProps} from './avatar-frame.js';
 import {useColors} from './provider.js';
-/** Token roles of the default face palette, in this order. The order and the number of colours decide which colours a seed lands on. */
-export const avatarColorRoles=['action','info','negative','warning'] as const;
+/** Token roles of the default face palette, in this order: the `avatarColorRoles` of `@bloxwap/hig/contracts/avatar`, which web and native share. The order and the number of colours decide which colours a seed lands on. */
+export const avatarColorRoles=paletteRoles;
 export interface AvatarProps extends AvatarFrameProps {
  /** What the generated face is drawn from, such as a wallet address. The same seed and colours draw the same face on web and native. It is case-sensitive. Passing it selects the generated face. Defaults to `name`. */
  seed?:string;
@@ -38,6 +38,6 @@ const BeamFace=React.memo(function BeamFace({seed,size,colors,faceColor}: {seed:
  * This entry draws the face with `react-native-svg`; `Avatar` from `@bloxwap/hig/native/status` is the same component without the face and without that peer.
  */
 export function Avatar({seed,variant,colors,faceColor,...frame}:AvatarProps){
- const beam=(variant??(seed===undefined?'initials':'beam'))==='beam';
- return <AvatarFrame {...frame} face={beam?<BeamFace seed={seed??frame.name} size={frame.size??avatarSize} colors={colors} faceColor={faceColor}/>:undefined}/>;
+ const beam=(variant??(seed==null?'initials':'beam'))==='beam';
+ return <AvatarFrame {...frame} face={beam?<BeamFace seed={seed??frame.name} size={avatarSide(frame.size)??avatarSize} colors={colors} faceColor={faceColor}/>:undefined}/>;
 }

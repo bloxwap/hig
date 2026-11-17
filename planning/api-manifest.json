@@ -28,11 +28,11 @@
       },
       "avatarColorRoles": {
         "entry": "avatar",
-        "signature": "export declare const avatarColorRoles: readonly ['action', 'info', 'negative', 'warning'];"
+        "signature": "export declare const avatarColorRoles: readonly [\"action\", \"info\", \"negative\", \"warning\"];"
       },
       "AvatarProps": {
         "entry": "avatar",
-        "signature": "export interface AvatarProps {\n    /** The person or account. It is the accessible name, the first two letters are the initials, and it is the seed of the generated face unless `seed` is given. */\n    name: string;\n    /** An image to show instead. If it fails to load, the initials or the generated face show in its place. */\n    src?: string;\n    /** What the generated face is drawn from, such as a wallet address. The same seed and colours draw the same face on web and native. It is case-sensitive. Passing it selects the generated face. Defaults to `name`. */\n    seed?: string;\n    /** What shows without an image: `initials`, the first two letters of `name` on the well fill, or `beam`, a generated face. Defaults to `initials`, or to `beam` when `seed` is given. */\n    variant?: 'initials' | 'beam';\n    /** Width and height in CSS pixels. Defaults to 40. With it, the initials are drawn at 40% of the size. */\n    size?: number;\n    /** Palette of the generated face, as CSS colours. Defaults to the `action`, `info`, `negative` and `warning` token roles (`avatarColorRoles`), which are Display P3 where the screen supports it. A seed picks by position, so the same list in the same order keeps the same faces. */\n    colors?: readonly string[];\n    /** One colour for the eyes and mouth of every generated face. Left out, each face takes the `background` role on a bright colour and the `text` role on a deep one. */\n    faceColor?: string;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from assistive technology, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
+        "signature": "export interface AvatarProps {\n    /** The person or account. It is the accessible name, the first two letters are the initials, and it is the seed of the generated face unless `seed` is given. */\n    name: string;\n    /** An image to show instead, cropped to fill the box. If it fails to load, the initials or the generated face show in its place. */\n    src?: string;\n    /** What the generated face is drawn from, such as a wallet address. The same seed and colours draw the same face on web and native. It is case-sensitive. Passing it selects the generated face. Defaults to `name`. */\n    seed?: string;\n    /** What shows without an image: `initials`, the first two letters of `name` on the well fill, or `beam`, a generated face. Defaults to `initials`, or to `beam` when `seed` is given. */\n    variant?: 'initials' | 'beam';\n    /** Width and height in CSS pixels. Defaults to 40. With it, the initials are drawn at 40% of the size. A size that is not a finite number of zero or more is ignored. */\n    size?: number;\n    /** Palette of the generated face, as CSS colours. Defaults to the `action`, `info`, `negative` and `warning` token roles (`avatarColorRoles`), which are Display P3 where the screen supports it. A seed picks by position, so the same list in the same order keeps the same faces. */\n    colors?: readonly string[];\n    /** One colour for the eyes and mouth of every generated face. Left out, each face takes the `background` role on a bright colour and the `text` role on a deep one. */\n    faceColor?: string;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from assistive technology, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
       },
       "Avatar": {
         "entry": "avatar",
@@ -1282,7 +1282,7 @@
       },
       "avatarColorRoles": {
         "entry": "avatar",
-        "signature": "export declare const avatarColorRoles: readonly ['action', 'info', 'negative', 'warning'];"
+        "signature": "export declare const avatarColorRoles: readonly [\"action\", \"info\", \"negative\", \"warning\"];"
       },
       "AvatarProps": {
         "entry": "avatar",
@@ -2410,7 +2410,7 @@
       },
       "AvatarFrameProps": {
         "entry": "avatar-frame",
-        "signature": "export interface AvatarFrameProps {\n    /** The person or account. It is the accessible name, and the first two letters are the initials. */\n    name: string;\n    /** An image to show instead. If it fails to load, the fallback shows in its place. */\n    source?: ImageSourcePropType;\n    /** Width and height in dp. Defaults to 40. With it, the initials are drawn at 40% of the size. */\n    size?: number;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from VoiceOver and TalkBack, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
+        "signature": "export interface AvatarFrameProps {\n    /** The person or account. It is the accessible name, and the first two letters are the initials. */\n    name: string;\n    /** An image to show instead, cropped to fill the box. If it fails to load, or it names no image (`{uri: undefined}`, an empty address), the fallback shows in its place. */\n    source?: ImageSourcePropType;\n    /** Width and height in dp. Defaults to 40. With it, the initials are drawn at 40% of the size and keep that size at every system text size, so they stay inside the box. A size that is not a finite number of zero or more is ignored. */\n    size?: number;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from VoiceOver and TalkBack, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
       },
       "AvatarFrame": {
         "entry": "avatar-frame",

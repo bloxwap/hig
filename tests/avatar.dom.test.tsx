@@ -2,7 +2,8 @@
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {readFileSync} from 'node:fs';
-import {cleanup,fireEvent,render,screen} from '@testing-library/react';
+import {act,cleanup,fireEvent,render,screen} from '@testing-library/react';
+import {hydrateRoot} from 'react-dom/client';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {Avatar,avatarColorRoles} from '../packages/hig/react/src/avatar';
@@ -115,12 +116,63 @@ describe('Avatar generated face',()=>{
  });
 });
 
+describe('Avatar does no work when nothing changed',()=>{
+ it('keeps the drawing when its provider renders again, with a host palette written inline',()=>{
+  // HIGProvider hands every consumer a new context value on each of its renders; the face must not be computed or diffed again for that.
+  const tree=(tick:number)=><HIGProvider><span data-tick={tick}/><Avatar name='Joe' seed={address} colors={[...vivid]}/><Avatar name='Ann' variant='beam'/></HIGProvider>;
+  const view=render(tree(1)),svgs=[...document.querySelectorAll('svg')],before=computed();
+  expect(svgs).toHaveLength(2);expect(before).toBeGreaterThan(0);
+  let writes=0;const observer=new MutationObserver(records=>{writes+=records.length;});for(const svg of svgs)observer.observe(svg,{attributes:true,childList:true,subtree:true,characterData:true});
+  for(let tick=2;tick<12;tick++)view.rerender(tree(tick));
+  expect(computed()).toBe(before);expect([...document.querySelectorAll('svg')]).toEqual(svgs);expect(observer.takeRecords().length+writes).toBe(0);
+  // A provider colour that changes the ink is still seen.
+  view.rerender(<HIGProvider primaryColor='#101080'><span/><Avatar name='Joe' seed={address} colors={[...vivid]}/><Avatar name='Ann' variant='beam'/></HIGProvider>);
+  expect(computed()).toBe(before+2);observer.disconnect();
+ });
+ it('draws a new face for a new seed, palette or ink, and only then',()=>{
+  const view=render(<Avatar name='Joe' seed='a' colors={['#101010','#f0f0f0']}/>);const first=drawn(),before=computed();
+  view.rerender(<Avatar name='Joe' seed='a' colors={['#101010','#f0f0f0']} square decorative size={12}/>);expect(computed()).toBe(before);
+  view.rerender(<Avatar name='Joe' seed='b' colors={['#101010','#f0f0f0']}/>);expect(computed()).toBe(before+1);expect(drawn()).not.toEqual(first);
+  view.rerender(<Avatar name='Joe' seed='b' colors={['#f0f0f0','#101010']}/>);expect(computed()).toBe(before+2);
+  view.rerender(<Avatar name='Joe' seed='b' colors={['#f0f0f0','#101010']} faceColor='#ff0000'/>);expect(computed()).toBe(before+3);expect(hex(drawn().mouthInk).toUpperCase()).toBe('#FF0000');
+  // Colours that only differ in where one ends and the next begins are different palettes.
+  view.rerender(<Avatar name='Joe' seed='b' colors={['#f0f0f0']}/>);expect(computed()).toBe(before+4);
+ });
+});
+
 describe('Avatar size, shape, image and accessibility',()=>{
  it('size sets the box of every content, and scales the initials',()=>{
   const view=render(<Avatar name='Joe' size={20}/>);
   expect(avatar().style.width).toBe('20px');expect(avatar().style.height).toBe('20px');expect(avatar().style.fontSize).toBe('8px');expect(avatar().style.lineHeight).toBe('1');
   view.rerender(<Avatar name='Joe' seed={address} size={144}/>);expect(avatar().style.width).toBe('144px');expect(avatar().style.height).toBe('144px');expect(avatar().style.fontSize).toBe('');
   view.rerender(<Avatar name='Joe' src='/joe.png' size={64}/>);expect(avatar().tagName).toBe('IMG');expect(avatar().style.width).toBe('64px');expect(avatar().style.height).toBe('64px');
+ });
+ it('ignores a size that cannot be drawn and keeps the default box',()=>{
+  const errors=vi.spyOn(console,'error').mockImplementation(()=>{});
+  for(const size of [NaN,Infinity,-Infinity,-5,'20' as unknown as number,null as unknown as number]){
+   for(const props of [{},{seed:address},{src:'/joe.png'}]){const view=render(<Avatar name='Joe' size={size} {...props}/>);expect(avatar().getAttribute('style'),`${String(size)} ${JSON.stringify(props)}`).toBeNull();view.unmount();}
+   expect(renderToStaticMarkup(<Avatar name='Joe' size={size}/>)).toBe(renderToStaticMarkup(<Avatar name='Joe'/>));
+  }
+  // React reports an invalid style value through console.error; none was written.
+  expect(errors).not.toHaveBeenCalled();errors.mockRestore();
+  // Zero and very large sizes are sizes.
+  const view=render(<Avatar name='Joe' seed={address} size={0}/>);expect(avatar().style.width).toBe('0px');expect(avatar().querySelector('svg')).not.toBeNull();
+  view.rerender(<Avatar name='Joe' seed={address} size={100000}/>);expect(avatar().style.width).toBe('100000px');expect(drawn().viewBox).toBe('0 0 36 36');
+ });
+ it('draws whole characters as initials',()=>{
+  const view=render(<Avatar name='A😀 x'/>);expect(avatar().textContent).toBe('A😀');
+  view.rerender(<Avatar name='日本語のなまえ'/>);expect(avatar().textContent).toBe('日本');
+  view.rerender(<Avatar name=''/>);expect(avatar().textContent).toBe('');
+ });
+ it('treats a missing seed from untyped code as no seed',()=>{
+  render(<Avatar name='Joe' seed={null as unknown as string}/>);expect(avatar().textContent).toBe('Jo');expect(avatar().dataset.variant).toBeUndefined();
+ });
+ it('draws a face for an empty seed and for a very long one',()=>{
+  const view=render(<Avatar name='Joe' seed=''/>);expect(avatar().dataset.variant).toBe('beam');expect(drawn().wrapperTransform).toBe('translate(4 4) rotate(0 18 18) scale(1)');
+  view.rerender(<Avatar name='Joe' seed={'x'.repeat(200000)}/>);expect(drawn().wrapperTransform).toMatch(/^translate\(-?[\d.]+ -?[\d.]+\) rotate\(-?\d+ 18 18\) scale\([\d.]+\)$/);
+ });
+ it('crops a photo that is not square instead of stretching it',()=>{
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('img.hig-avatar { object-fit:cover; }');
  });
  it('square removes the rounding of every content',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');
@@ -139,6 +191,53 @@ describe('Avatar size, shape, image and accessibility',()=>{
   view.rerender(<Avatar name='Joe' seed={address} src='/joe.png'/>);expect(avatar().tagName).toBe('SPAN');
   view.rerender(<Avatar name='Joe' seed={address} src='/joe-2.png'/>);expect(avatar().tagName).toBe('IMG');
   view.rerender(<Avatar name='Joe' src='/gone.png'/>);fireEvent.error(avatar());expect(avatar().textContent).toBe('Jo');
+ });
+ it('replaces an image that failed before the page hydrated',async()=>{
+  // The server sent the image; the browser tried it and fired `error` before React was listening.
+  const element=<Avatar name='Joe' seed={address} src='/gone.png'/>;
+  const container=document.createElement('div');container.innerHTML=renderToStaticMarkup(element);document.body.append(container);
+  const broken=container.querySelector('img')!;
+  Object.defineProperties(broken,{complete:{value:true},naturalWidth:{value:0},decode:{value:()=>Promise.reject(new DOMException('The source image cannot be decoded.','EncodingError'))}});
+  let root:ReturnType<typeof hydrateRoot>;
+  await act(async()=>{root=hydrateRoot(container,element);});
+  expect(container.querySelector('img')).toBeNull();expect(container.querySelector<HTMLElement>('.hig-avatar')!.dataset.variant).toBe('beam');expect(container.querySelector('[role=img]')!.getAttribute('aria-label')).toBe('Joe');
+  act(()=>root.unmount());container.remove();
+ });
+ it('keeps an image that is complete and sound, with or without a size of its own, and one that is still loading',async()=>{
+  const cases:Array<Record<string,PropertyDescriptor>>=[
+   // Loaded, with a width.
+   {complete:{value:true},naturalWidth:{value:64},decode:{value:()=>Promise.reject(new Error('never asked'))}},
+   // Loaded, no intrinsic size (an SVG without one): `decode()` resolves.
+   {complete:{value:true},naturalWidth:{value:0},decode:{value:()=>Promise.resolve()}},
+   // Still loading.
+   {complete:{value:false},naturalWidth:{value:0},decode:{value:()=>Promise.reject(new Error('never asked'))}},
+   // A browser without `decode()`.
+   {complete:{value:true},naturalWidth:{value:0}},
+  ];
+  for(const stub of cases){
+   const element=<Avatar name='Joe' seed={address} src='/joe.png'/>;
+   const container=document.createElement('div');container.innerHTML=renderToStaticMarkup(element);document.body.append(container);
+   Object.defineProperties(container.querySelector('img')!,stub);
+   let root:ReturnType<typeof hydrateRoot>;
+   await act(async()=>{root=hydrateRoot(container,element);});
+   expect(container.querySelector('img'),JSON.stringify(Object.keys(stub))).not.toBeNull();
+   act(()=>root.unmount());container.remove();
+  }
+ });
+ it('does not act on a failed check after the image is gone or has changed',async()=>{
+  let reject!:(reason:unknown)=>void;const pending=new Promise<void>((_,no)=>{reject=no;});
+  const container=document.createElement('div');container.innerHTML=renderToStaticMarkup(<Avatar name='Joe' src='/a.png'/>);document.body.append(container);
+  // The element is reused for the next address, whose own check finds a sound image.
+  const answers=[pending,Promise.resolve()];
+  Object.defineProperties(container.querySelector('img')!,{complete:{value:true},naturalWidth:{value:0},decode:{value:()=>answers.shift()??Promise.resolve()}});
+  let root:ReturnType<typeof hydrateRoot>;
+  await act(async()=>{root=hydrateRoot(container,<Avatar name='Joe' src='/a.png'/>);});
+  // The host swaps the address before the check answers: the old answer must not hide the new image.
+  await act(async()=>{root.render(<Avatar name='Joe' src='/b.png'/>);});
+  await act(async()=>{reject(new Error('broken'));await pending.catch(()=>{});});
+  expect(answers).toHaveLength(0);expect(container.querySelector('img')?.getAttribute('src')).toBe('/b.png');
+  const errors=vi.spyOn(console,'error').mockImplementation(()=>{});
+  act(()=>root.unmount());expect(errors).not.toHaveBeenCalled();errors.mockRestore();container.remove();
  });
  it('decorative hides every content from assistive technology',()=>{
   const view=render(<Avatar name='Joe' seed={address} decorative/>);

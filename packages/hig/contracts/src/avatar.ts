@@ -12,6 +12,15 @@ export type BeamInk = 'dark' | 'light';
 export interface BeamInks {dark:string;light:string}
 /** boring-avatars' own inks. Renderers pass the provider's background and text roles instead. */
 export const beamInks:BeamInks = {dark:'#000000',light:'#FFFFFF'};
+/** Token roles of the default face palette, in this order. The order and the number of colours decide which colours a seed lands on. */
+export const avatarColorRoles = ['action','info','negative','warning'] as const;
+/** A `size` an avatar can be drawn at: a finite number of zero or more. Anything else (NaN, a negative, Infinity, or a value that is not a number from untyped code) is undefined, and the avatar keeps its default size. */
+export function avatarSide(size:unknown):number|undefined { return typeof size === 'number' && Number.isFinite(size) && size >= 0 ? size : undefined; }
+/** The initials of `name`: its first two UTF-16 units, as Avatar has always drawn them, and the second half of a character that this cut would split (an emoji after one letter), so no half character is drawn. */
+export function avatarInitials(name:string):string {
+ const high = name.charCodeAt(1), low = name.charCodeAt(2);
+ return name.slice(0, high >= 0xd800 && high <= 0xdbff && low >= 0xdc00 && low <= 0xdfff ? 3 : 2);
+}
 /** A generated face: what to paint and where, with no platform types. */
 export interface BeamAvatar {
  /** Position in the palette of the backdrop colour. */

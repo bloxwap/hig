@@ -42,7 +42,12 @@ describe('Avatar without the new props is what it was',()=>{
  it('draws the image under its name',()=>{
   const image=mount({name:'Demo account',source:{uri:'https://example.com/demo.png'}}).findByType(RN.Image);
   expect(image.props.source).toEqual({uri:'https://example.com/demo.png'});expect(image.props.accessibilityLabel).toBe('Demo account');expect(flat(image)).toEqual({width:40,height:40,borderRadius:20});
-  expect(image.props.accessible).toBeUndefined();expect(image.props.importantForAccessibility).toBeUndefined();
+  // A label alone does not make an Image an accessibility element on iOS, so the photo is a named image like the fallback.
+  expect(image.props.accessible).toBe(true);expect(image.props.accessibilityRole).toBe('image');expect(image.props.importantForAccessibility).toBeUndefined();
+ });
+ it('keeps the letters following the system text size when no size is given',()=>{
+  expect(mount({name:'Demo account'}).findByType(RN.Text).props.maxFontSizeMultiplier).toBeUndefined();
+  expect(mount({name:'Demo account'},{maxFontSizeMultiplier:1.5}).findByType(RN.Text).props.maxFontSizeMultiplier).toBe(1.5);
  });
 });
 
@@ -109,6 +114,50 @@ describe('Avatar generated face',()=>{
  });
 });
 
+describe('Avatar edge inputs',()=>{
+ it('ignores a size that cannot be drawn and keeps the default box',()=>{
+  for(const size of [NaN,Infinity,-Infinity,-5,'20',null]){
+   expect(flat(box(mount({size})))).toEqual({width:40,height:40,borderRadius:20,backgroundColor:nativeSrgb.surface,alignItems:'center',justifyContent:'center'});
+   expect(flat(mount({size}).findByType(RN.Text))).toMatchObject({fontSize:16,lineHeight:24});
+   const face=mount({size,seed:address});expect(flat(box(face))).toEqual({width:40,height:40,borderRadius:20,overflow:'hidden'});expect(drawn(face)).toMatchObject({width:40,height:40});
+   expect(flat(mount({size,source:7}).findByType(RN.Image))).toEqual({width:40,height:40,borderRadius:20});
+  }
+  // Zero and very large sizes are sizes.
+  expect(drawn(mount({size:0,seed:address}))).toMatchObject({width:0,height:0,viewBox:'0 0 36 36'});
+  expect(flat(box(mount({size:100000,seed:address})))).toMatchObject({width:100000,height:100000,borderRadius:50000});
+ });
+ it('letters sized to the box keep that size at every system text size',()=>{
+  // Sized initials are 40% of the box; scaled by a large-text setting they would leave it, so they do not scale (as in HIG's other fixed discs).
+  for(const size of [20,40,64])expect(mount({size}).findByType(RN.Text).props.maxFontSizeMultiplier).toBe(1);
+  expect(mount({size:20},{maxFontSizeMultiplier:2}).findByType(RN.Text).props.maxFontSizeMultiplier).toBe(1);
+  expect(mount({size:NaN}).findByType(RN.Text).props.maxFontSizeMultiplier).toBeUndefined();
+ });
+ it('shows the fallback for a source that names no image',()=>{
+  // A host writes `source={{uri: photo}}` before the photo is known.
+  for(const source of [{uri:undefined},{uri:null},{uri:''},{},[],[{uri:''}],null,undefined,0,'']){
+   const seeded=mount({seed:address,source});expect(seeded.findAllByType(RN.Image)).toHaveLength(0);expect(seeded.findAllByType(Svg)).toHaveLength(1);
+   const plain=mount({source});expect(plain.findAllByType(RN.Image)).toHaveLength(0);expect(plain.findByType(RN.Text).props.children).toBe('Jo');
+  }
+  for(const source of [{uri:'https://example.com/joe.png'},7,[{uri:'https://example.com/joe.png',width:40},{uri:'https://example.com/joe@2x.png',width:80}]])expect(mount({seed:address,source}).findAllByType(RN.Image)).toHaveLength(1);
+  // The address arrives: the image is tried.
+  mount({seed:address,source:{uri:undefined}});expect(update({seed:address,source:{uri:'https://example.com/joe.png'}}).findAllByType(RN.Image)).toHaveLength(1);
+ });
+ it('draws whole characters as initials, and treats a missing seed from untyped code as no seed',()=>{
+  expect(mount({name:'A😀 x'}).findByType(RN.Text).props.children).toBe('A😀');expect(mount({name:'日本語のなまえ'}).findByType(RN.Text).props.children).toBe('日本');expect(mount({name:''}).findByType(RN.Text).props.children).toBe('');
+  const view=mount({seed:null});expect(view.findAllByType(Svg)).toHaveLength(0);expect(view.findByType(RN.Text).props.children).toBe('Jo');
+ });
+ it('draws a face for an empty seed and for a very long one',()=>{
+  expect(drawn(mount({seed:''})).wrapperTransform).toBe('translate(4 4) rotate(0 18 18) scale(1)');
+  expect(drawn(mount({seed:'x'.repeat(200000)})).wrapperTransform).toMatch(/^translate\(-?[\d.]+ -?[\d.]+\) rotate\(-?\d+ 18 18\) scale\([\d.]+\)$/);
+ });
+ it('keeps the drawing when its provider renders again',()=>{
+  const tree=tick=>h(HIGProvider,null,h(RN.View,{testID:String(tick)}),h(Avatar,{name:'Joe',seed:address,colors:[...vivid]}),h(Avatar,{name:'Ann',variant:'beam'}));
+  act(()=>{root=render(tree(1));});const before=beamAvatar.mock.calls.length;
+  for(let tick=2;tick<12;tick++)act(()=>root.update(tree(tick)));
+  expect(beamAvatar.mock.calls.length).toBe(before);
+ });
+});
+
 describe('Avatar size, shape, image and accessibility',()=>{
  it('size sets the box of every content, and scales the initials',()=>{
   let view=mount({size:20});
@@ -137,7 +186,9 @@ describe('Avatar size, shape, image and accessibility',()=>{
  it('decorative hides every content from VoiceOver and TalkBack',()=>{
   const unread={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants'};
   for(const props of [{seed:address},{}]){const disc=box(mount({...props,decorative:true}));expect(disc.props).toMatchObject(unread);expect(disc.props.accessibilityLabel).toBeUndefined();expect(disc.props.accessibilityRole).toBeUndefined();}
-  const image=mount({source:7,decorative:true}).findByType(RN.Image);expect(image.props).toMatchObject(unread);expect(image.props.accessibilityLabel).toBeUndefined();
+  const image=mount({source:7,decorative:true}).findByType(RN.Image);expect(image.props).toMatchObject(unread);expect(image.props.accessibilityLabel).toBeUndefined();expect(image.props.accessibilityRole).toBeUndefined();
+  // Named, the photo, the face and the letters read the same way.
+  for(const props of [{source:7},{seed:address},{}]){const named=mount(props).findAll(node=>node.props.accessibilityRole==='image')[0];expect(named.props).toMatchObject({accessible:true,accessibilityRole:'image',accessibilityLabel:'Joe'});}
  });
 });
 
