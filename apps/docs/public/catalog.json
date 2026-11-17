@@ -451,7 +451,7 @@
     {
       "name": "Avatar",
       "route": "components/avatar",
-      "entry": "status",
+      "entry": "avatar",
       "nativeSupport": "renderer",
       "states": [
         "default",

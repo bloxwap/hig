@@ -733,7 +733,7 @@
     {
       "name": "Avatar",
       "slug": "avatar",
-      "entry": "status",
+      "entry": "avatar",
       "family": "status",
       "web": "<C.Avatar name='Demo account'/>",
       "native": "<C.Avatar name='Demo account'/>",

@@ -145,6 +145,11 @@
       "import": "./react/dist/status.js",
       "default": "./react/dist/status.js"
     },
+    "./react/avatar": {
+      "types": "./react/dist/avatar.d.ts",
+      "import": "./react/dist/avatar.js",
+      "default": "./react/dist/avatar.js"
+    },
     "./react/toast": {
       "types": "./react/dist/toast.d.ts",
       "import": "./react/dist/toast.js",
@@ -537,6 +542,11 @@
       "types": "./native/dist/status.d.ts",
       "import": "./native/dist/status.js",
       "default": "./native/dist/status.js"
+    },
+    "./native/avatar": {
+      "types": "./native/dist/avatar.d.ts",
+      "import": "./native/dist/avatar.js",
+      "default": "./native/dist/avatar.js"
     },
     "./native/data": {
       "types": "./native/dist/data.d.ts",

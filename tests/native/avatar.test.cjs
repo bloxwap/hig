@@ -1,4 +1,4 @@
-/** Native Avatar: the image, the initials it always drew, and the generated beam face in react-native-svg. */
+/** Native Avatar: the image, the initials it always drew, and the generated beam face in react-native-svg (the `avatar` entry); the `status` entry draws it without the face and without the SVG peer. */
 const React=require('react');
 const {readFileSync}=require('node:fs');
 const {create:render,act}=require('react-test-renderer');
@@ -11,7 +11,7 @@ jest.mock('@bloxwap/hig/contracts/avatar',()=>{const actual=jest.requireActual('
 const {beamAvatar}=require('@bloxwap/hig/contracts/avatar');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {Surface}=require('../../packages/hig/native/src/surface');
-const {Avatar,avatarColorRoles}=require('../../packages/hig/native/src/status');
+const {Avatar,avatarColorRoles}=require('../../packages/hig/native/src/avatar');
 const h=React.createElement;
 const address='0x1111111111111111111111111111111111111111';
 const vivid=['#00FF00','#00BBFF','#FF14A0','#FFFA00','#C300FF'];
@@ -138,5 +138,35 @@ describe('Avatar size, shape, image and accessibility',()=>{
   const unread={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants'};
   for(const props of [{seed:address},{}]){const disc=box(mount({...props,decorative:true}));expect(disc.props).toMatchObject(unread);expect(disc.props.accessibilityLabel).toBeUndefined();expect(disc.props.accessibilityRole).toBeUndefined();}
   const image=mount({source:7,decorative:true}).findByType(RN.Image);expect(image.props).toMatchObject(unread);expect(image.props.accessibilityLabel).toBeUndefined();
+ });
+});
+
+describe('Avatar from the status entry',()=>{
+ it('loads no SVG peer: neither the entry nor the frame it shares with the avatar entry imports react-native-svg',()=>{
+  const loads=file=>/from 'react-native-svg[/']|require\('react-native-svg/.test(readFileSync(`packages/hig/native/src/${file}`,'utf8'));
+  expect(['status.tsx','avatar-frame.tsx','surface.tsx','icons.tsx','provider.tsx'].filter(loads)).toEqual([]);expect(loads('brand.tsx')).toBe(true);
+  expect(readFileSync('packages/hig/native/src/avatar.tsx','utf8')).toMatch(/from 'react-native-svg'/);
+ });
+ it('renders with react-native-svg absent',()=>{
+  jest.isolateModules(()=>{
+   jest.doMock('react-native-svg',()=>{throw new Error('Cannot find module react-native-svg');});
+   // A fresh registry has its own React, so the renderer comes from it too.
+   const renderer=require('react-test-renderer'),isolated=require('../../packages/hig/native/src/status');
+   expect(()=>require('react-native-svg')).toThrow('Cannot find module');
+   let tree;renderer.act(()=>{tree=renderer.create(require('react').createElement(isolated.Avatar,{name:'Demo account',size:24,square:true}));});
+   expect(require('react-native').StyleSheet.flatten(tree.root.findAll(node=>node.props.accessibilityRole==='image')[0].props.style)).toMatchObject({width:24,height:24,borderRadius:0});
+   renderer.act(()=>tree.unmount());
+   jest.dontMock('react-native-svg');
+  });
+ });
+ it('is the same frame: size, square, decorative and the image fallback, and no generated face',()=>{
+  const {Avatar:Plain}=require('../../packages/hig/native/src/status');
+  const plain=props=>{if(root)act(()=>root.unmount());act(()=>{root=render(h(Plain,{name:'Joe',...props}));});return root.root;};
+  expect(flat(box(plain({})))).toEqual({width:40,height:40,borderRadius:20,backgroundColor:nativeSrgb.surface,alignItems:'center',justifyContent:'center'});
+  expect(flat(box(plain({size:64,square:true})))).toMatchObject({width:64,height:64,borderRadius:0});
+  expect(box(plain({decorative:true})).props).toMatchObject({accessible:false,importantForAccessibility:'no-hide-descendants'});
+  const view=plain({source:{uri:'https://example.com/joe.png'}});act(()=>view.findByType(RN.Image).props.onError({nativeEvent:{error:'404'}}));expect(view.findByType(RN.Text).props.children).toBe('Jo');
+  // Untyped JavaScript that passes a seed here gets the initials; the face is in the avatar entry.
+  const seeded=plain({seed:address,variant:'beam'});expect(seeded.findAllByType(Svg)).toHaveLength(0);expect(seeded.findByType(RN.Text).props.children).toBe('Jo');
  });
 });

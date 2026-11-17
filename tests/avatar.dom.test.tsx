@@ -5,7 +5,8 @@ import {readFileSync} from 'node:fs';
 import {cleanup,fireEvent,render,screen} from '@testing-library/react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {Avatar,avatarColorRoles} from '../packages/hig/react/src/status';
+import {Avatar,avatarColorRoles} from '../packages/hig/react/src/avatar';
+import * as status from '../packages/hig/react/src/status';
 import {beamAvatar} from '../packages/hig/contracts/src/avatar';
 import * as model from '@bloxwap/hig/contracts/avatar';
 // The renderer's own import of the model, wrapped so a test can count how often a face is computed.
@@ -20,6 +21,16 @@ function drawn(root:Element=avatar()){
  const svg=root.querySelector('svg')!,[backdrop,wrapper,leftEye,rightEye]=[...svg.querySelectorAll('rect')] as SVGRectElement[],group=svg.querySelector('g')!,mouth=svg.querySelector('path')!;
  return {viewBox:svg.getAttribute('viewBox'),backgroundColor:backdrop!.style.fill,wrapperColor:wrapper!.style.fill,wrapperTransform:wrapper!.getAttribute('transform'),wrapperRadius:Number(wrapper!.getAttribute('rx')),faceTransform:group.getAttribute('transform'),mouthPath:mouth.getAttribute('d'),mouthStroked:mouth.style.fill==='none',mouthInk:mouth.style.fill==='none'?mouth.style.stroke:mouth.style.fill,mouthCap:mouth.style.strokeLinecap,leftEyeX:Number(leftEye!.getAttribute('x')),rightEyeX:Number(rightEye!.getAttribute('x')),eyes:[leftEye!,rightEye!].map(eye=>[eye.getAttribute('y'),eye.getAttribute('width'),eye.getAttribute('height'),eye.getAttribute('rx'),eye.style.fill].join(' '))};
 }
+
+describe('Avatar entries',()=>{
+ it('is published as react/avatar and native/avatar, with the shared model as contracts/avatar',()=>{
+  const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,{types:string;import:string;default:string}>;
+  for(const [key,file] of [['./react/avatar','./react/dist/avatar'],['./native/avatar','./native/dist/avatar'],['./contracts/avatar','./contracts/dist/avatar']] as const)expect(exportsMap[key],key).toEqual({types:`${file}.d.ts`,import:`${file}.js`,default:`${file}.js`});
+ });
+ it('the status entry still exports the same component',()=>{
+  expect(status.Avatar).toBe(Avatar);
+ });
+});
 
 describe('Avatar without the new props is what it was',()=>{
  it('draws the first two letters as a named image, with no inline style or new attribute',()=>{
