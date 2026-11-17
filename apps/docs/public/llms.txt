@@ -1339,6 +1339,45 @@ The host can reject `onOpenChange(false)` while pending; HIG restores Vaul's las
 
 `scripts/gesture-sheet-browser-smoke.mjs` exercises the real Vaul backend in Chromium and WebKit: drag/scroll handoff, handle-only drag, controlled veto with retained input identity, nondismissible state, snap expansion, dynamic growth/shrink and capped scrolling, rapid resize interruption, focus/node identity, focus trap/Escape/return, viewport resizing, host styles/refs and reduced motion. Evidence in `evidence/web-gesture-sheet/` records the exact source baseline and dirty state. Desktop viewport resizing does not certify physical mobile software-keyboard behavior; that remains a host/device observation.
 
+### Views that swap (`GestureSheetView`)
+
+A sheet that walks through several views, such as choose, review and done, wraps them in `GestureSheetView` from the same entry and names the current one with `viewKey`:
+
+```tsx
+<GestureSheet open={open} onOpenChange={setOpen} title="Buy Bitcoin" titleHidden closeButton={null} enableDynamicSizing>
+  <GestureSheetView viewKey={step}>
+    {step === 'fees' ? <Fees/> : step === 'review' ? <Review/> : <Choose/>}
+  </GestureSheetView>
+</GestureSheet>
+```
+
+When `viewKey` changes, the old view fades and shrinks slightly out of the way without holding its space, the new view fades in at its own size, and the content-sized sheet moves to the new height at the same time. All three share one curve, `cubic-bezier(.26,.08,.25,1)`, with no spring and no overshoot: the old view and the height take 270ms and the new view 220ms, the values of Vaul's Dynamic Drawer. Going deeper and going back look the same, as in Vaul: there is no push or pop direction. The first view appears with the sheet. The outgoing view is inert and hidden from assistive technology while it leaves. Under reduced motion, and where the browser cannot animate, the views swap at once. Give every view its own way out, since `closeButton={null}` removes the built-in Close. The native preview engine has no view component: its content is swapped by the host and the sheet moves to the new height.
+
+## Native sheet engine (preview)
+
+`@bloxwap/hig/native/gesture-sheet-next` is HIG's own sheet for iOS and Android, written to replace the `@gorhom/bottom-sheet` backend behind `@bloxwap/hig/native/gesture-sheet`. It needs `react-native-reanimated`, `react-native-gesture-handler` and `react-native-safe-area-context`, and no sheet library. It is a preview: its arithmetic and lifecycle are tested, but it has not yet been measured on devices, so it sits beside the existing entry until it has.
+
+```tsx
+import {GestureSheet, GestureSheetHost, GestureSheetScrollView} from '@bloxwap/hig/native/gesture-sheet-next';
+
+<GestureSheetHost>{/* once, around the screen */}
+  <App/>
+  <GestureSheet open={open} onOpenChange={setOpen} title="Markets" contentMode="custom" enableDynamicSizing>
+    <GestureSheetScrollView>{rows}</GestureSheetScrollView>
+  </GestureSheet>
+</GestureSheetHost>
+```
+
+- **Why it stays smooth.** While the sheet moves, only its `translateY` and the backdrop's opacity change, both on the UI thread. Nothing is laid out per frame, whatever the content weighs. Opening, closing, a new detent set and content that changed height all become one spring. The surface is rasterised on Android (`renderToHardwareTextureAndroid`).
+- **Sizing.** `snapPoints` are points or a percentage of the room under `topInset`, sorted for you, with `initialIndex` counted from the lowest. Fixed content is laid out once at the tallest detent, so at a lower detent its lower part is off screen, as in Vaul. `enableDynamicSizing` gives one detent as tall as the content, up to `maxDynamicContentSize`; when the content changes height the content is laid out at once and the sheet moves to the new height in 270ms.
+- **Drag.** The whole sheet drags. A slow release takes the nearest detent, or closes past half way below the lowest; a flick moves one detent in its direction, or closes from the lowest. Above the top detent the sheet resists. A drag can be caught mid-motion.
+- **Views that swap.** The engine animates the height only. A host that swaps its content gets the sheet moving to the new height in 270ms on the web sheet's curve; the content itself changes at once. A cross-fade and a push and pop by depth were built and measured on a Seeker, and dropped a frame per swap with a 12ms median frame at 120Hz, so they were removed.
+- **Scrolling content.** Use `GestureSheetScrollView`: at the top detent it scrolls, a pull down from the top of the content moves the sheet, and below the top detent the drag moves the sheet. Bounce and overscroll are off.
+- **Presentation.** `modal` (default) draws in the nearest `GestureSheetHost` and is mounted from opening until its closing motion ends; without a host it draws in place. `inline` draws where it is rendered and keeps its children mounted while closed.
+- **Dismissal.** Drag, a backdrop press, Android Back, the accessibility escape and the default Close ask through `onOpenChange(false)`; a host that keeps `open` gets the sheet back at its detent. `dismissible={false}` blocks all of them. `onDismiss` fires once after an accepted dismissal has finished moving; `onChange(index)` fires when the sheet settles on a detent.
+- **Keyboard.** iOS lifts the sheet over the keyboard. Android resizes the window, which the sheet reads as new room.
+- **Differences from `native/gesture-sheet`.** No backend-typed props: `modalRef`, `sheetRef`, `handleComponent`, `backgroundComponent`, `backdropComponent`, `animationConfigs`, `containerStyle`, `keyboardBehavior` and `enableContentPanningGesture` are gone. `handle`, `backgroundStyle`, `backdropOpacity` and `testID` take their place. Modal sheets need `GestureSheetHost` in place of `BottomSheetModalProvider`. The sheet draws no shadow.
+
 ## When to use and examples
 
 Do: repeat the order amount and give an explicit cancel action. Don’t: hide essential terms in hover help or execute confirm on open.
