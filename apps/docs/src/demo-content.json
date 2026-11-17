@@ -421,6 +421,10 @@
       "title": "ConfirmBlock"
     },
     {
+      "route": "components/preset-picker-block",
+      "title": "PresetPickerBlock"
+    },
+    {
       "route": "components/profile-block",
       "title": "ProfileBlock"
     },
@@ -1213,6 +1217,17 @@
         "default",
         "busy",
         "fee"
+      ]
+    },
+    {
+      "name": "PresetPickerBlock",
+      "route": "components/preset-picker-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
       ]
     },
     {

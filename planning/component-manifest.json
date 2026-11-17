@@ -170,6 +170,7 @@
         "RewardBlock",
         "AssetsBlock",
         "ConfirmBlock",
+        "PresetPickerBlock",
         "ProfileBlock",
         "ScreenHeader",
         "SoundHapticsBlock",

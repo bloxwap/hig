@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PresetPickerBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -25,6 +25,7 @@ All data and actions are supplied by the host application.
 | `LanguageBlock` | Choose the app's language: a header, a search field, and each language as a row with its flag and a check on the one in use. Details below. |
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
+| `PresetPickerBlock` | Choose one value from quick choices, such as an order size or leverage: an optional header, the value as the headline figure, an optional row that opens the host's own entry, the choices as chips, then Cancel and the confirming action. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
 | `AssetsBlock` | Choose a market: a search field, category capsules, All / Positions / Trend views, then the markets in sections by category, each with its signal disc. Details below. |
 | `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
@@ -305,6 +306,29 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Live numbers.** The headline figure and the three prices update through `AnimatedNumberReadout`.
 - **Pinned header.** `stickyHeader` pins the header (see [pinned headers](#pinned-headers)); on native the block becomes its own scroll view and the info popover opens just under the pinned header.
 - **Ownership.** The block never reads a position or a price feed and never places an order.
+
+### PresetPickerBlock
+
+`PresetPickerBlock` chooses one value from quick choices, such as a trade sheet's Size or Leverage pane: an optional header, the value as the headline figure, an optional row that opens the host's own entry, the choices as chips, then Cancel and the confirming action. It reuses `TargetBlock`'s parts (the headline, the Custom row, `PresetGroup` and the actions row) without the price card and the unit control. It is available from `@bloxwap/hig/react/blocks/preset-picker-block`, `@bloxwap/hig/native/preset-picker-block` and the `blocks` aggregates.
+
+```tsx
+<PresetPickerBlock<'max' | number>
+  value={notional} valueOptions={{style: 'currency', currency: 'USD', maximumFractionDigits: 0}}
+  presets={[{value: 'max', label: 'Max'}, {value: 25, label: '$25'}, {value: 100, label: '$100', disabled: 100 > maxUsd}]}
+  selected={maxed ? 'max' : steps.includes(notional) ? notional : null} onPresetChange={choose} presetsLabel="Size" columns={3}
+  custom={{label: 'Custom amount', value: custom ? '$75' : undefined, onSelect: openKeypad}}
+  submitLabel="Set Size" onSubmit={done} onCancel={restore}/>
+```
+
+- **Header.** `title` draws the shared `ScreenHeader`, with `onBack`, `backProps`, `headerAction`, `headingId` and `stickyHeader` as in the other blocks. Leave `title` out for a pane whose host draws its own header (as a sheet that keeps one header across its panes does): the block then starts at the headline figure. Native `stickyHeader` needs `title`, and takes `stickyHeaderBackground` and `scrollComponent`.
+- **Headline.** `value` is the value being chosen, drawn as `TargetBlock`'s headline figure through `AnimatedNumberReadout`, formatted with `valueOptions`, with `valuePrefix` and `valueSuffix` (such as `×` for leverage) and read with `valueLabel` before it. `null` reads as unknown.
+- **Quick choices.** `presets` are `PresetGroup` options, `{value, label, disabled?, testID?}`, with host labels (`$25`, `Max`, `40×`) and string or number values. `selected` is the chip shown selected, kept apart from `value` so a sticky Max or a custom value can select a chip or none; `onPresetChange` reports a press on another enabled chip. `columns` sets chips per row, `presetsLabel` names the group (default `title`), and the selected chip takes `intent` (`primary` by default, or `destructive`).
+- **Custom row.** `custom` adds `TargetBlock`'s Custom row above the chips: `{label, onSelect}`, plus `value` (host text drawn on the trailing edge; the row is then filled like a selected chip and reads as pressed, native: selected), `selected` (defaults to whether `value` is given), `accessibilityLabel` (web `aria-label`, native `accessibilityLabel`, in place of the label and value) and `testID`. The host opens its own entry, such as a keypad, on `onSelect`.
+- **Adjustable (native).** `adjustable={{incrementLabel, decrementLabel, testID?}}` wraps the chips in one `adjustable` view named by `presetsLabel` and valued by the selected chip's label: the screen reader's adjust gesture steps to the next or previous enabled chip and reports it through `onPresetChange`. Web chips are already buttons in the tab order.
+- **Between.** `children` are drawn as given between the chips and the actions, such as a muted note.
+- **Actions.** `onSubmit` with `submitLabel` is the confirming action in `intent`, with `submitDisabled` and `busy`; `onCancel` adds Cancel on its leading side (`cancelLabel`, default the built-in “Cancel”), the two sharing the row equally as in `TargetBlock`. `suppressFeedback` keeps the provider's feedback off the chips and both actions for a host that plays its own cue.
+- **Test IDs.** Web: `submitTestID`, `cancelTestID`, `custom.testID` and each preset's `testID` become `data-testid`s, and other attributes, such as a `data-testid` for the block, pass to its `<section>`. Native: `testID` (default `preset-picker`) prefixes `-header`, `-back`, `-title`, `-headline`, `-custom`, `-custom-value`, `-presets`, `-preset-<value>` (a preset without its own `testID`), `-adjustable`, `-actions`, `-cancel` and `-confirm`; `custom.testID` and `adjustable.testID` replace theirs.
+- **Ownership.** The block holds no value of its own: the host keeps the value, restores it on Cancel and commits it on the confirming action.
 
 ### PositionBlock
 

@@ -21,3 +21,4 @@ export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHist
 export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps,type PickerInputProps,type PickerRowProps} from './blocks/pickers.js';
 export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-panel-block.js';
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './blocks/confirm-block.js';
+export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom} from './blocks/preset-picker-block.js';

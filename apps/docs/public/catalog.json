@@ -723,6 +723,17 @@
       ]
     },
     {
+      "name": "PresetPickerBlock",
+      "route": "components/preset-picker-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ]
+    },
+    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "entry": "blocks",

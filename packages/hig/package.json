@@ -343,6 +343,16 @@
       "import": "./native/dist/confirm-block.js",
       "default": "./native/dist/confirm-block.js"
     },
+    "./react/blocks/preset-picker-block": {
+      "types": "./react/dist/blocks/preset-picker-block.d.ts",
+      "import": "./react/dist/blocks/preset-picker-block.js",
+      "default": "./react/dist/blocks/preset-picker-block.js"
+    },
+    "./native/preset-picker-block": {
+      "types": "./native/dist/preset-picker-block.d.ts",
+      "import": "./native/dist/preset-picker-block.js",
+      "default": "./native/dist/preset-picker-block.js"
+    },
     "./react/blocks/assets-block": {
       "types": "./react/dist/blocks/assets-block.d.ts",
       "import": "./react/dist/blocks/assets-block.js",

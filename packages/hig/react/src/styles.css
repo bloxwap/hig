@@ -483,7 +483,7 @@ button.hig-swap-receive:active { opacity:.8; }
 .hig-swap-view[data-direction='pop'],[dir='rtl'] .hig-swap-view[data-direction='push'] { --hig-swap-from:-24px; }
 @keyframes hig-swap-push { from { opacity:0;transform:translateX(var(--hig-swap-from)); } }
 /* Every block's column: the swap views, the blocks and the AssetsBlock list. */
-.hig-swap-picker,.hig-swap-settings-view,.hig-account-block,.hig-token-card,.hig-manage-position-block,.hig-settings-block,.hig-position-block,.hig-reward-block,.hig-trade-history-list,.hig-trade-detail,.hig-language-block,.hig-assets-block,.hig-assets-list,.hig-confirm { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-swap-picker,.hig-swap-settings-view,.hig-account-block,.hig-token-card,.hig-manage-position-block,.hig-settings-block,.hig-position-block,.hig-reward-block,.hig-trade-history-list,.hig-trade-detail,.hig-language-block,.hig-assets-block,.hig-assets-list,.hig-confirm,.hig-preset-picker,.hig-explainer { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-swap-view-header { display:flex;align-items:center;gap:4px;min-width:0;margin-inline-start:-8px; }
 .hig-swap-view-title { margin:0;min-width:0;font-size:1.5rem;line-height:1.25;font-weight:700;overflow-wrap:anywhere;outline:none; }
 .hig-swap-back { appearance:none;flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
@@ -715,7 +715,7 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 /* TargetBlock: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
 .hig-target-block { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }
-.hig-target-block[data-kind='stop-loss'] { --hig-target-tone:var(--hig-negative);--hig-target-fill:var(--hig-negative);--hig-target-on-fill:var(--hig-background); }
+.hig-target-block[data-kind='stop-loss'],.hig-preset-picker[data-intent='destructive'] { --hig-target-tone:var(--hig-negative);--hig-target-fill:var(--hig-negative);--hig-target-on-fill:var(--hig-background); }
 /* The headline figure matches the SwapPanel amount: the same size and the interface face, not the mono face. */
 .hig-target-amount { margin:0;font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere; }
 .hig-target-bar,.hig-bar-pnl-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
@@ -731,10 +731,10 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-target-actions,.hig-confirm-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 /* The Custom row holding the host's value reads as the selected choice: filled like a selected quick choice, the value on its trailing
    edge. Its (0,3,0) selector outranks the base `.hig-swap-setting:hover` and `:active` fills (0,2,0), so press and hover only darken it. */
-.hig-target-block .hig-swap-setting[aria-pressed='true'] { background:var(--hig-target-fill,var(--hig-action));color:var(--hig-target-on-fill,var(--hig-onAction)); }
-.hig-target-block .hig-swap-setting[aria-pressed='true'] > .hig-swap-setting-value { color:inherit; }
-.hig-target-block .hig-swap-setting[aria-pressed='true']:active { filter:brightness(.9); }
-@media(hover:hover) and (pointer:fine) { .hig-target-block .hig-swap-setting[aria-pressed='true']:hover { filter:brightness(.9); } }
+:is(.hig-target-block,.hig-preset-picker) .hig-swap-setting[aria-pressed='true'] { background:var(--hig-target-fill,var(--hig-action));color:var(--hig-target-on-fill,var(--hig-onAction)); }
+:is(.hig-target-block,.hig-preset-picker) .hig-swap-setting[aria-pressed='true'] > .hig-swap-setting-value { color:inherit; }
+:is(.hig-target-block,.hig-preset-picker) .hig-swap-setting[aria-pressed='true']:active { filter:brightness(.9); }
+@media(hover:hover) and (pointer:fine) { :is(.hig-target-block,.hig-preset-picker) .hig-swap-setting[aria-pressed='true']:hover { filter:brightness(.9); } }
 /* The info button beside a host header control: both sides of the header widen together so the title stays centred. */
 .hig-target-header-actions { display:inline-flex;align-items:center;gap:4px; }
 .hig-target-block > .hig-screen-header:has(.hig-target-header-actions) { grid-template-columns:92px minmax(0,1fr) 92px; }
