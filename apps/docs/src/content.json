@@ -2087,6 +2087,7 @@
       "slug": "preset-group",
       "entry": "selection",
       "family": "selection",
+      "added": "Unreleased",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -2621,6 +2622,7 @@
       "slug": "toaster",
       "entry": "toast",
       "family": "status",
+      "added": "Unreleased",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -2793,6 +2795,7 @@
       "slug": "confetti",
       "entry": "confetti",
       "family": "status",
+      "added": "Unreleased",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -2869,6 +2872,7 @@
       "slug": "number-flow",
       "entry": "animated-number",
       "family": "financial-data",
+      "added": "Unreleased",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -3092,6 +3096,7 @@
       "slug": "qr-code",
       "entry": "qr-code",
       "family": "financial-data",
+      "added": "Unreleased",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -3431,6 +3436,7 @@
       "slug": "assets-block",
       "entry": "blocks",
       "family": "blocks",
+      "added": "Unreleased",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -3457,6 +3463,7 @@
       "slug": "confirm-block",
       "entry": "blocks",
       "family": "blocks",
+      "added": "Unreleased",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -3911,6 +3918,7 @@
       "slug": "altimeter-chart",
       "entry": "@bloxwap/hig/chart",
       "family": "chart",
+      "added": "Unreleased",
       "nativeSupport": "alternative",
       "states": [
         "default",
@@ -3933,6 +3941,7 @@
       "slug": "outcome-chart",
       "entry": "@bloxwap/hig/chart",
       "family": "chart",
+      "added": "Unreleased",
       "nativeSupport": "alternative",
       "states": [
         "default",
