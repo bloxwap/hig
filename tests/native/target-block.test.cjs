@@ -60,13 +60,13 @@ it('titles the price card with the position and order type and reads the two pri
  expect(text(host(view,'target-note'))).toBe('Fills at your target price or better.');
  expect(order(view)).toEqual(['Entry, $64,700.00','If triggered, $65,000.00']);
  // Two prices only: the whole bar is filled from entry to the trigger, the trigger edge in the positive role, and there is no tick.
- expect(flat(host(view,'target-move'))).toMatchObject({flexGrow:1,backgroundColor:nativeSrgb.buy,borderStartColor:nativeSrgb.text,borderEndColor:nativeSrgb.buy});expect(has(view,'target-entry-tick')).toBe(false);expect(has(view,'target-mark')).toBe(false);
+ expect(flat(host(view,'target-move'))).toMatchObject({flexGrow:1,borderStartColor:nativeSrgb.text,borderEndColor:nativeSrgb.buy});expect(flat(host(view,'target-fill'))).toMatchObject({backgroundColor:nativeSrgb.buy,opacity:0.5});expect(has(view,'target-entry-tick')).toBe(false);expect(has(view,'target-mark')).toBe(false);
  expect(host(view,'target-bar').props.importantForAccessibility).toBe('no-hide-descendants');
  const trigger=host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0];expect(trigger.props).toMatchObject({value:65000,tone:'positive'});
  // A stop loss under entry leads with the trigger in the negative role.
  view=mount({kind:'stop-loss',trigger:64600,value:-0.5});
  expect(order(view)).toEqual(['If triggered, $64,600.00','Entry, $64,700.00']);
- expect(flat(host(view,'target-move'))).toMatchObject({backgroundColor:nativeSrgb.sell,borderStartColor:nativeSrgb.sell,borderEndColor:nativeSrgb.text});expect(host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0].props.tone).toBe('negative');
+ expect(flat(host(view,'target-move'))).toMatchObject({borderStartColor:nativeSrgb.sell,borderEndColor:nativeSrgb.text});expect(flat(host(view,'target-fill'))).toMatchObject({backgroundColor:nativeSrgb.sell,opacity:0.5});expect(host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0].props.tone).toBe('negative');
  // Without a trigger there is no stretch and only entry reads; without host text there is no title row.
  view=mount({trigger:undefined});expect(has(view,'target-move')).toBe(false);expect(prices(view)).toEqual(['target-entry']);expect(has(view,'target-position')).toBe(false);expect(has(view,'target-note')).toBe(false);
  view=mount({priceOptions:{style:'currency',currency:'USD',maximumFractionDigits:0}});expect(order(view)[1]).toBe('If triggered, $65,000');

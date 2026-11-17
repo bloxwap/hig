@@ -4,6 +4,7 @@ import {formatNumber} from './number-format.js';
 import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 import {Surface,Text} from './surface.js';
+import {barFillOpacity} from './bar-mark.js';
 import {Button,IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
 import {PresetGroup} from './preset-group.js';
@@ -158,7 +159,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    </View>:null}
    <View {...hidden} testID='target-bar' style={{flexDirection:'row',height:24,borderRadius:8,overflow:'hidden'}}>
     <View style={part(from)}/>
-    {to>from?<View testID='target-move' style={{flexGrow:to-from,flexShrink:1,flexBasis:0,minWidth:6,backgroundColor:tone,borderStartWidth:3,borderEndWidth:3,borderStartColor:triggerLeads?tone:colors.text,borderEndColor:triggerLeads?colors.text:tone}}/>:null}
+    {to>from?<View testID='target-move' style={{flexGrow:to-from,flexShrink:1,flexBasis:0,minWidth:6,borderStartWidth:3,borderEndWidth:3,borderStartColor:triggerLeads?tone:colors.text,borderEndColor:triggerLeads?colors.text:tone}}><View testID='target-fill' style={{flex:1,backgroundColor:tone,opacity:barFillOpacity}}/></View>:null}
     <View style={part(1-to)}/>
    </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>

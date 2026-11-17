@@ -80,9 +80,10 @@ describe('BarPnl',()=>{
  });
 });
 
-it('fills the stretch between entry and mark solid in the result colour',()=>{
+it('fills the stretch between entry and mark in the result colour at the bar fill strength, with solid edges',()=>{
  const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start))??'';
- expect(rule('.hig-bar-pnl-move {')).toContain('background:var(--hig-bar-pnl-tone);');expect(rule('.hig-bar-pnl-move {')).not.toContain('color-mix');
+ expect(rule('.hig-bar-pnl-move {')).toContain('background:color-mix(in srgb,var(--hig-bar-pnl-tone) calc(var(--hig-bar-fill-opacity,.5)*100%),transparent);');expect(rule('.hig-bar-pnl-move {')).toContain('border-inline:3px solid var(--hig-text)');
+ expect(rule(".hig-bar-pnl-move[data-lead='mark']")).toContain('border-inline-start-color:var(--hig-bar-pnl-tone)');
  // The result follows the market direction roles, which default to buy and sell (the same colours as positive and negative).
  expect(rule(".hig-bar-pnl[data-result='profit']")).toContain('var(--hig-up,var(--hig-buy))');expect(rule(".hig-bar-pnl[data-result='loss']")).toContain('var(--hig-down,var(--hig-sell))');
  expect(rule('.hig-bar-pnl-liquidation {')).toContain('background:var(--hig-negative)');

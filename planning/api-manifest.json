@@ -1296,6 +1296,10 @@
         "entry": "bar-mark",
         "signature": "export interface BarMarkProps {\n    title: string;\n    /** Trailing text on the title row, such as `59.2 GB of 64 GB`. A string is drawn muted; an element is rendered as given. */\n    description?: React.ReactNode;\n    elements: readonly BarMarkElement[];\n    /** The whole the bar measures against. When it is larger than the sum of the values the rest is the empty track. */\n    total?: number;\n    /** `false` hides the legend; the card then reads the elements as one label. */\n    legend?: boolean;\n    /** `small` draws a 12 unit bar for a secondary breakdown; the default is 24. */\n    size?: 'default' | 'small';\n    /** Set false to draw no card: no surface fill, padding or radius. The title row, bar and legend keep their spacing. Default `true`. */\n    surface?: boolean;\n    testID?: string;\n}"
       },
+      "barFillOpacity": {
+        "entry": "bar-mark",
+        "signature": "export declare const barFillOpacity = 0.5;"
+      },
       "barMarkTones": {
         "entry": "bar-mark",
         "signature": "export declare const barMarkTones: readonly BarMarkTone[];"
