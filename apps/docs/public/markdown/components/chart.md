@@ -16,7 +16,8 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 
 | Component | Key props and behavior |
 | --- | --- |
-| `AltimeterChart` | Required `summary`; `price` (host-owned, `null` while unknown) or `feed`; `height` (default 320); `priceOptions`. |
+| `AltimeterChart` | Required `summary`; `price` (host-owned, `null` while unknown) or `feed`; `height` (default 320); `priceOptions`; optional `targets` and `dgen` (default false). |
+| `AltimeterTarget` | `{id, price, label?, color?}`. A horizontal dotted level with an optional right-aligned text label and CSS color. |
 | `bitcoinPrice` | The default `feed`: the Bitcoin mid price from Hyperliquid's public best-bid/offer WebSocket. |
 | `OutcomeChart` | Required `summary`; `outcomes` (host-owned, `null` while unknown) or `feed`; `height` (default 360). |
 | `championsLeagueWinner` | The default `feed`: the UEFA Champions League winner market on Hyperliquid's outcome markets. |
@@ -24,14 +25,15 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 | `PriceChart` | `data`, required `summary`, `height`, and chart SDK props. Not in the catalog. |
 | `chartTheme` | Token-based colors in sRGB for canvas compatibility. |
 
-`AltimeterChart` is the Bloxwap app's live chart on its own. It draws four things and nothing else:
+`AltimeterChart` is the Bloxwap app's live chart on its own:
 
 - **Grid.** Plus marks on 50px tiles that flow left one tile (50px) per second.
 - **Trail.** The price line. It flows left at the same 50px per second, fades toward the leading edge, and is sampled five times a second so it keeps moving on a quiet market.
 - **Ladder.** Price ticks 44px apart, about one basis point of price each. The current price stays at the vertical center, so the ladder moves down as the price rises and up as it falls.
-- **Current price.** A pill at the trail's tip. Each new price eases in over 300ms, and its changed digits roll through `AnimatedNumberReadout`.
+- **Current price.** A pill at the trail's tip. Each new price eases in over 300ms, and its changed digits roll through `AnimatedNumberReadout`. Updates arriving during a move continue from the current position and forward velocity, constrained to avoid overshooting the new price. Canvas fonts and ladder text widths are reused between frames; font loading and formatting changes invalidate the width cache.
 
-It draws no positions, entry or target lines, and no controls.
+- **Targets (optional).** Horizontal dotted lines at host-supplied prices, spanning the full chart width from leading to trailing edge, with optional colored text labels aligned at the chart's trailing edge. The current-price pill covers labels where they overlap. Labels have no capsule: a line below the current price has its label just above it, and a line above the current price has its label just below it. Labels follow their lines on the same frame, without a second position tween. Only the above/below offset animates over 260ms, reversing from its current offset when needed. Collision and edge constraints apply after that offset, so labels move aside only to make room for another label or stay inside the chart. Reduced motion switches sides instantly. When a target leaves the visible price range, its line disappears and its price/title label pins to the top or bottom edge. Labels stack in price order, making room for nearby visible labels; they return to their lines as those targets re-enter the chart. Target values also remain available to assistive technology.
+- **DGEN (optional).** A brief shake of the current-price pill and colored particles radiating outward from the pill when the displayed price reaches or crosses a target in either direction. It defaults to off.
 
 ```tsx
 import {AltimeterChart} from '@bloxwap/hig/chart';
@@ -41,9 +43,26 @@ import {AltimeterChart} from '@bloxwap/hig/chart';
 
 // Product: the host owns the price.
 <AltimeterChart summary='Ether mark price.' price={mark}/>
+
+// Product targets: the host supplies prices, labels and colors.
+<AltimeterChart summary='Ether mark price and position targets.' price={mark}
+ targets={[
+  {id:'tp',price:takeProfit,label:'Take Profit',color:'var(--hig-buy)'},
+  {id:'entry',price:entry,label:'Entry',color:'#6b9fff'},
+  {id:'sl',price:stopLoss,label:'Stop Loss',color:'var(--hig-sell)'},
+  {id:'liq',price:liquidation,label:'Liquidation',color:'#ed63b3'},
+ ]}
+ dgen
+/>
 ```
 
 A `feed` is `(onPrice) => stop`: call `onPrice` with each new price and return a function that stops the source. It runs only while `price` is omitted. Keep its identity stable (define it outside the component or memoize it), because a new function resubscribes.
+
+Targets use stable, unique IDs and finite positive prices. Pass a new array when a target changes. Invalid targets and duplicate IDs after the first valid occurrence are ignored. Each label shows its title on the left and the formatted target price on the right, for example `Take Profit $100.02`. Titles capitalize each word; prices use the provider's locale and `priceOptions`. Omit `label` for just a dotted line; omit `color` to use the primary accent. Colors accept CSS variables and must remain legible against the chart background. The chart does not place or execute orders.
+
+`dgen` responds to the eased, visible price crossing a target, including an exact touch, once per arrival. Initial prices, new or edited target prices, missing data, feed replacement and resuming after a frame gap longer than two seconds re-arm detection without replaying old crossings. Targets crossed in the same frame share one burst using the last crossed target's color. Bursts have a 600ms cooldown with no queue, a 260ms pill shake and a 520ms particle fade. They use the Web Animations API, with no added dependency; unsupported browsers retain the chart and targets. Turning DGEN off or enabling reduced motion cancels an active effect. The catalog's **targets** state includes a DGEN switch and price controls to preview crossings.
+
+The shake and dispersing particles take their visual cue from [Liveline](https://github.com/benjitaylor/liveline); here the trigger is a target crossing rather than momentum.
 
 `OutcomeChart` shows one question with two to ten outcomes, live, in the same style as `AltimeterChart`:
 

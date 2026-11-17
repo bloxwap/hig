@@ -3,7 +3,13 @@
 Version 0.7.0, an entry of `@bloxwap/hig`. `AltimeterChart` is the Bloxwap live chart on its
 own: a plus grid and price trail that flow left at 50px per second, a price ladder centered on the current price,
 and the current price at the trail's tip. Pass `price` or a `feed`; with neither it shows live Bitcoin through
-`bitcoinPrice`. `OutcomeChart` shows a question with two to ten
+`bitcoinPrice`. Optional `targets` (`AltimeterTarget`: `{id, price, label?, color?}`) add full-width horizontal dotted lines
+and colored text labels at the chart's trailing edge that glide to the side of each line facing the current price.
+Labels pass behind the current-price pill where they overlap. Streaming price updates retarget from the current position and forward velocity without overshoot; the canvas reuses its font and measured ladder widths between frames.
+Each label shows its title on the left and formatted target price on the right, such as `Take Profit $100.02`.
+Offscreen labels pin and stack at the top or bottom in price order while their lines stay hidden. Labels follow their lines on the same frame and move aside only for other labels or the chart edges. Only the above/below offset animates (260ms), reversing from its current offset; collision constraints apply afterward so labels stay separated throughout.
+Set `dgen` to shake the price pill and burst particles outward from it when its price crosses a target;
+it defaults to off and respects reduced motion. `OutcomeChart` shows a question with two to ten
 outcomes live, as one flowing trail each on a 0 to 100% ladder, ending in a stroked capsule with the label and chance; with no `outcomes` or `feed` it shows the
 UEFA Champions League winner market through `championsLeagueWinner`. The entry is also the HIG adapter for [`@bloxwap/chart`](https://github.com/bloxwap/chart): `PriceChart` (a
 `<figure>` with a required text `summary`, lazy-loading `@bloxwap/chart/react` inside `Suspense`) and

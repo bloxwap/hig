@@ -1,0 +1,64 @@
+{
+  "scope": [
+    "apps/app/src",
+    "apps/mobile/src",
+    "apps/mobile/app"
+  ],
+  "calls": {
+    "app": 249,
+    "mobile": 116,
+    "total": 365
+  },
+  "customWebRenderers": [
+    "NotificationCard",
+    "InfoCard",
+    "InfoPanel",
+    "FeedbackCard",
+    "SwingSignalCard",
+    "ClosePayoutCard"
+  ],
+  "customWebCallSites": [
+    {
+      "file": "apps/app/src/components/analytics-feedback.tsx",
+      "line": 38
+    },
+    {
+      "file": "apps/app/src/components/swing-signal-subscriber.tsx",
+      "line": 47
+    },
+    {
+      "file": "apps/app/src/components/trading/trade-screen.tsx",
+      "line": 705
+    },
+    {
+      "file": "apps/app/src/hooks/use-toast.tsx",
+      "line": 32
+    },
+    {
+      "file": "apps/app/src/hooks/use-toast.tsx",
+      "line": 87
+    },
+    {
+      "file": "apps/app/src/hooks/use-toast.tsx",
+      "line": 146
+    }
+  ],
+  "nativeOverlaysOutsideToastAPI": [
+    "apps/mobile/src/components/analytics-feedback.tsx",
+    "apps/mobile/app/trade/[asset].tsx"
+  ],
+  "addedInReview": [
+    "Feedback failure and return prompts",
+    "Papertrade minimums",
+    "Order minimum error",
+    "Copy icon confirmation",
+    "Five mobile recovery states",
+    "Optional store update",
+    "Solana send progress"
+  ],
+  "limitations": [
+    "Native-specific states use web presentations; native rendering is not verified here.",
+    "365 is a source call count, not the number of unique runtime messages; dynamic translations and conditions can produce multiple messages.",
+    "Source inventory includes development fixtures and wrapper implementations."
+  ]
+}

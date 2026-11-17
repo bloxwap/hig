@@ -417,7 +417,13 @@
       "entry": "toast",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
       ]
     },
     {
@@ -836,6 +842,16 @@
       ]
     },
     {
+      "name": "FeedbackBlock",
+      "route": "components/feedback-block",
+      "entry": "overlay",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "return"
+      ]
+    },
+    {
       "name": "SignalsBlock",
       "route": "components/signals-block",
       "entry": "blocks",
@@ -983,7 +999,8 @@
       "nativeSupport": "alternative",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "targets"
       ]
     },
     {

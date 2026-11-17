@@ -56,9 +56,11 @@ export function outcomeY(chance:number,height:number,inset:number,scale:OutcomeS
 /**
  * Centers for capsules of `size` that want to sit at `wanted` but may not overlap: neighbors keep `gap` between
  * them and all stay inside `height`; when they cannot all fit with the gap, the gap shrinks. Returned in the order given.
+ * `preserveOrder` keeps the input sequence instead of sorting by desired position, for stable target-label stacks.
  */
-export function capsuleCenters(wanted:readonly number[],height:number,size=36,gap=6):number[]{
- const order=wanted.map((_,index)=>index).sort((a,b)=>wanted[a]-wanted[b]),placed:number[]=[];
+export function capsuleCenters(wanted:readonly number[],height:number,size=36,gap=6,preserveOrder=false):number[]{
+ const order=wanted.map((_,index)=>index),placed:number[]=[];
+ if(!preserveOrder)order.sort((a,b)=>wanted[a]-wanted[b]);
  // A crowded chart gives up the gap before any capsule leaves it.
  const step=order.length>1?Math.min(size+gap,(height-size)/(order.length-1)):size+gap;
  for(const [rank,index] of order.entries())placed[rank]=Math.max(wanted[index],rank?placed[rank-1]+step:size/2);

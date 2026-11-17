@@ -13,7 +13,8 @@ export function exampleCode(name,platform='react',density='comfortable',state='d
  // An entry is either a subpath of @bloxwap/hig/<platform> or a full package name (AltimeterChart lives in @bloxwap/hig/chart, #96).
  const imports=Object.entries(grouped).map(([entry,symbols])=>`import {${symbols.join(',')}} from '${entry.startsWith('@')?entry:`@bloxwap/hig/${platform}/${entry}`}';`).join('\n');
  const gesture=platform==='native'&&name==='GestureSheet';
- const content=`<HIGProvider density=${JSON.stringify(platform==='native'?'comfortable':density)}><Stack>${body.replaceAll('C.','')}<Text>{message}</Text></Stack>${toaster?'<Toaster/>':''}</HIGProvider>`;
+ const toastPosition=name==='Toaster'&&["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"].includes(state)?state:'bottom-center';
+ const content=`<HIGProvider density=${JSON.stringify(platform==='native'?'comfortable':density)}><Stack>${body.replaceAll('C.','')}<Text>{message}</Text></Stack>${toaster?`<Toaster position="${toastPosition}"/>`:''}</HIGProvider>`;
  // The native Toaster reads the finger and the safe area, so its sample shows the two roots it needs.
  const roots=platform==='native'&&toaster;
  const tree=gesture?`<GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><BottomSheetModalProvider>${content}</BottomSheetModalProvider></SafeAreaProvider></GestureHandlerRootView>`:roots?`<GestureHandlerRootView style={{flex:1}}><SafeAreaProvider>${content}</SafeAreaProvider></GestureHandlerRootView>`:content;

@@ -684,7 +684,13 @@
       "native": "<><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
       ],
       "a11y": "Each notice is announced once when it is raised, and an error interrupts on iOS; the close control is named for its notice; a touch holds every notice; a running screen reader keeps the native stack expanded; reduced motion fades in place on native and cuts on web; physical device observations pending",
       "feedback": "none emitted by the host; the product plays outcome feedback when it raises the notice"
@@ -1543,6 +1549,28 @@
       }
     },
     {
+      "name": "FeedbackBlock",
+      "slug": "feedback-block",
+      "entry": "overlay",
+      "family": "blocks",
+      "web": "<C.Stack><C.Text>That didn't work. What got in the way?</C.Text><C.Text>Optional · one tap</C.Text>{['It was confusing','Too slow','I hit an error','Just looking','Something else'].map(answer=><C.Button key={answer} intent='secondary' onClick={()=>setMessage('Thanks, that helps. Answer: '+answer)}>{answer}</C.Button>)}</C.Stack>",
+      "native": "<C.Stack><C.Text>That didn't work. What got in the way?</C.Text><C.Text>Optional · one tap</C.Text>{['It was confusing','Too slow','I hit an error','Just looking','Something else'].map(answer=><C.Button key={answer} intent='secondary' onPress={()=>setMessage('Thanks, that helps. Answer: '+answer)}>{answer}</C.Button>)}</C.Stack>",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "return"
+      ],
+      "a11y": "Visible question heading followed by five vertically stacked answer buttons.",
+      "feedback": "Failure and return questionnaires use local demo answers.",
+      "variants": {
+        "return": {
+          "web": "<C.Stack><C.Text>What stopped you last time?</C.Text><C.Text>Optional · one tap</C.Text>{['It was confusing','Too slow','I hit an error','Just looking','Something else'].map(answer=><C.Button key={answer} intent='secondary' onClick={()=>setMessage('Thanks, that helps. Answer: '+answer)}>{answer}</C.Button>)}</C.Stack>",
+          "native": "<C.Stack><C.Text>What stopped you last time?</C.Text><C.Text>Optional · one tap</C.Text>{['It was confusing','Too slow','I hit an error','Just looking','Something else'].map(answer=><C.Button key={answer} intent='secondary' onPress={()=>setMessage('Thanks, that helps. Answer: '+answer)}>{answer}</C.Button>)}</C.Stack>"
+        }
+      },
+      "added": "Unreleased"
+    },
+    {
       "name": "SignalsBlock",
       "slug": "signals-block",
       "entry": "blocks",
@@ -1896,10 +1924,17 @@
       "nativeSupport": "alternative",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "targets"
       ],
-      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "a11y": "Caption, current price and target values available as text; DGEN effects respect reduced motion; live updates silent",
+      "feedback": "Optional DGEN pill shake and burst on target crossings; off by default; no sound or haptics",
+      "variants": {
+        "targets": {
+          "web": "<C.Stack><C.AltimeterChart summary='Sample price with take profit, entry, stop loss and liquidation targets.' price={100+(range-25)/1000} targets={[{id:'tp',price:100.02,label:'Take Profit',color:'#12b981'},{id:'entry',price:100,label:'Entry',color:'#6b9fff'},{id:'sl',price:99.98,label:'Stop Loss',color:'#f97316'},{id:'liq',price:99.96,label:'Liquidation',color:'#ed63b3'}]} dgen={checked} height={400}/><C.Switch label='DGEN crossing effects' checked={checked} onCheckedChange={setChecked}/><C.Row style={{flexWrap:'wrap'}}><C.Button onClick={()=>setRange(r=>Math.max(-35,r-20))}>Price down</C.Button><C.Button onClick={()=>setRange(25)}>Reset price</C.Button><C.Button onClick={()=>setRange(r=>Math.min(85,r+20))}>Price up</C.Button></C.Row></C.Stack>",
+          "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>"
+        }
+      }
     },
     {
       "name": "OutcomeChart",

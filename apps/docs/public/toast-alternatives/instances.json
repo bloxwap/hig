@@ -1,0 +1,2557 @@
+[
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/analytics-feedback.tsx",
+    "line": 38,
+    "api": "sonnerToast.custom",
+    "code": "sonnerToast.custom((id) => (\n      <FeedbackCard\n        prompt={prompt}\n        title={t(prompt.trigger === 'failure' ? 'titleFailure' : 'titleReturn')}\n        optional={t('optional')}\n        closeLabel={t('closeAria')}\n        label={(reason) => t(`reasons.${reason}`)}\n        onAnswer={(reason) => {\n          answerFeedback(prompt.id, reason);\n          sonnerToast.dismiss(id);\n          toast({ title: t('thanks'), variant: 'success' });\n        }}\n        onClose={() => {\n          dismissFeedback(prompt.id, 'cancelled');\n          sonnerToast.dismiss(id);\n        }}\n      />\n    ), {\n      id: TOAST_ID,\n      duration: PROMPT_DURATION_MS,\n      onAutoClose: () => dismissFeedback(prompt.id, 'timeout'),\n      // Swipes; a no-op once answered or closed above.\n      onDismiss: () => { if (!unmounting) dismissFeedback(prompt.id, 'cancelled'); },\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/analytics-feedback.tsx",
+    "line": 48,
+    "api": "toast",
+    "code": "toast({ title: t('thanks'), variant: 'success' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/providers.tsx",
+    "line": 439,
+    "api": "toast",
+    "code": "toast({\n          title: `Signed in${address ? ` as ${shortAddress(address)}` : \"\"}`,\n          icon: <Zap className=\"h-4 w-4\" strokeWidth={2.5} />,\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/referral-prompt.tsx",
+    "line": 260,
+    "api": "toast",
+    "code": "toast({\n        title: t('toastAppliedTitle'),\n        description: t('toastAppliedDescription'),\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/referral-prompt.tsx",
+    "line": 273,
+    "api": "toast",
+    "code": "toast({\n          title: t('toastAlreadySetTitle'),\n          description: t('toastAlreadySetDescription'),\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/referral-prompt.tsx",
+    "line": 285,
+    "api": "toast",
+    "code": "toast({\n          title: t('toastDeclinedTitle'),\n          description: t('toastDeclinedDescription'),\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/service-worker-register.tsx",
+    "line": 139,
+    "api": "infoToast",
+    "code": "infoToast({\n        id: 'app-update',\n        title: labelsRef.current.title,\n        variant: 'info',\n        action: { label: labelsRef.current.refresh, onClick: () => window.location.reload() },\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/signup-toast.tsx",
+    "line": 88,
+    "api": "infoToast",
+    "code": "infoToast({\n        id: TOAST_ID,\n        variant: \"info\",\n        icon: null,\n        closeLabel: copy(\"dismissAria\"),\n        title: (\n          <button\n            type=\"button\"\n            className=\"flex w-full items-center gap-2.5 text-left\"\n            onClick={() => {\n              openLoginRef.current(true);\n            }}\n          >\n            <ProviderStack />\n            <span>{copy(\"title\")}</span>\n          </button>\n        ),\n        onClose: () => {\n          engagedRef.current = true;\n          persist(SIGNUP_TOAST_DISMISSED_KEY);\n        },\n        onDismiss: () => {\n          if (engagedRef.current || authedRef.current) return;\n          engagedRef.current = true;\n          persist(SIGNUP_TOAST_DISMISSED_KEY);\n        },\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/swing-signal-subscriber.tsx",
+    "line": 47,
+    "api": "toast.custom",
+    "code": "toast.custom(\n        (id) => (\n          <div className=\"flex w-full justify-center\" onPointerDownCapture={(event) => event.stopPropagation()}>\n            {/* The toaster passes taps through; the alert opts back in so its controls work. */}\n            <div className=\"pointer-events-auto relative flex w-full max-w-sm justify-center\">\n              {/* A tap opens the signal's position, as the push notification's Open does. */}\n              <button\n                type=\"button\"\n                className=\"flex w-full justify-center\"\n                onClick={() => {\n                  toast.dismiss(id);\n                  openSwingCard(coin, data.signalId, nav.current.onTradeScreen, nav.current.push);\n                }}\n              >\n                <SwingSignalCard\n                  coin={coin}\n                  leverage={data.leverage}\n                  direction={data.direction}\n                  confidence={data.confidence}\n                  closeInset\n                  label={`${t('alertTitle', { coin, direction: data.direction })}. ${data.leverage}×. ${t('alertDescription', { entry: localize(String(data.entryPrice)), stop: localize(String(data.stopLoss)), target: localize(String(data.takeProfit)) })}`}\n                />\n              </button>\n              {/* The X dismisses without opening anything; a sibling, not nested in the open button. */}\n              <button\n                type=\"button\"\n                aria-label={tTrade('closeDismissAria')}\n                onClick={() => toast.dismiss(id)}\n                className=\"absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground\"\n              >\n                <X className=\"h-4 w-4\" />\n              </button>\n            </div>\n          </div>\n        ),\n        { id: `swing-${data.signalId}` },\n      )"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/tournament-drawer-content.tsx",
+    "line": 252,
+    "api": "toast",
+    "code": "toast({\n        title: t('toastErrorTitle'),\n        description: t('toastErrorDescription'),\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/tournament-drawer-content.tsx",
+    "line": 301,
+    "api": "toast",
+    "code": "toast({\n        title: tDrawer('leftTitle'),\n        description: tDrawer('leftDescription'),\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/tournament-drawer-content.tsx",
+    "line": 315,
+    "api": "toast",
+    "code": "toast({\n          title: tDrawer('clearedTitle'),\n          description: tDrawer('clearedDescription'),\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/tournament-drawer-content.tsx",
+    "line": 323,
+    "api": "toast",
+    "code": "toast({\n        title: declined\n          ? tDrawer('leaveDeclinedTitle')\n          : tDrawer('leaveErrorTitle'),\n        description: declined\n          ? tDrawer('leaveDeclinedDescription')\n          : tDrawer('leaveErrorDescription'),\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/tournament-join-modal.tsx",
+    "line": 189,
+    "api": "toast",
+    "code": "toast({\n        title: t('toastErrorTitle'),\n        description: t('toastErrorDescription'),\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/deposit-cards.tsx",
+    "line": 769,
+    "api": "toast",
+    "code": "toast({\n                title: t('toast.arrivedTitle'),\n                description: t('toast.arrivedDescription', { token }),\n                variant: 'success',\n              })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/deposit-cards.tsx",
+    "line": 778,
+    "api": "toast",
+    "code": "toast({\n                title: t('toast.refundedTitle'),\n                description: refundsToSender\n                  ? t('toast.refundedToSenderDescription', {\n                      token,\n                      chain: chainName,\n                    })\n                  : t('toast.refundedDescription', {\n                      token,\n                      chain: chainName,\n                    }),\n                variant: 'destructive',\n              })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 45,
+    "api": "toast",
+    "code": "toast({\n    id: 'direct-send-busy',\n    title: 'Send in progress',\n    description: 'Your previous send from this wallet is still being submitted.',\n    variant: 'destructive',\n  })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 58,
+    "api": "toast",
+    "code": "toast({\n    title: 'Send confirming',\n    description: `${amountLabel} → ${destinationLabel} is still confirming. Don't send it again; it is checked before any new send.`,\n    variant: 'success',\n  })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 107,
+    "api": "toast",
+    "code": "toast({\n        title: 'Previous send completed',\n        description: `Your last ${chainLabel} send went through. Check your balance before sending again.`,\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 115,
+    "api": "toast",
+    "code": "toast({\n        title: 'Previous send already processed',\n        description: `Your earlier ${chainLabel} send was already processed, so nothing new was sent. Check your balance before sending again.`,\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 123,
+    "api": "toast",
+    "code": "toast({\n        title: 'Previous send no longer pending',\n        description: `The previous ${chainLabel} send's nonce was used, so nothing new was sent. Check your wallet history before sending again.`,\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 130,
+    "api": "toast",
+    "code": "toast({\n        title: 'Previous send still confirming',\n        description: `Your last ${chainLabel} send may still complete. Try again in a few minutes; it is checked again before any new send.`,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 139,
+    "api": "infoToast",
+    "code": "infoToast({\n        id: `direct-send-unresolved-${previous.id}`,\n        variant: 'destructive',\n        title: DIRECT_SEND_RECOVERY_TITLE,\n        description: `${DIRECT_SEND_RECOVERY_MESSAGE} Check your ${chainLabel} balance and history before sending again.`,\n        action: {\n          label: DIRECT_SEND_RECOVERY_ACTION,\n          onClick: () => {\n            void acknowledgeDirectSendRecord(previous).then((cleared) =>\n              toast(\n                cleared\n                  ? { title: 'New send allowed', description: 'You can send again.', variant: 'success' }\n                  : {\n                      title: 'Not cleared',\n                      description:\n                        'This transfer may still complete, another send from this wallet is in progress, or it changed. Try again shortly.',\n                      variant: 'destructive',\n                    },\n              ),\n            );\n          },\n        },\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 148,
+    "api": "toast",
+    "code": "toast(\n                cleared\n                  ? { title: 'New send allowed', description: 'You can send again.', variant: 'success' }\n                  : {\n                      title: 'Not cleared',\n                      description:\n                        'This transfer may still complete, another send from this wallet is in progress, or it changed. Try again shortly.',\n                      variant: 'destructive',\n                    },\n              )"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 167,
+    "api": "infoToast",
+    "code": "infoToast({\n        id: `direct-send-unreachable-${previous.id}`,\n        variant: 'destructive',\n        title: DIRECT_SEND_UNREACHABLE_TITLE,\n        description: DIRECT_SEND_UNREACHABLE_MESSAGE,\n        action: {\n          label: DIRECT_SEND_UNREACHABLE_ACTION,\n          onClick: () => {\n            void recheckSolanaDirectSend(previous).then((result) => {\n              switch (result) {\n                case 'settled':\n                  notifyDirectSendStop({ kind: 'previous-settled' }, chainLabel, onSettled);\n                  return;\n                case 'failed':\n                  onSettled();\n                  toast({ title: 'Previous send did not go through', description: 'Nothing moved. You can send again.', variant: 'success' });\n                  return;\n                case 'pending':\n                  notifyDirectSendStop({ kind: 'previous-pending' }, chainLabel, onSettled);\n                  return;\n                case 'unverified':\n                  notifyDirectSendStop({ kind: 'previous-unverified', previous }, chainLabel, onSettled);\n                  return;\n                case 'unreachable':\n                  notifyDirectSendStop({ kind: 'previous-unreachable', previous }, chainLabel, onSettled);\n                  return;\n                case 'busy':\n                  // Another send from this wallet is running; keep the re-check available.\n                  notifyDirectSendBusy();\n                  notifyDirectSendStop({ kind: 'previous-unreachable', previous }, chainLabel, onSettled);\n                  return;\n                case 'changed':\n                  // A newer send replaced this record; its own flow reports it.\n                  return;\n              }\n            });\n          },\n        },\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 182,
+    "api": "toast",
+    "code": "toast({ title: 'Previous send did not go through', description: 'Nothing moved. You can send again.', variant: 'success' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 209,
+    "api": "toast",
+    "code": "toast({\n        title: 'Previous send still confirming',\n        description: `Another ${chainLabel} send from this wallet is still confirming. Try again after it settles.`,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/direct-send-notices.ts",
+    "line": 216,
+    "api": "toast",
+    "code": "toast({\n        title: 'Send not started',\n        description:\n          'This browser could not guard the send against duplicates. Update your browser, free up site storage, or leave private browsing, then try again.',\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/leaderboard-card.tsx",
+    "line": 203,
+    "api": "toast",
+    "code": "toast({\n        title: t('toasts.linkCopied.title'),\n        variant: 'success',\n        icon: <Copy className=\"h-4 w-4\" strokeWidth={2.5} />,\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 410,
+    "api": "toast",
+    "code": "toast({\n              title: 'Take profit updated',\n              description: `${payload.coin} ${payload.side} position.`,\n              variant: 'success',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 418,
+    "api": "toast",
+    "code": "toast({\n              title: 'Take profit not updated',\n              description: (err as Error).message ?? 'Unknown error.',\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 531,
+    "api": "toast",
+    "code": "toast({\n              title: 'Stop loss updated',\n              description: `${payload.coin} ${payload.side} position.`,\n              variant: 'success',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 539,
+    "api": "toast",
+    "code": "toast({\n              title: 'Stop loss not updated',\n              description: (err as Error).message ?? 'Unknown error.',\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 605,
+    "api": "toast",
+    "code": "toast({\n          title: 'Position closed',\n          description: `${payload.coin} ${payload.side} flattened.`,\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 659,
+    "api": "toast",
+    "code": "toast({\n          title: \"Close didn't fill\",\n          description: humanizeOrderError(reason) ?? 'The market moved too fast — tap Close again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 695,
+    "api": "toast",
+    "code": "toast({\n        title: 'Position closed',\n        description: `${payload.coin} ${payload.side} flattened.`,\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 707,
+    "api": "toast",
+    "code": "toast({\n        title: err instanceof CloseBelowMinOrderValueError || !isNoFillRejection(rawMsg) ? 'Close failed' : \"Close didn't fill\",\n        description,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 943,
+    "api": "toast",
+    "code": "toast({\n          title: t('toastSuccessTitle'),\n          description: t('toastSuccessDescription', {\n            coin: payload.coin,\n            kind: kindLabel,\n          }),\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 961,
+    "api": "toast",
+    "code": "toast({\n          title: 'Cancel failed',\n          description: `Couldn't resolve assetId for ${payload.coin}.`,\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 975,
+    "api": "toast",
+    "code": "toast({\n        title: t('toastSuccessTitle'),\n        description: t('toastSuccessDescription', {\n          coin: payload.coin,\n          kind: kindLabel,\n        }),\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 985,
+    "api": "toast",
+    "code": "toast({\n        title: t('toastFailureTitle'),\n        description: (err as Error).message ?? 'Unknown error.',\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/position-cards.tsx",
+    "line": 1296,
+    "api": "toast",
+    "code": "toast({\n        title: failed > 0 ? tActivity('closedSomeFailedTitle') : tActivity('closedTitle'),\n        description: tActivity('closedResult', { closed: sent, failed }),\n        variant: failed > 0 ? 'destructive' : 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/profile-cards.tsx",
+    "line": 344,
+    "api": "toast",
+    "code": "toast({\n                title: v ? t('toasts.liveMode.title') : t('toasts.demoMode.title'),\n                description: v ? t('toasts.liveMode.description') : t('toasts.demoMode.description'),\n                variant: v ? 'success' : 'warning',\n              })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/profile-cards.tsx",
+    "line": 761,
+    "api": "toast",
+    "code": "toast({ title: t('failedTitle'), description: t('failedBody'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/referral-cards.tsx",
+    "line": 150,
+    "api": "toast",
+    "code": "toast({ title: tRoot('referral.copied'), variant: 'success' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/referral-cards.tsx",
+    "line": 251,
+    "api": "toast",
+    "code": "toast({ title: t('success', { code: result.code }) })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/referral-cards.tsx",
+    "line": 407,
+    "api": "toast",
+    "code": "toast({\n        title: result.alreadyReferred ? t('alreadyReferred') : t('success'),\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/sim-funding-cards.tsx",
+    "line": 57,
+    "api": "toast",
+    "code": "toast({\n      title: t('toast.title'),\n      description: t('toast.description', { amount: localize(`$${n.toFixed(2)}`) }),\n      variant: 'success',\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/sim-funding-cards.tsx",
+    "line": 199,
+    "api": "toast",
+    "code": "toast({\n      title: t('toast.title'),\n      description: t('toast.description', {\n        amount: localize(`$${formatUsdcAmount(n)}`),\n      }),\n      variant: 'success',\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/sponsored-send.ts",
+    "line": 233,
+    "api": "toast",
+    "code": "toast({\n    title: status === 'settled' ? 'Previous send completed' : 'Previous send still confirming',\n    description:\n      status === 'settled'\n        ? `Your last ${origin.chainLabel} send went through. Check your balance before sending again.`\n        : `Your last ${origin.chainLabel} send may still complete. Try again after it settles, within about 10 minutes.`,\n    variant: status === 'settled' ? 'success' : 'destructive',\n  })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/unified-mode.ts",
+    "line": 105,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/unified-mode.ts",
+    "line": 124,
+    "api": "toast",
+    "code": "toast({\n          title: enable ? t('toasts.unifiedEnabled.title') : t('toasts.unifiedDisabled.title'),\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/unified-mode.ts",
+    "line": 132,
+    "api": "toast",
+    "code": "toast({\n            title: 'Close your open positions first',\n            description: e.message,\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/unified-mode.ts",
+    "line": 138,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.updateFailed.title'),\n            description: (e as Error).message,\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-deposit-entry.ts",
+    "line": 107,
+    "api": "infoToast",
+    "code": "infoToast({ id: DEPOSIT_UNAVAILABLE_ID, variant: 'info', title: tDepositRef.current('errors.depositsUnavailable') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-deposit-entry.ts",
+    "line": 146,
+    "api": "infoToast",
+    "code": "infoToast({ id: DEPOSIT_UNAVAILABLE_ID, variant: 'info', title: tDepositRef.current('errors.depositsUnavailable') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-deposit-entry.ts",
+    "line": 162,
+    "api": "infoToast",
+    "code": "infoToast({\n      id: BRIDGE_PROMPT_ID,\n      variant: 'info',\n      title: tDepositRef.current('root.bridgePrompt.title'),\n      action: {\n        label: tDepositRef.current('root.bridgePrompt.action'),\n        onClick: () => bridgeActionRef.current(),\n      },\n      onClose: () => {\n        bridgePromptClosedRef.current = true;\n      },\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-position-actions.ts",
+    "line": 169,
+    "api": "toast",
+    "code": "toast({\n          title: 'Wallet unavailable',\n          description: 'Reconnect your wallet and try again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-position-actions.ts",
+    "line": 175,
+    "api": "toast",
+    "code": "toast({\n          title: failed > 0 ? t('activityCard.closedSomeFailedTitle') : t('activityCard.closedTitle'),\n          description: t('activityCard.closedResult', {\n            closed,\n            failed,\n          }),\n          variant: failed > 0 ? 'destructive' : 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 179,
+    "api": "toast",
+    "code": "toast({ title: t('toasts.transferSent.title'), description: labels.sent, variant: 'success' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 183,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferSent.title'),\n            description: 'Confirmation is still pending. Do not send it again.',\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 199,
+    "api": "toast",
+    "code": "toast({\n            title: rejected ? t('toasts.transferDeclined.title') : t('toasts.transferFailed.title'),\n            description: rejected\n              ? t('toasts.transferDeclined.description')\n              : ((outcome.error as Error | undefined)?.message ?? t('toasts.unknownError')),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 230,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 240,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.transferFailed.title'),\n          description: 'Minimum bridge amount is 0.01 SOL.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 335,
+    "api": "infoToast",
+    "code": "infoToast({\n          id: WITHDRAW_FLIGHT_TOAST_ID,\n          variant: 'info',\n          icon: <Loader2 className=\"h-4 w-4 animate-spin\" />,\n          title: <WithdrawRouteTitle stops={['Solana', destName]} active={0} />,\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 393,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.walletUnavailable.title'),\n            description: t('toasts.walletUnavailable.description'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 403,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 424,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.transferSent.title'),\n          description: t('toasts.transferSent.description', {\n            amount: localize(`$${formatUsdDisplay(amountUsd)}`),\n            target: sendDestination.target,\n          }),\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 435,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.transferFailed.title'),\n          description: (e as Error).message,\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 463,
+    "api": "toast",
+    "code": "toast({\n      title: t('toasts.walletUnavailable.title'),\n      description: t('toasts.walletUnavailable.description'),\n      variant: 'destructive',\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 514,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.sent.title'),\n            description: t('toasts.sent.description', { amount: amountLabel, destination: current.destination }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 540,
+    "api": "toast",
+    "code": "toast({\n        title: declined ? t('toasts.transferDeclined.title') : t('toasts.sendFailed.title'),\n        description: declined ? t('toasts.transferDeclined.description') : ((outcome.error as Error | undefined)?.message ?? t('toasts.unknownError')),\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 547,
+    "api": "toast",
+    "code": "toast({ title: t('toasts.sendFailed.title'), description: (e as Error).message, variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 589,
+    "api": "toast",
+    "code": "toast({\n        title: t('toasts.transferFailed.title'),\n        description: 'This gasless HyperEVM route is temporarily unavailable.',\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 601,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 639,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.sent.title'),\n            description: t('toasts.sent.description', {\n              amount: localize(`$${current.amountUsd.toFixed(2)}`),\n              destination: current.destination,\n            }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 653,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.withdrawConfirming.title'),\n            description: t('toasts.withdrawConfirming.description', {\n              amount: localize(`$${current.amountUsd.toFixed(2)}`),\n              chain: origin.chainLabel,\n            }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 668,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferFailed.title'),\n            description:\n              feeCheck.reason === 'changed'\n                ? 'The send fee changed. Review the send again.'\n                : 'The send fee could not be confirmed. Try again.',\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 692,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.withdrawConfirming.title'),\n            description: t('toasts.withdrawConfirming.description', {\n              amount: localize(`$${current.amountUsd.toFixed(2)}`),\n              chain: origin.chainLabel,\n            }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 704,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.sent.title'),\n          description: t('toasts.sent.description', {\n            amount: `${localize(`$${outcome.netUsd.toFixed(2)}`)} (fee ${localize(`$${outcome.feeUsd.toFixed(2)}`)})`,\n            destination: current.destination,\n          }),\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 718,
+    "api": "toast",
+    "code": "toast({\n          title: rejected ? t('toasts.transferDeclined.title') : t('toasts.sendFailed.title'),\n          description: rejected ? t('toasts.transferDeclined.description') : (err.message ?? t('toasts.unknownError')),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 769,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.sent.title'),\n            description: t('toasts.sent.description', { amount: amountLabel, destination: current.destination }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 791,
+    "api": "toast",
+    "code": "toast({\n        title: declined ? t('toasts.transferDeclined.title') : t('toasts.sendFailed.title'),\n        description: declined ? t('toasts.transferDeclined.description') : ((outcome.error as Error | undefined)?.message ?? t('toasts.unknownError')),\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 828,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 855,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferSent.title'),\n            description:\n              gasless.kind === 'sent' && gasless.preview?.outAmount\n                ? `Bridging ${localize(`$${gasless.preview.outAmount}`)} → Hyperliquid`\n                : t('toasts.withdrawConfirming.description', {\n                    amount: localize(`$${amountUsd.toFixed(2)}`),\n                    chain: 'Hyperliquid',\n                  }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 901,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferSent.title'),\n            description: t('toasts.withdrawConfirming.description', {\n              amount: localize(`$${amountUsd.toFixed(2)}`),\n              chain: 'Hyperliquid',\n            }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 913,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.transferSent.title'),\n          description: `Bridging ${localize(`$${outcome.netUsd.toFixed(2)}`)} → Hyperliquid`,\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 924,
+    "api": "toast",
+    "code": "toast({\n          title: rejected ? t('toasts.transferDeclined.title') : t('toasts.transferFailed.title'),\n          description: rejected ? t('toasts.transferDeclined.description') : (err.message ?? t('toasts.unknownError')),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 961,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 988,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.transferSent.title'),\n              description:\n                gasless.kind === 'sent' && gasless.preview?.outAmount\n                  ? `Bridging ${localize(gasless.preview.outAmount)} ${gasless.preview.outSymbol ?? ''} → ${destLabel}`\n                  : t('toasts.withdrawConfirming.description', {\n                      amount: localize(`$${amountUsd.toFixed(2)}`),\n                      chain: destLabel,\n                    }),\n              variant: 'success',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1038,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferSent.title'),\n            description: t('toasts.withdrawConfirming.description', {\n              amount: localize(`$${amountUsd.toFixed(2)}`),\n              chain: destLabel,\n            }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1050,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.transferSent.title'),\n          description: `Bridging ${localize(`$${outcome.netUsd.toFixed(2)}`)} → ${destLabel}`,\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1061,
+    "api": "toast",
+    "code": "toast({\n          title: rejected ? t('toasts.transferDeclined.title') : t('toasts.transferFailed.title'),\n          description: rejected ? t('toasts.transferDeclined.description') : (err.message ?? t('toasts.unknownError')),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1100,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.transferFailed.title'),\n          description: 'External Solana accounts are view-only. Switch to the embedded account to send.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1120,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.transferFailed.title'),\n              description:\n                'Hyperliquid → HyperEVM USDC only delivers to your own wallet. Use USDC on Base or Solana to send to another address.',\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1135,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferFailed.title'),\n            description: \"Sending Hyperliquid USDC to that asset isn't supported yet — pick USDC on Base, Solana, or HyperEVM.\",\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1169,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.transferFailed.title'),\n              description: \"That route isn't supported from a Solana asset yet — pick USDC on Hyperliquid, HyperEVM, or Base.\",\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1194,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.transferFailed.title'),\n              description: 'Depositing to Hyperliquid is supported from USDC on Base or HyperEVM.',\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1219,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.transferFailed.title'),\n          description: 'Gas-free transfers are not available for this route yet. Choose another asset.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1264,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.transferSent.title'),\n              description: t('toasts.transferSent.description', {\n                amount: localize(`$${formatUsdDisplay(usd)}`),\n                target: unifiedDestInternal,\n              }),\n              variant: 'success',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1275,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.transferFailed.title'),\n              description: (e as Error).message,\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-send-controller.tsx",
+    "line": 1309,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.walletUnavailable.title'),\n            description: t('toasts.walletUnavailable.description'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-solana-direct-send.ts",
+    "line": 92,
+    "api": "toast",
+    "code": "toast({ title: 'Sent', description: request.sentDescription, variant: 'success' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-solana-direct-send.ts",
+    "line": 95,
+    "api": "toast",
+    "code": "toast({\n              title: 'Transfer submitted',\n              description: 'Confirmation is still pending. Do not send it again.',\n              variant: 'success',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-solana-direct-send.ts",
+    "line": 109,
+    "api": "toast",
+    "code": "toast({\n              title: declined ? 'Signature declined' : 'Send failed',\n              description: declined ? 'You cancelled the wallet signature.' : ((outcome.error as Error | undefined)?.message ?? 'Unknown error'),\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 93,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferSent.title'),\n            description: t('toasts.transferSent.description', { amount: amountLabel, target: 'HyperEVM' }),\n            variant: 'success',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 108,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 119,
+    "api": "toast",
+    "code": "toast({\n        title: t('toasts.transferFailed.title'),\n        description: (outcome.error as Error | undefined)?.message ?? t('toasts.unknownError'),\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 133,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 182,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 232,
+    "api": "toast",
+    "code": "toast({\n          title: t('toasts.walletUnavailable.title'),\n          description: t('toasts.walletUnavailable.description'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 248,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.walletUnavailable.title'),\n            description: t('toasts.walletUnavailable.description'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 256,
+    "api": "toast",
+    "code": "toast({\n            title: t('toasts.transferFailed.title'),\n            description: t('bridgeFromCore.destination.belowMin', {\n              min: localize(`$${RELAY_WITHDRAW_MIN_USD.toFixed(2)}`),\n            }),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 272,
+    "api": "infoToast",
+    "code": "infoToast({\n            id: WITHDRAW_FLIGHT_TOAST_ID,\n            variant: 'info',\n            icon: <Loader2 className=\"h-4 w-4 animate-spin\" />,\n            title: <WithdrawRouteTitle stops={['Hyperliquid', chainName]} active={0} />,\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 301,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.withdrawConfirming.title'),\n              description: t('toasts.withdrawConfirming.description', {\n                amount: localize(`$${outputUsd.toFixed(2)}`),\n                chain: chainName,\n              }),\n              variant: 'success',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 311,
+    "api": "toast",
+    "code": "toast({\n              title: t('toasts.withdrawSent.title'),\n              description: t('toasts.withdrawSent.description', {\n                amount: localize(`$${outputUsd.toFixed(2)}`),\n                chain: chainName,\n                fee: localize(`$${feeUsd.toFixed(2)}`),\n                eta: plan.preview.estimatedFillTimeSec,\n              }),\n              variant: 'success',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet/use-withdraw-controller.tsx",
+    "line": 334,
+    "api": "toast",
+    "code": "toast({\n            title: rejected ? t('toasts.transferDeclined.title') : t('toasts.transferFailed.title'),\n            description: rejected ? t('toasts.transferDeclined.description') : (e.message ?? t('toasts.unknownError')),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet.tsx",
+    "line": 443,
+    "api": "toast",
+    "code": "toast({ title: t('errors.depositsUnavailable'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/account-sheet.tsx",
+    "line": 448,
+    "api": "toast",
+    "code": "toast({\n              title: 'Deposit screen unavailable',\n              description: 'Please try again.',\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 617,
+    "api": "toast",
+    "code": "toast({\n          title: 'Wallet unavailable',\n          description: 'Reconnect your wallet and try again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 631,
+    "api": "toast",
+    "code": "toast({\n          title: 'Order changed',\n          description: 'This order is now attached to an open position and was not canceled.',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 639,
+    "api": "toast",
+    "code": "toast({\n          title: 'Order skipped',\n          description: `Couldn't resolve assetId for ${order.coin}.`,\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 651,
+    "api": "toast",
+    "code": "toast({\n          title: 'Order canceled',\n          description: `${order.coin} ${order.side === 'B' ? 'buy' : 'sell'} @ ${fmtPx(order.limitPx)}`,\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 658,
+    "api": "toast",
+    "code": "toast({\n          title: 'Cancel failed',\n          description: (e as Error).message,\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 683,
+    "api": "toast",
+    "code": "toast({\n          title: 'Wallet unavailable',\n          description: 'Reconnect your wallet and try again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 706,
+    "api": "toast",
+    "code": "toast({\n          title: 'Nothing to cancel',\n          description:\n            skipped > 0\n              ? `Couldn't resolve assetIds for ${skipped} order${skipped === 1 ? '' : 's'}.`\n              : 'The open-order list changed before cancellation.',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 716,
+    "api": "toast",
+    "code": "toast({\n        title: 'Orders canceled',\n        description:\n          skipped > 0\n            ? `Canceled ${batch.length}, skipped ${skipped} (unknown coin).`\n            : `Canceled ${batch.length} order${batch.length === 1 ? '' : 's'}.`,\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 726,
+    "api": "toast",
+    "code": "toast({\n        title: 'Cancel all failed',\n        description: (e as Error).message,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 742,
+    "api": "toast",
+    "code": "toast({\n          title: 'Wallet unavailable',\n          description: 'Reconnect your wallet and try again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 751,
+    "api": "toast",
+    "code": "toast({\n          title: 'TWAP skipped',\n          description: 'Missing coin metadata.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 761,
+    "api": "toast",
+    "code": "toast({\n          title: 'TWAP skipped',\n          description: `Couldn't resolve assetId for ${coin}.`,\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 774,
+    "api": "toast",
+    "code": "toast({\n          title: 'TWAP canceled',\n          description: `${coin} TWAP stopped`,\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 781,
+    "api": "toast",
+    "code": "toast({\n          title: 'TWAP cancel failed',\n          description: (e as Error).message,\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 801,
+    "api": "toast",
+    "code": "toast({\n        title: 'Wallet unavailable',\n        description: 'Reconnect your wallet and try again.',\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/activity-card.tsx",
+    "line": 837,
+    "api": "toast",
+    "code": "toast({\n      title: failed > 0 ? 'Some TWAPs failed' : 'TWAPs canceled',\n      description: [\n        canceled > 0 ? `${canceled} canceled` : null,\n        failed > 0 ? `${failed} failed` : null,\n        skipped > 0 ? `${skipped} skipped` : null,\n      ]\n        .filter(Boolean)\n        .join(', '),\n      variant: failed > 0 ? 'destructive' : 'success',\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/agent-task-dialog.tsx",
+    "line": 126,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"toastWalletUnavailableTitle\"),\n          description: t(\"toastWalletUnavailableDesc\"),\n          variant: \"destructive\",\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/agent-task-dialog.tsx",
+    "line": 151,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"toastApprovedTitle\"),\n          description: t(\"toastApprovedDesc\"),\n          variant: \"success\",\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/agent-task-dialog.tsx",
+    "line": 166,
+    "api": "toast",
+    "code": "toast({\n        title: isUserRejected\n          ? t(\"toastDeclinedTitle\")\n          : t(\"toastFailedTitle\"),\n        description: isUserRejected\n          ? t(\"toastDeclinedDesc\")\n          : err.message ?? t(\"toastUnknownErrorDesc\"),\n        variant: \"destructive\",\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/bloxwap-burn-card.tsx",
+    "line": 200,
+    "api": "toast",
+    "code": "toast({\n          title: t('toast.failedTitle'),\n          description: (outcome.error as Error | undefined)?.message ?? '',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/bloxwap-burn-card.tsx",
+    "line": 215,
+    "api": "toast",
+    "code": "toast({\n        title: t('toast.submittedTitle'),\n        description: t('toast.submittedDescription', {\n          amount: localize(formatToastAmount(numeric)),\n        }),\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/bloxwap-burn-card.tsx",
+    "line": 243,
+    "api": "toast",
+    "code": "toast({\n        title: t('toast.failedTitle'),\n        description: (err as Error).message,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/bloxwap-send-card.tsx",
+    "line": 115,
+    "api": "toast",
+    "code": "toast({ title: 'Send failed', description: (err as Error).message, variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/bottom-controls.tsx",
+    "line": 434,
+    "api": "toast",
+    "code": "toast({ id: ORDER_TOO_SMALL_TOAST, title: orderTooSmallTitle, description: orderTooSmallMessage, variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/bottom-controls.tsx",
+    "line": 461,
+    "api": "infoPanelToast",
+    "code": "infoPanelToast({\n      id: PAPERTRADE_MINIMUMS_TOAST,\n      title: ptMinimumsText,\n      variant: 'warning',\n      onClose: () => setPtMinimumsDismissed((current) => new Set(current).add(ptFloorKey)),\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/builder-task-dialog.tsx",
+    "line": 141,
+    "api": "toast",
+    "code": "toast({\n        title: t(\"toastNotConfiguredTitle\"),\n        description: t(\"toastNotConfiguredDesc\"),\n        variant: \"destructive\",\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/builder-task-dialog.tsx",
+    "line": 175,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"toastWalletUnavailableTitle\"),\n          description: t(\"toastWalletUnavailableDesc\"),\n          variant: \"destructive\",\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/builder-task-dialog.tsx",
+    "line": 208,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"toastApprovedTitle\"),\n          description: t(\"toastApprovedDesc\"),\n          variant: \"success\",\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/builder-task-dialog.tsx",
+    "line": 223,
+    "api": "toast",
+    "code": "toast({\n        title: isUserRejected\n          ? t(\"toastDeclinedTitle\")\n          : t(\"toastFailedTitle\"),\n        description: isUserRejected\n          ? t(\"toastDeclinedDesc\")\n          : err.message ?? t(\"toastUnknownErrorDesc\"),\n        variant: \"destructive\",\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/crypto-address.tsx",
+    "line": 35,
+    "api": "toast",
+    "code": "toast({\n        title: t(\"addressCopied\"),\n        variant: \"success\",\n        icon: <Copy className=\"h-4 w-4\" strokeWidth={2.5} />,\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 233,
+    "api": "toast",
+    "code": "toast({\n          title: 'Wallet unavailable',\n          description: 'Reconnect your wallet and try again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 253,
+    "api": "toast",
+    "code": "toast({\n            title: 'Deposited, not yet delegated',\n            description:\n              'Your HYPE reached the staking balance but the delegation signature failed. Use “Delegate undelegated balance” to finish.',\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 263,
+    "api": "toast",
+    "code": "toast({\n          title: 'Staked',\n          description: `${localize(typedHypeLabel(amount, locale))} delegated to ${DEFAULT_STAKING_VALIDATOR.name}. Fee discount applies from your next trade window.`,\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 275,
+    "api": "toast",
+    "code": "toast({\n          title: 'Undelegated',\n          description: `${localize(typedHypeLabel(amount, locale))} is back in your staking balance. Transfer it to spot to start the ${UNSTAKING_QUEUE_DAYS}-day queue.`,\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 284,
+    "api": "toast",
+    "code": "toast({\n        title: mode === 'stake' ? 'Stake failed' : 'Undelegate failed',\n        description: (err as Error).message,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 309,
+    "api": "toast",
+    "code": "toast({\n          title: 'Wallet unavailable',\n          description: 'Reconnect your wallet and try again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 322,
+    "api": "toast",
+    "code": "toast({\n        title: 'Delegated',\n        description: `${localize(`${weiToHype(repairWei)} HYPE`)} delegated to ${DEFAULT_STAKING_VALIDATOR.name}.`,\n        variant: 'success',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 330,
+    "api": "toast",
+    "code": "toast({\n        title: 'Delegate failed',\n        description: (err as Error).message,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 374,
+    "api": "toast",
+    "code": "toast({\n          title: 'Transfer cancelled',\n          description: 'You replaced the transaction, so no HYPE moved to your Exchange.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 382,
+    "api": "toast",
+    "code": "toast({\n          title: 'Moved to Exchange',\n          description: 'Your HYPE arrived in your Exchange spot balance — ready to stake.',\n          variant: 'success',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 390,
+    "api": "toast",
+    "code": "toast({\n          title: 'Transfer failed on-chain',\n          description: 'The transaction reverted — your HYPE did not move (only gas was spent).',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 430,
+    "api": "toast",
+    "code": "toast({\n          title: 'Wallet unavailable',\n          description: 'Reconnect your wallet and try again.',\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 453,
+    "api": "toast",
+    "code": "toast({\n          title: 'Transfer still pending',\n          description: \"The network hasn't confirmed it yet. Your balances update automatically when it lands — don't re-send.\",\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/hype-staking-card.tsx",
+    "line": 464,
+    "api": "toast",
+    "code": "toast({\n        title: 'Move failed',\n        description: (err as Error).message,\n        variant: 'destructive',\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/login-drawer.tsx",
+    "line": 314,
+    "api": "toast",
+    "code": "toast({ title: t('xInAppTitle'), description: t('xInAppBody') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/size-lev-picker.tsx",
+    "line": 789,
+    "api": "toast",
+    "code": "toast({\n                      title: tToasts('walletUnavailable.title'),\n                      description: tToasts('walletUnavailable.description'),\n                      variant: 'destructive',\n                    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/size-lev-picker.tsx",
+    "line": 795,
+    "api": "toast",
+    "code": "toast({\n                      title: failed > 0 ? tActivity('closedSomeFailedTitle') : tActivity('closedTitle'),\n                      description: tActivity('closedResult', { closed, failed }),\n                      variant: failed > 0 ? 'destructive' : 'success',\n                    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/sl-tp-cards.tsx",
+    "line": 469,
+    "api": "infoPanelToast",
+    "code": "infoPanelToast({\n      id: SL_FEE_FLOOR_TIP_ID,\n      variant: 'info',\n      title: tRef.current('feeFloorTip.title'),\n      description: tRef.current('feeFloorTip.description'),\n      onClose: () => {\n        feeFloorTipDismissed = true;\n      },\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/solana-sol-send-card.tsx",
+    "line": 116,
+    "api": "toast",
+    "code": "toast({ title: 'Send failed', description: (err as Error).message, variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/solana-usdc-send-card.tsx",
+    "line": 148,
+    "api": "toast",
+    "code": "toast({ title: 'Send failed', description: (err as Error).message, variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-screen.tsx",
+    "line": 551,
+    "api": "toast",
+    "code": "toast({\n        title: `Ready to open ${label}`,\n        description: `Tap ${cur.side === 'long' ? 'UP' : 'DOWN'} to open — your ${cur.side} setup is primed.`,\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-screen.tsx",
+    "line": 705,
+    "api": "sonnerToast.custom",
+    "code": "sonnerToast.custom(\n      (id) => (\n        // Center the shrink-wrapped card in Sonner’s fixed-width slot.\n        <div className=\"flex w-full justify-center\">\n          <ClosePayoutCard lastClose={lastClose} onDismiss={() => sonnerToast.dismiss(id)} />\n        </div>\n      ),\n      {\n        duration: holdMs,\n        onAutoClose: clearLastClose,\n        onDismiss: clearLastClose,\n      },\n    )"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-screen.tsx",
+    "line": 914,
+    "api": "infoToast",
+    "code": "infoToast({\n      id: LOW_BALANCE_PROMPT_ID,\n      title: showInPositionToast ? t('fundsInPositionTitle') : t('lowBalanceTitle'),\n      variant: 'warning',\n      action: showInPositionToast\n        ? undefined\n        : {\n            label: t('walletCta'),\n            onClick: () => openAccountSheetTo('deposit-root'),\n          },\n      onClose: () => closedFundingToastsRef.current.add(kind),\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-screen.tsx",
+    "line": 1008,
+    "api": "infoToast",
+    "code": "infoToast({\n      id: WALLET_SETUP_PROMPT_ID,\n      title: t('walletSetupTitle'),\n      variant: 'warning',\n      action: {\n        label: t('walletSetupRetry'),\n        onClick: () => retryProvisioning(),\n      },\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 92,
+    "api": "toast",
+    "code": "toast({ title: t(\"videoUnavailable\"), variant: \"destructive\" })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 131,
+    "api": "toast",
+    "code": "toast({\n        title: t(\"copied\"),\n        variant: \"success\",\n        icon: <Copy className=\"h-4 w-4\" strokeWidth={2.5} />,\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 154,
+    "api": "toast",
+    "code": "toast({\n        title: t(\"copiedImage\"),\n        variant: \"success\",\n        icon: <Copy className=\"h-4 w-4\" strokeWidth={2.5} />,\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 186,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"imageCopiedForX\"),\n            variant: \"success\",\n            icon: <Copy className=\"h-4 w-4\" strokeWidth={2.5} />,\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 208,
+    "api": "toast",
+    "code": "toast({\n        title: t(\"copied\"),\n        variant: \"success\",\n        icon: <Copy className=\"h-4 w-4\" strokeWidth={2.5} />,\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 227,
+    "api": "toast",
+    "code": "toast({ title: t(\"videoUnavailable\"), variant: \"destructive\" })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 275,
+    "api": "toast",
+    "code": "toast({ title: t(\"videoReadyTapAgain\") })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 309,
+    "api": "toast",
+    "code": "toast({ title: t(\"videoUnavailable\"), variant: \"destructive\" })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/components/trading/trade-share-card.tsx",
+    "line": 361,
+    "api": "toast",
+    "code": "toast({ title: t(\"videoUnavailable\"), variant: \"destructive\" })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-any-wallet-deposit.ts",
+    "line": 84,
+    "api": "toast",
+    "code": "toast({\n          title: t('toast.refundedTitle'),\n          description: t('toast.refundedDescription'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-any-wallet-deposit.ts",
+    "line": 92,
+    "api": "toast",
+    "code": "toast({\n          title: t('toast.failureTitle'),\n          description: t('toast.failureDescription'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-execution-gate.ts",
+    "line": 40,
+    "api": "toast",
+    "code": "toast({ id: `execution-disabled-${kind}`, title, variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-farm-harvest.tsx",
+    "line": 107,
+    "api": "toast",
+    "code": "toast({ title: tToasts('walletUnavailable.title'), description: tToasts('walletUnavailable.description'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-farm-harvest.tsx",
+    "line": 109,
+    "api": "toast",
+    "code": "toast({ title: tPt('harvestFailedTitle'), description: tPt('harvestFailedBody'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-farm-harvest.tsx",
+    "line": 111,
+    "api": "toast",
+    "code": "toast({ title: tPt('harvestedTitle'), description: tPt('harvestedBody'), variant: 'success' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-market-open-countdown-toast.tsx",
+    "line": 121,
+    "api": "infoToast",
+    "code": "infoToast({\n          id: TOAST_ID,\n          variant: 'info',\n          icon: <Clock className=\"h-4 w-4\" strokeWidth={2.5} />,\n          closable: true,\n          title: renderTitle(latest.current.t, next.secondsLeft, announcedSeconds),\n          onClose: userDismissed,\n          onDismiss: userDismissed,\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-staking.ts",
+    "line": 94,
+    "api": "toast",
+    "code": "toast({ title: copy.succeeded })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-staking.ts",
+    "line": 97,
+    "api": "toast",
+    "code": "toast({ title: copy.failed, variant: \"destructive\" })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-staking.ts",
+    "line": 100,
+    "api": "toast",
+    "code": "toast({ title: copy.unconfirmed })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-staking.ts",
+    "line": 125,
+    "api": "toast",
+    "code": "toast({ title: copy.unconfirmed })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-trade.tsx",
+    "line": 343,
+    "api": "toast",
+    "code": "toast(failureCopy(intent, outcome))"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-trade.tsx",
+    "line": 362,
+    "api": "toast",
+    "code": "toast(failureCopy(intent, outcome))"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-trade.tsx",
+    "line": 465,
+    "api": "toast",
+    "code": "toast({ title: t(title), description: t(`reasons.${reasonKey(reasonForCode(kind))}`), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-trade.tsx",
+    "line": 598,
+    "api": "toast",
+    "code": "toast({ title: t('unconfirmedTitle'), description: t('unconfirmedOpen') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-trade.tsx",
+    "line": 644,
+    "api": "toast",
+    "code": "toast({ title: t('closeSlowTitle'), description: t('closeSlowBody') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-papertrade-trade.tsx",
+    "line": 732,
+    "api": "toast",
+    "code": "toast({ title: t('unconfirmedTitle'), description: t('unconfirmedClose') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-push-notifications.ts",
+    "line": 199,
+    "api": "toast",
+    "code": "toast({\n        variant: \"destructive\",\n        title: \"Sign in to enable notifications\",\n        description: \"Connect your wallet first so alerts reach your account.\",\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-push-notifications.ts",
+    "line": 238,
+    "api": "toast",
+    "code": "toast({\n          variant: \"destructive\",\n          title: \"Couldn't enable notifications\",\n          description:\n            err instanceof Error && err.message.includes(\"permission\")\n              ? \"Permission was denied. Enable notifications in your device Settings.\"\n              : \"Something went wrong. Please try again.\",\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-push-notifications.ts",
+    "line": 301,
+    "api": "toast",
+    "code": "toast({\n          variant: \"destructive\",\n          title: \"Couldn't save notification setting\",\n          description: \"Your previous setting is still active.\",\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-push-notifications.ts",
+    "line": 332,
+    "api": "toast",
+    "code": "toast({\n        variant: \"destructive\",\n        title: \"Couldn't save funding frequency\",\n        description: \"Your previous setting is still active.\",\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-swing-push-open.ts",
+    "line": 84,
+    "api": "toast",
+    "code": "toast({ title: tPreparation('collateralPreparationTitle'), description: tPreparation('collateralPreparationMessage') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-swing-push-open.ts",
+    "line": 118,
+    "api": "toast",
+    "code": "toast({ variant: 'destructive', title: t('title'), description })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 365,
+    "api": "toast",
+    "code": "toast({\n          id: 'trade-execution-disabled',\n          title: tToasts('tradingUnavailableTitle'),\n          description: tUnavailable('trading'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1148,
+    "api": "toast",
+    "code": "toast({ title: tToasts('tradingUnavailableTitle'), description: tAuth('unsupportedAccountMode'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1257,
+    "api": "toast",
+    "code": "toast({\n      title: tToasts('agentApprovalTitle'),\n      description: tToasts('agentApprovalFailedMessage'),\n      variant: 'destructive',\n    })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1580,
+    "api": "toast",
+    "code": "toast({ title: tPt('hedgeUnavailableTitle'), description: tPt('hedgeUnavailableBody'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1590,
+    "api": "toast",
+    "code": "toast({ title: tPt('hedgeFailedTitle'), description: tPt('hedgeFailedBody'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1666,
+    "api": "toast",
+    "code": "toast({\n            title: t('unsupportedCollateralTitle'),\n            description: t('unsupportedCollateralMessage', {\n              coin: orderCoin.includes(':') ? orderCoin.slice(orderCoin.indexOf(':') + 1) : orderCoin,\n            }),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1699,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('priceNotReadyTitle'),\n            description: tToasts('priceNotReadyMessage'),\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1715,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('marketsNotReadyTitle'),\n            description: tToasts('marketsNotReadyMessage'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1735,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('balanceLoadingTitle'),\n            description: tToasts('balanceLoadingMessage'),\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1765,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('openWontFillTitle'),\n            description: tToasts('openWontFillMessage', { pctLabel: numbers.localize(`${DEFAULT_OPEN_SLIPPAGE_BPS / 100}%`) }),\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1777,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('orderTooSmallTitle'),\n            description: tToasts('orderTooSmallMessage', { minLabel: numbers.localize(`$${HL_MIN_TRADE_USD}`) }),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1801,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('insufficientBalanceTitle'),\n            description: tToasts('insufficientBalanceMessage'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1903,
+    "api": "toast",
+    "code": "toast({ title: tPt('hedgeFailedTitle'), description: tPt('hedgeFailedBody'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 1975,
+    "api": "toast",
+    "code": "toast({ title: tToasts('openFailedTitle'), description: tToasts('setupCheckTimeoutMessage'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2009,
+    "api": "toast",
+    "code": "toast({\n              title: tToasts('outcomeNoLiquidityTitle'),\n              description: tToasts('outcomeNoLiquidityMessage'),\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2076,
+    "api": "toast",
+    "code": "toast({ title: tToasts('collateralPreparationTitle'), description: tToasts('collateralPreparationMessage') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2395,
+    "api": "toast",
+    "code": "toast({\n              title: tToasts('stopLossNotAttachedTitle'),\n              description: tToasts('stopLossNotAttachedMessage'),\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2490,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('signInRequiredTitle'),\n            description: tToasts('signInRequiredMessage'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2524,
+    "api": "toast",
+    "code": "toast({\n                title: tToasts('agentApprovalTitle'),\n                description: tToasts('agentApprovalMessage', { surface: 'browser' }),\n                variant: 'destructive',\n              })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2536,
+    "api": "toast",
+    "code": "toast({ title: tToasts('openFailedTitle'), description: tToasts('leverageConfirmationFailedMessage'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2542,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('builderApprovalTitle'),\n            description: tToasts('builderApprovalMessage'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2553,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('agentApprovalTitle'),\n            description: tToasts('agentApprovalMessage', { surface: 'browser' }),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2562,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('insufficientBalanceTitle'),\n            description: tToasts('insufficientBalanceMessage'),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2569,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('orderTooSmallTitle'),\n            description: tToasts('orderTooSmallMessage', { minLabel: numbers.localize(`$${HL_MIN_TRADE_USD}`) }),\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2579,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('orderNoFillTitle'),\n            description: humanizeOrderError(msg) ?? msg,\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2586,
+    "api": "toast",
+    "code": "toast({\n            title: tToasts('openFailedTitle'),\n            description: humanizeOrderError(msg) ?? msg,\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2727,
+    "api": "toast",
+    "code": "toast({ title: tToasts('openFailedTitle'), description: tToasts('setupCheckTimeoutMessage'), variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2927,
+    "api": "toast",
+    "code": "toast({\n              title: t('closeNoFillTitle'),\n              description: humanizeOrderError(reason) ?? t('closeNoFillBody'),\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2940,
+    "api": "toast",
+    "code": "toast({\n              title: t('closeBlockedTitle'),\n              description: e.message,\n              variant: 'destructive',\n            })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2954,
+    "api": "toast",
+    "code": "toast({\n            title: isNoFillRejection(closeMsg) ? t('closeNoFillTitle') : t('closeFailedTitle'),\n            description: humanizeOrderError(closeMsg) ?? closeMsg,\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 2965,
+    "api": "toast",
+    "code": "toast({\n          title: t('closeFailedTitle'),\n          description: t('closeNotReadyBody'),\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 3152,
+    "api": "toast",
+    "code": "toast({ title: t('unlockedToastTitle') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 3181,
+    "api": "toast",
+    "code": "toast({ title: t('unlockedToastTitle'), description: t('unlockedToastBody') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 3362,
+    "api": "toast",
+    "code": "toast({\n            title: t('lockedToastTitle'),\n            description: 'Lock is live, but an older order could not be removed. Review Open orders.',\n            variant: 'destructive',\n          })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 3371,
+    "api": "toast",
+    "code": "toast({ title: t('lockedToastTitle'), description: t('lockedToastBody') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 3385,
+    "api": "toast",
+    "code": "toast({ title: t('lockPendingTitle'), description: t('lockPendingBody') })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 3387,
+    "api": "toast",
+    "code": "toast({ title: t('lockedToastTitle'), description: (error as Error).message, variant: 'destructive' })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tap-trade.tsx",
+    "line": 3389,
+    "api": "toast",
+    "code": "toast({\n          title: t(unlocking ? 'unlockFailedTitle' : 'lockFailedTitle'),\n          description: (error as Error).message,\n          variant: 'destructive',\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-toast.tsx",
+    "line": 32,
+    "api": "sonnerToast.custom",
+    "code": "sonnerToast.custom((id) => (\n    <div\n      className=\"flex w-full justify-center\"\n      // Keep taps on the overlaid toast from dismissing the Vaul drawer.\n      onPointerDownCapture={(e) => e.stopPropagation()}\n    >\n      <NotificationCard\n        tone={tone}\n        title={title ?? ''}\n        description={description}\n        icon={icon}\n        onClick={() => {\n          sonnerToast.dismiss(id);\n          onClick?.();\n        }}\n      />\n    </div>\n  ), { id: toastId })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-toast.tsx",
+    "line": 87,
+    "api": "sonnerToast.custom",
+    "code": "sonnerToast.custom(\n    (toastId) => {\n      const wrapAction = (value?: NotificationAction): NotificationAction | undefined =>\n        value\n          ? {\n              label: value.label,\n              onClick: () => {\n                sonnerToast.dismiss(toastId);\n                value.onClick();\n              },\n            }\n          : undefined;\n      const notice = {\n        title: title ?? '',\n        description,\n        icon,\n        closeLabel,\n        action: wrapAction(action),\n        secondaryAction: wrapAction(secondaryAction),\n        onClose: closable\n          ? () => {\n              sonnerToast.dismiss(toastId);\n              onClose?.();\n            }\n          : undefined,\n      };\n      return (\n        <div\n          className=\"flex w-full justify-center\"\n          // Stop capture-phase pointerdown so the portaled toast does not trigger Vaul’s\n          // outside-dismiss listener.\n          onPointerDownCapture={(e) => e.stopPropagation()}\n        >\n          <InfoCard {...notice} tone={tone} />\n        </div>\n      );\n    },\n    { id, duration: Number.POSITIVE_INFINITY, ...(onDismiss ? { onDismiss: () => onDismiss() } : {}) },\n  )"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-toast.tsx",
+    "line": 146,
+    "api": "sonnerToast.custom",
+    "code": "sonnerToast.custom(\n    (toastId) => {\n      const notice = {\n        title: title ?? '',\n        description,\n        icon,\n        onClose: closable\n          ? () => {\n              sonnerToast.dismiss(toastId);\n              onClose?.();\n            }\n          : undefined,\n      };\n      return (\n        <div\n          className=\"flex w-full justify-center\"\n          // Stop capture-phase pointerdown so the portaled toast does not dismiss the underlying\n          // Vaul drawer.\n          onPointerDownCapture={(e) => e.stopPropagation()}\n        >\n          <InfoPanel {...notice} tone={tone} />\n        </div>\n      );\n    },\n    { id, duration: Number.POSITIVE_INFINITY },\n  )"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-tournament-start-toast.tsx",
+    "line": 95,
+    "api": "toast",
+    "code": "toast({\n          title: current.t(\"startedTitle\"),\n          description: current.name\n            ? current.t(\"startedDescriptionNamed\", { name: current.name })\n            : current.t(\"startedDescription\"),\n          variant: \"success\",\n          icon: <Trophy className=\"h-4 w-4\" strokeWidth={2.5} />,\n          onClick: () => useTrade.getState().openAccountSheetTo(\"tournament\"),\n        })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/hooks/use-withdrawal-reconciliation.ts",
+    "line": 40,
+    "api": "toast",
+    "code": "toast({\n        title:\n          intent.phase === \"filled\"\n            ? \"Withdrawal delivered\"\n            : intent.phase === \"refunded\"\n              ? \"Withdrawal refunded\"\n              : \"Withdrawal failed\",\n        description:\n          intent.phase === \"failed\"\n            ? intent.failReason ?? \"The route did not complete.\"\n            : `${intent.destination} · ${intent.recipient}`,\n        variant: intent.phase === \"failed\" ? \"destructive\" : \"success\",\n      })"
+  },
+  {
+    "platform": "App",
+    "file": "apps/app/src/lib/ready-to-trade-toast.tsx",
+    "line": 22,
+    "api": "toast",
+    "code": "toast({ id: 'ready-to-trade', title: copy.title, description: copy.description, variant: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/money-execution-recovery-notice.tsx",
+    "line": 132,
+    "api": "toast",
+    "code": "toast({\n        id: recoveryToastId(attempt),\n        title: MONEY_EXECUTION_RECOVERY_TITLE,\n        description: `${message} ${MONEY_EXECUTION_WAITING}`,\n        tone: 'warning',\n        durationMs: Number.POSITIVE_INFINITY,\n        infoCard: { closable: true, closeLabel: 'Dismiss', onClose: dismiss, ...fonts },\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/money-execution-recovery-notice.tsx",
+    "line": 143,
+    "api": "toast",
+    "code": "toast({\n        id: recoveryToastId(attempt),\n        title: MONEY_EXECUTION_CHECK_TITLE,\n        description:\n          checkState === 'pending'\n            ? `${message} ${MONEY_EXECUTION_CHECK_PENDING}`\n            : checkState === 'unreachable' || checkState === 'unsupported'\n              ? `${message} ${MONEY_EXECUTION_CHECK_UNREACHABLE}`\n              : `${message} ${MONEY_EXECUTION_CHECKING}`,\n        tone: 'warning',\n        durationMs: Number.POSITIVE_INFINITY,\n        infoCard: {\n          action: {\n            label: MONEY_EXECUTION_CHECK_ACTION,\n            keepOpen: true,\n            onPress: () => {\n              if (checks.get(attempt) !== 'checking') runCheck(key, attempt);\n            },\n          },\n          closable: true,\n          closeLabel: 'Dismiss',\n          onClose: dismiss,\n          ...fonts,\n        },\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/money-execution-recovery-notice.tsx",
+    "line": 170,
+    "api": "toast",
+    "code": "toast({\n      id: recoveryToastId(attempt),\n      title: MONEY_EXECUTION_RECOVERY_TITLE,\n      description: `${message} If your balance and activity show it did not go through, you can start a new one.`,\n      tone: 'warning',\n      durationMs: Number.POSITIVE_INFINITY,\n      infoCard: {\n        action: {\n          label: MONEY_EXECUTION_RECOVERY_ACTION,\n          onPress: () => {\n            // Refused while a live flow or a reconcile owns the record; then it stays blocked.\n            if (!acknowledgeMoneyExecution(key)) dismiss();\n          },\n        },\n        closable: true,\n        closeLabel: 'Dismiss',\n        onClose: dismiss,\n        ...fonts,\n      },\n    })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/position-card-renderers.tsx",
+    "line": 322,
+    "api": "toast",
+    "code": "toast({\n          tone: 'error',\n          title: failureTitle,\n          description: error instanceof Error && error.message ? error.message : t('positionCard.unknownError'),\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/use-relay-withdraw.ts",
+    "line": 93,
+    "api": "toast",
+    "code": "toast({\n      title: intent.phase === 'filled' ? 'Withdrawal delivered' : intent.phase === 'refunded' ? 'Withdrawal refunded' : 'Withdrawal failed',\n      description:\n        intent.phase === 'failed'\n          ? (intent.failReason ?? 'The withdrawal route did not complete.')\n          : `${intent.destination} · ${intent.recipient}`,\n      tone: intent.phase === 'filled' ? 'success' : intent.phase === 'refunded' ? 'warning' : 'error',\n    })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-burn-execution.ts",
+    "line": 50,
+    "api": "toast",
+    "code": "toast({\n        tone: 'error',\n        title: tRef.current('burn.toast.failedTitle'),\n        description: burnExecution.error,\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-burn-execution.ts",
+    "line": 58,
+    "api": "toast",
+    "code": "toast({\n        tone: 'success',\n        title: tRef.current('burn.toast.submittedTitle'),\n        // The hook's base units cover a burn reconciled after a remount, which this card never sized.\n        description: tRef.current('burn.toast.submittedDescription', {\n          amount: formatBurnToastAmount(burnBaseUnitsToAmount(burnExecution.baseUnits) ?? burnAmountRef.current, localeRef.current),\n        }),\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 131,
+    "api": "toast",
+    "code": "toast({ tone: 'error', title: tRef.current('stakeHype.toast.failedTitle'), description: hypeStaking.error })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 133,
+    "api": "toast",
+    "code": "toast({\n        tone: 'error',\n        title: tRef.current('stakeHype.toast.repairTitle'),\n        description: hypeStaking.error ?? tRef.current('stakeHype.toast.repairDescription'),\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 139,
+    "api": "toast",
+    "code": "toast({ tone: 'success', title: tRef.current('stakeHype.toast.updatedTitle') })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 162,
+    "api": "toast",
+    "code": "toast({\n        tone: 'success',\n        title: tRef.current('toasts.transferSubmitted.title'),\n        description: sent ? tRef.current('toasts.transferSubmitted.description', { amount: localizeRef.current(`$${sent.netUsd.toFixed(2)}`) }) : undefined,\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 169,
+    "api": "toast",
+    "code": "toast({\n        tone: 'info',\n        title: tRef.current('toasts.transferConfirming.title'),\n        description: sponsoredUsdcSend.error ?? tRef.current('toasts.transferConfirming.description'),\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 175,
+    "api": "toast",
+    "code": "toast({ tone: 'error', title: tRef.current('toasts.transferFailed.title'), description: sponsoredUsdcSend.error })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 204,
+    "api": "toast",
+    "code": "toast({\n          tone: 'success',\n          title: copy('bridge.relayDeposit.toast.arrivedTitle'),\n          description: copy('bridge.relayDeposit.toast.arrivedDescription', { token: outcome.token }),\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 212,
+    "api": "toast",
+    "code": "toast({\n          tone: 'error',\n          title: copy('bridge.relayDeposit.toast.refundedTitle'),\n          description:\n            chain && originRefundPolicy(chain).kind === 'depositor'\n              ? copy('bridge.relayDeposit.toast.refundedToSenderDescription', values)\n              : copy('bridge.relayDeposit.toast.refundedDescription', values),\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 241,
+    "api": "toast",
+    "code": "toast({\n        tone: 'success',\n        title: tRef.current('stakeHype.toast.movedTitle'),\n        description: tRef.current('stakeHype.toast.movedDescription'),\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 248,
+    "api": "toast",
+    "code": "toast({\n        tone: 'info',\n        title: tRef.current('stakeHype.toast.confirmingTitle'),\n        description: hypeCoreBridge.error ?? tRef.current('stakeHype.toast.confirmingDescription'),\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-result-toasts.ts",
+    "line": 254,
+    "api": "toast",
+    "code": "toast({\n        tone: 'error',\n        title: tRef.current('stakeHype.toast.transferFailedTitle'),\n        description: hypeCoreBridge.error,\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/account/wallet-card-send-operation.ts",
+    "line": 129,
+    "api": "toast",
+    "code": "toast({ tone: succeeded ? 'success' : 'error', ...copy })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/analytics-feedback.tsx",
+    "line": 120,
+    "api": "toast",
+    "code": "toast({ id: 'analytics-feedback-thanks', title: t('thanks'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/login-drawer.tsx",
+    "line": 182,
+    "api": "toast",
+    "code": "toast({\n          title: t('providerUnavailable'),\n          // Omit generic fallback copy; show a description only for recognized configuration\n          // errors.\n          description: privyLoginErrorMessage(error, '') || undefined,\n          tone: 'error',\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/ota-update-toast.tsx",
+    "line": 70,
+    "api": "toast",
+    "code": "toast({\n      id: OTA_UPDATE_TOAST_ID,\n      title: phase === 'ready' ? readyTitle : downloadingTitle,\n      description: phase === 'ready' ? undefined : progressLabel,\n      tone: 'info',\n      durationMs: Number.POSITIVE_INFINITY,\n      infoCard: {\n        action:\n          phase === 'ready'\n            ? {\n                label: refreshLabel,\n                // Restarting replaces the card; keep it up if the reload is refused.\n                keepOpen: true,\n                onPress: () => {\n                  if (useTrade.getState().pendingTrade !== null) return;\n                  void Updates.reloadAsync().catch(() => {});\n                },\n              }\n            : undefined,\n        closable: true,\n        closeLabel,\n        onClose: () => setDismissed(phase),\n        ...fonts,\n      },\n    })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/size-lev-sheet.tsx",
+    "line": 421,
+    "api": "toast",
+    "code": "toast(\n      failed > 0\n        ? { title: tPt('harvestFailedTitle'), description: tPt('harvestFailedBody'), tone: 'error' }\n        : { title: tPt('harvestedTitle'), description: tPt('harvestedBody'), tone: 'success' },\n    )"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/size-lev-sheet.tsx",
+    "line": 587,
+    "api": "toast",
+    "code": "toast({\n        title: failed > 0 ? t('activityCard.closedSomeFailedTitle') : t('activityCard.closedTitle'),\n        description: t('activityCard.closedResult', { closed, failed }),\n        tone: failed > 0 ? 'error' : 'success',\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/size-lev-sheet.tsx",
+    "line": 592,
+    "api": "toast",
+    "code": "toast({ title: LEFTOVER_PROTECTION_WARNING, tone: 'warning' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/tap-controls.tsx",
+    "line": 612,
+    "api": "toast",
+    "code": "toast({ id: ORDER_TOO_SMALL_TOAST, title: orderTooSmallTitle, description: orderTooSmallMessage, tone: \"error\" })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/tap-controls.tsx",
+    "line": 633,
+    "api": "toast",
+    "code": "toast({\n      id: PAPERTRADE_MINIMUMS_TOAST,\n      title: ptMinimumsMessage,\n      tone: \"warning\",\n      durationMs: Number.POSITIVE_INFINITY,\n      infoCard: {\n        onClose: () => {\n          dismissedPapertradeMinimums.add(ptFloorKey);\n          rerenderPtMinimums();\n        },\n      },\n    })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/components/update-banner.tsx",
+    "line": 57,
+    "api": "toast",
+    "code": "toast({\n      id: UPDATE_TOAST_ID,\n      title,\n      description,\n      tone: required ? 'warning' : 'info',\n      durationMs: Number.POSITIVE_INFINITY,\n      infoCard: {\n        action: {\n          label: actionLabel,\n          // The required notice must still be there when the user comes back from the store.\n          keepOpen: required,\n          onPress: () => {\n            if (!required) setDismissed(true);\n            void Linking.openURL(storeUrl).catch(() => {});\n          },\n        },\n        closable: !required,\n        closeLabel,\n        onClose: () => setDismissed(true),\n        boldFontFamily: BLOXWAP_SANS_BOLD_FAMILY,\n        regularFontFamily: BLOXWAP_SANS_REGULAR_FAMILY,\n        semiboldFontFamily: BLOXWAP_SANS_SEMIBOLD_FAMILY,\n      },\n    })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-atr-lock.ts",
+    "line": 118,
+    "api": "toast",
+    "code": "toast({\n        tone: success && !actions.state.warning ? \"success\" : \"error\",\n        title: t(pending ? \"trade.toasts.lockPendingTitle\" : success\n          ? operation === \"lock\" ? \"trade.toasts.lockedTitle\" : \"trade.toasts.unlockedTitle\"\n          : operation === \"lock\" ? \"trade.toasts.lockFailedTitle\" : \"trade.toasts.unlockFailedTitle\"),\n        description: pending ? t(\"trade.toasts.lockPendingBody\") : actions.state.message ?? (success\n          ? t(operation === \"lock\" ? \"trade.toasts.lockedBody\" : \"trade.toasts.unlockedBody\")\n          : undefined),\n        durationMs: success ? 4000 : 3500,\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-atr-lock.ts",
+    "line": 197,
+    "api": "toast",
+    "code": "toast({ tone: \"success\", title: t(\"trade.toasts.unlockedTitle\"), durationMs: 4000 })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-atr-lock.ts",
+    "line": 200,
+    "api": "toast",
+    "code": "toast({ tone: \"error\", title: t(\"trade.toasts.lockPendingTitle\"), description: t(\"trade.toasts.lockPendingBody\"), durationMs: 4000 })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-atr-lock.ts",
+    "line": 210,
+    "api": "toast",
+    "code": "toast({ tone: \"success\", title: t(\"trade.toasts.unlockedTitle\"), description: t(\"trade.toasts.unlockedBody\"), durationMs: 4000 })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-atr-lock.ts",
+    "line": 216,
+    "api": "toast",
+    "code": "toast({ tone: \"error\", title: t(\"trade.toasts.unlockFailedTitle\"), description: (error as Error).message, durationMs: 3500 })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-atr-lock.ts",
+    "line": 287,
+    "api": "toast",
+    "code": "toast({ tone: \"success\", title: t(\"trade.toasts.lockedTitle\"), description: t(\"trade.toasts.lockedBody\"), durationMs: 4000 })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-atr-lock.ts",
+    "line": 291,
+    "api": "toast",
+    "code": "toast({ tone: \"error\", title: t(\"trade.toasts.lockFailedTitle\"), description: (error as Error).message, durationMs: 3500 })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-market-open-countdown-toast.ts",
+    "line": 101,
+    "api": "toast",
+    "code": "toast({\n          id: TOAST_ID,\n          title: latest.current.t('countdownTitle', { time: formatCountdownClock(next.secondsLeft) }),\n          tone: 'info',\n          durationMs: Infinity,\n          infoCard: {\n            closable: true,\n            closeLabel: latest.current.tMobile('hig.dismiss'),\n            onClose: () => {\n              suppressedOpenAt = session.nextOpenAt;\n            },\n          },\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-papertrade-paper-action.ts",
+    "line": 87,
+    "api": "toast",
+    "code": "toast({ title: title(copy), tone })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-papertrade-trade.tsx",
+    "line": 446,
+    "api": "toast",
+    "code": "toast(failureCopy(intent, outcome))"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-papertrade-trade.tsx",
+    "line": 451,
+    "api": "toast",
+    "code": "toast(failureCopy(intent, outcome))"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-papertrade-trade.tsx",
+    "line": 537,
+    "api": "toast",
+    "code": "toast({ title: t(title), description: t(`reasons.${reasonKey(papertradeReasonForCode(kind))}` as Parameters<typeof t>[0]), tone: 'error' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-papertrade-trade.tsx",
+    "line": 683,
+    "api": "toast",
+    "code": "toast({ title: t('unconfirmedTitle'), description: t('unconfirmedOpen') })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-papertrade-trade.tsx",
+    "line": 720,
+    "api": "toast",
+    "code": "toast({ title: t('closeSlowTitle'), description: t('closeSlowBody') })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-papertrade-trade.tsx",
+    "line": 829,
+    "api": "toast",
+    "code": "toast({ title: t('unconfirmedTitle'), description: t('unconfirmedClose') })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-swing-push-open.ts",
+    "line": 77,
+    "api": "toast",
+    "code": "toast({\n        title: tPreparation('trade.toasts.collateralPreparationTitle'),\n        description: tPreparation('trade.toasts.collateralPreparationMessage'),\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-swing-push-open.ts",
+    "line": 127,
+    "api": "toast",
+    "code": "toast({ tone: 'error', title: t('signals.swing.openFailed.title'), description })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1043,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"trade.toasts.unifiedEnablingTitle\"),\n          description: t(\"trade.toasts.unifiedEnablingMessage\"),\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1048,
+    "api": "toast",
+    "code": "toast({ title: t(\"trade.toasts.unifiedEnabledTitle\"), tone: \"success\" })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1110,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"trade.toasts.agentApprovalTitle\"),\n          description: t(\"trade.toasts.agentApprovalFailedMessage\"),\n          tone: \"error\",\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1128,
+    "api": "toast",
+    "code": "toast({ title: t(\"trade.toasts.openFailedTitle\"), description: (error as Error).message, tone: \"error\" })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1139,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"trade.toasts.builderApprovalTitle\"),\n          description: t(\"trade.toasts.builderApprovalMessage\"),\n          tone: \"error\",\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1159,
+    "api": "toast",
+    "code": "toast({\n          title: t(\"trade.toasts.openFailedTitle\"),\n            description: error instanceof HlSessionError\n              ? t(error.code === \"unsupported-account-mode\" ? \"auth.errors.unsupportedAccountMode\" : \"auth.errors.unifiedUnconfirmed\")\n              : humanizeOrderError(String(error)) ?? String(error),\n          tone: \"error\",\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1456,
+    "api": "toast",
+    "code": "toast({ title: tPt(\"hedgeUnavailableTitle\"), description: tPt(\"hedgeUnavailableBody\"), tone: \"error\" })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1467,
+    "api": "toast",
+    "code": "toast({ title: tPt(\"hedgeFailedTitle\"), description: tPt(\"hedgeFailedBody\"), tone: \"error\" })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1615,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.unsupportedCollateralTitle\"),\n            description: t(\"trade.toasts.unsupportedCollateralMessage\", {\n              coin: orderCoin.includes(\":\")\n                ? orderCoin.slice(orderCoin.indexOf(\":\") + 1)\n                : orderCoin,\n            }),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1651,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.priceNotReadyTitle\"),\n            description: t(\"trade.toasts.priceNotReadyMessage\"),\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1663,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.marketsNotReadyTitle\"),\n            description: t(\"trade.toasts.marketsNotReadyMessage\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1682,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.balanceLoadingTitle\"),\n            description: t(\"trade.toasts.balanceLoadingMessage\"),\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1714,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.openWontFillTitle\"),\n            description: t(\"trade.toasts.openWontFillMessage\", {\n              pctLabel: localize(`${DEFAULT_OPEN_SLIPPAGE_BPS / 100}%`),\n            }),\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1728,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.orderTooSmallTitle\"),\n            description: t(\"trade.toasts.orderTooSmallMessage\", {\n              minLabel: localize(`$${HL_MIN_TRADE_USD}`),\n            }),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1756,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.insufficientBalanceTitle\"),\n            description: t(\"trade.toasts.insufficientBalanceMessage\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1868,
+    "api": "toast",
+    "code": "toast({ title: tPt(\"hedgeFailedTitle\"), description: tPt(\"hedgeFailedBody\"), tone: \"error\" })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1964,
+    "api": "toast",
+    "code": "toast({\n              title: t(\"trade.toasts.tradingUnavailableTitle\"),\n              description: t(\"trade.toasts.tradingUnavailableMessage\"),\n              tone: \"error\",\n            })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 1997,
+    "api": "toast",
+    "code": "toast({\n                title: t(\"trade.toasts.outcomeNoLiquidityTitle\"),\n                description: t(\"trade.toasts.outcomeNoLiquidityMessage\"),\n              })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2076,
+    "api": "toast",
+    "code": "toast({ title: t('trade.toasts.collateralPreparationTitle'), description: t('trade.toasts.collateralPreparationMessage') })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2374,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.stopLossNotAttachedTitle\"),\n            description: t(\"trade.toasts.stopLossNotAttachedMessage\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2465,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.agentApprovalTitle\"),\n            description: t(\"trade.toasts.agentApprovalMessage\", { surface: \"device\" }),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2476,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.openFailedTitle\"),\n            description: t(\"trade.toasts.leverageConfirmationFailedMessage\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2505,
+    "api": "toast",
+    "code": "toast({\n              title: t(\"trade.toasts.openFailedTitle\"),\n              description: e.message,\n              tone: \"error\",\n            })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2521,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.builderApprovalTitle\"),\n            description: t(\"trade.toasts.builderApprovalMessage\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2531,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.agentApprovalTitle\"),\n            description: t(\"trade.toasts.agentApprovalMessage\", { surface: \"device\" }),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2541,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.insufficientBalanceTitle\"),\n            description: t(\"trade.toasts.insufficientBalanceMessage\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2548,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.orderTooSmallTitle\"),\n            description: t(\"trade.toasts.orderTooSmallMessage\", {\n              minLabel: localize(`$${HL_MIN_TRADE_USD}`),\n            }),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2561,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.orderNoFillTitle\"),\n            description: humanizeOrderError(msg) ?? msg,\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2568,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.openFailedTitle\"),\n            // Typed session and signing failures carry catalog copy, never their English.\n            description:\n              e instanceof HlSessionError\n                ? t(\"auth.errors.unifiedUnconfirmed\")\n                : e instanceof HlSigningChainError\n                  ? t(\"trade.toasts.agentApprovalFailedMessage\")\n                  : (humanizeOrderError(msg) ?? msg),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2667,
+    "api": "toast",
+    "code": "toast({\n            title: t(\"trade.toasts.openFailedTitle\"),\n            description: t(\"trade.toasts.setupCheckTimeoutMessage\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/hooks/use-tap-trade.ts",
+    "line": 2810,
+    "api": "toast",
+    "code": "toast({\n            title: isNoFillRejection(message)\n              ? t(\"trade.toasts.closeNoFillTitle\")\n              : t(\"trade.toasts.closeFailedTitle\"),\n            description:\n              humanizeOrderError(message) ?? t(\"trade.toasts.closeNoFillFallback\"),\n            tone: \"error\",\n          })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/lib/ready-to-trade-toast.ts",
+    "line": 39,
+    "api": "toast",
+    "code": "toast({ id: 'ready-to-trade', title: copy.title, description: copy.description, tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/accounts-card.tsx",
+    "line": 104,
+    "api": "toast",
+    "code": "toast({ tone: 'error', title: t('cancelTrigger.toastFailureTitle'), description: message ?? undefined })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/accounts-card.tsx",
+    "line": 109,
+    "api": "toast",
+    "code": "toast(\n      status === 'error'\n        ? { tone: 'error', title: `${label} not updated`, description: message ?? undefined }\n        : { tone: 'warning', title: `${label} updated`, description: message ?? undefined },\n    )"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/accounts-card.tsx",
+    "line": 235,
+    "api": "toast",
+    "code": "toast({\n          tone: 'error',\n          title: t('bridge.relayDeposit.daimo.unavailableTitle'),\n          description: t('bridge.relayDeposit.daimo.unavailableDescription'),\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/accounts-card.tsx",
+    "line": 258,
+    "api": "toast",
+    "code": "toast({\n        tone: 'error',\n        title: t('bridge.relayDeposit.daimo.unavailableTitle'),\n        description: t('bridge.relayDeposit.daimo.unavailableDescription'),\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 252,
+    "api": "toast",
+    "code": "toast({ title: t(next ? 'toasts.unifiedEnabled.title' : 'toasts.unifiedDisabled.title'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 256,
+    "api": "toast",
+    "code": "toast({\n        title:\n          error instanceof UnifiedDisablePositionsBlockerError\n            ? 'Close your open positions first'\n            : 'Account update failed',\n        description: error instanceof Error ? error.message : String(error),\n        tone: 'error',\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 534,
+    "api": "toast",
+    "code": "toast({\n      title: t('accountSheet.toasts.walletUnavailable.title'),\n      description: t('accountSheet.toasts.walletUnavailable.description'),\n      tone: 'error',\n    })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 554,
+    "api": "toast",
+    "code": "toast({ title: t('referralPrompt.toastAppliedTitle'), description: t('referralPrompt.toastAppliedDescription'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 564,
+    "api": "toast",
+    "code": "toast({ title: t('dialogs.agent.toastApprovedTitle'), description: t('dialogs.agent.toastApprovedDesc'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 569,
+    "api": "toast",
+    "code": "toast({ title: t('dialogs.builder.toastApprovedTitle'), description: t('dialogs.builder.toastApprovedDesc'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 579,
+    "api": "toast",
+    "code": "toast({ title: t('referralPrompt.toastAlreadySetTitle'), description: t('referralPrompt.toastAlreadySetDescription') })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 582,
+    "api": "toast",
+    "code": "toast({ title: t('referralPrompt.toastDeclinedTitle'), description: t('referralPrompt.toastDeclinedDescription') })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 587,
+    "api": "toast",
+    "code": "toast({ title: t(`dialogs.${kind}.toastDeclinedTitle`), description: t(`dialogs.${kind}.toastDeclinedDesc`) })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/advanced-card.tsx",
+    "line": 591,
+    "api": "toast",
+    "code": "toast({\n          title: t(`dialogs.${kind}.toastFailedTitle`),\n          description: t('mobile.trade.toasts.agentApprovalFailedMessage'),\n          tone: 'error',\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/billing-card.tsx",
+    "line": 52,
+    "api": "toast",
+    "code": "toast({ title: 'Could not open billing', description: String(error), tone: 'error' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/delete-account-card.tsx",
+    "line": 87,
+    "api": "toast",
+    "code": "toast({ title: t('deleteAccount.failedTitle'), description: t('deleteAccount.failedBody'), tone: 'error' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/export-wallet-card.tsx",
+    "line": 87,
+    "api": "toast",
+    "code": "toast({\n        title: 'Secure export closed',\n        description: 'Your private key was shown only inside Privy’s secure export window.',\n        tone: 'success',\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/export-wallet-card.tsx",
+    "line": 93,
+    "api": "toast",
+    "code": "toast({\n        title: 'Wallet export failed',\n        description: 'Sign in again and retry the secure export.',\n        tone: 'error',\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/referral-card.tsx",
+    "line": 84,
+    "api": "toast",
+    "code": "toast({ title: t('root.referral.redeem.success'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/referral-card.tsx",
+    "line": 97,
+    "api": "toast",
+    "code": "toast({\n        title: result.alreadyReferred ? t('root.referral.redeem.alreadyReferred') : t('root.referral.redeem.success'),\n        tone: 'success',\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/referral-card.tsx",
+    "line": 277,
+    "api": "toast",
+    "code": "toast({ title: t('root.referral.copied'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/referral-card.tsx",
+    "line": 376,
+    "api": "toast",
+    "code": "toast({ title: t('root.referral.customCode.success', { code: result.code }), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/signing-account-card.tsx",
+    "line": 105,
+    "api": "toast",
+    "code": "toast({ title: tMobile(normalized.messageKey), tone: 'error' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/tournament-card.tsx",
+    "line": 145,
+    "api": "toast",
+    "code": "toast({ title: t('toastErrorTitle'), description: t('toastErrorDescription'), tone: 'error' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/tournament-card.tsx",
+    "line": 169,
+    "api": "toast",
+    "code": "toast({ title: tDrawer('leftTitle'), description: tDrawer('leftDescription'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/tournament-card.tsx",
+    "line": 178,
+    "api": "toast",
+    "code": "toast({ title: tDrawer('clearedTitle'), description: tDrawer('clearedDescription'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/tournament-card.tsx",
+    "line": 184,
+    "api": "toast",
+    "code": "toast({\n        title: declined ? tDrawer('leaveDeclinedTitle') : tDrawer('leaveErrorTitle'),\n        description: declined ? tDrawer('leaveDeclinedDescription') : tDrawer('leaveErrorDescription'),\n        tone: 'error',\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/profile/cards/trade-share-card.tsx",
+    "line": 240,
+    "api": "toast",
+    "code": "toast({ title: t('history.detail.captionCopied'), tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/src/providers/swing-signal-subscriber.tsx",
+    "line": 54,
+    "api": "toast",
+    "code": "toast({\n        id: `swing-${data.signalId}`,\n        title,\n        description,\n        durationMs: 8000,\n        // A tap opens the position, as the push notification's Open does; the toast then dismisses.\n        // Its X dismisses without opening anything.\n        onPress: () => openSwingCard(coin, data.signalId, nav.current.pathname, nav.current.router),\n        tradeAlert: {\n          coin,\n          direction: data.direction === 'LONG' ? 'long' : 'short',\n          directionColors,\n          closeLabel: tTrade('closeDismissAria'),\n          label: `${title}. ${data.leverage}×. ${description}`,\n          leverage: data.leverage,\n          signalLevel: signalLevel(data.confidence),\n        },\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/dev-fixtures/hig-adoption.tsx",
+    "line": 24,
+    "api": "toast",
+    "code": "toast({\n      title: `Request ${request} needs recovery`,\n      description: 'The connection was interrupted before the request completed. Check the details and retry this request when the connection is restored.',\n      durationMs: Infinity,\n      tone: 'warning',\n      infoCard: { closable: false, action: { label: `Recover request ${request}`, onPress: () => setRecovered(true), keepOpen: true } },\n    })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/dev-fixtures/toasts.tsx",
+    "line": 19,
+    "api": "toast",
+    "code": "toast({ ...persistent, title: 'Copied' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/dev-fixtures/toasts.tsx",
+    "line": 20,
+    "api": "toast",
+    "code": "toast({\n        ...persistent,\n        title: 'Update required',\n        description: 'This version can no longer trade.',\n        tone: 'warning',\n        infoCard: { action: { label: 'Update', onPress: () => {} } },\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/dev-fixtures/toasts.tsx",
+    "line": 27,
+    "api": "toast",
+    "code": "toast({ ...persistent, title: 'New version available', tone: 'info', infoCard: { action: { label: 'Update', onPress: () => {} } } })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/dev-fixtures/toasts.tsx",
+    "line": 29,
+    "api": "toast",
+    "code": "toast({ ...persistent, title: 'Order failed', description: 'Insufficient margin', tone: 'error' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/dev-fixtures/toasts.tsx",
+    "line": 30,
+    "api": "toast",
+    "code": "toast({ ...persistent, title: 'Position opened', description: 'BTC long 10×', tone: 'success' })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/dev-fixtures/toasts.tsx",
+    "line": 31,
+    "api": "toast",
+    "code": "toast({\n        ...persistent,\n        title: 'ETH LONG',\n        tradeAlert: { coin: 'ETH', direction: 'long', label: 'ETH LONG. 5×.', leverage: 5, signalLevel: 4 },\n      })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/trade/[asset].tsx",
+    "line": 996,
+    "api": "toast",
+    "code": "toast({\n          title: `Ready to open ${latestSignalSymbol.current}`,\n          description: 'The setup is primed. Tap the direction button to open.',\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/trade/[asset].tsx",
+    "line": 1001,
+    "api": "toast",
+    "code": "toast({\n          tone: 'error',\n          title: 'Signal unavailable',\n          description: 'This signal is stale or incomplete. Review the market before trading.',\n        })"
+  },
+  {
+    "platform": "Mobile",
+    "file": "apps/mobile/app/trade/[asset].tsx",
+    "line": 1204,
+    "api": "toast",
+    "code": "toast({ title: tShare('history.detail.captionCopied'), tone: 'success' })"
+  }
+]

@@ -138,6 +138,8 @@ dismissToast('transfer');         // or dismissToast() for every notice
 | `offset` | Distance from the screen edges, added to the safe-area inset: one number for every edge, or `{top, right, bottom, left}` with the other edges keeping the default (24 points; 16 under a 600-point window). `left` and `right` are physical, like `position`. `offset` places the stack at every window width on both platforms; on web, Sonner's `mobileOffset` replaces it under 600px when it is given. The app's top placement is `offset={{top: nativeMetrics.safeArea.toastOffset}}`; see [safe area](https://bloxwap.github.io/hig/docs/guides/foundations/safe-area/). |
 | `swipeDirections` | `top`, `right`, `bottom`, `left`. Default: towards the edges the stack sits against, so `bottom-center` swipes down and `top-right` up or right. |
 
+Try all six placements in the [Toaster examples](https://bloxwap.github.io/hig/docs/components/toaster/). The `center` positions are the top-middle and bottom-middle placements. Select a position, then choose **Show a notice**. The copied example sets that position on the single mounted host.
+
 The web `Toaster` also takes every other Sonner prop. The native one takes the props above and `testID`.
 
 ### How the native host moves

@@ -982,6 +982,8 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-explainer-sections,.hig-explainer-section > div { display:flex;flex-direction:column;gap:12px;min-width:0; }
 .hig-explainer-section > div { flex:1;gap:4px; }
 .hig-explainer-section { --hig-explainer-tone:var(--hig-text);display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--hig-fill); }
+/* Icon rows: 20px disc radius + 12px inset. */
+.hig-explainer-section:has(> .hig-explainer-icon) { border-radius:32px;align-items:flex-start; }
 .hig-explainer-section[data-tone] { background:color-mix(in srgb,var(--hig-explainer-tone) 10%,transparent); }
 .hig-explainer-section[data-tone='up'] { --hig-explainer-tone:var(--hig-up,var(--hig-buy)); }
 .hig-explainer-section[data-tone='down'] { --hig-explainer-tone:var(--hig-down,var(--hig-sell)); }

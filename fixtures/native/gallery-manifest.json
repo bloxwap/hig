@@ -330,7 +330,13 @@
     {
       "name": "Toaster",
       "states": [
-        "default"
+        "default",
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
       ],
       "support": "renderer"
     },
@@ -672,6 +678,14 @@
       "support": "renderer"
     },
     {
+      "name": "FeedbackBlock",
+      "states": [
+        "default",
+        "return"
+      ],
+      "support": "alternative"
+    },
+    {
       "name": "SignalsBlock",
       "states": [
         "default",
@@ -792,7 +806,8 @@
       "name": "AltimeterChart",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "targets"
       ],
       "support": "alternative"
     },
