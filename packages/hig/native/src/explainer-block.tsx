@@ -75,6 +75,8 @@ export interface ExplainerBlockProps {
  testID?:string;
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
+/** Test ID parts, which double as the actions' default intents. */
+const primaryPart='primary',secondaryPart='secondary',descriptionPart='description',caveatPart='caveat';
 /**
  * How something works, or how to finish a task, as a screen: an optional header, a lead paragraph, titled sections (each with an optional
  * icon and tone, a heading, media, a body and a caveat), numbered steps, a closing note, then one or two actions. Draws the "How Swing
@@ -90,24 +92,24 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
  const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=><Button testID={entry.testID??id(fallback)} intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} onPress={entry.onSelect} style={{flex:1,alignSelf:'auto'}}>{entry.label}</Button>;
  const header=title!==undefined?<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
-  {shown(description)?prose(description,'description'):null}
-  {sections.length>0?<View testID={id('sections')} style={{gap:12}}>{sections.map(section=>{const part=`section-${section.id}`,tone=section.tone?colors[section.tone]:undefined;return <View key={section.id} testID={section.testID??id(part)} style={{direction,flexDirection:'row',alignItems:'center',gap:12,padding:12,borderRadius:16,backgroundColor:tone?withAlpha(tone,0.1):fills.well}}>
+  {shown(description)?prose(description,descriptionPart):null}
+  {sections.length>0?<View testID={id('sections')} style={{gap:12}}>{sections.map(section=>{const part=`section-${section.id}`,bodyPart=`${part}-body`,sectionCaveatPart=`${part}-caveat`,tone=section.tone?colors[section.tone]:undefined;return <View key={section.id} testID={section.testID??id(part)} style={{direction,flexDirection:'row',alignItems:'center',gap:12,padding:12,borderRadius:16,backgroundColor:tone?withAlpha(tone,0.1):fills.well}}>
    {section.icon!=null?<View {...hidden} testID={id(`${part}-icon`)} style={{width:40,height:40,borderRadius:20,alignItems:'center',justifyContent:'center',backgroundColor:withAlpha(tone??colors.text,0.15)}}>{section.icon}</View>:null}
    <View style={{flex:1,minWidth:0,gap:4}}>
     {section.title!==undefined?<Text testID={id(`${part}-title`)} accessibilityRole='header' style={{fontSize:16,lineHeight:24,fontWeight:'700',color:tone??colors.text}}>{section.title}{section.meaning?<Text style={{color:colors.muted}}>{` ${section.meaning}`}</Text>:null}</Text>:null}
     {section.media!=null?<View testID={id(`${part}-media`)} style={{alignItems:'center',gap:8,marginVertical:12}}>{section.media}</View>:null}
-    {shown(section.body)?prose(section.body,`${part}-body`):null}
-    {shown(section.caveat)?prose(section.caveat,`${part}-caveat`):null}
+    {shown(section.body)?prose(section.body,bodyPart):null}
+    {shown(section.caveat)?prose(section.caveat,sectionCaveatPart):null}
    </View>
   </View>;})}</View>:null}
   {steps.length>0?<View testID={id('steps')} style={{gap:8}}>{steps.map((step,index)=><View key={index} testID={id(`step-${index}`)} accessible style={{direction,flexDirection:'row',gap:8}}>
    <Text style={{...muted,minWidth:16,fontVariant:['tabular-nums']}}>{`${index+1}.`}</Text>
    {typeof step==='string'||typeof step==='number'?<Text style={{...muted,flexShrink:1}}>{step}</Text>:<View style={{flexShrink:1}}>{step}</View>}
   </View>)}</View>:null}
-  {shown(caveat)?prose(caveat,'caveat'):null}
+  {shown(caveat)?prose(caveat,caveatPart):null}
   {primaryAction||secondaryAction?<View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
-   {secondaryAction?action(secondaryAction,'secondary'):null}
-   {primaryAction?action(primaryAction,'primary'):null}
+   {secondaryAction?action(secondaryAction,secondaryPart):null}
+   {primaryAction?action(primaryAction,primaryPart):null}
   </View>:null}
  </>;
  if(stickyHeader&&header)return <StickyHeaderLayout testID={testID} headerTestID={id('sticky-header')} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>{body}</StickyHeaderLayout>;

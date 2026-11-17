@@ -64,6 +64,8 @@ export interface ExplainerBlockProps extends Omit<React.HTMLAttributes<HTMLEleme
  /** Pins the header to the top of the nearest scroller. See Pinned headers. */
  stickyHeader?:boolean;
 }
+/** The actions' default intents. */
+const primaryIntent='primary',secondaryIntent='secondary';
 /**
  * How something works, or how to finish a task: an optional header, a lead paragraph, titled sections (each with an optional icon and
  * tone, a heading, media, a body and a caveat), numbered steps, a closing note, then one or two actions. Draws the “How Swing works” and
@@ -86,6 +88,6 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
   </section>;})}</div>}
   {steps.length>0&&<ol className='hig-explainer-steps hig-explainer-text'>{steps.map((step,index)=><li key={index}>{step}</li>)}</ol>}
   {caveat!=null&&caveat!==false&&<p className='hig-explainer-text' data-caveat=''>{caveat}</p>}
-  {(primaryAction||secondaryAction)&&<div className='hig-confirm-actions'>{secondaryAction&&action(secondaryAction,'secondary')}{primaryAction&&action(primaryAction,'primary')}</div>}
+  {(primaryAction||secondaryAction)&&<div className='hig-confirm-actions'>{secondaryAction&&action(secondaryAction,secondaryIntent)}{primaryAction&&action(primaryAction,primaryIntent)}</div>}
  </section>;
 }
