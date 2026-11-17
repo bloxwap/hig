@@ -321,6 +321,7 @@
       "slug": "preset-group",
       "entry": "selection",
       "family": "selection",
+      "added": "Unreleased",
       "web": "<C.PresetGroup label='Order size' options={[{value:10,label:'$10'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'}]} defaultValue={25} disabled={disabled} onValueChange={size=>setMessage(`$${size} selected`)}/>",
       "native": "<C.PresetGroup label='Order size' options={[{value:10,label:'$10'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'}]} defaultValue={25} disabled={disabled} onValueChange={size=>setMessage(`$${size} selected`)}/>",
       "nativeSupport": "renderer",
@@ -674,6 +675,21 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "Toaster",
+      "slug": "toaster",
+      "entry": "toast",
+      "family": "status",
+      "added": "Unreleased",
+      "web": "<><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "native": "<><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Each notice is announced once when it is raised, and an error interrupts on iOS; the close control is named for its notice; a touch holds every notice; a running screen reader keeps the native stack expanded; reduced motion fades in place on native and cuts on web; physical device observations pending",
+      "feedback": "none emitted by the host; the product plays outcome feedback when it raises the notice"
+    },
+    {
       "name": "Progress",
       "slug": "progress",
       "entry": "status",
@@ -733,16 +749,28 @@
     {
       "name": "Avatar",
       "slug": "avatar",
-      "entry": "status",
+      "entry": "avatar",
       "family": "status",
       "web": "<C.Avatar name='Demo account'/>",
       "native": "<C.Avatar name='Demo account'/>",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "generated": {
+          "web": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111'/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'/><C.Avatar name='Clara Barton' variant='beam'/><C.Avatar name='Signed out' seed='bloxwap' size={64}/><C.Avatar name='Small' seed='anon' size={24}/><C.Avatar name='Square' seed='sim:k3j9x0aa' square/></C.Inline>",
+          "native": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111'/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'/><C.Avatar name='Clara Barton' variant='beam'/><C.Avatar name='Signed out' seed='bloxwap' size={64}/><C.Avatar name='Small' seed='anon' size={24}/><C.Avatar name='Square' seed='sim:k3j9x0aa' square/></C.Inline>"
+        },
+        "palette": {
+          "web": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Clara Barton' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Sojourner Truth' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']} faceColor='#ffffff'/></C.Inline>",
+          "native": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Clara Barton' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Sojourner Truth' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']} faceColor='#ffffff'/></C.Inline>"
+        }
+      }
     },
     {
       "name": "StatusIndicator",
@@ -758,6 +786,21 @@
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "Confetti",
+      "slug": "confetti",
+      "entry": "confetti",
+      "family": "status",
+      "added": "Unreleased",
+      "web": "<><C.Button onClick={()=>setRange(range+1)}>Celebrate</C.Button><C.Confetti trigger={range-25} options={{particleCount:80,spread:70,origin:{y:0.7}}}/></>",
+      "native": "<><C.Button onPress={()=>setRange(range+1)}>Celebrate</C.Button><C.Confetti trigger={range-25} options={{particleCount:80,spread:70,origin:{y:0.7}}}/></>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Decoration only: the canvas (web) and the layer (native) are hidden from assistive technology and take no pointer events or touches; no burst is drawn under reduced motion unless the call opts out; the host shows and announces the result being celebrated",
+      "feedback": "none; the host owns the outcome it celebrates"
     },
     {
       "name": "NumberReadout",
@@ -790,6 +833,35 @@
       ],
       "a11y": "One final localized reading with prefix/suffix stays accessible; decorative per-place motion honors reduced motion, latest value wins and no live region or feedback is emitted.",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+    },
+    {
+      "name": "NumberFlow",
+      "slug": "number-flow",
+      "entry": "animated-number",
+      "family": "financial-data",
+      "added": "Unreleased",
+      "web": "<><C.NumberFlow label=\"Mark price\" value={empty?null:960+range} stale={!!error} options={{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}}/><C.Slider label=\"Mark price\" value={range} onValueChange={setRange}/></>",
+      "native": "<><C.NumberFlow label=\"Mark price\" value={empty?null:960+range} stale={!!error} options={{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}}/><C.Slider label=\"Mark price\" value={range} onValueChange={setRange}/></>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
+      ],
+      "a11y": "One final localized reading stays accessible while the digits roll; the moving copy is hidden, reduced motion draws each value at once and no live region or feedback is emitted.",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "countdown": {
+          "web": "<><C.NumberFlowGroup><C.NumberFlow label=\"Minutes left\" value={Math.floor((100-range)*9/60)} trend={-1} suffix=\"m \"/><C.NumberFlow label=\"Seconds left\" value={((100-range)*9)%60} trend={-1} digits={{1:{max:5}}} options={{minimumIntegerDigits:2}} suffix=\"s\"/></C.NumberFlowGroup><C.Slider label=\"Time elapsed\" value={range} onValueChange={setRange}/></>",
+          "native": "<><C.Inline><C.NumberFlowGroup><C.NumberFlow label=\"Minutes left\" value={Math.floor((100-range)*9/60)} trend={-1} suffix=\"m \"/><C.NumberFlow label=\"Seconds left\" value={((100-range)*9)%60} trend={-1} digits={{1:{max:5}}} options={{minimumIntegerDigits:2}} suffix=\"s\"/></C.NumberFlowGroup></C.Inline><C.Slider label=\"Time elapsed\" value={range} onValueChange={setRange}/></>"
+        },
+        "continuous": {
+          "web": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>",
+          "native": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>"
+        }
+      }
     },
     {
       "name": "Usd",
@@ -912,6 +984,33 @@
         "host-qr": {
           "web": "<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={140} announce={false} qr={<svg aria-hidden='true' viewBox='0 0 7 7' width='100%' height='100%' fill='currentColor'><rect x='0' y='0' width='3' height='3'/><rect x='4' y='0' width='3' height='3'/><rect x='0' y='4' width='3' height='3'/><rect x='4' y='4' width='1' height='1'/></svg>} onCopy={()=>setMessage('Copied; the host confirms it with its own toast')}/>",
           "native": "<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={140} announce={false} qr={<View style={{flex:1,borderRadius:12,borderWidth:8}}/>} onCopy={()=>setMessage('Copied; the host confirms it with its own toast')}/>"
+        }
+      }
+    },
+    {
+      "name": "QRCode",
+      "slug": "qr-code",
+      "entry": "qr-code",
+      "family": "financial-data",
+      "added": "Unreleased",
+      "web": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688'/>",
+      "native": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
+      ],
+      "a11y": "One image named by the built-in “QR code” message or the host label, or hidden when the host names it; no text, no motion; never mirrored; device observations pending",
+      "feedback": "none; the code is not interactive",
+      "variants": {
+        "arena": {
+          "web": "<C.QRCode value='ethereum:0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688@8453' arena={<C.BrandMark size={32}/>} label='Deposit address QR code'/>",
+          "native": "<C.QRCode value='ethereum:0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688@8453' arena={<C.BrandMark size={32}/>} label='Deposit address QR code'/>"
+        },
+        "dark-on-light": {
+          "web": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={160} color='black' background='white'/>",
+          "native": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={160} color='black' background='white'/>"
         }
       }
     },
@@ -1225,6 +1324,7 @@
       "slug": "assets-block",
       "entry": "blocks",
       "family": "blocks",
+      "added": "Unreleased",
       "web": "<C.AssetsBlock categories={[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',opensAt:Date.now()+8073000},{id:'stocks',label:'Stocks',opensAt:Date.now()+101529000}]} assets={empty?[]:[{id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},{id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},{id:'XRP',name:'Ripple',symbol:'XRP',detail:'20×',category:'crypto',signal:null},{id:'SOL',name:'Solana',symbol:'SOL',detail:'20×',category:'crypto',signal:'down',position:true},{id:'GOLD',name:'Gold',symbol:'GOLD',detail:'20×',category:'commodities',signal:null},{id:'NVDA',name:'Nvidia',symbol:'NVDA',detail:'10×',category:'stocks',signal:null}]} selectedId='BTC' onClose={()=>setMessage('The host closes the sheet')} onSelect={asset=>setMessage(`The host opens ${asset.name}`)}/>",
       "native": "<C.AssetsBlock categories={[{id:'crypto',label:'Crypto',status:{label:'OPEN'}},{id:'commodities',label:'Commodities',opensAt:Date.now()+8073000},{id:'stocks',label:'Stocks',opensAt:Date.now()+101529000}]} assets={empty?[]:[{id:'BTC',name:'Bitcoin',symbol:'BTC',detail:'40×',category:'crypto',signal:'watch',position:true},{id:'ETH',name:'Ethereum',symbol:'ETH',detail:'25×',category:'crypto',signal:'up'},{id:'XRP',name:'Ripple',symbol:'XRP',detail:'20×',category:'crypto',signal:null},{id:'SOL',name:'Solana',symbol:'SOL',detail:'20×',category:'crypto',signal:'down',position:true},{id:'GOLD',name:'Gold',symbol:'GOLD',detail:'20×',category:'commodities',signal:null},{id:'NVDA',name:'Nvidia',symbol:'NVDA',detail:'10×',category:'stocks',signal:null}]} selectedId='BTC' onClose={()=>setMessage('The host closes the sheet')} onSelect={asset=>setMessage(`The host opens ${asset.name}`)}/>",
       "nativeSupport": "renderer",
@@ -1247,6 +1347,7 @@
       "slug": "confirm-block",
       "entry": "blocks",
       "family": "blocks",
+      "added": "Unreleased",
       "web": "<C.ConfirmBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>",
       "native": "<C.ConfirmBlock amount={2.5} symbol='HYPE' address='0x1111111111111111111111111111111111111111' network='HyperEVM' onBack={()=>setMessage('The host goes back')} onConfirm={()=>setMessage('The host signs and sends')} onCancel={()=>setMessage('The host closes the sheet')}/>",
       "nativeSupport": "renderer",
@@ -1273,6 +1374,7 @@
       "slug": "preset-picker-block",
       "entry": "blocks",
       "family": "blocks",
+      "added": "Unreleased",
       "web": "<C.PresetPickerBlock<'max'|number> value={100} valueOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}} valueLabel='Size' presetsLabel='Size' columns={3} presets={[{value:'max',label:'Max'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'},{value:250,label:'$250'},{value:500,label:'$500',disabled:true}]} selected={100} onPresetChange={value=>setMessage('The host sets the size to '+value)} custom={{label:'Custom amount',onSelect:()=>setMessage('The host opens its keypad')}} submitLabel='Set Size' onSubmit={()=>setMessage('The host keeps the size')} onCancel={()=>setMessage('The host restores the size')}/>",
       "native": "<C.PresetPickerBlock<'max'|number> value={100} valueOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}} valueLabel='Size' presetsLabel='Size' columns={3} presets={[{value:'max',label:'Max'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'},{value:250,label:'$250'},{value:500,label:'$500',disabled:true}]} selected={100} onPresetChange={value=>setMessage('The host sets the size to '+value)} custom={{label:'Custom amount',onSelect:()=>setMessage('The host opens its keypad')}} submitLabel='Set Size' onSubmit={()=>setMessage('The host keeps the size')} onCancel={()=>setMessage('The host restores the size')}/>",
       "nativeSupport": "renderer",
@@ -1299,6 +1401,7 @@
       "slug": "explainer-block",
       "entry": "blocks",
       "family": "blocks",
+      "added": "Unreleased",
       "web": "<C.ExplainerBlock title='How Trend works' description='Trend reads each market every minute and marks where momentum is heading.' sections={[{id:'up',tone:'up',icon:<C.Text>↑</C.Text>,title:'Up',meaning:'→ Momentum is rising',body:'Price is climbing with conviction.'},{id:'down',tone:'down',icon:<C.Text>↓</C.Text>,title:'Down',meaning:'→ Momentum is falling',body:'Price is sliding with conviction.'},{id:'watch',tone:'warning',icon:<C.Text>●</C.Text>,title:'Watch',meaning:'→ A move may be coming',body:'Price is coiling before a break.'}]} caveat='Trend describes the market. It is not advice.' primaryAction={{label:'Got it',onSelect:()=>setMessage('The host closes the sheet')}}/>",
       "native": "<C.ExplainerBlock title='How Trend works' description='Trend reads each market every minute and marks where momentum is heading.' sections={[{id:'up',tone:'up',icon:<C.Text>↑</C.Text>,title:'Up',meaning:'→ Momentum is rising',body:'Price is climbing with conviction.'},{id:'down',tone:'down',icon:<C.Text>↓</C.Text>,title:'Down',meaning:'→ Momentum is falling',body:'Price is sliding with conviction.'},{id:'watch',tone:'warning',icon:<C.Text>●</C.Text>,title:'Watch',meaning:'→ A move may be coming',body:'Price is coiling before a break.'}]} caveat='Trend describes the market. It is not advice.' primaryAction={{label:'Got it',onSelect:()=>setMessage('The host closes the sheet')}}/>",
       "nativeSupport": "renderer",
@@ -1787,6 +1890,7 @@
       "slug": "altimeter-chart",
       "entry": "@bloxwap/hig/chart",
       "family": "chart",
+      "added": "Unreleased",
       "web": "<C.AltimeterChart summary='Live Bitcoin price from Hyperliquid. The current price is also shown as text.' price={empty?null:undefined} height={320}/>",
       "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
       "nativeSupport": "alternative",
@@ -1802,6 +1906,7 @@
       "slug": "outcome-chart",
       "entry": "@bloxwap/hig/chart",
       "family": "chart",
+      "added": "Unreleased",
       "web": "<C.OutcomeChart summary='UEFA Champions League winner on Hyperliquid: the live chance of each club, also shown as text.' outcomes={empty?null:undefined} height={360}/>",
       "native": "<C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>",
       "nativeSupport": "alternative",

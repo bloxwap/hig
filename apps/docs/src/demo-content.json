@@ -301,6 +301,10 @@
       "title": "Toast"
     },
     {
+      "route": "components/toaster",
+      "title": "Toaster"
+    },
+    {
       "route": "components/progress",
       "title": "Progress"
     },
@@ -325,12 +329,20 @@
       "title": "StatusIndicator"
     },
     {
+      "route": "components/confetti",
+      "title": "Confetti"
+    },
+    {
       "route": "components/number-readout",
       "title": "NumberReadout"
     },
     {
       "route": "components/animated-number-readout",
       "title": "AnimatedNumberReadout"
+    },
+    {
+      "route": "components/number-flow",
+      "title": "NumberFlow"
     },
     {
       "route": "components/usd",
@@ -363,6 +375,10 @@
     {
       "route": "components/wallet-address",
       "title": "WalletAddress"
+    },
+    {
+      "route": "components/qr-code",
+      "title": "QRCode"
     },
     {
       "route": "components/bar-mark",
@@ -913,6 +929,15 @@
       ]
     },
     {
+      "name": "Toaster",
+      "route": "components/toaster",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "Progress",
       "route": "components/progress",
       "family": "status",
@@ -955,7 +980,9 @@
       "family": "status",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ]
     },
     {
@@ -966,6 +993,15 @@
       "states": [
         "default",
         "error"
+      ]
+    },
+    {
+      "name": "Confetti",
+      "route": "components/confetti",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
       ]
     },
     {
@@ -988,6 +1024,19 @@
         "default",
         "error",
         "empty"
+      ]
+    },
+    {
+      "name": "NumberFlow",
+      "route": "components/number-flow",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
       ]
     },
     {
@@ -1066,6 +1115,17 @@
       "states": [
         "default",
         "host-qr"
+      ]
+    },
+    {
+      "name": "QRCode",
+      "route": "components/qr-code",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
       ]
     },
     {

@@ -100,6 +100,22 @@ button[data-search-full] kbd {
 
 .component-link:hover { text-decoration: underline; text-underline-offset: .2em; }
 
+/* Marks a component added since the last release, in the sidebar, the catalog and the page title. */
+.docs-new {
+  display: inline-block;
+  margin-inline-start: .5em;
+  padding: 0 .5em;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--hig-action) 16%, transparent);
+  color: var(--hig-action);
+  font-size: .6875rem;
+  line-height: 1.6;
+  font-weight: 600;
+  letter-spacing: .02em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
 /* Example controls belong to the docs shell; the canvas uses HIG styles. */
 .component-demo {
   min-width: 0;

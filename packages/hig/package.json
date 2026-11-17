@@ -36,10 +36,35 @@
       "import": "./contracts/dist/announcements.js",
       "default": "./contracts/dist/announcements.js"
     },
+    "./contracts/number-flow": {
+      "types": "./contracts/dist/number-flow.d.ts",
+      "import": "./contracts/dist/number-flow.js",
+      "default": "./contracts/dist/number-flow.js"
+    },
     "./contracts/messages": {
       "types": "./contracts/dist/messages.d.ts",
       "import": "./contracts/dist/messages.js",
       "default": "./contracts/dist/messages.js"
+    },
+    "./contracts/toast": {
+      "types": "./contracts/dist/toast.d.ts",
+      "import": "./contracts/dist/toast.js",
+      "default": "./contracts/dist/toast.js"
+    },
+    "./contracts/confetti": {
+      "types": "./contracts/dist/confetti.d.ts",
+      "import": "./contracts/dist/confetti.js",
+      "default": "./contracts/dist/confetti.js"
+    },
+    "./contracts/avatar": {
+      "types": "./contracts/dist/avatar.d.ts",
+      "import": "./contracts/dist/avatar.js",
+      "default": "./contracts/dist/avatar.js"
+    },
+    "./contracts/qr": {
+      "types": "./contracts/dist/qr.d.ts",
+      "import": "./contracts/dist/qr.js",
+      "default": "./contracts/dist/qr.js"
     },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
@@ -139,6 +164,11 @@
       "types": "./react/dist/status.d.ts",
       "import": "./react/dist/status.js",
       "default": "./react/dist/status.js"
+    },
+    "./react/avatar": {
+      "types": "./react/dist/avatar.d.ts",
+      "import": "./react/dist/avatar.js",
+      "default": "./react/dist/avatar.js"
     },
     "./react/toast": {
       "types": "./react/dist/toast.d.ts",
@@ -263,6 +293,16 @@
       "import": "./react/dist/wallet-address-core.js",
       "default": "./react/dist/wallet-address-core.js"
     },
+    "./react/qr-code": {
+      "types": "./react/dist/qr-code.d.ts",
+      "import": "./react/dist/qr-code.js",
+      "default": "./react/dist/qr-code.js"
+    },
+    "./native/qr-code": {
+      "types": "./native/dist/qr-code.d.ts",
+      "import": "./native/dist/qr-code.js",
+      "default": "./native/dist/qr-code.js"
+    },
     "./react/asset-balance-row": {
       "types": "./react/dist/asset-balance-row.d.ts",
       "import": "./react/dist/asset-balance-row.js",
@@ -362,6 +402,16 @@
       "types": "./native/dist/explainer-block.d.ts",
       "import": "./native/dist/explainer-block.js",
       "default": "./native/dist/explainer-block.js"
+    },
+    "./react/confetti": {
+      "types": "./react/dist/confetti.d.ts",
+      "import": "./react/dist/confetti.js",
+      "default": "./react/dist/confetti.js"
+    },
+    "./native/confetti": {
+      "types": "./native/dist/confetti.d.ts",
+      "import": "./native/dist/confetti.js",
+      "default": "./native/dist/confetti.js"
     },
     "./react/blocks/assets-block": {
       "types": "./react/dist/blocks/assets-block.d.ts",
@@ -553,6 +603,11 @@
       "import": "./native/dist/status.js",
       "default": "./native/dist/status.js"
     },
+    "./native/avatar": {
+      "types": "./native/dist/avatar.d.ts",
+      "import": "./native/dist/avatar.js",
+      "default": "./native/dist/avatar.js"
+    },
     "./native/data": {
       "types": "./native/dist/data.d.ts",
       "import": "./native/dist/data.js",
@@ -617,6 +672,11 @@
       "types": "./native/dist/animated-number.d.ts",
       "import": "./native/dist/animated-number.js",
       "default": "./native/dist/animated-number.js"
+    },
+    "./native/toast": {
+      "types": "./native/dist/toast.d.ts",
+      "import": "./native/dist/toast.js",
+      "default": "./native/dist/toast.js"
     },
     "./package.json": "./package.json"
   },

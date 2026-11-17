@@ -1,5 +1,8 @@
+import type {NumberFlowPlace} from '@bloxwap/hig/contracts/number-flow';
 export interface AnimatedNumberToken {key:string;text:string;digit:boolean;value?:number;place?:number;section?:'number'|'exponent'}
-export interface AnimatedNumberModel {reading:string;tokens:readonly AnimatedNumberToken[];animatable:boolean}
+export interface AnimatedNumberModel {reading:string;tokens:readonly AnimatedNumberToken[];animatable:boolean;
+ /** The ten digit glyphs of the reading's numbering system, zero first, when it moves place by place. A reel rolls through these. */
+ digits?:readonly string[]}
 export interface AnimatedNumberTransitionToken extends AnimatedNumberToken {oldText?:string;oldValue?:number;changed:boolean}
 const staticModel=(reading:string):AnimatedNumberModel=>({reading,animatable:false,tokens:[{key:'static:0',text:reading,digit:false}]});
 function digitsFor(formatter:Intl.NumberFormat){
@@ -31,7 +34,7 @@ export function createAnimatedNumberModel(value:number|null|undefined,locale:str
    tokens.push({key:`digit:${section}:${place}`,text:digit.text,digit:true,value:digit.value,place,section});
   }
  }
- return tokens.some(token=>token.digit)?{reading,tokens,animatable:true}:staticModel(reading);
+ return tokens.some(token=>token.digit)?{reading,tokens,animatable:true,digits:glyphs}:staticModel(reading);
 }
 /**
  * A model for host-formatted text. Without `animate` it is the text as one static token. With it, every digit of the text
@@ -48,7 +51,7 @@ export function createFormattedAnimatedNumberModel(text:string,locale:string,ani
  const flush=()=>{if(run){tokens.push({key:`literal:${tokens.length}`,text:run,digit:false});run='';}};
  characters.forEach((character,index)=>{const value=values[index];if(value<0){run+=character;return;}flush();const place=count-++seen;tokens.push({key:`digit:number:${place}`,text:character,digit:true,value,place,section:'number'});});
  flush();
- return {reading:text,tokens,animatable:true};
+ return {reading:text,tokens,animatable:true,digits:local&&!values.some((value,index)=>value>=0&&ascii[value]===characters[index])?local:ascii};
 }
 export function createAnimatedNumberTransitions(previous:AnimatedNumberModel|null,next:AnimatedNumberModel):readonly AnimatedNumberTransitionToken[]{
  if(!previous?.animatable||!next.animatable)return next.tokens.map(token=>({...token,changed:false}));
@@ -60,4 +63,37 @@ export function createAnimatedNumberTransitions(previous:AnimatedNumberModel|nul
   if(insertion>=0)result.splice(insertion,0,{...old,text:'',oldText:old.text,changed:true});
  }
  return result;
+}
+/** The digits of a model as NumberFlow places: the number's own digits carry their place, an exponent's carry none. */
+export function numberFlowPlaces(model:AnimatedNumberModel):NumberFlowPlace[]{
+ return model.tokens.filter(token=>token.digit).map(token=>({key:token.key,digit:token.value??0,place:token.section==='number'?token.place??null:null}));
+}
+/**
+ * A stable key for every token, in order, so a part keeps its element while the figure around it changes. Digits keep their
+ * place key. Text before the first digit is keyed outward from the number (`pre:0` sits against it), text after the last
+ * digit likewise (`post:0`), and text between digits by the digit that follows it (`sep:number:2` is the separator before
+ * the hundreds, `sep:number:-1` the decimal mark), so a separator stays itself when a place is added in front of it.
+ */
+export function numberFlowTokenKeys(tokens:readonly AnimatedNumberToken[]):string[]{
+ const first=tokens.findIndex(token=>token.digit);if(first<0)return tokens.map((_,index)=>`pre:${tokens.length-1-index}`);
+ let last=tokens.length-1;while(!tokens[last].digit)last--;
+ const keys:string[]=[],used=new Map<string,number>();
+ for(let index=0;index<tokens.length;index++){const token=tokens[index];
+  if(token.digit){keys.push(token.key);continue;}
+  if(index<first){keys.push(`pre:${first-1-index}`);continue;}
+  if(index>last){keys.push(`post:${index-last-1}`);continue;}
+  let next=index+1;while(!tokens[next].digit)next++;
+  const base=`sep:${tokens[next].section??'number'}:${tokens[next].place??0}`,count=used.get(base)??0;used.set(base,count+1);keys.push(count?`${base}:${count}`:base);
+ }
+ return keys;
+}
+/**
+ * Which way a part looks for the neighbour it travels with when the figure changes width: `1` towards the parts after it
+ * (integer places, their separators and what stands before the number, which are anchored at the decimal mark's left), `-1`
+ * towards the parts before it (the decimal mark, fraction places and what follows the number).
+ */
+export function numberFlowAnchorSide(key:string):-1|1{
+ if(key.startsWith('pre:')||key==='affix:prefix')return 1;
+ const match=/^(?:digit|sep):number:(-?\d+)/.exec(key);
+ return match&&Number(match[1])>=0?1:-1;
 }
