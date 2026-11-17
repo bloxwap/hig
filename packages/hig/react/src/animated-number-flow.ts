@@ -22,6 +22,18 @@ let sampledEasing=true;
 // `composite: 'add'` and would replace that transform, rolling the wrong glyphs through the window, so there nothing moves and
 // every value is drawn at once. (No `KeyframeEffect` at all is a test double for `animate`, which is taken at its word.)
 const additive=()=>typeof KeyframeEffect==='undefined'||'composite' in KeyframeEffect.prototype;
+// One commit can change many figures, and each reads where its parts are before it moves them. Taken figure by figure, every
+// read that follows another figure's writes lays the page out again: forty figures, forty layouts. So a figure that is about to
+// change says so before the commit (`expect`), what it would write is held, and when the last of them has read (`done`)
+// everything held is written in the order it was asked for: one layout for the commit, however many figures changed. A figure
+// that never reports back costs only the wait, since a microtask (still before the next paint) writes what is held.
+let expected=0,scheduled=false,held:(()=>void)[]=[];
+function release(){expected=0;scheduled=false;const writes=held;held=[];for(const write of writes)write();}
+export const numberFlowCommit={
+ /** A figure will read and write in the commit that is starting. */
+ expect(){expected++;},
+ /** That figure has read all it needs: the last one to say so writes for all of them. */
+ done(){if(expected>0&&--expected===0)release();}};
 
 /**
  * NumberFlow's motion over elements React drew. React owns the final text of every part; this adds what moves, and removes it
@@ -38,7 +50,7 @@ const additive=()=>typeof KeyframeEffect==='undefined'||'composite' in KeyframeE
  */
 export class NumberFlowEngine {
  private root:HTMLElement|null=null;private before:Map<string,Before>|null=null;private extent:Extent|null=null;private clip:Animation|null=null;
- private readonly reels=new Map<HTMLElement,Reel>();private readonly running=new Set<Animation>();private readonly fades=new Map<Element,Animation>();private ghosts=0;
+ private readonly reels=new Map<HTMLElement,Reel>();private readonly running=new Set<Animation>();private readonly fades=new Map<Element,Animation>();private ghosts=0;private epoch=0;
  /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */
  attach(root:HTMLElement|null){this.root=root;}
  /** Whether anything is still moving. */
@@ -59,6 +71,8 @@ export class NumberFlowEngine {
   const now=Array.from(root.querySelectorAll<HTMLElement>(part)),keys=now.map(element=>element.dataset.higFlowKey as string),present=new Set(keys),rects=now.map(element=>element.getBoundingClientRect()),edges=core?.getBoundingClientRect(),origins={digits:layers.digits?.getBoundingClientRect(),around:layers.around?.getBoundingClientRect()};
   const shift=new Map<string,number>();
   now.forEach((_,index)=>{const prior=before.get(keys[index]);if(prior&&!keys[index].startsWith('ghost:'))shift.set(keys[index],prior.left-rects[index].left);});
+  // Everything from here on writes.
+  this.write(()=>{
   // A part with no place of its own in both readings travels with its nearest neighbour that has one, on the side it is anchored to.
   const travel=(order:readonly string[],index:number,side:-1|1)=>{for(const direction of [side,-side])for(let at=index+direction;at>=0&&at<order.length;at+=direction){const dx=shift.get(order[at]);if(dx!==undefined)return dx;}return 0;};
   const slide=(element:HTMLElement,dx:number)=>{if(Math.abs(dx)>0.01)this.play(element,{transform:[`translateX(${dx}px)`,'translateX(0px)']},motion.transform,{composite:'add'});};
@@ -81,11 +95,12 @@ export class NumberFlowEngine {
   // The digits' clip starts at their old edges and travels to their new ones with the parts.
   if(core&&edges&&extent){const left=extent.left-edges.left,right=edges.right-extent.right;
    if(Math.abs(left)>0.01||Math.abs(right)>0.01){if(this.clip)this.stop(this.clip);this.clip=this.play(core,{clipPath:[`inset(-1em ${right}px -1em ${left}px)`,'inset(-1em 0px -1em 0px)']},motion.transform,{},()=>{this.clip=null;});}}
+  });
  }
  /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */
  spin(spins:ReadonlyMap<string,NumberFlowSpin>,glyphs:readonly string[],timing:NumberFlowWebTiming){
   const root=this.root;if(!root||!spins.size||!additive())return;
-  for(const place of root.querySelectorAll<HTMLElement>('[data-hig-flow-digit]')){
+  this.write(()=>{for(const place of root.querySelectorAll<HTMLElement>('[data-hig-flow-digit]')){
    const spin=spins.get(place.dataset.higFlowKey as string);if(!spin||!spin.delta)continue;
    let reel=this.reels.get(place);
    if(reel&&reel.length!==spin.length){this.settle(place,reel);reel=undefined;}
@@ -106,14 +121,20 @@ export class NumberFlowEngine {
    const turn:{delta:number;animation:Animation|null}={delta:spin.delta,animation:null};
    turn.animation=this.play(turning.strip,{transform:[`translateY(${spin.delta*100}%)`,'translateY(0%)']},timing,{composite:'add'},()=>{turning.active=turning.active.filter(other=>other!==turn);if(!turning.active.length&&this.reels.get(place)===turning)this.settle(place,turning);});
    if(turn.animation)turning.active.push(turn as Turn);else if(!turning.active.length)this.settle(place,turning);
-  }
+  }});
  }
  /** Stop everything where it is going: the parts are left exactly as React drew them. */
  cancel(){
-  this.before=null;this.extent=null;this.clip=null;
+  this.before=null;this.extent=null;this.clip=null;this.epoch++;
   for(const [place,reel] of Array.from(this.reels))this.settle(place,reel);
   for(const animation of Array.from(this.running))this.stop(animation);
   this.fades.clear();for(const layer of this.root?.querySelectorAll('.hig-number-flow-ghosts')??[])layer.replaceChildren();
+ }
+ /** Writes now, or with the rest of the commit when other figures are still to read. A `cancel` in between drops it. */
+ private write(change:()=>void){
+  if(expected<=0){change();return;}
+  const epoch=this.epoch;held.push(()=>{if(this.epoch===epoch)change();});
+  if(!scheduled){scheduled=true;void Promise.resolve().then(release);}
  }
  private stop(animation:Animation){this.running.delete(animation);animation.onfinish=null;animation.cancel();}
  private settle(place:HTMLElement,reel:Reel){for(const turn of reel.active)this.stop(turn.animation);reel.active=[];reel.frame.remove();delete place.dataset.spinning;this.reels.delete(place);}

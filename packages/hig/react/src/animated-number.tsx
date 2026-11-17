@@ -2,7 +2,7 @@
 import React,{useContext,useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import {type NumberProps} from './data.js';
 import {createAnimatedNumberModel,createAnimatedNumberTransitions,createFormattedAnimatedNumberModel,numberFlowPlaces,numberFlowTokenKeys} from './animated-number-model.js';
-import {NumberFlowEngine,numberFlowWebMotion,type NumberFlowSpin} from './animated-number-flow.js';
+import {NumberFlowEngine,numberFlowCommit,numberFlowWebMotion,type NumberFlowSpin} from './animated-number-flow.js';
 import {numberFlowDeltas,numberFlowDigitLength,numberFlowNeutral,resolveNumberFlowTimings,type NumberFlowDigits,type NumberFlowTiming} from '@bloxwap/hig/contracts/number-flow';
 import {useHIG,useNumberLocale} from './provider.js';
 import {tokens as higTokens} from '@bloxwap/hig/tokens';
@@ -115,8 +115,9 @@ function FlowReadout(all:AnimatedNumberProps){
  const visual=useRef<HTMLSpanElement>(null),engine=useRef<NumberFlowEngine|null>(null),committed=useRef<{value:number|null|undefined;signature:string;model:typeof model;drawn:string}|null>(null),live=useRef({moving,motion:flowMotion});
  useEffect(()=>group?.join({measure:()=>{if(live.current.moving)engine.current?.measure();},flip:()=>engine.current?.flip(live.current.motion)}),[group]);
  useEffect(()=>()=>engine.current?.cancel(),[]);
- const before=()=>{const prior=committed.current;if(!prior||!moving||(prior.model===model&&prior.drawn===drawn))return;if(group)group.willUpdate();else engine.current?.measure();};
- useCommitEffect(()=>{
+ // A figure that is about to change holds its writes until every figure changing in the same commit has read its positions.
+ const expected=useRef(false),before=()=>{const prior=committed.current;if(!prior||!moving||(prior.model===model&&prior.drawn===drawn))return;if(!expected.current){expected.current=true;numberFlowCommit.expect();}if(group)group.willUpdate();else engine.current?.measure();};
+ const change=()=>{
   // A reading that slides instead is drawn by another tree; whatever comes back after it is a first paint, not a change.
   if(!placeable){committed.current=null;engine.current?.cancel();return;}
   const flow=engine.current??=new NumberFlowEngine();flow.attach(visual.current);live.current={moving,motion:flowMotion};
@@ -132,7 +133,8 @@ function FlowReadout(all:AnimatedNumberProps){
   const old=new Map(numberFlowPlaces(prior.model).map(place=>[place.key,place.digit])),places=numberFlowPlaces(model),deltas=numberFlowDeltas(numberFlowPlaces(prior.model),places,{trend:movement,digits,continuous}),spins=new Map<string,NumberFlowSpin>();
   for(const place of places){const delta=deltas.get(place.key)??0,from=old.get(place.key)??0;if(delta)spins.set(place.key,{delta,from,length:numberFlowDigitLength(digits,place.place,Math.max(place.digit,from))});}
   flow.spin(spins,model.digits??asciiDigits,flowMotion.spin);
- });
+ };
+ useCommitEffect(()=>{try{change();}finally{if(expected.current){expected.current=false;numberFlowCommit.done();}}});
  // The number itself is always drawn left to right, as digits are in every script; a reading that needs reordering slides instead.
  if(!placeable)return <SlideReadout {...all}/>;
  // The digits, first to last with the separators between them, sit in one box the engine clips while it changes width; signs and currency stay outside it.
