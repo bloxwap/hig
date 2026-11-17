@@ -1,0 +1,7 @@
+name: Job-local Bun
+description: Install pinned Bun without writing a shared user-home executable
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: bash "$GITHUB_ACTION_PATH/setup.sh"

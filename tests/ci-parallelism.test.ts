@@ -60,3 +60,13 @@ it('preserves the branch-required quality context and propagates candidate failu
  expect(aggregate).toContain('RESULT: ${{ needs.candidate.result }}');
  expect(aggregate).toContain('run: test "$RESULT" = success');
 });
+
+it('isolates Bun executables between runner services sharing a home directory', () => {
+ expect(workflow).not.toContain('uses: oven-sh/setup-bun');
+ expect(readFileSync('.github/workflows/docs.yml', 'utf8')).not.toContain('uses: oven-sh/setup-bun');
+ const setup = readFileSync('.github/actions/setup-bun/setup.sh', 'utf8');
+ expect(setup).toContain('mktemp -d "$RUNNER_TEMP/hig-bun.XXXXXX"');
+ expect(setup).toContain('--ignore-scripts');
+ expect(setup).toContain('"$package@1.4.2"');
+ expect(setup).toContain('>> "$GITHUB_PATH"');
+});
