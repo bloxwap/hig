@@ -317,4 +317,16 @@ jobs:
             fi
           done
           exit "$failed"
+  # Preserve the exact status context required by the main branch ruleset.
+  quality-result:
+    name: quality
+    needs: candidate
+    if: (always() && !cancelled()) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 5
+    steps:
+      - name: Require every candidate gate
+        env:
+          RESULT: ${{ needs.candidate.result }}
+        run: test "$RESULT" = success
 # No npm publish, git tag, release API, deployment or write permissions.

@@ -51,3 +51,12 @@ it('selects only the required preview and fails closed on a missing browser suit
  expect(() => selectBrowserGates('typo')).toThrow('Unknown browser gate');
  expect(() => selectBrowserGates('next', true)).toThrow('Visual-only');
 });
+
+it('preserves the branch-required quality context and propagates candidate failures', () => {
+ const aggregate = workflow.split('  quality-result:')[1];
+ expect(aggregate).toContain('name: quality');
+ expect(aggregate).toContain('needs: candidate');
+ expect(aggregate).toContain('always() && !cancelled()');
+ expect(aggregate).toContain('RESULT: ${{ needs.candidate.result }}');
+ expect(aggregate).toContain('run: test "$RESULT" = success');
+});
