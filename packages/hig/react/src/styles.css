@@ -29,6 +29,7 @@
 /* Market-direction fills follow HIGProvider marketColors (default buy and sell), with the dark label destructive uses. */
 .hig-button[data-intent='up'] { background:var(--hig-up,var(--hig-buy));color:var(--hig-background); }
 .hig-button[data-intent='down'] { background:var(--hig-down,var(--hig-sell));color:var(--hig-background); }
+.hig-button[data-intent='warning'] { background:var(--hig-warning);color:var(--hig-background); }
 .hig-button[data-full] { width:100%; }
 .hig-button-spinner { flex:none;width:1em;height:1em;border:2px solid color-mix(in srgb,currentColor 30%,transparent);border-top-color:currentColor;border-radius:50%;animation:hig-spin .8s linear infinite; }
 .hig-icon-button[aria-busy='true'] > .hig-button-spinner ~ span[aria-hidden='true'] { display:none; }

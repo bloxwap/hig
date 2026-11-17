@@ -3,6 +3,7 @@ import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {ConfirmBlock,confirmAddressRows} from '../packages/hig/react/src/blocks/confirm-block';
 import * as blocks from '../packages/hig/react/src/blocks';
@@ -133,5 +134,10 @@ describe('ConfirmBlock',()=>{
   expect((screen.getByTestId('delete-account-export') as HTMLButtonElement).disabled).toBe(true);expect((screen.getByTestId('delete-account-anyway') as HTMLButtonElement).disabled).toBe(false);
   // Without them nothing carries a test ID.
   rerender(<ConfirmBlock title='Sign out' onConfirm={()=>{}} onCancel={()=>{}}/>);expect(document.querySelector('[data-testid]')).toBeNull();
+ });
+ it('draws confirmIntent warning as a Button in the warning intent, whose stylesheet fill is the warning role',()=>{
+  render(<HIGProvider><ConfirmBlock title='Send anyway?' confirmLabel='Send anyway' confirmIntent='warning' warning='This address is new to you.' onConfirm={()=>{}} onCancel={()=>{}}/></HIGProvider>);
+  expect(screen.getByRole('button',{name:'Send anyway'}).dataset.intent).toBe('warning');
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-button[data-intent='warning'] { background:var(--hig-warning);color:var(--hig-background); }");
  });
 });

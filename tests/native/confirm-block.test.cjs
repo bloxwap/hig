@@ -144,3 +144,11 @@ it('takes a test ID per action, Pressable props for Back, and cancelDisabled hol
  const held=mount({...props,cancelDisabled:true});
  expect(button(held,'delete-account-export').props.disabled).toBe(true);expect(button(held,'delete-account-withdraw').props.disabled).toBeFalsy();expect(button(held,'delete-account-anyway').props.disabled).toBe(false);
 });
+
+it('fills the confirming action in the warning role with a dark label for confirmIntent warning',()=>{
+ if(root)act(()=>root.unmount());
+ act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Send anyway?',confirmLabel:'Send anyway',confirmIntent:'warning',warning:'This address is new to you.',onConfirm:()=>{},onCancel:()=>{}})));});
+ const confirm=button(root.root,'confirm-confirm');expect(confirm.props.intent).toBe('warning');
+ const pressable=confirm.findAll(node=>typeof node.props.style==='function')[0];expect(StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor).toBe(nativeSrgb.warning);
+ expect(flat(confirm.findAll(node=>node.type==='Text'&&node.props.children==='Send anyway')[0]).color).toBe(nativeSrgb.background);
+});

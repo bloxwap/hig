@@ -3,8 +3,8 @@ import React,{forwardRef,useId,useRef} from 'react';
 import type {Intent} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,type PressDecorationKind} from './provider.js';
-/** A button's intent: the shared `Intent`, or a market-direction fill, `up` (buy, long) or `down` (sell, short), that follows `HIGProvider marketColors` (default the buy and sell colours) with a dark label. */
-export type ButtonIntent=Intent|'up'|'down';
+/** A button's intent: the shared `Intent`, a market-direction fill, `up` (buy, long) or `down` (sell, short), that follows `HIGProvider marketColors` (default the buy and sell colours) with a dark label, or `warning`, the warning role's fill with a dark label, for an action that goes ahead despite a caution. */
+export type ButtonIntent=Intent|'up'|'down'|'warning';
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>{intent?:ButtonIntent;/** Shows a leading spinner and blocks activation. */busy?:boolean;/** Busy text appended to the accessible name (not drawn; the spinner is the visible cue); defaults to HIGProvider `messages.busy`. `''` omits it (busy state stays exposed). */busyLabel?:string;fullWidth?:boolean;suppressFeedback?:boolean}
 function useButton({intent='primary',busy=false,busyLabel,disabled,fullWidth,suppressFeedback,onClick,children,type='button',...props}:ButtonProps,ref:React.ForwardedRef<HTMLButtonElement>,kind:PressDecorationKind){
  // The provider puts its press layer on the context (see PressDecoration); calling it here keeps the layer out of a lone Button bundle.

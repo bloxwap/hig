@@ -30,8 +30,8 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  children?:React.ReactNode;
  /** A bulleted list under `children`, in the muted colour, such as what deleting an account loses. */
  points?:readonly React.ReactNode[];
- /** The confirming action's intent: `primary` (the default) or `destructive`, for an action that deletes or ends something. */
- confirmIntent?:'primary'|'destructive';
+ /** The confirming action's intent: `primary` (the default), `destructive`, for an action that deletes or ends something, or `warning`, the warning role's fill, for an action that goes ahead despite a caution, such as confirming past a `warning`. */
+ confirmIntent?:'primary'|'destructive'|'warning';
  /** A full-width action under Cancel and Confirm, such as “Delete anyway”. Unavailable while `busy`, unless `cancelWhileBusy` is set. */
  tertiaryAction?:ConfirmTertiaryAction;
  /** More lines under Network, such as a fee. */
