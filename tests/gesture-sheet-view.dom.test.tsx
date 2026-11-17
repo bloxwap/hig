@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
+import {readFileSync} from 'node:fs';
 import {act,cleanup,render} from '@testing-library/react';
 import {GestureSheetView} from '../packages/hig/react/src/gesture-sheet';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -41,6 +42,12 @@ describe('GestureSheetView',()=>{
   cleanup();restore?.();restore=undefined;
   view=render(<GestureSheetView viewKey='a'><p>First</p></GestureSheetView>);view.rerender(<GestureSheetView viewKey='b'><p>Second</p></GestureSheetView>);
   expect(views().map(node=>node.textContent)).toEqual(['Second']);
+ });
+ it('a leaving view never makes the sheet scrollable or draws a scrollbar',()=>{
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');
+  expect(css).toContain(".hig-gesture-view[data-leaving] { position:absolute;inset-block-start:0;inset-inline:0;pointer-events:none; }");
+  expect(css).toContain(".hig-gesture-dynamic:has(.hig-gesture-view[data-leaving]) { overflow:visible; }");
+  expect(css).toContain(":is(.hig-gesture-sheet,.hig-gesture-dynamic):has(.hig-gesture-view[data-leaving]) { scrollbar-width:none; }");
  });
  it('keeps host attributes and the layout class the stylesheet positions',()=>{
   render(<GestureSheetView viewKey='a' className='steps' data-flow='buy'><p>First</p></GestureSheetView>);
