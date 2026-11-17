@@ -792,6 +792,34 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "NumberFlow",
+      "slug": "number-flow",
+      "entry": "animated-number",
+      "family": "financial-data",
+      "web": "<><C.NumberFlow label=\"Mark price\" value={empty?null:960+range} stale={!!error} options={{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}}/><C.Slider label=\"Mark price\" value={range} onValueChange={setRange}/></>",
+      "native": "<><C.NumberFlow label=\"Mark price\" value={empty?null:960+range} stale={!!error} options={{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}}/><C.Slider label=\"Mark price\" value={range} onValueChange={setRange}/></>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
+      ],
+      "a11y": "One final localized reading stays accessible while the digits roll; the moving copy is hidden, reduced motion draws each value at once and no live region or feedback is emitted.",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "countdown": {
+          "web": "<><C.NumberFlowGroup><C.NumberFlow label=\"Minutes left\" value={Math.floor((100-range)*9/60)} trend={-1} suffix=\"m \"/><C.NumberFlow label=\"Seconds left\" value={((100-range)*9)%60} trend={-1} digits={{1:{max:5}}} options={{minimumIntegerDigits:2}} suffix=\"s\"/></C.NumberFlowGroup><C.Slider label=\"Time elapsed\" value={range} onValueChange={setRange}/></>",
+          "native": "<><C.Inline><C.NumberFlowGroup><C.NumberFlow label=\"Minutes left\" value={Math.floor((100-range)*9/60)} trend={-1} suffix=\"m \"/><C.NumberFlow label=\"Seconds left\" value={((100-range)*9)%60} trend={-1} digits={{1:{max:5}}} options={{minimumIntegerDigits:2}} suffix=\"s\"/></C.NumberFlowGroup></C.Inline><C.Slider label=\"Time elapsed\" value={range} onValueChange={setRange}/></>"
+        },
+        "continuous": {
+          "web": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>",
+          "native": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>"
+        }
+      }
+    },
+    {
       "name": "Usd",
       "slug": "usd",
       "entry": "data",

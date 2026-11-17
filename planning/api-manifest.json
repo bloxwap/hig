@@ -8,11 +8,23 @@
       },
       "AnimatedNumberProps": {
         "entry": "animated-number",
-        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    duration?: number;\n    trend?: AnimatedNumberTrend;\n    /** Host-formatted text for a finite `value`, drawn in place of the Intl reading and read the same way, for a host whose number table the browser's Intl does not match. Never parse it back. Empty text falls back to Intl. Unknown values still read as the dash. */\n    formattedValue?: string;\n    /** With `formattedValue`, moves the host's text place by place: each digit rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static. */\n    animateFormatted?: boolean;\n}"
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 600. Flowing: sets the roll and the sideways slide (900 by default) and fades take half of it; the three timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value, a figure that gains or loses a place slides closed while the place fades, and a new value joins the motion in flight.\n     * `'slide'` is the short settle: the old digit leaves by one line as the new one arrives, and a newer value restarts it.\n     * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading that cannot be laid out place by place\n     * (right-to-left letters or bidi controls in the number itself) slides.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the sideways slide when the figure changes width, and the roll unless `spinTiming` is set. Default 900 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a part that arrives or leaves. Default 450 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Flowing only: keeps the moving parts on their own compositor layers between changes. For a figure that changes many times a second; it costs memory, so leave it off elsewhere. */\n    willChange?: boolean;\n    /** Class names for the readout's root, for the host's type size, weight and colour. */\n    className?: string;\n    /** Host-formatted text for a finite `value`, drawn in place of the Intl reading and read the same way, for a host whose number table the browser's Intl does not match. Never parse it back. Empty text falls back to Intl. Unknown values still read as the dash. */\n    formattedValue?: string;\n    /** With `formattedValue`, moves the host's text place by place: each digit rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static. */\n    animateFormatted?: boolean;\n}"
       },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ duration, trend, options: requested, formattedValue, animateFormatted, ...rest }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "NumberFlow": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlow({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "NumberFlowProps": {
+        "entry": "animated-number",
+        "signature": "export type NumberFlowProps = AnimatedNumberProps;"
+      },
+      "NumberFlowGroup": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlowGroup({ children }: {\n    children?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "AssetArtwork": {
         "entry": "asset-balance-row",
@@ -1130,13 +1142,33 @@
         "entry": "blocks/screen-header",
         "signature": "export declare const qrIcon: React.JSX.Element;"
       },
+      "NumberFlowWebTiming": {
+        "entry": "animated-number-flow",
+        "signature": "export interface NumberFlowWebTiming {\n    duration: number;\n    easing: string;\n    fallback: string;\n}"
+      },
+      "NumberFlowWebMotion": {
+        "entry": "animated-number-flow",
+        "signature": "export interface NumberFlowWebMotion {\n    spin: NumberFlowWebTiming;\n    transform: NumberFlowWebTiming;\n    opacity: NumberFlowWebTiming;\n}"
+      },
+      "NumberFlowSpin": {
+        "entry": "animated-number-flow",
+        "signature": "export interface NumberFlowSpin {\n    delta: number;\n    length: number;\n    from: number;\n}"
+      },
+      "numberFlowWebMotion": {
+        "entry": "animated-number-flow",
+        "signature": "export declare function numberFlowWebMotion(timings: NumberFlowTimings): NumberFlowWebMotion;"
+      },
+      "NumberFlowEngine": {
+        "entry": "animated-number-flow",
+        "signature": "export declare class NumberFlowEngine {\n    private root;\n    private before;\n    private extent;\n    private clip;\n    private readonly reels;\n    private readonly running;\n    private readonly fades;\n    private ghosts;\n    /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */\n    attach(root: HTMLElement | null): void;\n    /** Whether anything is still moving. */\n    get busy(): boolean;\n    /** First: where every part is now, read before the commit that changes them. */\n    measure(): void;\n    /** Last, invert, play: slide every part from where it was, fade in what arrived and fade out a copy of what left. Does nothing without a `measure` since the last call. */\n    flip(motion: NumberFlowWebMotion): void;\n    /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */\n    spin(spins: ReadonlyMap<string, NumberFlowSpin>, glyphs: readonly string[], timing: NumberFlowWebTiming): void;\n    /** Stop everything where it is going: the parts are left exactly as React drew them. */\n    cancel(): void;\n    private stop;\n    private settle;\n    private play;\n}"
+      },
       "AnimatedNumberToken": {
         "entry": "animated-number-model",
         "signature": "export interface AnimatedNumberToken {\n    key: string;\n    text: string;\n    digit: boolean;\n    value?: number;\n    place?: number;\n    section?: 'number' | 'exponent';\n}"
       },
       "AnimatedNumberModel": {
         "entry": "animated-number-model",
-        "signature": "export interface AnimatedNumberModel {\n    reading: string;\n    tokens: readonly AnimatedNumberToken[];\n    animatable: boolean;\n}"
+        "signature": "export interface AnimatedNumberModel {\n    reading: string;\n    tokens: readonly AnimatedNumberToken[];\n    animatable: boolean;\n    /** The ten digit glyphs of the reading's numbering system, zero first, when it moves place by place. A reel rolls through these. */\n    digits?: readonly string[];\n}"
       },
       "AnimatedNumberTransitionToken": {
         "entry": "animated-number-model",
@@ -1153,6 +1185,18 @@
       "createAnimatedNumberTransitions": {
         "entry": "animated-number-model",
         "signature": "export declare function createAnimatedNumberTransitions(previous: AnimatedNumberModel | null, next: AnimatedNumberModel): readonly AnimatedNumberTransitionToken[];"
+      },
+      "numberFlowPlaces": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowPlaces(model: AnimatedNumberModel): NumberFlowPlace[];"
+      },
+      "numberFlowTokenKeys": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowTokenKeys(tokens: readonly AnimatedNumberToken[]): string[];"
+      },
+      "numberFlowAnchorSide": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowAnchorSide(key: string): -1 | 1;"
       },
       "Figure": {
         "entry": "figure",
@@ -1238,11 +1282,23 @@
       },
       "AnimatedNumberProps": {
         "entry": "animated-number",
-        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    duration?: number;\n    trend?: AnimatedNumberTrend;\n    /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */\n    animateFormatted?: boolean;\n}"
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 600. Flowing: sets the roll (900 by default) and fades take half of it; the timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value on NumberFlow's curve, a place the figure gains rolls up from zero as it fades in, and a new value joins the roll in\n     * flight. `'slide'` is the short settle: the reel eases straight to the new digit and a newer value retargets it.\n     * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading native cannot lay out place by\n     * place (right-to-left, unmeasured glyphs) is drawn static either way.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the roll unless `spinTiming` is set. On web it also times the sideways slide when the figure changes width; native changes width at once. Default 900 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a place that arrives. Default 450 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Accepted so one call site serves both platforms. Web keeps the moving parts on their own layers; native reels already are. */\n    willChange?: boolean;\n    /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */\n    animateFormatted?: boolean;\n}"
+      },
+      "NumberFlow": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlow({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "NumberFlowProps": {
+        "entry": "animated-number",
+        "signature": "export type NumberFlowProps = AnimatedNumberProps;"
+      },
+      "NumberFlowGroup": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlowGroup({ children }: {\n    children?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ value, options: requested, formattedValue, animateFormatted, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ value, options: requested, formattedValue, animateFormatted, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration: requestedDuration, motion, animated, spinTiming, transformTiming, opacityTiming, digits, continuous }: AnimatedNumberProps): React.JSX.Element;"
       },
       "AssetSignal": {
         "entry": "assets-block",
@@ -2387,6 +2443,34 @@
       "createNumberReelModel": {
         "entry": "animated-number-model",
         "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string, animateFormatted?: boolean): NumberReelModel | null;"
+      },
+      "numberReelPlace": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberReelPlace(token: Pick<NumberReelToken, 'type' | 'place'>): number | null;"
+      },
+      "numberReelPlaces": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberReelPlaces(model: NumberReelModel): NumberFlowPlace[];"
+      },
+      "numberFlowReelOffset": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowReelOffset(position: number, length: number, height: number): number;"
+      },
+      "sampleReelEasing": {
+        "entry": "animated-number-model",
+        "signature": "export declare function sampleReelEasing(samples: readonly number[], progress: number): number;"
+      },
+      "NumberFlowTurn": {
+        "entry": "animated-number-model",
+        "signature": "export type NumberFlowTurn = {\n    delta: number;\n    start: number;\n    duration: number;\n};"
+      },
+      "NumberFlowRoll": {
+        "entry": "animated-number-model",
+        "signature": "export type NumberFlowRoll = {\n    type: 'hig-number-flow';\n    current: number;\n    toValue: number;\n    turns: NumberFlowTurn[];\n    reduceMotion: false;\n    onStart: (animation: NumberFlowRoll, value: number, now: number, previous?: {\n        type?: string;\n        toValue?: unknown;\n        turns?: NumberFlowTurn[];\n    } | null) => void;\n    onFrame: (animation: NumberFlowRoll, now: number) => boolean;\n};"
+      },
+      "createNumberFlowRoll": {
+        "entry": "animated-number-model",
+        "signature": "export declare function createNumberFlowRoll(delta: number, duration: number, samples: readonly number[]): NumberFlowRoll;"
       },
       "Figure": {
         "entry": "figure",

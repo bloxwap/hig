@@ -120,6 +120,7 @@
       "components": [
         "NumberReadout",
         "AnimatedNumberReadout (optional animated-number entry)",
+        "NumberFlow (optional animated-number entry)",
         "Usd",
         "Percent",
         "Metric/Stat",
