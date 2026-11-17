@@ -142,7 +142,7 @@ describe('confetti physics',()=>{
  });
  it('mirrors a burst for right-to-left: origin, direction and drift flip, the rest stays',()=>{
   expect(mirrorConfetti({angle:60,drift:2,origin:{x:0,y:0.7},spread:55,particleCount:20})).toEqual({angle:120,drift:-2,origin:{x:1,y:0.7},spread:55,particleCount:20});
-  expect(mirrorConfetti()).toEqual({angle:90,drift:-0,origin:{x:0.5}});
+  expect(mirrorConfetti()).toEqual({angle:90,drift:0,origin:{x:0.5}});
   // With no spread every piece flies along the angle, so the mirrored burst is the mirror image piece for piece.
   const options={particleCount:5,angle:30,spread:0,drift:1,origin:{x:0.2}};
   const left=createConfettiBurst(options,palette,seeded(14)),right=createConfettiBurst(mirrorConfetti(options),palette,seeded(14));

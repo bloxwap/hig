@@ -34,7 +34,7 @@ it('without a mounted Confetti a call resolves and draws nothing',async()=>{
 
 it('the layer fills its parent, takes no touches, is hidden from assistive technology, stays left-to-right and is empty at rest',()=>{
  const view=mount({style:{zIndex:5}});
- expect(layer(view).props.pointerEvents).toBe('none');expect(layer(view).props.accessibilityElementsHidden).toBe(true);expect(layer(view).props.importantForAccessibility).toBe('no-hide-descendants');
+ expect(layer(view).props.pointerEvents).toBe('none');expect(layer(view).props.accessible).toBe(false);expect(layer(view).props.accessibilityElementsHidden).toBe(true);expect(layer(view).props.importantForAccessibility).toBe('no-hide-descendants');
  expect(flat(layer(view))).toEqual({position:'absolute',left:0,right:0,top:0,bottom:0,direction:'ltr',zIndex:5});
  expect(pieces(view)).toHaveLength(0);expect(mockTimings).toHaveLength(0);
 });

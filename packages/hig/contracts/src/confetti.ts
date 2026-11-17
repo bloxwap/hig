@@ -112,7 +112,7 @@ export function confettiSkipped(options:ConfettiOptions|undefined,reducedMotion:
 /** The same burst seen in a mirror: for a cannon that should fire from the leading edge in right-to-left text. Confetti itself is physical and never mirrors on its own. */
 export function mirrorConfetti(options:ConfettiOptions={}):ConfettiOptions{
  const d=confettiDefaults;
- return {...options,angle:180-finite(options.angle,d.angle),drift:-finite(options.drift,d.drift),origin:{...options.origin,x:1-finite(options.origin?.x,d.origin.x)}};
+ return {...options,angle:180-finite(options.angle,d.angle),drift:0-finite(options.drift,d.drift),origin:{...options.origin,x:1-finite(options.origin?.x,d.origin.x)}};
 }
 /** One burst, several or none as a list: what `Confetti` fires for its `options`. Nothing given is one default burst. */
 export function confettiBursts(options:ConfettiOptions|readonly ConfettiOptions[]|undefined):readonly (ConfettiOptions|undefined)[]{return Array.isArray(options)?options as readonly ConfettiOptions[]:[options as ConfettiOptions|undefined];}

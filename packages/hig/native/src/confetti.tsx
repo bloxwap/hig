@@ -98,7 +98,7 @@ export function Confetti({trigger,options,style,testID}:ConfettiProps){
   for(const burst of confettiBursts(latest.current))void fire(burst);
  },[trigger,fire]);
  const measure=useCallback((event:LayoutChangeEvent)=>{const {width,height}=event.nativeEvent.layout;room.current={width,height};},[]);
- return <View testID={testID} pointerEvents='none' accessibilityElementsHidden importantForAccessibility='no-hide-descendants' onLayout={measure} style={[styles.layer,style]}>
+ return <View testID={testID} pointerEvents='none' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' onLayout={measure} style={[styles.layer,style]}>
   {runs.map(run=><Burst key={run.id} run={run} onEnd={end}/>)}
  </View>;
 }
