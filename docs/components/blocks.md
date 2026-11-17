@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PresetPickerBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PresetPickerBlock`, `ExplainerBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -26,6 +26,7 @@ All data and actions are supplied by the host application.
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PresetPickerBlock` | Choose one value from quick choices, such as an order size or leverage: an optional header, the value as the headline figure, an optional row that opens the host's own entry, the choices as chips, then Cancel and the confirming action. Details below. |
+| `ExplainerBlock` | How something works, or how to finish a task: an optional header, a lead paragraph, titled sections with an optional icon and tone, numbered steps, a closing note, then one or two actions. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
 | `AssetsBlock` | Choose a market: a search field, category capsules, All / Positions / Trend views, then the markets in sections by category, each with its signal disc. Details below. |
 | `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
@@ -329,6 +330,28 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Actions.** `onSubmit` with `submitLabel` is the confirming action in `intent`, with `submitDisabled` and `busy`; `onCancel` adds Cancel on its leading side (`cancelLabel`, default the built-in “Cancel”), the two sharing the row equally as in `TargetBlock`. `suppressFeedback` keeps the provider's feedback off the chips and both actions for a host that plays its own cue.
 - **Test IDs.** Web: `submitTestID`, `cancelTestID`, `custom.testID` and each preset's `testID` become `data-testid`s, and other attributes, such as a `data-testid` for the block, pass to its `<section>`. Native: `testID` (default `preset-picker`) prefixes `-header`, `-back`, `-title`, `-headline`, `-custom`, `-custom-value`, `-presets`, `-preset-<value>` (a preset without its own `testID`), `-adjustable`, `-actions`, `-cancel` and `-confirm`; `custom.testID` and `adjustable.testID` replace theirs.
 - **Ownership.** The block holds no value of its own: the host keeps the value, restores it on Cancel and commits it on the confirming action.
+
+### ExplainerBlock
+
+`ExplainerBlock` explains how something works, or how to finish a task: an optional header, a lead paragraph, titled sections, numbered steps, a closing note, then one or two actions. It draws the “How Swing works” and “How Trend works” sheets and short task dialogs such as inviting a friend, setting up an agent or a builder code. It is available from `@bloxwap/hig/react/blocks/explainer-block`, `@bloxwap/hig/native/explainer-block` and the `blocks` aggregates.
+
+```tsx
+<ExplainerBlock title="How Trend works" description={trendDescription}
+  sections={[
+    {id: 'up', tone: 'up', icon: <TrendingUp/>, title: 'Up', meaning: '→ Momentum is rising', body: upText},
+    {id: 'watch', tone: 'warning', icon: <Eye/>, title: 'Watch', meaning: '→ A move may be coming', body: watchText},
+  ]}
+  caveat={notAdvice} primaryAction={{label: 'Got it', onSelect: close}}/>
+```
+
+- **Header.** `title` draws the shared `ScreenHeader`, with `onBack`, `backProps`, `headerAction` (such as Close), `headingId` and `stickyHeader` as in the other blocks. Leave `title` out inside a host `Sheet` or `Dialog` that draws its own title. Native `stickyHeader` needs `title`, and takes `stickyHeaderBackground` and `scrollComponent`.
+- **Lead.** `description` is a muted paragraph under the header.
+- **Sections.** `sections` are `{id, title?, meaning?, icon?, tone?, media?, body?, caveat?, testID?}`, each a rounded card (16 radius, 12 padding) with its parts stacked 4 apart. `title` is the section's heading (web `h3`, and the section is a region named by it; native `header`), and `meaning` follows it on the same line, muted. `icon` sits on the leading edge in a 40 disc and is decorative; on web it is drawn in `currentColor`, so an SVG icon takes the tone's colour, and on native the host draws it in `useColors()[tone]`. `tone` (`up`, `down`, `positive`, `negative` or `warning`) tints the card at 10%, the disc at 15% and the heading in the tone; without it the card sits on the neutral fill and the heading in the text colour. `up` and `down` follow the provider's market colours. `media` is host content centred between the heading and the body, such as an example card and its caption. `body` and `caveat` are muted text (native draws a string as `Text` and any other node as given).
+- **Steps.** `steps` are drawn after the sections as a numbered list (web `ol`; native rows read as one, `1.` then the step).
+- **Closing note.** `caveat` is a muted note after the sections and steps.
+- **Actions.** `primaryAction` and `secondaryAction` are `{label, onSelect, intent?, disabled?, busy?, testID?}`. The secondary action sits on the leading side of the primary one, the two sharing the row equally as in `ConfirmBlock`; either alone takes the full width. Intents default to `primary` and `secondary`. `suppressFeedback` keeps the provider's feedback off both for a host that plays its own cue.
+- **Test IDs.** Web: `section.testID` and each action's `testID` become `data-testid`s, and other attributes pass to the block's `<section>`. Native: `testID` (default `explainer`) prefixes `-header`, `-back`, `-title`, `-description`, `-sections`, `-section-<id>` (and `-section-<id>-icon`, `-title`, `-media`, `-body`, `-caveat`), `-steps`, `-step-<index>`, `-caveat`, `-actions`, `-secondary` and `-primary`; `section.testID` and an action's `testID` replace theirs.
+- **Ownership.** All text is host text; the block holds no state and runs no flow. The host copies a link, opens a sheet or closes the dialog on each action.
 
 ### PositionBlock
 

@@ -1,0 +1,65 @@
+/** Native ExplainerBlock: an optional header, a lead paragraph, toned sections, steps, a caveat and one or two actions. */
+const React=require('react');
+const {create:render,act}=require('react-test-renderer');
+const {StyleSheet}=require('react-native');
+const {nativeSrgb:srgb,withAlpha}=require('@bloxwap/hig/tokens');
+// `up` is the provider's market colour, buy by default.
+const nativeSrgb={...srgb,up:srgb.buy};
+const {HIGProvider}=require('../../packages/hig/native/src/provider');
+const {ExplainerBlock}=require('../../packages/hig/native/src/explainer-block');
+const blocks=require('../../packages/hig/native/src/blocks');
+const {Button}=require('../../packages/hig/native/src/button');
+const h=React.createElement;
+let root;
+function mount(props={},provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(ExplainerBlock,props)));});return root.root;}
+const all=(view,id)=>view.findAll(node=>node.props.testID===id);
+const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
+const has=(view,id)=>all(view,id).length>0;
+const text=node=>typeof node==='string'?node:node.children.map(text).join('');
+const flat=node=>StyleSheet.flatten(node.props.style)??{};
+const button=(view,id)=>view.findAllByType(Button).find(node=>node.props.testID===id);
+afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
+const glyph=testID=>h('View',{testID});
+const trend=[
+ {id:'up',tone:'up',icon:glyph('glyph-up'),title:'Up',meaning:'→ Momentum is rising',body:'Price is climbing.'},
+ {id:'down',tone:'down',icon:glyph('glyph-down'),title:'Down',meaning:'→ Momentum is falling',body:'Price is sliding.'},
+ {id:'watch',tone:'warning',icon:glyph('glyph-watch'),title:'Watch',body:'Price is coiling.',testID:'trend-watch'},
+];
+
+it('draws the How Trend works sheet: header, lead, toned icon sections with heading and meaning, a caveat and one action',()=>{
+ const done=jest.fn();
+ const view=mount({title:'How Trend works',headingId:'trend-heading',description:'Trend reads each market every minute.',sections:trend,caveat:'Trend is not advice.',primaryAction:{label:'Got it',onSelect:done}});
+ expect(text(host(view,'explainer-title'))).toBe('How Trend works');expect(host(view,'explainer-title').props.nativeID).toBe('trend-heading');
+ expect(text(host(view,'explainer-description'))).toBe('Trend reads each market every minute.');expect(flat(host(view,'explainer-description')).color).toBe(nativeSrgb.muted);
+ const up=host(view,'explainer-section-up');expect(flat(up).backgroundColor).toBe(withAlpha(nativeSrgb.up,0.1));
+ const icon=host(view,'explainer-section-up-icon');expect(icon.props.accessibilityElementsHidden).toBe(true);expect(flat(icon).backgroundColor).toBe(withAlpha(nativeSrgb.up,0.15));expect(has(view,'glyph-up')).toBe(true);
+ const heading=host(view,'explainer-section-up-title');expect(heading.props.accessibilityRole).toBe('header');expect(text(heading)).toBe('Up → Momentum is rising');expect(flat(heading).color).toBe(nativeSrgb.up);
+ expect(text(host(view,'explainer-section-up-body'))).toBe('Price is climbing.');
+ expect(flat(host(view,'trend-watch')).backgroundColor).toBe(withAlpha(nativeSrgb.warning,0.1));expect(has(view,'explainer-section-watch')).toBe(false);
+ expect(text(host(view,'explainer-caveat'))).toBe('Trend is not advice.');
+ expect(has(view,'explainer-secondary')).toBe(false);expect(button(view,'explainer-primary').props.intent).toBe('primary');
+ act(()=>button(view,'explainer-primary').props.onPress());expect(done).toHaveBeenCalledTimes(1);
+});
+
+it('draws the How Swing works sheet without a header: neutral sections with media, a section caveat and host nodes as given',()=>{
+ const view=mount({testID:'swing-how',sections:[{id:'notification',title:'The notification',media:glyph('example-card'),body:'Each signal names a market.',caveat:'Signals expire.'},{id:'execution',title:'Execution',body:h('View',{testID:'rich'})}]});
+ expect(has(view,'swing-how-header')).toBe(false);expect(has(view,'swing-how-title')).toBe(false);
+ const section=host(view,'swing-how-section-notification');expect(flat(section).backgroundColor).not.toBe(withAlpha(nativeSrgb.up,0.1));expect(has(view,'swing-how-section-notification-icon')).toBe(false);
+ expect(flat(host(view,'swing-how-section-notification-title')).color).toBe(nativeSrgb.text);
+ expect(has(host(view,'swing-how-section-notification-media'),'example-card')).toBe(true);
+ expect(text(host(view,'swing-how-section-notification-caveat'))).toBe('Signals expire.');
+ expect(has(host(view,'swing-how-section-execution-body'),'rich')).toBe(true);
+ expect(has(view,'swing-how-actions')).toBe(false);
+});
+
+it('draws a task dialog: Back with backProps, numbered steps, two actions with their intents, and pins the header with stickyHeader',()=>{
+ const back=jest.fn(),pressIn=jest.fn(),copy=jest.fn(),later=jest.fn();
+ const view=mount({testID:'invite',title:'Invite a friend',onBack:back,backProps:{onPressIn:pressIn},steps:['Copy your link.','Send it to a friend.'],primaryAction:{label:'Copy link',onSelect:copy,busy:true,testID:'invite-copy'},secondaryAction:{label:'Not now',onSelect:later},suppressFeedback:true});
+ const backButton=all(view,'invite-back').find(node=>typeof node.props.onPressIn==='function');act(()=>backButton.props.onPressIn());act(()=>backButton.props.onPress());expect([back,pressIn].map(fn=>fn.mock.calls.length)).toEqual([1,1]);
+ expect(text(host(view,'invite-step-0'))).toBe('1.Copy your link.');expect(text(host(view,'invite-step-1'))).toBe('2.Send it to a friend.');expect(host(view,'invite-step-0').props.accessible).toBe(true);
+ const actions=host(view,'invite-actions');expect(actions.findAllByType(Button).map(node=>[node.props.testID,node.props.intent])).toEqual([['invite-secondary','secondary'],['invite-copy','primary']]);
+ expect(button(view,'invite-copy').props).toMatchObject({busy:true,suppressFeedback:true});
+ act(()=>button(view,'invite-secondary').props.onPress());expect(later).toHaveBeenCalledTimes(1);
+ const sticky=mount({title:'Invite a friend',stickyHeader:true});expect(has(sticky,'explainer-sticky-header')).toBe(true);
+ expect(blocks.ExplainerBlock).toBe(ExplainerBlock);
+});

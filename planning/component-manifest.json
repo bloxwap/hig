@@ -171,6 +171,7 @@
         "AssetsBlock",
         "ConfirmBlock",
         "PresetPickerBlock",
+        "ExplainerBlock",
         "ProfileBlock",
         "ScreenHeader",
         "SoundHapticsBlock",

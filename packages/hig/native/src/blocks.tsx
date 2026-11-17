@@ -38,3 +38,4 @@ export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel-block.js';
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './confirm-block.js';
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom,type PresetPickerAdjustable} from './preset-picker-block.js';
+export {ExplainerBlock,type ExplainerBlockProps,type ExplainerSection,type ExplainerAction,type ExplainerTone} from './explainer-block.js';

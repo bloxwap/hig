@@ -353,6 +353,16 @@
       "import": "./native/dist/preset-picker-block.js",
       "default": "./native/dist/preset-picker-block.js"
     },
+    "./react/blocks/explainer-block": {
+      "types": "./react/dist/blocks/explainer-block.d.ts",
+      "import": "./react/dist/blocks/explainer-block.js",
+      "default": "./react/dist/blocks/explainer-block.js"
+    },
+    "./native/explainer-block": {
+      "types": "./native/dist/explainer-block.d.ts",
+      "import": "./native/dist/explainer-block.js",
+      "default": "./native/dist/explainer-block.js"
+    },
     "./react/blocks/assets-block": {
       "types": "./react/dist/blocks/assets-block.d.ts",
       "import": "./react/dist/blocks/assets-block.js",

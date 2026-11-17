@@ -936,6 +936,22 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-confirm-points { display:flex;flex-direction:column;gap:8px;padding-inline-start:20px;list-style:disc;color:var(--hig-muted);line-height:1.5; }
 .hig-confirm-tertiary { margin-top:-8px; }
 .hig-confirm-tertiary[data-tone='destructive']:not(:disabled) { color:var(--hig-negative); }
+/* ExplainerBlock: sections on the neutral fill, or tinted 10% in their tone with a 15% disc and the heading in the tone. */
+.hig-explainer-sections,.hig-explainer-section > div { display:flex;flex-direction:column;gap:12px;min-width:0; }
+.hig-explainer-section > div { flex:1;gap:4px; }
+.hig-explainer-section { --hig-explainer-tone:var(--hig-text);display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--hig-fill); }
+.hig-explainer-section[data-tone] { background:color-mix(in srgb,var(--hig-explainer-tone) 10%,transparent); }
+.hig-explainer-section[data-tone='up'] { --hig-explainer-tone:var(--hig-up,var(--hig-buy)); }
+.hig-explainer-section[data-tone='down'] { --hig-explainer-tone:var(--hig-down,var(--hig-sell)); }
+.hig-explainer-section[data-tone='positive'] { --hig-explainer-tone:var(--hig-positive); }
+.hig-explainer-section[data-tone='negative'] { --hig-explainer-tone:var(--hig-negative); }
+.hig-explainer-section[data-tone='warning'] { --hig-explainer-tone:var(--hig-warning); }
+.hig-explainer-icon { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--hig-explainer-tone);background:color-mix(in srgb,var(--hig-explainer-tone) 15%,transparent); }
+.hig-explainer-section h3 { margin:0;font-size:1rem;line-height:1.5;font-weight:700;color:var(--hig-explainer-tone); }
+.hig-explainer-section h3 > span { color:var(--hig-muted); }
+.hig-explainer-media { display:flex;flex-direction:column;align-items:center;gap:8px;margin-block:12px; }
+.hig-explainer-text { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43; }
+.hig-explainer-steps { display:flex;flex-direction:column;gap:8px;padding-inline-start:20px; }
 .hig-assets-status { flex:none;padding:2px 10px;font:600 .75rem/1.33 var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);letter-spacing:.08em; }
 .hig-assets-status[data-countdown] { color:var(--hig-muted);letter-spacing:.02em;font-variant-numeric:tabular-nums; }
 .hig-assets-status .hig-number { font-family:inherit; }

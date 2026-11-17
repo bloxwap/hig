@@ -586,6 +586,26 @@
         "entry": "blocks/preset-picker-block",
         "signature": "export interface PresetPickerCustom {\n    /** The row's text: Custom amount. */\n    label: string;\n    /** Called on a press; the host opens its own entry. */\n    onSelect: () => void;\n    /** The value the host's entry set, as host text: `$75`. It is drawn on the trailing edge and the row reads as selected. */\n    value?: string;\n    /** Whether the row reads as selected. Defaults to whether `value` is given. */\n    selected?: boolean;\n    /** The row's accessible name, in place of its text: Edit custom size, current $75. */\n    accessibilityLabel?: string;\n    /** The row's `data-testid`. */\n    testID?: string;\n}"
       },
+      "ExplainerBlock": {
+        "entry": "blocks/explainer-block",
+        "signature": "export declare function ExplainerBlock({ title, description, sections, steps, caveat, primaryAction, secondaryAction, suppressFeedback, onBack, backProps, headerAction, headingId, stickyHeader, className, ...rest }: ExplainerBlockProps): React.JSX.Element;"
+      },
+      "ExplainerBlockProps": {
+        "entry": "blocks/explainer-block",
+        "signature": "export interface ExplainerBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading of the header. Leave it out inside a host dialog or sheet that draws its own title. */\n    title?: string;\n    /** A lead paragraph under the header, muted. */\n    description?: React.ReactNode;\n    /** The titled sections, in order. */\n    sections?: readonly ExplainerSection[];\n    /** Numbered steps after the sections, such as how to finish a task. */\n    steps?: readonly React.ReactNode[];\n    /** A small note after the sections and steps, such as what the whole explanation does not promise. */\n    caveat?: React.ReactNode;\n    /** The main action: Got it, Copy link. */\n    primaryAction?: ExplainerAction;\n    /** A second action on the leading side of the main one, the two sharing the row equally: Not now. */\n    secondaryAction?: ExplainerAction;\n    /** Keeps the provider's feedback off the actions, for a host that plays its own cue. */\n    suppressFeedback?: boolean;\n    /** Shows Back on the leading edge of the header (needs `title`). */\n    onBack?: () => void;\n    /** Attributes for the header's Back `<button>`. */\n    backProps?: ScreenHeaderControlProps;\n    /** A control on the trailing edge of the header, such as a Close `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** `id` of the header's heading, so a dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** Pins the header to the top of the nearest scroller. See Pinned headers. */\n    stickyHeader?: boolean;\n}"
+      },
+      "ExplainerSection": {
+        "entry": "blocks/explainer-block",
+        "signature": "export interface ExplainerSection {\n    /** Stable key, also used in native test IDs. */\n    id: string;\n    /** The section's heading: Up. */\n    title?: string;\n    /** Muted text after the heading on the same line, such as what the heading means: → Momentum is rising. */\n    meaning?: string;\n    /** A glyph on the leading edge in a disc, drawn in `currentColor` (the tone's colour). Decorative: hidden from assistive technology. */\n    icon?: React.ReactNode;\n    /** Tints the section, its disc and its heading. Without it the section sits on the neutral fill. */\n    tone?: ExplainerTone;\n    /** Host content under the heading and before the body, centred, such as an example card and its caption. */\n    media?: React.ReactNode;\n    /** The section's text, muted. */\n    body?: React.ReactNode;\n    /** A small note at the end of the section, such as what the signal does not promise. */\n    caveat?: React.ReactNode;\n    /** The section's `data-testid`. */\n    testID?: string;\n}"
+      },
+      "ExplainerAction": {
+        "entry": "blocks/explainer-block",
+        "signature": "export interface ExplainerAction {\n    label: string;\n    onSelect: () => void;\n    /** Defaults to `primary` for `primaryAction` and `secondary` for `secondaryAction`. */\n    intent?: 'primary' | 'secondary' | 'destructive' | 'ghost';\n    disabled?: boolean;\n    busy?: boolean;\n    /** The button's `data-testid`. */\n    testID?: string;\n}"
+      },
+      "ExplainerTone": {
+        "entry": "blocks/explainer-block",
+        "signature": "export type ExplainerTone = 'up' | 'down' | 'positive' | 'negative' | 'warning';"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -1839,6 +1859,26 @@
       "PresetPickerAdjustable": {
         "entry": "preset-picker-block",
         "signature": "export interface PresetPickerAdjustable {\n    /** Name of the increment action: Increase leverage. */\n    incrementLabel: string;\n    /** Name of the decrement action: Decrease leverage. */\n    decrementLabel: string;\n    /** The adjustable view's test ID, in place of `<testID>-adjustable`. */\n    testID?: string;\n}"
+      },
+      "ExplainerBlock": {
+        "entry": "explainer-block",
+        "signature": "export declare function ExplainerBlock({ title, description, sections, steps, caveat, primaryAction, secondaryAction, suppressFeedback, onBack, backProps, headerAction, headingId, stickyHeader, stickyHeaderBackground, scrollComponent, testID }: ExplainerBlockProps): React.JSX.Element;"
+      },
+      "ExplainerBlockProps": {
+        "entry": "explainer-block",
+        "signature": "export interface ExplainerBlockProps {\n    /** Heading of the header. Leave it out inside a host sheet that draws its own title. */\n    title?: string;\n    /** A lead paragraph under the header, muted. A string is drawn as Text; anything else as given. */\n    description?: React.ReactNode;\n    /** The titled sections, in order. */\n    sections?: readonly ExplainerSection[];\n    /** Numbered steps after the sections, such as how to finish a task. A string is drawn as Text; anything else as given. */\n    steps?: readonly React.ReactNode[];\n    /** A small note after the sections and steps. */\n    caveat?: React.ReactNode;\n    /** The main action: Got it, Copy link. */\n    primaryAction?: ExplainerAction;\n    /** A second action on the leading side of the main one, the two sharing the row equally: Not now. */\n    secondaryAction?: ExplainerAction;\n    /** Keeps the provider's feedback off the actions, for a host that plays its own cue. */\n    suppressFeedback?: boolean;\n    /** Shows Back on the leading edge of the header (needs `title`). */\n    onBack?: () => void;\n    /** Pressable props for Back, such as `{android_disableSound: true}`. */\n    backProps?: ScreenHeaderControlProps;\n    /** A control on the trailing edge of the header, such as a Close IconButton. */\n    headerAction?: React.ReactNode;\n    /** `nativeID` of the title, so a sheet can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child. Needs `title`; place it in a bounded container. */\n    stickyHeader?: boolean;\n    /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** Prefix of the test IDs: `<testID>-header`, `-back`, `-title`, `-description`, `-section-<id>` (with `-icon`, `-title`, `-media`, `-body` and `-caveat` after it), `-step-<index>`, `-caveat`, `-actions`, `-secondary` and `-primary`. Defaults to `explainer`. */\n    testID?: string;\n}"
+      },
+      "ExplainerSection": {
+        "entry": "explainer-block",
+        "signature": "export interface ExplainerSection {\n    /** Stable key, also used in the test IDs. */\n    id: string;\n    /** The section's heading: Up. */\n    title?: string;\n    /** Muted text after the heading on the same line, such as what the heading means: → Momentum is rising. */\n    meaning?: string;\n    /** A glyph on the leading edge in a 40dp disc, such as an icon drawn in `useColors()[tone]`. Decorative: hidden from assistive technology. */\n    icon?: React.ReactNode;\n    /** Tints the section, its disc and its heading. Without it the section sits on the neutral fill. */\n    tone?: ExplainerTone;\n    /** Host content under the heading and before the body, centred, such as an example card and its caption. */\n    media?: React.ReactNode;\n    /** The section's text, muted. A string is drawn as Text; anything else as given. */\n    body?: React.ReactNode;\n    /** A small note at the end of the section. A string is drawn as Text; anything else as given. */\n    caveat?: React.ReactNode;\n    /** The section's test ID, in place of `<testID>-section-<id>`. */\n    testID?: string;\n}"
+      },
+      "ExplainerAction": {
+        "entry": "explainer-block",
+        "signature": "export interface ExplainerAction {\n    label: string;\n    onSelect: () => void;\n    /** Defaults to `primary` for `primaryAction` and `secondary` for `secondaryAction`. */\n    intent?: 'primary' | 'secondary' | 'destructive' | 'ghost';\n    disabled?: boolean;\n    busy?: boolean;\n    /** The button's test ID, in place of `<testID>-primary` or `<testID>-secondary`. */\n    testID?: string;\n}"
+      },
+      "ExplainerTone": {
+        "entry": "explainer-block",
+        "signature": "export type ExplainerTone = 'up' | 'down' | 'positive' | 'negative' | 'warning';"
       },
       "BrandMark": {
         "entry": "brand",
