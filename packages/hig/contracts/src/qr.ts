@@ -188,32 +188,37 @@ function template(version:number):{modules:Uint8Array;reserved:Uint8Array}{
  if(version>=7)for(let i=0;i<18;i++){const a=size-11+i%3,b=Math.floor(i/3);set(a,b,0);set(b,a,0);}
  return {modules,reserved};
 }
-/** Penalty of runs (rule 1) and finder-like sequences (rule 3) along every line in one direction. `step` is the distance between neighbours in a line, `stride` between lines. */
-function linePenalty(modules:Uint8Array,size:number,step:number,stride:number):number{
- let score=0;
- for(let line=0;line<size;line++){
-  const start=line*stride;let run=1,previous=modules[start]!;
-  for(let i=1;i<size;i++){const cell=modules[start+i*step]!;if(cell===previous)run++;else{if(run>=5)score+=run-2;run=1;previous=cell;}}
-  if(run>=5)score+=run-2;
-  // 1011101 with four light modules on either side, each occurrence inside the symbol.
-  for(let i=0;i+11<=size;i++){
-   const at=(k:number)=>modules[start+(i+k)*step]!;
-   if(at(0)&&!at(1)&&at(2)&&at(3)&&at(4)&&!at(5)&&at(6)&&!at(7)&&!at(8)&&!at(9)&&!at(10))score+=40;
-   if(!at(0)&&!at(1)&&!at(2)&&!at(3)&&at(4)&&!at(5)&&at(6)&&at(7)&&at(8)&&!at(9)&&at(10))score+=40;
-  }
- }
- return score;
-}
+// Rule 3's sequence, 1011101 with four light modules after it or before it, as the last eleven modules of a line.
+const FINDER_LIKE=0b10111010000,FINDER_LIKE_REVERSED=0b00001011101;
 /**
  * The mask penalty of a symbol (ISO/IEC 18004 §7.8.3): runs of five or more, 2×2 blocks, finder-like sequences and the share of
  * dark modules. `encodeQR` scores each candidate with its format and version cells still light, as the `qr` encoder behind Cuer
  * and python-qrcode do, so HIG picks the same mask they pick.
  */
 export function qrPenalty(modules:Uint8Array,size:number):number{
- let score=linePenalty(modules,size,1,size)+linePenalty(modules,size,size,1),dark=0;
- for(let row=0;row<size;row++)for(let column=0;column<size;column++){
-  const at=row*size+column,cell=modules[at]!;dark+=cell;
-  if(row+1<size&&column+1<size&&cell===modules[at+1]&&cell===modules[at+size]&&cell===modules[at+size+1])score+=3;
+ let score=0,dark=0;
+ // Along the rows: runs, finder-like sequences (the last eleven modules, kept as bits), 2×2 blocks against the row above, and the dark count.
+ for(let row=0,at=0;row<size;row++){
+  let run=0,previous=2,window=0;
+  for(let column=0;column<size;column++,at++){
+   const cell=modules[at]!;dark+=cell;
+   if(cell===previous)run++;else{if(run>=5)score+=run-2;run=1;previous=cell;}
+   window=(window<<1|cell)&0x7ff;
+   if(column>=10&&(window===FINDER_LIKE||window===FINDER_LIKE_REVERSED))score+=40;
+   if(row&&column&&cell===modules[at-1]&&cell===modules[at-size]&&cell===modules[at-size-1])score+=3;
+  }
+  if(run>=5)score+=run-2;
+ }
+ // Down the columns: runs and finder-like sequences.
+ for(let column=0;column<size;column++){
+  let run=0,previous=2,window=0;
+  for(let row=0,at=column;row<size;row++,at+=size){
+   const cell=modules[at]!;
+   if(cell===previous)run++;else{if(run>=5)score+=run-2;run=1;previous=cell;}
+   window=(window<<1|cell)&0x7ff;
+   if(row>=10&&(window===FINDER_LIKE||window===FINDER_LIKE_REVERSED))score+=40;
+  }
+  if(run>=5)score+=run-2;
  }
  const total=size*size;
  return score+10*Math.ceil(Math.max(0,Math.abs(dark*100-total*50)-total*5)/(total*5));
