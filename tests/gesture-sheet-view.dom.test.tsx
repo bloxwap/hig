@@ -5,11 +5,11 @@ import {readFileSync} from 'node:fs';
 import {act,cleanup,render} from '@testing-library/react';
 import {GestureSheetView} from '../packages/hig/react/src/gesture-sheet';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-type Fake={frames:Keyframe[];options:KeyframeAnimationOptions;onfinish:(()=>void)|null;oncancel:(()=>void)|null};
+type Fake={cancel:ReturnType<typeof vi.fn>;frames:Keyframe[];options:KeyframeAnimationOptions;onfinish:(()=>void)|null;oncancel:(()=>void)|null};
 let restore:(()=>void)|undefined;
 function waapi(){
  const animations:Fake[]=[],original=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'animate');
- Object.defineProperty(HTMLElement.prototype,'animate',{configurable:true,writable:true,value:vi.fn((frames:Keyframe[],options:KeyframeAnimationOptions)=>{const animation:Fake={frames,options,onfinish:null,oncancel:null};animations.push(animation);return animation as unknown as Animation;})});
+ Object.defineProperty(HTMLElement.prototype,'animate',{configurable:true,writable:true,value:vi.fn((frames:Keyframe[],options:KeyframeAnimationOptions)=>{const animation:Fake={frames,options,onfinish:null,oncancel:null,cancel:vi.fn()};animations.push(animation);return animation as unknown as Animation;})});
  restore=()=>{if(original)Object.defineProperty(HTMLElement.prototype,'animate',original);else delete (HTMLElement.prototype as {animate?:unknown}).animate;};
  return animations;
 }
@@ -28,6 +28,16 @@ describe('GestureSheetView',()=>{
   expect(animations.map(animation=>animation.frames)).toEqual([[{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'scale(1)'}],[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.96)'}]]);
   expect(animations.map(animation=>animation.options.duration)).toEqual([220,270]);expect(animations.every(animation=>animation.options.easing==='cubic-bezier(.26,.08,.25,1)')).toBe(true);
   act(()=>animations[1].onfinish?.());expect(views().map(node=>node.textContent)).toEqual(['Second']);
+ });
+ it('cancels both animations on rapid navigation and unmount without a stale completion removing the new view',()=>{
+  const animations=waapi();
+  const view=render(<GestureSheetView viewKey='a'>First</GestureSheetView>);
+  view.rerender(<GestureSheetView viewKey='b'>Second</GestureSheetView>);
+  view.rerender(<GestureSheetView viewKey='c'>Third</GestureSheetView>);
+  for(const animation of animations.slice(0,2)){expect(animation.cancel).toHaveBeenCalledOnce();expect(animation.onfinish).toBeNull();}
+  expect(views().map(node=>node.textContent)).toEqual(['Second','Third']);
+  view.unmount();
+  for(const animation of animations.slice(2))expect(animation.cancel).toHaveBeenCalledOnce();
  });
  it('updates a view in place while its key stays the same',()=>{
   const animations=waapi();

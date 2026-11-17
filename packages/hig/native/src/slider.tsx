@@ -1,3 +1,4 @@
+import {numericRange} from '@bloxwap/hig/contracts';
 import React from 'react';
 import {View,Platform,UIManager,requireNativeComponent,type AccessibilityActionEvent,type ViewProps} from 'react-native';
 import SliderBackend from '@react-native-community/slider';
@@ -8,7 +9,7 @@ import {Text} from './surface.js';
 // cannot offer ACTION_SET_PROGRESS. The package's autolinked HIGAdjustableView (android/) adds it and reports
 // {actionName:'setProgress',value}; without native linking (Expo Go, web, tests) the wrapper stays a plain View.
 const AndroidAdjustable=Platform.OS==='android'&&UIManager.hasViewManagerConfig?.('HIGAdjustableView')?requireNativeComponent<ViewProps>('HIGAdjustableView'):null;
-export function Slider({label,value,defaultValue=0,min=0,max=100,step=1,disabled,onValueChange}: {label:string;value?:number;defaultValue?:number;min?:number;max?:number;step?:number;disabled?:boolean;onValueChange?:(v:number)=>void}){const [current,set]=useControllable(value,defaultValue,onValueChange);const {messages}=useHIG();const colors=useColors();const fills=useFills();
+export function Slider({label,value,defaultValue=0,min=0,max=100,step=1,disabled,onValueChange}: {label:string;value?:number;defaultValue?:number;min?:number;max?:number;step?:number;disabled?:boolean;onValueChange?:(v:number)=>void}){const range=numericRange(min,max,step);const [stored,commit]=useControllable(value,defaultValue,onValueChange);const current=range.clamp(stored);const set=(next:number)=>commit(range.clamp(next));const {messages}=useHIG();const colors=useColors();const fills=useFills();
  // Explicit action labels (#87): RN 0.83 Android lists an unlabeled increment/decrement action with an empty label "".
  const actions=[{name:'increment',label:messages.increase??en.increase},{name:'decrement',label:messages.decrease??en.decrease}];
  // A plain 48dp adjustable View owns label/value/increment/decrement on iOS and Android and hides the backend:

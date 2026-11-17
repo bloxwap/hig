@@ -15,7 +15,7 @@ export class FeedbackController implements FeedbackSink {
  emit=(event:FeedbackEvent):void=>{
   if(this.dead||this.background||event.cancelled||event.disabled||event.busy||event.suppressed)return;
   if(event.intent==='cancel'){attempt(this.options.sound?.cancel?.bind(this.options.sound));attempt(this.options.haptics?.cancel?.bind(this.options.haptics));return;}
-  const now=this.clock(),key=`${event.source}/${event.id}/${event.intent}`,cadenceKey=`${event.source}/${event.intent}`;
+  const now=this.clock(),key=JSON.stringify([event.source,event.id,event.intent]),cadenceKey=JSON.stringify([event.source,event.intent]);
   if(this.seen.has(key)||now-(this.cadence.get(cadenceKey)??-Infinity)<presets[event.intent].cooldown)return;
   this.seen.set(key,now);this.cadence.set(cadenceKey,now);
   const requestedCap=this.options.maxRemembered??256;const cap=Number.isFinite(requestedCap)?Math.max(1,Math.trunc(requestedCap)):256;while(this.seen.size>cap)this.seen.delete(this.seen.keys().next().value!);while(this.cadence.size>cap)this.cadence.delete(this.cadence.keys().next().value!);

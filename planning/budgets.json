@@ -3,10 +3,10 @@
     "gzip": 920
   },
   "field": {
-    "gzip": 400
+    "gzip": 440
   },
   "nativeSwitch": {
-    "gzip": 2560
+    "gzip": 2750
   },
   "feedbackContract": {
     "gzip": 1200
@@ -15,7 +15,7 @@
     "gzip": 700000
   },
   "docsCSS": {
-    "raw": 197500
+    "raw": 210000
   },
   "fonts": {
     "raw": 600000

@@ -528,7 +528,7 @@
       },
       "SwapPanelBlock": {
         "entry": "blocks/swap-panel-block",
-        "signature": "export declare function SwapPanelBlock({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, submittingLabel, onReset, destination, details, note, noteTone, title, onBack, headingId, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, keypad, shortcuts, captureKeyboard, view: viewProp, onViewChange, settings, className, style }: SwapPanelBlockProps): React.JSX.Element;"
+        "signature": "export declare function SwapPanelBlock({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, submittingLabel, onReset, destination, details, note, noteTone, title, onBack, headingId, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, keypad, shortcuts, captureKeyboard, active, view: viewProp, onViewChange, settings, className, style }: SwapPanelBlockProps): React.JSX.Element;"
       },
       "SwapPanel": {
         "entry": "blocks/swap-panel-block",
@@ -540,7 +540,7 @@
       },
       "SwapPanelBlockProps": {
         "entry": "blocks/swap-panel-block",
-        "signature": "export interface SwapPanelBlockProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, typed keys, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */\n    submitting?: boolean;\n    /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */\n    submittingLabel?: string;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet (“Withdraw from Papertrade”), drawn as the shared `ScreenHeader` (the title centred in a 44px row) like every other block. `onBack` adds Back on its leading edge. */\n    title?: string;\n    onBack?: () => void;\n    /** With `title`: `id` of the heading, so a host dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    /** `auto` shows the keypad for a coarse pointer (touch), where there is no hardware keyboard. */\n    keypad?: 'auto' | 'always' | 'never';\n    /** ⌘F / Ctrl+F opens the From picker and ⌘K / Ctrl+K the To picker while the panel is mounted. */\n    shortcuts?: boolean;\n    /** Digits typed anywhere on the page (outside a text field) drive the amount, not only inside the panel. */\n    captureKeyboard?: boolean;\n    /** The view on show. The panel pushes its token pickers and settings as views inside its own bounds; `main` is the cards. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+        "signature": "export interface SwapPanelBlockProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, typed keys, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */\n    submitting?: boolean;\n    /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */\n    submittingLabel?: string;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet (“Withdraw from Papertrade”), drawn as the shared `ScreenHeader` (the title centred in a 44px row) like every other block. `onBack` adds Back on its leading edge. */\n    title?: string;\n    onBack?: () => void;\n    /** With `title`: `id` of the heading, so a host dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    /** `auto` shows the keypad for a coarse pointer (touch), where there is no hardware keyboard. */\n    keypad?: 'auto' | 'always' | 'never';\n    /** ⌘F / Ctrl+F opens the From picker and ⌘K / Ctrl+K the To picker while the panel is mounted. */\n    shortcuts?: boolean;\n    /** Digits typed anywhere on the page (outside a text field) drive the amount, not only inside the panel. */\n    captureKeyboard?: boolean;\n    /** Disable global shortcuts and amount capture while a retained screen is inactive. */\n    active?: boolean;\n    /** The view on show. The panel pushes its token pickers and settings as views inside its own bounds; `main` is the cards. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    className?: string;\n    style?: React.CSSProperties;\n}"
       },
       "SwapPanelProps": {
         "entry": "blocks/swap-panel-block",
@@ -548,7 +548,7 @@
       },
       "SwapToken": {
         "entry": "blocks",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n    /** Picker rows: host text after the balance figure, such as ` HYPE`. */\n    unitsSuffix?: string;\n    /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */\n    detail?: string;\n}"
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an inline SVG, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Up to 100 when omitted; explicit precision must be an integer from 0 to 100. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`) sits under the name, the artwork is a single disc, and only Max is offered. */\n    /** Pass a `SwapFigure` when the amount in it can change while the card is shown, so it updates place by place. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n    /** Picker rows: host text after the balance figure, such as ` HYPE`. */\n    unitsSuffix?: string;\n    /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */\n    detail?: string;\n}"
       },
       "SwapChain": {
         "entry": "blocks",
@@ -1254,9 +1254,13 @@
         "entry": "animated-number-flow",
         "signature": "export declare function numberFlowWebMotion(timings: NumberFlowTimings): NumberFlowWebMotion;"
       },
+      "numberFlowCommit": {
+        "entry": "animated-number-flow",
+        "signature": "export declare const numberFlowCommit: {\n    /** A figure will read and write in the commit that is starting. */\n    expect(): void;\n    /** That figure has read all it needs: the last one to say so writes for all of them. */\n    done(): void;\n};"
+      },
       "NumberFlowEngine": {
         "entry": "animated-number-flow",
-        "signature": "export declare class NumberFlowEngine {\n    private root;\n    private before;\n    private extent;\n    private clip;\n    private readonly reels;\n    private readonly running;\n    private readonly fades;\n    private ghosts;\n    /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */\n    attach(root: HTMLElement | null): void;\n    /** Whether anything is still moving. */\n    get busy(): boolean;\n    /** First: where every part is now, read before the commit that changes them. */\n    measure(): void;\n    /** Last, invert, play: slide every part from where it was, fade in what arrived and fade out a copy of what left. Does nothing without a `measure` since the last call. */\n    flip(motion: NumberFlowWebMotion): void;\n    /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */\n    spin(spins: ReadonlyMap<string, NumberFlowSpin>, glyphs: readonly string[], timing: NumberFlowWebTiming): void;\n    /** Stop everything where it is going: the parts are left exactly as React drew them. */\n    cancel(): void;\n    private stop;\n    private settle;\n    private play;\n}"
+        "signature": "export declare class NumberFlowEngine {\n    private root;\n    private before;\n    private extent;\n    private clip;\n    private readonly reels;\n    private readonly slides;\n    private readonly running;\n    private readonly fades;\n    private ghosts;\n    private epoch;\n    /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */\n    attach(root: HTMLElement | null): void;\n    /** Whether anything is still moving. */\n    get busy(): boolean;\n    /** First: where every part is now, read before the commit that changes them. */\n    measure(): void;\n    /** Last, invert, play: slide every part from where it was, fade in what arrived and fade out a copy of what left. Does nothing without a `measure` since the last call. */\n    flip(motion: NumberFlowWebMotion): void;\n    /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */\n    spin(spins: ReadonlyMap<string, NumberFlowSpin>, glyphs: readonly string[], timing: NumberFlowWebTiming): void;\n    /** Stop everything where it is going: the parts are left exactly as React drew them. */\n    cancel(): void;\n    /** Writes now, or with the rest of the commit when other figures are still to read. A `cancel` in between drops it. */\n    private write;\n    /** Makes room on an element for another movement: one in flight alone becomes its additive twin, where it is and on the same clock. Returns what is still in flight. */\n    private join;\n    private stop;\n    private settle;\n    private play;\n}"
       },
       "AnimatedNumberToken": {
         "entry": "animated-number-model",
@@ -1293,6 +1297,10 @@
       "numberFlowAnchorSide": {
         "entry": "animated-number-model",
         "signature": "export declare function numberFlowAnchorSide(key: string): -1 | 1;"
+      },
+      "useAsyncResult": {
+        "entry": "async-result",
+        "signature": "export declare function useAsyncResult(owner: unknown): () => () => boolean;"
       },
       "Figure": {
         "entry": "figure",
@@ -1874,7 +1882,7 @@
       },
       "SwapCapsule": {
         "entry": "blocks",
-        "signature": "export declare function SwapCapsule({ children, onPress, label, testID, hitSlop, ref }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string; /** Defaults to a 44dp target, as on the swap card. */\n    hitSlop?: Insets; /** Reaches the capsule, for example to move accessibility focus back to it. */\n    ref?: React.Ref<View>;\n}): React.JSX.Element;"
+        "signature": "export declare function SwapCapsule({ children, onPress, label, testID, disabled, hitSlop, ref }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string;\n    disabled?: boolean; /** Defaults to a 44dp target, as on the swap card. */\n    hitSlop?: Insets; /** Reaches the capsule, for example to move accessibility focus back to it. */\n    ref?: React.Ref<View>;\n}): React.JSX.Element;"
       },
       "SwapAmountCard": {
         "entry": "blocks",
@@ -1914,7 +1922,7 @@
       },
       "SwapToken": {
         "entry": "blocks",
-        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n    /** Picker rows: host text after the balance figure, such as ` HYPE`. */\n    unitsSuffix?: string;\n    /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */\n    detail?: string;\n}"
+        "signature": "export interface SwapToken {\n    /** Unique per asset and chain, for example `${chainId}-${address}`. */\n    id: string;\n    symbol: string;\n    name: string;\n    /** Chain display name and identity. Two tokens on the same `chainId` swap; different chains bridge. */\n    chain: string;\n    chainId: string | number;\n    /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */\n    icon?: SwapArtwork;\n    chainIcon?: SwapArtwork;\n    /** Most decimal places a token amount may be typed with, for example 6 for USDC. Up to 100 when omitted; explicit precision must be an integer from 0 to 100. Dollars always stop at two. */\n    decimals?: number;\n    /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */\n    balance?: number | null;\n    /** USD per unit, when the host knows it. Enables the dollar and unit conversion. */\n    price?: number | null;\n    /** Presents the side as an account rather than a token: this line (for example `$22.72 available`, as text or as a `SwapFigure` that updates in place) sits under the name, the artwork is a single disc, and only Max is offered. */\n    caption?: string | SwapFigure;\n    /** Extra text matched by the picker search, such as the contract address. */\n    keywords?: string;\n    /** Picker rows: host text after the balance figure, such as ` HYPE`. */\n    unitsSuffix?: string;\n    /** Picker rows: the second line under the name in place of the chain, for a list that is not about chains. The search still matches the chain. */\n    detail?: string;\n}"
       },
       "SwapArtwork": {
         "entry": "blocks",
@@ -2186,7 +2194,7 @@
       },
       "GestureSheet": {
         "entry": "gesture-sheet-next",
-        "signature": "export declare function GestureSheet(props: GestureSheetProps): React.JSX.Element | null;"
+        "signature": "export declare const GestureSheet: React.MemoExoticComponent<(props: GestureSheetProps) => React.JSX.Element | null>;"
       },
       "ListGroupAction": {
         "entry": "list-group",
@@ -2306,7 +2314,7 @@
       },
       "useHIG": {
         "entry": "provider",
-        "signature": "export declare const useHIG: () => HIGContext;"
+        "signature": "export declare const useHIG: () => HIGContext & {\n    provided?: boolean;\n};"
       },
       "usePresentNumber": {
         "entry": "provider",
@@ -2682,7 +2690,7 @@
       },
       "createNumberReelModel": {
         "entry": "animated-number-model",
-        "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string, animateFormatted?: boolean): NumberReelModel | null;"
+        "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string, animateFormatted?: boolean, reading?: string): NumberReelModel | null;"
       },
       "numberReelPlace": {
         "entry": "animated-number-model",
@@ -2716,6 +2724,10 @@
         "entry": "announce",
         "signature": "export declare function speak(message: string, severity: string): void;"
       },
+      "useAsyncResult": {
+        "entry": "async-result",
+        "signature": "export declare function useAsyncResult(owner: unknown): () => () => boolean;"
+      },
       "avatarSize": {
         "entry": "avatar-frame",
         "signature": "export declare const avatarSize = 40;"
@@ -2723,6 +2735,10 @@
       "AvatarFrameProps": {
         "entry": "avatar-frame",
         "signature": "export interface AvatarFrameProps {\n    /** The person or account. It is the accessible name, and the first two letters are the initials. */\n    name: string;\n    /** An image to show instead, cropped to fill the box. If it fails to load, or it names no image (`{uri: undefined}`, an empty address), the fallback shows in its place. */\n    source?: ImageSourcePropType;\n    /** Width and height in dp. Defaults to 40. With it, the initials are drawn at 40% of the size and keep that size at every system text size, so they stay inside the box. A size that is not a finite number of zero or more is ignored. */\n    size?: number;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from VoiceOver and TalkBack, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
+      },
+      "sameFrame": {
+        "entry": "avatar-frame",
+        "signature": "export declare const sameFrame: (a: AvatarFrameProps, b: AvatarFrameProps) => boolean;"
       },
       "AvatarFrame": {
         "entry": "avatar-frame",
@@ -2779,6 +2795,10 @@
       "SHEET_RESIZE": {
         "entry": "gesture-sheet-model",
         "signature": "export declare const SHEET_RESIZE: {\n    readonly duration: 270;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n};"
+      },
+      "validateSnapPoints": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function validateSnapPoints(points: readonly SheetSnapPoint[], initialIndex?: number): void;"
       },
       "SearchIcon": {
         "entry": "icons",
@@ -2934,7 +2954,7 @@
       },
       "unitsToEntry": {
         "entry": "swap-shared",
-        "signature": "export declare function unitsToEntry(units: number, mode: SwapDenomination, price: number): string;"
+        "signature": "export declare function unitsToEntry(units: number | string, mode: SwapDenomination, price: number): string;"
       },
       "applyAmountKey": {
         "entry": "swap-shared",
@@ -3004,11 +3024,15 @@
       },
       "AltimeterChart": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, style, ...props }: AltimeterChartProps): React.JSX.Element;"
+        "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, targets, dgen, style, ...props }: AltimeterChartProps): React.JSX.Element;"
       },
       "AltimeterChartProps": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n}"
+        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Horizontal dotted levels with optional right-aligned labels and CSS colors. Offscreen labels pin and stack at the edges. Use stable, unique IDs. */\n    targets?: readonly AltimeterTarget[];\n    /** DGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */\n    dgen?: boolean;\n}"
+      },
+      "AltimeterTarget": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface AltimeterTarget {\n    /** Stable, unique identity. Changing the price re-arms this target without firing an effect. */\n    id: string;\n    price: number;\n    /** Title shown before the formatted target price, with capitalized words. Omit for a line without text. */\n    label?: string;\n    /** Defaults to the chart's primary accent. */\n    color?: string;\n}"
       },
       "bitcoinPrice": {
         "entry": "@bloxwap/hig/chart",
@@ -3016,7 +3040,7 @@
       },
       "AltimeterFeed": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export type AltimeterFeed = (onPrice: (price: number) => void) => () => void;"
+        "signature": "export type AltimeterFeed = (onPrice: (price: number) => void, onStale?: () => void) => () => void;"
       },
       "OutcomeChart": {
         "entry": "@bloxwap/hig/chart",
@@ -3036,15 +3060,23 @@
       },
       "OutcomeFeed": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export type OutcomeFeed = (onOutcomes: (outcomes: readonly Outcome[]) => void) => () => void;"
+        "signature": "export type OutcomeFeed = (onOutcomes: (outcomes: readonly Outcome[]) => void, onStale?: () => void) => () => void;"
       },
       "championsLeagueWinner": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare const championsLeagueWinner: OutcomeFeed;"
       },
+      "ALTIMETER_BURST_COOLDOWN_MS": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_BURST_COOLDOWN_MS = 600;"
+      },
+      "burstAtPill": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function burstAtPill(pill: HTMLElement, layer: HTMLElement, color: string): () => void;"
+      },
       "AltimeterFrame": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export interface AltimeterFrame {\n    width: number;\n    height: number;\n    now: number;\n    /** Grid offset in (-50, 0]. */\n    phase: number;\n    ticks: readonly AltimeterTick[];\n    /** Eased price held at the vertical center; `NaN` while waiting. */\n    display: number;\n    anchor: number;\n    spacing: number;\n    colors: {\n        grid: string;\n        ladder: string;\n        line: string;\n    };\n    label: (price: number) => string;\n    /** Resolved font stack for the ladder labels. Defaults to the mono family by name. */\n    font?: string;\n}"
+        "signature": "export interface AltimeterFrame {\n    width: number;\n    height: number;\n    now: number;\n    /** Grid offset in (-50, 0]. */\n    phase: number;\n    ticks: readonly AltimeterTick[];\n    /** Eased price held at the vertical center; `NaN` while waiting. */\n    display: number;\n    anchor: number;\n    spacing: number;\n    colors: {\n        grid: string;\n        ladder: string;\n        line: string;\n    };\n    label: (price: number) => string;\n    /** Resolved font stack for the ladder labels. Defaults to the mono family by name. */\n    font?: string;\n    /** Optional text-width cache for a live renderer; invalidated when the resolved font changes. */\n    labelWidth?: (text: string) => number;\n    /** Vertical text bounds of target labels; colliding ladder numbers yield to them. */\n    targetLabelBounds?: readonly (readonly [number, number])[];\n}"
       },
       "drawAltimeter": {
         "entry": "@bloxwap/hig/chart",
@@ -3090,6 +3122,10 @@
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function easeInOut(t: number): number;"
       },
+      "priceTween": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function priceTween(): {\n    reset(): void;\n    update(target: number, now: number, snap?: boolean): number;\n};"
+      },
       "AltimeterPoint": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export type AltimeterPoint = readonly [number, number];"
@@ -3109,6 +3145,26 @@
       "ladderPrices": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function ladderPrices(anchor: number, spacing: number, low: number, high: number): number[];"
+      },
+      "validTargets": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function validTargets(targets: readonly AltimeterTarget[]): AltimeterTarget[];"
+      },
+      "AltimeterTargetPosition": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface AltimeterTargetPosition {\n    /** Actual line position, which may be outside the chart. */\n    y: number;\n    /** Row position clamped to the chart so pinned labels never inherit a huge offscreen transform. */\n    anchor: number;\n    /** Label's top in chart coordinates, after stacking. */\n    labelTop?: number;\n    pinned: 'top' | 'bottom' | null;\n}"
+      },
+      "placeTargets": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function placeTargets(targets: readonly AltimeterTarget[], display: number, spacing: number, height: number, sideOffsets?: ReadonlyMap<string, number>): Map<string, AltimeterTargetPosition>;"
+      },
+      "targetLayout": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function targetLayout(): {\n    reset(): void;\n    update(targets: readonly AltimeterTarget[], display: number, spacing: number, height: number, now: number, snap?: boolean): Map<string, AltimeterTargetPosition>;\n};"
+      },
+      "targetCrossings": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function targetCrossings(): {\n    reset(): void;\n    update(price: number, targets: readonly AltimeterTarget[]): AltimeterTarget[];\n};"
       },
       "nextChampionsLeagueQuestion": {
         "entry": "@bloxwap/hig/chart",
@@ -3156,7 +3212,7 @@
       },
       "capsuleCenters": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function capsuleCenters(wanted: readonly number[], height: number, size?: number, gap?: number): number[];"
+        "signature": "export declare function capsuleCenters(wanted: readonly number[], height: number, size?: number, gap?: number, preserveOrder?: boolean): number[];"
       },
       "monoFont": {
         "entry": "@bloxwap/hig/chart",

@@ -6,6 +6,8 @@ Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Filter`, `Pres
 
 Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig/react/selection` or `@bloxwap/hig/native/selection` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
+Slider requires finite ordered bounds and a positive finite step. Displayed values and callbacks are clamped to the range. Choice keys must be unique. Controlled components retain their ownership for their mounted lifetime; remount to change ownership.
+
 ## API and anatomy
 
 | Control | Key props and behavior |

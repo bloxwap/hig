@@ -4,6 +4,7 @@
 @source '../components';
 @source '../lib';
 @source '../src/*.tsx';
+@source '../src/toast-alternatives';
 @source '../content';
 @source '../mdx-components.tsx';
 @import 'fumadocs-ui/css/neutral.css';
@@ -31,3 +32,24 @@
 .brand-name small{font-size:.7rem;font-weight:400;color:var(--hig-muted)}
 .docs-version{padding-top:.75rem;font-size:.7rem;color:var(--hig-muted)}
 
+
+@theme inline {
+ --color-bloxwap-green: var(--bloxwap-green);
+ --color-bloxwap-pink: var(--bloxwap-pink);
+ --color-bloxwap-yellow: var(--bloxwap-yellow);
+ --color-bloxwap-blue: var(--bloxwap-blue);
+ --color-background: var(--color-fd-background);
+ --color-foreground: var(--color-fd-foreground);
+ --color-muted: var(--color-fd-muted);
+ --color-muted-foreground: var(--color-fd-muted-foreground);
+ --color-border: var(--color-fd-border);
+ --color-on-brand: #111;
+}
+[aria-label="Monorepo toast alternatives"] {
+ --bloxwap-green: var(--hig-positive);
+ --bloxwap-pink: var(--hig-negative);
+ --bloxwap-yellow: var(--hig-warning);
+ --bloxwap-blue: var(--hig-info);
+}
+
+[aria-label="Monorepo toast alternatives"] { --hig-up: var(--hig-positive); --hig-down: var(--hig-negative); --dir-up: var(--hig-positive); --dir-down: var(--hig-negative); }

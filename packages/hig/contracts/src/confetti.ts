@@ -107,7 +107,7 @@ export const confettiStarWedge={width:2*CONFETTI_STAR_OUTER*CONFETTI_STAR_INNER*
  */
 export function createConfettiBurst(options:ConfettiOptions|undefined,fallbackColors:readonly string[]|(()=>readonly string[]),random:()=>number=Math.random):ConfettiBurst{
  const o=options??{},d=confettiDefaults;
- const count=Math.floor(finite(o.particleCount,d.particleCount,0,Number.MAX_SAFE_INTEGER));
+ const count=Math.floor(finite(o.particleCount,d.particleCount,0,500));
  const angle=finite(o.angle,d.angle)*Math.PI/180,spread=finite(o.spread,d.spread)*Math.PI/180,velocity=finite(o.startVelocity,d.startVelocity);
  const own=list(o.colors).filter(color=>typeof color==='string'&&color!=='');const colors=own.length?own:typeof fallbackColors==='function'?fallbackColors():fallbackColors;
  const picked=list(o.shapes).filter(shape=>shapes.includes(shape));const pool=picked.length?picked:d.shapes;
@@ -169,14 +169,19 @@ export function confettiBox(shape:ConfettiShape,physics:ConfettiPhysics):number{
  */
 export function confettiPose(particle:ConfettiParticle,physics:ConfettiPhysics,t:number):ConfettiPose{
  'worklet';
- const flight=confettiFlight(particle,physics,t,confettiTravel(physics,t),{x:0,y:0,ux:0,uy:0,vx:0,vy:0,wobble:0});
- const size=physics.size;
- if(size<=0)return {x:flight.x,y:flight.y,rotate:0,scaleX:0,scaleY:0};
- if(particle.shape==='star')return {x:flight.x,y:flight.y,rotate:0,scaleX:1,scaleY:1};
- if(particle.shape==='circle')return {x:flight.x,y:flight.y,rotate:Math.PI/10*flight.wobble,scaleX:Math.abs(flight.ux)/size,scaleY:Math.abs(flight.vy)/size};
+ // confettiFlight's sums, kept in local variables and taken only as far as the shape needs them. Native runs this for every
+ // piece every frame, and its engine allocates a flight object and a boxed number for each field written to it: a star needs
+ // no angle at all and a circle no tumble or flutter. The results are the same numbers, bit for bit.
+ const size=physics.size,travel=confettiTravel(physics,t),x=particle.dx*travel+physics.drift*t,y=particle.dy*travel+physics.gravity*t;
+ if(size<=0)return {x,y,rotate:0,scaleX:0,scaleY:0};
+ if(particle.shape==='star')return {x,y,rotate:0,scaleX:1,scaleY:1};
+ const flat=physics.flat,wobble=flat?0:particle.wobble+particle.wobbleSpeed*t,ux=flat?size:size*Math.cos(wobble),vy=flat?size:size*Math.sin(wobble);
+ if(particle.shape==='circle')return {x,y,rotate:Math.PI/10*wobble,scaleX:Math.abs(ux)/size,scaleY:Math.abs(vy)/size};
+ let uy=0,vx=0;
+ if(!flat){const tilt=particle.tilt+0.1*t,noise=Math.sin((particle.seed+Math.floor(t))*12.9898)*43758.5453,flutter=2+noise-Math.floor(noise);uy=flutter*Math.sin(tilt);vx=flutter*Math.cos(tilt);}
  // Singular values of [[ux,vx],[uy,vy]] and the rotation that follows the stretch; the rotation before it only turns a square onto itself.
- const e=(flight.ux+flight.vy)/2,f=(flight.ux-flight.vy)/2,g=(flight.uy+flight.vx)/2,h=(flight.uy-flight.vx)/2;
+ const e=(ux+vy)/2,f=(ux-vy)/2,g=(uy+vx)/2,h=(uy-vx)/2;
  const q=Math.sqrt(e*e+h*h),r=Math.sqrt(f*f+g*g);
  // The flutter does not shrink with the piece, so a piece far below a pixel would be stretched without end: the stretch stops at REACH.
- return {x:flight.x+(flight.ux+flight.vx)/2,y:flight.y+(flight.uy+flight.vy)/2,rotate:(Math.atan2(h,e)+Math.atan2(g,f))/2,scaleX:Math.min(REACH,(q+r)/size),scaleY:Math.min(REACH,Math.abs(q-r)/size)};
+ return {x:x+(ux+vx)/2,y:y+(uy+vy)/2,rotate:(Math.atan2(h,e)+Math.atan2(g,f))/2,scaleX:Math.min(REACH,(q+r)/size),scaleY:Math.min(REACH,Math.abs(q-r)/size)};
 }

@@ -6,6 +6,8 @@ Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, `Search`, `ListGroup`,
 
 Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react/navigation` or `@bloxwap/hig/native/navigation` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
+Uncontrolled Tabs and Select reconcile removed or disabled selections to the first enabled item. Controlled invalid selections stay empty until the host supplies a valid value. Tabs require unique values. Pagination normalizes page and total to positive integers and clamps page to total.
+
 ## API and anatomy
 
 | Component | Key props and behavior |

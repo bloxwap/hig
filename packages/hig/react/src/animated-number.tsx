@@ -2,7 +2,7 @@
 import React,{useContext,useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import {type NumberProps} from './data.js';
 import {createAnimatedNumberModel,createAnimatedNumberTransitions,createFormattedAnimatedNumberModel,numberFlowPlaces,numberFlowTokenKeys} from './animated-number-model.js';
-import {NumberFlowEngine,numberFlowWebMotion,type NumberFlowSpin} from './animated-number-flow.js';
+import {NumberFlowEngine,numberFlowCommit,numberFlowWebMotion,type NumberFlowSpin} from './animated-number-flow.js';
 import {numberFlowDeltas,numberFlowDigitLength,numberFlowNeutral,resolveNumberFlowTimings,type NumberFlowDigits,type NumberFlowTiming} from '@bloxwap/hig/contracts/number-flow';
 import {useHIG,useNumberLocale} from './provider.js';
 import {tokens as higTokens} from '@bloxwap/hig/tokens';
@@ -75,8 +75,11 @@ function SlideReadout({duration=180,trend,options:requested,formattedValue,anima
   for(const animation of created)animation.onfinish=()=>{if(generation.current===id&&--remaining===0){active.current=[];setSettled(frame);}};
   return()=>{if(generation.current===id)cancel();};
  },[frame,reducedMotion,duration]);
- const tokens=settled===frame||reducedMotion?createAnimatedNumberTransitions(null,frame.model):frame.tokens;
- return <span className={className?`hig-number ${className}`:'hig-number'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={element} className='hig-animated-number-visual' aria-hidden='true' dir={direction}>{known&&props.prefix}{tokens.map(token=>token.changed?<span className='hig-animated-number-place' data-hig-animated-number-change key={token.key}>{token.oldText!==undefined&&<span className='hig-animated-number-old'>{token.oldText}</span>}{token.text&&<span className='hig-animated-number-new'>{token.text}</span>}</span>:<span key={token.key}>{token.text}</span>)}{known&&props.suffix}{props.stale&&<span> {staleText}</span>}</span></span>;
+ // The same elements for the same reading: a parent that draws again without a new value costs this figure no reconciliation.
+ const still=settled===frame||reducedMotion;
+ return useMemo(()=>{const tokens=still?createAnimatedNumberTransitions(null,frame.model):frame.tokens;
+  return <span className={className?`hig-number ${className}`:'hig-number'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={element} className='hig-animated-number-visual' aria-hidden='true' dir={direction}>{known&&props.prefix}{tokens.map(token=>token.changed?<span className='hig-animated-number-place' data-hig-animated-number-change key={token.key}>{token.oldText!==undefined&&<span className='hig-animated-number-old'>{token.oldText}</span>}{token.text&&<span className='hig-animated-number-new'>{token.text}</span>}</span>:<span key={token.key}>{token.text}</span>)}{known&&props.suffix}{props.stale&&<span> {staleText}</span>}</span></span>;
+ },[frame,still,className,props.label,accessible,direction,known,props.prefix,props.suffix,props.stale,staleText]);
 }
 
 interface FlowMember {measure:()=>void;flip:()=>void}
@@ -115,8 +118,9 @@ function FlowReadout(all:AnimatedNumberProps){
  const visual=useRef<HTMLSpanElement>(null),engine=useRef<NumberFlowEngine|null>(null),committed=useRef<{value:number|null|undefined;signature:string;model:typeof model;drawn:string}|null>(null),live=useRef({moving,motion:flowMotion});
  useEffect(()=>group?.join({measure:()=>{if(live.current.moving)engine.current?.measure();},flip:()=>engine.current?.flip(live.current.motion)}),[group]);
  useEffect(()=>()=>engine.current?.cancel(),[]);
- const before=()=>{const prior=committed.current;if(!prior||!moving||(prior.model===model&&prior.drawn===drawn))return;if(group)group.willUpdate();else engine.current?.measure();};
- useCommitEffect(()=>{
+ // A figure that is about to change holds its writes until every figure changing in the same commit has read its positions.
+ const expected=useRef(false),before=()=>{const prior=committed.current;if(!prior||!moving||(prior.model===model&&prior.drawn===drawn))return;if(!expected.current){expected.current=true;numberFlowCommit.expect();}if(group)group.willUpdate();else engine.current?.measure();};
+ const change=()=>{
   // A reading that slides instead is drawn by another tree; whatever comes back after it is a first paint, not a change.
   if(!placeable){committed.current=null;engine.current?.cancel();return;}
   const flow=engine.current??=new NumberFlowEngine();flow.attach(visual.current);live.current={moving,motion:flowMotion};
@@ -132,17 +136,22 @@ function FlowReadout(all:AnimatedNumberProps){
   const old=new Map(numberFlowPlaces(prior.model).map(place=>[place.key,place.digit])),places=numberFlowPlaces(model),deltas=numberFlowDeltas(numberFlowPlaces(prior.model),places,{trend:movement,digits,continuous}),spins=new Map<string,NumberFlowSpin>();
   for(const place of places){const delta=deltas.get(place.key)??0,from=old.get(place.key)??0;if(delta)spins.set(place.key,{delta,from,length:numberFlowDigitLength(digits,place.place,Math.max(place.digit,from))});}
   flow.spin(spins,model.digits??asciiDigits,flowMotion.spin);
- });
+ };
+ useCommitEffect(()=>{try{change();}finally{if(expected.current){expected.current=false;numberFlowCommit.done();}}});
+ // The same elements for the same reading: a parent that draws again without a new value costs this figure no reconciliation.
+ const figure=useMemo(()=>{
+  // The digits, first to last with the separators between them, sit in one box the engine clips while it changes width; signs and currency stay outside it.
+  const parts=model.tokens.map((token,index)=>token.digit?<span className='hig-number-flow-place' data-hig-flow-key={keys[index]} data-hig-flow-digit='' key={keys[index]}><span className='hig-number-flow-digit'>{token.text}</span></span>:<span className='hig-number-flow-part' data-hig-flow-key={keys[index]} key={keys[index]}>{token.text}</span>);
+  const found=model.tokens.findIndex(token=>token.digit),first=found<0?parts.length:found;let last=parts.length-1;while(last>=first&&!model.tokens[last].digit)last--;
+  return <span className={className?`hig-number hig-number-flow ${className}`:'hig-number hig-number-flow'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={visual} className='hig-animated-number-visual' aria-hidden='true' dir={direction} data-will-change={willChange?'':undefined}>
+   {prefix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:prefix'>{prefix}</span>}
+   <span className='hig-number-flow-core' dir='ltr'>{parts.slice(0,first)}<span className='hig-number-flow-digits' key='digits'>{parts.slice(first,last+1)}<span className='hig-number-flow-ghosts' key='ghosts'/></span>{parts.slice(last+1)}</span>
+   {suffix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:suffix'>{suffix}</span>}
+   {props.stale&&<span className='hig-number-flow-part' data-hig-flow-key='affix:stale'> {staleText}</span>}
+   <span className='hig-number-flow-ghosts'/>
+  </span></span>;
+ },[model,keys,className,props.label,accessible,direction,willChange,prefix,suffix,props.stale,staleText]);
  // The number itself is always drawn left to right, as digits are in every script; a reading that needs reordering slides instead.
  if(!placeable)return <SlideReadout {...all}/>;
- // The digits, first to last with the separators between them, sit in one box the engine clips while it changes width; signs and currency stay outside it.
- const parts=model.tokens.map((token,index)=>token.digit?<span className='hig-number-flow-place' data-hig-flow-key={keys[index]} data-hig-flow-digit='' key={keys[index]}><span className='hig-number-flow-digit'>{token.text}</span></span>:<span className='hig-number-flow-part' data-hig-flow-key={keys[index]} key={keys[index]}>{token.text}</span>);
- const found=model.tokens.findIndex(token=>token.digit),first=found<0?parts.length:found;let last=parts.length-1;while(last>=first&&!model.tokens[last].digit)last--;
- return <BeforeCommit before={before}><span className={className?`hig-number hig-number-flow ${className}`:'hig-number hig-number-flow'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={visual} className='hig-animated-number-visual' aria-hidden='true' dir={direction} data-will-change={willChange?'':undefined}>
-  {prefix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:prefix'>{prefix}</span>}
-  <span className='hig-number-flow-core' dir='ltr'>{parts.slice(0,first)}<span className='hig-number-flow-digits' key='digits'>{parts.slice(first,last+1)}<span className='hig-number-flow-ghosts' key='ghosts'/></span>{parts.slice(last+1)}</span>
-  {suffix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:suffix'>{suffix}</span>}
-  {props.stale&&<span className='hig-number-flow-part' data-hig-flow-key='affix:stale'> {staleText}</span>}
-  <span className='hig-number-flow-ghosts'/>
- </span></span></BeforeCommit>;
+ return <BeforeCommit before={before}>{figure}</BeforeCommit>;
 }

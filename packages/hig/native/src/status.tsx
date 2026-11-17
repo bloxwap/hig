@@ -1,8 +1,9 @@
+import {progressValue} from '@bloxwap/hig/contracts';
 import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {AvatarFrame,type AvatarFrameProps} from './avatar-frame.js';
+import {AvatarFrame,sameFrame,type AvatarFrameProps} from './avatar-frame.js';
 import {ActivityIndicator,Animated,Easing,View,ScrollView,useWindowDimensions,Platform,type DimensionValue,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
@@ -117,7 +118,7 @@ export interface SpinnerProps {
  testID?:string;
 }
 export function Spinner({label,hideLabel,testID}:SpinnerProps){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View testID={testID} accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/>{hideLabel?null:<Text>{text}</Text>}</View>;}
-export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){
+export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){({value,max}=progressValue(value,max));
  const {locale,messages,direction}=useHIG();const colors=useColors();const fills=useFills();
  const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));
  return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}>
@@ -147,11 +148,14 @@ export function EmptyState({title,description,action,illustration,titleStyle,des
  {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
+/** The Avatar frame, kept while its props are the same: a list that renders again renders no frame for the rows that did not change. */
+const StillFrame=React.memo(AvatarFrame,sameFrame);
 /**
  * A person or account as a 40dp disc: an image, else the first two letters of the name on the well fill (one step lighter inside a Surface, Dialog or sheet).
  * `size`, `square` and `decorative` are as in `@bloxwap/hig/native/avatar`, whose `Avatar` also draws a face generated from a seed; that entry needs `react-native-svg` and this one does not.
+ * It renders again only when one of its props changes.
  */
-export function Avatar(props:AvatarFrameProps){return <AvatarFrame {...props}/>;}
+export function Avatar(props:AvatarFrameProps){return <StillFrame {...props}/>;}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */

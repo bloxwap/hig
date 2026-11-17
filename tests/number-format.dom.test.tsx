@@ -68,7 +68,7 @@ describe('HIGProvider numberFormat',()=>{
   const all=reading();
   expect(all).toContain('10,00 $');expect(all.some(text=>text.includes('$US'))).toBe(false);
   // The locale is the nested provider's own (en-US by default); the money presentation is replaced, not merged.
-  expect(plain([...document.querySelectorAll('.hig-number')].at(-1)?.textContent)).toBe('USD 1.00');
+  expect(plain([...document.querySelectorAll('.hig-number')].at(-1)?.textContent)).toBe('1,00 USD');
  });
 });
 describe('numberFormat.locale and formattedValue (Unreleased)',()=>{

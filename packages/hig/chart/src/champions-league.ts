@@ -26,7 +26,7 @@ export function remainder(prices:readonly (number|null)[]):number|null{
  * remains. It finds the market by name, so once a season settles it moves to the next one by itself. It needs no
  * key. Products pass their own `outcomes` or `feed`.
  */
-export const championsLeagueWinner:OutcomeFeed=onOutcomes=>{
+export const championsLeagueWinner:OutcomeFeed=(onOutcomes,onStale)=>{
  if(typeof fetch==='undefined'||typeof WebSocket==='undefined')return ()=>{};
  let stopped=false,socket:WebSocket|undefined,timer:ReturnType<typeof setTimeout>|undefined,reported=0,pending:ReturnType<typeof setTimeout>|undefined,current=-1,outcomes:Outcome[]=[],failures=0;
  const abort=new AbortController();
@@ -36,11 +36,15 @@ export const championsLeagueWinner:OutcomeFeed=onOutcomes=>{
   if(stopped||pending)return;
   pending=setTimeout(()=>{pending=undefined;reported=Date.now();if(!stopped)onOutcomes(snapshot());},Math.max(0,reported+REPORT_MS-Date.now()));
  };
+ let deadline:ReturnType<typeof setTimeout>|undefined,reconnect:ReturnType<typeof setTimeout>|undefined;
  const listen=()=>{
+  if(stopped)return;
   socket?.close();
   const live=socket=new WebSocket(STREAM);
+  const arm=()=>{clearTimeout(deadline);deadline=setTimeout(()=>{if(!stopped&&socket===live)live.close();},30_000);};arm();
   live.onopen=()=>{for(const outcome of outcomes)if(outcome.id!==OTHER)live.send(JSON.stringify({method:'subscribe',subscription:{type:'l2Book',coin:outcome.id}}));};
   live.onmessage=event=>{
+   if(stopped||socket!==live)return;
    try{
     const message=JSON.parse(String(event.data));
     // The order book sends a snapshot on subscribing and again as it changes; best-quote streams stay silent on a quiet market.
@@ -48,10 +52,10 @@ export const championsLeagueWinner:OutcomeFeed=onOutcomes=>{
     const [bid,ask]=(message.data?.levels??[]).map((side:{px?:string}[])=>Number(side?.[0]?.px)),outcome=outcomes.find(o=>o.id===message.data?.coin);
     // A one-sided book says little about the price; keep the last one.
     if(!outcome||!(bid>0)||!(ask>0))return;
-    outcome.price=(bid+ask)/2;report();
+    outcome.price=(bid+ask)/2;arm();report();
    }catch{/* A malformed frame is skipped. */}
   };
-  live.onclose=()=>{if(!stopped&&socket===live)setTimeout(()=>{if(!stopped&&socket===live)listen();},5000);};
+  live.onclose=()=>{if(stopped||socket!==live)return;clearTimeout(deadline);onStale?.();reconnect=setTimeout(()=>{if(!stopped&&socket===live)listen();},5000);};
  };
  const refresh=async()=>{
   try{
@@ -68,9 +72,9 @@ export const championsLeagueWinner:OutcomeFeed=onOutcomes=>{
     current=question.question;outcomes=[...listed,{id:OTHER,label:names.other,price:null}];report();listen();
    }
    failures=0;
-  }catch{failures++;/* Offline or rate limited: try again below. */}
+  }catch{if(!stopped)onStale?.();failures++;/* Offline or rate limited: try again below. */}
   if(!stopped)timer=setTimeout(refresh,failures?Math.min(REFRESH_MS,2000*2**failures):REFRESH_MS);
  };
  refresh();
- return ()=>{stopped=true;abort.abort();clearTimeout(timer);clearTimeout(pending);socket?.close();};
+ return ()=>{stopped=true;abort.abort();clearTimeout(timer);clearTimeout(pending);clearTimeout(deadline);clearTimeout(reconnect);socket?.close();};
 };

@@ -104,9 +104,9 @@ it('confirms in the role of its kind, with Cancel beside it only when the host h
  expect(button(view,'target-submit').props).toMatchObject({children:'Set Stop Loss',intent:'destructive'});expect(button(view,'target-cancel').props).toMatchObject({children:'Cancel',intent:'secondary'});
  act(()=>{button(view,'target-cancel').props.onPress({});});expect(cancel).toHaveBeenCalledTimes(1);
  expect(flat(host(view,'target-actions'))).toMatchObject({flexDirection:'row',gap:8,marginTop:16});
- // An unknown target cannot be confirmed unless the host says otherwise; Cancel takes host or provider text.
+ // An unknown target cannot be confirmed even if the host clears submitDisabled; Cancel takes host or provider text.
  view=mount({value:null});expect(button(view,'target-submit').props.disabled).toBe(true);
- view=mount({value:null,submitDisabled:false,busy:true});expect(button(view,'target-submit').props).toMatchObject({disabled:false,busy:true});
+ view=mount({value:null,submitDisabled:false,busy:true});expect(button(view,'target-submit').props).toMatchObject({disabled:true,busy:true});
  view=mount({onCancel:cancel},{messages:{cancel:'Annuler'}});expect(button(view,'target-cancel').props.children).toBe('Annuler');
  view=mount({onCancel:cancel,labels:{...labels,cancel:'Not now'}});expect(button(view,'target-cancel').props.children).toBe('Not now');
 });
