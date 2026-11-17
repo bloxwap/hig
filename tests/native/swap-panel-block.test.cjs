@@ -472,3 +472,12 @@ it('an account caption and a destination detail can be live figures that update 
  expect(flows(tree,'swap-caption')).toHaveLength(0);expect(flows(tree,'swap-destination-detail')).toHaveLength(0);
 });
 
+
+it('keeps the action named while submitting with the amount cleared: the burn busy with no amount',()=>{
+ let tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',actionIntent:'destructive',amount:'0',submitting:true});
+ expect(actionText(tree)).toBe('Burn');expect(action(tree).props.busy).toBe(true);
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submitting:true,submittingLabel:'Burning…'});
+ expect(actionText(tree)).toBe('Burning…');
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submittingLabel:'Burning…'});
+ expect(actionText(tree)).toBe('Enter an amount');
+});

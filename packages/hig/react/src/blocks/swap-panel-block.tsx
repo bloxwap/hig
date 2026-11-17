@@ -66,7 +66,11 @@ export interface SwapPanelBlockProps {
  /** Enables the receive view, offered in the From picker before a wallet is connected. */
  receive?:SwapReceive;receiving?:boolean;onReceivingChange?:(receiving:boolean)=>void;
  /** The host validates, quotes and executes. HIG never submits a transaction. */
- onSubmit:(action:SwapAction)=>void;submitting?:boolean;
+ onSubmit:(action:SwapAction)=>void;
+ /** The host's submit is in flight: the action shows a spinner and ignores presses, and keeps its ready name (or `submittingLabel`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */
+ submitting?:boolean;
+ /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */
+ submittingLabel?:string;
  /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */
  onReset?:()=>void;
  /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */
@@ -122,7 +126,7 @@ const amountKey=(event:{key:string;metaKey:boolean;ctrlKey:boolean;altKey:boolea
  * or token units, token pickers, settings, and one action that names itself from the chosen pair.
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
-export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,onReset,destination,details,note,noteTone='muted',title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,keypad='auto',shortcuts=true,captureKeyboard=false,view:viewProp,onViewChange,settings,className,style}:SwapPanelBlockProps){
+export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,submittingLabel,onReset,destination,details,note,noteTone='muted',title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,keypad='auto',shortcuts=true,captureKeyboard=false,view:viewProp,onViewChange,settings,className,style}:SwapPanelBlockProps){
  const {messages}=useHIG();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
@@ -155,7 +159,9 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  // A destination or a details card stands in for the To token: one way, and ready from the From side alone.
  const fixed=!!destination||(!!details&&!to);const oneWay=oneWayProp||fixed;
  const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
- const actionText=showReceive?(messages.swapSendFromWallet??en.swapSendFromWallet):!from||(!to&&!fixed)?(messages.swapChooseToken??en.swapChooseToken):destination?.pending?(messages.swapChooseDestination??en.swapChooseDestination):units<=0?(messages.swapEnterAmount??en.swapEnterAmount):insufficient?(messages.swapInsufficient??en.swapInsufficient)(from.symbol):actionDisabled&&actionStatus?actionStatus:actionLabel??(action==='swap'&&!fixed?messages.swapActionSwap??en.swapActionSwap:action==='bridge'&&!fixed?messages.swapActionBridge??en.swapActionBridge:messages.swapActionSend??en.swapActionSend);
+ const readyText=actionLabel??(action==='swap'&&!fixed?messages.swapActionSwap??en.swapActionSwap:action==='bridge'&&!fixed?messages.swapActionBridge??en.swapActionBridge:messages.swapActionSend??en.swapActionSend);
+ // While the host's submit is in flight the amount may already be cleared: the action keeps its name rather than asking for an amount.
+ const actionText=showReceive?(messages.swapSendFromWallet??en.swapSendFromWallet):!from||(!to&&!fixed)?(messages.swapChooseToken??en.swapChooseToken):destination?.pending?(messages.swapChooseDestination??en.swapChooseDestination):submitting?submittingLabel??readyText:units<=0?(messages.swapEnterAmount??en.swapEnterAmount):insufficient?(messages.swapInsufficient??en.swapInsufficient)(from.symbol):actionDisabled&&actionStatus?actionStatus:readyText;
  const pristine=(lockFrom||!from)&&(lockTo||!to)&&input===0;
  // Updater form: several keys can land before the next render, and each must build on the last.
  const latest=useRef(fromMode);latest.current=fromMode;const latestView=useRef(view);latestView.current=view;

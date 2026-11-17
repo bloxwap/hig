@@ -384,6 +384,17 @@ describe('SwapPanelBlock host control',()=>{
   view.unmount();render(<Host initialFrom={account} destination={{title:'Burn'}} amount='5' actionLabel='Burn' actionIntent='destructive'/>);
   expect(action().getAttribute('data-intent')).toBe('destructive');expect(action()).toHaveProperty('disabled',false);
  });
+ it('keeps the action named while submitting with the amount cleared: the burn busy with no amount',()=>{
+  const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
+  let view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' actionIntent='destructive' submitting/>);
+  // The busy text after the name is the Button's own, visually hidden.
+  expect(action().textContent).toBe('Burn · Working');expect(action().getAttribute('aria-busy')).toBe('true');
+  view.unmount();view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submitting submittingLabel='Burning…'/>);
+  expect(action().textContent).toBe('Burning… · Working');
+  // Not submitting, the panel's own checks speak as before.
+  view.unmount();render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submittingLabel='Burning…'/>);
+  expect(action().textContent).toBe('Enter an amount');
+ });
  it('caps typed decimals per token and refuses keys past the balance when asked',()=>{
   expect(applyAmountKey('1.123456','7','token',6)).toBe('1.123456');expect(applyAmountKey('1.123456','7','token')).toBe('1.1234567');expect(applyAmountKey('1.12','3','usd',6)).toBe('1.12');
   const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
