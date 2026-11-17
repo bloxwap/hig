@@ -2,6 +2,8 @@ import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
+import {beamAvatar,beamEye,beamSize} from '@bloxwap/hig/contracts/avatar';
+import Svg,{G,Path,Rect} from 'react-native-svg';
 import {ActivityIndicator,Animated,Easing,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType,type ViewProps,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
@@ -111,8 +113,57 @@ export function EmptyState({title,description,action,illustration,titleStyle,des
  {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
-/** Initials sit on the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
-export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){const fills=useFills();return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<View accessible accessibilityRole='image' accessibilityLabel={name} style={{width:40,height:40,borderRadius:20,backgroundColor:fills.well,alignItems:'center',justifyContent:'center'}}><Text accessible={false}>{name.slice(0,2)}</Text></View>;}
+/** Token roles of the default face palette, in this order. The order and the number of colours decide which colours a seed lands on. */
+export const avatarColorRoles=['action','info','negative','warning'] as const;
+export interface AvatarProps {
+ /** The person or account. It is the accessible name, the first two letters are the initials, and it is the seed of the generated face unless `seed` is given. */
+ name:string;
+ /** An image to show instead. If it fails to load, the initials or the generated face show in its place. */
+ source?:ImageSourcePropType;
+ /** What the generated face is drawn from, such as a wallet address. The same seed and colours draw the same face on web and native. It is case-sensitive. Passing it selects the generated face. Defaults to `name`. */
+ seed?:string;
+ /** What shows without an image: `initials`, the first two letters of `name` on the well fill, or `beam`, a generated face. Defaults to `initials`, or to `beam` when `seed` is given. */
+ variant?:'initials'|'beam';
+ /** Width and height in dp. Defaults to 40. */
+ size?:number;
+ /** Palette of the generated face, as React Native colours. Defaults to the `action`, `info`, `negative` and `warning` roles of the provider's colour table (`avatarColorRoles`), which is Display P3 on an iOS host that paints in it. A seed picks by position, so the same list in the same order keeps the same faces. */
+ colors?:readonly string[];
+ /** One colour for the eyes and mouth of every generated face. Left out, each face takes the `background` role on a bright colour and the `text` role on a deep one. */
+ faceColor?:string;
+ /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */
+ square?:boolean;
+ /** Hides the avatar from VoiceOver and TalkBack, for an avatar beside the name it stands for. */
+ decorative?:boolean;
+}
+const unread={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
+const beamBox=`0 0 ${beamSize} ${beamSize}`;
+const samePalette=(a?:readonly string[],b?:readonly string[])=>a===b||(a!==undefined&&b!==undefined&&a.length===b.length&&a.every((color,index)=>color===b[index]));
+/** What identifies an image source across renders: its address (a host often builds `{uri}` inline), or the `require` number. */
+const sourceKey=(source:ImageSourcePropType):unknown=>Array.isArray(source)?source.map(item=>item.uri).join(' '):typeof source==='object'&&source!==null?(source as {uri?:string}).uri??source:source;
+/** The generated face in react-native-svg. Memoised on what it draws, so a list that re-renders with the same seeds and colours costs nothing here. */
+const BeamFace=React.memo(function BeamFace({seed,size,colors,faceColor}: {seed:string;size:number;colors?:readonly string[];faceColor?:string}){
+ const roles=useColors();
+ const face=beamAvatar(seed,colors&&colors.length>0?colors:avatarColorRoles.map(role=>roles[role]),{dark:roles.background,light:roles.text});
+ const ink=faceColor??face.faceColor,mouthFill=face.mouthStroked?'none':ink,mouthStroke=face.mouthStroked?ink:'none';
+ return <Svg width={size} height={size} viewBox={beamBox}>
+  <Rect width={beamSize} height={beamSize} fill={face.backgroundColor}/>
+  <Rect width={beamSize} height={beamSize} rx={face.wrapperRadius} transform={face.wrapperTransform} fill={face.wrapperColor}/>
+  <G transform={face.faceTransform}>
+   <Path d={face.mouthPath} fill={mouthFill} stroke={mouthStroke} strokeLinecap='round'/>
+   <Rect x={face.leftEyeX} y={beamEye.y} width={beamEye.width} height={beamEye.height} rx={beamEye.radius} fill={ink}/>
+   <Rect x={face.rightEyeX} y={beamEye.y} width={beamEye.width} height={beamEye.height} rx={beamEye.radius} fill={ink}/>
+  </G>
+ </Svg>;
+},(previous,next)=>previous.seed===next.seed&&previous.size===next.size&&previous.faceColor===next.faceColor&&samePalette(previous.colors,next.colors));
+/** A person or account as a 40dp disc: an image, else the first two letters of the name on the well fill (one step lighter inside a Surface, Dialog or sheet), else (with `variant='beam'` or a `seed`) a face generated from the seed. The face is an identity picture, so it is the same in right-to-left layouts and it never moves. */
+export function Avatar({name,source,seed,variant,size,colors,faceColor,square,decorative}:AvatarProps){
+ const fills=useFills();const [failed,setFailed]=useState<{key:unknown}>();
+ const side=size??40,borderRadius=square?0:side/2;
+ if(source){const key=sourceKey(source);if(!failed||failed.key!==key){const reading=decorative?unread:{accessibilityLabel:name};return <Image {...reading} source={source} onError={()=>setFailed({key})} style={{width:side,height:side,borderRadius}}/>;}}
+ const reading=decorative?unread:{accessible:true,accessibilityRole:'image' as const,accessibilityLabel:name};
+ if((variant??(seed===undefined?'initials':'beam'))==='beam')return <View {...reading} style={{width:side,height:side,borderRadius,overflow:'hidden'}}><BeamFace seed={seed??name} size={side} colors={colors} faceColor={faceColor}/></View>;
+ return <View {...reading} style={{width:side,height:side,borderRadius,backgroundColor:fills.well,alignItems:'center',justifyContent:'center'}}><Text accessible={false} style={size===undefined?undefined:{fontSize:Math.round(size*0.4),lineHeight:Math.round(size*0.6)}}>{name.slice(0,2)}</Text></View>;
+}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */

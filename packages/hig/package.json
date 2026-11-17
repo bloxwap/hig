@@ -41,6 +41,11 @@
       "import": "./contracts/dist/messages.js",
       "default": "./contracts/dist/messages.js"
     },
+    "./contracts/avatar": {
+      "types": "./contracts/dist/avatar.d.ts",
+      "import": "./contracts/dist/avatar.js",
+      "default": "./contracts/dist/avatar.js"
+    },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
       "import": "./native-fonts/dist/index.js",
