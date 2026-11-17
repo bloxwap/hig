@@ -77,4 +77,6 @@ export function backdropProgress(position:number,lowest:number,closed:number):nu
  * A view swap and the height change that goes with it, measured from Vaul's Dynamic Drawer: one curve for all of it, with
  * no spring and no overshoot. The old view leaves and the sheet resizes in `duration`; the new view arrives in `enter`.
  */
-export const SHEET_VIEW_SWAP={duration:270,enter:220,curve:[0.26,0.08,0.25,1]} as const;
+export const SHEET_VIEW_SWAP={duration:270,enter:220,curve:[0.26,0.08,0.25,1],/** How far a pushed or popped view travels, as a percentage of its own width. */travel:30} as const;
+/** What a swap between two depths is: 1 pushes, -1 pops, 0 cross-fades in place (no depth given, or the same depth). */
+export function viewMove(from:number|undefined,to:number|undefined):-1|0|1{return from===undefined||to===undefined||from===to?0:to>from?1:-1;}

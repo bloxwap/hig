@@ -14,7 +14,7 @@ jest.mock('react-native-gesture-handler',()=>{
  const chain=()=>{const gesture={};for(const name of ['activeOffsetY','failOffsetX','onStart','onChange','onEnd','onFinalize','simultaneousWithExternalGesture'])gesture[name]=()=>gesture;return gesture;};
  return {Gesture:{Pan:chain,Native:chain},GestureDetector:({children})=>children};
 });
-const {GestureSheet,GestureSheetHost,GestureSheetScrollView}=require('../../packages/hig/native/src/gesture-sheet-next');
+const {GestureSheet,GestureSheetHost,GestureSheetScrollView,GestureSheetView}=require('../../packages/hig/native/src/gesture-sheet-next');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const h=React.createElement;
 let root;
@@ -90,4 +90,19 @@ it('GestureSheetScrollView is a plain scroller outside a sheet, with bounce and 
  act(()=>{root=create(h(GestureSheetScrollView,{testID:'scroller'},h(RNText,null,'Row')));});
  const scroller=root.root.findAll(node=>node.props.testID==='scroller'&&node.props.bounces!==undefined)[0];
  expect(scroller.props).toMatchObject({bounces:false,overScrollMode:'never',scrollEventThrottle:16});
+});
+
+it('GestureSheetView shows the first view plainly, then draws the old view leaving out of flow beside the new one, and swaps at once under reduced motion',()=>{
+ const view=(key,depth,provider={})=>h(HIGProvider,provider,h(GestureSheetView,{viewKey:key,depth,testID:'view'},h(RNText,null,String(key))));
+ act(()=>{root=create(view('menu',0));});
+ const texts=()=>root.root.findAllByType(RNText).map(text);
+ expect(texts()).toEqual(['menu']);
+ act(()=>root.update(view('detail',1)));
+ // Old first (leaving, out of flow, hidden from assistive technology), then the new one.
+ expect(texts()).toEqual(['menu','detail']);
+ const leaving=root.root.findAll(node=>typeof node.type==='string'&&node.props.importantForAccessibility==='no-hide-descendants')[0];
+ expect(leaving.props).toMatchObject({pointerEvents:'none',accessibilityElementsHidden:true});expect(require('react-native').StyleSheet.flatten(leaving.props.style)).toMatchObject({position:'absolute',top:0,left:0,right:0});
+ act(()=>root.unmount());
+ act(()=>{root=create(view('menu',0,{reducedMotion:true}));});act(()=>root.update(view('detail',1,{reducedMotion:true})));
+ expect(root.root.findAllByType(RNText).map(text)).toEqual(['detail']);
 });

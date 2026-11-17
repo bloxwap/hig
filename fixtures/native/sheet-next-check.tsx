@@ -75,7 +75,7 @@ function Check(){
   <Sheet open={open==='list'} onOpenChange={close} title='Markets' contentMode='custom' snapPoints={['50%','90%']}>
    <Scroller>{rows(60).map(index=><Row key={index} index={index}/>)}</Scroller>
   </Sheet>
-  <Sheet open={open==='content'} onOpenChange={close} title='Panes' contentMode='custom' enableDynamicSizing>{engine==='next'?<GestureSheetView viewKey={tall?'tall':'short'}>{pane}</GestureSheetView>:pane}</Sheet>
+  <Sheet open={open==='content'} onOpenChange={close} title='Panes' contentMode='custom' enableDynamicSizing>{engine==='next'?<GestureSheetView viewKey={tall?'tall':'short'} depth={tall?1:0}>{pane}</GestureSheetView>:pane}</Sheet>
  </SafeAreaView>;
 }
 export default function SheetNextCheck(){

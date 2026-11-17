@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {backdropProgress,detentHeight,detentHeights,dragPosition,releaseTarget,rubberBand,SHEET_FLICK} from '../packages/hig/native/src/gesture-sheet-model';
+import {backdropProgress,detentHeight,detentHeights,dragPosition,releaseTarget,rubberBand,SHEET_FLICK,SHEET_SPRING,SHEET_VIEW_SWAP,viewMove} from '../packages/hig/native/src/gesture-sheet-model';
 describe('native sheet arithmetic',()=>{
  it('reads detents as points or a share of the room, clamped, sorted and without duplicates',()=>{
   expect(detentHeight(300,800)).toBe(300);expect(detentHeight('50%',800)).toBe(400);expect(detentHeight(2000,800)).toBe(800);expect(detentHeight(-5,800)).toBe(0);expect(detentHeight('x%' as `${number}%`,800)).toBe(0);
@@ -27,6 +27,13 @@ describe('native sheet arithmetic',()=>{
   expect(releaseTarget(610,SHEET_FLICK,positions,800,true)).toBe(-1);expect(releaseTarget(610,SHEET_FLICK,positions,800,false)).toBe(2);
   expect(releaseTarget(590,-SHEET_FLICK,positions,800,true)).toBe(1);expect(releaseTarget(390,-SHEET_FLICK,positions,800,true)).toBe(0);expect(releaseTarget(60,-SHEET_FLICK,positions,800,true)).toBe(0);
   expect(releaseTarget(300,0,[],800,true)).toBe(-1);
+ });
+ it('reads a swap between depths as a push, a pop or a cross-fade in place',()=>{
+  expect(viewMove(0,1)).toBe(1);expect(viewMove(2,1)).toBe(-1);expect(viewMove(1,1)).toBe(0);expect(viewMove(undefined,1)).toBe(0);expect(viewMove(1,undefined)).toBe(0);
+ });
+ it('keeps the settle spring critically damped and the view swap on the measured curve',()=>{
+  expect(SHEET_SPRING.damping/(2*Math.sqrt(SHEET_SPRING.stiffness*SHEET_SPRING.mass))).toBeCloseTo(1,1);
+  expect(SHEET_VIEW_SWAP).toMatchObject({duration:270,enter:220,curve:[0.26,0.08,0.25,1],travel:30});
  });
  it('dims fully at the lowest detent and above, fading out towards closed',()=>{
   expect(backdropProgress(400,400,800)).toBe(1);expect(backdropProgress(80,400,800)).toBe(1);expect(backdropProgress(600,400,800)).toBe(0.5);expect(backdropProgress(800,400,800)).toBe(0);

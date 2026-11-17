@@ -8,7 +8,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {Raised,useColors,useHIG} from './provider.js';
 import {Heading,Text,Stack} from './surface.js';
 import {Button} from './button.js';
-import {backdropProgress,detentHeights,dragPosition,releaseTarget,SHEET_SPRING,SHEET_VIEW_SWAP,type SheetSnapPoint} from './gesture-sheet-model.js';
+import {backdropProgress,detentHeights,dragPosition,releaseTarget,SHEET_SPRING,SHEET_VIEW_SWAP,viewMove,type SheetSnapPoint} from './gesture-sheet-model.js';
 export type {SheetSnapPoint} from './gesture-sheet-model.js';
 
 type FocusTarget=React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null;
@@ -100,19 +100,41 @@ export const GestureSheetScrollView=React.forwardRef<React.ComponentRef<typeof R
 
 const swapCurve=Easing.bezier(...SHEET_VIEW_SWAP.curve);
 const VIEW_LEAVE={duration:SHEET_VIEW_SWAP.duration,easing:swapCurve},VIEW_ARRIVE={duration:SHEET_VIEW_SWAP.enter,easing:swapCurve};
-const viewEntering=()=>{'worklet';return {initialValues:{opacity:0,transform:[{scale:0.96}]},animations:{opacity:withTiming(1,VIEW_ARRIVE),transform:[{scale:withTiming(1,VIEW_ARRIVE)}]}};};
-const viewExiting=()=>{'worklet';return {initialValues:{opacity:1,transform:[{scale:1}]},animations:{opacity:withTiming(0,VIEW_LEAVE),transform:[{scale:withTiming(0.96,VIEW_LEAVE)}]}};};
+/** One of the two views of a swap. `travel` is the signed share of its width it starts from (arriving) or ends at (leaving); 0 swaps with a slight scale instead. */
+function SwapLayer({role,travel,onDone,children,style,testID}:{role:'arrive'|'leave';travel:number;onDone?:()=>void;children:React.ReactNode;style?:StyleProp<ViewStyle>;testID?:string}){
+ const progress=useSharedValue(0),leaves=role==='leave';
+ useEffect(()=>{progress.value=withTiming(1,leaves?VIEW_LEAVE:VIEW_ARRIVE,finished=>{'worklet';if(finished&&onDone)runOnJS(onDone)();});return()=>cancelAnimation(progress);},[]);
+ const animated=useAnimatedStyle(()=>{
+  'worklet';
+  const shown=leaves?1-progress.value:progress.value,away=1-shown;
+  return {opacity:shown,transform:travel===0?[{scale:1-away*0.04}]:[{translateX:`${travel*away}%`}]};
+ });
+ return <Reanimated.View testID={testID} pointerEvents={leaves?'none':'auto'} accessibilityElementsHidden={leaves} importantForAccessibility={leaves?'no-hide-descendants':'auto'} style={[leaves?styles.leaving:null,style,animated]}>{children}</Reanimated.View>;
+}
 /**
- * One view of a sheet that shows several, such as the steps of a flow. When `viewKey` changes, the old view fades and
- * shrinks out of the way without holding its space, the new one fades in at its own size, and a content-sized sheet
- * springs to the new height at the same time. The first view appears with the sheet, and nothing moves under reduced motion.
+ * One view of a sheet that shows several, such as the steps of a flow or the levels of a menu. When `viewKey` changes, the
+ * old view fades out of the way without holding its space, the new one fades in at its own size, and a content-sized sheet
+ * moves to the new height at the same time. With `depth` the swap also reads as a push or a pop. The first view appears with
+ * the sheet, and nothing moves under reduced motion.
  */
-export function GestureSheetView({viewKey,children,style,testID}:{/** Names the view. A change swaps the content with the transition. */viewKey:string|number;children:React.ReactNode;style?:StyleProp<ViewStyle>;testID?:string}){
- const {reducedMotion}=useHIG(),initial=useRef(viewKey),swapped=useRef(false);
- // The first view appears with the sheet. After the first swap every view enters with the transition, including a return to the first one.
- if(viewKey!==initial.current)swapped.current=true;
- const animate=!reducedMotion&&swapped.current;
- return <Reanimated.View key={viewKey} testID={testID} entering={animate?viewEntering:undefined} exiting={reducedMotion?undefined:viewExiting} style={style}>{children}</Reanimated.View>;
+export function GestureSheetView({viewKey,depth,children,style,testID}:{/** Names the view. A change swaps the content with the transition. */viewKey:string|number;/** How deep the view sits in the sheet's hierarchy: 0 for the first, 1 for what it opens, and so on. A swap to a deeper view is a push (the new view arrives from the trailing side), a swap to a shallower view is a pop (the reverse); without it, or between two views of one depth, the views cross-fade in place. */depth?:number;children:React.ReactNode;style?:StyleProp<ViewStyle>;testID?:string}){
+ const {reducedMotion,direction}=useHIG();
+ type Shown={key:string|number;depth:number|undefined;node:React.ReactNode};
+ const committed=useRef<Shown>({key:viewKey,depth,node:children});
+ const [shown,setShown]=useState(viewKey),[leaving,setLeaving]=useState<Shown|null>(null),[move,setMove]=useState<-1|0|1>(0),[swapped,setSwapped]=useState(false);
+ if(shown!==viewKey){
+  const from=committed.current;
+  setShown(viewKey);setSwapped(true);setLeaving(reducedMotion||from.key===viewKey?null:from);setMove(viewMove(from.depth,depth));
+ }
+ useEffect(()=>{committed.current={key:viewKey,depth,node:children};});
+ const done=useCallback(()=>setLeaving(null),[]);
+ // A push arrives from the trailing side: the right in left-to-right text, the left in right-to-left.
+ const travel=move*(direction==='rtl'?-1:1)*SHEET_VIEW_SWAP.travel;
+ if(reducedMotion||!swapped)return <View key={viewKey} testID={testID} style={style}>{children}</View>;
+ return <View>
+  {leaving?<SwapLayer key={`leave:${leaving.key}`} role='leave' travel={-travel} onDone={done} style={style}>{leaving.node}</SwapLayer>:null}
+  <SwapLayer key={`arrive:${viewKey}`} role='arrive' travel={travel} style={style} testID={testID}>{children}</SwapLayer>
+ </View>;
 }
 
 const focusOn=(node:FocusTarget)=>{if(!node)return;try{const handle=findNodeHandle(node);if(handle!=null){AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(node,'viewHoverEnter');}}catch{/* A detached focus target cannot block the sheet. */}};
@@ -275,4 +297,5 @@ const styles=StyleSheet.create({
  grow:{flex:1,minHeight:0},
  shrink:{flexShrink:1,minHeight:0},
  hidden:{position:'absolute',width:1,height:1,overflow:'hidden'},
+ leaving:{position:'absolute',top:0,left:0,right:0},
 });
