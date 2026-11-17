@@ -46,12 +46,10 @@
  --color-on-brand: #111;
 }
 [aria-label="Monorepo toast alternatives"] {
- --bloxwap-green: #00ff3f;
- --bloxwap-pink: #ff479c;
- --bloxwap-yellow: #fffb38;
- --bloxwap-blue: #35b5ff;
+ --bloxwap-green: var(--hig-positive);
+ --bloxwap-pink: var(--hig-negative);
+ --bloxwap-yellow: var(--hig-warning);
+ --bloxwap-blue: var(--hig-info);
 }
 
-[aria-label="Monorepo toast alternatives"] { --hig-up: #00ff3f; --hig-down: #ff479c; --dir-up: #00ff3f; --dir-down: #ff479c; }
-
-.feedback-block-modal { --bloxwap-pink: #ff479c; --bloxwap-yellow: #fffb38; }
+[aria-label="Monorepo toast alternatives"] { --hig-up: var(--hig-positive); --hig-down: var(--hig-negative); --dir-up: var(--hig-positive); --dir-down: var(--hig-negative); }

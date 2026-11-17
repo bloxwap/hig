@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- **Toast and feedback previews.** Isolate app and mobile toast presentations, add a FeedbackBlock with vertical secondary answers, align concentric feedback and explainer layouts, and expose all six Toaster positions in web/native galleries and copied examples.
+- **Toast and feedback previews.** Isolate app and mobile toast presentations, add a FeedbackBlock with vertical secondary answers, align concentric feedback and explainer layouts, and expose all six Toaster positions in web/native galleries and copied examples. Gallery inventory and copyable code load as static JSON; the new preview styles measure 206,898 bytes total CSS, with the docs CSS budget raised from 195,000 to 210,000 bytes.
 
 - **Altimeter target lines and DGEN (web).** `AltimeterChart` accepts `targets` with stable IDs, prices, optional labels and CSS colors, drawing full-width dotted levels with plain labels at the chart's trailing edge. Labels show a title-case title followed by the formatted price, track their lines without lag, glide to the side facing the current price, and move aside for nearby labels or pinned edge stacks. Interrupted price moves retain their current position and forward velocity without overshoot; reused canvas fonts and text measurements avoid repeated style resolution. Opt-in `dgen` adds a pill shake and particles radiating from the pill on target crossings, with cooldown, cleanup and reduced-motion support. The catalog's `targets` state includes price controls and a DGEN switch.
 

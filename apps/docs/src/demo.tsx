@@ -64,7 +64,7 @@ function ComponentPreview({entry,state,onStateChange,density,codes}: {entry:Entr
  </section>;
 }
 function App({initialRoute}:{initialRoute:string}){
- const [codes,setCodes]=useState<CodeData|null>(null);const loadCodes=useCallback(()=>{void import('./code.json').then(m=>setCodes(m.default as CodeData));},[]);
+ const [codes,setCodes]=useState<CodeData|null>(null);const loadCodes=useCallback(()=>{void fetch(`${basePath}/code.json`).then(response=>{if(!response.ok)throw new Error('Example code unavailable');return response.json();}).then(data=>setCodes(data as CodeData)).catch(()=>setCodes({}));},[]);
  const route=initialRoute;
  const parameters=useMemo(()=>new URLSearchParams(typeof window==='undefined'?'':location.search),[]);
  const [preset,setPreset]=useState(['app','pro','docs'].includes(parameters.get('preset')??'')?parameters.get('preset')!:'app');
