@@ -721,7 +721,7 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-target-bar,.hig-bar-pnl-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
 .hig-target-rest,.hig-target-move,.hig-bar-mark-segment,.hig-bar-mark-rest,.hig-bar-pnl-rest,.hig-bar-pnl-move { flex:0 1 0;min-width:0;transition:flex-grow var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
 .hig-target-rest { background:var(--hig-fill-raised); }
-.hig-target-move { box-sizing:border-box;min-width:6px;background:var(--hig-target-tone);border-inline:3px solid var(--hig-text); }
+.hig-target-move { box-sizing:border-box;min-width:6px;background:color-mix(in srgb,var(--hig-target-tone) calc(var(--hig-bar-fill-opacity,.5)*100%),transparent);border-inline:3px solid var(--hig-text); }
 .hig-target-move[data-lead='trigger'] { border-inline-start-color:var(--hig-target-tone); }
 .hig-target-move[data-lead='start'] { border-inline-end-color:var(--hig-target-tone); }
 .hig-target-prices [data-price='trigger'] dd { color:var(--hig-target-tone); }
@@ -816,7 +816,7 @@ button.hig-profile-artwork:active { opacity:.85; }
 .hig-bar-mark-description { color:var(--hig-muted);font-size:.875rem;text-align:end;min-width:0; }
 .hig-bar-mark-bar { display:flex;gap:2px;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
 .hig-bar-mark[data-size='small'] > .hig-bar-mark-bar { height:12px;border-radius:6px; }
-.hig-bar-mark-segment { min-width:3px;background:var(--hig-bar-mark-color,var(--hig-muted)); }
+.hig-bar-mark-segment { min-width:3px;background:color-mix(in srgb,var(--hig-bar-mark-color,var(--hig-muted)) calc(var(--hig-bar-fill-opacity,.5)*100%),transparent); }
 .hig-bar-mark-rest { background:var(--hig-fill-raised); }
 .hig-bar-mark-legend { display:flex;flex-wrap:wrap;gap:8px 16px;margin:0;padding:0;list-style:none;color:var(--hig-muted);font-size:.875rem; }
 .hig-bar-mark-legend > li { display:inline-flex;align-items:center;gap:6px;min-width:0; }
@@ -885,7 +885,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-bar-pnl[data-result='profit'] { --hig-bar-pnl-tone:var(--hig-up,var(--hig-buy)); }
 .hig-bar-pnl[data-result='loss'] { --hig-bar-pnl-tone:var(--hig-down,var(--hig-sell)); }
 .hig-bar-pnl-rest { background:var(--hig-fill-raised); }
-.hig-bar-pnl-move { box-sizing:border-box;min-width:6px;background:var(--hig-bar-pnl-tone);border-inline:3px solid var(--hig-text); }
+.hig-bar-pnl-move { box-sizing:border-box;min-width:6px;background:color-mix(in srgb,var(--hig-bar-pnl-tone) calc(var(--hig-bar-fill-opacity,.5)*100%),transparent);border-inline:3px solid var(--hig-text); }
 .hig-bar-pnl-move[data-lead='mark'] { border-inline-start-color:var(--hig-bar-pnl-tone); }
 .hig-bar-pnl-move[data-lead='entry'] { border-inline-end-color:var(--hig-bar-pnl-tone); }
 .hig-bar-pnl-liquidation { position:absolute;inset-block:0;width:3px;margin-inline-start:-1.5px;background:var(--hig-negative);transition:inset-inline-start var(--hig-motion-duration-base) var(--hig-motion-easing-standard,ease); }
