@@ -113,6 +113,22 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-animated-number-place { position:relative;display:inline-block; }
 .hig-animated-number-new { display:inline-block; }
 .hig-animated-number-old { position:absolute;inset-inline-start:0;inset-block-start:0;display:inline-block;opacity:0;pointer-events:none; }
+/* NumberFlow. Every part is its own box so it can slide, and nothing changes how the line is laid out: at rest the figure is the
+   same boxes plain text would be. A turning place gets a window one em tall, centred on its digit, with a band above and below
+   where the digits rolling through it fade; the strip inside the window is what moves. Set --hig-number-flow-mask-height to
+   resize the band; 0 cuts hard. Nothing here transitions: the motion is additive Web Animations started by the component,
+   which draws reduced motion at once. */
+.hig-number-flow .hig-animated-number-visual { display:inline-block;position:relative;white-space:nowrap; }
+.hig-number-flow-core { display:inline-block;unicode-bidi:isolate; }
+.hig-number-flow-digits { display:inline-block;position:relative; }
+.hig-number-flow-part,.hig-number-flow-place { display:inline-block;position:relative;white-space:pre; }
+.hig-number-flow-digit { display:inline-block; }
+.hig-number-flow-place[data-spinning]>.hig-number-flow-digit { visibility:hidden; }
+.hig-number-flow-window { --hig-number-flow-edge:var(--hig-number-flow-mask-height,0.15em);position:absolute;inset-inline:0;inset-block-start:50%;height:calc(1em + 2*var(--hig-number-flow-edge));margin-block-start:calc(-0.5em - var(--hig-number-flow-edge));pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent,black var(--hig-number-flow-edge),black calc(100% - var(--hig-number-flow-edge)),transparent);mask-image:linear-gradient(to bottom,transparent,black var(--hig-number-flow-edge),black calc(100% - var(--hig-number-flow-edge)),transparent); }
+.hig-number-flow-strip,.hig-number-flow-ghosts { position:absolute;inset:0;pointer-events:none; }
+.hig-number-flow-glyph { position:absolute;inset-inline:0;height:100%;line-height:calc(1em + 2*var(--hig-number-flow-edge));text-align:center; }
+.hig-number-flow-ghost { position:absolute;margin:0;pointer-events:none; }
+.hig-number-flow [data-will-change] :is(.hig-number-flow-part,.hig-number-flow-place,.hig-number-flow-strip) { will-change:transform; }
 .hig-row { display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-width:0;padding-block:12px; }
 .hig-data-list,.hig-list-error { display:flex;flex-direction:column;align-items:stretch;gap:var(--hig-gap);min-width:0; }
 .hig-data-list > .hig-button,.hig-list-error > .hig-button { align-self:flex-start; }

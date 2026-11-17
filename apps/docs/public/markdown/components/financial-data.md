@@ -2,7 +2,7 @@
 
 Readable numbers, metrics, lists, tables, and wallet addresses for host-provided financial data.
 
-Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
+Includes `NumberReadout`, `AnimatedNumberReadout`, `NumberFlow`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data` or `@bloxwap/hig/native/data` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -189,8 +189,74 @@ Number motion is optional for a readout on its own and required inside the swap 
 
 The optional `trend` prop controls directional digit motion: `1` always moves upward, `-1` always moves downward, and `0` follows each changed digit’s own increase or decrease. A callback receives `(previousValue, newValue)` and returns one of those three values. When omitted, a finite numeric increase or decrease supplies the direction. This is a presentation hint, not a price signal or a replacement for an explicit semantic tone.
 
-Updates are latest-value-wins: a newer value supersedes pending motion and settles on the newest final reading, including during rapid updates. Both platforms expose one accessible final reading rather than separate characters, and neither adds a live region or announces every tick. Pending visual motion is canceled on replacement and unmount.
+Updates are latest-value-wins: a newer value supersedes pending motion and settles on the newest final reading, including during rapid updates. Both platforms expose one accessible final reading rather than separate characters, and neither adds a live region or announces every tick. Pending visual motion is canceled on replacement and unmount. (A flowing figure, below, adds the newer value to the motion in flight instead of cancelling it, and lands on the same final reading.)
 
 Reduced motion and unknown/non-finite values use the static final reading. A platform that cannot safely measure or lay out individual places also uses the static result. Opaque `formattedValue` remains static unless `animateFormatted` is set. Unsafe mixed-bidi tokenization and unsupported native text layouts may likewise fall back to the intact static reading; this is not a claim of physical-device or RTL certification.
 
 The native animated entry uses the optional Reanimated and Worklets peers. Install SDK-compatible versions when using that entry; the ordinary native `data` entry and static readouts import no animation engine. Example: `import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number'` (or `hig-native/animated-number`), then `<AnimatedNumberReadout value={price} label="Price" trend={1} prefix="≈ " options={{style:'currency',currency:'USD'}} />`. The gallery manifest contains runnable examples for both renderers.
+
+## NumberFlow
+
+`NumberFlow` is `AnimatedNumberReadout` drawn with NumberFlow's motion: the same component and the same props under the name the product already uses, exported beside it from `@bloxwap/hig/react/animated-number` and `@bloxwap/hig/native/animated-number`. The two names differ in one default. `NumberFlow` flows; `AnimatedNumberReadout` keeps the short slide the blocks use. `motion="flow"` or `motion="slide"` chooses either one explicitly. Use `NumberFlow` for a figure a person watches change: a price, a balance, a countdown.
+
+```tsx
+import {NumberFlow, NumberFlowGroup} from '@bloxwap/hig/react/animated-number'; // or @bloxwap/hig/native/animated-number
+
+<NumberFlow value={price} label="Mark price" options={{style: 'currency', currency: 'USD'}} />
+<NumberFlow value={seconds % 60} trend={-1} digits={{1: {max: 5}}} options={{minimumIntegerDigits: 2}} />
+```
+
+What flowing means, on both platforms:
+
+- **Digits roll through the values between.** A place going from 2 to 7 passes 3, 4, 5 and 6. With a `trend` every place turns that way and wraps (9 to 0 going up is one step); with `trend={0}` each place takes its own short way. `digits` limits a place (`{1:{max:5}}` makes the tens of a seconds counter wrap 5 to 0), and `continuous` turns the places below the highest changed one once all the way round so the figure reads as counting.
+- **A new value joins the motion in flight.** Each change adds its own turn to the turns still running instead of cancelling them, so a figure that updates faster than it settles keeps moving at speed and still lands on the latest value.
+- **NumberFlow's timing.** Movement takes 900 ms on NumberFlow's settle (`'number-flow'`) and fades take 450 ms ease-out. `duration` sets the movement and makes fades half of it; `spinTiming`, `transformTiming` and `opacityTiming` set each part as `{duration, easing}`. `easing` is `'number-flow'`, `'standard'` (HIG's), `'linear'`, `'ease'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'` or four bezier control points. No part runs longer than 3000 ms. The arithmetic for all of this is one module, `@bloxwap/hig/contracts/number-flow`, which both renderers call.
+- **`animated={false}`** draws every new value at once, as reduced motion does. Use it for a typed echo and until the first real value arrives. It works for the sliding readout too.
+- **One reading.** Assistive technology gets the final formatted reading as one static text, with `label` in front when given. The moving copy is hidden from it and nothing is announced per change. Reduced motion (the provider's `reducedMotion`, else the system setting), an unknown value, a change of locale, format or direction, and a hidden page all draw the new reading at once.
+
+Platform differences:
+
+| | Web | Native |
+| --- | --- | --- |
+| A figure gains or loses a place | Every part slides to its new position (first, last, invert, play), the new place fades in, a copy of the old one fades out, and the digits are clipped at their moving edge so a place passes under the currency sign instead of over it. | The figure changes width at once. A new place rolls up from zero as it fades in; a place that left is removed at once. |
+| `NumberFlowGroup` | Figures inside it slide together when one of them changes width. Text between them is not moved; put a unit in `suffix` to move it. | Draws its children and nothing else. |
+| At rest | Each part is its own inline box and the figure takes the line height, baseline and (in a monospaced or tabular face) the width the plain reading does; in a proportional face the parts lose the kerning between them, as on native. Nothing is mounted for motion until a value changes. | One glyph per place. A place mounts its strip (eleven glyphs) the first time it turns; the sliding readout mounts twenty glyphs per place up front. |
+| While moving | Additive Web Animations on `transform` and `opacity` (and `clip-path` while the width changes), started in one commit with one layout read. No script, style recalculation or layout per frame, and no React render when it lands. | One Reanimated animation per turning place on the UI thread, changing `transform` (and `opacity` for a new place) only. The frame callback stops when the last turn lands. |
+| Right to left | The number is drawn left to right inside a right-to-left page, as digits are in every script, with `prefix` and `suffix` on the page's sides. A number that itself contains right-to-left letters or bidi controls (some Arabic currency formats) slides instead. | As for the sliding readout: a right-to-left provider or text draws the static reading. |
+| Large text | Sizes with the surrounding font. | Reels are measured at the current font scale and re-measured when it changes; `maxFontSizeMultiplier` caps it. |
+| Web only | `className` on the root, `willChange` (keeps moving parts on their own layers for a figure that ticks many times a second), and `--hig-number-flow-mask-height` (the fading band above and below a rolling digit, default `0.15em`; `0` cuts hard). | `willChange` is accepted and does nothing. `style`, `tone`, `testID` and `maxFontSizeMultiplier` are native only. |
+
+Validation: `tests/number-flow-model.test.ts` (the shared arithmetic and the web model), `tests/number-flow.dom.test.tsx`, `tests/native/number-flow.test.cjs`, and `scripts/number-flow-browser-smoke.mjs`, which runs the web motion in Chromium and WebKit: the flowing figure is laid out as the plain reading is, digits roll through the values between, a value arriving in flight does not restart the roll, a figure that changes width slides and clips, everything is removed when it lands, reduced motion moves nothing, and Arabic digits roll in a right-to-left page. No device or simulator run covers the native motion yet: its arithmetic, and what it mounts and starts, are tested against a stand-in for Reanimated that runs the real animation objects, and smoothness on a device is unclaimed.
+
+### Migrating from the product's NumberFlow
+
+Web call sites of the vendored `@number-flow/react`:
+
+| Product prop | HIG |
+| --- | --- |
+| `value` | `value`. `null`, `undefined`, `NaN` and infinities draw the dash; coerce to `0` first where the product wants a zero. |
+| `format` | `options` (any `Intl.NumberFormatOptions`, scientific notation included). |
+| `locales` | The provider: `HIGProvider locale`, or `numberFormat.locale` for numbers alone. For an echo pinned to one locale whatever the app language, format the text yourself and pass `formattedValue` with `animateFormatted`. |
+| `prefix`, `suffix`, `trend`, `digits`, `animated`, `willChange` | The same names and meanings. |
+| `plugins={[continuous]}` | `continuous`. |
+| `spinTiming`, `transformTiming`, `opacityTiming` | The same names. `easing` is a named curve or control points, not a CSS string: `'ease-out'` stays, `cubic-bezier(0.22, 1, 0.36, 1)` becomes `[0.22, 1, 0.36, 1]` or `'standard'`, and NumberFlow's default becomes `'number-flow'` (or is left out). |
+| `className` | `className`. `--number-flow-mask-height` becomes `--hig-number-flow-mask-height`. There is no shadow root, so `::part()` rules have nothing to match and the padding workaround that used them is not needed. |
+| `NumberFlowGroup` | `NumberFlowGroup`. |
+| `isolate`, `respectMotionPreference`, `onAnimationsStart`, `onAnimationsFinish`, `nonce`, the element ref, `data-*` and other HTML attributes | Not provided. Reduced motion always follows the provider. Wrap the figure for a test id. |
+| `role="img"` with the value as its label | One visually hidden reading; `label` names it. |
+
+Native call sites of `FlowUsd`, `FlowNumber`, `FlowPercent` and `FlowFormatted`:
+
+| Product prop | HIG |
+| --- | --- |
+| `FlowUsd` `digits`, `signed`, `compact` | `options={{style:'currency', currency:'USD', minimumFractionDigits, maximumFractionDigits, signDisplay, notation}}`. |
+| `FlowPercent` | `options={{style:'percent', minimumFractionDigits, maximumFractionDigits, signDisplay}}` and `value / 100`: the port takes percent points, `Intl` a fraction. |
+| `FlowNumber` `suffix` | `suffix`. |
+| `FlowFormatted` `text`, `value` | `value` with `formattedValue={text}` and `animateFormatted`. |
+| `animate` | `animated`. |
+| `duration` | `duration` (900 by default, as before; `0` draws at once). |
+| `style` | `style` takes typography only (`fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, `textAlign`); colour is `tone`. There is no `className`. |
+| `textProps.maxFontSizeMultiplier`, `allowFontScaling={false}` | `maxFontSizeMultiplier` (`1` for no scaling). |
+| `textProps.accessibilityLabel` | `label`, read as `label: reading`. |
+| `textProps.accessibilityLiveRegion`, `pulse` | Not provided: live figures stay silent and do not flash. |
+| `FlowLocaleContext` | The provider's `locale` and `numberFormat`, or `formattedValue` with `animateFormatted` for text the host localizes. |

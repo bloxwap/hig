@@ -71,7 +71,9 @@
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
     "validation-and-citation",
-    "optional-number-motion"
+    "optional-number-motion",
+    "numberflow",
+    "migrating-from-the-products-numberflow"
   ],
   "/docs/guides/components/navigation/": [
     "api-and-anatomy",

@@ -490,6 +490,19 @@
       ]
     },
     {
+      "name": "NumberFlow",
+      "route": "components/number-flow",
+      "entry": "animated-number",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
+      ]
+    },
+    {
       "name": "Usd",
       "route": "components/usd",
       "entry": "data",

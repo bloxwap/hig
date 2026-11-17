@@ -1,3 +1,4 @@
+import type {NumberFlowPlace} from '@bloxwap/hig/contracts/number-flow';
 import {formatNumber} from './number-format.js';
 
 export type NumberTrend=-1|0|1|((previousValue:number,value:number)=>-1|0|1);
@@ -152,4 +153,58 @@ export function createNumberReelModel(value:number|null|undefined,locale:string,
   }
   return {canonical,digits,tokens};
  }catch{return null;}
+}
+
+/** The NumberFlow place of a reel: an integer reel's own place (0 is the ones), a negative one for a fraction reel (-1 is the tenths), `null` for an exponent's. */
+export function numberReelPlace(token:Pick<NumberReelToken,'type'|'place'>):number|null{return token.type==='integer'?token.place??0:token.type==='fraction'?-1-(token.place??0):null;}
+/** The reels of a model as NumberFlow places, in display order. */
+export function numberReelPlaces(model:NumberReelModel):NumberFlowPlace[]{
+ return model.tokens.filter(token=>token.kind==='digit').map(token=>({key:token.key,digit:token.digit??0,place:numberReelPlace(token)}));
+}
+/**
+ * Where a reel's strip sits for a position that has turned any number of times either way. The strip is `length + 1` glyphs,
+ * the last repeating the first, so every position between two digits (9 to 0 included) is two neighbouring rows. UI thread.
+ */
+export function numberFlowReelOffset(position:number,length:number,height:number):number{
+ 'worklet';
+ return -(((position%length)+length)%length)*height;
+}
+/** Progress along a sampled curve (first sample 0, last 1) at time `progress`. The UI-thread twin of `sampleNumberFlowEasing`. */
+export function sampleReelEasing(samples:readonly number[],progress:number):number{
+ 'worklet';
+ const scaled=Math.max(0,Math.min(1,progress))*(samples.length-1),index=Math.floor(scaled),start=samples[index],end=index+1<samples.length?samples[index+1]:start;
+ return start+(end-start)*(scaled-index);
+}
+export type NumberFlowTurn={delta:number;start:number;duration:number};
+/** A Reanimated animation object: one reel position, which is its target less what every turn still in flight has left to go. */
+export type NumberFlowRoll={type:'hig-number-flow';current:number;toValue:number;turns:NumberFlowTurn[];reduceMotion:false;
+ onStart:(animation:NumberFlowRoll,value:number,now:number,previous?:{type?:string;toValue?:unknown;turns?:NumberFlowTurn[]}|null)=>void;
+ onFrame:(animation:NumberFlowRoll,now:number)=>boolean};
+/**
+ * One turn of a reel by `delta` glyphs, for `defineAnimation`. A new turn does not restart the reel: it is added to the turns
+ * still in flight, each keeping its own clock and curve, which is what NumberFlow's additive animations do on web. So a reel
+ * asked to move again while it moves keeps its speed instead of easing in from rest every time, and it always ends on the
+ * digit the last turn asked for. With nothing in flight `onFrame` reports finished and the frame callback stops. HIG's
+ * provider decides reduced motion, so the system setting is not consulted here. UI thread.
+ */
+export function createNumberFlowRoll(delta:number,duration:number,samples:readonly number[]):NumberFlowRoll{
+ 'worklet';
+ // Reanimated drops an animation whose `current` already equals the value it is assigned to, before `onStart` runs (a timing
+ // holds its target there). This roll only knows its target once it starts, so it starts as no number at all.
+ return {type:'hig-number-flow',current:Number.NaN,toValue:0,turns:[],reduceMotion:false,
+  onStart(animation,value,now,previous){
+   'worklet';
+   const continuing=!!previous&&previous.type==='hig-number-flow'&&typeof previous.toValue==='number';
+   animation.turns=continuing&&previous?.turns?previous.turns.filter(turn=>now<turn.start+turn.duration):[];
+   animation.toValue=(continuing?previous?.toValue as number:Math.round(value))+delta;
+   if(duration>0&&delta!==0)animation.turns.push({delta,start:now,duration});
+   animation.current=animation.turns.length?value:animation.toValue;
+  },
+  onFrame(animation,now){
+   'worklet';
+   let remaining=0;const active:NumberFlowTurn[]=[];
+   for(const turn of animation.turns){const progress=(now-turn.start)/turn.duration;if(progress<1){remaining+=turn.delta*(1-sampleReelEasing(samples,progress));active.push(turn);}}
+   animation.turns=active;animation.current=animation.toValue-remaining;
+   return active.length===0;
+  }};
 }

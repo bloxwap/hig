@@ -36,6 +36,11 @@
       "import": "./contracts/dist/announcements.js",
       "default": "./contracts/dist/announcements.js"
     },
+    "./contracts/number-flow": {
+      "types": "./contracts/dist/number-flow.d.ts",
+      "import": "./contracts/dist/number-flow.js",
+      "default": "./contracts/dist/number-flow.js"
+    },
     "./contracts/messages": {
       "types": "./contracts/dist/messages.d.ts",
       "import": "./contracts/dist/messages.js",

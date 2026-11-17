@@ -390,6 +390,17 @@
       "support": "renderer"
     },
     {
+      "name": "NumberFlow",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Usd",
       "states": [
         "default",
