@@ -333,6 +333,16 @@
       "import": "./react/dist/blocks/profile-block.js",
       "default": "./react/dist/blocks/profile-block.js"
     },
+    "./react/blocks/confirm-block": {
+      "types": "./react/dist/blocks/confirm-block.d.ts",
+      "import": "./react/dist/blocks/confirm-block.js",
+      "default": "./react/dist/blocks/confirm-block.js"
+    },
+    "./native/confirm-block": {
+      "types": "./native/dist/confirm-block.d.ts",
+      "import": "./native/dist/confirm-block.js",
+      "default": "./native/dist/confirm-block.js"
+    },
     "./react/blocks/assets-block": {
       "types": "./react/dist/blocks/assets-block.d.ts",
       "import": "./react/dist/blocks/assets-block.js",
@@ -577,6 +587,11 @@
       "types": "./native/dist/gesture-sheet.d.ts",
       "import": "./native/dist/gesture-sheet.js",
       "default": "./native/dist/gesture-sheet.js"
+    },
+    "./native/gesture-sheet-next": {
+      "types": "./native/dist/gesture-sheet-next.d.ts",
+      "import": "./native/dist/gesture-sheet-next.js",
+      "default": "./native/dist/gesture-sheet-next.js"
     },
     "./native/animated-number": {
       "types": "./native/dist/animated-number.d.ts",

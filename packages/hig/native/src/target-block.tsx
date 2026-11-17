@@ -139,7 +139,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
- const stop=kind==='stop-loss',tone=stop?colors.negative:colors.positive,intent=stop?'destructive' as const:'primary' as const;
+ const stop=kind==='stop-loss',tone=stop?colors.negative:colors.positive,intent=stop?'destructive' as const:'primary' as const,onFill=stop?colors.background:colors.onAction;
  const triggerLeads=(positions.trigger??0)<(positions.entry??0);
  const align=(index:number)=>order.length>1&&index===order.length-1?'flex-end' as const:order.length===3&&index===1?'center' as const:'flex-start' as const;
  const part=(grow:number)=>({flexGrow:grow,flexShrink:1,flexBasis:0,backgroundColor:fills.raised});
@@ -174,11 +174,11 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <Text numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.custom}</Text>
    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
   </Pressable>:null}
-  {onCustom&&customText!==null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityLabel={`${labels.custom}, ${customText}`} accessibilityState={{selected:true}} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:14,borderRadius:9999,borderWidth:2,borderColor:tone,backgroundColor:pressed?fills.raised:fills.well,marginTop:16})}>
-   <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.custom}</Text>
+  {onCustom&&customText!==null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityLabel={`${labels.custom}, ${customText}`} accessibilityState={{selected:true}} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:stop?colors.negative:colors.action,opacity:pressed?0.9:1,marginTop:16})}>
+   <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:onFill}}>{labels.custom}</Text>
    <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>
-    <Text testID='target-custom-value' numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:tone}}>{customText}</Text>
-    <View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
+    <Text testID='target-custom-value' numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:onFill}}>{customText}</Text>
+    <View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={onFill}/></View>
    </View>
   </Pressable>:null}
   {presets.length>0?<PresetGroup testID='target-presets' label={labels.presets??labels.title} selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,testID:`target-preset-${preset}`,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)} style={{marginTop:16}}/>:null}

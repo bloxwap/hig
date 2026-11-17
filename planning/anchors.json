@@ -27,6 +27,7 @@
     "frompickerblock-and-topickerblock",
     "accountblock",
     "tokenactionblock",
+    "confirmblock",
     "languageblock",
     "managepositionblock",
     "targetblock",
@@ -83,6 +84,8 @@
   "/docs/guides/components/overlays/": [
     "api-and-anatomy",
     "optional-web-gesture-backend",
+    "views-that-swap-gesturesheetview",
+    "native-sheet-engine-preview",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",

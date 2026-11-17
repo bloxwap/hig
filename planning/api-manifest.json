@@ -554,6 +554,18 @@
         "entry": "blocks/swap-panel-block",
         "signature": "export interface SwapDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n    /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */\n    formattedValue?: string;\n}"
       },
+      "ConfirmBlock": {
+        "entry": "blocks/confirm-block",
+        "signature": "export declare function ConfirmBlock({ amount, symbol, amountOptions, address, network, details, title, warningTitle, warning, onConfirm, confirmLabel, busy, confirmDisabled, onCancel, cancelLabel, onBack, headerAction, stickyHeader, headingId, className, ...rest }: ConfirmBlockProps): React.JSX.Element;"
+      },
+      "ConfirmBlockProps": {
+        "entry": "blocks/confirm-block",
+        "signature": "export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** The amount being sent, in token units. `null` reads as unknown. */\n    amount: number | null;\n    /** The token's ticker, after the amount: HYPE. */\n    symbol: string;\n    /** Format of the amount. Defaults to at most six fraction digits. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The destination address, shown in full beside “To”, always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */\n    address: string;\n    /** The network the send moves on: HyperEVM. */\n    network: string;\n    /** More lines under Network, such as a fee. */\n    details?: readonly ConfirmDetail[];\n    /** Heading. Defaults to the built-in “Confirm Send”. */\n    title?: string;\n    /** Heading of the warning. Defaults to the built-in “Double-check the address.” */\n    warningTitle?: string;\n    /** Body of the warning. Defaults to the built-in sentence naming the token and network; `null` or `false` draws no warning. */\n    warning?: React.ReactNode;\n    /** Called when the user confirms. The host signs and sends. */\n    onConfirm: () => void;\n    /** Text of the confirming action. Defaults to the built-in “Confirm Send”. */\n    confirmLabel?: string;\n    /** The send is in progress: the confirming action shows a spinner and ignores presses, and Cancel is unavailable. */\n    busy?: boolean;\n    /** Draws the confirming action unavailable, for example while a quote refreshes. */\n    confirmDisabled?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. Without it the confirming action takes the full width. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in “Cancel”. */\n    cancelLabel?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */\n    stickyHeader?: boolean;\n    /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n}"
+      },
+      "ConfirmDetail": {
+        "entry": "blocks/confirm-block",
+        "signature": "export interface ConfirmDetail {\n    label: string;\n    value: React.ReactNode;\n    /** What a `value` that is not text reads as. */\n    valueLabel?: string;\n}"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -705,6 +717,14 @@
       "GestureSheet": {
         "entry": "gesture-sheet",
         "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps, enableDynamicSizing, maxDynamicContentSize, labelledBy }: GestureSheetProps): React.JSX.Element;"
+      },
+      "GestureSheetViewProps": {
+        "entry": "gesture-sheet",
+        "signature": "export interface GestureSheetViewProps extends React.HTMLAttributes<HTMLDivElement> {\n    /** Names the view. A change swaps the content with the transition. */\n    viewKey: string | number;\n}"
+      },
+      "GestureSheetView": {
+        "entry": "gesture-sheet",
+        "signature": "export declare function GestureSheetView({ viewKey, children, className, ...rest }: GestureSheetViewProps): React.JSX.Element;"
       },
       "ListGroupAction": {
         "entry": "list-group",
@@ -1085,6 +1105,10 @@
       "NotificationsGroup": {
         "entry": "blocks/notifications-block",
         "signature": "export interface NotificationsGroup {\n    id: string;\n    title?: string;\n    items: readonly NotificationsItem[];\n}"
+      },
+      "confirmAddressRows": {
+        "entry": "blocks/confirm-block",
+        "signature": "export declare function confirmAddressRows(address: string): {\n    text: string;\n    anchor: boolean;\n}[][];"
       },
       "ScreenHeaderControlProps": {
         "entry": "blocks/screen-header",
@@ -1752,6 +1776,18 @@
         "entry": "blocks",
         "signature": "export type SwapView = 'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees';"
       },
+      "ConfirmBlock": {
+        "entry": "confirm-block",
+        "signature": "export declare function ConfirmBlock({ amount, symbol, amountOptions, address, network, details, title, warningTitle, warning, onConfirm, confirmLabel, busy, confirmDisabled, onCancel, cancelLabel, onBack, headerAction, stickyHeader, stickyHeaderBackground, scrollComponent, headingId, testID }: ConfirmBlockProps): React.JSX.Element;"
+      },
+      "ConfirmBlockProps": {
+        "entry": "confirm-block",
+        "signature": "export interface ConfirmBlockProps {\n    /** The amount being sent, in token units. `null` reads as unknown. */\n    amount: number | null;\n    /** The token's ticker, after the amount: HYPE. */\n    symbol: string;\n    /** Format of the amount; default `{maximumFractionDigits:6}`. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The destination address, shown in full beside \"To\", always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */\n    address: string;\n    /** The network the send moves on: HyperEVM. */\n    network: string;\n    /** More lines under Network, such as a fee. */\n    details?: readonly ConfirmDetail[];\n    /** Heading. Defaults to the built-in \"Confirm Send\". */\n    title?: string;\n    /** Heading of the warning. Defaults to the built-in \"Double-check the address.\" */\n    warningTitle?: string;\n    /** Body of the warning. Defaults to the built-in sentence naming the token and network; `null` or `false` draws no warning. */\n    warning?: React.ReactNode;\n    /** Called when the user confirms. The host signs and sends. */\n    onConfirm: () => void;\n    /** Text of the confirming action. Defaults to the built-in \"Confirm Send\". */\n    confirmLabel?: string;\n    /** The send is in progress: the confirming action shows a spinner and ignores presses, and Back and Cancel are unavailable. */\n    busy?: boolean;\n    /** Draws the confirming action unavailable, for example while a quote refreshes. */\n    confirmDisabled?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. Without it the confirming action takes the full width. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in \"Cancel\". */\n    cancelLabel?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */\n    stickyHeader?: boolean;\n    /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`. Defaults to `confirm`. */\n    testID?: string;\n}"
+      },
+      "ConfirmDetail": {
+        "entry": "confirm-block",
+        "signature": "export interface ConfirmDetail {\n    label: string;\n    value: React.ReactNode;\n    /** What a `value` that is not text reads as. */\n    valueLabel?: string;\n}"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -1791,6 +1827,10 @@
       "Checkbox": {
         "entry": "checkbox",
         "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): React.JSX.Element;"
+      },
+      "confirmAddressRows": {
+        "entry": "confirm-block",
+        "signature": "export declare function confirmAddressRows(address: string): {\n    text: string;\n    anchor: boolean;\n}[][];"
       },
       "NumberTone": {
         "entry": "data",
@@ -1884,13 +1924,25 @@
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<SearchInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
+      "SheetSnapPoint": {
+        "entry": "gesture-sheet-next",
+        "signature": "export type SheetSnapPoint = number | `${number}%`;"
+      },
       "GestureSheetProps": {
-        "entry": "gesture-sheet",
-        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Modal is the default. Inline retains the screen-level backend and its child state while closed. */\n{\n    presentation?: 'modal';\n    modalRef?: React.Ref<BottomSheetModal>;\n    sheetRef?: never;\n} | {\n    presentation: 'inline';\n    sheetRef?: React.Ref<BottomSheet>;\n    modalRef?: never;\n}) & (\n/** Fixed sizing keeps sorted increasing detents. Changes retain the current index or clamp a removed detent. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    maxDynamicContentSize?: never;\n}\n/** Content sizing uses one backend-measured detent and an optional finite positive point ceiling (default: container height), without fixed snap points or an initial detent index. */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n    initialIndex?: never;\n    maxDynamicContentSize?: BottomSheetModalProps['maxDynamicContentSize'];\n});"
+        "entry": "gesture-sheet-next",
+        "signature": "export type GestureSheetProps = SheetCommonProps & (\n/** Fixed detents, as points or a percentage of the room under `topInset`. Sorted for you; `initialIndex` counts from the lowest. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly SheetSnapPoint[];\n    initialIndex?: number;\n    maxDynamicContentSize?: never;\n}\n/** One detent as tall as the content, up to `maxDynamicContentSize` points (default: all the room). */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n    initialIndex?: never;\n    maxDynamicContentSize?: number;\n});"
+      },
+      "GestureSheetHost": {
+        "entry": "gesture-sheet-next",
+        "signature": "export declare function GestureSheetHost({ children, style }: {\n    children: React.ReactNode;\n    style?: StyleProp<ViewStyle>;\n}): React.JSX.Element;"
+      },
+      "GestureSheetScrollView": {
+        "entry": "gesture-sheet-next",
+        "signature": "export declare const GestureSheetScrollView: React.ForwardRefExoticComponent<Omit<import(\"react-native-reanimated\").AnimatedScrollViewProps, \"ref\"> & React.RefAttributes<Reanimated.ScrollView>>;"
       },
       "GestureSheet": {
-        "entry": "gesture-sheet",
-        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, contentMode, raised, titleRef, presentation, sheetRef, snapPoints, enableDynamicSizing, maxDynamicContentSize, enableContentPanningGesture, keyboardBehavior, keyboardBlurBehavior, android_keyboardInputMode, initialIndex, dismissible, returnFocusRef, closeLabel, onDismiss, onChange, onHardwareBackPress, topInset, bottomInset, modalRef, handleComponent, handleStyle, handleIndicatorStyle, backgroundComponent, backgroundStyle, containerStyle, animateOnMount, animationConfigs, backdropComponent, labelledBy }: GestureSheetProps): React.JSX.Element;"
+        "entry": "gesture-sheet-next",
+        "signature": "export declare function GestureSheet(props: GestureSheetProps): React.JSX.Element | null;"
       },
       "ListGroupAction": {
         "entry": "list-group",
@@ -2347,6 +2399,46 @@
       "figureReading": {
         "entry": "figure",
         "signature": "export declare function figureReading(figure: Figure, locale: string, options?: Intl.NumberFormatOptions): string;"
+      },
+      "detentHeight": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function detentHeight(point: SheetSnapPoint, room: number): number;"
+      },
+      "detentHeights": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function detentHeights(points: readonly SheetSnapPoint[], room: number): number[];"
+      },
+      "rubberBand": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function rubberBand(overshoot: number, limit: number): number;"
+      },
+      "dragPosition": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function dragPosition(raw: number, top: number, lowest: number, closed: number, dismissible: boolean): number;"
+      },
+      "SHEET_PROJECTION": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_PROJECTION = 0.18;"
+      },
+      "SHEET_FLICK": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_FLICK = 500;"
+      },
+      "releaseTarget": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function releaseTarget(position: number, velocity: number, positions: readonly number[], closed: number, dismissible: boolean): number;"
+      },
+      "SHEET_SPRING": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_SPRING: {\n    readonly damping: 36;\n    readonly stiffness: 320;\n    readonly mass: 1;\n    readonly overshootClamping: true;\n};"
+      },
+      "backdropProgress": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function backdropProgress(position: number, lowest: number, closed: number): number;"
+      },
+      "SHEET_RESIZE": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_RESIZE: {\n    readonly duration: 270;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n};"
       },
       "SearchIcon": {
         "entry": "icons",

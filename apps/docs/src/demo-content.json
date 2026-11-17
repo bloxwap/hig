@@ -417,6 +417,10 @@
       "title": "AssetsBlock"
     },
     {
+      "route": "components/confirm-block",
+      "title": "ConfirmBlock"
+    },
+    {
       "route": "components/profile-block",
       "title": "ProfileBlock"
     },
@@ -1198,6 +1202,17 @@
         "default",
         "trend",
         "empty"
+      ]
+    },
+    {
+      "name": "ConfirmBlock",
+      "route": "components/confirm-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "busy",
+        "fee"
       ]
     },
     {

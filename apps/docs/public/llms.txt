@@ -189,7 +189,7 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -206,6 +206,7 @@ All data and actions are supplied by the host application.
 | `SwapPanelBlock` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
 | `AccountBlock` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
 | `TokenActionBlock` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
+| `ConfirmBlock` | The last look before a send: the amount as the headline, the destination address in full and the network as plain lines, a warning that the send cannot be taken back, then Cancel and Confirm side by side. Details below. |
 | `TradeHistoryListBlock` | A history of closed trades: a header, then one row per trade with the asset, its side and leverage, and the net result over its age. Details below. |
 | `TradeHistoryDetailBlock` | The full record of one closed trade: the asset, the net result as the headline figure, the trade's figures as rows, and the host's actions. Details below. |
 | `LanguageBlock` | Choose the app's language: a header, a search field, and each language as a row with its flag and a check on the one in use. Details below. |
@@ -391,6 +392,24 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountBlock`, with the same `stickyHeader` and `headingId`.
 - **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanelBlock`.
 
+### ConfirmBlock
+
+`ConfirmBlock` is the last look before a send, usually in a sheet after the amount and destination are chosen: the header, the amount with its ticker as the headline, the destination address and the network as plain lines, a warning, then Cancel and the confirming action side by side. It is available from `@bloxwap/hig/react/blocks/confirm-block`, `@bloxwap/hig/native/confirm-block` and the `blocks` aggregates.
+
+```tsx
+<ConfirmBlock amount={2.5} symbol="HYPE" address={destination} network="HyperEVM"
+  busy={sending} onBack={goBack} onConfirm={send} onCancel={close}/>
+```
+
+- **Amount.** `amount` is in token units and is formatted with `amountOptions` (at most six fraction digits by default); `symbol` follows it, smaller and muted. `null` reads as unknown.
+- **Destination.** The details are information, not controls, so they are plain lines with no card or row container: a muted label on the leading edge and the value on the trailing edge. `address` is shown in full beside the built-in “To”, always as two rows of monospace split at the middle, left to right in every locale. The characters people compare are emphasised in the text colour, the first 4 (6 when the address starts with `0x`) and the last 4, and the rest is muted, as in `VerticalAddress`. Assistive technology reads the plain address. Never shorten it here. `network` is the value of the Network line. `details` adds lines under it, such as a fee: `{label, value}` plus `valueLabel` for a value that is not text. Native reads each line as one (“To, 0x…”).
+- **Warning.** The warning is on by default: the built-in heading “Double-check the address.” and a sentence that names the token and the network. `warningTitle` and `warning` replace them with host text; `warning={null}` draws none. It is a note, not an alert: it is there before the user acts, so nothing is announced on its own.
+- **Actions.** `onConfirm` reports the press on the confirming action, which is the primary button; `confirmLabel` replaces the built-in “Confirm Send”. `onCancel` shows Cancel on its leading side (`cancelLabel`), the two sharing the row equally as in `TargetBlock`; without it the confirming action takes the full width. `confirmDisabled` draws the confirming action unavailable.
+- **Busy.** While `busy`, the confirming action shows a spinner and ignores presses, and Back and Cancel are unavailable, so a send that is being signed cannot be left half way.
+- **Header.** `title` replaces the built-in “Confirm Send”. `onBack` shows Back and `headerAction` is the trailing control, with the same `stickyHeader` and `headingId` as the other blocks.
+- **Native test IDs.** `testID` (default `confirm`) prefixes `-header`, `-back`, `-title`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`.
+- **Ownership.** The block never validates an address, reads a wallet or sends. The host checks the address before showing the block, and signs and sends on `onConfirm`.
+
 ### LanguageBlock
 
 `LanguageBlock` is the screen for choosing the app's language: the same header as `AccountBlock`, a search field, then each language as a row. It is available from `@bloxwap/hig/react/blocks/language-block`, `@bloxwap/hig/native/language-block` and the `blocks` aggregates.
@@ -457,7 +476,7 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Note.** `note` is one sentence about how the order fills, such as that a take-limit fills only at the target price or better. With `labels.info`, the accessible name of the button, an info button sits on the trailing edge of the header and opens the sentence in a popover under it. Pressing the button again, pressing anywhere else or, on web, Escape closes it. The popover is the block's own, so the web entry needs no Radix peer, and native draws the same popover. Without `labels.info`, or when `headerAction` takes the trailing edge, the sentence is always shown under the headline figure. Leave `note` out and there is no button, as on a stop-market order.
 - **Unit.** `units` lists the units offered, all three by default, as a `SegmentedControl`; `onUnitChange` reports the choice. With one unit the control is hidden. The host converts `value` and `presets` when the unit changes. A unit can be `{unit, disabled}` to show it dimmed when it cannot be chosen now, for example Price while the size is zero.
 - **Quick choices.** `presets` are values in the current unit, drawn as equal capsules in one row by the public `PresetGroup` ([selection](https://bloxwap.github.io/hig/docs/guides/components/selection/#api-and-anatomy)), selected in the kind's colour. Whole dollar amounts drop their cents (+$1, -$0.50), and so do whole prices (Unreleased: `$63,000` even when `priceOptions` fix two fraction digits; a price formatted by significant digits keeps `priceOptions`), on web and native alike. On native each label is one line that shrinks to fit its column (down to 75%) rather than wrapping. The preset equal to `value` is shown selected and exposed as pressed; `onValueChange` reports a press on another preset (Unreleased: a press on the selected one no longer reports it again, and a new choice plays the provider's `selection` feedback instead of `activate`). A preset can be `{value, disabled}` to show it dimmed, for example a stop inside a fee floor; the host explains why. `targetPresets` and `targetUnits` return either list in its object form. `onCustom` adds a Custom row with a chevron above them, and the host opens its own entry, for example a keypad sheet.
-- **Custom value.** `customValue` is the value the host's entry set, in the current unit. The Custom row then shows it on its trailing edge in the kind's colour, takes a ring in that colour and is exposed as pressed (native: selected), and no quick choice shows selected. Its accessible name is the label and the value.
+- **Custom value.** `customValue` is the value the host's entry set, in the current unit. The Custom row then shows it on its trailing edge, is filled like a selected quick choice (the action colour for a take profit, the negative colour for a stop loss, with the label, value and chevron in the colour drawn on that fill) and is exposed as pressed (native: selected), and no quick choice shows selected. Its accessible name is the label and the value.
 - **Money format.** Dollar presets, the custom value and the headline follow the provider's `numberFormat`, so `{currencyDisplay: 'narrowSymbol'}` reads `+1 $` in French. Percentages are not currencies and keep Intl's percent format.
 - **Actions.** `onSubmit` is the confirming action, labelled by `labels.submit`, with `busy` and `submitDisabled`. `onCancel` adds Cancel beside it. `onBack` and `headerAction` are the header controls, as in `AccountBlock`. `headerActionBesideInfo` keeps the info button when `headerAction` is given: the info button comes first and the host control sits on the trailing edge, and both header sides widen to 92 units so the title stays centred. Without it `headerAction` replaces the info button, as before. `headingId` is passed to the header.
 - **Live numbers.** The headline figure and the three prices update through `AnimatedNumberReadout`.
@@ -1313,6 +1332,45 @@ The host can reject `onOpenChange(false)` while pending; HIG restores Vaul's las
 
 `scripts/gesture-sheet-browser-smoke.mjs` exercises the real Vaul backend in Chromium and WebKit: drag/scroll handoff, handle-only drag, controlled veto with retained input identity, nondismissible state, snap expansion, dynamic growth/shrink and capped scrolling, rapid resize interruption, focus/node identity, focus trap/Escape/return, viewport resizing, host styles/refs and reduced motion. Evidence in `evidence/web-gesture-sheet/` records the exact source baseline and dirty state. Desktop viewport resizing does not certify physical mobile software-keyboard behavior; that remains a host/device observation.
 
+### Views that swap (`GestureSheetView`)
+
+A sheet that walks through several views, such as choose, review and done, wraps them in `GestureSheetView` from the same entry and names the current one with `viewKey`:
+
+```tsx
+<GestureSheet open={open} onOpenChange={setOpen} title="Buy Bitcoin" titleHidden closeButton={null} enableDynamicSizing>
+  <GestureSheetView viewKey={step}>
+    {step === 'fees' ? <Fees/> : step === 'review' ? <Review/> : <Choose/>}
+  </GestureSheetView>
+</GestureSheet>
+```
+
+When `viewKey` changes, the old view fades and shrinks slightly out of the way without holding its space, the new view fades in at its own size, and the content-sized sheet moves to the new height at the same time. All three share one curve, `cubic-bezier(.26,.08,.25,1)`, with no spring and no overshoot: the old view and the height take 270ms and the new view 220ms, the values of Vaul's Dynamic Drawer. Going deeper and going back look the same, as in Vaul: there is no push or pop direction. The first view appears with the sheet. The outgoing view is inert and hidden from assistive technology while it leaves. Under reduced motion, and where the browser cannot animate, the views swap at once. Give every view its own way out, since `closeButton={null}` removes the built-in Close. The native preview engine has no view component: its content is swapped by the host and the sheet moves to the new height.
+
+## Native sheet engine (preview)
+
+`@bloxwap/hig/native/gesture-sheet-next` is HIG's own sheet for iOS and Android, written to replace the `@gorhom/bottom-sheet` backend behind `@bloxwap/hig/native/gesture-sheet`. It needs `react-native-reanimated`, `react-native-gesture-handler` and `react-native-safe-area-context`, and no sheet library. It is a preview: its arithmetic and lifecycle are tested, but it has not yet been measured on devices, so it sits beside the existing entry until it has.
+
+```tsx
+import {GestureSheet, GestureSheetHost, GestureSheetScrollView} from '@bloxwap/hig/native/gesture-sheet-next';
+
+<GestureSheetHost>{/* once, around the screen */}
+  <App/>
+  <GestureSheet open={open} onOpenChange={setOpen} title="Markets" contentMode="custom" enableDynamicSizing>
+    <GestureSheetScrollView>{rows}</GestureSheetScrollView>
+  </GestureSheet>
+</GestureSheetHost>
+```
+
+- **Why it stays smooth.** While the sheet moves, only its `translateY` and the backdrop's opacity change, both on the UI thread. Nothing is laid out per frame, whatever the content weighs. Opening, closing, a new detent set and content that changed height all become one spring. The surface is rasterised on Android (`renderToHardwareTextureAndroid`).
+- **Sizing.** `snapPoints` are points or a percentage of the room under `topInset`, sorted for you, with `initialIndex` counted from the lowest. Fixed content is laid out once at the tallest detent, so at a lower detent its lower part is off screen, as in Vaul. `enableDynamicSizing` gives one detent as tall as the content, up to `maxDynamicContentSize`; when the content changes height the content is laid out at once and the sheet moves to the new height in 270ms.
+- **Drag.** The whole sheet drags. A slow release takes the nearest detent, or closes past half way below the lowest; a flick moves one detent in its direction, or closes from the lowest. Above the top detent the sheet resists. A drag can be caught mid-motion.
+- **Views that swap.** The engine animates the height only. A host that swaps its content gets the sheet moving to the new height in 270ms on the web sheet's curve; the content itself changes at once. A cross-fade and a push and pop by depth were built and measured on a Seeker, and dropped a frame per swap with a 12ms median frame at 120Hz, so they were removed.
+- **Scrolling content.** Use `GestureSheetScrollView`: at the top detent it scrolls, a pull down from the top of the content moves the sheet, and below the top detent the drag moves the sheet. Bounce and overscroll are off.
+- **Presentation.** `modal` (default) draws in the nearest `GestureSheetHost` and is mounted from opening until its closing motion ends; without a host it draws in place. `inline` draws where it is rendered and keeps its children mounted while closed.
+- **Dismissal.** Drag, a backdrop press, Android Back, the accessibility escape and the default Close ask through `onOpenChange(false)`; a host that keeps `open` gets the sheet back at its detent. `dismissible={false}` blocks all of them. `onDismiss` fires once after an accepted dismissal has finished moving; `onChange(index)` fires when the sheet settles on a detent.
+- **Keyboard.** iOS lifts the sheet over the keyboard. Android resizes the window, which the sheet reads as new room.
+- **Differences from `native/gesture-sheet`.** No backend-typed props: `modalRef`, `sheetRef`, `handleComponent`, `backgroundComponent`, `backdropComponent`, `animationConfigs`, `containerStyle`, `keyboardBehavior` and `enableContentPanningGesture` are gone. `handle`, `backgroundStyle`, `backdropOpacity` and `testID` take their place. Modal sheets need `GestureSheetHost` in place of `BottomSheetModalProvider`. The sheet draws no shadow.
+
 ## When to use and examples
 
 Do: repeat the order amount and give an explicit cancel action. Don’t: hide essential terms in hover help or execute confirm on open.
@@ -2047,6 +2105,11 @@ Rules:
 | `noPositions` | No open positions | AssetsBlock: empty Positions view | — |
 | `noTrend` | No trending markets | AssetsBlock: empty Trend view | — |
 | `opensIn` | Opens in | AssetsBlock: before the countdown to when a closed legacy market opens | — |
+| `confirmSend` | Confirm Send | ConfirmBlock: the default heading and confirming action | — |
+| `sendTo` | To | ConfirmBlock: label of the destination address row | — |
+| `sendNetwork` | Network | ConfirmBlock: label of the network row | — |
+| `sendWarningTitle` | Double-check the address. | ConfirmBlock: heading of the warning above the actions | — |
+| `sendWarning` | HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong. | ConfirmBlock: body of the warning | `symbol`, `network` |
 
 `npm run lint` runs `scripts/check-built-in-strings.mjs`, and so does `tests/built-in-strings.test.ts`. The check fails when a component under `packages/{react,native}/src` adds a user-visible or accessible literal. That covers JSX text, a visible or accessibility attribute (`aria-label`, `accessibilityLabel`, `title`, `label`, `description`, …), a label-like default prop and a `set…()` status string. To add copy, add a key to `HIGMessages`, read it with `useMessages()`, and add a row to the table above. The test checks that every key is in this table with its English default.
 
