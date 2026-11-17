@@ -1,4 +1,4 @@
-import React,{memo,useEffect,useRef,useState} from 'react';
+import React,{memo,useEffect,useMemo,useRef,useState} from 'react';
 import {PixelRatio,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type TextStyle} from 'react-native';
 import Reanimated,{cancelAnimation,defineAnimation,Easing,ReduceMotion,useAnimatedStyle,useSharedValue,withTiming} from 'react-native-reanimated';
 import {numberFlowDeltas,numberFlowDigitLength,numberFlowEasingSamples,resolveNumberFlowTimings,type NumberFlowDigits,type NumberFlowTiming} from '@bloxwap/hig/contracts/number-flow';
@@ -153,15 +153,17 @@ export function NumberFlowGroup({children}:{children?:React.ReactNode}){return <
 export function AnimatedNumberReadout({value,options:requested,formattedValue,animateFormatted,stale,label,tone='text',style,testID,maxFontSizeMultiplier,trend,prefix,suffix,duration:requestedDuration,motion='slide',animated=true,spinTiming,transformTiming,opacityTiming,digits,continuous=false}:AnimatedNumberProps){
  const duration=requestedDuration??180,flow=motion==='flow';
  const locale=useNumberLocale();
- const {messages,direction,reducedMotion:reduced,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript,maxFontSizeMultiplier:providerMaxFontSizeMultiplier,numberFormat}=useHIG(),colors=useColors(),reducedMotion=reduced||!animated;const options=presentNumberFormat(requested,numberFormat);
- const reading=formatNumberReadout(value,locale,options,formattedValue,prefix,suffix),staleSuffix=stale?` ${messages.stale??en.stale}`:'';
+ const {messages,direction,reducedMotion:reduced,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript,maxFontSizeMultiplier:providerMaxFontSizeMultiplier,numberFormat}=useHIG(),colors=useColors(),reducedMotion=reduced||!animated;const options=presentNumberFormat(requested,numberFormat),optionsKey=options?JSON.stringify(options):'';
+ // The reading and its reels depend on the value and the format alone. A readout draws more often than its value changes (its
+ // parent draws, the digits are measured, a turn is worked out), and none of those renders formats anything again.
+ const reading=useMemo(()=>formatNumberReadout(value,locale,options,formattedValue,prefix,suffix),[value,locale,optionsKey,formattedValue,prefix,suffix]),staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  const previousValue=useRef(value),directionTrend=numberTrendDirection(trend,previousValue.current,value);
  useEffect(()=>{previousValue.current=value;},[value]);
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
  const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
  const textStyle:StyleProp<TextStyle>=[typography,{color,fontVariant:['tabular-nums']}];
  const script=detectScript(`${reading.text}${staleSuffix}`,locale);
- const model=createNumberReelModel(value,locale,options,formattedValue,direction,animateFormatted);
+ const model=useMemo(()=>createNumberReelModel(value,locale,options,formattedValue,direction,animateFormatted,reading.core),[value,locale,optionsKey,formattedValue,direction,animateFormatted]);
  const safeModel=model&&safeNumberLayout(`${prefix??''}${suffix??''}${staleSuffix}`,direction)?model:null;
  let fontScale=0;try{fontScale=PixelRatio.getFontScale();}catch{/* Static until native font metrics are available. */}
  const measurementKey=JSON.stringify([safeModel?.digits,typography,fontScale,maxFontSizeMultiplier,providerMaxFontSizeMultiplier,script,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript]);
@@ -179,7 +181,7 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  const [flowStep,setFlowStep]=useState<FlowStep|null>(null);let turns=noTurns;
  if(flow&&activeModel){
   // A new locale or format is a different reading rather than a new value, as on web: it is drawn at once and the next value rolls from it.
-  const signature=JSON.stringify([locale,options??{},!!formattedValue]);
+  const signature=`${locale}\u0000${optionsKey}\u0000${formattedValue?1:0}`;
   if(!flowStep||flowStep.key!==measurementKey||flowStep.signature!==signature)setFlowStep({key:measurementKey,signature,canonical:activeModel.canonical,value,places:numberReelPlaces(activeModel),turns:noTurns});
   else if(flowStep.canonical!==activeModel.canonical){
    const places=numberReelPlaces(activeModel),moving=!reducedMotion&&timings.spin.duration>0,deltas=moving?numberFlowDeltas(flowStep.places,places,{trend:numberTrendDirection(trend,flowStep.value,value),digits,continuous}):null,before=new Map(flowStep.places.map(place=>[place.key,place.digit])),next=new Map<string,FlowTurn>();

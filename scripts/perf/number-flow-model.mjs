@@ -2,7 +2,7 @@
 // (formatting included), timed in Node from the built output (run `node scripts/build.mjs` first). Prints one JSON object of
 // operations per second and microseconds per operation.
 //
-//   node scripts/perf/number-flow-model.mjs            every case, 400 ms each
+//   node scripts/perf/number-flow-model.mjs            every case, 400 ms each in five slices, the fastest slice reported
 //   node scripts/perf/number-flow-model.mjs --ms=1000  longer samples
 //
 // This is V8 with full ICU. Hermes formats through the platform's number formatter, so the absolute cost of anything that
@@ -16,11 +16,16 @@ const usd={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFracti
 const values=Array.from({length:512},(_,index)=>1000+Math.sin(index*1.7)*180+index*0.37),rates=values.map(value=>(value-1000)/9000);
 let cursor=0;const next=list=>list[cursor++&511];
 let sink=0;
+// The best of five slices: other work on the machine only ever adds time, so the fastest slice is the truest.
 function time(run){
  for(let warm=0;warm<200;warm++)sink+=run()?1:0;
- let operations=0;const started=performance.now();let elapsed=0;
- while(elapsed<budget){for(let batch=0;batch<50;batch++)sink+=run()?1:0;operations+=50;elapsed=performance.now()-started;}
- return {opsPerSec:Math.round(operations/elapsed*1000),usPerOp:Math.round(elapsed/operations*1e5)/100};
+ let best=Infinity;
+ for(let slice=0;slice<5;slice++){
+  let operations=0;const started=performance.now();let elapsed=0;
+  while(elapsed<budget/5){for(let batch=0;batch<50;batch++)sink+=run()?1:0;operations+=50;elapsed=performance.now()-started;}
+  best=Math.min(best,elapsed/operations);
+ }
+ return {opsPerSec:Math.round(1000/best),usPerOp:Math.round(best*1e5)/100};
 }
 const kept=new Intl.NumberFormat('en-US',usd),webBefore=web.createAnimatedNumberModel(1234.56,'en-US',usd),webAfter=web.createAnimatedNumberModel(1240.61,'en-US',usd);
 const nativeBefore=native.createNumberReelModel(1234.56,'en-US',usd,undefined,'ltr'),nativeAfter=native.createNumberReelModel(1240.61,'en-US',usd,undefined,'ltr');
@@ -49,6 +54,8 @@ const cases={
  'native createNumberReelModel (currency)':()=>native.createNumberReelModel(next(values),'en-US',usd,undefined,'ltr'),
  'native createNumberReelModel (percent, exceptZero)':()=>native.createNumberReelModel(next(rates),'en-US',percent,undefined,'ltr'),
  'native createNumberReelModel (same value again)':()=>native.createNumberReelModel(1234.56,'en-US',usd,undefined,'ltr'),
+ // As the readout calls it: the reading it has already formatted is handed in, so the model formats nothing itself.
+ 'native createNumberReelModel (reading handed in)':()=>{const value=next(values);return native.createNumberReelModel(value,'en-US',usd,undefined,'ltr',false,kept.format(value));},
  'native createFormattedReelModel':()=>native.createFormattedReelModel('$1,234.56','en-US','ltr'),
  'native numberReelPlaces':()=>native.numberReelPlaces(nativeAfter),
  // Shared arithmetic, per changed value on both renderers.
