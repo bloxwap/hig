@@ -6,6 +6,12 @@
 //   node scripts/perf/number-flow-web.mjs                    every scenario, both motions, unthrottled and at 4x CPU throttle
 //   node scripts/perf/number-flow-web.mjs --runs=5           the median of five runs of each (default 3)
 //   node scripts/perf/number-flow-web.mjs --only=tickers     chosen scenarios (tickers, interrupt, mount, unchanged, roll)
+//   node scripts/perf/number-flow-web.mjs --stat=min         the fastest run of each instead of the median: on a busy machine
+//                                                            other work only ever adds time, so the least is the truest
+//   node scripts/perf/number-flow-web.mjs --against=.local/base/packages/hig/react/src
+//                                                            also measures another copy of the React sources (an older
+//                                                            checkout, say), run about with the current one so both see the
+//                                                            same machine, and prints it under "against"
 //   node scripts/perf/number-flow-web.mjs --profile=tickers:flow[:4]   the functions with the most self time in one scenario
 //   node scripts/perf/number-flow-web.mjs --trace=tickers:flow[:4]     main-thread self time by Chromium timeline event (style, layout, paint...)
 //
@@ -21,14 +27,15 @@
 import {createRequire} from 'node:module';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
+import {relative,resolve} from 'node:path';
 import {launchBrowser} from '../browser-launcher.mjs';
 const root=fileURLToPath(new URL('../..',import.meta.url));
 const require=createRequire(`${root}/package.json`);
 const {build}=require('esbuild');const {chromium}=require('@playwright/test');
 const flag=name=>process.argv.find(argument=>argument.startsWith(`--${name}=`))?.slice(name.length+3);
-const runs=Math.max(1,Number(flag('runs'))||3),only=flag('only')?.split(','),profile=flag('profile')?.split(':'),trace=flag('trace')?.split(':');
-const source=`import React,{Profiler,useState} from 'react';import {createRoot} from 'react-dom/profiling';import {flushSync} from 'react-dom';
-import {HIGProvider} from './packages/hig/react/src/provider';import {AnimatedNumberReadout} from './packages/hig/react/src/animated-number';
+const runs=Math.max(1,Number(flag('runs'))||3),only=flag('only')?.split(','),profile=flag('profile')?.split(':'),trace=flag('trace')?.split(':'),least=flag('stat')==='min',against=flag('against');
+const pageSource=sources=>`import React,{Profiler,useState} from 'react';import {createRoot} from 'react-dom/profiling';import {flushSync} from 'react-dom';
+import {HIGProvider} from './${sources}/provider';import {AnimatedNumberReadout} from './${sources}/animated-number';
 const usd={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2};
 // The first currency crosses 1,000 and the first percentage crosses zero, so figures gain and lose places and signs as well as roll.
 const formats=[{options:usd,start:997.25,step:2.5},{options:{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'},start:0.0042,step:0.006},{options:usd,start:64250.1,step:180},{options:{style:'percent',maximumFractionDigits:1},start:0.482,step:0.02}];
@@ -85,12 +92,14 @@ window.higPerf={
   const midRoll={animations:document.getAnimations().length/instances,domNodesPerInstance:nodes()/instances};await wait(1500);
   return {atRest,restDomNodesPerInstance:rest,oneChange:midRoll,afterOneChange:leftovers()};
  }};`;
-const bundle=(await build({stdin:{contents:source,resolveDir:root,loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'}})).outputFiles[0].text;
+const bundled=async sources=>(await build({stdin:{contents:pageSource(sources),resolveDir:root,loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'}})).outputFiles[0].text;
+// The other copy has to sit inside this checkout, where its imports resolve to the same React and the same built contracts.
+const bundles={current:await bundled('packages/hig/react/src'),...(against?{against:await bundled(relative(root,resolve(against)).split('\\').join('/'))}:null)};
 const css=readFileSync(`${root}/packages/hig/tokens/dist/tokens.css`,'utf8')+readFileSync(`${root}/packages/hig/react/src/styles.css`,'utf8')+'body{margin:24px;background:var(--hig-background);color:var(--hig-text);font-family:system-ui;font-size:20px}#board{display:flex;flex-wrap:wrap;gap:8px 24px}.cell{display:inline-block;min-width:140px}';
 const html=`<html><head><style>${css}</style></head><body><div id='root'></div></body></html>`;
 const counters=async cdp=>Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(metric=>[metric.name,metric.value]));
 const round=value=>typeof value==='number'?Math.round(value*1000)/1000:value;
-async function measure(browser,scenario,motion,rate,inspect=''){
+async function measure(browser,bundle,scenario,motion,rate,inspect=''){
  const profiled=inspect==='profile',traced=inspect==='trace';
  const page=await browser.newPage({viewport:{width:1280,height:900}});const errors=[];page.on('pageerror',error=>errors.push(error.message));
  try{
@@ -131,23 +140,23 @@ function timeline(trace,started){
  while(stack.length)close(stack.pop());
  return Object.fromEntries(Array.from(self).sort((a,b)=>b[1]-a[1]).slice(0,24).map(([name,ms])=>[name,round(ms)]));
 }
-/** The median of each number across runs, field by field. */
-function medians(results){
- const [first]=results;if(typeof first==='number'){const sorted=results.slice().sort((a,b)=>a-b);return round(sorted[Math.floor(sorted.length/2)]);}
- if(first&&typeof first==='object')return Object.fromEntries(Object.keys(first).map(key=>[key,medians(results.map(result=>result[key]))]));
+/** The median (or with --stat=min the least) of each number across runs, field by field. */
+function summary(results){
+ const [first]=results;if(typeof first==='number'){const sorted=results.slice().sort((a,b)=>a-b);return round(sorted[least?0:Math.floor(sorted.length/2)]);}
+ if(first&&typeof first==='object')return Object.fromEntries(Object.keys(first).map(key=>[key,summary(results.map(result=>result[key]))]));
  return first;
 }
 const browser=await launchBrowser(chromium,{headless:true});
 try{
- if(profile||trace){const [scenario,motion='flow',rate='1']=profile??trace;console.log(JSON.stringify({scenario,motion,cpuThrottle:Number(rate),...(await measure(browser,scenario,motion,Number(rate),profile?'profile':'trace'))},null,1));}
+ if(profile||trace){const [scenario,motion='flow',rate='1']=profile??trace;console.log(JSON.stringify({scenario,motion,cpuThrottle:Number(rate),...(await measure(browser,bundles.current,scenario,motion,Number(rate),profile?'profile':'trace'))},null,1));}
  else{
-  const result={checkedAt:new Date().toISOString(),chromium:browser.version(),runs,note:'median of runs; an update is one value handed to one figure, a tick one state change of the parent',cpuThrottle1x:{},cpuThrottle4x:{}};
+  const result={checkedAt:new Date().toISOString(),chromium:browser.version(),runs,note:`${least?'least':'median'} of runs; an update is one value handed to one figure, a tick one state change of the parent`,cpuThrottle1x:{},cpuThrottle4x:{},...(against?{against:{sources:against,cpuThrottle1x:{},cpuThrottle4x:{}}}:null)};
   for(const [name,rate] of [['cpuThrottle1x',1],['cpuThrottle4x',4]])for(const motion of ['flow','slide']){
-   result[name][motion]={};
+   result[name][motion]={};if(against)result.against[name][motion]={};
    for(const scenario of ['tickers','interrupt','mount','unchanged','roll']){
     if(only&&!only.includes(scenario))continue;
-    const samples=[];for(let run=0;run<runs;run++)samples.push(await measure(browser,scenario,motion,rate));
-    result[name][motion][scenario]=medians(samples);
+    const samples={current:[],against:[]};for(let run=0;run<runs;run++)for(const [variant,bundle] of Object.entries(bundles))samples[variant].push(await measure(browser,bundle,scenario,motion,rate));
+    result[name][motion][scenario]=summary(samples.current);if(against)result.against[name][motion][scenario]=summary(samples.against);
    }
   }
   console.log(JSON.stringify(result,null,1));

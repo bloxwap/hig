@@ -75,8 +75,11 @@ function SlideReadout({duration=180,trend,options:requested,formattedValue,anima
   for(const animation of created)animation.onfinish=()=>{if(generation.current===id&&--remaining===0){active.current=[];setSettled(frame);}};
   return()=>{if(generation.current===id)cancel();};
  },[frame,reducedMotion,duration]);
- const tokens=settled===frame||reducedMotion?createAnimatedNumberTransitions(null,frame.model):frame.tokens;
- return <span className={className?`hig-number ${className}`:'hig-number'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={element} className='hig-animated-number-visual' aria-hidden='true' dir={direction}>{known&&props.prefix}{tokens.map(token=>token.changed?<span className='hig-animated-number-place' data-hig-animated-number-change key={token.key}>{token.oldText!==undefined&&<span className='hig-animated-number-old'>{token.oldText}</span>}{token.text&&<span className='hig-animated-number-new'>{token.text}</span>}</span>:<span key={token.key}>{token.text}</span>)}{known&&props.suffix}{props.stale&&<span> {staleText}</span>}</span></span>;
+ // The same elements for the same reading: a parent that draws again without a new value costs this figure no reconciliation.
+ const still=settled===frame||reducedMotion;
+ return useMemo(()=>{const tokens=still?createAnimatedNumberTransitions(null,frame.model):frame.tokens;
+  return <span className={className?`hig-number ${className}`:'hig-number'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={element} className='hig-animated-number-visual' aria-hidden='true' dir={direction}>{known&&props.prefix}{tokens.map(token=>token.changed?<span className='hig-animated-number-place' data-hig-animated-number-change key={token.key}>{token.oldText!==undefined&&<span className='hig-animated-number-old'>{token.oldText}</span>}{token.text&&<span className='hig-animated-number-new'>{token.text}</span>}</span>:<span key={token.key}>{token.text}</span>)}{known&&props.suffix}{props.stale&&<span> {staleText}</span>}</span></span>;
+ },[frame,still,className,props.label,accessible,direction,known,props.prefix,props.suffix,props.stale,staleText]);
 }
 
 interface FlowMember {measure:()=>void;flip:()=>void}
@@ -135,16 +138,20 @@ function FlowReadout(all:AnimatedNumberProps){
   flow.spin(spins,model.digits??asciiDigits,flowMotion.spin);
  };
  useCommitEffect(()=>{try{change();}finally{if(expected.current){expected.current=false;numberFlowCommit.done();}}});
+ // The same elements for the same reading: a parent that draws again without a new value costs this figure no reconciliation.
+ const figure=useMemo(()=>{
+  // The digits, first to last with the separators between them, sit in one box the engine clips while it changes width; signs and currency stay outside it.
+  const parts=model.tokens.map((token,index)=>token.digit?<span className='hig-number-flow-place' data-hig-flow-key={keys[index]} data-hig-flow-digit='' key={keys[index]}><span className='hig-number-flow-digit'>{token.text}</span></span>:<span className='hig-number-flow-part' data-hig-flow-key={keys[index]} key={keys[index]}>{token.text}</span>);
+  const found=model.tokens.findIndex(token=>token.digit),first=found<0?parts.length:found;let last=parts.length-1;while(last>=first&&!model.tokens[last].digit)last--;
+  return <span className={className?`hig-number hig-number-flow ${className}`:'hig-number hig-number-flow'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={visual} className='hig-animated-number-visual' aria-hidden='true' dir={direction} data-will-change={willChange?'':undefined}>
+   {prefix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:prefix'>{prefix}</span>}
+   <span className='hig-number-flow-core' dir='ltr'>{parts.slice(0,first)}<span className='hig-number-flow-digits' key='digits'>{parts.slice(first,last+1)}<span className='hig-number-flow-ghosts' key='ghosts'/></span>{parts.slice(last+1)}</span>
+   {suffix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:suffix'>{suffix}</span>}
+   {props.stale&&<span className='hig-number-flow-part' data-hig-flow-key='affix:stale'> {staleText}</span>}
+   <span className='hig-number-flow-ghosts'/>
+  </span></span>;
+ },[model,keys,className,props.label,accessible,direction,willChange,prefix,suffix,props.stale,staleText]);
  // The number itself is always drawn left to right, as digits are in every script; a reading that needs reordering slides instead.
  if(!placeable)return <SlideReadout {...all}/>;
- // The digits, first to last with the separators between them, sit in one box the engine clips while it changes width; signs and currency stay outside it.
- const parts=model.tokens.map((token,index)=>token.digit?<span className='hig-number-flow-place' data-hig-flow-key={keys[index]} data-hig-flow-digit='' key={keys[index]}><span className='hig-number-flow-digit'>{token.text}</span></span>:<span className='hig-number-flow-part' data-hig-flow-key={keys[index]} key={keys[index]}>{token.text}</span>);
- const found=model.tokens.findIndex(token=>token.digit),first=found<0?parts.length:found;let last=parts.length-1;while(last>=first&&!model.tokens[last].digit)last--;
- return <BeforeCommit before={before}><span className={className?`hig-number hig-number-flow ${className}`:'hig-number hig-number-flow'}><span className='hig-sr-only' aria-label={props.label?accessible:undefined}>{accessible}</span><span ref={visual} className='hig-animated-number-visual' aria-hidden='true' dir={direction} data-will-change={willChange?'':undefined}>
-  {prefix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:prefix'>{prefix}</span>}
-  <span className='hig-number-flow-core' dir='ltr'>{parts.slice(0,first)}<span className='hig-number-flow-digits' key='digits'>{parts.slice(first,last+1)}<span className='hig-number-flow-ghosts' key='ghosts'/></span>{parts.slice(last+1)}</span>
-  {suffix&&<span className='hig-number-flow-part' data-hig-flow-key='affix:suffix'>{suffix}</span>}
-  {props.stale&&<span className='hig-number-flow-part' data-hig-flow-key='affix:stale'> {staleText}</span>}
-  <span className='hig-number-flow-ghosts'/>
- </span></span></BeforeCommit>;
+ return <BeforeCommit before={before}>{figure}</BeforeCommit>;
 }
