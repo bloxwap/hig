@@ -1,0 +1,23 @@
+name: Set up a self-hosted release job
+description: Install job-local release tools, locked dependencies and generated fonts
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: '24.22.1'
+    - name: Install job-local pinned npm
+      shell: bash
+      run: |
+        echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+        prefix=$(mktemp -d "$RUNNER_TEMP/hig-release-npm.XXXXXX")
+        npm install --prefix "$prefix" --ignore-scripts --no-audit --no-fund npm@11.6.1
+        echo "$prefix/node_modules/.bin" >> "$GITHUB_PATH"
+    - name: Install CPython 3.12
+      shell: bash
+      run: bash scripts/ci-setup-python.sh
+    - shell: bash
+      run: npm ci
+    - name: Native fonts (on-disk reuse)
+      shell: bash
+      run: bash scripts/ci-native-fonts.sh
