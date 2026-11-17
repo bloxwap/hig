@@ -82,6 +82,8 @@ const EXIT={duration:TOAST_EXIT.duration,easing:Easing.bezier(...TOAST_EXIT.curv
 const FADE={duration:TOAST_REDUCED_FADE,easing:Easing.bezier(...TOAST_EXIT.curve),reduceMotion:ReduceMotion.Never};
 const NO_INSETS={top:0,right:0,bottom:0,left:0} as const;
 interface Stack {keys:number[];heights:number[]}
+// A card renders again when its place in the stack changes how it takes touches; what it shows has not changed then, so the capsule is skipped.
+const Capsule=memo(ToastNotice);
 interface CardProps {
  entry:Entry;front:boolean;hidden:boolean;interactive:boolean;lift:1|-1;gap:number;visible:number;reduce:boolean;
  left:boolean;right:boolean;up:boolean;down:boolean;narrow:boolean;testID?:string;
@@ -180,7 +182,7 @@ const Card=memo(function Card({entry,front,hidden,interactive,lift,gap,visible,r
  // A notice behind a collapsed stack, or past the visible ones, shows no content: it takes no touches and assistive technology skips it.
  return <GestureDetector gesture={pan}>
   <Reanimated.View testID={name} onLayout={onLayout} pointerEvents={interactive?'auto':'none'} accessibilityElementsHidden={hidden||(!front&&!interactive)} importantForAccessibility={hidden||(!front&&!interactive)?'no-hide-descendants':'auto'} style={[styles.card,lift===1?styles.top:styles.bottom,narrow?styles.narrow:styles.wide,{backgroundColor:colors.nested},cardStyle]}>
-   <Reanimated.View style={contentStyle}><ToastNotice message={value.message} description={value.description} severity={value.severity} action={value.action} dismissName={value.dismissName} onDismiss={dismiss} hug style={styles.bare}/></Reanimated.View>
+   <Reanimated.View style={contentStyle}><Capsule message={value.message} description={value.description} severity={value.severity} action={value.action} dismissName={value.dismissName} onDismiss={dismiss} hug style={styles.bare}/></Reanimated.View>
   </Reanimated.View>
  </GestureDetector>;
 });

@@ -9,10 +9,11 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Text:RNText,View:RNView}=require('react-native');
-const mockSeen={reactions:[],cards:0,gestures:0,capsules:0};
+const mockSeen={reactions:[],cards:0,gestures:0,capsules:0,stacks:0};
 jest.mock('react-native-reanimated',()=>{
  const React=require('react'),RN=require('react-native');
- const shared=initial=>{const ref=React.useRef(null);if(ref.current===null){let current=initial;ref.current={get value(){return current;},set value(next){current=next&&next.__animation?next.to:next;}};}return ref.current;};
+ // The stack is the one value the JS thread hands the UI thread to place every notice, so a write to it is one restack.
+ const shared=initial=>{const ref=React.useRef(null);if(ref.current===null){let current=initial;ref.current={get value(){return current;},set value(next){if(next&&Array.isArray(next.keys))mockSeen.stacks++;current=next&&next.__animation?next.to:next;}};}return ref.current;};
  const animation=to=>({__animation:true,to});
  return {__esModule:true,default:{View:RN.View},cancelAnimation:()=>{},Easing:{bezier:(...points)=>points},ReduceMotion:{Always:'always',System:'system',Never:'never'},runOnJS:fn=>fn,
   useSharedValue:shared,useAnimatedStyle:updater=>({__style:updater}),withTiming:animation,withSpring:animation,
@@ -43,12 +44,12 @@ const cards=()=>root.root.findAll(node=>node.props.testID==='toasts-toast'&&type
 // A device lays a view out once, when it mounts: only cards that have not reported a height do.
 const laid=new WeakSet();
 const layout=(height=44)=>{act(()=>{for(const card of cards()){if(laid.has(card.props.onLayout))continue;laid.add(card.props.onLayout);card.props.onLayout({nativeEvent:{layout:{width:240,height}}});}});flush();};
-/** What React did since the last call: commits of the host and of the rows, card and capsule renders, gestures built. */
-let last={host:0,rows:0,cards:0,capsules:0,gestures:0};
-const spent=()=>{const now={host:commits.host,rows:commits.rows,cards:mockSeen.cards,capsules:mockSeen.capsules,gestures:mockSeen.gestures},delta=Object.fromEntries(Object.keys(now).map(key=>[key,now[key]-last[key]]));last=now;return delta;};
+/** What happened since the last call: commits of the host and of the rows, card and capsule renders, gestures built, and restacks sent to the UI thread. */
+let last={host:0,rows:0,cards:0,capsules:0,gestures:0,stacks:0};
+const spent=()=>{const now={host:commits.host,rows:commits.rows,cards:mockSeen.cards,capsules:mockSeen.capsules,gestures:mockSeen.gestures,stacks:mockSeen.stacks},delta=Object.fromEntries(Object.keys(now).map(key=>[key,now[key]-last[key]]));last=now;return delta;};
 const report=(name,value)=>{if(process.env.HIG_PERF_REPORT==='1')console.log(`[toaster-perf] ${name} ${JSON.stringify(value)}`);};
 
-it('raising a notice commits the host once and never the rows beside it',()=>{
+it('raising a notice commits the host once, draws one capsule and never renders the rows beside it',()=>{
  mount();spent();
  const raised=[];
  for(let index=0;index<12;index++){act(()=>{toast(`Notice ${index+1}`,{severity:['info','success','warning','error'][index%4]});});layout();raised.push(spent());}
@@ -56,8 +57,12 @@ it('raising a notice commits the host once and never the rows beside it',()=>{
  // One commit per notice: the height it reports and the restack go to the UI thread without a render.
  expect(raised.map(step=>step.host)).toEqual(Array(12).fill(1));
  expect(raised.map(step=>step.rows)).toEqual(Array(12).fill(0));
+ // Only the new notice draws its capsule. The notice it pushes back and the one that goes out of sight change how they take touches, not what they show.
+ expect(raised.map(step=>step.capsules)).toEqual(Array(12).fill(1));
  // The new card, the old front, and from the fourth on the card that goes out of sight; the cards between keep their props and are skipped.
  expect(raised.map(step=>step.cards)).toEqual([1,2,2,3,3,3,3,3,3,3,3,3]);
+ // The notices move on the UI thread: the JS thread sends it the stack once per notice, when its height is known, and nothing per frame.
+ expect(raised.map(step=>step.stacks)).toEqual(Array(12).fill(1));
  // Three visible and one spare, however many are waiting.
  expect(cards()).toHaveLength(4);
 });
@@ -68,8 +73,13 @@ it('replacing a notice by id commits the host once and renders only that notice'
  const replaced=[];
  for(let index=0;index<40;index++){act(()=>{toast(`Sending ${index+1}`,{id:'job',duration:Infinity});});flush();replaced.push(spent());}
  report('replace 40, per call',replaced[0]);
- for(const step of replaced)expect(step).toEqual({host:1,rows:0,cards:1,capsules:1,gestures:0});
+ // Its height has not changed, so nothing is sent to the UI thread.
+ for(const step of replaced)expect(step).toEqual({host:1,rows:0,cards:1,capsules:1,gestures:0,stacks:0});
  expect(cards()).toHaveLength(3);
+ // Raised again with nothing new to show, its time starts over and its capsule is not drawn again.
+ act(()=>{toast('Sending 40',{id:'job',duration:Infinity});});flush();
+ expect(spent()).toEqual({host:1,rows:0,cards:1,capsules:0,gestures:0,stacks:0});
+ expect(root.root.findAllByType(RNText).map(node=>node.props.children)).toEqual(expect.arrayContaining(['One','Sending 40','Three']));
 });
 
 it('dismissing every notice mounts no card for the ones waiting behind the stack, and leaves no card, timer or reaction',()=>{
@@ -77,18 +87,22 @@ it('dismissing every notice mounts no card for the ones waiting behind the stack
  mount();spent();
  // Every notice was the front when it was raised, so every one has been drawn and laid out; four still are.
  for(let index=0;index<12;index++){act(()=>{toast(`Notice ${index+1}`);});layout();}
+ // One timer per visible notice counts its time; the ones behind them wait without one.
+ expect(jest.getTimerCount()).toBe(3);
  spent();const reactions=mockSeen.reactions.length;
  act(()=>{dismissToast();});flush();const leaving=spent();
  // The four that are drawn play their exit. The eight behind them have nothing on screen: no card is mounted to take them away.
  expect(cards()).toHaveLength(4);expect(leaving.cards).toBe(4);expect(mockSeen.reactions).toHaveLength(reactions);
- // Only the front stops taking touches, so only its gesture is built again.
- expect(leaving.gestures).toBe(1);
- // One commit marks them as leaving, and one drops the ones that were not drawn.
- expect(leaving.host).toBe(2);
+ // Only the front stops taking touches, so only its gesture is built again, and no capsule is drawn again on the way out.
+ expect(leaving.gestures).toBe(1);expect(leaving.capsules).toBe(0);
+ // One commit marks them as leaving, and one drops the ones that were not drawn. The UI thread is sent the emptied stack once.
+ expect(leaving.host).toBe(2);expect(leaving.stacks).toBe(1);
+ // While they leave, each drawn notice has one timer, to drop it when its exit has played.
+ expect(jest.getTimerCount()).toBe(4);
  act(()=>{jest.advanceTimersByTime(250);});const dropped=spent();
  report('dismiss all of 12',{leaving,dropped,timers:jest.getTimerCount(),reactions:mockSeen.reactions.length});
  // The drawn ones go together once their exit has played.
- expect(dropped).toEqual({host:1,rows:0,cards:0,capsules:0,gestures:0});
+ expect(dropped).toEqual({host:1,rows:0,cards:0,capsules:0,gestures:0,stacks:0});
  expect(root.toJSON().children.filter(child=>child.props.testID==='toasts')).toHaveLength(0);
  expect(jest.getTimerCount()).toBe(0);expect(mockSeen.reactions).toHaveLength(0);expect(leaving.rows).toBe(0);
 });
