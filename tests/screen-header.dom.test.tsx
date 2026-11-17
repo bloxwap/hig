@@ -5,7 +5,7 @@ import {cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {ScreenHeader} from '../packages/hig/react/src/blocks/screen-header';
+import {HeaderClose,ScreenHeader,type HeaderCloseProps} from '../packages/hig/react/src/blocks/screen-header';
 import {AccountBlock} from '../packages/hig/react/src/blocks/account-block';
 import * as blocks from '../packages/hig/react/src/blocks';
 afterEach(cleanup);
@@ -53,6 +53,14 @@ describe('ScreenHeader',()=>{
   expect(container.querySelector('.hig-screen-header-side:last-child')!.textContent).toBe('Close');
   expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('.hig-screen-header > .hig-screen-header-side:last-child { grid-column:3; }');
  });
+ it('reads description after the heading, visually hidden, with an id a dialog can describe itself by (Unreleased)',()=>{
+  const {container,rerender}=render(<ScreenHeader title='Log in' headingId='login-title' description='Choose a sign-in method'/>);
+  const heading=screen.getByRole('heading',{level:2,name:'Log in'});const description=container.querySelector('p.hig-sr-only')!;
+  expect(description.textContent).toBe('Choose a sign-in method');expect(description.id).toBe('login-title-description');
+  expect(heading.compareDocumentPosition(description)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  rerender(<ScreenHeader title='Log in' description='Choose a sign-in method'/>);expect(container.querySelector('p.hig-sr-only')!.hasAttribute('id')).toBe(false);
+  rerender(<ScreenHeader title='Log in'/>);expect(container.querySelector('p')).toBeNull();
+ });
  it('pins the header transparent at rest and fills it once content scrolls under it (Unreleased)',()=>{
   const {container}=render(<div data-testid='scroller' style={{overflowY:'auto'}}><section><ScreenHeader title='Signals' stickyHeader/><p>Rows</p></section></div>);
   const header=container.querySelector<HTMLElement>('.hig-screen-header')!,scroller=screen.getByTestId('scroller'),content=header.parentElement!;
@@ -90,5 +98,18 @@ describe('ScreenHeader',()=>{
   ];
   for(const block of sticky){const view=render(block);expect(view.container.querySelector('.hig-screen-header')!.getAttribute('data-sticky')).toBe('true');view.unmount();}
   const {container}=render(<blocks.SignalsBlock title='Signals' groups={[]}/>);expect(container.querySelector('.hig-screen-header')!.hasAttribute('data-sticky')).toBe(false);
+ });
+ it('draws an eyebrow over the title in a heading stack, outside the heading',()=>{
+  render(<HIGProvider><ScreenHeader title='Keep the lights on.' eyebrow='Builder fee' onBack={()=>{}}/></HIGProvider>);
+  const heading=screen.getByRole('heading',{level:2,name:'Keep the lights on.'});const stack=heading.parentElement!;
+  expect(stack.className).toBe('hig-screen-heading');expect(stack.firstElementChild!.className).toBe('hig-screen-eyebrow');expect(stack.firstElementChild!.textContent).toBe('Builder fee');
+  expect(stack.parentElement!.className).toBe('hig-screen-header');expect([...stack.parentElement!.children].indexOf(stack)).toBe(1);
+ });
+ it('HeaderClose takes disabled in closeProps: disabled, not pressable, other attributes kept',async()=>{
+  const close=vi.fn();
+  const {rerender}=render(<HIGProvider><HeaderClose label='Close' onClose={close} closeProps={{disabled:true,'data-testid':'close'} as HeaderCloseProps}/></HIGProvider>);
+  const button=screen.getByTestId('close') as HTMLButtonElement;expect(button.disabled).toBe(true);await userEvent.click(button);expect(close).not.toHaveBeenCalled();
+  rerender(<HIGProvider><HeaderClose label='Close' onClose={close} closeProps={{'data-testid':'close'} as HeaderCloseProps}/></HIGProvider>);
+  expect((screen.getByTestId('close') as HTMLButtonElement).disabled).toBe(false);await userEvent.click(screen.getByRole('button',{name:'Close'}));expect(close).toHaveBeenCalledOnce();
  });
 });

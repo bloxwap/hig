@@ -42,9 +42,9 @@ export interface BarMarkProps {
  surface?:boolean;
  testID?:string;
 }
-/** The order segments take their colour in when an element names neither `tone` nor `color`. */
 /** How strong a bar's fill is drawn, so a wide bar does not outweigh the figures beside it. The edges of a move, the liquidation tick and the legend dots stay solid. Web: `--hig-bar-fill-opacity`. */
 export const barFillOpacity=0.5;
+/** The order segments take their colour in when an element names neither `tone` nor `color`. */
 export const barMarkTones:readonly BarMarkTone[]=['positive','info','warning','negative','muted','faint'];
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** Each element's clamped value and its share of the whole, plus the unfilled remainder in the same unit. */

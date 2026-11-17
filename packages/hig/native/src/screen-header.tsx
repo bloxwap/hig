@@ -29,8 +29,12 @@ export interface ScreenHeaderProps {
  titleRef?:React.Ref<React.ComponentRef<typeof View>>;
  /** Short host text in a badge beside the title, read as part of the heading after a pause: Demo. */
  badge?:string;
+ /** A kicker over the title, centred in small muted capitals: Builder fee. Host text, read before the heading as its own element (test ID `<testID>-eyebrow`). The header grows to fit it. */
+ eyebrow?:string;
  /** Hides the title visually while it stays the accessible heading, for a host that draws its own visible title and must not have it read twice. The header keeps its height. */
  hideTitle?:boolean;
+ /** Host text that describes the pane, never drawn and read after the heading as its accessibility hint, such as a sheet's description. */
+ description?:string;
  /** Marks the header as pinned in the host's scroller: it is transparent at rest and takes `stickyHeaderBackground` once `scrolled` is true. Get `scrolled` from `useStickyHeaderScroll()` on that scroller. */
  stickyHeader?:boolean;
  /** With `stickyHeader`: content has scrolled under the header, so it draws its fill. */
@@ -42,17 +46,19 @@ export interface ScreenHeaderProps {
  /** Style of the header's container. With `stickyHeader` it sits outside the fill (React Native moves it onto the sticky slot's wrapper once pinned); put an inset in `inset`. */
  style?:StyleProp<ViewStyle>;
 }
+/** Pressable props for a header Close: those of `ScreenHeaderControlProps`, plus `disabled`, which draws Close unavailable (a faint glyph, read as disabled, not pressable), for example while the pane's action is being signed. */
+export type HeaderCloseProps=ScreenHeaderControlProps&{disabled?:boolean};
 /** The block header's Close control, shared by the blocks that draw one. */
-export function HeaderClose({onClose,label,testID,closeProps}:{onClose:()=>void;label:string;testID?:string;closeProps?:ScreenHeaderControlProps}){
- const colors=useColors();
- return <IconButton {...closeProps} intent='ghost' label={label} suppressFeedback testID={testID} onPress={onClose}><CloseIcon color={colors.text}/></IconButton>;
+export function HeaderClose({onClose,label,testID,closeProps}:{onClose:()=>void;label:string;testID?:string;closeProps?:HeaderCloseProps}){
+ const colors=useColors(),off=!!closeProps?.disabled;
+ return <IconButton {...closeProps} disabled={off} intent='ghost' label={label} suppressFeedback testID={testID} onPress={onClose}><CloseIcon color={off?colors.faint:colors.text}/></IconButton>;
 }
 /**
  * The header of a block that is its own screen: Back on the leading edge, the title centred, an optional control on the trailing
  * edge. The settings blocks (Notifications, Signals, Sound & Haptics) draw it; the other native blocks draw a header that matches
  * it. Import it from `@bloxwap/hig/native/screen-header` for a host pane that has no block.
  */
-export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,hideTitle,stickyHeader,scrolled,stickyHeaderBackground,inset,style}:ScreenHeaderProps){
+export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,eyebrow,hideTitle,description,stickyHeader,scrolled,stickyHeaderBackground,inset,style}:ScreenHeaderProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  // Clear white stays in the accessibility tree where opacity 0 might not; the title keeps its line so the header keeps its height.
@@ -60,12 +66,15 @@ export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,
  const heading={textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:ink} as const;
  const fill=stickyHeader?stickyHeaderFill(!!scrolled,stickyHeaderBackground??colors.background):undefined;
  const pad=stickyHeader&&inset?inset:0,height=44+pad;
- const row=<View testID={id('header')} style={[{flexDirection:'row',alignItems:'center',minHeight:height},pad?{paddingTop:pad,paddingHorizontal:pad}:undefined,fill,stickyHeader?undefined:style]}>
-  <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton {...backProps} intent='ghost' label={t.back} disabled={backDisabled} suppressFeedback testID={id('back')} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={backDisabled?colors.faint:colors.text}/></View></IconButton>:null}</View>
-  {badge?<View ref={titleRef} nativeID={headingId} accessible accessibilityRole='header' accessibilityLabel={`${title}, ${badge}`} style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,minWidth:0}}>
+ // Beside the sides the title fills the middle; under an eyebrow it sits in a column at its own height.
+ const grow=eyebrow?null:{flex:1};
+ const titleNode=badge?<View ref={titleRef} nativeID={headingId} accessible accessibilityRole='header' accessibilityLabel={`${title}, ${badge}`} accessibilityHint={description} style={{...grow,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,minWidth:0}}>
    <Text testID={id('title')} accessible={false} numberOfLines={1} style={{...heading,flexShrink:1}}>{title}</Text>
    {hideTitle?null:<View testID={id('badge')} style={{flexShrink:0}}><Badge><Text style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.text}}>{badge}</Text></Badge></View>}
-  </View>:<Text ref={titleRef as unknown as React.Ref<React.ComponentRef<typeof Text>>} testID={id('title')} nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,...heading}}>{title}</Text>}
+  </View>:<Text ref={titleRef as unknown as React.Ref<React.ComponentRef<typeof Text>>} testID={id('title')} nativeID={headingId} accessibilityRole='header' accessibilityHint={description} numberOfLines={1} style={{...grow,...heading}}>{title}</Text>;
+ const row=<View testID={id('header')} style={[{flexDirection:'row',alignItems:'center',minHeight:height},pad?{paddingTop:pad,paddingHorizontal:pad}:undefined,fill,stickyHeader?undefined:style]}>
+  <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton {...backProps} intent='ghost' label={t.back} disabled={backDisabled} suppressFeedback testID={id('back')} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={backDisabled?colors.faint:colors.text}/></View></IconButton>:null}</View>
+  {eyebrow?<View style={{flex:1,minWidth:0,gap:2}}><Text testID={id('eyebrow')} numberOfLines={1} style={{textAlign:'center',fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase',color:colors.muted}}>{eyebrow}</Text>{titleNode}</View>:titleNode}
   <View style={{minWidth:44,alignItems:'flex-end'}}>{action}</View>
  </View>;
  // A pinned header is the host scroller's sticky child: React Native moves its `style` prop onto the slot's own wrapper and passes flex:1 in its

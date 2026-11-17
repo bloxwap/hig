@@ -17,14 +17,16 @@ export interface RewardPromo {
  eyebrow:string;
  /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */
  rules?:RewardLink;
- /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */
- amount:number|null;
- /** Format of `amount` and `goal`. Defaults to whole US dollars. */
+ /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */
+ amount?:number|null|string;
+ /** Host content drawn in the headline figure's place and type, in place of `amount`, such as the host's own live figure. */
+ figure?:React.ReactNode;
+ /** Format of a number `amount` and of `goal`. Defaults to whole US dollars. */
  amountOptions?:Intl.NumberFormatOptions;
- /** The amount the pool is filling towards. Draws the progress bar under the caption. */
+ /** The amount the pool is filling towards. Draws the progress bar under the caption (full only against a number `amount`). */
  goal?:number;
- /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */
- caption?:string|((goal:string)=>string);
+ /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. Any other node is drawn as given, such as a live countdown. */
+ caption?:React.ReactNode|((goal:string)=>React.ReactNode);
  /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host elements for an accented word. */
  headline?:React.ReactNode;
  /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */
@@ -70,7 +72,8 @@ export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  listTitle?:string;
  /** The column heading over the scores: Entries. */
  scoreTitle?:string;
- entries:readonly RewardEntry[];
+ /** The standings, in order. Leave them out for a promotion-only pane: no list is drawn. */
+ entries?:readonly RewardEntry[];
  /** Format of every score. Defaults to a whole number. An entry's own `scoreOptions` wins. */
  scoreOptions?:Intl.NumberFormatOptions;
  /** Accessible name of the verified mark. The mark is decorative without it. */
@@ -98,6 +101,7 @@ export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  header?:boolean;
 }
 const wholeDollars={style:'currency',currency:'USD',maximumFractionDigits:0} as const,whole={maximumFractionDigits:0} as const;
+const noEntries:readonly RewardEntry[]=[];
 const skeletons=[0,1,2,3,4];
 /** The share of the goal reached, from 0 to 1. Unknown amounts and goals that are not above zero give `null`. */
 export function rewardProgress(amount:number|null|undefined,goal:number|null|undefined):number|null{
@@ -121,17 +125,18 @@ function Onward({link,className,children}:{link:RewardLink;className:string;chil
   :<button type='button' className={className} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></button>;
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,headingId,header=true,className,...rest}:RewardBlockProps){
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries=noEntries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,headingId,header=true,className,...rest}:RewardBlockProps){
  const locale=useNumberLocale();const present=usePresentNumber();
- const money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(promo.amount,promo.goal):null;
+ const amount=promo?.amount,money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(typeof amount==='string'?null:amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
+ const figure=promo?.figure!=null&&promo.figure!==false?promo.figure:amount===undefined?null:typeof amount==='string'?amount:<AnimatedNumberReadout value={amount} options={money}/>;
  const pinned=you&&<Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>;
  return <section {...rest} className={`hig-reward-block${className?` ${className}`:''}`}>
   {header&&<ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
   {promo&&<section className='hig-surface hig-reward-promo'>
    <div className='hig-reward-promo-top'><span className='hig-reward-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<Onward link={promo.rules} className='hig-reward-rules'>{promo.rules.label}<SwapIcon name='chevron' size={16}/></Onward>}</div>
-   <p className='hig-reward-amount'><AnimatedNumberReadout value={promo.amount} options={money}/></p>
-   {caption&&<p className='hig-reward-caption hig-number'>{caption}</p>}
+   {figure!=null&&(promo.figure!=null&&promo.figure!==false?<div className='hig-reward-amount'>{figure}</div>:<p className='hig-reward-amount'>{figure}</p>)}
+   {caption!=null&&caption!==false&&caption!==''&&(typeof caption==='string'||typeof caption==='number'?<p className='hig-reward-caption hig-number'>{caption}</p>:<div className='hig-reward-caption hig-number'>{caption}</div>)}
    {promo.goal!==undefined&&<div className='hig-reward-track' aria-hidden='true'><span style={{width:`${(share??0)*100}%`}}/></div>}
    {(promo.headline||promo.description)&&<p className='hig-reward-summary'>{promo.headline&&<strong>{promo.headline}</strong>}{promo.headline&&promo.description?' ':null}{promo.description}</p>}
    {promo.action&&<Onward link={promo.action} className='hig-reward-action'><span>{promo.action.label}</span><SwapIcon name='chevron' size={16}/></Onward>}

@@ -105,6 +105,8 @@ test('counts down to a legacy market reopening, reads it in words, then falls ba
 test('rows are one line each, headingId names the title, and stickyHeader pins the header in the block\'s own scroll view',()=>{
  const {ScrollView}=require('react-native');
  let view=mount({assets:[{id:'LONG',name:'A market with a name far too long for one line',symbol:'LONGSYMBOL',detail:'40×',category:'crypto'}],headingId:'assets-title'});
+ // The section heading lines up with the row content: 8 in, as the row's own padding, on both edges.
+ expect(flat(host(view,'assets-section-crypto-header'))).toMatchObject({paddingHorizontal:8});expect(flat(host(view,'assets-LONG'))).toMatchObject({padding:8});
  const lines=host(view,'assets-LONG').findAll(node=>typeof node.type==='string'&&node.props.numberOfLines!==undefined);
  expect(lines.map(node=>[node.props.numberOfLines,text(node)])).toEqual([[1,'A market with a name far too long for one line'],[1,'LONGSYMBOL · 40×']]);
  expect(view.findAll(node=>node.props.nativeID==='assets-title'&&node.props.accessibilityRole==='header').length).toBeGreaterThan(0);
@@ -121,6 +123,113 @@ test('rows are one line each, headingId names the title, and stickyHeader pins t
  expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-search')).toHaveLength(0);expect(has(view,'assets-list')).toBe(true);
  // A host scroll view, such as a sheet library's, takes ScrollView's place.
  const Sheet=props=>h(ScrollView,{...props,testID:'sheet-scroll'});view=mount({stickyHeader:true,scrollComponent:Sheet});expect(has(view,'sheet-scroll')).toBe(true);
+ // The scroller fills a bounded parent and shrinks below its content, so it scrolls in a sheet body even when the host's scroll view carries no flex of its own.
+ const Bare=props=>{Bare.style=props.style;return h(ScrollView,{...props,testID:'bare-scroll'});};view=mount({stickyHeader:true,scrollComponent:Bare});
+ expect(StyleSheet.flatten(Bare.style)).toEqual({flexGrow:1,flexShrink:1,minHeight:0});
  // Without a test ID the pinned header is `assets-sticky-header`.
  act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{assets,categories,onSelect:()=>{},stickyHeader:true})));});expect(has(root.root,'assets-sticky-header')).toBe(true);
+});
+
+test('reads the host clock, freezes while paused, and runs no timer while no countdown section is shown',()=>{
+ jest.useFakeTimers();const spy=jest.spyOn(global,'setInterval');
+ let clock=1_000_000;const now=()=>clock;const opensAt=clock+65_000;
+ const cats=[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}];
+ const tree=props=>h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{testID:'assets',assets,categories:cats,onSelect:()=>{},now,...props}));
+ act(()=>{root=render(tree({category:'crypto'}));});
+ expect(spy).not.toHaveBeenCalled();
+ act(()=>root.update(tree({category:''})));
+ const badge=()=>{const countdown=host(root.root,'assets-countdown-commodities');return text(countdown??host(root.root,'assets-status-commodities'));};
+ expect(badge()).toBe('Opens in 0:01:05');expect(spy).toHaveBeenCalledTimes(1);
+ act(()=>{clock+=1000;jest.advanceTimersByTime(1000);});expect(badge()).toBe('Opens in 0:01:04');
+ act(()=>root.update(tree({paused:true})));
+ act(()=>{clock+=5000;jest.advanceTimersByTime(5000);});expect(badge()).toBe('Opens in 0:01:04');expect(spy).toHaveBeenCalledTimes(1);
+ act(()=>root.update(tree({})));expect(badge()).toBe('Opens in 0:00:59');
+ // Paused past the opening, a host re-render (new assets) keeps the frozen text; unpausing shows the status.
+ act(()=>root.update(tree({paused:true})));clock+=120_000;
+ act(()=>root.update(tree({paused:true,assets:[...assets]})));expect(badge()).toBe('Opens in 0:00:59');
+ act(()=>root.update(tree({})));expect(badge()).toBe('OPEN');
+ spy.mockRestore();jest.useRealTimers();
+});
+
+test('rolls the countdown digits each tick, and while paused neither ticks nor rolls, even when the opening moves',()=>{
+ const {PixelRatio}=require('react-native');jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
+ const motion=global.__numberReanimated;motion.animations.length=0;motion.timing.mockClear();
+ jest.useFakeTimers();const spy=jest.spyOn(global,'setInterval');
+ let clock=1_000_000;const now=()=>clock;
+ const cats=at=>[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt:at}];
+ const opensAt=clock+65_000;
+ const tree=props=>h(HIGProvider,{reducedMotion:false},h(AssetsBlock,{testID:'assets',assets,onSelect:()=>{},now,...props}));
+ act(()=>{root=render(tree({categories:cats(opensAt)}));});
+ // Measure the readout's glyph probes so its reels draw.
+ const probes=host(root.root,'assets-status-commodities').findAll(node=>typeof node.props.onLayout==='function'&&typeof node.type==='string');
+ act(()=>{for(const probe of probes)probe.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:8,height:16}}});});
+ const reading=()=>text(host(root.root,'assets-countdown-commodities'));
+ expect(reading()).toBe('Opens in 0:01:05');expect(motion.animations).toHaveLength(0);
+ act(()=>{clock+=1000;jest.advanceTimersByTime(1000);});
+ expect(reading()).toBe('Opens in 0:01:04');expect(motion.animations.length).toBeGreaterThan(0);
+ const rolled=motion.animations.length;
+ act(()=>root.update(tree({categories:cats(opensAt),paused:true})));
+ act(()=>{clock+=5000;jest.advanceTimersByTime(5000);});
+ expect(reading()).toBe('Opens in 0:01:04');expect(motion.animations).toHaveLength(rolled);
+ // The host moves the opening while paused: the text follows against the frozen clock, and its digits snap rather than roll.
+ act(()=>root.update(tree({categories:cats(opensAt+10_000),paused:true})));
+ expect(reading()).toBe('Opens in 0:01:14');expect(motion.animations).toHaveLength(rolled);expect(spy).toHaveBeenCalledTimes(1);
+ // Unpaused, the clock is read again and the timer resumes.
+ act(()=>root.update(tree({categories:cats(opensAt+10_000)})));
+ expect(reading()).toBe('Opens in 0:01:09');expect(spy).toHaveBeenCalledTimes(2);
+ spy.mockRestore();jest.useRealTimers();
+});
+
+test('draws emptyAction under the empty text only while the list is empty and not loading',()=>{
+ const press=jest.fn();const action={label:'Browse all markets',onPress:press};
+ let view=mount({view:'positions',category:'commodities',emptyAction:action});
+ const button=all(view,'assets-empty-action').find(n=>n.props.accessibilityRole==='button');
+ expect(button.props.accessibilityState.disabled).toBe(false);expect(text(host(view,'assets-empty-action'))).toBe('Browse all markets');
+ // Centred under the centred empty text, as on web (`.hig-assets-list > .hig-button { align-self:center }`), not on the leading edge.
+ expect(flat(button).alignSelf).toBe('center');expect(flat(host(view,'assets-empty')).textAlign).toBe('center');
+ act(()=>button.props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(press).toHaveBeenCalledTimes(1);
+ view=mount({view:'positions',category:'commodities',emptyAction:{...action,testID:'browse-all'}});expect(has(view,'browse-all')).toBe(true);
+ view=mount({assets:[],loading:true,emptyAction:action});expect(has(view,'assets-empty-action')).toBe(false);
+ view=mount({emptyAction:action});expect(has(view,'assets-empty-action')).toBe(false);
+});
+
+test('the empty disc steps up to the raised fill on the selected or pressed row',()=>{
+ let view=mount({selectedId:'XRP'});
+ const raised=flat(host(view,'assets-XRP-signal')).backgroundColor;
+ expect(raised).not.toBe(colors.surface);expect(raised).not.toBe(flat(host(view,'assets-XRP')).backgroundColor);
+ view=mount();expect(flat(host(view,'assets-XRP-signal')).backgroundColor).toBe(colors.surface);
+});
+
+test('autoFocusSearch focuses the search field on mount',()=>{
+ const {TextInput}=require('react-native');
+ let view=mount();expect(view.findByType(TextInput).props.autoFocus).toBeFalsy();
+ view=mount({autoFocusSearch:true});expect(view.findByType(TextInput).props.autoFocus).toBe(true);
+});
+
+test('enterChoosesFirst makes the Search key choose the first enabled match of a query, and only then',()=>{
+ const {TextInput}=require('react-native');const select=jest.fn();
+ let view=mount({onSelect:select});expect(view.findByType(TextInput).props.onSubmitEditing).toBeUndefined();
+ view=mount({onSelect:select,enterChoosesFirst:true});
+ act(()=>view.findByType(TextInput).props.onSubmitEditing());expect(select).not.toHaveBeenCalled();
+ view=mount({onSelect:select,enterChoosesFirst:true,query:'r',assets:assets.map(asset=>asset.id==='ETH'?{...asset,disabled:true}:asset)});
+ act(()=>view.findByType(TextInput).props.onSubmitEditing());expect(select).toHaveBeenCalledTimes(1);expect(select.mock.calls[0][0].id).toBe('XRP');
+});
+
+test('scrolls the selected category capsule fully into view on mount and on change, through a host filterScrollComponent',()=>{
+ const {ScrollView}=require('react-native');const scrollTo=jest.fn();
+ const Host=React.forwardRef((props,ref)=>{React.useImperativeHandle(ref,()=>({scrollTo}));return h(ScrollView,{...props,testID:'host-filter'});});
+ const view=mount({filterScrollComponent:Host,defaultCategory:'stocks'});
+ const scroller=host(view,'host-filter');
+ const chips=view.findAll(n=>n.props.accessibilityRole==='radio'&&typeof n.props.onLayout==='function'&&typeof n.props.onPress==='function');
+ const layout=(node,x,width)=>act(()=>node.props.onLayout({nativeEvent:{layout:{x,y:0,width,height:40}}}));
+ // The row bleeds 16 past the block's padding on each side and insets its content by 16, so the capsules run to the container's edge.
+ expect(flat(scroller)).toMatchObject({marginHorizontal:-16});expect(StyleSheet.flatten(scroller.props.contentContainerStyle)).toMatchObject({paddingHorizontal:16});
+ // All, Crypto, Commodities, Stocks at 100 wide with 8 between after the 16 inset, in a 260-wide row: Stocks (340 to 440) ends the view, 16 clear of its edge.
+ chips.forEach((chip,index)=>layout(chip,16+index*108,100));
+ act(()=>scroller.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:260,height:40}}}));
+ expect(scrollTo).toHaveBeenLastCalledWith({x:196,animated:false});
+ // Choosing a capsule left of the view scrolls back to it, keeping the 16 inset clear.
+ act(()=>chips[1].props.onPress());expect(scrollTo).toHaveBeenLastCalledWith({x:108,animated:false});
+ // A capsule already whole on screen does not scroll.
+ scrollTo.mockClear();act(()=>chips[2].props.onPress());expect(scrollTo).not.toHaveBeenCalled();
 });

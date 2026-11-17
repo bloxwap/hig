@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
 import {useColors,useFills,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
@@ -29,6 +29,8 @@ export interface AssetBalanceRowProps {
  trailing?:React.ReactNode;
  /** What the row reads for `trailing`, in place of its text, for an icon or a figure whose text is not what should be heard. */
  trailingLabel?:string;
+ /** `trailing` holds a control, such as a Copy or Remove button: it stays its own accessibility element and touch target beside the row, out of the row's reading and outside the row's press (`<testID>-trailing`). The rest of the row is then one element (with `onSelect`, the button `<testID>-main`) read as before without the trailing text. */
+ trailingInteractive?:boolean;
  /** Marks the row in use: a check on the trailing edge and `accessibilityState.selected`. */
  selected?:boolean;
  /** Dims the row, ignores presses and reads as unavailable. */
@@ -42,12 +44,14 @@ const units:Intl.NumberFormatOptions={maximumFractionDigits:6};
 const avatar=40;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** One holding as a capsule row: a round avatar, the asset's name over its symbol, and its dollar value over its units. The avatar is padded equally on every side, so the capsule end is concentric with it, and both numbers update place by place. */
-export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,trailingLabel,selected,disabled,onSelect,testID}:AssetBalanceRowProps){
+export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,trailingLabel,trailingInteractive,selected,disabled,onSelect,testID}:AssetBalanceRowProps){
  const colors=useColors(),fills=useFills(),locale=useNumberLocale(),present=usePresentNumber();
+ const [held,setHeld]=useState(false);
+ const split=!!trailingInteractive&&trailing!=null&&trailing!==false;
  const unitsFirst=headline==='units',hasUnits=amounts&&!unitsFirst&&balance!==undefined;
  const unitsText=()=>formatNumberReadout(balance,locale,balanceOptions,undefined,undefined,unitsSuffix).text;
  const headlineText=amounts?unitsFirst?unitsText():formatNumberReadout(value,locale,present(usd)).text:null;
- const label=[name,symbol,headlineText,hasUnits?unitsText():null,tag||null,trailingLabel??(trailing!=null&&trailing!==false?plainText(trailing):null)].filter(Boolean).join(', ');
+ const label=[name,symbol,headlineText,hasUnits?unitsText():null,tag||null,split?null:trailingLabel??(trailing!=null&&trailing!==false?plainText(trailing):null)].filter(Boolean).join(', ');
  const state=selected||disabled?{...(selected?{selected:true}:{}),...(disabled?{disabled:true}:{})}:undefined;
  const strong=disabled?colors.muted:colors.text;
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
@@ -61,8 +65,18 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
    {hasUnits?<AnimatedNumberReadout value={balance} options={balanceOptions} suffix={unitsSuffix} tone='muted' testID={testID?`${testID}-balance`:undefined} style={{fontSize:14,lineHeight:20}}/>:null}
    {tag?<Text testID={testID?`${testID}-tag`:undefined} numberOfLines={1} style={{fontSize:12,lineHeight:18,color:colors.muted}}>{tag}</Text>:null}
   </View>:null}
-  {trailing!=null&&trailing!==false?<View {...hidden} testID={testID?`${testID}-trailing`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>:null}
-  {selected?<View {...hidden} testID={testID?`${testID}-check`:undefined} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:strong,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>:null}
+  {trailing!=null&&trailing!==false&&!split?<View {...hidden} testID={testID?`${testID}-trailing`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>:null}
  </>;
- return onSelect?<Pressable testID={testID} accessibilityRole='button' accessibilityLabel={label} accessibilityState={state} disabled={disabled} onPress={onSelect} style={({pressed})=>row(pressed)}>{content}</Pressable>:<View testID={testID} accessible accessibilityLabel={label} accessibilityState={state} style={row(false)}>{content}</View>;
+ const check=selected?<View {...hidden} testID={testID?`${testID}-check`:undefined} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:strong,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>:null;
+ if(split){
+  // The control leaves the row's element: the rest is one element (or button), the control its own target beside it.
+  const main:ViewStyle={flex:1,minWidth:0,flexDirection:'row',alignItems:'center',gap:12,alignSelf:'stretch'};
+  return <View testID={testID} style={row(held)}>
+   {onSelect?<Pressable testID={testID?`${testID}-main`:undefined} accessibilityRole='button' accessibilityLabel={label} accessibilityState={state} disabled={disabled} onPress={onSelect} onPressIn={()=>setHeld(true)} onPressOut={()=>setHeld(false)} style={main}>{content}</Pressable>
+    :<View testID={testID?`${testID}-main`:undefined} accessible accessibilityLabel={label} accessibilityState={state} style={main}>{content}</View>}
+   <View testID={testID?`${testID}-trailing`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>
+   {check}
+  </View>;
+ }
+ return onSelect?<Pressable testID={testID} accessibilityRole='button' accessibilityLabel={label} accessibilityState={state} disabled={disabled} onPress={onSelect} style={({pressed})=>row(pressed)}>{content}{check}</Pressable>:<View testID={testID} accessible accessibilityLabel={label} accessibilityState={state} style={row(false)}>{content}{check}</View>;
 }

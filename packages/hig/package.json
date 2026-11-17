@@ -383,6 +383,26 @@
       "import": "./native/dist/confirm-block.js",
       "default": "./native/dist/confirm-block.js"
     },
+    "./react/blocks/preset-picker-block": {
+      "types": "./react/dist/blocks/preset-picker-block.d.ts",
+      "import": "./react/dist/blocks/preset-picker-block.js",
+      "default": "./react/dist/blocks/preset-picker-block.js"
+    },
+    "./native/preset-picker-block": {
+      "types": "./native/dist/preset-picker-block.d.ts",
+      "import": "./native/dist/preset-picker-block.js",
+      "default": "./native/dist/preset-picker-block.js"
+    },
+    "./react/blocks/explainer-block": {
+      "types": "./react/dist/blocks/explainer-block.d.ts",
+      "import": "./react/dist/blocks/explainer-block.js",
+      "default": "./react/dist/blocks/explainer-block.js"
+    },
+    "./native/explainer-block": {
+      "types": "./native/dist/explainer-block.d.ts",
+      "import": "./native/dist/explainer-block.js",
+      "default": "./native/dist/explainer-block.js"
+    },
     "./react/confetti": {
       "types": "./react/dist/confetti.d.ts",
       "import": "./react/dist/confetti.js",

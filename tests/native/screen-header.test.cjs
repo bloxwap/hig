@@ -92,6 +92,16 @@ describe('host slots (Unreleased)',()=>{
   view=mount(h(header.ScreenHeader,{testID:'pane',title:'Trade',badge:'Demo',hideTitle:true,titleRef:ref}));
   expect(all(view,'pane-badge')).toHaveLength(0);expect(view.findAll(node=>node.props.accessibilityLabel==='Trade, Demo'&&typeof node.type==='string')).toHaveLength(1);
  });
+ it('reads description after the heading as its accessibility hint, never drawn',()=>{
+  let view=mount(h(header.ScreenHeader,{testID:'pane',title:'Log in',description:'Choose a sign-in method'}));
+  const title=all(view,'pane-title').find(node=>typeof node.type==='string');
+  expect(title.props.accessibilityRole).toBe('header');expect(title.props.accessibilityHint).toBe('Choose a sign-in method');
+  expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('Choose a sign-in method'))).toHaveLength(0);
+  view=mount(h(header.ScreenHeader,{testID:'pane',title:'Trade',badge:'Demo',description:'Practice money'}));
+  expect(view.findAll(node=>typeof node.type==='string'&&node.props.accessibilityRole==='header'&&node.props.accessibilityHint==='Practice money')).toHaveLength(1);
+  view=mount(h(header.ScreenHeader,{testID:'pane',title:'Pane'}));
+  expect(all(view,'pane-title').find(node=>typeof node.type==='string').props.accessibilityHint).toBeUndefined();
+ });
  it('fills a pinned header only once its scroller reports content under it',()=>{
   const fill=view=>flat(all(view,'pane-header')[0]).backgroundColor;
   let view=mount(h(header.ScreenHeader,{testID:'pane',title:'Pane'}));expect(fill(view)).toBeUndefined();
@@ -144,4 +154,20 @@ it('reaches 48dp around the 32dp signals help pill, and leaves the swap card cap
  expect(flat(pill).minHeight+pill.props.hitSlop.top+pill.props.hitSlop.bottom).toBe(48);
  const {SwapCapsule}=require('../../packages/hig/native/src/swap-parts');
  const capsule=mount(h(SwapCapsule,{testID:'max',onPress:()=>{}},'Max'));expect(pressable(capsule,'max').props.hitSlop).toEqual({top:6,bottom:6});
+});
+
+it('HeaderClose takes disabled in closeProps: a faint glyph, read as disabled, not pressable; Pressable props still reach it',()=>{
+ const close=jest.fn();
+ let view=mount(h(header.HeaderClose,{testID:'pane-close',label:'Close',onClose:close,closeProps:{disabled:true,android_disableSound:true}}));
+ const control=pressable(view,'pane-close');expect(control.props.disabled).toBe(true);expect(control.props.accessibilityState).toMatchObject({disabled:true});expect(control.props.android_disableSound).toBe(true);
+ expect(view.findByType(icons.CloseIcon).props.color).toBe(require('@bloxwap/hig/tokens').nativeSrgb.faint);
+ view=mount(h(header.HeaderClose,{testID:'pane-close',label:'Close',onClose:close}));
+ const open=pressable(view,'pane-close');expect(open.props.disabled).toBeFalsy();act(()=>{open.props.onPress({stopPropagation(){},isDefaultPrevented:()=>false});});expect(close).toHaveBeenCalledTimes(1);
+});
+
+it('draws an eyebrow over the title, centred and muted, and grows the header to fit it',()=>{
+ const view=mount(h(header.ScreenHeader,{testID:'pane',title:'Keep the lights on.',eyebrow:'Builder fee'}));
+ const eyebrow=all(view,'pane-eyebrow').find(node=>typeof node.type==='string');expect(text(eyebrow)).toBe('Builder fee');expect(flat(eyebrow)).toMatchObject({textAlign:'center',textTransform:'uppercase'});
+ const title=all(view,'pane-title').find(node=>typeof node.type==='string');expect(title.props.accessibilityRole).toBe('header');expect(flat(title).flex).toBeUndefined();
+ const plain=mount(h(header.ScreenHeader,{testID:'pane',title:'Plain'}));expect(all(plain,'pane-eyebrow')).toHaveLength(0);expect(flat(all(plain,'pane-title').find(node=>typeof node.type==='string')).flex).toBe(1);
 });

@@ -25,3 +25,14 @@ it('renders the initial selection in server HTML without waiting for measurement
  const html=renderToString(<SegmentedControl label='Markets' options={options} defaultValue='open'/>);
  expect(html).toContain('--hig-segment-index:1');expect(html).toContain('hig-segment-indicator');expect(html).toContain('checked=""');
 });
+
+it('sets the group data-testid, <testID>-<value> on each radio, and an option testID in its place',async()=>{
+ const change=vi.fn();
+ render(<SegmentedControl label='Markets' testID='markets' options={[options[0],{...options[1],testID:'open-custom'},options[2]]} defaultValue='all' onValueChange={change}/>);
+ expect(screen.getByTestId('markets').tagName).toBe('FIELDSET');
+ expect(screen.getAllByRole('radio').map(radio=>radio.getAttribute('data-testid'))).toEqual(['markets-all','open-custom','markets-trend']);
+ await userEvent.click(screen.getByTestId('markets-trend'));expect(change).toHaveBeenCalledExactlyOnceWith('trend');expect(screen.getByTestId('markets-trend')).toHaveProperty('checked',true);
+ cleanup();
+ render(<SegmentedControl label='Markets' options={[options[0],{...options[1],testID:'open-only'}]}/>);
+ expect(screen.getAllByRole('radio').map(radio=>radio.getAttribute('data-testid'))).toEqual([null,'open-only']);
+});

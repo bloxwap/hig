@@ -1370,6 +1370,60 @@
       }
     },
     {
+      "name": "PresetPickerBlock",
+      "slug": "preset-picker-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "added": "Unreleased",
+      "web": "<C.PresetPickerBlock<'max'|number> value={100} valueOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}} valueLabel='Size' presetsLabel='Size' columns={3} presets={[{value:'max',label:'Max'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'},{value:250,label:'$250'},{value:500,label:'$500',disabled:true}]} selected={100} onPresetChange={value=>setMessage('The host sets the size to '+value)} custom={{label:'Custom amount',onSelect:()=>setMessage('The host opens its keypad')}} submitLabel='Set Size' onSubmit={()=>setMessage('The host keeps the size')} onCancel={()=>setMessage('The host restores the size')}/>",
+      "native": "<C.PresetPickerBlock<'max'|number> value={100} valueOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}} valueLabel='Size' presetsLabel='Size' columns={3} presets={[{value:'max',label:'Max'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'},{value:250,label:'$250'},{value:500,label:'$500',disabled:true}]} selected={100} onPresetChange={value=>setMessage('The host sets the size to '+value)} custom={{label:'Custom amount',onSelect:()=>setMessage('The host opens its keypad')}} submitLabel='Set Size' onSubmit={()=>setMessage('The host keeps the size')} onCancel={()=>setMessage('The host restores the size')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "custom": {
+          "web": "<C.PresetPickerBlock<'max'|number> value={75} valueOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}} valueLabel='Size' presetsLabel='Size' columns={3} presets={[{value:'max',label:'Max'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'},{value:250,label:'$250'},{value:500,label:'$500',disabled:true}]} selected={null} onPresetChange={value=>setMessage('The host sets the size to '+value)} custom={{label:'Custom amount',value:'$75',onSelect:()=>setMessage('The host opens its keypad')}} submitLabel='Set Size' onSubmit={()=>setMessage('The host keeps the size')} onCancel={()=>setMessage('The host restores the size')}/>",
+          "native": "<C.PresetPickerBlock<'max'|number> value={75} valueOptions={{style:'currency',currency:'USD',maximumFractionDigits:0}} valueLabel='Size' presetsLabel='Size' columns={3} presets={[{value:'max',label:'Max'},{value:25,label:'$25'},{value:50,label:'$50'},{value:100,label:'$100'},{value:250,label:'$250'},{value:500,label:'$500',disabled:true}]} selected={null} onPresetChange={value=>setMessage('The host sets the size to '+value)} custom={{label:'Custom amount',value:'$75',onSelect:()=>setMessage('The host opens its keypad')}} submitLabel='Set Size' onSubmit={()=>setMessage('The host keeps the size')} onCancel={()=>setMessage('The host restores the size')}/>"
+        },
+        "leverage": {
+          "web": "<C.PresetPickerBlock title='Leverage' onBack={()=>setMessage('The host goes back')} value={40} valueSuffix='×' valueLabel='Leverage' presetsLabel='Leverage' columns={3} presets={[{value:1,label:'1×'},{value:5,label:'5×'},{value:10,label:'10×'},{value:20,label:'20×'},{value:25,label:'25×'},{value:40,label:'40×'}]} selected={40} onPresetChange={value=>setMessage('The host sets leverage to '+value)} submitLabel='Set Leverage' onSubmit={()=>setMessage('The host keeps the leverage')} onCancel={()=>setMessage('The host restores the leverage')}/>",
+          "native": "<C.PresetPickerBlock title='Leverage' onBack={()=>setMessage('The host goes back')} value={40} valueSuffix='×' valueLabel='Leverage' presetsLabel='Leverage' columns={3} presets={[{value:1,label:'1×'},{value:5,label:'5×'},{value:10,label:'10×'},{value:20,label:'20×'},{value:25,label:'25×'},{value:40,label:'40×'}]} selected={40} adjustable={{incrementLabel:'Increase leverage',decrementLabel:'Decrease leverage'}} onPresetChange={value=>setMessage('The host sets leverage to '+value)} submitLabel='Set Leverage' onSubmit={()=>setMessage('The host keeps the leverage')} onCancel={()=>setMessage('The host restores the leverage')}/>"
+        }
+      }
+    },
+    {
+      "name": "ExplainerBlock",
+      "slug": "explainer-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "added": "Unreleased",
+      "web": "<C.ExplainerBlock title='How Trend works' description='Trend reads each market every minute and marks where momentum is heading.' sections={[{id:'up',tone:'up',icon:<C.Text>↑</C.Text>,title:'Up',meaning:'→ Momentum is rising',body:'Price is climbing with conviction.'},{id:'down',tone:'down',icon:<C.Text>↓</C.Text>,title:'Down',meaning:'→ Momentum is falling',body:'Price is sliding with conviction.'},{id:'watch',tone:'warning',icon:<C.Text>●</C.Text>,title:'Watch',meaning:'→ A move may be coming',body:'Price is coiling before a break.'}]} caveat='Trend describes the market. It is not advice.' primaryAction={{label:'Got it',onSelect:()=>setMessage('The host closes the sheet')}}/>",
+      "native": "<C.ExplainerBlock title='How Trend works' description='Trend reads each market every minute and marks where momentum is heading.' sections={[{id:'up',tone:'up',icon:<C.Text>↑</C.Text>,title:'Up',meaning:'→ Momentum is rising',body:'Price is climbing with conviction.'},{id:'down',tone:'down',icon:<C.Text>↓</C.Text>,title:'Down',meaning:'→ Momentum is falling',body:'Price is sliding with conviction.'},{id:'watch',tone:'warning',icon:<C.Text>●</C.Text>,title:'Watch',meaning:'→ A move may be coming',body:'Price is coiling before a break.'}]} caveat='Trend describes the market. It is not advice.' primaryAction={{label:'Got it',onSelect:()=>setMessage('The host closes the sheet')}}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sections",
+        "task"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "sections": {
+          "web": "<C.ExplainerBlock title='How Swing works' onBack={()=>setMessage('The host goes back')} sections={[{id:'notification',title:'The notification',body:'Each Swing signal names a market, a side and a leverage, with how confident the model is.',caveat:'A signal expires after an hour.'},{id:'execution',title:'Execution',body:'Open the signal to place the trade yourself; Swing never trades for you.'}]} primaryAction={{label:'Got it',onSelect:()=>setMessage('The host closes the sheet')}}/>",
+          "native": "<C.ExplainerBlock title='How Swing works' onBack={()=>setMessage('The host goes back')} sections={[{id:'notification',title:'The notification',body:'Each Swing signal names a market, a side and a leverage, with how confident the model is.',caveat:'A signal expires after an hour.'},{id:'execution',title:'Execution',body:'Open the signal to place the trade yourself; Swing never trades for you.'}]} primaryAction={{label:'Got it',onSelect:()=>setMessage('The host closes the sheet')}}/>"
+        },
+        "task": {
+          "web": "<C.ExplainerBlock title='Invite a friend' description='You both earn rewards when they make their first trade.' steps={['Copy your invite link.','Send it to a friend.','They sign up and trade $100.']} secondaryAction={{label:'Not now',onSelect:()=>setMessage('The host closes the dialog')}} primaryAction={{label:'Copy link',onSelect:()=>setMessage('The host copies the link')}}/>",
+          "native": "<C.ExplainerBlock title='Invite a friend' description='You both earn rewards when they make their first trade.' steps={['Copy your invite link.','Send it to a friend.','They sign up and trade $100.']} secondaryAction={{label:'Not now',onSelect:()=>setMessage('The host closes the dialog')}} primaryAction={{label:'Copy link',onSelect:()=>setMessage('The host copies the link')}}/>"
+        }
+      }
+    },
+    {
       "name": "ProfileBlock",
       "slug": "profile-block",
       "entry": "blocks",

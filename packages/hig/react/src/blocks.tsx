@@ -10,7 +10,7 @@ export {TokenActionBlock,tokenActionLabel,type TokenActionBlockProps,type TokenA
 export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type ManagePositionBlockLabels,type ManagePositionBlockAction,type ManagePositionBlockSummary,type ManagePositionBlockFigure,type ManagePositionIcon} from './blocks/manage-position-block.js';
 export {TargetBlock,targetLayout,targetFormat,targetPresets,targetUnits,type TargetBlockProps,type TargetBlockLabels,type TargetKind,type TargetUnit,type TargetPrice,type TargetPreset,type TargetUnitOption} from './blocks/target-block.js';
 export {PositionBlock,type PositionBlockProps,type PositionBlockDetail,type PositionBlockFigure,type PositionBlockRow,type PositionBlockFlag,type PositionBlockFlagAction} from './blocks/position-block.js';
-export {AssetsBlock,filterAssets,type AssetsBlockProps,type AssetItem,type AssetCategory,type AssetSignal,type AssetsView} from './blocks/assets-block.js';
+export {AssetsBlock,filterAssets,type AssetsBlockProps,type AssetItem,type AssetCategory,type AssetSignal,type AssetsView,type AssetsEmptyAction} from './blocks/assets-block.js';
 export {ProfileBlock,type ProfileBlockProps,type ProfileSection,type ProfileRow,type ProfileStatus,type ProfileAction,type ProfileFigure} from './blocks/profile-block.js';
 export {RewardBlock,rewardProgress,type RewardBlockProps,type RewardPromo,type RewardEntry} from './blocks/reward-block.js';
 export {SoundHapticsBlock,soundLevel,type SoundHapticsBlockProps,type SoundSection,type SoundVolume,type SettingAction} from './blocks/sound-haptics-block.js';
@@ -20,4 +20,6 @@ export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,t
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './blocks/trade-history-detail-block.js';
 export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps,type PickerInputProps,type PickerRowProps} from './blocks/pickers.js';
 export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-panel-block.js';
-export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail} from './blocks/confirm-block.js';
+export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './blocks/confirm-block.js';
+export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom} from './blocks/preset-picker-block.js';
+export {ExplainerBlock,type ExplainerBlockProps,type ExplainerSection,type ExplainerAction,type ExplainerTone} from './blocks/explainer-block.js';

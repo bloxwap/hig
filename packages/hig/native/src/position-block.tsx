@@ -6,7 +6,7 @@ import {Button} from './button.js';
 import {SwitchRow} from './switch-row.js';
 import {ListGroup,ListRow} from './list-group.js';
 import {AnimatedNumberReadout} from './animated-number.js';
-import {HeaderClose,ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
+import {HeaderClose,ScreenHeader,type HeaderCloseProps,type ScreenHeaderControlProps} from './screen-header.js';
 import {StickyHeaderLayout,stickyHeaderFill} from './sticky-header.js';
 import {figureProps,figureReading,type Figure} from './figure.js';
 /** A number the host supplies as a number so it updates place by place: `{value:0.53,options:{style:'currency',currency:'USD'}}`, or Leverage as `{value:40,suffix:'×'}`. `null` reads as unknown. `formattedValue` is the host's own text for it, still moving place by place. */
@@ -56,8 +56,8 @@ export interface PositionBlockHeaderProps {
  stickyHeaderBackground?:string;
  /** Pressable props for Back, such as `{android_disableSound: true}`. */
  backProps?:ScreenHeaderControlProps;
- /** Pressable props for Close. */
- closeProps?:ScreenHeaderControlProps;
+ /** Pressable props for Close; `disabled` draws it unavailable. */
+ closeProps?:HeaderCloseProps;
  testID?:string;
 }
 export interface PositionBlockProps {
@@ -89,8 +89,8 @@ export interface PositionBlockProps {
  scrollComponent?:React.ComponentType<ScrollViewProps>;
  /** Pressable props for the header's Back, such as `{android_disableSound: true}`. */
  backProps?:ScreenHeaderControlProps;
- /** Pressable props for the header's Close. */
- closeProps?:ScreenHeaderControlProps;
+ /** Pressable props for the header's Close; `disabled` draws it unavailable. */
+ closeProps?:HeaderCloseProps;
  testID?:string;
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};

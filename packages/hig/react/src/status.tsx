@@ -35,7 +35,13 @@ export function Toast({notices,onDismiss,dismissLabel}: {notices:readonly Notice
  return <aside className='hig-toast' aria-label={messages.notifications??en.notifications}>{unique.map(n=><ToastNotice key={n.id} message={n.message} severity={n.severity} action={n.action} dismissName={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onDismiss={()=>onDismiss(n.id)}/>)}<span className='hig-sr-only' role={announcement.severity==='error'?'alert':'status'} aria-atomic='true'>{announcement.message}</span></aside>;
 }
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
-export function Spinner({label}: {label?:string}){const {messages}=useHIG();return <span className='hig-spinner' role='status'><span className='hig-spinner-indicator' aria-hidden='true'/>{label??messages.loading??en.loading}…</span>;}
+export interface SpinnerProps {
+ /** What is loading; defaults to HIGProvider `messages.loading`. */
+ label?:string;
+ /** Draws the ring alone, for a tight spot such as a row or a button-sized slot: the label is not drawn but stays the status's accessible text. */
+ hideLabel?:boolean;
+}
+export function Spinner({label,hideLabel}:SpinnerProps){const {messages}=useHIG();const text=`${label??messages.loading??en.loading}…`;return <span className='hig-spinner' role='status'><span className='hig-spinner-indicator' aria-hidden='true'/>{hideLabel?<span className='hig-sr-only'>{text}</span>:text}</span>;}
 export function Skeleton({label}: {label?:string}){const {messages}=useHIG();return <div className='hig-skeleton' aria-label={label??messages.loadingContent??en.loadingContent} role='status'/>;}
 const emptySymbol=<svg aria-hidden='true' focusable='false' viewBox='0 0 32 32'><path d='M5 18.5 8.6 8.9A2 2 0 0 1 10.5 7.5h11a2 2 0 0 1 1.9 1.4L27 18.5v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z'/><path d='M5 18.5h6.5a4.5 4.5 0 0 0 9 0H27'/></svg>;
 /** Centred stack: symbol, title, optional description, optional action. Decorative `illustration` replaces the default symbol (same prop as native); `null` omits it. */

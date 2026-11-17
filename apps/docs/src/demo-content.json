@@ -437,6 +437,14 @@
       "title": "ConfirmBlock"
     },
     {
+      "route": "components/preset-picker-block",
+      "title": "PresetPickerBlock"
+    },
+    {
+      "route": "components/explainer-block",
+      "title": "ExplainerBlock"
+    },
+    {
       "route": "components/profile-block",
       "title": "ProfileBlock"
     },
@@ -1273,6 +1281,28 @@
         "default",
         "busy",
         "fee"
+      ]
+    },
+    {
+      "name": "PresetPickerBlock",
+      "route": "components/preset-picker-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ]
+    },
+    {
+      "name": "ExplainerBlock",
+      "route": "components/explainer-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sections",
+        "task"
       ]
     },
     {

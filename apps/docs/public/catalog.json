@@ -767,6 +767,28 @@
       ]
     },
     {
+      "name": "PresetPickerBlock",
+      "route": "components/preset-picker-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ]
+    },
+    {
+      "name": "ExplainerBlock",
+      "route": "components/explainer-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sections",
+        "task"
+      ]
+    },
+    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "entry": "blocks",

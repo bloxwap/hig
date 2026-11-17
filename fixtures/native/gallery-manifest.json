@@ -615,6 +615,24 @@
       "support": "renderer"
     },
     {
+      "name": "PresetPickerBlock",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ExplainerBlock",
+      "states": [
+        "default",
+        "sections",
+        "task"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "ProfileBlock",
       "states": [
         "default",
