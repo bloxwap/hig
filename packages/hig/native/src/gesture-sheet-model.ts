@@ -79,3 +79,14 @@ export function backdropProgress(position:number,lowest:number,closed:number):nu
  * use the spring.
  */
 export const SHEET_RESIZE={duration:270,curve:[0.26,0.08,0.25,1]} as const;
+
+/** Invalid fixed detents are programmer errors, before they reach either sheet backend. */
+export function validateSnapPoints(points:readonly SheetSnapPoint[],initialIndex=0){
+ if(!points.length)throw new Error('GestureSheet requires at least one snap point.');
+ if(!Number.isInteger(initialIndex)||initialIndex<0)throw new RangeError('GestureSheet initialIndex must be a nonnegative integer.');
+ for(const point of points){
+  const percent=typeof point==='string';
+  const value=percent?Number(point.slice(0,-1)):point;
+  if((percent&&!/^\d+(?:\.\d+)?%$/.test(point))||!Number.isFinite(value)||value<=0||(percent&&value>100))throw new RangeError('GestureSheet snap points must be positive finite points or percentages up to 100%.');
+ }
+}

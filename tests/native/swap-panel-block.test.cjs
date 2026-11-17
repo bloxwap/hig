@@ -91,8 +91,8 @@ it('filters the picker by search and chain, marks the selected row, and sections
  act(()=>search.props.onChangeText('zzz'));expect(list()).toEqual([]);
 });
 it('names the action from the pair and blocks an amount above the balance',()=>{
- expect(swapAction(eth,eth)).toBe('send');expect(swapAction(eth,baseEth)).toBe('send');expect(swapAction(eth,usdc)).toBe('swap');expect(swapAction(eth,baseUsdc)).toBe('bridge');expect(swapAction(null,usdc)).toBe('send');
- for(const [to,label] of [[baseEth,'Send'],[usdc,'Swap'],[baseUsdc,'Bridge']]){const tree=mount({defaultFrom:eth,defaultTo:to});type(tree,'5');expect(actionText(tree)).toBe(label);expect(action(tree).props.disabled).toBe(false);}
+ expect(swapAction(eth,eth)).toBe('send');expect(swapAction(eth,baseEth)).toBe('bridge');expect(swapAction(eth,usdc)).toBe('swap');expect(swapAction(eth,baseUsdc)).toBe('bridge');expect(swapAction(null,usdc)).toBe('send');
+ for(const [to,label] of [[baseEth,'Bridge'],[usdc,'Swap'],[baseUsdc,'Bridge']]){const tree=mount({defaultFrom:eth,defaultTo:to});type(tree,'5');expect(actionText(tree)).toBe(label);expect(action(tree).props.disabled).toBe(false);}
  const tree=mount({defaultFrom:eth,defaultTo:usdc});type(tree,'1001');expect(actionText(tree)).toBe('Insufficient ETH');expect(action(tree).props.disabled).toBe(true);
 });
 it('submits the action once ready and not while submitting',()=>{
@@ -418,7 +418,7 @@ it('draws host artwork elements in place of image URLs, and host content above t
 // Number flow: every number that can change while the card is on screen is an AnimatedNumberReadout, so a new
 // balance, quote, fee or slippage moves its digits instead of swapping the text.
 it('balance, conversion, fee and slippage are live numbers that follow their props, and read as before',()=>{
- const base={defaultFrom:eth,defaultTo:usdc,fee:0.27,slippage:0.01,amount:'0.01'};let tree=mount(base);
+ const base={from:eth,to:usdc,fee:0.27,slippage:0.01,amount:'0.01'};let tree=mount(base);
  expect(flows(tree,'swap-balance')).toHaveLength(1);expect(read(tree,'swap-balance')).toBe('0.5 ETH');
  expect(flows(tree,'swap-conversion-from')).toHaveLength(1);expect(flows(tree,'swap-conversion-to')).toHaveLength(1);
  expect(flows(tree,'swap-fee')).toHaveLength(1);expect(flows(tree,'swap-fee')[0].props.value).toBe(0.27);expect(read(tree,'swap-fee')).toBe('Fee $0.27');
@@ -472,3 +472,36 @@ it('an account caption and a destination detail can be live figures that update 
  expect(flows(tree,'swap-caption')).toHaveLength(0);expect(flows(tree,'swap-destination-detail')).toHaveLength(0);
 });
 
+
+it('keeps the action named while submitting with the amount cleared: the burn busy with no amount',()=>{
+ let tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',actionIntent:'destructive',amount:'0',submitting:true});
+ expect(actionText(tree)).toBe('Burn');expect(action(tree).props.busy).toBe(true);
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submitting:true,submittingLabel:'Burning…'});
+ expect(actionText(tree)).toBe('Burning…');
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submittingLabel:'Burning…'});
+ expect(actionText(tree)).toBe('Enter an amount');
+});
+
+it('keeps a held action status while submitting, and leaves the amount alone until the submit settles',()=>{
+ let tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submitting:true,actionDisabled:true,actionStatus:'Signing…'});
+ expect(actionText(tree)).toBe('Signing…');
+ tree=mount({defaultFrom:{...eth,balance:5},destination:{title:'Burn'},actionLabel:'Burn',amount:'0',submitting:true,submittingLabel:'Burning…',actionDisabled:true,actionStatus:'Signing…'});
+ expect(actionText(tree)).toBe('Burning…');
+ const onAmountChange=jest.fn();
+ tree=mount({defaultFrom:eth,defaultTo:usdc,onAmountChange,submitting:true});
+ type(tree,'12');press(tree,'swap-max');
+ expect(amount(tree)).toBe('$0');expect(onAmountChange).not.toHaveBeenCalled();
+});
+
+it('rejects a known zero balance and preserves exact token input',()=>{
+ const submit=jest.fn(),change=jest.fn();
+ let tree=mount({from:{...eth,balance:0},to:eth,amount:'1',denomination:'token',onSubmit:submit});
+ press(tree,'swap-action');expect(submit).not.toHaveBeenCalled();expect(action(tree).props.disabled).toBe(true);
+ tree=mount({from:{...eth,decimals:18},to:eth,denomination:'token',onAmountChange:change});
+ type(tree,'0.000000001');expect(change).toHaveBeenLastCalledWith('0.000000001');expect(amount(tree)).toBe('0.000000001');
+});
+it('does not mutate the pair or denomination during submission',()=>{
+ const changed=jest.fn();const tree=mount({from:eth,to:usdc,amount:'1',denomination:'token',submitting:true,onFromChange:changed});
+ press(tree,'swap-flip');press(tree,'swap-slot-from');press(tree,'swap-mode-from');
+ expect(changed).not.toHaveBeenCalled();expect(amount(tree)).toBe('1');expect(has(tree,'swap-keypad')).toBe(true);
+});

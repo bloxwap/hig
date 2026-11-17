@@ -17,6 +17,7 @@
   "/docs/guides/components/actions-surfaces/": [
     "api-and-anatomy",
     "when-to-use-and-examples",
+    "button-as-a-link",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
     "validation-and-citation"
@@ -31,6 +32,8 @@
     "languageblock",
     "managepositionblock",
     "targetblock",
+    "presetpickerblock",
+    "explainerblock",
     "positionblock",
     "tradehistorylistblock",
     "tradehistorydetailblock",
@@ -63,6 +66,7 @@
   ],
   "/docs/guides/components/financial-data/": [
     "api-and-anatomy",
+    "qrcode",
     "marketrow",
     "assetbalancerow",
     "barmark",
@@ -71,7 +75,9 @@
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
     "validation-and-citation",
-    "optional-number-motion"
+    "optional-number-motion",
+    "numberflow",
+    "migrating-from-the-products-numberflow"
   ],
   "/docs/guides/components/navigation/": [
     "api-and-anatomy",
@@ -100,6 +106,15 @@
   ],
   "/docs/guides/components/status/": [
     "api-and-anatomy",
+    "avatar",
+    "transient-toasts-toaster-and-toast",
+    "how-the-native-host-moves",
+    "where-the-platforms-differ",
+    "confetti",
+    "confetti-colour",
+    "confetti-motion-and-performance",
+    "confetti-accessibility-and-direction",
+    "confetti-platform-differences",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
@@ -218,7 +233,9 @@
     "component-css-and-the-opt-in-base",
     "radix-overlay-peers-and-fumadocs",
     "sonner-toasts",
+    "confetti",
     "wallet-address-qr-codes",
+    "generated-avatars",
     "brand-accent",
     "ssr-and-next-client-boundaries",
     "open-graph-card-fonts",

@@ -1,4 +1,5 @@
-import React,{useEffect,useRef,useCallback,useImperativeHandle} from 'react';
+import {validateSnapPoints} from './gesture-sheet-model.js';
+import React,{useEffect,useRef,useCallback,useImperativeHandle,useMemo} from 'react';
 import {AccessibilityInfo,BackHandler,findNodeHandle,Platform,Text as RNText,TextInput,View} from 'react-native';
 import BottomSheet,{BottomSheetModal,BottomSheetScrollView,BottomSheetBackdrop,BottomSheetView,type BottomSheetBackdropProps,type BottomSheetModalProps} from '@gorhom/bottom-sheet';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -68,7 +69,7 @@ export type GestureSheetProps=GestureSheetCommonProps&(
 /** Optional backend: host supplies GestureHandlerRootView, SafeAreaProvider and BottomSheetModalProvider. */
 export function GestureSheet({open,onOpenChange,title,description,children,contentMode='default',raised=true,titleRef,presentation='modal',sheetRef,snapPoints,enableDynamicSizing=false,maxDynamicContentSize,enableContentPanningGesture,keyboardBehavior='interactive',keyboardBlurBehavior='restore',android_keyboardInputMode='adjustResize',initialIndex=0,dismissible=true,returnFocusRef,closeLabel,onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,modalRef,handleComponent,handleStyle,handleIndicatorStyle,backgroundComponent,backgroundStyle,containerStyle,animateOnMount,animationConfigs,backdropComponent,labelledBy}:GestureSheetProps){
  if(enableDynamicSizing&&snapPoints!==undefined)throw new Error('Content-sized GestureSheet does not accept fixed snapPoints.');
- const fixedSnapPoints=snapPoints??[];
+ const fixedSnapPoints=snapPoints??[];if(!enableDynamicSizing)validateSnapPoints(fixedSnapPoints,initialIndex);
  if(!enableDynamicSizing&&fixedSnapPoints.length===0)throw new Error('GestureSheet requires at least one snap point.');
  if(maxDynamicContentSize!==undefined&&(!Number.isFinite(maxDynamicContentSize)||maxDynamicContentSize<=0))throw new Error('GestureSheet maxDynamicContentSize must be finite and greater than zero.');
  const detentCount=enableDynamicSizing?1:fixedSnapPoints.length;
@@ -79,6 +80,7 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
  const startingIndex=Math.max(0,Math.min(initialIndex,detentCount-1));
  const activeIndex=useRef(startingIndex),detentFrame=useRef<number|null>(null),pendingSnap=useRef(false);
  const detentKey=JSON.stringify(fixedSnapPoints);
+ const backendSnapPoints=useMemo(()=>[...fixedSnapPoints],[detentKey]);
  const latest=useRef({open,onOpenChange,returnFocusRef,onDismiss,onHardwareBackPress});latest.current={open,onOpenChange,returnFocusRef,onDismiss,onHardwareBackPress};
  const env=useHIG(),colors=useColors(),insets=useSafeAreaInsets();
  const focus=useCallback((node:React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null)=>{if(!node)return;try{const handle=findNodeHandle(node);if(handle!=null){AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(node,'viewHoverEnter');}}catch{/* Detached focus targets cannot prevent dismissal. */}},[]);
@@ -125,8 +127,10 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
  // basic accessibility props, so modal escape and VoiceOver scope belong on its measured or scrolling content.
  // Inline content keeps its native state while closed, with all descendants hidden from accessibility.
  // No stroke: the sheet is the `overlay` fill, darker than a card, lifted by a soft shadow.
- const sheetFill={backgroundColor:colors.overlay,borderRadius:tokens.radius.xl,boxShadow:'0 -8px 32px #0008'};
- const backendProps={accessible:false,accessibilityLabel:title,index:presentation==='inline'&&!open?-1:presented.current?Math.max(0,Math.min(activeIndex.current,detentCount-1)):startingIndex,snapPoints:enableDynamicSizing?undefined:[...fixedSnapPoints],enableDynamicSizing,maxDynamicContentSize:enableDynamicSizing?maxDynamicContentSize:undefined,enableContentPanningGesture,enablePanDownToClose:dismissible,topInset:topInset??insets.top,bottomInset:bottomInset??insets.bottom,keyboardBehavior,keyboardBlurBehavior,android_keyboardInputMode,overrideReduceMotion:env.reducedMotion?ReduceMotion.Always:ReduceMotion.System,animateOnMount,animationConfigs,backdropComponent:backdropComponent===undefined?backdrop:backdropComponent,handleComponent,handleStyle,backgroundComponent,containerStyle,backgroundStyle:backgroundStyle?[sheetFill,backgroundStyle]:sheetFill,handleIndicatorStyle:handleIndicatorStyle?[{backgroundColor:colors.action},handleIndicatorStyle]:{backgroundColor:colors.action},onChange:handleChange};
+ const sheetFill=useMemo(()=>({backgroundColor:colors.overlay,borderRadius:tokens.radius.xl,boxShadow:'0 -8px 32px #0008'}),[colors.overlay]);
+ const sheetBackground=useMemo(()=>backgroundStyle?[sheetFill,backgroundStyle]:sheetFill,[sheetFill,backgroundStyle]);
+ const sheetIndicator=useMemo(()=>{const fill={backgroundColor:colors.action};return handleIndicatorStyle?[fill,handleIndicatorStyle]:fill;},[colors.action,handleIndicatorStyle]);
+ const backendProps={accessible:false,accessibilityLabel:title,index:presentation==='inline'&&!open?-1:presented.current?Math.max(0,Math.min(activeIndex.current,detentCount-1)):startingIndex,snapPoints:enableDynamicSizing?undefined:backendSnapPoints,enableDynamicSizing,maxDynamicContentSize:enableDynamicSizing?maxDynamicContentSize:undefined,enableContentPanningGesture,enablePanDownToClose:dismissible,topInset:topInset??insets.top,bottomInset:bottomInset??insets.bottom,keyboardBehavior,keyboardBlurBehavior,android_keyboardInputMode,overrideReduceMotion:env.reducedMotion?ReduceMotion.Always:ReduceMotion.System,animateOnMount,animationConfigs,backdropComponent:backdropComponent===undefined?backdrop:backdropComponent,handleComponent,handleStyle,backgroundComponent,containerStyle,backgroundStyle:sheetBackground,handleIndicatorStyle:sheetIndicator,onChange:handleChange};
  const lifted=raised?<Raised>{content}</Raised>:content;
  return presentation==='inline'?<BottomSheet {...backendProps} ref={inline} accessibilityElementsHidden={!open} importantForAccessibility={open?'auto':'no-hide-descendants'} onClose={handleSettledClose}>{lifted}</BottomSheet>:<BottomSheetModal {...backendProps} ref={sheet} enableDismissOnClose stackBehavior='push' onDismiss={handleSettledClose}>{lifted}</BottomSheetModal>;
 }

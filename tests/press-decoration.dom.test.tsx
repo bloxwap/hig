@@ -120,7 +120,7 @@ describe('HIGProvider pressDecoration',()=>{
   expect((screen.getByRole('button',{name:'Choose asset'}).lastElementChild as HTMLElement).dataset.kind).toBe('row');
   const source=readFileSync('packages/hig/react/src/blocks/swap-panel-block.tsx','utf8');
   expect(source.match(/className='hig-swap-hit'.*?<PressDecoration kind='row'\/><\/button>/g)).toHaveLength(3);
-  expect(source).toContain("<SwapIcon name='flip' size={16}/><PressDecoration kind='icon-button' disabled={!from||!to}/>");
+  expect(source).toContain("<SwapIcon name='flip' size={16}/><PressDecoration kind='icon-button' disabled={submitting||!from||!to}/>");
   expect(source).toContain("onClick={copyAddress}>{content}<PressDecoration kind='row'/>");
  });
  it('hands a press to a disabled switch to nobody, and a host label that names its own control is left to that control',()=>{

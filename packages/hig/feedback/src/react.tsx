@@ -7,9 +7,10 @@ interface FeedbackContext {preferences:FeedbackPreferences;update:(next:Partial<
 const Context=createContext<FeedbackContext>({preferences:defaultPreferences,update:()=>{},sink:{emit:()=>{}},controller:()=>null});
 export function FeedbackProvider({children,createController,storage,initialPreferences}:React.PropsWithChildren<{initialPreferences?:Partial<FeedbackPreferences>;createController:(prefs:FeedbackPreferences)=>FeedbackController;storage?:PreferenceStorage}>){
  const [preferences,setPreferences]=useState(()=>migratePreferences({...defaultPreferences,...initialPreferences}));const current=useRef(preferences);const revision=useRef(0);const controller=useRef<FeedbackController|null>(null);
+ const writes=useRef(Promise.resolve());
  const [sink]=useState<FeedbackSink>(()=>({emit:event=>controller.current?.emit(event)}));
  useEffect(()=>{const instance=createController(current.current);controller.current=instance;let alive=true;void loadPreferences(storage,()=>revision.current,value=>{if(!alive)return;current.current=value;setPreferences(value);instance.updatePreferences(value);});return()=>{alive=false;controller.current=null;instance.dispose();};},[createController,storage]);
- const update=useCallback((next:Partial<FeedbackPreferences>)=>{revision.current++;const value=migratePreferences({...current.current,...next});current.current=value;setPreferences(value);controller.current?.updatePreferences(value);try{Promise.resolve(storage?.write(value)).catch(()=>{});}catch{/* Preferences remain live without storage. */}},[storage]);
+ const update=useCallback((next:Partial<FeedbackPreferences>)=>{revision.current++;const value=migratePreferences({...current.current,...next});current.current=value;setPreferences(value);controller.current?.updatePreferences(value);writes.current=writes.current.then(()=>storage?.write(value)).then(()=>{},()=>{});},[storage]);
  const getController=useCallback(()=>controller.current,[]);
  return <Context.Provider value={{preferences,update,sink,controller:getController}}>{children}</Context.Provider>;
 }

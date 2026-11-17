@@ -12,6 +12,7 @@ export const chartTheme:DeepPartial<ChartConfig>={theme:{background:tokens.color
 /** Web canvas only. Native uses labeled price rows; no embedded engine or WebView claim. */
 export function PriceChart({summary,...props}:ChartProps & {summary:string}){const {messages}=useHIG();const colors=useColors();const theme=useMemo(()=>({...chartTheme,crosshair:{...chartTheme.crosshair,labelBackground:colors.action,labelColor:colors.onAction}}),[colors]);return <figure><figcaption>{summary}</figcaption><Suspense fallback={<p role='status'>{messages.loadingChart??en.loadingChart}</p>}><Chart {...props} preset={theme}/></Suspense></figure>;}
 export {AltimeterChart,type AltimeterChartProps} from './altimeter-chart.js';
+export type {AltimeterTarget} from './altimeter-targets.js';
 export {bitcoinPrice,type AltimeterFeed} from './bitcoin-price.js';
 export {OutcomeChart,type OutcomeChartProps} from './outcome-chart.js';
 export {outcomeColors,type Outcome,type OutcomeFeed} from './outcome-model.js';

@@ -19,14 +19,16 @@ export interface RewardPromo {
  eyebrow:string;
  /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */
  rules?:{label:string;onSelect:()=>void};
- /** The headline figure: the pool so far, or the top prize. `null` reads as unknown. */
- amount:number|null;
- /** Format of `amount` and `goal`. Defaults to whole US dollars. */
+ /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */
+ amount?:number|null|string;
+ /** Host content drawn in the headline figure's place (`<testID>-figure`), in place of `amount`, such as the host's own live figure. It is drawn as given and reads itself. */
+ figure?:React.ReactNode;
+ /** Format of a number `amount` and of `goal`. Defaults to whole US dollars. */
  amountOptions?:Intl.NumberFormatOptions;
- /** The amount the pool is filling towards. Draws the progress bar under the caption. */
+ /** The amount the pool is filling towards. Draws the progress bar under the caption (full only against a number `amount`). */
  goal?:number;
- /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. */
- caption?:string|((goal:string)=>string);
+ /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given and read with the figure: top prize. Any other node, such as a live countdown, is drawn as given after the figure and reads itself. */
+ caption?:React.ReactNode|((goal:string)=>React.ReactNode);
  /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host Text elements for an accented word. */
  headline?:React.ReactNode;
  /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */
@@ -90,7 +92,8 @@ export interface RewardBlockProps {
  listTitle?:string;
  /** The column heading over the scores: Entries. */
  scoreTitle?:string;
- entries:readonly RewardEntry[];
+ /** The standings, in order. Leave them out for a promotion-only pane: no list is drawn. */
+ entries?:readonly RewardEntry[];
  /** Format of every score. Defaults to a whole number. An entry's own `scoreOptions` wins. */
  scoreOptions?:Intl.NumberFormatOptions;
  /** Words for the verified mark, read after the name. */
@@ -106,6 +109,7 @@ export interface RewardBlockProps {
 }
 const wholeDollars:Intl.NumberFormatOptions={style:'currency',currency:'USD',maximumFractionDigits:0};
 const whole:Intl.NumberFormatOptions={maximumFractionDigits:0};
+const noEntries:readonly RewardEntry[]=[];
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const avatar=40,space=' ';
 /** The share of the goal reached, from 0 to 1. Unknown amounts and goals that are not above zero give `null`. */
@@ -113,12 +117,16 @@ export function rewardProgress(amount:number|null|undefined,goal:number|null|und
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,header:showHeader=true,testID}:RewardBlockProps){
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries=noEntries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,header:showHeader=true,testID}:RewardBlockProps){
  const colors=useColors(),fills=useFills(),{direction,monoFontFamily}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
  const prefix=testID??'reward',tid=(part:string)=>`${prefix}-${part}`;
- const money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(promo.amount,promo.goal):null;
+ const amount=promo?.amount,money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(typeof amount==='string'?null:amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
+ // A text caption is read with the figure; a host node (such as a live countdown) and a host figure read themselves.
+ const captionText=typeof caption==='string'||typeof caption==='number'?String(caption):null,captionNode=captionText===null&&caption!=null&&caption!==false?caption:null;
+ const hostFigure=promo?.figure!=null&&promo.figure!==false?promo.figure:null;
  const caps={fontFamily:monoFontFamily,fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase'} as const;
+ const figureStyle={fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9} as const,captionStyle={fontFamily:monoFontFamily,fontSize:15,lineHeight:22,color:colors.muted} as const;
  const standing=(entry:RewardEntry,id:string,style?:ViewStyle,lead?:string)=>{
   const figure=entry.detail!=null&&typeof entry.detail==='object'?entry.detail:null,detail=typeof entry.detail==='string'?entry.detail:undefined,score=entry.scoreOptions??scoreOptions;
   const said=figure?formatNumberReadout(figure.value,locale,present(figure.options),figure.formattedValue,figure.prefix,figure.suffix).text:detail;
@@ -168,10 +176,14 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
      <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
     </Pressable>:null}
    </View>
-   <View testID={tid('amount')} accessible accessibilityLabel={[formatNumberReadout(promo.amount,locale,present(money)).text,caption].filter(Boolean).join(' ')} style={{gap:4}}>
-    <View {...hidden} style={{alignItems:'flex-start'}}><AnimatedNumberReadout value={promo.amount} options={money} tone='positive' style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9}}/></View>
-    {caption?<Text {...hidden} testID={tid('caption')} style={{fontFamily:monoFontFamily,fontSize:15,lineHeight:22,color:colors.muted}}>{caption}</Text>:null}
-   </View>
+   {hostFigure?<View testID={tid('amount')} style={{gap:4}}>
+    <View testID={tid('figure')} style={{alignItems:'flex-start'}}>{hostFigure}</View>
+    {captionText?<Text testID={tid('caption')} style={captionStyle}>{captionText}</Text>:null}
+   </View>:amount!==undefined||captionText?<View testID={tid('amount')} accessible accessibilityLabel={[amount===undefined?null:typeof amount==='string'?amount:formatNumberReadout(amount,locale,present(money)).text,captionText].filter(Boolean).join(' ')} style={{gap:4}}>
+    {amount===undefined?null:<View {...hidden} style={{alignItems:'flex-start'}}>{typeof amount==='string'?<Text style={{...figureStyle,color:colors.positive}}>{amount}</Text>:<AnimatedNumberReadout value={amount} options={money} tone='positive' style={figureStyle}/>}</View>}
+    {captionText?<Text {...hidden} testID={tid('caption')} style={captionStyle}>{captionText}</Text>:null}
+   </View>:null}
+   {captionNode?<View testID={tid('caption')} style={{marginTop:-8}}>{captionNode}</View>:null}
    {promo.goal!==undefined?<View {...hidden} testID={tid('track')} style={{direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'}}><View testID={tid('fill')} style={{width:`${(reached??0)*100}%`,minWidth:8,borderRadius:2,backgroundColor:colors.action}}/></View>:null}
    {promo.headline||promo.description?<Text testID={tid('summary')} style={{fontSize:16,lineHeight:24,color:colors.muted}}>{promo.headline?<Text style={{fontWeight:'600',color:colors.text}}>{promo.headline}</Text>:null}{promo.headline&&promo.description?space:null}{promo.description}</Text>:null}
    {promo.action?<Pressable testID={tid('action')} accessibilityRole='button' accessibilityLabel={promo.action.label} onPress={promo.action.onSelect} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:44,marginTop:4,marginBottom:-8,paddingTop:12,borderTopWidth:1,borderTopColor:fills.raised}}>

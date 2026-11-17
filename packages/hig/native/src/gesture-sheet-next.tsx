@@ -1,3 +1,4 @@
+import {validateSnapPoints} from './gesture-sheet-model.js';
 import React,{createContext,useCallback,useContext,useEffect,useId,useMemo,useRef,useState} from 'react';
 import {AccessibilityInfo,BackHandler,findNodeHandle,Keyboard,Platform,Pressable,StyleSheet,Text as RNText,TextInput,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
 import Reanimated,{cancelAnimation,Easing,ReduceMotion,runOnJS,useAnimatedProps,useAnimatedReaction,useAnimatedScrollHandler,useAnimatedStyle,useDerivedValue,useSharedValue,withSpring,withTiming,type SharedValue} from 'react-native-reanimated';
@@ -69,7 +70,7 @@ const HostContext=createContext<HostValue|null>(null);
 export function GestureSheetHost({children,style}:{children:React.ReactNode;style?:StyleProp<ViewStyle>}){
  const [layers,setLayers]=useState<readonly {id:string;node:React.ReactNode}[]>([]);
  const value=useMemo<HostValue>(()=>({
-  show:(id,node)=>setLayers(current=>{const index=current.findIndex(layer=>layer.id===id);if(index<0)return [...current,{id,node}];const next=current.slice();next[index]={id,node};return next;}),
+  show:(id,node)=>setLayers(current=>{const index=current.findIndex(layer=>layer.id===id);if(index<0)return [...current,{id,node}];if(current[index].node===node)return current;const next=current.slice();next[index]={id,node};return next;}),
   hide:id=>setLayers(current=>current.some(layer=>layer.id===id)?current.filter(layer=>layer.id!==id):current),
  }),[]);
  return <HostContext.Provider value={value}>
@@ -161,7 +162,7 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   if(space<=0)return {target:-1,kick:kick.value,index:active.value};
   if(!shown.value)return {target:space,kick:kick.value,index:active.value};
   if(list.length===0)return {target:-1,kick:kick.value,index:active.value};
-  return {target:list[Math.max(0,Math.min(list.length-1,list.length-1-active.value))],kick:kick.value,index:active.value};
+  const index=Math.max(0,Math.min(list.length-1,active.value));return {target:list[list.length-1-index],kick:kick.value,index};
  },(next,previous)=>{
   'worklet';
   const target=next.target;
@@ -172,7 +173,7 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   if(closes&&closing.value)return;
   const motion={...SHEET_SPRING,reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
   if(closes){closing.value=true;position.value=withSpring(target,motion,finished=>{'worklet';if(finished)runOnJS(finishClose)();});return;}
-  const index=active.value;
+  const index=next.index;active.value=index;
   // Content that changed height while the sheet rests moves on the resize curve. Opening and a new detent index use the spring.
   const resized=previous!==null&&previous.target>=0&&previous.target<space&&next.kick===previous.kick&&next.index===previous.index;
   if(resized&&!reduce.value){position.value=withTiming(target,RESIZE,finished=>{'worklet';if(finished)runOnJS(settled)(index);});return;}
@@ -234,7 +235,8 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
  * thread. While it moves only a transform and the backdrop's opacity change, so content of any weight costs no layout per frame.
  * Host supplies GestureHandlerRootView, SafeAreaProvider and, for modal sheets, GestureSheetHost.
  */
-export function GestureSheet(props:GestureSheetProps){
+export const GestureSheet=React.memo(function GestureSheet(props:GestureSheetProps){
+ if(!props.enableDynamicSizing)validateSnapPoints(props.snapPoints??[],props.initialIndex);
  if(props.enableDynamicSizing&&props.snapPoints!==undefined)throw new Error('Content-sized GestureSheet does not accept fixed snapPoints.');
  if(!props.enableDynamicSizing&&(props.snapPoints??[]).length===0)throw new Error('GestureSheet requires at least one snap point.');
  if(props.maxDynamicContentSize!==undefined&&(!Number.isFinite(props.maxDynamicContentSize)||props.maxDynamicContentSize<=0))throw new Error('GestureSheet maxDynamicContentSize must be finite and greater than zero.');
@@ -248,7 +250,7 @@ export function GestureSheet(props:GestureSheetProps){
  useEffect(()=>()=>{if(host)host.hide(key);},[host,key]);
  if(!inline)return null;
  return props.presentation==='inline'||mounted?surface:null;
-}
+});
 
 const styles=StyleSheet.create({
  fill:{flex:1},

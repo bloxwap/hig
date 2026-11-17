@@ -328,6 +328,19 @@
       "support": "renderer"
     },
     {
+      "name": "Toaster",
+      "states": [
+        "default",
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Progress",
       "states": [
         "default",
@@ -359,7 +372,9 @@
     {
       "name": "Avatar",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ],
       "support": "renderer"
     },
@@ -368,6 +383,13 @@
       "states": [
         "default",
         "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Confetti",
+      "states": [
+        "default"
       ],
       "support": "renderer"
     },
@@ -386,6 +408,17 @@
         "default",
         "error",
         "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "NumberFlow",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
       ],
       "support": "renderer"
     },
@@ -448,6 +481,15 @@
       "states": [
         "default",
         "host-qr"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "QRCode",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
       ],
       "support": "renderer"
     },
@@ -579,6 +621,24 @@
       "support": "renderer"
     },
     {
+      "name": "PresetPickerBlock",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ExplainerBlock",
+      "states": [
+        "default",
+        "sections",
+        "task"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "ProfileBlock",
       "states": [
         "default",
@@ -616,6 +676,14 @@
         "devices"
       ],
       "support": "renderer"
+    },
+    {
+      "name": "FeedbackBlock",
+      "states": [
+        "default",
+        "return"
+      ],
+      "support": "alternative"
     },
     {
       "name": "SignalsBlock",
@@ -738,7 +806,8 @@
       "name": "AltimeterChart",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "targets"
       ],
       "support": "alternative"
     },

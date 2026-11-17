@@ -301,6 +301,10 @@
       "title": "Toast"
     },
     {
+      "route": "components/toaster",
+      "title": "Toaster"
+    },
+    {
       "route": "components/progress",
       "title": "Progress"
     },
@@ -325,12 +329,20 @@
       "title": "StatusIndicator"
     },
     {
+      "route": "components/confetti",
+      "title": "Confetti"
+    },
+    {
       "route": "components/number-readout",
       "title": "NumberReadout"
     },
     {
       "route": "components/animated-number-readout",
       "title": "AnimatedNumberReadout"
+    },
+    {
+      "route": "components/number-flow",
+      "title": "NumberFlow"
     },
     {
       "route": "components/usd",
@@ -363,6 +375,10 @@
     {
       "route": "components/wallet-address",
       "title": "WalletAddress"
+    },
+    {
+      "route": "components/qr-code",
+      "title": "QRCode"
     },
     {
       "route": "components/bar-mark",
@@ -421,6 +437,14 @@
       "title": "ConfirmBlock"
     },
     {
+      "route": "components/preset-picker-block",
+      "title": "PresetPickerBlock"
+    },
+    {
+      "route": "components/explainer-block",
+      "title": "ExplainerBlock"
+    },
+    {
       "route": "components/profile-block",
       "title": "ProfileBlock"
     },
@@ -435,6 +459,10 @@
     {
       "route": "components/sound-haptics-block",
       "title": "SoundHapticsBlock"
+    },
+    {
+      "route": "components/feedback-block",
+      "title": "FeedbackBlock"
     },
     {
       "route": "components/signals-block",
@@ -905,6 +933,21 @@
       ]
     },
     {
+      "name": "Toaster",
+      "route": "components/toaster",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
+      ]
+    },
+    {
       "name": "Progress",
       "route": "components/progress",
       "family": "status",
@@ -947,7 +990,9 @@
       "family": "status",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ]
     },
     {
@@ -958,6 +1003,15 @@
       "states": [
         "default",
         "error"
+      ]
+    },
+    {
+      "name": "Confetti",
+      "route": "components/confetti",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
       ]
     },
     {
@@ -980,6 +1034,19 @@
         "default",
         "error",
         "empty"
+      ]
+    },
+    {
+      "name": "NumberFlow",
+      "route": "components/number-flow",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
       ]
     },
     {
@@ -1058,6 +1125,17 @@
       "states": [
         "default",
         "host-qr"
+      ]
+    },
+    {
+      "name": "QRCode",
+      "route": "components/qr-code",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
       ]
     },
     {
@@ -1216,6 +1294,28 @@
       ]
     },
     {
+      "name": "PresetPickerBlock",
+      "route": "components/preset-picker-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ]
+    },
+    {
+      "name": "ExplainerBlock",
+      "route": "components/explainer-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sections",
+        "task"
+      ]
+    },
+    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "family": "blocks",
@@ -1260,6 +1360,16 @@
         "default",
         "interactive",
         "devices"
+      ]
+    },
+    {
+      "name": "FeedbackBlock",
+      "route": "components/feedback-block",
+      "family": "blocks",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "return"
       ]
     },
     {
@@ -1410,7 +1520,8 @@
       "nativeSupport": "alternative",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "targets"
       ]
     },
     {

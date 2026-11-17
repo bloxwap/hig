@@ -101,17 +101,19 @@
         "Badge",
         "Alert/Callout",
         "Toast",
+        "Toaster",
         "Progress",
         "Spinner",
         "Skeleton",
         "EmptyState",
         "Avatar",
-        "StatusIndicator"
+        "StatusIndicator",
+        "Confetti (confetti entry)"
       ],
       "docs": "docs/components/status.md",
       "web": "implemented",
       "native": "implemented with documented alternatives",
-      "remaining": "Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence."
+      "remaining": "Toast is an inline notification stack, no mandatory portal/timer backend; its host owns delivery ordering/persistence. Toaster and toast() are the transient host: Sonner on web, HIG's own Reanimated and Gesture Handler host on native, which has not run on a device. toast.loading and toast.promise are not provided. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence. Confetti is HIG's own (no canvas-confetti): web paints one canvas, native moves one view per piece on a Reanimated clock and builds a star from five border triangles; its look on a GPU-backed display and its look and frame rate on devices are unobserved."
     },
     {
       "slug": "financial-data",
@@ -120,12 +122,14 @@
       "components": [
         "NumberReadout",
         "AnimatedNumberReadout (optional animated-number entry)",
+        "NumberFlow (optional animated-number entry)",
         "Usd",
         "Percent",
         "Metric/Stat",
         "Row",
         "VerticalAddress",
         "WalletAddress",
+        "QRCode",
         "BarMark",
         "BarPnl",
         "AssetBalanceRow",
@@ -170,6 +174,8 @@
         "RewardBlock",
         "AssetsBlock",
         "ConfirmBlock",
+        "PresetPickerBlock",
+        "ExplainerBlock",
         "ProfileBlock",
         "ScreenHeader",
         "SoundHapticsBlock",

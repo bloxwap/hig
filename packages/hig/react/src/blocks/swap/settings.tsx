@@ -27,7 +27,7 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
  const row=(label:string,value:React.ReactNode,target:SwapSettingsView)=><button type='button' className='hig-swap-setting' onClick={()=>onViewChange(target)}><span>{label}</span><span className='hig-swap-setting-value'>{value}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>;
  const slippageRow=row(messages.swapSlippageTitle??en.swapSlippageTitle,<SwapNumber {...percentNumber(slippage)}/>,'slippage'),feesRow=row(messages.swapFees??en.swapFees,feeText,'fees');
  return <div className='hig-swap-settings-view' role='group' aria-label={title}>
-  <SwapViewHeader title={title} titleRef={heading} backLabel={messages.back??en.back} onBack={onBack}/>
+  <SwapViewHeader title={title} titleRef={heading} backLabel={messages.back??en.back} onBack={()=>{setCustom(null);onBack();}}/>
   {view==='settings'&&<div className='hig-swap-settings'>
    {onDenominationChange&&<SegmentedControl label={(messages.swapDenomination??en.swapDenomination)} options={[{value:'usd',label:(messages.swapDollars??en.swapDollars)},{value:'token',label:(messages.swapUnits??en.swapUnits)}]} value={denomination} onValueChange={value=>onDenominationChange(value as SwapDenomination)}/>}
    {onSlippageChange&&slippageRow}
@@ -36,7 +36,7 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
   </div>}
   {view==='slippage'&&onSlippageChange&&<div className='hig-swap-settings hig-swap-presets'>
    <SegmentedControl label={(messages.swapSlippageTitle??en.swapSlippageTitle)} options={slippagePresets.map(value=>({value:String(value),label:formatPercent(value)}))} value={preset===undefined?'':String(preset)} onValueChange={value=>{setCustom(null);onSlippageChange(Number(value));}}/>
-   <Field label={(messages.swapSlippageCustom??en.swapSlippageCustom)}><Input inputMode='decimal' value={custom??String(Number((slippage*100).toFixed(4)))} onChange={event=>{const raw=event.target.value.replace(/[^0-9.]/g,'');setCustom(raw);const percent=Number.parseFloat(raw);if(Number.isFinite(percent)&&percent>=0&&percent<=50)onSlippageChange(percent/100);}}/></Field>
+   <Field label={(messages.swapSlippageCustom??en.swapSlippageCustom)}><Input inputMode='decimal' onBlur={()=>setCustom(null)} value={custom??String(Number((slippage*100).toFixed(4)))} onChange={event=>{const raw=event.target.value;const percent=Number(raw);if(!/^\d*\.?\d*$/.test(raw)||!Number.isFinite(percent)||percent>50)return;setCustom(raw);if(raw!==''&&raw!=='.')onSlippageChange(percent/100);}}/></Field>
   </div>}
   {view==='fees'&&<dl className='hig-swap-fees'>
    {fees?.map(item=><div key={item.label}><dt>{item.label}</dt><dd><SwapNumber {...usdNumber(item.usd)}/></dd></div>)}

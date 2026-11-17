@@ -1,4 +1,5 @@
 import { Copy } from '@bloxwap/icons/native/copy';
+import {useAsyncResult} from './async-result.js';
 import React from 'react';
 import {Pressable,View} from 'react-native';
 import {useColors,useMessages} from './provider.js';
@@ -27,7 +28,8 @@ export function WalletAddressFrame({address,kind,code,size=196,onCopy,announce=t
  const layout=kind??addressKind(address),rows=Math.max(1,Math.ceil(address.length/(layout==='ethereum'?6:4)));
  const body=<><View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:16}}><View style={{width:size,height:size}}>{code}</View><VerticalAddress address={address} kind={layout} rowHeight={size/rows} testID='wallet-address-column'/></View>
   {onCopy?<View {...hidden} style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,marginTop:12}}><CopyIcon color={colors.muted}/><Text style={{color:colors.muted,fontSize:14,lineHeight:21}}>{t.tapToCopy}</Text></View>:null}</>;
- const copy=()=>{if(!onCopy)return;Promise.resolve().then(onCopy).then(()=>{if(announce)show(t.addressCopied);}).catch(()=>{/* The host adapter reports its own failure. */});};
+ const beginCopy=useAsyncResult(address);
+ const copy=()=>{const current=beginCopy();if(!onCopy)return;Promise.resolve().then(onCopy).then(()=>{if(current()&&announce)show(t.addressCopied);}).catch(()=>{/* The host adapter reports its own failure. */});};
  // The toast sits outside the button so its dismiss control is not nested in another control.
  return <View testID={testID} style={{alignItems:'center'}}>
   {onCopy?<Pressable accessibilityRole='button' accessibilityLabel={`${t.copyAddress}: ${address}`} testID='wallet-address-copy' onPress={copy} style={({pressed})=>({opacity:pressed?0.8:1})}>{body}</Pressable>:<View>{body}</View>}

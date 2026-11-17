@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {ALTIMETER_FLOW_PX,easeInOut,gridPhase,labelDecimalsFor,ladderPrices,smoothTrail,tickSpacingFor,trailPoints} from '../packages/hig/chart/src/altimeter-model';
+import {ALTIMETER_FLOW_PX,easeInOut,gridPhase,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,tickSpacingFor,trailPoints} from '../packages/hig/chart/src/altimeter-model';
 
 it('the grid and trail travel 50px a second, and the grid wraps every tile',()=>{
  expect(ALTIMETER_FLOW_PX).toBe(50);
@@ -25,6 +25,43 @@ it('ladder spacing is about one basis point and its labels keep enough digits',(
 it('the price tween eases in and out between its ends',()=>{
  expect(easeInOut(0)).toBe(0);expect(easeInOut(1)).toBe(1);expect(easeInOut(2)).toBe(1);expect(easeInOut(.5)).toBeCloseTo(.5,3);
  expect(easeInOut(.25)).toBeLessThan(.25);expect(easeInOut(.75)).toBeGreaterThan(.75);
+});
+
+it('retargets an unfinished price move without changing its current position',()=>{
+ const tween=priceTween();
+ tween.update(100,1000);tween.update(100.04,1400);
+ const before=tween.update(100.04,1550);
+ expect(before).toBeCloseTo(100.02);
+ expect(tween.update(99.98,1550)).toBe(before);
+ let previous=before;
+ for(let now=1551;now<=1850;now++){
+  const value=tween.update(99.98,now);
+  expect(value).toBeLessThanOrEqual(previous+1e-10);expect(value).toBeGreaterThanOrEqual(99.98-1e-10);
+  previous=value;
+ }
+ expect(previous).toBeCloseTo(99.98);
+});
+
+it('carries forward velocity through streaming updates instead of stopping on every packet',()=>{
+ const tween=priceTween();tween.update(100,0);tween.update(100.04,10);
+ const before=tween.update(100.04,159.99),at=tween.update(100.04,160);
+ expect(tween.update(100.08,160)).toBe(at);
+ const after=tween.update(100.08,160.01);
+ expect((after-at)/.01).toBeCloseTo((at-before)/.01,7);
+});
+
+it('limits velocity toward nearer prices and resets after missing data or reduced motion',()=>{
+ const tween=priceTween();tween.update(100,0);tween.update(100.04,10);
+ const at=tween.update(100.04,160),target=at+.001;
+ expect(tween.update(target,160)).toBe(at);
+ let previous=at;
+ for(let now=161;now<=460;now++){
+  const value=tween.update(target,now);
+  expect(value).toBeGreaterThanOrEqual(previous-1e-10);expect(value).toBeLessThanOrEqual(target+1e-10);
+  previous=value;
+ }
+ expect(tween.update(200,500,true)).toBe(200);
+ tween.reset();expect(tween.update(50,516)).toBe(50);
 });
 
 it('the smoothed trail passes through every sample and never overshoots a price',()=>{

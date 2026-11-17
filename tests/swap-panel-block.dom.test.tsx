@@ -31,7 +31,7 @@ const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;f
 const flowing=(element:Element)=>element.querySelectorAll('.hig-animated-number-old').length;
 describe('swap helpers',()=>{
  it('names the action from the pair',()=>{
-  expect(swapAction(null,eth)).toBe('send');expect(swapAction(eth,eth)).toBe('send');expect(swapAction(usdc,baseUsdc)).toBe('send');
+  expect(swapAction(null,eth)).toBe('send');expect(swapAction(eth,eth)).toBe('send');expect(swapAction(usdc,baseUsdc)).toBe('bridge');
   expect(swapAction(eth,usdc)).toBe('swap');expect(swapAction(eth,baseUsdc)).toBe('bridge');
  });
  it('edits an amount string one key at a time and caps dollars at two decimals',()=>{
@@ -70,8 +70,8 @@ describe('SwapPanelBlock',()=>{
   const pad=within(screen.getByRole('group',{name:'Keypad'}));
   fireEvent.click(pad.getByRole('button',{name:'7'}));fireEvent.click(pad.getByRole('button',{name:'5'}));fireEvent.click(pad.getByRole('button',{name:'Delete'}));
   expect(reading(amount())).toBe('$7');
-  fireEvent.paste(amount(),{clipboardData:{getData:()=>'1,234.567'}});expect(reading(amount())).toBe('$1234.57');
-  fireEvent.paste(amount(),{clipboardData:{getData:()=>'not a number'}});expect(reading(amount())).toBe('$1234.57');
+  fireEvent.paste(amount(),{clipboardData:{getData:()=>'1,234.567'}});expect(reading(amount())).toBe('$1234.56');
+  fireEvent.paste(amount(),{clipboardData:{getData:()=>'not a number'}});expect(reading(amount())).toBe('$1234.56');
  });
  it('pushes the token picker as a view: search, chain filter, hot section and keyboard',async()=>{
   const from=vi.fn();
@@ -98,7 +98,7 @@ describe('SwapPanelBlock',()=>{
   expect(screen.getByText('Base')).toBeTruthy();expect(screen.queryByText('From…')).toBeNull();
  });
  it('labels send, swap, bridge and an amount over the balance',()=>{
-  const view=render(<Host initialFrom={eth} initialTo={baseEth}/>);type('5');expect(action().textContent).toBe('Send');view.unmount();
+  const view=render(<Host initialFrom={eth} initialTo={baseEth}/>);type('5');expect(action().textContent).toBe('Bridge');view.unmount();
   render(<Host initialFrom={eth} initialTo={baseUsdc}/>);type('5');expect(action().textContent).toBe('Bridge');
   type('0 0 0');expect(action().textContent).toBe('Insufficient ETH');expect(action()).toHaveProperty('disabled',true);
  });
@@ -383,6 +383,31 @@ describe('SwapPanelBlock host control',()=>{
   expect(action().textContent).toBe('Deposit');expect(action()).toHaveProperty('disabled',true);
   view.unmount();render(<Host initialFrom={account} destination={{title:'Burn'}} amount='5' actionLabel='Burn' actionIntent='destructive'/>);
   expect(action().getAttribute('data-intent')).toBe('destructive');expect(action()).toHaveProperty('disabled',false);
+ });
+ it('keeps the action named while submitting with the amount cleared: the burn busy with no amount',()=>{
+  const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
+  let view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' actionIntent='destructive' submitting/>);
+  // The busy text after the name is the Button's own, visually hidden.
+  expect(action().textContent).toBe('Burn · Working');expect(action().getAttribute('aria-busy')).toBe('true');
+  view.unmount();view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submitting submittingLabel='Burning…'/>);
+  expect(action().textContent).toBe('Burning… · Working');
+  // Not submitting, the panel's own checks speak as before.
+  view.unmount();render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submittingLabel='Burning…'/>);
+  expect(action().textContent).toBe('Enter an amount');
+ });
+ it('keeps a held action status while submitting, and leaves the amount alone until the submit settles',()=>{
+  const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
+  let view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submitting actionDisabled actionStatus='Signing…'/>);
+  expect(action().textContent).toBe('Signing… · Working');
+  view.unmount();view=render(<Host initialFrom={account} destination={{title:'Burn'}} amount='0' actionLabel='Burn' submitting submittingLabel='Burning…' actionDisabled actionStatus='Signing…'/>);
+  expect(action().textContent).toBe('Burning… · Working');
+  const onAmountChange=vi.fn();
+  view.unmount();view=render(<Host initialFrom={eth} initialTo={usdc} keypad='always' onAmountChange={onAmountChange} submitting/>);
+  const pad=within(screen.getByRole('group',{name:'Keypad'}));
+  fireEvent.click(pad.getByRole('button',{name:'7'}));type('5');fireEvent.paste(amount(),{clipboardData:{getData:()=>'12'}});fireEvent.click(screen.getByRole('button',{name:'Max'}));
+  expect(reading(amount())).toBe('$0');expect(onAmountChange).not.toHaveBeenCalled();
+  view.rerender(<Host initialFrom={eth} initialTo={usdc} keypad='always' onAmountChange={onAmountChange}/>);
+  fireEvent.click(pad.getByRole('button',{name:'7'}));expect(reading(amount())).toBe('$7');
  });
  it('caps typed decimals per token and refuses keys past the balance when asked',()=>{
   expect(applyAmountKey('1.123456','7','token',6)).toBe('1.123456');expect(applyAmountKey('1.123456','7','token')).toBe('1.1234567');expect(applyAmountKey('1.12','3','usd',6)).toBe('1.12');

@@ -1,19 +1,22 @@
 "use client";
 import { Check } from '@bloxwap/icons/react/check';
 import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React,{useEffect,useId,useLayoutEffect,useRef,useState} from 'react';
 import {useControllable,useHIG} from './provider.js';
 import type {ChoicesProps} from './selection.js';
 
 /** A select-only combobox. DOM focus stays on the trigger while its active option is announced. */
 export function Select({label,options,value,defaultValue,disabled,onValueChange}:ChoicesProps){
+ assertUniqueKeys(options,option=>option.value,'Select');const controlled=useRef(value!==undefined).current;
  const id=useId();const {direction,locale}=useHIG();
  const [current,setCurrent]=useControllable(value,defaultValue??options.find(option=>!option.disabled)?.value??'',onValueChange);
  const [open,setOpen]=useState(false);const [active,setActive]=useState(-1);
  const trigger=useRef<HTMLButtonElement>(null);const list=useRef<HTMLDivElement>(null);
  const search=useRef({text:'',time:0});
  const match=options.findIndex(option=>option.value===current);
- const selected=match>=0?match:options.findIndex(option=>!option.disabled);
+ const selected=match>=0&&!options[match].disabled?match:controlled?-1:options.findIndex(option=>!option.disabled);
+ useEffect(()=>{if(!controlled&&selected>=0&&current!==options[selected].value)setCurrent(options[selected].value);},[controlled,current,selected,options]);
  const expanded=open&&!disabled&&options.length>0;
  const activeOption=active>=0&&!options[active]?.disabled?options[active]:undefined;
  const optionId=(index:number)=>`${id}-option-${index}`;

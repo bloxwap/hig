@@ -7,7 +7,7 @@ import {Switch} from '../selection.js';
 import {ListGroup,ListRow} from '../list-group.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {figureProps,type Figure} from '../figure.js';
-import {HeaderClose,ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
+import {HeaderClose,ScreenHeader,type HeaderCloseProps,type ScreenHeaderControlProps} from './screen-header.js';
 /** A number the host supplies as a number so it updates place by place: `{value:0.53,options:{style:'currency',currency:'USD'}}`, or Leverage as `{value:40,suffix:'×'}`. `null` reads as unknown. `formattedValue` is the host's own text for it, still moving place by place. */
 export type PositionBlockFigure=Figure;
 /** One line of the summary: Notional, Fee, Liquidation. `value` is host text (`2% of profit`) or a live figure. `tone` colours the value; the default is the text colour. */
@@ -57,8 +57,8 @@ export interface PositionBlockProps extends Omit<React.HTMLAttributes<HTMLElemen
  stickyHeader?:boolean;
  /** Attributes for the header's Back `<button>`. */
  backProps?:ScreenHeaderControlProps;
- /** Attributes for the header's Close `<button>`. */
- closeProps?:ScreenHeaderControlProps;
+ /** Attributes for the header's Close `<button>`; `disabled` draws Close unavailable. */
+ closeProps?:HeaderCloseProps;
 }
 const figure=(value:string|PositionBlockFigure)=>typeof value==='string'?value:<AnimatedNumberReadout {...figureProps(value)}/>;
 /** A press anywhere on a switch row that is not on a control toggles the row's switch, through the switch itself so its change and feedback run once. */

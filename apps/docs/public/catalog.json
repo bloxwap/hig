@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "components": [
     {
       "name": "Button",
@@ -412,6 +412,21 @@
       ]
     },
     {
+      "name": "Toaster",
+      "route": "components/toaster",
+      "entry": "toast",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
+      ]
+    },
+    {
       "name": "Progress",
       "route": "components/progress",
       "entry": "status",
@@ -451,10 +466,12 @@
     {
       "name": "Avatar",
       "route": "components/avatar",
-      "entry": "status",
+      "entry": "avatar",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ]
     },
     {
@@ -465,6 +482,15 @@
       "states": [
         "default",
         "error"
+      ]
+    },
+    {
+      "name": "Confetti",
+      "route": "components/confetti",
+      "entry": "confetti",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
       ]
     },
     {
@@ -487,6 +513,19 @@
         "default",
         "error",
         "empty"
+      ]
+    },
+    {
+      "name": "NumberFlow",
+      "route": "components/number-flow",
+      "entry": "animated-number",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
       ]
     },
     {
@@ -565,6 +604,17 @@
       "states": [
         "default",
         "host-qr"
+      ]
+    },
+    {
+      "name": "QRCode",
+      "route": "components/qr-code",
+      "entry": "qr-code",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
       ]
     },
     {
@@ -723,6 +773,28 @@
       ]
     },
     {
+      "name": "PresetPickerBlock",
+      "route": "components/preset-picker-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "custom",
+        "leverage"
+      ]
+    },
+    {
+      "name": "ExplainerBlock",
+      "route": "components/explainer-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "sections",
+        "task"
+      ]
+    },
+    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "entry": "blocks",
@@ -767,6 +839,16 @@
         "default",
         "interactive",
         "devices"
+      ]
+    },
+    {
+      "name": "FeedbackBlock",
+      "route": "components/feedback-block",
+      "entry": "overlay",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "return"
       ]
     },
     {
@@ -917,7 +999,8 @@
       "nativeSupport": "alternative",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "targets"
       ]
     },
     {

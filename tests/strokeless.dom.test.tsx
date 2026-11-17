@@ -46,9 +46,10 @@ describe('fill and space instead of strokes',()=>{
   expect(css).not.toMatch(/\.hig-(range|progress|switch|spinner|separator)[^{]*\{[^}]*var\(--hig-(border|nested)\)/);
  });
  it('draws an unavailable button as a neutral well and keeps the intent colour while busy',()=>{
-  expect(rule('.hig-button:disabled')).not.toContain('opacity');
-  expect(rule(".hig-button:disabled:not([aria-busy='true'])")).toBe(' background:var(--hig-fill);color:var(--hig-muted); ');
-  expect(rule(".hig-button[data-intent='ghost']:disabled:not([aria-busy='true'])")).toContain('background:transparent;color:var(--hig-faint)');
+  // A Button with href is an anchor, disabled through aria-disabled, so each rule matches both.
+  expect(rule(".hig-button:is(:disabled,[aria-disabled='true'])")).not.toContain('opacity');
+  expect(rule(".hig-button:is(:disabled,[aria-disabled='true']):not([aria-busy='true'])")).toBe(' background:var(--hig-fill);color:var(--hig-muted);box-shadow:none; ');
+  expect(rule(".hig-button[data-intent='ghost']:is(:disabled,[aria-disabled='true']):not([aria-busy='true'])")).toContain('background:transparent;color:var(--hig-faint)');
   expect(rule(".hig-button[aria-busy='true']")).toContain('opacity:.7');
   expect(css).not.toContain('.hig-swap-actions > .hig-button:disabled');
  });

@@ -149,7 +149,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
   {presets.length>0&&<PresetGroup className='hig-target-presets' label={labels.presets??labels.title} selectedIntent={intent} options={targetPresets(presets).map(({value:preset,disabled})=>({value:preset,disabled,label:formatNumber(preset,locale,present(targetFormat(unit,priceOptions,preset)))}))} value={custom===null?value:null} onValueChange={next=>onValueChange?.(next)}/>}
   <div className='hig-target-actions'>
    {onCancel&&<Button fullWidth intent='secondary' onClick={onCancel}>{labels.cancel??messages.cancel??en.cancel}</Button>}
-   <Button fullWidth intent={intent} disabled={submitDisabled??value===null} busy={busy} onClick={onSubmit}>{labels.submit}</Button>
+   <Button fullWidth intent={intent} disabled={!!submitDisabled||!known(value)||(unit==='price'&&value<=0)} busy={busy} onClick={onSubmit}>{labels.submit}</Button>
   </div>
  </section>;
 }

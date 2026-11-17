@@ -1,7 +1,7 @@
 import { Check as SharedCheck } from '@bloxwap/icons/native/check';
 import { ArrowUpRight } from '@bloxwap/icons/native/arrow-up-right';
 import React,{forwardRef,useState} from 'react';
-import {ActivityIndicator,Platform,Pressable,View,type PressableProps,type ViewProps,type ViewStyle} from 'react-native';
+import {ActivityIndicator,Platform,Pressable,Text as NativeText,View,type PressableProps,type ViewProps,type ViewStyle} from 'react-native';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
@@ -29,6 +29,9 @@ export interface ListGroupProps {
  testID?:string;
 }
 const shown=(node:React.ReactNode)=>node!=null&&node!==false&&node!=='';
+const bare=(node:React.ReactNode)=>typeof node==='string'||typeof node==='number';
+/** A fragment or array with a bare string or number among its children (through nested fragments and arrays). */
+const loose=(node:React.ReactNode):boolean=>Array.isArray(node)?node.some(child=>bare(child)||loose(child)):React.isValidElement(node)&&node.type===React.Fragment&&loose(([] as React.ReactNode[]).concat((node.props as {children?:React.ReactNode}).children));
 const actionSlop={top:12,bottom:12,left:8,right:8};
 /** A grouped list for menus and settings: an optional heading over rows that share one rounded container. */
 export function ListGroup({title,titleAccessory,action,intro,children,testID}:ListGroupProps){
@@ -62,8 +65,10 @@ export function ListGroup({title,titleAccessory,action,intro,children,testID}:Li
 }
 export interface ListRowProps extends Omit<PressableProps,'children'|'style'|'onPress'|'disabled'|'role'|'accessibilityRole'|'accessibilityLabel'|'accessibilityState'|'aria-label'|'aria-checked'|'aria-disabled'|'aria-busy'|'aria-selected'> {
  label:string;
- /** A muted second line under the label, such as a subtitle or an address. The row grows to fit it, and it is read with the label (as the hint of a switch row). */
+ /** A muted second line under the label, such as a subtitle or an address. The row grows to fit it, and it is read with the label (as the hint of a switch row). A string, a number, one Text element, or a fragment or array with bare text among its children (`<>Ends in <Text>3m</Text></>`) is drawn in the muted Text; any other node (several Text elements, a row with an icon, a live figure) is drawn as given in a View, styled by the host. A component of the host's own that renders bare strings must be wrapped in a Text, as anywhere in a View. Its text is read as concatenated, so give such a row `accessibilityLabel`. */
  description?:React.ReactNode;
+ /** What the row reads as, in place of its label, description and value: Long BTC, 10×, 0.5 BTC, up $12. A pressable row keeps its busy text after it, a switch row is named by it (its description and value stay its hint), and a static row becomes one element named by it (with a `trailing` control, the label, description and value become that element and the control stays its own target). */
+ accessibilityLabel?:string;
  /** Colours the label: `destructive` for an action that deletes or ends something, `muted` for one that is done or inactive. */
  tone?:'destructive'|'muted';
  /** Artwork before the label, such as an icon. Decorative: the label names the row. */
@@ -100,29 +105,39 @@ function Check({color,testID}:{color:string;testID?:string}){return <SharedCheck
 /** An arrow pointing up and away, for a row that opens something outside the app; it mirrors in right-to-left layouts. */
 function External({color,rtl,testID}:{color:string;rtl:boolean;testID?:string}){return <ArrowUpRight size={20} color={color} testID={testID} style={{transform:rtl?[{scaleX:-1}]:undefined}}/>;}
 /** One row of a ListGroup: the label leads; a value, icons, a badge or a control trail. With `onSelect` the whole row is one button and shows a disclosure chevron; with `checked` or `onCheckedChange` the whole row is a switch; otherwise the row is static, so a control in `trailing` is its only target. Other Pressable props, such as `android_disableSound`, `hitSlop` or `onLongPress`, reach the row, and the ref reaches its view. */
-export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,ListRowProps>(function ListRow({label,description,tone,leading,value,valueLabel,valueTone,trailing,onSelect,disabled,selected,busy,busyLabel,disclosure,checked,defaultChecked,onCheckedChange,testID,...rest},ref){
+export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,ListRowProps>(function ListRow({label,description,accessibilityLabel,tone,leading,value,valueLabel,valueTone,trailing,onSelect,disabled,selected,busy,busyLabel,disclosure,checked,defaultChecked,onCheckedChange,testID,...rest},ref){
  const colors=useColors(),fills=useFills(),{direction,messages}=useHIG();const [internal,setInternal]=useState(!!defaultChecked);
  const toggles=!onSelect&&(checked!==undefined||defaultChecked!==undefined||onCheckedChange!=null);
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'flex-start',gap:12,minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:pressed?fills.raised:fills.well,opacity:disabled?0.5:1});
  const text=typeof value==='string'||typeof value==='number';
  const described=shown(description),about=described?plainText(description):'';
- const reading=[label,about||null,text?String(value):valueLabel??null].filter(Boolean).join(', ');
+ const reading=accessibilityLabel??[label,about||null,text?String(value):valueLabel??null].filter(Boolean).join(', ');
  const busyText=busyLabel??messages.busy??en.busy;
  const spoken=busy&&busyText&&Platform.OS!=='android'?`${reading} · ${busyText}`:reading;
  // Everything aligns to the first line of the label, so a trailing switch stays at the top when the label wraps.
  const first:ViewStyle={minHeight:40,justifyContent:'center'};
  // A static row with a state is one element, so the state is read; a trailing control keeps the row open so the control stays its own target.
- const announced=!onSelect&&!toggles&&(selected!==undefined||!!busy)&&trailing==null;
- const quiet=onSelect||toggles||announced?hidden:{};
+ // A host name on a static row: with no trailing control the row is one element; with one, the text is one element beside it.
+ const named=!onSelect&&!toggles&&accessibilityLabel!==undefined;
+ const announced=!onSelect&&!toggles&&(selected!==undefined||!!busy||named)&&trailing==null;
+ const grouped=named&&trailing!=null;
+ const quiet=onSelect||toggles||announced?hidden:{},textQuiet=grouped?hidden:quiet;
  const lead=leading==null?null:<View {...hidden} style={first}>{leading}</View>;
  const labelColor=tone==='destructive'?colors.negative:tone==='muted'?colors.muted:colors.text;
+ const descriptionStyle={fontSize:14,lineHeight:20,color:colors.muted};
+ // Text, one Text element, or a fragment or array holding bare text (`<>Ends in <Text>3m</Text></>`) keeps the muted line, since a bare string cannot sit in a View; richer host content is laid out as given.
+ const inline=bare(description)||loose(description)||(React.isValidElement(description)&&(description.type===Text||description.type===NativeText));
+ const descriptionTestID=testID?`${testID}-description`:undefined;
+ const nameBox={flex:1,flexShrink:1,minWidth:0,paddingVertical:8} as const;
+ const nameRole=grouped?{accessible:true,accessibilityLabel}:quiet;
  const name=described
-  ?<View {...quiet} style={{flex:1,flexShrink:1,minWidth:0,paddingVertical:8}}>
+  ?<View {...nameRole} style={nameBox}>
    <Text style={{fontSize:16,lineHeight:24,color:labelColor}}>{label}</Text>
-   <Text testID={testID?`${testID}-description`:undefined} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{description}</Text>
+   {inline?<Text testID={descriptionTestID} style={descriptionStyle}>{description}</Text>:<View testID={descriptionTestID} style={{minWidth:0}}>{description}</View>}
   </View>
-  :<Text {...quiet} style={{flex:1,flexShrink:1,minWidth:0,paddingVertical:8,fontSize:16,lineHeight:24,color:labelColor}}>{label}</Text>;
- const amount=value==null||value===false?null:text?<Text {...quiet} testID={testID?`${testID}-value`:undefined} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',paddingVertical:8,fontSize:16,lineHeight:24,color:colors[valueTone??'muted'],textAlign:'right'}}>{value}</Text>:<View {...(!onSelect&&!toggles&&!announced&&valueLabel?{accessible:true,accessibilityLabel:valueLabel}:{})} style={first}>{value}</View>;
+  :grouped?<View {...nameRole} style={nameBox}><Text style={{fontSize:16,lineHeight:24,color:labelColor}}>{label}</Text></View>
+  :<Text {...textQuiet} style={{...nameBox,fontSize:16,lineHeight:24,color:labelColor}}>{label}</Text>;
+ const amount=value==null||value===false?null:text?<Text {...textQuiet} testID={testID?`${testID}-value`:undefined} numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',paddingVertical:8,fontSize:16,lineHeight:24,color:colors[valueTone??'muted'],textAlign:'right'}}>{value}</Text>:<View {...(grouped?hidden:!onSelect&&!toggles&&!announced&&valueLabel?{accessible:true,accessibilityLabel:valueLabel}:{})} style={first}>{value}</View>;
  const extra=trailing==null?null:<View pointerEvents={onSelect||toggles?'none':'auto'} {...quiet} style={{flexDirection:'row',alignItems:'center',gap:8,minHeight:40}}>{trailing}</View>;
  const chevron=<View testID={testID?`${testID}-chevron`:undefined} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>;
  const glyphKind=disclosure??(selected!==undefined?'none':'chevron');
@@ -134,7 +149,7 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
   const on=checked??internal;
   const hint=[about||null,text?String(value):valueLabel??null].filter(Boolean).join(', ')||undefined;
   // The row holds an uncontrolled state itself so the drawn track follows it; SwitchRow stays controlled and emits feedback once.
-  return <SwitchRow {...rest} ref={ref} testID={testID} label={label} accessibilityHint={rest.accessibilityHint??hint} accessibilityState={busy?{busy:true}:undefined} checked={on} disabled={disabled||busy} onCheckedChange={next=>{if(checked===undefined)setInternal(next);onCheckedChange?.(next);}} style={row(false)}>
+  return <SwitchRow {...rest} ref={ref} testID={testID} label={accessibilityLabel??label} accessibilityHint={rest.accessibilityHint??hint} accessibilityState={busy?{busy:true}:undefined} checked={on} disabled={disabled||busy} onCheckedChange={next=>{if(checked===undefined)setInternal(next);onCheckedChange?.(next);}} style={row(false)}>
    <SwitchRowContent first={first} lead={lead} name={name} amount={amount} extra={extra} checked={on} testID={testID}/>
   </SwitchRow>;
  }

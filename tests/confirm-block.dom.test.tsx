@@ -3,6 +3,7 @@ import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {ConfirmBlock,confirmAddressRows} from '../packages/hig/react/src/blocks/confirm-block';
 import * as blocks from '../packages/hig/react/src/blocks';
@@ -71,5 +72,72 @@ describe('ConfirmBlock',()=>{
   render(<HIGProvider messages={{confirmSend:'Confirmer',sendTo:'À',sendNetwork:'Réseau',sendWarningTitle:'Vérifiez.',sendWarning:(symbol,network)=>`${symbol} sur ${network}`,cancel:'Annuler'}}><ConfirmBlock {...base} onCancel={()=>{}}/></HIGProvider>);
   expect(screen.getByRole('heading',{name:'Confirmer'})).toBeTruthy();expect(rows().map(row=>row.querySelector('dt')!.textContent)).toEqual(['À','Réseau']);
   expect(screen.getByRole('note').textContent).toBe('Vérifiez.HYPE sur HyperEVM');expect(screen.getByRole('button',{name:'Annuler'})).toBeTruthy();
+ });
+ it('marks its details one line only with oneLineDetails',()=>{
+  const view=render(<ConfirmBlock {...base} details={[{label:'Network fee',value:'0.0001 HYPE'}]}/>);
+  expect(document.querySelector('.hig-confirm-details')!.hasAttribute('data-one-line')).toBe(false);
+  view.rerender(<ConfirmBlock {...base} details={[{label:'Network fee',value:'0.0001 HYPE'}]} oneLineDetails/>);
+  expect(document.querySelector('.hig-confirm-details')!.hasAttribute('data-one-line')).toBe(true);expect(rows()).toHaveLength(3);
+  expect(rows()[0].querySelector('dd .hig-sr-only')!.textContent).toBe(address);expect(rows()[2].querySelector('dd')!.textContent).toBe('0.0001 HYPE');
+ });
+ it('reads the amount with amountLabel and draws a notice between the warning and the actions',()=>{
+  const view=render(<ConfirmBlock {...base}/>);
+  expect(document.querySelector('.hig-confirm-amount [aria-label]')).toBeNull();expect(screen.queryByRole('alert')).toBeNull();
+  view.rerender(<ConfirmBlock {...base} amountLabel='Amount' notice={<div role='alert'>Fee unavailable</div>}/>);
+  expect(document.querySelector('.hig-confirm-amount [aria-label]')!.getAttribute('aria-label')).toBe('Amount: 2.5');
+  const order=Array.from(document.querySelector('.hig-confirm')!.children);
+  expect(order.indexOf(screen.getByRole('alert'))).toBe(order.indexOf(screen.getByRole('note'))+1);expect(order[order.indexOf(screen.getByRole('alert'))+1].className).toBe('hig-confirm-actions');
+ });
+ it('keeps a node value inline under oneLineDetails and reads its valueLabel',()=>{
+  render(<ConfirmBlock {...base} details={[{label:'Network fee',value:<b>0.0001 HYPE ($0.01)</b>,valueLabel:'0.0001 HYPE'}]} oneLineDetails/>);
+  const dd=rows()[2].querySelector('dd')!;
+  expect(dd.querySelector('.hig-sr-only')!.textContent).toBe('0.0001 HYPE');expect(dd.querySelector('[aria-hidden] b')!.textContent).toBe('0.0001 HYPE ($0.01)');
+ });
+ it('confirms something that is not a send: no amount, lines or warning, the body and points, a destructive Confirm and a tertiary action',async()=>{
+  const confirm=vi.fn(),cancel=vi.fn(),anyway=vi.fn();
+  const {rerender}=render(<HIGProvider><ConfirmBlock title='Delete account?' confirmLabel='Delete' confirmIntent='destructive' onConfirm={confirm} onCancel={cancel} points={['Keys are erased','Profile is removed']} tertiaryAction={{label:'Delete anyway',tone:'destructive',onSelect:anyway}}><p>This cannot be undone.</p></ConfirmBlock></HIGProvider>);
+  expect(screen.getByRole('heading',{name:'Delete account?'})).toBeTruthy();
+  expect(document.querySelector('.hig-confirm-amount')).toBeNull();expect(document.querySelector('.hig-confirm-details')).toBeNull();expect(screen.queryByRole('note')).toBeNull();
+  const body=document.querySelector('.hig-confirm-body')!;expect(body.querySelector('p')!.textContent).toBe('This cannot be undone.');
+  expect([...body.querySelectorAll('.hig-confirm-points > li')].map(li=>li.textContent)).toEqual(['Keys are erased','Profile is removed']);
+  const actions=[...document.querySelectorAll<HTMLButtonElement>('.hig-confirm-actions > button')];
+  expect(actions.map(button=>button.textContent)).toEqual(['Cancel','Delete']);expect(actions[1].dataset.intent).toBe('destructive');
+  const tertiary=screen.getByRole('button',{name:'Delete anyway'});expect(tertiary.dataset.intent).toBe('ghost');expect(tertiary.dataset.tone).toBe('destructive');expect(tertiary.closest('.hig-confirm-actions')).toBeNull();
+  await userEvent.click(tertiary);expect(anyway).toHaveBeenCalledTimes(1);
+  await userEvent.click(actions[1]);expect(confirm).toHaveBeenCalledTimes(1);
+  // Busy holds the tertiary action with Cancel.
+  rerender(<HIGProvider><ConfirmBlock title='Delete account?' busy onConfirm={confirm} onCancel={cancel} tertiaryAction={{label:'Delete anyway',onSelect:anyway}}/></HIGProvider>);
+  expect((screen.getByRole('button',{name:'Delete anyway'}) as HTMLButtonElement).disabled).toBe(true);expect((screen.getByRole('button',{name:'Cancel'}) as HTMLButtonElement).disabled).toBe(true);
+  // cancelWhileBusy keeps Back, Cancel and the tertiary action while the confirm spins.
+  rerender(<HIGProvider><ConfirmBlock title='Enable' busy cancelWhileBusy onBack={()=>{}} onConfirm={confirm} onCancel={cancel} tertiaryAction={{label:'Delete anyway',onSelect:anyway}}/></HIGProvider>);
+  expect((screen.getByRole('button',{name:'Cancel'}) as HTMLButtonElement).disabled).toBe(false);expect((screen.getByRole('button',{name:'Delete anyway'}) as HTMLButtonElement).disabled).toBe(false);
+  expect((screen.getByRole('button',{name:'Back'}) as HTMLButtonElement).disabled).toBe(false);expect(document.querySelector('.hig-confirm-actions > button[aria-busy="true"]')).toBeTruthy();
+  // Plain busy holds Back too.
+  rerender(<HIGProvider><ConfirmBlock title='Close' busy onBack={()=>{}} onConfirm={confirm} onCancel={cancel}/></HIGProvider>);
+  expect((screen.getByRole('button',{name:'Back'}) as HTMLButtonElement).disabled).toBe(true);
+  // backWhileBusy frees Back alone: Cancel and the tertiary action stay held.
+  rerender(<HIGProvider><ConfirmBlock title='Close' busy backWhileBusy onBack={()=>{}} onConfirm={confirm} onCancel={cancel} tertiaryAction={{label:'Delete anyway',onSelect:anyway}}/></HIGProvider>);
+  expect((screen.getByRole('button',{name:'Back'}) as HTMLButtonElement).disabled).toBe(false);
+  expect((screen.getByRole('button',{name:'Cancel'}) as HTMLButtonElement).disabled).toBe(true);expect((screen.getByRole('button',{name:'Delete anyway'}) as HTMLButtonElement).disabled).toBe(true);
+  // An amount without an address still draws the headline, but no default warning.
+  rerender(<HIGProvider><ConfirmBlock title='Close all' amount={12.5} onConfirm={confirm}/></HIGProvider>);
+  expect(document.querySelector('.hig-confirm-amount .hig-animated-number-visual')!.textContent).toBe('12.5');expect(document.querySelector('.hig-confirm-symbol')).toBeNull();expect(screen.queryByRole('note')).toBeNull();
+ });
+ it('takes a data-testid per action, attributes for Back, and cancelDisabled holds Cancel without busy',async()=>{
+  const exported=vi.fn(),withdraw=vi.fn(),anyway=vi.fn(),back=vi.fn();
+  const props={title:'Move your funds first',confirmLabel:'Withdraw first',cancelLabel:'Export account',onConfirm:withdraw,onCancel:exported,confirmTestID:'delete-account-withdraw',cancelTestID:'delete-account-export',tertiaryAction:{label:'Delete anyway',onSelect:anyway,testID:'delete-account-anyway'},onBack:back,backProps:{'data-testid':'delete-account-back'} as React.ButtonHTMLAttributes<HTMLButtonElement>};
+  const {rerender}=render(<ConfirmBlock {...props}/>);
+  await userEvent.click(screen.getByTestId('delete-account-withdraw'));await userEvent.click(screen.getByTestId('delete-account-export'));await userEvent.click(screen.getByTestId('delete-account-anyway'));await userEvent.click(screen.getByTestId('delete-account-back'));
+  expect([withdraw,exported,anyway,back].map(fn=>fn.mock.calls.length)).toEqual([1,1,1,1]);
+  expect(screen.getByTestId('delete-account-withdraw').textContent).toBe('Withdraw first');expect(screen.getByTestId('delete-account-back').getAttribute('aria-label')).toBe('Back');
+  rerender(<ConfirmBlock {...props} cancelDisabled confirmDisabled/>);
+  expect((screen.getByTestId('delete-account-export') as HTMLButtonElement).disabled).toBe(true);expect((screen.getByTestId('delete-account-anyway') as HTMLButtonElement).disabled).toBe(false);
+  // Without them nothing carries a test ID.
+  rerender(<ConfirmBlock title='Sign out' onConfirm={()=>{}} onCancel={()=>{}}/>);expect(document.querySelector('[data-testid]')).toBeNull();
+ });
+ it('draws confirmIntent warning as a Button in the warning intent, whose stylesheet fill is the warning role',()=>{
+  render(<HIGProvider><ConfirmBlock title='Send anyway?' confirmLabel='Send anyway' confirmIntent='warning' warning='This address is new to you.' onConfirm={()=>{}} onCancel={()=>{}}/></HIGProvider>);
+  expect(screen.getByRole('button',{name:'Send anyway'}).dataset.intent).toBe('warning');
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-button[data-intent='warning'] { --hig-glow:var(--hig-warning);background:var(--hig-warning);color:var(--hig-background); }");
  });
 });

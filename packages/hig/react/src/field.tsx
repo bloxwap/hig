@@ -1,19 +1,25 @@
 "use client";
 import { Search } from '@bloxwap/icons/react/search';
 import { X } from '@bloxwap/icons/react/x';
-import React,{createContext,useContext,useId,useRef,forwardRef} from 'react';
+import React,{createContext,useContext,useId,useRef,useCallback,useEffect,forwardRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from './provider.js';
-const Context=createContext<{id:string;description?:string;invalid?:boolean;disabled?:boolean;required?:boolean}>({id:''});
+const Context=createContext<{id:string;description?:string;invalid?:boolean;disabled?:boolean;required?:boolean;register?:()=>()=>void}>({id:''});
 export interface FieldProps {id?:string;label:string;description?:string;/** `positive` draws the description as a success line, such as a name that is available, and announces it when it changes. The words carry the meaning; the colour repeats it. */descriptionTone?:'muted'|'positive';error?:string;required?:boolean;disabled?:boolean}
 export function Field({id:provided,label,description,descriptionTone,error,required,disabled,children}:React.PropsWithChildren<FieldProps>){
  const {messages}=useHIG();const generated=useId();const id=provided??generated;const ids=[description&&`${id}-help`,error&&`${id}-error`].filter(Boolean).join(' ')||undefined;
+ const controls=useRef(0);const register=useCallback(()=>{if(++controls.current>1)throw new Error('Field requires exactly one control.');return()=>{controls.current--;};},[]);
  const positive=descriptionTone==='positive';
- return <Context.Provider value={{id,description:ids,invalid:!!error,disabled,required}}><div className='hig-field'><label htmlFor={id}>{label}{required?` ${messages.required??en.required}`:''}</label>{children}{description&&<p id={`${id}-help`} data-tone={positive?'positive':undefined} aria-live={positive?'polite':undefined}>{description}</p>}{error&&<p id={`${id}-error`} role='alert'>{error}</p>}</div></Context.Provider>;
+ return <Context.Provider value={{id,description:ids,invalid:!!error,disabled,required,register}}><div className='hig-field'><label htmlFor={id}>{label}{required?` ${messages.required??en.required}`:''}</label>{children}{description&&<p id={`${id}-help`} data-tone={positive?'positive':undefined} aria-live={positive?'polite':undefined}>{description}</p>}{error&&<p id={`${id}-error`} role='alert'>{error}</p>}</div></Context.Provider>;
 }
 export const Label=(props:React.LabelHTMLAttributes<HTMLLabelElement>)=><label {...props}/>;
-export const Input=forwardRef<HTMLInputElement,React.InputHTMLAttributes<HTMLInputElement>>(function Input(props,ref){const field=useContext(Context);return <input id={field.id||undefined} aria-describedby={field.description} aria-invalid={field.invalid||undefined} required={field.required} {...props} disabled={!!field.disabled||props.disabled} ref={ref} className={`hig-input ${props.className??''}`}/>;});
-export const TextArea=forwardRef<HTMLTextAreaElement,React.TextareaHTMLAttributes<HTMLTextAreaElement>>(function TextArea(props,ref){const field=useContext(Context);return <textarea id={field.id||undefined} aria-describedby={field.description} aria-invalid={field.invalid||undefined} required={field.required} {...props} disabled={!!field.disabled||props.disabled} ref={ref} className={`hig-input ${props.className??''}`}/>;});
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>,'prefix'> {
+ /** Host text on the leading edge inside the field, before what is typed, such as `@` for a handle or `$` for an amount. Drawn muted and not part of the value; the input names it in its description (`aria-describedby`, before the field's help and error), so it is read after the label. The text starts after it. */
+ prefix?:string;
+}
+export const Input=forwardRef<HTMLInputElement,InputProps>(function Input({prefix,...props},ref){const field=useContext(Context);useEffect(()=>field.register?.(),[field.register]);const own=useId();const input=<input {...props} id={field.id||props.id} aria-describedby={[prefix&&own,field.description,props['aria-describedby']].filter(Boolean).join(' ')||undefined} aria-invalid={field.invalid||props['aria-invalid']} required={field.required||props.required} disabled={!!field.disabled||props.disabled} ref={ref} className={`hig-input ${props.className??''}`}/>;return prefix?<span className='hig-input-affix'><span id={own} className='hig-input-prefix'>{prefix}</span>{input}</span>:input;});
+/** Marked pure, as `SearchInput` is, so a bundle that imports only `Input` drops it. */
+export const TextArea=/* @__PURE__ */forwardRef<HTMLTextAreaElement,React.TextareaHTMLAttributes<HTMLTextAreaElement>>(function TextArea(props,ref){const field=useContext(Context);useEffect(()=>field.register?.(),[field.register]);return <textarea {...props} id={field.id||props.id} aria-describedby={[field.description,props['aria-describedby']].filter(Boolean).join(' ')||undefined} aria-invalid={field.invalid||props['aria-invalid']} required={field.required||props.required} disabled={!!field.disabled||props.disabled} ref={ref} className={`hig-input ${props.className??''}`}/>;});
 /** The magnifying glass sits inset on the leading edge; the input keeps the ref, class and every prop. Marked pure so a bundle that imports another field drops the icon. */
 export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
  /** Host content on the trailing edge inside the field, such as a filter button. The text stops 48 units short of the edge; wider content sets the input's `padding-inline-end`. */
@@ -25,7 +31,7 @@ export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputEle
 }
 export const SearchInput=/* @__PURE__ */forwardRef<HTMLInputElement,SearchInputProps>(function SearchInput({trailing,onClear,clearLabel,...props},ref){
  const {messages}=useHIG();const inner=useRef<HTMLInputElement|null>(null);const off=!!useContext(Context).disabled||!!props.disabled;
- const attach=(node:HTMLInputElement|null)=>{inner.current=node;if(typeof ref==='function')ref(node);else if(ref)ref.current=node;};
+ const attach=useCallback((node:HTMLInputElement|null)=>{inner.current=node;const cleanup:unknown=typeof ref==='function'?ref(node):undefined;if(ref&&typeof ref!=='function')ref.current=node;return()=>{inner.current=null;if(typeof cleanup==='function')cleanup();else if(typeof ref==='function')ref(null);else if(ref)ref.current=null;};},[ref]);
  const clear=onClear&&props.value!=null&&String(props.value)!==''?<button type='button' className='hig-search-clear' aria-label={clearLabel??messages.clearSearch??en.clearSearch} disabled={off} onClick={()=>{onClear();inner.current?.focus();}}><X size={16}/><PressDecoration kind='icon-button' disabled={off}/></button>:null;
  const extra=trailing!=null&&trailing!==false;
  const end=extra||clear?<span className='hig-search-trailing'>{trailing}{clear}</span>:null;

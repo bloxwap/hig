@@ -1,8 +1,10 @@
+import {progressValue} from '@bloxwap/hig/contracts';
 import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {ActivityIndicator,Animated,Easing,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType,type ViewProps,type TextProps} from 'react-native';
+import {AvatarFrame,sameFrame,type AvatarFrameProps} from './avatar-frame.js';
+import {ActivityIndicator,Animated,Easing,View,ScrollView,useWindowDimensions,Platform,type DimensionValue,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
 import {Button} from './button.js';
@@ -10,13 +12,19 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useFills,useHIG} from './provider.js';
 import {blockText,plainText} from './text-content.js';
 import {roleColor,type AccentRole} from './roles.js';
+import {speak} from './announce.js';
 export type {AccentRole} from './roles.js';
 const severityRole={info:'info',note:'info',success:'positive',tip:'positive',warning:'warning',error:'negative'} as const;
 /** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (a faint `text` tint, title in `text`). */
 export type AlertSeverity=keyof typeof severityRole|'default';
-function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
+/** A badge's meaning, as on web: explicit, never inferred from text or a number's sign. */
+export type BadgeTone='neutral'|'positive'|'negative'|'warning'|'info';
+export interface BadgeProps {children?:React.ReactNode;/** `positive`, `negative`, `warning` or `info` draws the label in that token role over a 15% wash of it, like web `.hig-badge[data-tone]`; `neutral` (default) keeps the well fill. */tone?:BadgeTone;/** A 6dp status dot in the label colour on the leading edge, hidden from assistive technology. */dot?:boolean;testID?:string}
 /** Neutral chip in the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
-export function Badge({children}:React.PropsWithChildren){const fills=useFills();return <Text style={{alignSelf:'flex-start',maxWidth:'100%',backgroundColor:fills.well,overflow:'hidden',borderRadius:9999,paddingVertical:4,paddingHorizontal:10}}>{children}</Text>;}
+export function Badge({children,tone='neutral',dot,testID}:BadgeProps){const fills=useFills();const colors=useColors();const accent=tone==='positive'||tone==='negative'||tone==='warning'||tone==='info'?colors[tone]:undefined;
+ /* 15% of the role over whatever is behind, as web color-mix with transparent; a colour that is not #rrggbb blends into the well instead. */
+ const fill=accent?(/^#[0-9a-f]{6}$/i.test(accent)?`${accent}26`:tint(accent,fills.well,0.15)):fills.well;const chip={alignSelf:'flex-start' as const,maxWidth:'100%' as const,backgroundColor:fill,overflow:'hidden' as const,borderRadius:9999,paddingVertical:4,paddingHorizontal:10};const label=accent?{color:accent}:null;
+ return dot?<View testID={testID} style={[chip,{flexDirection:'row',alignItems:'center',gap:6}]}><View accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{width:6,height:6,borderRadius:3,backgroundColor:accent??colors.text}}/><Text style={[label,{flexShrink:1}]}>{children}</Text></View>:<Text testID={testID} style={label?[chip,label]:chip}>{children}</Text>;}
 /** Opaque sRGB blend of `tone` into `base` (both `#rrggbb`): the native counterpart of CSS `color-mix`. */
 const tint=(tone:string,base:string,amount:number)=>'#'+[1,3,5].map(i=>Math.round(parseInt(base.slice(i,i+2),16)*(1-amount)+parseInt(tone.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
 /** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning, error → negative; default → 6% of `text`), with no stroke or glow; `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. A string or number child is drawn in a HIG `Text`. `announce` (default true) speaks the title and body when they appear or change; pass `false` for guidance that is present from the start. */
@@ -42,9 +50,36 @@ export interface ToastProps {
 }
 /** Loops a 0→1 value while `active`; rests at 0 otherwise (reduced motion, or nothing to show). */
 function useLoop(active:boolean,duration:number,easing:(value:number)=>number=Easing.linear){const value=useRef(new Animated.Value(0)).current;useEffect(()=>{if(!active){value.stopAnimation();value.setValue(0);return;}const loop=Animated.loop(Animated.timing(value,{toValue:1,duration,easing,useNativeDriver:Platform.OS!=='web',isInteraction:false}));loop.start();return()=>loop.stop();},[active,duration,easing,value]);return value;}
+export interface ToastNoticeProps {
+ message:string;
+ /** A second line under the message, in regular weight. */
+ description?:string;
+ severity?:Notice['severity'];
+ action?:React.ReactNode;
+ /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */
+ dismissName?:string;
+ /** Draws the close control and takes its press. Omitted, the notice has none. */
+ onDismiss?:()=>void;
+ /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */
+ hug?:boolean;
+ /** Merged over the capsule's fill, radius and shadow. */
+ style?:StyleProp<ViewStyle>;
+}
+/** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the transient `Toaster` of `@bloxwap/hig/native/toast`; it announces nothing itself. */
+export function ToastNotice({message,description,severity='info',action,dismissName,onDismiss,hug=false,style}:ToastNoticeProps){
+ const {messages,direction}=useHIG();const colors=useColors();
+ const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null;
+ return <View accessibilityLiveRegion='none' style={[{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'},style]}>
+  <SeverityIcon kind={severity} color={colors[severityRole[severity]]}/>
+  {/* Filling its parent, the message takes the room that is left. Hugging, nothing in the row may grow, or the row would take all the room it is offered. */}
+  <View style={hug?{flexShrink:1,minWidth:0}:{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{message}</Text>{description?<Text>{description}</Text>:null}</View>
+  {action}
+  {close}
+ </View>;
+}
 /** Each notice is one capsule row: severity symbol, message, optional action, then a close control. Compact, scrollable notices remain visible until their host removes them. */
 export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastProps){
- const {messages,direction}=useHIG();const colors=useColors();
+ const {messages}=useHIG();
  const {height}=useWindowDimensions();
  const dismiss=dismissLabel??messages.dismiss??en.dismiss;
  const unique=[...new Map(notices.map(n=>[n.id,n])).values()];
@@ -63,12 +98,7 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <View testID={testID} style={{maxHeight:maxHeight??height*.6,flexShrink:1}}>
   <ScrollView style={{flexGrow:0,flexShrink:1}} nestedScrollEnabled keyboardShouldPersistTaps='handled' accessibilityLabel={messages.notifications??en.notifications}>
-   <Stack style={{gap:8}}>{unique.map(n=><View key={n.id} accessibilityLiveRegion='none' style={{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'}}>
-    <SeverityIcon kind={n.severity} color={colors[severityRole[n.severity]]}/>
-    <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{n.message}</Text>{n.description?<Text>{n.description}</Text>:null}</View>
-    {n.action}
-    {n.closable!==false&&onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} hitSlop={8} onPress={()=>onDismiss(n.id)} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null}
-   </View>)}</Stack>
+   <Stack style={{gap:8}}>{unique.map(n=><ToastNotice key={n.id} message={n.message} description={n.description} severity={n.severity} action={n.action} dismissName={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onDismiss={n.closable!==false&&onDismiss?()=>onDismiss(n.id):undefined}/>)}</Stack>
   </ScrollView>
   {Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}
  </View>;
@@ -80,8 +110,15 @@ export function useTransientNotice(duration=4000):{notice:Notice|null;show:(mess
  const stop=()=>{if(timer.current!==null){clearTimeout(timer.current);timer.current=null;}};
  return {notice,dismiss:()=>{stop();setNotice(null);},show:(message,severity='success')=>{if(!alive.current)return;stop();setNotice({id:`notice-${++sequence.current}`,message,severity});timer.current=setTimeout(()=>{timer.current=null;setNotice(null);},duration);}};
 }
-export function Spinner({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
-export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){
+export interface SpinnerProps {
+ /** What is loading; defaults to HIGProvider `messages.loading`. */
+ label?:string;
+ /** Draws the indicator alone, for a tight spot such as a row or a button-sized slot: the label is not drawn but stays the element's accessibility label. */
+ hideLabel?:boolean;
+ testID?:string;
+}
+export function Spinner({label,hideLabel,testID}:SpinnerProps){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View testID={testID} accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/>{hideLabel?null:<Text>{text}</Text>}</View>;}
+export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){({value,max}=progressValue(value,max));
  const {locale,messages,direction}=useHIG();const colors=useColors();const fills=useFills();
  const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));
  return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}>
@@ -111,8 +148,14 @@ export function EmptyState({title,description,action,illustration,titleStyle,des
  {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
-/** Initials sit on the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
-export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){const fills=useFills();return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<View accessible accessibilityRole='image' accessibilityLabel={name} style={{width:40,height:40,borderRadius:20,backgroundColor:fills.well,alignItems:'center',justifyContent:'center'}}><Text accessible={false}>{name.slice(0,2)}</Text></View>;}
+/** The Avatar frame, kept while its props are the same: a list that renders again renders no frame for the rows that did not change. */
+const StillFrame=React.memo(AvatarFrame,sameFrame);
+/**
+ * A person or account as a 40dp disc: an image, else the first two letters of the name on the well fill (one step lighter inside a Surface, Dialog or sheet).
+ * `size`, `square` and `decorative` are as in `@bloxwap/hig/native/avatar`, whose `Avatar` also draws a face generated from a seed; that entry needs `react-native-svg` and this one does not.
+ * It renders again only when one of its props changes.
+ */
+export function Avatar(props:AvatarFrameProps){return <StillFrame {...props}/>;}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */

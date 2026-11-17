@@ -1,3 +1,4 @@
+import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React from 'react';
 import {View,type StyleProp,type ViewStyle} from 'react-native';
 import {useColors,useControllable,useHIG} from './provider.js';
@@ -34,7 +35,7 @@ export interface PresetGroupProps<T extends string|number=string> {
  */
 const chipSlop={top:2,bottom:2,left:4,right:4};
 /** A set of quick choices as chips in an equal-width grid, such as order sizes or leverage steps. Single choice, or none; each chip is a button that reads selected, 44dp tall with a 48dp touch target, in the interface face. TargetBlock draws its presets with it. */
-export function PresetGroup<T extends string|number=string>({label,options,value,defaultValue=null,onValueChange,columns,selectedIntent='primary',disabled,suppressFeedback,style,testID}:PresetGroupProps<T>){
+export function PresetGroup<T extends string|number=string>({label,options,value,defaultValue=null,onValueChange,columns,selectedIntent='primary',disabled,suppressFeedback,style,testID}:PresetGroupProps<T>){assertUniqueKeys(options,option=>option.value,'Choices');
  const {direction}=useHIG(),colors=useColors();
  const [current,set]=useControllable<T|null>(value,defaultValue,onValueChange as ((value:T|null)=>void)|undefined,suppressFeedback?null:'selection');
  const count=Math.max(1,Math.floor(columns??options.length)||1),rows:PresetOption<T>[][]=[];

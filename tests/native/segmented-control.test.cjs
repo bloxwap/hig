@@ -19,6 +19,12 @@ beforeEach(()=>{
 });
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;timing.mockRestore();});
 
+it('passes segmentProps to every segment, such as Android sound off for a host that plays its own, and keeps its own press',()=>{
+ const changed=jest.fn();mount({value:'all',onValueChange:changed,segmentProps:{android_disableSound:true,onPress:()=>{throw new Error('host press must not replace HIG’s');}}});
+ expect(radios().map(node=>node.props.android_disableSound)).toEqual([true,true,true]);
+ act(()=>radios()[1].props.onPress());expect(changed).toHaveBeenCalledWith('open');
+});
+
 it('places the initial pill without motion and animates only accepted controlled selections',()=>{
  const changed=jest.fn();mount({value:'open',onValueChange:changed});
  expect(style().width).toBe(100);expect(style().transform[0].translateX.__getValue()).toBe(104);expect(timing).not.toHaveBeenCalled();
@@ -77,4 +83,14 @@ it('reaches a 48dp touch target at either density, with vertical slop only so se
   }
   act(()=>root.unmount());root=null;
  }
+});
+
+it('takes a group testID, gives each segment <testID>-<value>, and lets an option set its own test ID',()=>{
+ mount({testID:'mode',options:[{value:'all',label:'All'},{value:'open',label:'Open',testID:'mode-open-custom'},{value:'trend',label:'Trend'}]});
+ expect(root.root.findAll(node=>node.props.testID==='mode'&&typeof node.type==='string')).toHaveLength(1);
+ expect(radios().map(node=>node.props.testID)).toEqual(['mode-all','mode-open-custom','mode-trend']);
+ act(()=>root.unmount());
+ // Without a group testID only the option that sets one has a test ID.
+ mount({options:[{value:'all',label:'All'},{value:'open',label:'Open',testID:'open-only'}]});
+ expect(radios().map(node=>node.props.testID)).toEqual([undefined,'open-only']);
 });
