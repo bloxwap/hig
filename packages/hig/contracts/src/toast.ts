@@ -61,6 +61,17 @@ export const TOAST_HOLD=200;
 export const TOAST_SWIPE_THRESHOLD=45;
 /** A swipe released faster than this (points per second) dismisses whatever its distance. HIG's own figure: Sonner divides the distance by the time since the pointer went down, which a hold before the flick defeats. */
 export const TOAST_FLICK=500;
+/** The longest time a platform timer counts: 2^31 - 1 milliseconds, about 24 days. A longer delay overflows and fires at once. */
+export const TOAST_MAX_DURATION=2147483647;
+/**
+ * A `duration` as both hosts read it. Only a positive number is a time: anything else (omitted, zero, negative, `NaN`)
+ * is `undefined`, so the Toaster's `duration` applies, as Sonner treats it. A time no timer can count is `Infinity`, so
+ * the notice stays instead of leaving at once.
+ */
+export function toastDuration(duration:number|undefined):number|undefined{
+ if(duration===undefined||!(duration>0))return undefined;
+ return duration>TOAST_MAX_DURATION?Infinity:duration;
+}
 /** Notices the store keeps; past it the oldest timed ones are dropped. HIG's own figure, bounding a burst. */
 export const TOAST_QUEUE_LIMIT=16;
 /** The spring a released swipe returns on: critically damped, so it settles without a bounce. */

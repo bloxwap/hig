@@ -51,6 +51,18 @@ describe('web toasts: the unified API over Sonner',()=>{
   await screen.findByRole('button',{name:'Dismiss Sent'});
   expect(capsules()).toHaveLength(1);expect(capsules()[0].dataset.severity).toBe('success');
  });
+ it('starts the time over when an id is raised again, as the native host does',async()=>{
+  vi.useFakeTimers({toFake:['setTimeout','clearTimeout']});
+  try{
+   render(<HIGProvider><Toaster duration={1000}/></HIGProvider>);
+   const expired=vi.fn();
+   act(()=>{toast('Sending',{id:'send',onAutoClose:expired});});
+   act(()=>{vi.advanceTimersByTime(900);});
+   act(()=>{toast.success('Sent',{id:'send',onAutoClose:expired});});
+   act(()=>{vi.advanceTimersByTime(900);});expect(expired).not.toHaveBeenCalled();expect(screen.getByRole('button',{name:'Dismiss Sent'})).toBeTruthy();
+   act(()=>{vi.advanceTimersByTime(100);});expect(expired).toHaveBeenCalledTimes(1);
+  }finally{vi.useRealTimers();}
+ });
  it('tells the owner how a notice ended: dismissed by its close button or by dismissToast, or timed out',async()=>{
   render(<HIGProvider><Toaster/></HIGProvider>);
   const closed=vi.fn(),dropped=vi.fn(),expired=vi.fn(),untouched=vi.fn();
@@ -81,6 +93,36 @@ describe('web toasts: the unified API over Sonner',()=>{
   expect(host().style.getPropertyValue('--gap')).toBe('8px');
   rerender(<HIGProvider><Toaster position='top-center' offset='3rem'/></HIGProvider>);
   await waitFor(()=>expect(host().style.getPropertyValue('--offset-top')).toBe('3rem'));
+ });
+ it('places the stack by offset at every window width, as native does, unless mobileOffset is given',async()=>{
+  const {rerender}=render(<HIGProvider><Toaster offset={{top:60}}/></HIGProvider>);
+  act(()=>{toast('Saved',{duration:Infinity});});
+  await screen.findByRole('button',{name:'Dismiss Saved'});
+  // A narrow window takes the named edge from offset and keeps the narrow default on the others.
+  expect(host().style.getPropertyValue('--offset-top')).toBe('calc(env(safe-area-inset-top, 0px) + 60px)');expect(host().style.getPropertyValue('--offset-left')).toBe('calc(env(safe-area-inset-left, 0px) + 24px)');
+  expect(host().style.getPropertyValue('--mobile-offset-top')).toBe('calc(env(safe-area-inset-top, 0px) + 60px)');expect(host().style.getPropertyValue('--mobile-offset-left')).toBe('calc(env(safe-area-inset-left, 0px) + 16px)');
+  rerender(<HIGProvider><Toaster offset={32}/></HIGProvider>);
+  await waitFor(()=>expect(host().style.getPropertyValue('--mobile-offset-bottom')).toBe('calc(env(safe-area-inset-bottom, 0px) + 32px)'));
+  rerender(<HIGProvider><Toaster offset='3rem'/></HIGProvider>);
+  await waitFor(()=>expect(host().style.getPropertyValue('--mobile-offset-bottom')).toBe('3rem'));
+  // Sonner's own prop still wins for narrow windows.
+  rerender(<HIGProvider><Toaster offset={32} mobileOffset={{bottom:8}}/></HIGProvider>);
+  await waitFor(()=>expect(host().style.getPropertyValue('--mobile-offset-bottom')).toBe('calc(env(safe-area-inset-bottom, 0px) + 8px)'));
+  expect(host().style.getPropertyValue('--mobile-offset-top')).toBe('calc(env(safe-area-inset-top, 0px) + 16px)');expect(host().style.getPropertyValue('--offset-bottom')).toBe('calc(env(safe-area-inset-bottom, 0px) + 32px)');
+ });
+ it('reads a duration as the native host does: not a positive number takes the default, and one no timer can count stays',async()=>{
+  vi.useFakeTimers({toFake:['setTimeout','clearTimeout']});
+  try{
+   render(<HIGProvider><Toaster duration={1000}/></HIGProvider>);
+   const expired=vi.fn();
+   act(()=>{toast('Negative',{duration:-5,onAutoClose:expired});toast('Month',{duration:2**31,onAutoClose:expired});});
+   act(()=>{vi.advanceTimersByTime(900);});
+   // A negative delay would fire at once; it takes the Toaster's second instead.
+   expect(expired).not.toHaveBeenCalled();expect(capsules()).toHaveLength(2);
+   act(()=>{vi.advanceTimersByTime(200);});expect(expired).toHaveBeenCalledTimes(1);
+   // A delay past the timer range would also fire at once; it is kept like Infinity.
+   act(()=>{vi.advanceTimersByTime(60000);});expect(expired).toHaveBeenCalledTimes(1);expect(screen.getByRole('button',{name:'Dismiss Month'})).toBeTruthy();
+  }finally{vi.useRealTimers();}
  });
  it('paints severities from token roles that are Display P3 on capable screens, and stops Sonner under provider reduced motion',()=>{
   for(const [severity,role] of [['success','positive'],['warning','warning'],['error','negative']])expect(css).toContain(`.hig-toast-item[data-severity='${severity}'] .hig-toast-icon { color:var(--hig-${role}); }`);

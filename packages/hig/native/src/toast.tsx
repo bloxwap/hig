@@ -5,7 +5,7 @@ import {Gesture,GestureDetector} from 'react-native-gesture-handler';
 import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {TOAST_DURATION,TOAST_EXIT,TOAST_GAP,TOAST_HOLD,TOAST_MOTION,TOAST_NARROW,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_REDUCED_FADE,TOAST_SPRING,TOAST_VISIBLE,TOAST_WIDTH,toastClockPause,toastClockRun,toastDrag,toastEdge,toastEnterFrom,toastExitTo,toastGrab,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastBaseOptions,type ToastCall,type ToastClock,type ToastEntry,type ToastId,type ToastPosition,type ToastSeverity,type ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
+import {TOAST_DURATION,TOAST_EXIT,TOAST_GAP,TOAST_HOLD,TOAST_MOTION,TOAST_NARROW,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_REDUCED_FADE,TOAST_SPRING,TOAST_VISIBLE,TOAST_WIDTH,toastClockPause,toastClockRun,toastDrag,toastDuration,toastEdge,toastEnterFrom,toastExitTo,toastGrab,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastBaseOptions,type ToastCall,type ToastClock,type ToastEntry,type ToastId,type ToastPosition,type ToastSeverity,type ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
 import {useColors,useHIG} from './provider.js';
 import {ToastNotice} from './status.js';
 import {speak} from './announce.js';
@@ -13,17 +13,17 @@ export type {ToastBaseOptions,ToastCall,ToastId,ToastPosition,ToastSeverity,Toas
 
 export interface ToastOptions extends ToastBaseOptions {/** A control drawn before the close button, such as a `Button` that retries. */action?:React.ReactNode}
 export interface ToasterProps {
- /** The corner or edge the stack hangs from. Default `bottom-center`, as on web. `left` and `right` follow the provider's direction, so they swap under right-to-left. */
+ /** The corner or edge the stack hangs from. Default `bottom-center`, as on web. `left` and `right` are the physical sides in either direction, as in Sonner; only the capsule's content mirrors under right-to-left. */
  position?:ToastPosition;
  /** Draws the visible notices one after another instead of as a collapsed stack. Default `false`. A finger resting on a notice for 200ms expands the stack until it lifts, and a running screen reader keeps it expanded so every notice can be reached. */
  expand?:boolean;
- /** Notices drawn at once; older ones wait behind them and their time does not run. Default 3. */
+ /** Notices drawn at once; older ones wait behind them and their time does not run. Default 3; anything below 1 or not a number shows one. */
  visibleToasts?:number;
  /** Points between notices when expanded, and how far each notice behind the front peeks out when collapsed. Default 14. */
  gap?:number;
- /** Points between the stack and the screen edges, added to the safe-area insets: one number for every edge, or an object naming edges, the others keeping the default. Default 16 on a window narrower than 600 points and 24 otherwise. `left` and `right` are start and end, like `position`. */
+ /** Points between the stack and the screen edges, added to the safe-area insets: one number for every edge, or an object naming edges, the others keeping the default. Default 16 on a window narrower than 600 points and 24 otherwise. `left` and `right` are the physical sides, like `position`. */
  offset?:number|{top?:number;right?:number;bottom?:number;left?:number};
- /** Milliseconds a notice stays when `toast()` names no `duration`. Default 4000. */
+ /** Milliseconds a notice stays when `toast()` names no `duration`. Default 4000, which also stands in for a value that is not a positive number. */
  duration?:number;
  /** Directions a swipe dismisses in. Default: towards the edges the stack sits against (`bottom-center` → down; `top-right` → up and right). */
  swipeDirections?:readonly ToastSwipeDirection[];
@@ -55,8 +55,9 @@ function leave(key:number,expired:boolean):void{
 function forget(key:number):void{const next=toastRemove(entries,key);if(next!==entries){entries=next;emit();}}
 function raise(message:string,options:ToastOptions={}):ToastId{
  const {severity='info',description,action,dismissName,duration,id,onDismiss,onAutoClose}=options;
- const key=++sequence,resolved=id??key;
- entries=toastUpsert(entries,{key,id:resolved,duration,value:{message,description,severity,action,dismissName,onDismiss,onAutoClose}});emit();
+ // As in Sonner, an empty string is not an id: the notice gets the next one.
+ const key=++sequence,resolved=typeof id==='number'||(typeof id==='string'&&id.length>0)?id:key;
+ entries=toastUpsert(entries,{key,id:resolved,duration:toastDuration(duration),value:{message,description,severity,action,dismissName,onDismiss,onAutoClose}});emit();
  return resolved;
 }
 /** Dismisses one notice by id, or every notice when the id is omitted. */
@@ -125,7 +126,7 @@ const Card=memo(function Card({entry,front,hidden,interactive,lift,gap,visible,r
   if(was===null||next.content!==was.content)content.value=withTiming(next.content,fade);
  },[id,gap,visible,lift,reduce]);
  // The exit, unless a swipe has already sent the notice on its way.
- useAnimatedReaction(()=>gone.value,(now,before)=>{
+ useAnimatedReaction(()=>{'worklet';return gone.value;},(now,before)=>{
   'worklet';
   if(!now||now===before||phase.value===2)return;
   const placed=phase.value===1;phase.value=2;
@@ -153,12 +154,13 @@ const Card=memo(function Card({entry,front,hidden,interactive,lift,gap,visible,r
    if(axis.value===1)dragX.value=toastDrag(event.translationX-origin.value,left,right);
    else if(axis.value===2)dragY.value=toastDrag(event.translationY-origin.value,up,down);
   })
-  .onEnd(event=>{
+  .onEnd((event,success)=>{
    'worklet';
    const horizontal=axis.value===1;axis.value=0;
    if(phase.value===2)return;
    const amount=horizontal?dragX.value:dragY.value,velocity=horizontal?event.velocityX:event.velocityY;
-   if(toastSwipeDismisses(amount,velocity,horizontal?left:up,horizontal?right:down)){
+   // A gesture the system took away (a call, the notice pushed behind a new one) is not a decision to dismiss: it goes back to rest.
+   if(success!==false&&toastSwipeDismisses(amount,velocity,horizontal?left:up,horizontal?right:down)){
     phase.value=2;
     const out=toastSwipeOut(amount,velocity,horizontal?size.value.width:size.value.height),timing={duration:out.duration,easing:EXIT.easing,reduceMotion:ReduceMotion.Never};
     if(!reduce){if(horizontal)dragX.value=withTiming(out.to,timing);else dragY.value=withTiming(out.to,timing);}
@@ -200,7 +202,7 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
  // A screen reader cannot reach content the collapsed stack hides, so the stack stays expanded while one runs.
  const [reader,setReader]=useState(false);
  useEffect(()=>{let alive=true;void AccessibilityInfo.isScreenReaderEnabled().then(value=>{if(alive&&value)setReader(true);}).catch(()=>{});const subscription=AccessibilityInfo.addEventListener('screenReaderChanged',setReader);return()=>{alive=false;subscription.remove();};},[]);
- const open=expand||reader,visible=Math.max(1,Math.floor(visibleToasts));
+ const open=expand||reader,visible=visibleToasts>=1?Math.floor(visibleToasts):1;
  const order=useMemo(()=>active?toastOrder(list):[],[active,list]);
  const stack=useSharedValue<Stack>({keys:[],heights:[]}),expanded=useSharedValue(open),held=useSharedValue(false);
  useEffect(()=>{expanded.value=open;},[open,expanded]);
@@ -220,10 +222,10 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
  const sync=useCallback(()=>{
   const now=Date.now(),paused=holds.size>0||!awake.current,live=new Set<number>();
   latest.current.order.forEach((entry,index)=>{
-   const total=entry.duration??latest.current.duration;
-   if(!Number.isFinite(total))return;
+   const total=entry.duration??toastDuration(latest.current.duration)??TOAST_DURATION;
+   if(total===Infinity)return;
    let record=clocks.get(entry.key);
-   if(!record||record.revision!==entry.revision){if(record?.timer!=null)clearTimeout(record.timer);record={clock:{remaining:Math.max(0,total),startedAt:null},revision:entry.revision,timer:null};clocks.set(entry.key,record);}
+   if(!record||record.revision!==entry.revision){if(record?.timer!=null)clearTimeout(record.timer);record={clock:{remaining:total,startedAt:null},revision:entry.revision,timer:null};clocks.set(entry.key,record);}
    live.add(entry.key);
    const runs=!paused&&index<latest.current.visible&&heights.has(entry.key);
    if(runs&&record.clock.startedAt===null){record.clock=toastClockRun(record.clock,now);record.timer=setTimeout(()=>leave(entry.key,true),record.clock.remaining);}
@@ -239,32 +241,31 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
   else if(peek.current===null)peek.current=setTimeout(()=>{held.value=holds.size>0;},TOAST_HOLD);
   sync();
  },[holds,held,sync]);
- const hold=useCallback((key:number,down:boolean)=>{if(down)holds.add(key);else holds.delete(key);settle();},[holds,settle]);
+ // The notices that take touches. A finger reported on any other arrived late, from a notice that has since been pushed out of reach, and is ignored.
+ const reach=useRef<ReadonlySet<number>>(new Set());
+ const hold=useCallback((key:number,down:boolean)=>{if(!down)holds.delete(key);else if(reach.current.has(key))holds.add(key);settle();},[holds,settle]);
  useEffect(()=>{
   const known=new Set(list.map(entry=>entry.key));
   for(const key of [...heights.keys()])if(!known.has(key))heights.delete(key);
-  // A notice that is gone can no longer lift the finger that held it.
-  for(const key of [...holds])if(!known.has(key))holds.delete(key);
+  // Only a notice that takes touches can be holding the time. One that is gone, leaving, or pushed out of reach may never report the finger lifting, and would hold every notice for good.
+  const touchable=new Set<number>();latest.current.order.forEach((entry,index)=>{if(index<visible&&(index===0||open))touchable.add(entry.key);});
+  reach.current=touchable;
+  for(const key of [...holds])if(!touchable.has(key))holds.delete(key);
   // A notice dismissed before it was ever drawn has no exit to play.
   if(active)for(const entry of list)if(entry.leaving&&!heights.has(entry.key))forget(entry.key);
   publish();settle();
- },[active,list,visible,duration,heights,holds,publish,settle]);
+ },[active,list,visible,duration,open,heights,holds,publish,settle]);
  useEffect(()=>{const subscription=AppState.addEventListener('change',state=>{awake.current=state==='active';sync();});return()=>subscription.remove();},[sync]);
  useEffect(()=>()=>{for(const record of clocks.values())if(record.timer!=null)clearTimeout(record.timer);clocks.clear();if(peek.current!==null)clearTimeout(peek.current);},[clocks]);
- // One announcement per burst, errors first; a notice that is redrawn unchanged is not read again.
+ // One announcement per burst: an error if there is one, otherwise the newest, which is the one drawn in front. A notice that is redrawn unchanged is not read again.
  const spoken=useRef<ReadonlyMap<string,string>>(new Map());
  useEffect(()=>{
   if(!active)return;
-  const delta=notificationDelta(spoken.current,order.map(entry=>({id:String(entry.key),message:[entry.value.message,entry.value.description].filter(Boolean).join('. '),severity:entry.value.severity})));
+  const delta=notificationDelta(spoken.current,[...order].reverse().map(entry=>({id:String(entry.key),message:[entry.value.message,entry.value.description].filter(Boolean).join('. '),severity:entry.value.severity})));
   spoken.current=delta.next;if(delta.message)speak(delta.message,delta.severity);
  },[active,order]);
- const edge=toastEdge(position),rtl=env.direction==='rtl';
- const directions=useMemo(()=>{
-  if(swipeDirections)return swipeDirections;
-  // `left` and `right` are start and end here, so under right-to-left the stack sits on the other side and is swiped off that way.
-  const mirrored:ToastSwipeDirection[]=toastSwipeDirections(position).map(direction=>!rtl?direction:direction==='left'?'right':direction==='right'?'left':direction);
-  return mirrored;
- },[swipeDirections,position,rtl]);
+ const edge=toastEdge(position);
+ const directions=useMemo(()=>swipeDirections??toastSwipeDirections(position),[swipeDirections,position]);
  const rank=new Map(order.map((entry,index)=>[entry.key,index]));
  // One notice past the visible ones stays mounted and transparent, so the notice the stack pushes out fades where it is and the one it uncovers is ready.
  const mounted=active?list.filter(entry=>entry.leaving?heights.has(entry.key):rank.get(entry.key)!<=visible):[];
@@ -272,9 +273,9 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
  const narrow=width<TOAST_NARROW,fallback=narrow?TOAST_NARROW_OFFSET:TOAST_OFFSET;
  const distance=(side:'top'|'right'|'bottom'|'left')=>(typeof offset==='object'?offset[side]:offset)??fallback;
  const label=env.messages.notifications??en.notifications;
- // The layer carries the provider's direction, so start and end on the rail are the provider's, whatever the OS layout direction is; the device insets stay on their physical sides.
- return <View testID={testID} pointerEvents='box-none' style={[StyleSheet.absoluteFill,{direction:env.direction}]}>
-  <View pointerEvents='box-none' accessibilityLabel={label} style={[styles.rail,{top:insets.top+distance('top'),bottom:insets.bottom+distance('bottom'),start:(rtl?insets.right:insets.left)+distance('left'),end:(rtl?insets.left:insets.right)+distance('right'),alignItems:edge.x==='center'?'center':edge.x==='left'?'flex-start':'flex-end'}]}>
+ // `left` and `right` are physical, as in Sonner. The layer always lays out left to right, so start and end on the rail are the physical left and right whatever the provider or the OS says (React Native swaps `left` and `right` themselves under an RTL OS). The capsule sets the provider's direction on its own row.
+ return <View testID={testID} pointerEvents='box-none' style={[StyleSheet.absoluteFill,styles.layer]}>
+  <View pointerEvents='box-none' accessibilityLabel={label} style={[styles.rail,{top:insets.top+distance('top'),bottom:insets.bottom+distance('bottom'),start:insets.left+distance('left'),end:insets.right+distance('right'),alignItems:edge.x==='center'?'center':edge.x==='left'?'flex-start':'flex-end'}]}>
    {mounted.map(entry=>{const index=rank.get(entry.key)??-1,hidden=index<0||index>=visible;
     return <Card key={entry.key} entry={entry} front={index===0} hidden={hidden} interactive={!hidden&&!entry.leaving&&(index===0||open)} lift={edge.lift} gap={gap} visible={visible} reduce={env.reducedMotion} left={directions.includes('left')} right={directions.includes('right')} up={directions.includes('top')} down={directions.includes('bottom')} narrow={narrow} testID={testID} stack={stack} expanded={expanded} held={held} report={report} hold={hold}/>;})}
   </View>
@@ -282,6 +283,7 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
 }
 
 const styles=StyleSheet.create({
+ layer:{direction:'ltr'},
  rail:{position:'absolute'},
  // The capsule's own fill, radius and shadow sit on the moving view, so the content inside can fade without the capsule going with it.
  card:{position:'absolute',borderRadius:22,boxShadow:'0 4px 16px #0006'},

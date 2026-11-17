@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
-import {TOAST_DURATION,TOAST_EXIT,TOAST_FLICK,TOAST_GAP,TOAST_HOLD,TOAST_MOTION,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_QUEUE_LIMIT,TOAST_SPRING,TOAST_STACK_SCALE,TOAST_SWIPE_THRESHOLD,TOAST_VISIBLE,TOAST_WIDTH,toastCap,toastClockPause,toastClockRun,toastDrag,toastEdge,toastEnterFrom,toastExitTo,toastGrab,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastEntry} from '../packages/hig/contracts/src/toast';
+import {TOAST_DURATION,TOAST_EXIT,TOAST_FLICK,TOAST_GAP,TOAST_HOLD,TOAST_MAX_DURATION,TOAST_MOTION,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_QUEUE_LIMIT,TOAST_SPRING,TOAST_STACK_SCALE,TOAST_SWIPE_THRESHOLD,TOAST_VISIBLE,TOAST_WIDTH,toastCap,toastClockPause,toastClockRun,toastDrag,toastDuration,toastEdge,toastEnterFrom,toastExitTo,toastGrab,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastEntry} from '../packages/hig/contracts/src/toast';
 const add=(list:readonly ToastEntry<string>[],key:number,value:string,options:{id?:string|number;duration?:number}={},limit?:number)=>toastUpsert(list,{key,id:options.id??key,duration:options.duration,value},limit);
 const keys=(list:readonly ToastEntry<string>[])=>list.map(entry=>entry.key);
 describe('toast contract',()=>{
@@ -119,6 +119,14 @@ describe('toast swipe arithmetic',()=>{
   expect(toastSwipeOut(60,100000,300).duration).toBe(100);expect(toastSwipeOut(60,200,300).duration).toBe(200);
   // Velocity against the swipe is ignored.
   expect(toastSwipeOut(-60,800,300)).toEqual({to:-360,duration:200});
+ });
+});
+describe('toast duration',()=>{
+ it('is a positive number of milliseconds; anything else takes the default, and a time past the timer range persists',()=>{
+  expect(toastDuration(undefined)).toBeUndefined();expect(toastDuration(0)).toBeUndefined();expect(toastDuration(-1)).toBeUndefined();expect(toastDuration(NaN)).toBeUndefined();
+  expect(toastDuration(1)).toBe(1);expect(toastDuration(4000)).toBe(4000);expect(toastDuration(Infinity)).toBe(Infinity);
+  // setTimeout holds a signed 32-bit delay: one millisecond more would fire at once.
+  expect(TOAST_MAX_DURATION).toBe(2**31-1);expect(toastDuration(TOAST_MAX_DURATION)).toBe(TOAST_MAX_DURATION);expect(toastDuration(TOAST_MAX_DURATION+1)).toBe(Infinity);
  });
 });
 describe('toast clock',()=>{

@@ -96,11 +96,11 @@ it('hangs from the chosen edge, clear of the safe area, and is as wide as the wi
  const layer=()=>root.root.findAll(node=>node.props.testID==='toasts'&&typeof node.type==='string')[0],rail=()=>StyleSheet.flatten(layer().children[0].props.style);
  const card=()=>Object.assign({},...flat(cards()[0].props.style).filter(part=>!part.__style));
  // Narrow window: 16 points past the insets on every side, full width between them, anchored at the bottom by default.
- expect(rail()).toMatchObject({position:'absolute',top:75,bottom:50,start:16,end:16,alignItems:'center'});expect(StyleSheet.flatten(layer().props.style).direction).toBe('ltr');
+ expect(rail()).toMatchObject({position:'absolute',top:75,bottom:50,start:16,end:16,alignItems:'center'});expect(StyleSheet.flatten(layer().props.style)).toMatchObject({position:'absolute',top:0,bottom:0,left:0,right:0,direction:'ltr'});
  expect(card()).toMatchObject({position:'absolute',bottom:0,maxWidth:'100%',borderRadius:22});expect(card().top).toBeUndefined();
  act(()=>root.update(tree({position:'top-right',offset:{top:60,left:8}},{direction:'rtl'},{top:59,right:47,bottom:21,left:0})));
- // Left and right are start and end: the layer carries the provider's direction, so the start edge is the physical right and takes its inset. Edges the host did not name keep the default.
- expect(rail()).toMatchObject({top:119,bottom:37,start:55,end:16,alignItems:'flex-end'});expect(StyleSheet.flatten(layer().props.style).direction).toBe('rtl');expect(card()).toMatchObject({top:0});expect(card().bottom).toBeUndefined();
+ // Left and right stay physical under right-to-left: the layer still lays out left to right, each side takes its own inset, and edges the host did not name keep the default.
+ expect(rail()).toMatchObject({top:119,bottom:37,start:8,end:63,alignItems:'flex-end'});expect(StyleSheet.flatten(layer().props.style).direction).toBe('ltr');expect(card()).toMatchObject({top:0});expect(card().bottom).toBeUndefined();
  // Wide window: 24 points and Sonner's 356-point column.
  act(()=>Dimensions.set({window:{...window,width:1024,height:768}}));
  act(()=>root.update(tree({position:'top-left'},{},insets)));
@@ -225,14 +225,14 @@ it('follows a swipe towards its edge, dismisses it when far or fast enough and s
  act(()=>{jest.advanceTimersByTime(250);});expect(root.toJSON()).toBeNull();
 });
 
-it('swipes sideways off a corner stack, mirrored under right-to-left, and takes explicit directions as given',()=>{
+it('swipes sideways off a corner stack towards its physical side in either direction, and takes explicit directions as given',()=>{
  mount({position:'top-right'},{direction:'rtl'});
  act(()=>{toast('Saved',{duration:Infinity});});measure([44],240);
  const drag=(dx,dy)=>{const pan=gestures()[0];act(()=>{pan.handlers.onBegin();pan.handlers.onStart({translationX:Math.sign(dx)*9,translationY:Math.sign(dy)*9});pan.handlers.onChange({translationX:dx+Math.sign(dx)*9,translationY:dy+Math.sign(dy)*9});});const at=drawn(cards()[0]);act(()=>{pan.handlers.onEnd({velocityX:0,velocityY:0});pan.handlers.onFinalize();});return at;};
- // The end side is the left under right-to-left, so that is the way off.
- expect(drag(-30,0).x).toBe(-30);expect(Math.abs(drag(30,0).x)).toBeLessThan(20);expect(drag(0,-30).y).toBe(-30);
- act(()=>root.update(tree({position:'top-right',swipeDirections:['right']},{direction:'rtl'})));
- expect(drag(30,0).x).toBe(30);expect(Math.abs(drag(-30,0).x)).toBeLessThan(20);expect(drag(0,-30).y).toBe(0);
+ // Right is the physical right under right-to-left too, so that is the way off.
+ expect(drag(30,0).x).toBe(30);expect(Math.abs(drag(-30,0).x)).toBeLessThan(20);expect(drag(0,-30).y).toBe(-30);
+ act(()=>root.update(tree({position:'top-right',swipeDirections:['left']},{direction:'rtl'})));
+ expect(drag(-30,0).x).toBe(-30);expect(Math.abs(drag(30,0).x)).toBeLessThan(20);expect(drag(0,-30).y).toBe(0);
 });
 
 it('dismisses by its close control, by id and all at once, and drops notices at once when no Toaster is mounted',()=>{
@@ -295,4 +295,111 @@ it('lets only the last Toaster mounted draw, and hands over when it goes',()=>{
  expect(layers('toasts')).toHaveLength(1);expect(layers('first')).toHaveLength(0);
  act(()=>root.update(h(HIGProvider,null,h(Toaster,{testID:'first'}))));
  expect(layers('first')).toHaveLength(1);expect(texts()).toContain('Saved');
+});
+
+// Review pass: edge inputs and interruptions.
+it('reads the newest notice of a burst, the one drawn in front, when none of them is an error',()=>onIOS(()=>{
+ const announce=jest.fn();swap(AccessibilityInfo,'announceForAccessibilityWithOptions',announce);
+ mount();
+ act(()=>{toast.success('Saved');toast.info('Synced');toast.warning('Slow network');});
+ expect(announce).toHaveBeenCalledTimes(1);expect(announce).toHaveBeenLastCalledWith('Slow network',{queue:true});
+}));
+
+it('reads a duration as Sonner does: zero, negative and NaN take the default, and a time no timer can count keeps the notice',()=>{
+ jest.useFakeTimers();
+ mount({duration:1000,expand:true,visibleToasts:4});
+ act(()=>{toast('Zero',{duration:0});toast('Negative',{duration:-5});toast('Not a number',{duration:NaN});toast('Month',{duration:2147483648});});measure([44,44,44,44]);
+ // Nothing leaves at once: the first three have the Toaster's second.
+ act(()=>{jest.advanceTimersByTime(999);});expect(texts()).toEqual(expect.arrayContaining(['Zero','Negative','Not a number','Month']));
+ act(()=>{jest.advanceTimersByTime(1);});act(()=>{jest.advanceTimersByTime(250);});
+ expect(texts()).not.toContain('Zero');expect(texts()).not.toContain('Negative');expect(texts()).not.toContain('Not a number');
+ // The last one is longer than a timer can count, so it stays like `Infinity` instead of firing at once; no timer is left running for it.
+ expect(texts()).toContain('Month');expect(jest.getTimerCount()).toBe(0);
+});
+
+it('shows one notice when visibleToasts is not a usable number, and still lets it run out',()=>{
+ jest.useFakeTimers();
+ mount({visibleToasts:NaN});
+ act(()=>{toast('One');toast('Two');});measure([44,44]);
+ expect(cards().map(card=>card.props.pointerEvents)).toEqual(['none','auto']);expect(drawn(cards()[1]).opacity).toBe(1);expect(drawn(cards()[0]).opacity).toBe(0);
+ act(()=>{jest.advanceTimersByTime(4000);});act(()=>{jest.advanceTimersByTime(250);});expect(texts()).not.toContain('Two');
+});
+
+it('does not dismiss on a swipe the system cancelled, however far it had gone',()=>{
+ mount();const dismissed=jest.fn();
+ act(()=>{toast('Saved',{duration:Infinity,onDismiss:dismissed});});measure([44],240);
+ const pan=gestures()[0];
+ act(()=>{pan.handlers.onBegin();pan.handlers.onStart({translationX:0,translationY:9});pan.handlers.onChange({translationX:0,translationY:89});});
+ expect(drawn(cards()[0]).y).toBe(80);
+ mockUI.animations.length=0;
+ // An incoming call, or the notice being pushed behind a new one: the gesture ends without success.
+ act(()=>{pan.handlers.onEnd({velocityX:0,velocityY:1200},false);pan.handlers.onFinalize();});flush();
+ expect(dismissed).not.toHaveBeenCalled();expect(mockUI.animations).toEqual([expect.objectContaining({to:0,kind:'spring'})]);expect(drawn(cards()[0])).toMatchObject({y:0,opacity:1});
+});
+
+it('lets time run again when the notice a finger was on is pushed out of reach before the finger lifts',()=>{
+ jest.useFakeTimers();
+ mount({visibleToasts:1});
+ act(()=>{toast('Held');});measure([44]);
+ const stale=gestures()[0];act(()=>{stale.handlers.onBegin();});
+ // Two more arrive: the held notice is no longer mounted, so its gesture can never report the finger lifting.
+ act(()=>{toast('Next');toast('Front');});
+ expect(texts()).not.toContain('Held');measure([44,44]);
+ // A touch-down that was already on its way from the UI thread when the notice went out of reach is ignored as well.
+ act(()=>{stale.handlers.onBegin();});
+ act(()=>{jest.advanceTimersByTime(4000);});act(()=>{jest.advanceTimersByTime(250);});
+ expect(texts()).not.toContain('Front');
+});
+
+it('keeps left and right physical under right-to-left, as Sonner does: only the capsule content mirrors',()=>{
+ const insets={top:0,right:47,bottom:0,left:11};
+ mount({position:'top-right',offset:{left:8,right:30}},{direction:'rtl'},insets);
+ act(()=>{toast('Saved',{duration:Infinity});});measure([44],240);
+ const layer=root.root.findAll(node=>node.props.testID==='toasts'&&typeof node.type==='string')[0],rail=StyleSheet.flatten(layer.children[0].props.style);
+ // The layer lays out left to right whatever the provider or the OS says, so start is the physical left.
+ expect(StyleSheet.flatten(layer.props.style).direction).toBe('ltr');expect(rail).toMatchObject({start:11+8,end:47+30,alignItems:'flex-end'});
+ // The capsule row itself follows the provider.
+ const row=cards()[0].findAll(node=>typeof node.type==='string'&&StyleSheet.flatten(node.props.style)?.minHeight===44)[0];
+ expect(StyleSheet.flatten(row.props.style).direction).toBe('rtl');
+ // The default swipe is towards the physical right edge.
+ const pan=gestures()[0];
+ act(()=>{pan.handlers.onBegin();pan.handlers.onStart({translationX:9,translationY:0});pan.handlers.onChange({translationX:39,translationY:0});});
+ expect(drawn(cards()[0]).x).toBe(30);
+ act(()=>{pan.handlers.onEnd({velocityX:0,velocityY:0});pan.handlers.onFinalize();});
+});
+
+it('gives a notice the next id when the one it was handed is an empty string, as Sonner does',()=>{
+ mount({expand:true});let ids;
+ act(()=>{ids=[toast('One',{id:'',duration:Infinity}),toast('Two',{id:'',duration:Infinity}),toast('Zero',{id:0,duration:Infinity})];});
+ expect(texts()).toEqual(expect.arrayContaining(['One','Two','Zero']));expect(typeof ids[0]).toBe('number');expect(ids[1]).not.toBe(ids[0]);expect(ids[2]).toBe(0);
+});
+
+it('leaves no timer behind when it unmounts mid-exit, and shows what is still live when it mounts again',()=>{
+ jest.useFakeTimers();
+ mount();
+ act(()=>{toast('Leaving');toast('Staying');});measure([44,44]);
+ act(()=>{gestures()[1].handlers.onBegin();});
+ act(()=>{dismissToast(toast('Gone',{id:'gone'}));});
+ act(()=>root.unmount());root=null;
+ expect(jest.getTimerCount()).toBe(0);
+ mount();expect(texts()).toEqual(expect.arrayContaining(['Leaving','Staying']));expect(texts()).not.toContain('Gone');
+});
+
+it('bounds a burst of calls in one tick: four notices mounted, one announcement, and everything goes when dismissed',()=>onIOS(()=>{
+ const announce=jest.fn();swap(AccessibilityInfo,'announceForAccessibilityWithOptions',announce);
+ mount();const dismissed=jest.fn();
+ act(()=>{for(let count=1;count<=100;count++)toast(`Notice ${count}`,{onDismiss:dismissed});});
+ expect(cards()).toHaveLength(4);expect(texts()).toEqual(expect.arrayContaining(['Notice 97','Notice 100']));expect(texts()).not.toContain('Notice 96');
+ expect(announce).toHaveBeenCalledTimes(1);expect(announce).toHaveBeenLastCalledWith('Notice 100',{queue:true});
+ // The store kept sixteen; none was ever laid out, so none has an exit to play.
+ act(()=>{dismissToast();});expect(dismissed).toHaveBeenCalledTimes(16);expect(root.toJSON()).toBeNull();
+}));
+
+it('draws a very long message and an empty one without cutting either',()=>{
+ mount({expand:true});const long='Withdrawal '.repeat(60).trim();
+ act(()=>{toast('',{duration:Infinity});toast(long,{duration:Infinity,description:long});});measure([44,480]);
+ expect(texts().filter(value=>value===long)).toHaveLength(2);
+ // No line limit: the capsule grows, and large text is not capped.
+ for(const node of root.root.findAllByType(RNText)){expect(node.props.numberOfLines).toBeUndefined();expect(node.props.allowFontScaling).not.toBe(false);}
+ expect(drawn(cards()[0]).y).toBe(-(480+14));
 });
