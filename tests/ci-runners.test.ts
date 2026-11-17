@@ -38,7 +38,7 @@ it('jobs other than publishing and Linux visuals use self-hosted macOS ARM64',()
  expect(readFileSync('docs/ci-runners.md','utf8')).toContain('playwright install chromium webkit');
  expect(readFileSync('docs/ci-runners.md','utf8')).toContain('do not save that folder with `actions/cache`');
  expect(readFileSync('docs/ci-runners.md','utf8')).not.toContain('install chromium firefox');
- expect(readFileSync('scripts/run-browser-gates.mjs','utf8')).toContain("['chromium','webkit']");
+ expect(readFileSync('scripts/browser-gates.mjs','utf8')).toContain("['chromium','webkit']");
  expect(readFileSync('scripts/run-browser-gates.mjs','utf8')).not.toContain('firefox');
  expect(readFileSync('scripts/packed-css-smoke.mjs','utf8')).toContain("'chromium,webkit'");
  expect(readFileSync('scripts/packed-css-smoke.mjs','utf8')).not.toContain('firefox');

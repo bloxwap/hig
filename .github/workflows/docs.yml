@@ -98,8 +98,16 @@ jobs:
           echo "NEXT_PUBLIC_BASE_PATH=/preview-docs" >> "$GITHUB_ENV"
           echo "HIG_DOCS_ORIGIN=https://docs.example" >> "$GITHUB_ENV"
       - run: bun run docs:build
-      - run: bun run test:web -- tests/docs.test.ts tests/docs-site-config.test.ts
-      - run: bun run --filter hig-docs check
+      - name: Check docs behavior and types in parallel
+        run: |
+          bun run test:web -- tests/docs.test.ts tests/docs-site-config.test.ts &
+          tests=$!
+          bun run --filter hig-docs check &
+          types=$!
+          failed=0
+          wait "$tests" || failed=1
+          wait "$types" || failed=1
+          exit "$failed"
       - name: Require GNU tar (gtar) for Pages artifacts
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |

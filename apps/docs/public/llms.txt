@@ -101,7 +101,7 @@ Catalog Button/Field/Input states and Slider focus captures live under `tests/vi
 
 ## Not required for these workflows
 
-The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` for RN 0.81.5 / Expo 54 and RN 0.83.10 / Expo 55). It does not boot simulators. Xcode, an iOS Simulator runtime, JDK 17, and the Android SDK are only for local `scripts/native-sim/` gallery runs, which these workflows do not execute.
+The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` for RN 0.81.5 / Expo 54 and RN 0.83.10 / Expo 55, and RN 0.88.1 / Expo 58). It does not boot simulators. Xcode, an iOS Simulator runtime, JDK 17, and the Android SDK are only for local `scripts/native-sim/` gallery runs, which these workflows do not execute.
 
 ## Jobs
 
@@ -110,10 +110,16 @@ The `native` job exports Android and iOS Metro bundles (`smoke:packed-native` fo
 | Job | Role |
 | --- | --- |
 | `paths-filter` | Same PR path filter as before; docs-only PRs skip the heavy jobs |
-| `quality` | `check`, examples, quality gates, SSR and packed smokes, Playwright packed-next/css, release dry-run. Review artifacts upload only when the job fails; `publish.yml` rebuilds instead of downloading them |
-| `native` | Packed native Metro export for both supported RN/Expo profiles |
-| `browser` | Chromium and WebKit browser, visual, and hydration gates. Captures upload only when the job fails |
-| `candidate` | Aggregator so the required check reports on docs-only PRs |
+| `compiler` | Compiler selection, TypeScript fallback and emit parity |
+| `quality (task)` | 14 independent lanes: static checks, web tests, native tests, ten packed-consumer checks, and release dry-run verification |
+| `native (profile)` | Separate packed native Metro exports for RN 0.81 / Expo 54, RN 0.83 / Expo 55, and RN 0.88 / Expo 58 |
+| `browser (gate)` | 18 separate suites covering Chromium, WebKit, components, Expo, docs, catalog and Next hydration; each starts only its required previews |
+| `linux-visual` | Linux Chromium baseline comparison |
+| `candidate` | Required aggregate check; waits for every matrix lane and fails if any lane fails or is unexpectedly skipped |
+
+The matrices use `fail-fast: false` so failures do not cancel other diagnostic results. They have no `max-parallel` cap: GitHub schedules as many lanes as the available runners allow. Each lane has its own checkout, `$RUNNER_TEMP`, build outputs, tarballs and uniquely named failure artifacts. Browser preview ports are allocated dynamically. Package builds precede their consumers within each lane; release dry-run and artifact verification remain ordered. Local `run-browser-gates.mjs` runs all suites by default; `HIG_BROWSER_GATE` selects one, and invalid selectors fail closed.
+
+More lanes only run simultaneously when the fleet has free runner capacity. Register each additional runner service with a distinct installation/work directory; do not share a checkout or temp directory. Heavy native exports and browser processes still compete for a mini's CPU and memory, so size the runner fleet accordingly. Workflow concurrency cancels superseded PR runs while keeping unrelated PRs independent. Publication and deployment retain their security, approval and artifact dependencies.
 
 ### Documentation (`docs.yml`)
 
