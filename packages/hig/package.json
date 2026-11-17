@@ -41,6 +41,11 @@
       "import": "./contracts/dist/messages.js",
       "default": "./contracts/dist/messages.js"
     },
+    "./contracts/qr": {
+      "types": "./contracts/dist/qr.d.ts",
+      "import": "./contracts/dist/qr.js",
+      "default": "./contracts/dist/qr.js"
+    },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
       "import": "./native-fonts/dist/index.js",
@@ -262,6 +267,16 @@
       "types": "./react/dist/wallet-address-core.d.ts",
       "import": "./react/dist/wallet-address-core.js",
       "default": "./react/dist/wallet-address-core.js"
+    },
+    "./react/qr-code": {
+      "types": "./react/dist/qr-code.d.ts",
+      "import": "./react/dist/qr-code.js",
+      "default": "./react/dist/qr-code.js"
+    },
+    "./native/qr-code": {
+      "types": "./native/dist/qr-code.d.ts",
+      "import": "./native/dist/qr-code.js",
+      "default": "./native/dist/qr-code.js"
     },
     "./react/asset-balance-row": {
       "types": "./react/dist/asset-balance-row.d.ts",

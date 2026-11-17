@@ -392,6 +392,9 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-vertical-address { display:inline-flex;flex-direction:column;flex:none;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);font-size:calc(var(--hig-address-row,1.5em)*.9);line-height:var(--hig-address-row,1.5em);font-weight:500;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--hig-muted);text-align:start;white-space:pre; }
 .hig-vertical-address > [aria-hidden] { display:flex;flex-direction:column; }
 .hig-vertical-address [data-anchor] { font-weight:700;color:var(--hig-text); }
+/* QRCode: one inline SVG. The size attributes set the square; host CSS may resize it and the drawing scales. */
+.hig-qr-code { display:block;flex:none;max-width:100%;height:auto; }
+.hig-qr-code-arena { display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden; }
 /* WalletAddress: the QR code and the address column share one height; the hint sits under both. */
 .hig-wallet-address { appearance:none;display:inline-flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;margin:0;padding:12px;border:0;border-radius:var(--hig-radius-xl,14px);background:transparent;color:var(--hig-text);font:inherit;text-align:start; }
 button.hig-wallet-address,button.hig-trade-row,button.hig-list-row,a.hig-list-row { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
