@@ -720,11 +720,11 @@
       },
       "GestureSheetViewProps": {
         "entry": "gesture-sheet",
-        "signature": "export interface GestureSheetViewProps extends React.HTMLAttributes<HTMLDivElement> {\n    /** Names the view. A change swaps the content with the transition. */\n    viewKey: string | number;\n    /** How deep the view sits in the sheet's hierarchy: 0 for the first, 1 for what it opens, and so on. With it, a swap to a deeper view is a push (the new view arrives from the trailing side and the old one leaves towards the leading side) and a swap to a shallower view is a pop (the reverse). Without it, or between two views of one depth, the views cross-fade in place. */\n    depth?: number;\n}"
+        "signature": "export interface GestureSheetViewProps extends React.HTMLAttributes<HTMLDivElement> {\n    /** Names the view. A change swaps the content with the transition. */\n    viewKey: string | number;\n}"
       },
       "GestureSheetView": {
         "entry": "gesture-sheet",
-        "signature": "export declare function GestureSheetView({ viewKey, depth, children, className, ...rest }: GestureSheetViewProps): React.JSX.Element;"
+        "signature": "export declare function GestureSheetView({ viewKey, children, className, ...rest }: GestureSheetViewProps): React.JSX.Element;"
       },
       "ListGroupAction": {
         "entry": "list-group",
@@ -1936,10 +1936,6 @@
         "entry": "gesture-sheet-next",
         "signature": "export declare const GestureSheetScrollView: React.ForwardRefExoticComponent<Omit<import(\"react-native-reanimated\").AnimatedScrollViewProps, \"ref\"> & React.RefAttributes<Reanimated.ScrollView>>;"
       },
-      "GestureSheetView": {
-        "entry": "gesture-sheet-next",
-        "signature": "export declare function GestureSheetView({ viewKey, depth, children, style, testID }: {\n    viewKey: string | number; /** How deep the view sits in the sheet's hierarchy: 0 for the first, 1 for what it opens, and so on. A swap to a deeper view is a push (the new view arrives from the trailing side), a swap to a shallower view is a pop (the reverse); without it, or between two views of one depth, the views cross-fade in place. */\n    depth?: number;\n    children: React.ReactNode;\n    style?: StyleProp<ViewStyle>;\n    testID?: string;\n}): React.JSX.Element;"
-      },
       "GestureSheet": {
         "entry": "gesture-sheet-next",
         "signature": "export declare function GestureSheet(props: GestureSheetProps): React.JSX.Element | null;"
@@ -2436,13 +2432,9 @@
         "entry": "gesture-sheet-model",
         "signature": "export declare function backdropProgress(position: number, lowest: number, closed: number): number;"
       },
-      "SHEET_VIEW_SWAP": {
+      "SHEET_RESIZE": {
         "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_VIEW_SWAP: {\n    readonly duration: 270;\n    readonly enter: 220;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n    readonly travel: 30;\n};"
-      },
-      "viewMove": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function viewMove(from: number | undefined, to: number | undefined): -1 | 0 | 1;"
+        "signature": "export declare const SHEET_RESIZE: {\n    readonly duration: 270;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n};"
       },
       "SearchIcon": {
         "entry": "icons",

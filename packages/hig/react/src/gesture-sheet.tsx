@@ -128,42 +128,30 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
 export interface GestureSheetViewProps extends React.HTMLAttributes<HTMLDivElement> {
  /** Names the view. A change swaps the content with the transition. */
  viewKey:string|number;
- /** How deep the view sits in the sheet's hierarchy: 0 for the first, 1 for what it opens, and so on. With it, a swap to a deeper view is a push (the new view arrives from the trailing side and the old one leaves towards the leading side) and a swap to a shallower view is a pop (the reverse). Without it, or between two views of one depth, the views cross-fade in place. */
- depth?:number;
 }
 // One curve for the height and both views, measured from Vaul's Dynamic Drawer: no spring and no overshoot, a short ease in and a long ease out. The old view leaves in 270ms and the new one arrives in 220ms.
 const VIEW_SWAP:KeyframeAnimationOptions={duration:270,easing:'cubic-bezier(.26,.08,.25,1)'};
-/** How far a pushed or popped view travels, as a share of its own width. The cross-fade covers the rest. */
-const VIEW_TRAVEL=30;
 const useCommitEffect=typeof window==='undefined'?useEffect:useLayoutEffect;
 /**
  * One view of a sheet that shows several, such as the steps of a flow or the levels of a menu. When `viewKey` changes, the
- * old view fades out of the way without holding its space, the new one fades in at its own size, and a content-sized sheet
- * (`enableDynamicSizing`) moves to the new height at the same time. With `depth` the swap also reads as a push or a pop.
- * The first view appears with the sheet, and nothing moves under reduced motion. The outgoing view is inert and hidden from
- * assistive technology while it leaves.
+ * old view fades and shrinks out of the way without holding its space, the new one fades in at its own size, and a
+ * content-sized sheet (`enableDynamicSizing`) moves to the new height at the same time. Going deeper and going back look
+ * the same, as in Vaul. The first view appears with the sheet, and nothing moves under reduced motion. The outgoing view is
+ * inert and hidden from assistive technology while it leaves.
  */
-export function GestureSheetView({viewKey,depth,children,className,...rest}:GestureSheetViewProps){
- const {reducedMotion,direction}=useHIG();
- type View={key:string|number;depth:number|undefined;node:React.ReactNode};
- const committed=useRef<View>({key:viewKey,depth,node:children}),enter=useRef<HTMLDivElement>(null),exit=useRef<HTMLDivElement>(null),mounted=useRef(false);
- // -1 pops, 1 pushes, 0 cross-fades in place.
- const [shown,setShown]=useState(viewKey),[leaving,setLeaving]=useState<View|null>(null),[move,setMove]=useState<-1|0|1>(0);
+export function GestureSheetView({viewKey,children,className,...rest}:GestureSheetViewProps){
+ const {reducedMotion}=useHIG();
+ type View={key:string|number;node:React.ReactNode};
+ const committed=useRef<View>({key:viewKey,node:children}),enter=useRef<HTMLDivElement>(null),exit=useRef<HTMLDivElement>(null),mounted=useRef(false);
+ const [shown,setShown]=useState(viewKey),[leaving,setLeaving]=useState<View|null>(null);
  // The children of the view that was last on screen are kept so it can be drawn once more while it leaves.
- if(shown!==viewKey){
-  const from=committed.current;
-  setShown(viewKey);setLeaving(reducedMotion||from.key===viewKey?null:from);
-  setMove(depth===undefined||from.depth===undefined||depth===from.depth?0:depth>from.depth?1:-1);
- }
- useEffect(()=>{committed.current={key:viewKey,depth,node:children};});
+ if(shown!==viewKey){setShown(viewKey);setLeaving(reducedMotion||committed.current.key===viewKey?null:committed.current);}
+ useEffect(()=>{committed.current={key:viewKey,node:children};});
  useCommitEffect(()=>{
   if(!mounted.current){mounted.current=true;return;}
   if(reducedMotion){setLeaving(null);return;}
-  // A push arrives from the trailing side: the right in left-to-right text, the left in right-to-left.
-  const travel=move*(direction==='rtl'?-1:1)*VIEW_TRAVEL;
-  const away=move===0?'scale(.96)':`translateX(${-travel}%)`,toward=move===0?'scale(.96)':`translateX(${travel}%)`,rest=move===0?'scale(1)':'translateX(0%)';
-  enter.current?.animate?.([{opacity:0,transform:toward},{opacity:1,transform:rest}],{...VIEW_SWAP,duration:220});
-  const out=exit.current?.animate?.([{opacity:1,transform:rest},{opacity:0,transform:away}],{...VIEW_SWAP,fill:'forwards'});
+  enter.current?.animate?.([{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'scale(1)'}],{...VIEW_SWAP,duration:220});
+  const out=exit.current?.animate?.([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.96)'}],{...VIEW_SWAP,fill:'forwards'});
   if(!out){setLeaving(null);return;}
   const done=()=>setLeaving(current=>current&&current.key!==viewKey?null:current);
   out.onfinish=done;out.oncancel=done;

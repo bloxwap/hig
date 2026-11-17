@@ -7,7 +7,7 @@ import {useFrameCallback,useSharedValue,runOnJS} from 'react-native-reanimated';
 import {SafeAreaProvider,SafeAreaView} from 'react-native-safe-area-context';
 import {HIGProvider,useColors} from '@bloxwap/hig/native/provider';
 import {GestureSheet as GorhomSheet} from '@bloxwap/hig/native/gesture-sheet';
-import {GestureSheet as NextSheet,GestureSheetHost,GestureSheetScrollView,GestureSheetView} from '@bloxwap/hig/native/gesture-sheet-next';
+import {GestureSheet as NextSheet,GestureSheetHost,GestureSheetScrollView} from '@bloxwap/hig/native/gesture-sheet-next';
 import {Button} from '@bloxwap/hig/native/button';
 import {Text} from '@bloxwap/hig/native/surface';
 type Engine='next'|'gorhom';
@@ -75,7 +75,7 @@ function Check(){
   <Sheet open={open==='list'} onOpenChange={close} title='Markets' contentMode='custom' snapPoints={['50%','90%']}>
    <Scroller>{rows(60).map(index=><Row key={index} index={index}/>)}</Scroller>
   </Sheet>
-  <Sheet open={open==='content'} onOpenChange={close} title='Panes' contentMode='custom' enableDynamicSizing>{engine==='next'?<GestureSheetView viewKey={tall?'tall':'short'} depth={tall?1:0}>{pane}</GestureSheetView>:pane}</Sheet>
+  <Sheet open={open==='content'} onOpenChange={close} title='Panes' contentMode='custom' enableDynamicSizing>{pane}</Sheet>
  </SafeAreaView>;
 }
 export default function SheetNextCheck(){

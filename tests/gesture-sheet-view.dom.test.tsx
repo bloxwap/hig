@@ -29,23 +29,6 @@ describe('GestureSheetView',()=>{
   expect(animations.map(animation=>animation.options.duration)).toEqual([220,270]);expect(animations.every(animation=>animation.options.easing==='cubic-bezier(.26,.08,.25,1)')).toBe(true);
   act(()=>animations[1].onfinish?.());expect(views().map(node=>node.textContent)).toEqual(['Second']);
  });
- it('with depth, a deeper view pushes in from the trailing side and a shallower one pops back, mirrored in right-to-left text',()=>{
-  const animations=waapi();
-  const frames=()=>animations.splice(0).map(animation=>animation.frames.map(frame=>frame.transform));
-  const view=render(<GestureSheetView viewKey='menu' depth={0}><p>Menu</p></GestureSheetView>);
-  view.rerender(<GestureSheetView viewKey='detail' depth={1}><p>Detail</p></GestureSheetView>);
-  // Push: the new view arrives from the right, the old one leaves to the left. Both still cross-fade.
-  expect(frames()).toEqual([['translateX(30%)','translateX(0%)'],['translateX(0%)','translateX(-30%)']]);
-  view.rerender(<GestureSheetView viewKey='deeper' depth={2}><p>Deeper</p></GestureSheetView>);expect(frames()).toEqual([['translateX(30%)','translateX(0%)'],['translateX(0%)','translateX(-30%)']]);
-  // Pop: the reverse.
-  view.rerender(<GestureSheetView viewKey='detail' depth={1}><p>Detail</p></GestureSheetView>);expect(frames()).toEqual([['translateX(-30%)','translateX(0%)'],['translateX(0%)','translateX(30%)']]);
-  // The same depth, or no depth, cross-fades in place.
-  view.rerender(<GestureSheetView viewKey='sibling' depth={1}><p>Sibling</p></GestureSheetView>);expect(frames()).toEqual([['scale(.96)','scale(1)'],['scale(1)','scale(.96)']]);
-  cleanup();animations.length=0;
-  const rtl=render(<HIGProvider direction='rtl'><GestureSheetView viewKey='menu' depth={0}><p>Menu</p></GestureSheetView></HIGProvider>);
-  rtl.rerender(<HIGProvider direction='rtl'><GestureSheetView viewKey='detail' depth={1}><p>Detail</p></GestureSheetView></HIGProvider>);
-  expect(frames()).toEqual([['translateX(-30%)','translateX(0%)'],['translateX(0%)','translateX(30%)']]);
- });
  it('updates a view in place while its key stays the same',()=>{
   const animations=waapi();
   const view=render(<GestureSheetView viewKey='a'><p>One</p></GestureSheetView>);view.rerender(<GestureSheetView viewKey='a'><p>Two</p></GestureSheetView>);
@@ -62,7 +45,6 @@ describe('GestureSheetView',()=>{
  });
  it('a leaving view never makes the sheet scrollable or draws a scrollbar',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');
-  expect(css).toContain('.hig-gesture-views { position:relative;min-width:0;overflow-x:clip; }');
   expect(css).toContain(".hig-gesture-view[data-leaving] { position:absolute;inset-block-start:0;inset-inline:0;pointer-events:none; }");
   expect(css).toContain(".hig-gesture-dynamic:has(.hig-gesture-view[data-leaving]) { overflow:visible; }");
   expect(css).toContain(":is(.hig-gesture-sheet,.hig-gesture-dynamic):has(.hig-gesture-view[data-leaving]) { scrollbar-width:none; }");

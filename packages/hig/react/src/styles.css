@@ -84,7 +84,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-gesture-sheet[data-hig-content-mode='default'] { overflow:auto;overscroll-behavior:contain;gap:12px;padding:24px; }
 .hig-gesture-sheet[data-hig-content-mode='custom'] { padding:0; }
 .hig-gesture-sheet[data-hig-dynamic='true'] { overflow:hidden;gap:0;padding:0; }
-.hig-gesture-views { position:relative;min-width:0;overflow-x:clip; }
+.hig-gesture-views { position:relative;min-width:0; }
 .hig-gesture-view[data-leaving] { position:absolute;inset-block-start:0;inset-inline:0;pointer-events:none; }
 .hig-gesture-dynamic { display:flex;flex-direction:column;flex:none;min-height:0;max-height:inherit; }
 .hig-gesture-dynamic[data-hig-content-mode='default'] { overflow:auto;overscroll-behavior:contain;gap:12px;padding:24px; }
