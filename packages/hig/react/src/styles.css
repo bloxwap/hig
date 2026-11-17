@@ -165,7 +165,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 /* A number read like the text around it uses the interface face, still with tabular digits, not the mono face: presentation
    market rows, the swap figures, asset and account balances, action, position, trade, profile and BarMark values, the TargetBlock
    headline and a row value. */
-.hig-market-row[data-mode='presentation'] .hig-number,.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number,.hig-swap-details .hig-number,.hig-swap-setting-value .hig-number,.hig-swap-identity .hig-number,.hig-asset-row .hig-number,.hig-account-balance .hig-number,.hig-account-section-total .hig-number,.hig-manage-action-value .hig-number,.hig-position-details dd .hig-number,.hig-target-amount .hig-number,.hig-trade-result .hig-number,.hig-trade-pnl .hig-number,.hig-trade-details .hig-number,.hig-profile-value .hig-number,.hig-bar-mark-description .hig-number,.hig-bar-mark-detail .hig-number,.hig-list-row-value .hig-number { font-family:inherit; }
+.hig-market-row[data-mode='presentation'] .hig-number,.hig-swap-amount .hig-number,.hig-swap-pill .hig-number,.hig-swap-meta .hig-number,.hig-swap-row .hig-number,.hig-swap-fees .hig-number,.hig-swap-details .hig-number,.hig-swap-setting-value .hig-number,.hig-swap-identity .hig-number,.hig-asset-row .hig-number,.hig-account-balance .hig-number,.hig-account-section-total .hig-number,.hig-manage-action-value .hig-number,.hig-position-details dd .hig-number,.hig-target-amount .hig-number,.hig-confirm-amount .hig-number,.hig-trade-result .hig-number,.hig-trade-pnl .hig-number,.hig-trade-details .hig-number,.hig-profile-value .hig-number,.hig-bar-mark-description .hig-number,.hig-bar-mark-detail .hig-number,.hig-list-row-value .hig-number { font-family:inherit; }
 /* Host options: a row without price or change, or with trailing content or a check, flows into as many columns as it has cells. */
 .hig-market-row[data-mode='presentation'][data-flow] { grid-template-columns:minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:auto; }
 .hig-market-row[data-mode='presentation'] .hig-market-trailing { text-align:end; }
@@ -478,7 +478,7 @@ button.hig-swap-receive:active { opacity:.8; }
 .hig-swap-view[data-direction='pop'],[dir='rtl'] .hig-swap-view[data-direction='push'] { --hig-swap-from:-24px; }
 @keyframes hig-swap-push { from { opacity:0;transform:translateX(var(--hig-swap-from)); } }
 /* Every block's column: the swap views, the blocks and the AssetsBlock list. */
-.hig-swap-picker,.hig-swap-settings-view,.hig-account-block,.hig-token-card,.hig-manage-position-block,.hig-settings-block,.hig-position-block,.hig-reward-block,.hig-trade-history-list,.hig-trade-detail,.hig-language-block,.hig-assets-block,.hig-assets-list { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-swap-picker,.hig-swap-settings-view,.hig-account-block,.hig-token-card,.hig-manage-position-block,.hig-settings-block,.hig-position-block,.hig-reward-block,.hig-trade-history-list,.hig-trade-detail,.hig-language-block,.hig-assets-block,.hig-assets-list,.hig-confirm { display:flex;flex-direction:column;gap:16px;min-width:0; }
 .hig-swap-view-header { display:flex;align-items:center;gap:4px;min-width:0;margin-inline-start:-8px; }
 .hig-swap-view-title { margin:0;min-width:0;font-size:1.5rem;line-height:1.25;font-weight:700;overflow-wrap:anywhere;outline:none; }
 .hig-swap-back { appearance:none;flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
@@ -598,7 +598,7 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-account-section-header > h3 { margin:0;min-width:0;font:inherit;overflow-wrap:anywhere; }
 .hig-account-section-total { flex:none; }
 /* TokenActionBlock: header, the assets and chains bars 8px apart, then equal full-width actions 16px below. */
-.hig-token-bars,.hig-token-actions,.hig-setting-cards,.hig-setting-body,.hig-setting-volume,.hig-notifications-item,.hig-signals-group,.hig-reward-list { display:flex;flex-direction:column;gap:8px; }
+.hig-token-bars,.hig-token-actions,.hig-confirm-warning,.hig-setting-cards,.hig-setting-body,.hig-setting-volume,.hig-notifications-item,.hig-signals-group,.hig-reward-list { display:flex;flex-direction:column;gap:8px; }
 .hig-token-card > .hig-token-note { margin:0; }
 .hig-token-card > .hig-token-actions + .hig-token-note { margin-block-start:-8px; }
 /* ManagePositionBlock: header, two bars 8px apart, action rows and the position row 16px below each other. */
@@ -723,7 +723,7 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-target-info { position:relative;display:inline-flex; }
 .hig-target-popover { position:absolute;inset-block-start:calc(100% + 4px);inset-inline-end:0;width:max-content;max-width:min(280px,calc(100vw - 48px));font-size:.875rem;font-weight:400;text-align:start; }
 .hig-target-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5;text-align:center; }
-.hig-target-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
+.hig-target-actions,.hig-confirm-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 /* The Custom row holding the host's value reads as the selected choice: filled like a selected quick choice, the value on its trailing
    edge. Its (0,3,0) selector outranks the base `.hig-swap-setting:hover` and `:active` fills (0,2,0), so press and hover only darken it. */
 .hig-target-block .hig-swap-setting[aria-pressed='true'] { background:var(--hig-target-fill,var(--hig-action));color:var(--hig-target-on-fill,var(--hig-onAction)); }
@@ -912,6 +912,17 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-assets-section > ul { display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none; }
 .hig-assets-section-header { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;padding-inline:8px; }
 .hig-assets-section-header > h3 { margin:0;min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500;overflow-wrap:anywhere; }
+.hig-confirm-amount { margin:0;font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere; }
+.hig-confirm-symbol { font-size:.5em;font-weight:600;letter-spacing:0;color:var(--hig-muted); }
+.hig-confirm-details { display:flex;flex-direction:column;gap:12px;margin:0;padding-inline:4px; }
+.hig-confirm-details > div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--hig-muted); }
+.hig-confirm-details dd { margin:0;color:var(--hig-text);font-weight:500;text-align:end;overflow-wrap:anywhere; }
+.hig-confirm-address { display:inline-flex;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);color:var(--hig-muted);text-align:start;white-space:pre; }
+.hig-confirm-address > [aria-hidden] { display:flex;flex-direction:column; }
+.hig-confirm-address [data-anchor] { font-weight:700;color:var(--hig-text); }
+.hig-confirm-warning { padding:20px;border-radius:20px;background:color-mix(in srgb,var(--hig-warning) 16%,transparent); }
+.hig-confirm-warning > strong { font-size:1.5rem;line-height:1.25;font-weight:700;color:var(--hig-warning); }
+.hig-confirm-warning > p { margin:0;line-height:1.5; }
 .hig-assets-status { flex:none;padding:2px 10px;font:600 .75rem/1.33 var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);letter-spacing:.08em; }
 .hig-assets-status[data-countdown] { color:var(--hig-muted);letter-spacing:.02em;font-variant-numeric:tabular-nums; }
 .hig-assets-status .hig-number { font-family:inherit; }

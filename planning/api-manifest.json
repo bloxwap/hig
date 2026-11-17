@@ -558,6 +558,18 @@
         "entry": "blocks/swap-panel-block",
         "signature": "export interface SwapDetail {\n    label: string;\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n    /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */\n    formattedValue?: string;\n}"
       },
+      "ConfirmBlock": {
+        "entry": "blocks/confirm-block",
+        "signature": "export declare function ConfirmBlock({ amount, symbol, amountOptions, address, network, details, title, warningTitle, warning, onConfirm, confirmLabel, busy, confirmDisabled, onCancel, cancelLabel, onBack, headerAction, stickyHeader, headingId, className, ...rest }: ConfirmBlockProps): React.JSX.Element;"
+      },
+      "ConfirmBlockProps": {
+        "entry": "blocks/confirm-block",
+        "signature": "export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** The amount being sent, in token units. `null` reads as unknown. */\n    amount: number | null;\n    /** The token's ticker, after the amount: HYPE. */\n    symbol: string;\n    /** Format of the amount. Defaults to at most six fraction digits. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The destination address, shown in full beside “To”, always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */\n    address: string;\n    /** The network the send moves on: HyperEVM. */\n    network: string;\n    /** More lines under Network, such as a fee. */\n    details?: readonly ConfirmDetail[];\n    /** Heading. Defaults to the built-in “Confirm Send”. */\n    title?: string;\n    /** Heading of the warning. Defaults to the built-in “Double-check the address.” */\n    warningTitle?: string;\n    /** Body of the warning. Defaults to the built-in sentence naming the token and network; `null` or `false` draws no warning. */\n    warning?: React.ReactNode;\n    /** Called when the user confirms. The host signs and sends. */\n    onConfirm: () => void;\n    /** Text of the confirming action. Defaults to the built-in “Confirm Send”. */\n    confirmLabel?: string;\n    /** The send is in progress: the confirming action shows a spinner and ignores presses, and Cancel is unavailable. */\n    busy?: boolean;\n    /** Draws the confirming action unavailable, for example while a quote refreshes. */\n    confirmDisabled?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. Without it the confirming action takes the full width. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in “Cancel”. */\n    cancelLabel?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */\n    stickyHeader?: boolean;\n    /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n}"
+      },
+      "ConfirmDetail": {
+        "entry": "blocks/confirm-block",
+        "signature": "export interface ConfirmDetail {\n    label: string;\n    value: React.ReactNode;\n    /** What a `value` that is not text reads as. */\n    valueLabel?: string;\n}"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -1089,6 +1101,10 @@
       "NotificationsGroup": {
         "entry": "blocks/notifications-block",
         "signature": "export interface NotificationsGroup {\n    id: string;\n    title?: string;\n    items: readonly NotificationsItem[];\n}"
+      },
+      "confirmAddressRows": {
+        "entry": "blocks/confirm-block",
+        "signature": "export declare function confirmAddressRows(address: string): {\n    text: string;\n    anchor: boolean;\n}[][];"
       },
       "ScreenHeaderControlProps": {
         "entry": "blocks/screen-header",
@@ -1756,6 +1772,18 @@
         "entry": "blocks",
         "signature": "export type SwapView = 'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees';"
       },
+      "ConfirmBlock": {
+        "entry": "confirm-block",
+        "signature": "export declare function ConfirmBlock({ amount, symbol, amountOptions, address, network, details, title, warningTitle, warning, onConfirm, confirmLabel, busy, confirmDisabled, onCancel, cancelLabel, onBack, headerAction, stickyHeader, stickyHeaderBackground, scrollComponent, headingId, testID }: ConfirmBlockProps): React.JSX.Element;"
+      },
+      "ConfirmBlockProps": {
+        "entry": "confirm-block",
+        "signature": "export interface ConfirmBlockProps {\n    /** The amount being sent, in token units. `null` reads as unknown. */\n    amount: number | null;\n    /** The token's ticker, after the amount: HYPE. */\n    symbol: string;\n    /** Format of the amount; default `{maximumFractionDigits:6}`. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The destination address, shown in full beside \"To\", always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */\n    address: string;\n    /** The network the send moves on: HyperEVM. */\n    network: string;\n    /** More lines under Network, such as a fee. */\n    details?: readonly ConfirmDetail[];\n    /** Heading. Defaults to the built-in \"Confirm Send\". */\n    title?: string;\n    /** Heading of the warning. Defaults to the built-in \"Double-check the address.\" */\n    warningTitle?: string;\n    /** Body of the warning. Defaults to the built-in sentence naming the token and network; `null` or `false` draws no warning. */\n    warning?: React.ReactNode;\n    /** Called when the user confirms. The host signs and sends. */\n    onConfirm: () => void;\n    /** Text of the confirming action. Defaults to the built-in \"Confirm Send\". */\n    confirmLabel?: string;\n    /** The send is in progress: the confirming action shows a spinner and ignores presses, and Back and Cancel are unavailable. */\n    busy?: boolean;\n    /** Draws the confirming action unavailable, for example while a quote refreshes. */\n    confirmDisabled?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. Without it the confirming action takes the full width. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in \"Cancel\". */\n    cancelLabel?: string;\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */\n    stickyHeader?: boolean;\n    /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`. Defaults to `confirm`. */\n    testID?: string;\n}"
+      },
+      "ConfirmDetail": {
+        "entry": "confirm-block",
+        "signature": "export interface ConfirmDetail {\n    label: string;\n    value: React.ReactNode;\n    /** What a `value` that is not text reads as. */\n    valueLabel?: string;\n}"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -1795,6 +1823,10 @@
       "Checkbox": {
         "entry": "checkbox",
         "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): React.JSX.Element;"
+      },
+      "confirmAddressRows": {
+        "entry": "confirm-block",
+        "signature": "export declare function confirmAddressRows(address: string): {\n    text: string;\n    anchor: boolean;\n}[][];"
       },
       "NumberTone": {
         "entry": "data",

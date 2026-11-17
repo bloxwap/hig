@@ -2,7 +2,7 @@
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `SwapPanelBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -19,6 +19,7 @@ All data and actions are supplied by the host application.
 | `SwapPanelBlock` | Send, swap and bridge in one panel. `tokens` (and optional `fromTokens`, `chains`, `hotTokenIds`), the pair as `from` / `to` with `onFromChange` / `onToChange` or uncontrolled with `defaultFrom` / `defaultTo`, `onAmountChange` (From amount in token units), the host quote as `received`, `fee`, `fees` and `quoteLoading`, `slippage` / `onSlippageChange`, `wallet`, `receive`, and `onSubmit(action)`. Details below. |
 | `AccountBlock` | An account at a glance: a header, the total with a deposit action, the pinned dollar balance, then every other holding by value. Details below. |
 | `TokenActionBlock` | One token and what can be done with it: where it is held, the chains it sits on, and the actions as equal full-width buttons. Details below. |
+| `ConfirmBlock` | The last look before a send: the amount as the headline, the destination address in full and the network as plain lines, a warning that the send cannot be taken back, then Cancel and Confirm side by side. Details below. |
 | `TradeHistoryListBlock` | A history of closed trades: a header, then one row per trade with the asset, its side and leverage, and the net result over its age. Details below. |
 | `TradeHistoryDetailBlock` | The full record of one closed trade: the asset, the net result as the headline figure, the trade's figures as rows, and the host's actions. Details below. |
 | `LanguageBlock` | Choose the app's language: a header, a search field, and each language as a row with its flag and a check on the one in use. Details below. |
@@ -203,6 +204,24 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Intent.** Actions default to `secondary`, because the card offers equal choices. Set `intent: 'primary'` on at most one, or `'destructive'` for something like a burn.
 - **Header.** `onBack` shows Back and `headerAction` is the trailing control, as in `AccountBlock`, with the same `stickyHeader` and `headingId`.
 - **Ownership.** The card never reads a wallet or starts a flow. Each action only reports the press; the host opens its send, receive, stake or unstake screen, for example a `SwapPanelBlock`.
+
+### ConfirmBlock
+
+`ConfirmBlock` is the last look before a send, usually in a sheet after the amount and destination are chosen: the header, the amount with its ticker as the headline, the destination address and the network as plain lines, a warning, then Cancel and the confirming action side by side. It is available from `@bloxwap/hig/react/blocks/confirm-block`, `@bloxwap/hig/native/confirm-block` and the `blocks` aggregates.
+
+```tsx
+<ConfirmBlock amount={2.5} symbol="HYPE" address={destination} network="HyperEVM"
+  busy={sending} onBack={goBack} onConfirm={send} onCancel={close}/>
+```
+
+- **Amount.** `amount` is in token units and is formatted with `amountOptions` (at most six fraction digits by default); `symbol` follows it, smaller and muted. `null` reads as unknown.
+- **Destination.** The details are information, not controls, so they are plain lines with no card or row container: a muted label on the leading edge and the value on the trailing edge. `address` is shown in full beside the built-in “To”, always as two rows of monospace split at the middle, left to right in every locale. The characters people compare are emphasised in the text colour, the first 4 (6 when the address starts with `0x`) and the last 4, and the rest is muted, as in `VerticalAddress`. Assistive technology reads the plain address. Never shorten it here. `network` is the value of the Network line. `details` adds lines under it, such as a fee: `{label, value}` plus `valueLabel` for a value that is not text. Native reads each line as one (“To, 0x…”).
+- **Warning.** The warning is on by default: the built-in heading “Double-check the address.” and a sentence that names the token and the network. `warningTitle` and `warning` replace them with host text; `warning={null}` draws none. It is a note, not an alert: it is there before the user acts, so nothing is announced on its own.
+- **Actions.** `onConfirm` reports the press on the confirming action, which is the primary button; `confirmLabel` replaces the built-in “Confirm Send”. `onCancel` shows Cancel on its leading side (`cancelLabel`), the two sharing the row equally as in `TargetBlock`; without it the confirming action takes the full width. `confirmDisabled` draws the confirming action unavailable.
+- **Busy.** While `busy`, the confirming action shows a spinner and ignores presses, and Back and Cancel are unavailable, so a send that is being signed cannot be left half way.
+- **Header.** `title` replaces the built-in “Confirm Send”. `onBack` shows Back and `headerAction` is the trailing control, with the same `stickyHeader` and `headingId` as the other blocks.
+- **Native test IDs.** `testID` (default `confirm`) prefixes `-header`, `-back`, `-title`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-warning`, `-confirm` and `-cancel`.
+- **Ownership.** The block never validates an address, reads a wallet or sends. The host checks the address before showing the block, and signs and sends on `onConfirm`.
 
 ### LanguageBlock
 
