@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
-import {TOAST_DURATION,TOAST_EXIT,TOAST_FLICK,TOAST_GAP,TOAST_MOTION,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_QUEUE_LIMIT,TOAST_SPRING,TOAST_STACK_SCALE,TOAST_SWIPE_THRESHOLD,TOAST_VISIBLE,TOAST_WIDTH,toastCap,toastClockPause,toastClockRun,toastDrag,toastEdge,toastEnterFrom,toastExitTo,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastEntry} from '../packages/hig/contracts/src/toast';
+import {TOAST_DURATION,TOAST_EXIT,TOAST_FLICK,TOAST_GAP,TOAST_HOLD,TOAST_MOTION,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_QUEUE_LIMIT,TOAST_SPRING,TOAST_STACK_SCALE,TOAST_SWIPE_THRESHOLD,TOAST_VISIBLE,TOAST_WIDTH,toastCap,toastClockPause,toastClockRun,toastDrag,toastEdge,toastEnterFrom,toastExitTo,toastGrab,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastEntry} from '../packages/hig/contracts/src/toast';
 const add=(list:readonly ToastEntry<string>[],key:number,value:string,options:{id?:string|number;duration?:number}={},limit?:number)=>toastUpsert(list,{key,id:options.id??key,duration:options.duration,value},limit);
 const keys=(list:readonly ToastEntry<string>[])=>list.map(entry=>entry.key);
 describe('toast contract',()=>{
@@ -12,6 +12,8 @@ describe('toast contract',()=>{
   expect(css).toContain(`transition: transform ${TOAST_MOTION.duration}ms, opacity ${TOAST_MOTION.duration}ms`);expect(css).toContain(`--scale: var(--toasts-before) * ${TOAST_STACK_SCALE} + 1`);expect(css).toContain(`animation-duration: ${TOAST_EXIT.duration}ms`);
   // Critically damped: damping = 2·√(stiffness·mass), so a released swipe returns without a bounce.
   expect(TOAST_SPRING.damping).toBeCloseTo(2*Math.sqrt(TOAST_SPRING.stiffness*TOAST_SPRING.mass),0);
+  // HIG's own figures, where Sonner has none or a pointer does the work.
+  expect([TOAST_HOLD,TOAST_FLICK]).toEqual([200,500]);
  });
  it('reads the edge a position hangs from and the swipes that dismiss towards it',()=>{
   expect(toastEdge('top-center')).toEqual({y:'top',x:'center',lift:1});expect(toastEdge('bottom-right')).toEqual({y:'bottom',x:'right',lift:-1});
@@ -92,6 +94,13 @@ describe('toast swipe arithmetic',()=>{
   expect(Math.abs(toastDrag(1,true,false))).toBeLessThan(1);
   // An axis nothing dismisses along does not move at all.
   expect(toastDrag(40,false,false)).toBe(0);expect(toastDrag(0,true,true)).toBe(0);
+ });
+ it('picks a notice up where it is: the grab undoes the drag in both directions',()=>{
+  expect(toastGrab(-30,true,false)).toBe(-30);expect(toastGrab(0,true,false)).toBe(0);expect(toastGrab(12,false,false)).toBe(0);
+  for(const delta of [1,8,30,120])expect(toastGrab(toastDrag(delta,true,false),true,false)).toBeCloseTo(delta);
+  for(const delta of [-1,-30])expect(toastGrab(toastDrag(delta,false,true),false,true)).toBeCloseTo(delta);
+  // Past what the resistance can reach it stays finite.
+  expect(Number.isFinite(toastGrab(25,true,false))).toBe(true);
  });
  it('dismisses a release that is far enough or fast enough, only in an allowed direction',()=>{
   expect(toastSwipeDismisses(-TOAST_SWIPE_THRESHOLD,0,true,false)).toBe(true);expect(toastSwipeDismisses(-44,0,true,false)).toBe(false);

@@ -101,6 +101,7 @@
         "Badge",
         "Alert/Callout",
         "Toast",
+        "Toaster",
         "Progress",
         "Spinner",
         "Skeleton",
@@ -111,7 +112,7 @@
       "docs": "docs/components/status.md",
       "web": "implemented",
       "native": "implemented with documented alternatives",
-      "remaining": "Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence."
+      "remaining": "Toast is an inline notification stack, no mandatory portal/timer backend; its host owns delivery ordering/persistence. Toaster and toast() are the transient host: Sonner on web, HIG's own Reanimated and Gesture Handler host on native, which has not run on a device. toast.loading and toast.promise are not provided. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence."
     },
     {
       "slug": "financial-data",

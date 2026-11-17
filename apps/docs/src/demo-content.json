@@ -301,6 +301,10 @@
       "title": "Toast"
     },
     {
+      "route": "components/toaster",
+      "title": "Toaster"
+    },
+    {
       "route": "components/progress",
       "title": "Progress"
     },
@@ -898,6 +902,15 @@
     {
       "name": "Toast",
       "route": "components/toast",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "Toaster",
+      "route": "components/toaster",
       "family": "status",
       "nativeSupport": "renderer",
       "states": [

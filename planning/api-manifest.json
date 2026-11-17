@@ -956,7 +956,7 @@
       },
       "ToastNotice": {
         "entry": "status",
-        "signature": "export declare function ToastNotice({ message, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
+        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode; /** A second line under the message, in regular weight. With one the capsule keeps a fixed corner radius, not a full pill. */\n    description?: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
       },
       "Toast": {
         "entry": "status",
@@ -1020,19 +1020,19 @@
       },
       "Toaster": {
         "entry": "toast",
-        "signature": "export declare function Toaster(props: ToasterProps): React.JSX.Element;"
+        "signature": "export declare function Toaster({ offset, mobileOffset, ...props }: ToasterProps): React.JSX.Element;"
       },
       "ToastOptions": {
         "entry": "toast",
-        "signature": "export interface ToastOptions {\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button; defaults to the English `dismissNotice`. Pass the provider's translation from a component. */\n    dismissName?: string; /** Milliseconds before auto-dismiss; Sonner's default when omitted. */\n    duration?: number; /** Reuse an id to replace a notice instead of stacking it. */\n    id?: string | number;\n}"
-      },
-      "toast": {
-        "entry": "toast",
-        "signature": "export declare function toast(message: string, { severity, action, dismissName, duration, id }?: ToastOptions): string | number;"
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
       },
       "dismissToast": {
         "entry": "toast",
-        "signature": "export declare function dismissToast(id?: string | number): void;"
+        "signature": "export declare function dismissToast(id?: ToastId): void;"
+      },
+      "toast": {
+        "entry": "toast",
+        "signature": "export declare const toast: ToastCall<ToastOptions>;"
       },
       "WalletAddressCoreProps": {
         "entry": "wallet-address-core",
@@ -2240,6 +2240,14 @@
         "entry": "status",
         "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss wording inside the close control's accessible name; defaults to HIGProvider messages.dismiss. The control shows an x, not text. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
       },
+      "ToastNoticeProps": {
+        "entry": "status",
+        "signature": "export interface ToastNoticeProps {\n    message: string;\n    /** A second line under the message, in regular weight. */\n    description?: string;\n    severity?: Notice['severity'];\n    action?: React.ReactNode;\n    /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */\n    dismissName?: string;\n    /** Draws the close control and takes its press. Omitted, the notice has none. */\n    onDismiss?: () => void;\n    /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */\n    hug?: boolean;\n    /** Merged over the capsule's fill, radius and shadow. */\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "ToastNotice": {
+        "entry": "status",
+        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss, hug, style }: ToastNoticeProps): React.JSX.Element;"
+      },
       "Toast": {
         "entry": "status",
         "signature": "export declare function Toast({ notices, onDismiss, dismissLabel, maxHeight, testID }: ToastProps): React.JSX.Element;"
@@ -2328,6 +2336,26 @@
         "entry": "swap-sheet",
         "signature": "export declare function SwapSheet({ open, onOpenChange, title, view: viewProp, onViewChange, style, ...panel }: SwapSheetProps): React.JSX.Element;"
       },
+      "ToastOptions": {
+        "entry": "toast",
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
+      },
+      "ToasterProps": {
+        "entry": "toast",
+        "signature": "export interface ToasterProps {\n    /** The corner or edge the stack hangs from. Default `bottom-center`, as on web. `left` and `right` follow the provider's direction, so they swap under right-to-left. */\n    position?: ToastPosition;\n    /** Draws the visible notices one after another instead of as a collapsed stack. Default `false`. A finger resting on a notice for 200ms expands the stack until it lifts, and a running screen reader keeps it expanded so every notice can be reached. */\n    expand?: boolean;\n    /** Notices drawn at once; older ones wait behind them and their time does not run. Default 3. */\n    visibleToasts?: number;\n    /** Points between notices when expanded, and how far each notice behind the front peeks out when collapsed. Default 14. */\n    gap?: number;\n    /** Points between the stack and the screen edges, added to the safe-area insets: one number for every edge, or an object naming edges, the others keeping the default. Default 16 on a window narrower than 600 points and 24 otherwise. `left` and `right` are start and end, like `position`. */\n    offset?: number | {\n        top?: number;\n        right?: number;\n        bottom?: number;\n        left?: number;\n    };\n    /** Milliseconds a notice stays when `toast()` names no `duration`. Default 4000. */\n    duration?: number;\n    /** Directions a swipe dismisses in. Default: towards the edges the stack sits against (`bottom-center` → down; `top-right` → up and right). */\n    swipeDirections?: readonly ToastSwipeDirection[];\n    /** Prefix of the test IDs: `<testID>` on the layer and `<testID>-toast` on each notice. */\n    testID?: string;\n}"
+      },
+      "dismissToast": {
+        "entry": "toast",
+        "signature": "export declare function dismissToast(id?: ToastId): void;"
+      },
+      "toast": {
+        "entry": "toast",
+        "signature": "export declare const toast: ToastCall<ToastOptions>;"
+      },
+      "Toaster": {
+        "entry": "toast",
+        "signature": "export declare function Toaster({ position, expand, visibleToasts, gap, offset, duration, swipeDirections, testID }: ToasterProps): React.JSX.Element | null;"
+      },
       "TradeHistoryListRender": {
         "entry": "trade-history-list-block",
         "signature": "export interface TradeHistoryListRender {\n    trades: readonly TradeHistoryItem[];\n    /** Draws one row; the signature matches FlatList's `renderItem`. */\n    renderItem: (info: {\n        item: TradeHistoryItem;\n    }) => React.ReactElement;\n    keyExtractor: (trade: TradeHistoryItem) => string;\n    /** The 8dp gap between rows, for `ItemSeparatorComponent`. */\n    ItemSeparatorComponent: React.ComponentType;\n    /** With `listChrome`: the header (unless it is pinned with `stickyHeader`) and the `notice`, 16dp above the first row. `null` when there is neither. */\n    ListHeaderComponent?: React.ReactElement | null;\n    /** With `listChrome`: the `footer`, 16dp under the last row. `null` without one. */\n    ListFooterComponent?: React.ReactElement | null;\n    /** With `listChrome`: the block's 16dp inset around the rows, header and footer. */\n    contentContainerStyle?: ViewStyle;\n    /** With `stickyHeader`: reports the list's offset so the pinned header fills once rows scroll under it. */\n    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;\n    scrollEventThrottle?: number;\n}"
@@ -2387,6 +2415,10 @@
       "createNumberReelModel": {
         "entry": "animated-number-model",
         "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string, animateFormatted?: boolean): NumberReelModel | null;"
+      },
+      "speak": {
+        "entry": "announce",
+        "signature": "export declare function speak(message: string, severity: string): void;"
       },
       "Figure": {
         "entry": "figure",

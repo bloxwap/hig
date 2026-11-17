@@ -412,6 +412,15 @@
       ]
     },
     {
+      "name": "Toaster",
+      "route": "components/toaster",
+      "entry": "toast",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "Progress",
       "route": "components/progress",
       "entry": "status",

@@ -2,15 +2,15 @@
 import React,{useEffect} from 'react';
 import {Toaster as SonnerToaster,toast as sonner,type ToasterProps} from 'sonner';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {TOAST_DURATION,TOAST_GAP,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_VISIBLE,type ToastBaseOptions,type ToastId,type ToastSeverity} from '@bloxwap/hig/contracts/toast';
+import {TOAST_DURATION,TOAST_GAP,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_VISIBLE,type ToastBaseOptions,type ToastCall,type ToastId,type ToastSeverity} from '@bloxwap/hig/contracts/toast';
 import {useHIG} from './provider.js';
 import {ToastNotice} from './status.js';
 import {registerNotifier} from './notify.js';
 export type {ToasterProps} from 'sonner';
-export type {ToastId,ToastPosition,ToastSeverity,ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
+export type {ToastBaseOptions,ToastCall,ToastId,ToastPosition,ToastSeverity,ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
 const edges=['top','right','bottom','left'] as const;
-/** A number (or nothing) is a distance added to the safe-area inset of every edge, as the native host places its stack. A string or a per-edge object is the host's own CSS and reaches Sonner untouched. */
-const inset=(offset:ToasterProps['offset'],fallback:number):ToasterProps['offset']=>offset===undefined||typeof offset==='number'?Object.fromEntries(edges.map(edge=>[edge,`calc(env(safe-area-inset-${edge}, 0px) + ${offset??fallback}px)`])):offset;
+/** A number, for every edge or for one named edge, is a distance added to that edge's safe-area inset, as the native host places its stack; an edge left out keeps the default. A string is the host's own CSS and reaches Sonner untouched. */
+const inset=(offset:ToasterProps['offset'],fallback:number):ToasterProps['offset']=>typeof offset==='string'?offset:Object.fromEntries(edges.map(edge=>{const value=typeof offset==='object'?offset[edge]:offset;return [edge,typeof value==='string'?value:`calc(env(safe-area-inset-${edge}, 0px) + ${value??fallback}px)`];}));
 /**
  * Sonner's host for transient HIG notices. Mount once near the app root, inside HIGProvider. It shares its defaults with the
  * native `Toaster` (`@bloxwap/hig/contracts/toast`): three visible notices, a 14px gap, four seconds, and offsets that clear
@@ -35,4 +35,4 @@ const as=(severity:ToastSeverity)=>(message:string,options?:Omit<ToastOptions,'s
  * `Toaster`). `toast.success`, `toast.error`, `toast.warning` and `toast.info` set the severity; `toast.dismiss` is
  * `dismissToast`. The same call, options and names work in `@bloxwap/hig/native/toast`.
  */
-export const toast:((message:string,options?:ToastOptions)=>ToastId)&{success:(message:string,options?:Omit<ToastOptions,'severity'>)=>ToastId;error:(message:string,options?:Omit<ToastOptions,'severity'>)=>ToastId;warning:(message:string,options?:Omit<ToastOptions,'severity'>)=>ToastId;info:(message:string,options?:Omit<ToastOptions,'severity'>)=>ToastId;dismiss:(id?:ToastId)=>void}=Object.assign(raise,{success:as('success'),error:as('error'),warning:as('warning'),info:as('info'),dismiss:dismissToast});
+export const toast:ToastCall<ToastOptions>=Object.assign(raise,{success:as('success'),error:as('error'),warning:as('warning'),info:as('info'),dismiss:dismissToast});

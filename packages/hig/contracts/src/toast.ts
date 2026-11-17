@@ -24,6 +24,16 @@ export interface ToastBaseOptions {
  /** Called once when the notice's time runs out. */
  onAutoClose?:()=>void;
 }
+/** `toast` as each platform exports it, with that platform's options: the call itself, a shorthand per severity, and `dismiss`, which is `dismissToast`. Each returns the notice's id. */
+export interface ToastCall<Options> {
+ (message:string,options?:Options):ToastId;
+ success:(message:string,options?:Omit<Options,'severity'>)=>ToastId;
+ error:(message:string,options?:Omit<Options,'severity'>)=>ToastId;
+ warning:(message:string,options?:Omit<Options,'severity'>)=>ToastId;
+ info:(message:string,options?:Omit<Options,'severity'>)=>ToastId;
+ /** Dismisses one notice by id, or every notice when the id is omitted. */
+ dismiss:(id?:ToastId)=>void;
+}
 /** Milliseconds a notice stays without a `duration`. */
 export const TOAST_DURATION=4000;
 /** Notices drawn at once; older ones wait behind them. */
@@ -45,6 +55,8 @@ export const TOAST_MOTION={duration:400,curve:[0.25,0.1,0.25,1]} as const;
 export const TOAST_EXIT={duration:200,curve:[0,0,0.58,1]} as const;
 /** Reduced motion: nothing slides or scales, and opacity changes over this long. HIG's own figure; Sonner cuts to the end state. */
 export const TOAST_REDUCED_FADE=150;
+/** How long a finger rests on a notice before a collapsed stack expands under it, so a tap or a quick swipe does not stir the stack. HIG's own figure; on web the pointer hovering does this. */
+export const TOAST_HOLD=200;
 /** A swipe released this far from rest dismisses. */
 export const TOAST_SWIPE_THRESHOLD=45;
 /** A swipe released faster than this (points per second) dismisses whatever its distance. HIG's own figure: Sonner divides the distance by the time since the pointer went down, which a hold before the flick defeats. */
@@ -141,6 +153,14 @@ export function toastDrag(delta:number,backward:boolean,forward:boolean):number{
  if(!backward&&!forward)return 0;
  if(delta<0?backward:forward)return delta;
  return delta/(1.5+Math.abs(delta)/20);
+}
+/** The drag distance that puts the notice where it already is, `amount` points from rest: `toastDrag` undone. A notice caught while it springs back carries on from there without a jump. */
+export function toastGrab(amount:number,backward:boolean,forward:boolean):number{
+ 'worklet';
+ if(!backward&&!forward)return 0;
+ if(amount<0?backward:forward)return amount;
+ const size=Math.min(Math.abs(amount),19.9);
+ return (amount<0?-1:1)*1.5*size/(1-size/20);
 }
 /** Whether a release dismisses: in an allowed direction, and either far enough or fast enough that way. `velocity` is in points per second along the axis. */
 export function toastSwipeDismisses(amount:number,velocity:number,backward:boolean,forward:boolean):boolean{

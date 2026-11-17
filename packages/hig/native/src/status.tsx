@@ -52,18 +52,21 @@ export interface ToastNoticeProps {
  dismissName?:string;
  /** Draws the close control and takes its press. Omitted, the notice has none. */
  onDismiss?:()=>void;
+ /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */
+ hug?:boolean;
  /** Merged over the capsule's fill, radius and shadow. */
  style?:StyleProp<ViewStyle>;
 }
-/** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the transient `Toaster` of `@bloxwap/hig/native/toast`; it announces nothing itself. It is as wide as its content when its parent does not stretch it. */
-export function ToastNotice({message,description,severity='info',action,dismissName,onDismiss,style}:ToastNoticeProps){
+/** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the transient `Toaster` of `@bloxwap/hig/native/toast`; it announces nothing itself. */
+export function ToastNotice({message,description,severity='info',action,dismissName,onDismiss,hug=false,style}:ToastNoticeProps){
  const {messages,direction}=useHIG();const colors=useColors();
  const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null;
  return <View accessibilityLiveRegion='none' style={[{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'},style]}>
   <SeverityIcon kind={severity} color={colors[severityRole[severity]]}/>
-  <View style={{flexShrink:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{message}</Text>{description?<Text>{description}</Text>:null}</View>
-  {/* The trailing group takes the free space as its margin, so nothing in the row grows and a capsule that is not stretched stays as wide as its content. */}
-  {action!=null||close?<View style={{flexDirection:'row',alignItems:'center',gap:10,marginStart:'auto'}}>{action}{close}</View>:null}
+  {/* Filling its parent, the message takes the room that is left. Hugging, nothing in the row may grow, or the row would take all the room it is offered. */}
+  <View style={hug?{flexShrink:1,minWidth:0}:{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{message}</Text>{description?<Text>{description}</Text>:null}</View>
+  {action}
+  {close}
  </View>;
 }
 /** Each notice is one capsule row: severity symbol, message, optional action, then a close control. Compact, scrollable notices remain visible until their host removes them. */

@@ -62,6 +62,10 @@ it('draws nothing while idle, then the HIG capsule with its message, description
  const layer=view.findAll(node=>node.props.testID==='toasts'&&typeof node.type==='string')[0];
  expect(layer.props.pointerEvents).toBe('box-none');expect(layer.children[0].props.pointerEvents).toBe('box-none');expect(layer.children[0].props.accessibilityLabel).toBe('Notifications');
  expect(view.findAll(node=>node.props.accessibilityLabel==='Dismiss Transfer failed').length).toBeGreaterThan(0);
+ // The capsule hugs its content: nothing in its row grows, so a short notice is a short pill.
+ const row=cards()[0].findAll(node=>typeof node.type==='string'&&StyleSheet.flatten(node.props.style)?.minHeight===44)[0],parts=row.children.map(child=>typeof child.type==='string'?child:child.findAll(node=>typeof node.type==='string')[0]);
+ expect(StyleSheet.flatten(row.props.style)).toMatchObject({flexDirection:'row',alignItems:'center',backgroundColor:'transparent'});expect(parts).toHaveLength(4);
+ expect(parts.map(part=>StyleSheet.flatten(part.props.style)?.flex)).toEqual([undefined,undefined,undefined,undefined]);expect(StyleSheet.flatten(parts[1].props.style)).toMatchObject({flexShrink:1,minWidth:0});
  // Until it is laid out it is transparent and out of the stack; then it is the front.
  expect(drawn(cards()[0]).opacity).toBe(0);measure([62]);expect(drawn(cards()[0])).toEqual({opacity:1,x:0,y:0,scaleX:1,scaleY:1});
  act(()=>{view.findAll(node=>node.props.accessibilityRole==='button'&&typeof node.props.onPress==='function'&&text(node)==='Retry')[0].props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented:()=>false});});
@@ -89,18 +93,18 @@ it('hangs from the chosen edge, clear of the safe area, and is as wide as the wi
  const insets={top:59,right:0,bottom:34,left:0};
  act(()=>Dimensions.set({window:{...window,width:390,height:844}}));
  mount({},{},insets);act(()=>{toast('Saved');});
- const rail=()=>StyleSheet.flatten(root.root.findAll(node=>node.props.testID==='toasts'&&typeof node.type==='string')[0].children[0].props.style);
+ const layer=()=>root.root.findAll(node=>node.props.testID==='toasts'&&typeof node.type==='string')[0],rail=()=>StyleSheet.flatten(layer().children[0].props.style);
  const card=()=>Object.assign({},...flat(cards()[0].props.style).filter(part=>!part.__style));
  // Narrow window: 16 points past the insets on every side, full width between them, anchored at the bottom by default.
- expect(rail()).toMatchObject({position:'absolute',top:75,bottom:50,left:16,right:16,alignItems:'center',direction:'ltr'});
+ expect(rail()).toMatchObject({position:'absolute',top:75,bottom:50,start:16,end:16,alignItems:'center'});expect(StyleSheet.flatten(layer().props.style).direction).toBe('ltr');
  expect(card()).toMatchObject({position:'absolute',bottom:0,maxWidth:'100%',borderRadius:22});expect(card().top).toBeUndefined();
- act(()=>root.update(tree({position:'top-right',offset:60},{direction:'rtl'},{top:59,right:47,bottom:21,left:0})));
- // Left and right are start and end: the rail carries the provider's direction, and the wider side inset clears both sides.
- expect(rail()).toMatchObject({top:119,bottom:81,left:107,right:107,alignItems:'flex-end',direction:'rtl'});expect(card()).toMatchObject({top:0});expect(card().bottom).toBeUndefined();
+ act(()=>root.update(tree({position:'top-right',offset:{top:60,left:8}},{direction:'rtl'},{top:59,right:47,bottom:21,left:0})));
+ // Left and right are start and end: the layer carries the provider's direction, so the start edge is the physical right and takes its inset. Edges the host did not name keep the default.
+ expect(rail()).toMatchObject({top:119,bottom:37,start:55,end:16,alignItems:'flex-end'});expect(StyleSheet.flatten(layer().props.style).direction).toBe('rtl');expect(card()).toMatchObject({top:0});expect(card().bottom).toBeUndefined();
  // Wide window: 24 points and Sonner's 356-point column.
  act(()=>Dimensions.set({window:{...window,width:1024,height:768}}));
  act(()=>root.update(tree({position:'top-left'},{},insets)));
- expect(rail()).toMatchObject({top:83,left:24,alignItems:'flex-start'});expect(card()).toMatchObject({maxWidth:356});
+ expect(rail()).toMatchObject({top:83,start:24,end:24,alignItems:'flex-start'});expect(card()).toMatchObject({maxWidth:356});
 });
 
 it('stacks like Sonner: the newest in front, older ones collapsed behind it, expanded on request, one extra kept ready',()=>{
@@ -177,9 +181,10 @@ it('holds every notice while one is touched or the app is in the background, and
  mount({visibleToasts:1,position:'top-center'});
  act(()=>{toast('Old');toast('New');});measure([44,44]);
  act(()=>{jest.advanceTimersByTime(3000);});
- // A finger goes down on the front: the stack expands on the UI thread and both clocks stop.
+ // A finger goes down on the front: both clocks stop at once. A tap would lift before the stack stirs; held for 200ms, the stack expands.
  const front=gestures()[1];act(()=>{front.handlers.onBegin();});flush();
- expect(drawn(cards()[0]).y).toBe(58);
+ expect(drawn(cards()[0]).y).toBe(14);
+ act(()=>{jest.advanceTimersByTime(200);});flush();expect(drawn(cards()[0]).y).toBe(58);
  act(()=>{jest.advanceTimersByTime(60000);});expect(texts()).toEqual(expect.arrayContaining(['Old','New']));
  // Lifted without a swipe: it collapses again and the front has the second it had left.
  act(()=>{front.handlers.onFinalize();});flush();expect(drawn(cards()[0]).y).toBe(14);

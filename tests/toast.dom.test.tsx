@@ -73,9 +73,14 @@ describe('web toasts: the unified API over Sonner',()=>{
    expect(host().style.getPropertyValue(`--mobile-offset-${edge}`)).toBe(`calc(env(safe-area-inset-${edge}, 0px) + 16px)`);
   }
   // A number is still a distance from the safe area; the host's own CSS and any Sonner prop pass through.
-  rerender(<HIGProvider><Toaster position='top-center' offset={60} mobileOffset='2rem' gap={8}/></HIGProvider>);
+  rerender(<HIGProvider><Toaster position='top-center' offset={60} mobileOffset={{top:60,left:'2rem'}} gap={8}/></HIGProvider>);
   await waitFor(()=>expect(host().dataset.yPosition).toBe('top'));
-  expect(host().style.getPropertyValue('--offset-top')).toBe('calc(env(safe-area-inset-top, 0px) + 60px)');expect(host().style.getPropertyValue('--mobile-offset-top')).toBe('2rem');expect(host().style.getPropertyValue('--gap')).toBe('8px');
+  expect(host().style.getPropertyValue('--offset-top')).toBe('calc(env(safe-area-inset-top, 0px) + 60px)');expect(host().style.getPropertyValue('--offset-left')).toBe('calc(env(safe-area-inset-left, 0px) + 60px)');
+  // One named edge: its number clears the safe area too, a string is the host's own CSS, and the other edges keep the default.
+  expect(host().style.getPropertyValue('--mobile-offset-top')).toBe('calc(env(safe-area-inset-top, 0px) + 60px)');expect(host().style.getPropertyValue('--mobile-offset-left')).toBe('2rem');expect(host().style.getPropertyValue('--mobile-offset-bottom')).toBe('calc(env(safe-area-inset-bottom, 0px) + 16px)');
+  expect(host().style.getPropertyValue('--gap')).toBe('8px');
+  rerender(<HIGProvider><Toaster position='top-center' offset='3rem'/></HIGProvider>);
+  await waitFor(()=>expect(host().style.getPropertyValue('--offset-top')).toBe('3rem'));
  });
  it('paints severities from token roles that are Display P3 on capable screens, and stops Sonner under provider reduced motion',()=>{
   for(const [severity,role] of [['success','positive'],['warning','warning'],['error','negative']])expect(css).toContain(`.hig-toast-item[data-severity='${severity}'] .hig-toast-icon { color:var(--hig-${role}); }`);

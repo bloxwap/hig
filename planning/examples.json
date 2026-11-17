@@ -674,6 +674,20 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "Toaster",
+      "slug": "toaster",
+      "entry": "toast",
+      "family": "status",
+      "web": "<><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "native": "<><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Each notice is announced once when it is raised, and an error interrupts on iOS; the close control is named for its notice; a touch holds every notice; a running screen reader keeps the native stack expanded; reduced motion fades in place on native and cuts on web; physical device observations pending",
+      "feedback": "none emitted by the host; the product plays outcome feedback when it raises the notice"
+    },
+    {
       "name": "Progress",
       "slug": "progress",
       "entry": "status",

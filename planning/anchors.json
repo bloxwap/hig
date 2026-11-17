@@ -100,6 +100,9 @@
   ],
   "/docs/guides/components/status/": [
     "api-and-anatomy",
+    "transient-toasts-toaster-and-toast",
+    "how-the-native-host-moves",
+    "where-the-platforms-differ",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
