@@ -41,7 +41,10 @@ export function HIGProvider({children,density='comfortable',locale='en-US',direc
  const colors=useMemo(()=>normalized===undefined&&marketUp===undefined&&marketDown===undefined?baseColors===nativeDisplayP3?displayP3Colors:srgbColors:withMarketRoles(normalized===undefined?baseColors:{...baseColors,...resolvePrimaryColor(normalized,space==='display-p3'&&Platform.OS==='ios'?'display-p3':'srgb')},marketUp,marketDown),[baseColors,space,normalized,marketUp,marketDown]);
  const [osReduced,setOSReduced]=useState(false);
  useEffect(()=>{let alive=true;void AccessibilityInfo.isReduceMotionEnabled().then(v=>{if(alive)setOSReduced(v);}).catch(()=>{});const sub=AccessibilityInfo.addEventListener('reduceMotionChanged',setOSReduced);return()=>{alive=false;sub.remove();};},[]);
- return <Context.Provider value={{density,locale,direction,reducedMotion:reducedMotion??osReduced,onAccepted,feedback,fontFamily,fontFamilies,fontFamiliesByScript:fontFamiliesByScript??parent.fontFamiliesByScript,monoFontFamily,maxFontSizeMultiplier,letterSpacingByScript,colorSpace:space,primaryColor:normalized,marketColors:inheritedMarket,messages:resolved,numberFormat:numberFormat??parent.numberFormat}}><ColorsContext.Provider value={colors}>{children}</ColorsContext.Provider></Context.Provider>;
+ const reduced=reducedMotion??osReduced,scripts=fontFamiliesByScript??parent.fontFamiliesByScript,format=numberFormat??parent.numberFormat;
+ // One context value for as long as nothing in it changes, so a provider that renders again re-renders no HIG Text or control below it.
+ const value=useMemo(()=>({density,locale,direction,reducedMotion:reduced,onAccepted,feedback,fontFamily,fontFamilies,fontFamiliesByScript:scripts,monoFontFamily,maxFontSizeMultiplier,letterSpacingByScript,colorSpace:space,primaryColor:normalized,marketColors:inheritedMarket,messages:resolved,numberFormat:format}),[density,locale,direction,reduced,onAccepted,feedback,fontFamily,fontFamilies,scripts,monoFontFamily,maxFontSizeMultiplier,letterSpacingByScript,space,normalized,inheritedMarket,resolved,format]);
+ return <Context.Provider value={value}><ColorsContext.Provider value={colors}>{children}</ColorsContext.Provider></Context.Provider>;
 }
 export const useHIG=()=>useContext(Context);
 /** Number options with the nearest provider's `numberFormat` merged under them; only currency formats change. */
