@@ -111,6 +111,13 @@ describe('ConfirmBlock',()=>{
   rerender(<HIGProvider><ConfirmBlock title='Enable' busy cancelWhileBusy onBack={()=>{}} onConfirm={confirm} onCancel={cancel} tertiaryAction={{label:'Delete anyway',onSelect:anyway}}/></HIGProvider>);
   expect((screen.getByRole('button',{name:'Cancel'}) as HTMLButtonElement).disabled).toBe(false);expect((screen.getByRole('button',{name:'Delete anyway'}) as HTMLButtonElement).disabled).toBe(false);
   expect((screen.getByRole('button',{name:'Back'}) as HTMLButtonElement).disabled).toBe(false);expect(document.querySelector('.hig-confirm-actions > button[aria-busy="true"]')).toBeTruthy();
+  // Plain busy holds Back too.
+  rerender(<HIGProvider><ConfirmBlock title='Close' busy onBack={()=>{}} onConfirm={confirm} onCancel={cancel}/></HIGProvider>);
+  expect((screen.getByRole('button',{name:'Back'}) as HTMLButtonElement).disabled).toBe(true);
+  // backWhileBusy frees Back alone: Cancel and the tertiary action stay held.
+  rerender(<HIGProvider><ConfirmBlock title='Close' busy backWhileBusy onBack={()=>{}} onConfirm={confirm} onCancel={cancel} tertiaryAction={{label:'Delete anyway',onSelect:anyway}}/></HIGProvider>);
+  expect((screen.getByRole('button',{name:'Back'}) as HTMLButtonElement).disabled).toBe(false);
+  expect((screen.getByRole('button',{name:'Cancel'}) as HTMLButtonElement).disabled).toBe(true);expect((screen.getByRole('button',{name:'Delete anyway'}) as HTMLButtonElement).disabled).toBe(true);
   // An amount without an address still draws the headline, but no default warning.
   rerender(<HIGProvider><ConfirmBlock title='Close all' amount={12.5} onConfirm={confirm}/></HIGProvider>);
   expect(document.querySelector('.hig-confirm-amount .hig-animated-number-visual')!.textContent).toBe('12.5');expect(document.querySelector('.hig-confirm-symbol')).toBeNull();expect(screen.queryByRole('note')).toBeNull();

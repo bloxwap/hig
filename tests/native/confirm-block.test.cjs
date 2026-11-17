@@ -122,3 +122,11 @@ it('confirms something that is not a send: no amount, lines or warning, the body
  act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Enable',busy:true,cancelWhileBusy:true,onBack:()=>{},onCancel:()=>{},onConfirm:confirm,tertiaryAction:{label:'Delete anyway',onSelect:anyway}}))));
  expect(button(root.root,'confirm-tertiary').props.disabled).toBe(false);expect(button(root.root,'confirm-cancel').props.disabled).toBe(false);expect(button(root.root,'confirm-confirm').props.busy).toBe(true);
 });
+
+it('backWhileBusy frees Back alone while busy',()=>{
+ const anyway=jest.fn();
+ const view=mount({busy:true,backWhileBusy:true,onBack:()=>{},onCancel:()=>{},tertiaryAction:{label:'Delete anyway',onSelect:anyway}});
+ expect(all(view,'confirm-back').some(node=>node.props.accessibilityState?.disabled===true)).toBe(false);
+ expect(all(view,'confirm-back').some(node=>node.props.disabled===false)).toBe(true);
+ expect(button(view,'confirm-cancel').props.disabled).toBe(true);expect(button(view,'confirm-tertiary').props.disabled).toBe(true);expect(button(view,'confirm-confirm').props.busy).toBe(true);
+});
