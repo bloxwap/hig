@@ -142,7 +142,7 @@ describe('RewardBlock promo text, slots and a promotion-only pane',()=>{
  it('draws a host figure in the figure slot, a caption function with a node, and no figure line without amount or figure',()=>{
   const {unmount}=render(<HIGProvider><RewardBlock title='Rewards' entries={[]} promo={{eyebrow:'Pool',figure:<strong data-testid='live'>$4,037</strong>,goal:250000,caption:goal=><em>of {goal}</em>}}/></HIGProvider>);
   const slot=screen.getByTestId('live').parentElement!;expect(slot.tagName).toBe('DIV');expect(slot.className).toBe('hig-reward-amount');
-  expect(q('.hig-reward-caption')!.textContent).toBe('of $250,000');expect(q<HTMLElement>('.hig-reward-track > span')!.style.width).toBe('0%');
+  expect(q('.hig-reward-caption')!.textContent).toBe('of $250,000');expect(q('.hig-reward-track > span')!.style.width).toBe('0%');
   unmount();render(<HIGProvider><RewardBlock title='Rewards' promo={{eyebrow:'Soon',headline:'Draws open Monday.'}}/></HIGProvider>);
   expect(q('.hig-reward-amount')).toBeNull();expect(q('.hig-reward-summary')!.textContent).toBe('Draws open Monday.');
  });
