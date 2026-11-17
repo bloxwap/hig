@@ -17,6 +17,7 @@
   "/docs/guides/components/actions-surfaces/": [
     "api-and-anatomy",
     "when-to-use-and-examples",
+    "button-as-a-link",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
     "validation-and-citation"

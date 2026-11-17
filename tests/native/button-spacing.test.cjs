@@ -19,6 +19,16 @@ it('shows a leading spinner instead of a busy suffix while keeping a spaced acce
  expect(root.root.findAllByType(RNText)).toHaveLength(1);
  expect(root.root.findAll(node=>node.props.accessibilityRole==='button')[0].props.accessibilityLabel).toBe('Host name');
 });
+it('keeps a trailing icon on the label line: the row stops wrapping and the label shrinks; text-only rows still wrap',()=>{
+ const row=()=>StyleSheet.flatten(root.root.findAll(node=>typeof node.type!=='string'&&StyleSheet.flatten(node.props.style)?.flexDirection==='row')[0].props.style);
+ act(()=>{root=create(h(Button,null,'Get my 4% discount on every trade',h(RNText,{testID:'arrow'},'→')))});
+ expect(row()).toMatchObject({flexDirection:'row',flexWrap:'nowrap'});
+ const [label,icon]=root.root.findAllByType(RNText);expect(StyleSheet.flatten(label.props.style).flexShrink).toBe(1);expect(icon.props.testID).toBe('arrow');
+ act(()=>root.update(h(Button,null,'Get my 4% discount')));
+ expect(row().flexWrap).toBe('wrap');expect(StyleSheet.flatten(root.root.findAllByType(RNText)[0].props.style).flexShrink).toBeUndefined();
+ act(()=>root.update(h(Button,{busy:true},'Get my 4% discount')));
+ expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(1);expect(row().flexWrap).toBe('wrap');
+});
 it('is 44dp tall with a 48dp touch target; a busy IconButton swaps its icon for the spinner',()=>{
  act(()=>{root=create(h(Button,null,'Review order'));});
  const control=root.root.findAll(node=>node.props.accessibilityRole==='button')[0];

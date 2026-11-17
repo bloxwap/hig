@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "api": {
     "react": {
       "AnimatedNumberTrend": {
@@ -644,7 +644,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: ButtonIntent; /** Shows a leading spinner and blocks activation. */\n    busy?: boolean; /** Busy text appended to the accessible name (not drawn; the spinner is the visible cue); defaults to HIGProvider `messages.busy`. `''` omits it (busy state stays exposed). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n    intent?: ButtonIntent; /** Shows a leading spinner and blocks activation. */\n    busy?: boolean; /** Busy text appended to the accessible name (not drawn; the spinner is the visible cue); defaults to HIGProvider `messages.busy`. `''` omits it (busy state stays exposed). */\n    busyLabel?: string;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean; /** Draws the button as a real link, `<a class=\"hig-button\" href>`, with the same intents, sizes and busy spinner. Disabled or busy, the link drops its `href` and reads as a disabled link (`role=\"link\"`, `aria-disabled`). The forwarded ref then holds the `HTMLAnchorElement`. */\n    href?: string; /** Link target, with `href`. Browsers treat `_blank` as `noopener`; pass `rel` for more. */\n    target?: React.HTMLAttributeAnchorTarget; /** Link relationship, with `href`. */\n    rel?: string; /** A soft halo in the fill colour around a filled intent, for one hero action on a brand or marketing surface. No halo while unavailable. */\n    glow?: boolean;\n}"
       },
       "Button": {
         "entry": "button",
@@ -652,7 +652,7 @@
       },
       "IconButton": {
         "entry": "button",
-        "signature": "export declare const IconButton: React.ForwardRefExoticComponent<Omit<ButtonProps, \"aria-label\"> & {\n    label: string;\n} & React.RefAttributes<HTMLButtonElement>>;"
+        "signature": "export declare const IconButton: React.ForwardRefExoticComponent<Omit<ButtonProps, \"aria-label\" | \"href\"> & {\n    label: string;\n} & React.RefAttributes<HTMLButtonElement>>;"
       },
       "Link": {
         "entry": "button",
@@ -1036,7 +1036,7 @@
       },
       "BadgeProps": {
         "entry": "status",
-        "signature": "export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {\n    tone?: BadgeTone;\n}"
+        "signature": "export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {\n    tone?: BadgeTone; /** A 6px status dot in the label colour on the leading edge, hidden from assistive technology. */\n    dot?: boolean;\n}"
       },
       "Badge": {
         "entry": "status",
@@ -2034,7 +2034,7 @@
       },
       "ButtonProps": {
         "entry": "button",
-        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: ButtonIntent;\n    busy?: boolean; /** Busy text for this button's accessible name; defaults to HIGProvider `messages.busy`. `''` leaves the name unchanged (accessibilityState.busy stays set). The visible busy state is a leading spinner. */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean;\n}"
+        "signature": "export interface ButtonProps extends Omit<PressableProps, 'children'> {\n    children: React.ReactNode; /** Custom content renders host nodes directly; the host owns visible busy content. Root disabled/busy/feedback semantics stay canonical. */\n    contentMode?: 'default' | 'custom';\n    intent?: ButtonIntent;\n    busy?: boolean; /** Busy text for this button's accessible name; defaults to HIGProvider `messages.busy`. `''` leaves the name unchanged (accessibilityState.busy stays set). The visible busy state is a leading spinner. */\n    busyLabel?: string; /** Overrides the provider's text scale cap for the label. */\n    maxFontSizeMultiplier?: number;\n    script?: TextScript;\n    fullWidth?: boolean;\n    suppressFeedback?: boolean; /** Makes the button a link: link semantics (`accessibilityRole=\"link\"`), and without `onPress` a press opens this URL through `Linking.openURL`, failures going to `onError`. A host `onPress` replaces that navigation (a router or in-app browser), so one press never opens both. On React Native Web the root also renders the `href`. */\n    href?: string; /** Receives a failed `Linking.openURL(href)`. */\n    onError?: (error: unknown) => void; /** A soft halo in the fill colour around a filled intent, for one hero action on a brand or marketing surface. No halo while unavailable. */\n    glow?: boolean;\n}"
       },
       "busyAccessibilityLabel": {
         "entry": "button",
@@ -2488,9 +2488,17 @@
         "entry": "status",
         "signature": "export type AlertSeverity = keyof typeof severityRole | 'default';"
       },
+      "BadgeTone": {
+        "entry": "status",
+        "signature": "export type BadgeTone = 'neutral' | 'positive' | 'negative' | 'warning' | 'info';"
+      },
+      "BadgeProps": {
+        "entry": "status",
+        "signature": "export interface BadgeProps {\n    children?: React.ReactNode; /** `positive`, `negative`, `warning` or `info` draws the label in that token role over a 15% wash of it, like web `.hig-badge[data-tone]`; `neutral` (default) keeps the well fill. */\n    tone?: BadgeTone; /** A 6dp status dot in the label colour on the leading edge, hidden from assistive technology. */\n    dot?: boolean;\n    testID?: string;\n}"
+      },
       "Badge": {
         "entry": "status",
-        "signature": "export declare function Badge({ children }: React.PropsWithChildren): React.JSX.Element;"
+        "signature": "export declare function Badge({ children, tone, dot, testID }: BadgeProps): React.JSX.Element;"
       },
       "Alert": {
         "entry": "status",
