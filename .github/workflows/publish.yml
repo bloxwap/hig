@@ -18,7 +18,7 @@ defaults:
     shell: bash
 jobs:
   security:
-    # Single-job publish: adds the scan serially.
+    # Independent release scan; publication waits for this gate.
     uses: bloxwap/.github/.github/workflows/security-scan.yml@2a70724cd0d803abef5f5a7c64c46065f4fda19b # v1.1.0
     permissions:
       contents: read
@@ -62,58 +62,104 @@ jobs:
           runs=$(gh run list --workflow quality.yml --commit "$release_sha" --status success --limit 1 --json databaseId --jq length)
           test "$runs" -gt 0 || { echo 'Run the candidate quality workflow successfully for this exact tag commit first.' >&2; exit 1; }
           echo "release-sha=$release_sha" >> "$GITHUB_OUTPUT"
+  validation:
+    needs: prerequisites
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [checks, unit-web, unit-native]
+    env:
+      HIG_QUALITY_TASK: ${{ matrix.task }}
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.prerequisites.outputs.release-sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-release
+      - run: node scripts/ci-quality-tasks.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: hig-release-validation-${{ matrix.task }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence/
+          retention-days: 14
+
+  prepare:
+    needs: prerequisites
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 40
+    outputs:
+      artifact: ${{ steps.bundle.outputs.artifact }}
+      report-sha256: ${{ steps.bundle.outputs.report-sha256 }}
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.prerequisites.outputs.release-sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-release
+      - run: npm run release:dry-run -- --channel stable-simulation
+      - name: Verify immutable source, gates and tarball hashes
+        run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
+      - name: Bind artifact to this job's verified report
+        id: bundle
+        run: |
+          echo "artifact=hig-release-input-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+          node --input-type=module -e 'import{readFileSync,appendFileSync}from"node:fs";import{createHash}from"node:crypto";appendFileSync(process.env.GITHUB_OUTPUT,"report-sha256="+createHash("sha256").update(readFileSync("artifacts/release-stable-simulation/report.json")).digest("hex")+"\n");'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.bundle.outputs.artifact }}
+          path: |
+            artifacts/release-stable-simulation/report.json
+            artifacts/release-stable-simulation/*.tgz
+          if-no-files-found: error
+          retention-days: 14
+
   publish:
-    # Trusted publishing requires an ephemeral GitHub-hosted runner.
-    needs: [security, prerequisites]
+    # Only the npm OIDC operation requires an ephemeral GitHub-hosted runner.
+    needs: [security, prerequisites, validation, prepare]
     environment: npm-release
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 15
+    outputs:
+      receipt-id: ${{ steps.receipt.outputs.artifact-id }}
     permissions:
       contents: read
       id-token: write
     env:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
+      RELEASE_SHA: ${{ needs.prerequisites.outputs.release-sha }}
+      REPORT_SHA256: ${{ needs.prepare.outputs.report-sha256 }}
     steps:
-      - name: Validate release tag
-        run: |
-          set -euo pipefail
-          [[ "$RELEASE_TAG" =~ ^v ]] || { echo 'Release tag must start with v' >&2; exit 1; }
-          git check-ref-format "refs/tags/$RELEASE_TAG"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: refs/tags/${{ env.RELEASE_TAG }}
           persist-credentials: false
       - name: Require the approved tag commit
-        env:
-          RELEASE_SHA: ${{ needs.prerequisites.outputs.release-sha }}
         run: test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
-      - name: Point temp dirs at $RUNNER_TEMP
-        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4  # zizmor: ignore[cache-poisoning] (v4 has no implicit cache; see note below)
+      # setup-node v4 has no automatic package-manager cache and no cache input is set.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4  # zizmor: ignore[cache-poisoning] (pinned v4 has no implicit cache)
         with:
           node-version: '24.22.1'
           registry-url: https://registry.npmjs.org
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-        with:
-          python-version: '3.12'
       - name: Install the trusted publishing npm CLI
         run: npm install --global npm@11.6.1
-      - run: npm ci
-      - name: Generate native fonts
-        run: bash scripts/ci-generate-fonts.sh
-      - run: npm run check
-      - run: npm run quality
-      - run: npm run release:dry-run -- --channel stable-simulation
-      - name: Restore the macOS-rendered docs social image
-        # sharp rasterizes og.png text with host system fonts, so Ubuntu output differs
-        # from the committed macOS render. The file is docs-only (in no npm package), and
-        # its drift is enforced by the Mac-mini quality run required in prerequisites.
-        run: git checkout -- apps/docs/public/og.png
-      - name: Verify source version, gates, exact package set and tarball hashes
-        run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.prepare.outputs.artifact }}
+          path: artifacts/release-stable-simulation
+      - name: Verify downloaded report and every tarball before publication
+        run: |
+          node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";import{createHash}from"node:crypto";assert.equal(createHash("sha256").update(readFileSync("artifacts/release-stable-simulation/report.json")).digest("hex"),process.env.REPORT_SHA256);'
+          node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
       - name: Publish the verified tarballs through npm trusted publishing
-        # @bloxwap/hig trusts this repository, workflow and protected environment.
-        # No long-lived token fallback: missing OIDC configuration must fail closed.
         run: |
           set -euo pipefail
           : > artifacts/published-packages.txt
@@ -127,17 +173,51 @@ jobs:
               echo "$name@$version" >> artifacts/published-packages.txt
             fi
           done < artifacts/verified-release.txt
-      - run: npx playwright install --with-deps chromium
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        id: receipt
+        if: always()
+        with:
+          name: hig-publish-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/published-packages.txt
+            artifacts/verified-release.txt
+          retention-days: 14
+
+  registry:
+    needs: [prerequisites, prepare, publish]
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        consumer: [web, next, rn-0.81, rn-0.83, rn-0.88]
+    env:
+      HIG_REGISTRY_CHECK: ${{ matrix.consumer }}
+      HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.prerequisites.outputs.release-sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-release
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.prepare.outputs.artifact }}
+          path: artifacts/release-stable-simulation
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          artifact-ids: ${{ needs.publish.outputs.receipt-id }}
+          merge-multiple: true
+          path: artifacts
+      - name: Install browser for the Next consumer
+        if: matrix.consumer == 'next'
+        run: npx playwright install chromium
+      # Every lane verifies registry bytes, signatures and provenance before its consumer.
       - run: npm run smoke:registry
-        env:
-          HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
-          name: hig-registry-verification-${{ github.sha }}-${{ github.run_attempt }}
-          path: |
-            artifacts/release-stable-simulation/report.json
-            artifacts/verified-release.txt
-            artifacts/published-packages.txt
-            evidence/registry-install.json
+          name: hig-registry-${{ matrix.consumer }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence/
           retention-days: 14

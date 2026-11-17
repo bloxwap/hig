@@ -59,15 +59,19 @@ it('keeps Linux visual baselines under tests/visual-baselines/linux and names Da
 
 });
 
-it('uses Ubuntu for trusted publishing within the publishing workflow',()=>{
+it('uses Ubuntu only for trusted publication and self-hosted runners for release work',()=>{
  const text=readFileSync('.github/workflows/publish.yml','utf8');
  const jobs=text.split('jobs:')[1];
- expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['security','prerequisites','publish']);
+ expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['security','prerequisites','validation','prepare','publish','registry']);
  expect(text.match(/runs-on: ubuntu-24\.04/g)).toHaveLength(1);
- expect(text.split('  prerequisites:')[1].split('  publish:')[0]).toContain('runs-on: [self-hosted, macOS, ARM64]');
- expect(text.match(/runs-on:/g)).toHaveLength(3);
- expect(text).toContain(`runs-on: '["self-hosted","macOS","ARM64"]'`);
- expect(text).toContain('needs: [security, prerequisites]');
- expect(text).toContain('npx playwright install --with-deps chromium');
- expect(text).toContain('actions/setup-python@');
+ const publish=text.split('  publish:')[1].split('  registry:')[0];
+ expect(publish).toContain('environment: npm-release');
+ expect(publish).toContain('id-token: write');
+ expect(publish).toContain('needs: [security, prerequisites, validation, prepare]');
+ expect(publish).not.toMatch(/npm ci|npm run check|smoke:registry|playwright/);
+ for(const name of ['prerequisites','validation','prepare','registry']){
+  const section=jobs.split(`  ${name}:`)[1].split(/\n {2}[\w-]+:\n/)[0];
+  expect(section).toContain('runs-on: [self-hosted, macOS, ARM64]');
+  expect(section).not.toContain('id-token: write');
+ }
 });
