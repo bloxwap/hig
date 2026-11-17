@@ -6,14 +6,19 @@
 //   HIG_QR_RUNS=7                          fresh pages per scenario and CPU rate (default 5); each figure is the median
 //   HIG_QR_RATES=1,4,6                     CPU throttling rates (`Emulation.setCPUThrottlingRate`)
 //   HIG_QR_RENDERER=native                 the native renderer on react-native-web and react-native-svg's web build
-//   HIG_QR_ROOT=.validation-tmp/base       another copy of packages/hig (inside this checkout) to bundle, for a before and after
+//   HIG_QR_ROOT=before=.validation-tmp/base,after=.
+//                                          copies of packages/hig (inside this checkout) to bundle, each `label=path` or a
+//                                          path. With several, their runs are interleaved, so a busy machine disturbs a
+//                                          before and an after alike, and the object holds `sources`, one set of rates a copy
 //
 // Scenarios: mount one code; mount one with an arena image; re-render its parent 100 times with identical props; change only
 // `size` 100 times; change `value` on each keystroke of a 60-character payment URI; mount a list of 50 distinct codes, and of
 // 50 equal ones; mount a code that was shown and unmounted. One change a frame where frames are counted. HIG_QR_SCENARIOS
-// names a subset. A throttled desktop Chromium is not a phone.
+// names a subset. A throttled desktop Chromium is not a phone. `load` is the machine's one-minute load average before and
+// after the run, beside its `cpus`: figures taken while it is near or above the core count are slower than the code is.
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
+import {cpus,loadavg} from 'node:os';
 import {dirname,resolve} from 'node:path';
 import {build} from 'esbuild';
 import sharp from 'sharp';
@@ -21,12 +26,12 @@ import {chromium} from '@playwright/test';
 import {launchBrowser} from '../browser-launcher.mjs';
 
 const require=createRequire(import.meta.url);
-const root=resolve(process.env.HIG_QR_ROOT??'.'),renderer=process.env.HIG_QR_RENDERER==='native'?'native':'react';
+const copies=(process.env.HIG_QR_ROOT??'.').split(',').map(entry=>entry.includes('=')?entry.split('='):[entry,entry]),roots=copies.map(([,root])=>root),renderer=process.env.HIG_QR_RENDERER==='native'?'native':'react';
 const runs=Number(process.env.HIG_QR_RUNS??5),rates=(process.env.HIG_QR_RATES??'1,4,6').split(',').map(Number);
-const css=readFileSync('packages/hig/tokens/generated/tokens.css','utf8')+readFileSync(`${root}/packages/hig/react/src/styles.css`,'utf8');
+const tokens=readFileSync('packages/hig/tokens/generated/tokens.css','utf8');
 const image=`data:image/png;base64,${(await sharp({create:{width:64,height:64,channels:3,background:{r:230,g:0,b:122}}}).png().toBuffer()).toString('base64')}`;
 /** The shared model from source, with the two steps a render may run counted and timed on `globalThis.__qr`. */
-const counted={name:'counted-qr',setup(bundler){
+const counted=(root)=>({name:'counted-qr',setup(bundler){
  const model=resolve(root,'packages/hig/contracts/src/qr.ts');
  bundler.onResolve({filter:/^@bloxwap\/hig\/contracts\/qr$/},()=>({path:model}));
  bundler.onLoad({filter:/contracts\/src\/qr\.ts$/},()=>{
@@ -37,7 +42,7 @@ const counted={name:'counted-qr',setup(bundler){
   }
   return {contents:source,loader:'ts'};
  });
-}};
+}});
 const scenarios=`
  const eth='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688',uri='ethereum:'+eth+'@8453?v=1';
  const address=(index)=>'0x'+Array.from({length:40},(_,k)=>'0123456789abcdef'[(index*7+k*13+index*k)%16]).join('');
@@ -77,21 +82,25 @@ const sources={
  import {QRCode} from './packages/hig/native/src/qr-code';
  const Box=({children})=><View>{children}</View>,HIGProvider=({children})=><Provider reducedMotion>{children}</Provider>;${scenarios}`,
 };
-const bundle=await build({stdin:{contents:sources[renderer],resolveDir:root,loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',plugins:[counted],resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json'],alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"',__DEV__:'false',global:'globalThis'}});
-const html=`<!doctype html><html lang="en"><head><style>${css}body{margin:24px;background:var(--hig-background);color:var(--hig-text)}#root>div>div{display:flex;flex-wrap:wrap;gap:8px}</style></head><body><main id="root"></main><script>${bundle.outputFiles[0].text.replaceAll('</script','<\\/script')}</script></body></html>`;
+/** The page for one copy of the packages: its stylesheet and its bundle. */
+async function document(root){
+ const bundle=await build({stdin:{contents:sources[renderer],resolveDir:resolve(root),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',plugins:[counted(root)],resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json'],alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"',__DEV__:'false',global:'globalThis'}});
+ return `<!doctype html><html lang="en"><head><style>${tokens}${readFileSync(`${root}/packages/hig/react/src/styles.css`,'utf8')}body{margin:24px;background:var(--hig-background);color:var(--hig-text)}#root>div>div{display:flex;flex-wrap:wrap;gap:8px}</style></head><body><main id="root"></main><script>${bundle.outputFiles[0].text.replaceAll('</script','<\\/script')}</script></body></html>`;
+}
+const pages=await Promise.all(roots.map(document));
 // Cross-origin isolated, so `performance.now()` in the page resolves 5 µs rather than 100 µs.
 const origin='https://qr-code.perf/',isolation={'Cross-Origin-Opener-Policy':'same-origin','Cross-Origin-Embedder-Policy':'require-corp'};
 const names=(process.env.HIG_QR_SCENARIOS??'mount,mountArena,rerender,resize,typing,list,listSame,remount').split(',');
 const median=(values)=>{const sorted=[...values].sort((a,b)=>a-b);return sorted[sorted.length>>1];};
 const round=(value)=>Math.round(value*1000)/1000;
 const browser=await launchBrowser(chromium,{headless:true});
-const result={benchmark:'qr-code-web',renderer,browser:`chromium ${browser.version()}`,platform:`${process.platform} ${process.arch}`,runs,source:process.env.HIG_QR_ROOT??'.',rates:{}};
+const result={benchmark:'qr-code-web',renderer,browser:`chromium ${browser.version()}`,platform:`${process.platform} ${process.arch}`,cpus:cpus().length,load:[round(loadavg()[0])],runs},rated=roots.map(()=>({}));
 try{
  for(const rate of rates){
-  const byScenario={};
+  const byScenario=roots.map(()=>({}));
   for(const name of names){
-   const samples=[];
-   for(let run=0;run<runs;run++){
+   const samples=roots.map(()=>[]);
+   for(let run=0;run<runs;run++)for(const [index,html] of pages.entries()){
     const context=await browser.newContext({viewport:{width:1200,height:900}});
     try{
      const page=await context.newPage(),errors=[];page.setDefaultTimeout(60000);page.on('pageerror',error=>errors.push(error.message));
@@ -102,12 +111,14 @@ try{
      await page.evaluate(async name=>{await window.perf[name].setup?.();window.perf.reset();},name);
      const before=await metrics(),measured=await page.evaluate(name=>window.perf[name].run(),name),after=await metrics();
      if(errors.length)throw new Error(`${name}: ${errors.join('; ')}`);
-     samples.push({...measured,scriptMs:(after.ScriptDuration-before.ScriptDuration)*1000,taskMs:(after.TaskDuration-before.TaskDuration)*1000,layoutMs:(after.LayoutDuration-before.LayoutDuration)*1000,recalcStyleMs:(after.RecalcStyleDuration-before.RecalcStyleDuration)*1000,layoutCount:after.LayoutCount-before.LayoutCount,recalcStyleCount:after.RecalcStyleCount-before.RecalcStyleCount,heapUsedKB:after.JSHeapUsedSize/1024,heapGrowthKB:(after.JSHeapUsedSize-before.JSHeapUsedSize)/1024});
+     samples[index].push({...measured,scriptMs:(after.ScriptDuration-before.ScriptDuration)*1000,taskMs:(after.TaskDuration-before.TaskDuration)*1000,layoutMs:(after.LayoutDuration-before.LayoutDuration)*1000,recalcStyleMs:(after.RecalcStyleDuration-before.RecalcStyleDuration)*1000,layoutCount:after.LayoutCount-before.LayoutCount,recalcStyleCount:after.RecalcStyleCount-before.RecalcStyleCount,heapUsedKB:after.JSHeapUsedSize/1024,heapGrowthKB:(after.JSHeapUsedSize-before.JSHeapUsedSize)/1024});
     }finally{await context.close();}
    }
-   byScenario[name]=Object.fromEntries(Object.keys(samples[0]).map(key=>[key,round(median(samples.map(sample=>sample[key])))]));
+   for(const [index,taken] of samples.entries())byScenario[index][name]=Object.fromEntries(Object.keys(taken[0]).map(key=>[key,round(median(taken.map(sample=>sample[key])))]));
   }
-  result.rates[`${rate}x`]=byScenario;
+  for(const [index,scenario] of byScenario.entries())rated[index][`${rate}x`]=scenario;
  }
 }finally{await browser.close();}
+result.load.push(round(loadavg()[0]));
+if(roots.length===1)Object.assign(result,{source:roots[0],rates:rated[0]});else result.sources=Object.fromEntries(copies.map(([label],index)=>[label,rated[index]]));
 console.log(JSON.stringify(result,null,1));
