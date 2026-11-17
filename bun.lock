@@ -9,7 +9,7 @@
         "@bloxwap/chart": "0.5.0",
         "@bloxwap/font": "0.1.4",
         "@bloxwap/haptic": "^0.4.0",
-        "@bloxwap/icons": "file:vendor/bloxwap-icons-0.1.0.tgz",
+        "@bloxwap/icons": "0.1.0",
         "@bloxwap/sfx": "^0.3.0",
         "@gorhom/bottom-sheet": "5.2.14",
         "@playwright/test": "^1.64.1",
@@ -162,7 +162,7 @@
     },
     "packages/hig": {
       "name": "@bloxwap/hig",
-      "version": "0.7.0",
+      "version": "0.8.0",
       "peerDependencies": {
         "@bloxwap/chart": "^0.3.0 || ^0.4.0 || ^0.5.0",
         "@bloxwap/haptic": "^0.2.0 || ^0.3.0 || ^0.4.0",
@@ -436,7 +436,7 @@
 
     "@bloxwap/hig": ["@bloxwap/hig@workspace:packages/hig"],
 
-    "@bloxwap/icons": ["@bloxwap/icons@vendor/bloxwap-icons-0.1.0.tgz", { "peerDependencies": { "expo-image": ">=3 <4 || >=55 <59", "react": ">=19 <20", "react-native": ">=0.81 <1" }, "optionalPeers": ["expo-image", "react", "react-native"] }, "sha512-3jJ8ORMR0vyW9EdckFkGI6DV3I4rDzTJA2O7ravZXBEOwfy8bZjTrx3pHoPavwY7Ih4WzuEiTjLaKQtcmgI3Zw=="],
+    "@bloxwap/icons": ["@bloxwap/icons@0.1.0", "", { "peerDependencies": { "expo-image": ">=3 <4 || >=55 <59", "react": ">=19 <20", "react-native": ">=0.81 <1" }, "optionalPeers": ["expo-image", "react", "react-native"] }, "sha512-BFBu9JA7GRakCXKG7/rq8ZNYEfcd77Zf/m7H57s07jePFGrahY6PLJLGC/FpVgRKh+ozD92w/R93ZaZyr6BwRg=="],
 
     "@bloxwap/sfx": ["@bloxwap/sfx@0.3.0", "", { "peerDependencies": { "node-web-audio-api": "^2.0.0", "react": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["node-web-audio-api", "react"], "bin": { "sfx-wav": "dist/cli/sfx-wav.js" } }, "sha512-EVdwkHXXLMikxKs6tlNHm8sXrfyGCNeJqSO7Vpo7PO3LsD17cVGcSp5Jif4z24la2Kt06cF+mjkD3IomJLXmYw=="],
 

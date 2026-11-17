@@ -229,6 +229,7 @@
   ],
   "/docs/guides/installation/": [
     "moving-from-the-01-packages",
+    "shared-ui-icons-next-release",
     "react--vite",
     "component-css-and-the-opt-in-base",
     "radix-overlay-peers-and-fumadocs",

@@ -28,11 +28,6 @@ export function compareLockfiles({bun,npm,manifest}){
       const bunEntry=bun.packages[`${ws.name}/${name}`]??bun.packages[name];
       const npmEntry=(path&&npm.packages[`${path}/node_modules/${name}`])||npm.packages[`node_modules/${name}`];
       if(!bunEntry||!npmEntry){problems.push(`${label} ${name}: not resolved in ${[!bunEntry&&'bun.lock',!npmEntry&&'package-lock.json'].filter(Boolean).join(' and ')}`);continue;}
-      // Local release candidates are identified by archive integrity, not a registry version.
-      if(pkg[kind][name].startsWith('file:')&&pkg[kind][name].endsWith('.tgz')){
-        if(bunEntry.at(-1)!==npmEntry.integrity)problems.push(`${label} ${name}: local archive integrity differs between lockfiles`);
-        continue;
-      }
       const bunResolved=bunVersion(bunEntry);
       if(bunResolved.startsWith('workspace:')&&npmEntry.link)continue;
       if(bunResolved!==npmEntry.version)problems.push(`${label} ${name}: bun.lock resolves ${bunResolved} but package-lock.json resolves ${npmEntry.version??npmEntry.resolved}`);

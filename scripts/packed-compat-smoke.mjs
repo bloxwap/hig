@@ -1,4 +1,3 @@
-import {iconConsumerPackage} from './icon-consumer.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {cpSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
@@ -21,7 +20,7 @@ writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'
  '@types/react':'19.1.16','@types/react-dom':'19.1.9','@types/node':'22.18.10',
  typescript:'6.0.3','typescript-7':'npm:typescript@7.0.2'
 }}));
-execFileSync('npm',['install','--strict-peer-deps','--ignore-scripts','--no-audit','--no-fund',iconConsumerPackage,packedTarball()],{cwd:directory,stdio:'inherit'});
+execFileSync('npm',['install','--strict-peer-deps','--ignore-scripts','--no-audit','--no-fund','@bloxwap/icons@^0.1.0',packedTarball()],{cwd:directory,stdio:'inherit'});
 for(const [name,version] of Object.entries(peers)){
  assert.equal(JSON.parse(readFileSync(join(directory,'node_modules',name,'package.json'),'utf8')).version,version);
  console.log(`Minimum peer: ${name}@${version}`);

@@ -65,7 +65,7 @@
     "@bloxwap/chart": "0.5.0",
     "@bloxwap/font": "0.1.4",
     "@bloxwap/haptic": "^0.4.0",
-    "@bloxwap/icons": "file:vendor/bloxwap-icons-0.1.0.tgz",
+    "@bloxwap/icons": "0.1.0",
     "@bloxwap/sfx": "^0.3.0",
     "@gorhom/bottom-sheet": "5.2.14",
     "@playwright/test": "^1.64.1",
