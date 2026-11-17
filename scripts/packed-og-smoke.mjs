@@ -1,3 +1,4 @@
+import {iconConsumerPackage} from './icon-consumer.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
 // #99: a clean OG-card consumer installs the packed @bloxwap/hig tarball and uses its og-fonts entry next to next/og, verifies every TTF
 // against the manifest (and the native manifest it was copied from), and renders 1200x630 PNG cards with the faces.
@@ -29,7 +30,7 @@ const next=JSON.parse(readFileSync('fixtures/next/package.json','utf8')).depende
 const dir=scratchDir('hig-og-consumer-');
 const root=JSON.parse(readFileSync('package.json','utf8')).devDependencies;
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',dependencies:{next:next.next,react:next.react,'react-dom':next['react-dom']},devDependencies:{typescript:root.typescript,'@types/node':root['@types/node'],'@types/react':root['@types/react']}},null,2));
-execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',tarball],{cwd:dir,stdio:'pipe'});
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',iconConsumerPackage,tarball],{cwd:dir,stdio:'pipe'});
 writeFileSync(join(dir,'native-manifest.json'),JSON.stringify(nativeManifest));
 writeFileSync(join(dir,'og.mjs'),`import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';

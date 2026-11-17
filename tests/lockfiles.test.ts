@@ -45,3 +45,8 @@ it('the quality job checks package-lock.json with npm before installing with Bun
   expect(workflow.indexOf('node scripts/check-lockfiles.mjs --npm')).toBeLessThan(workflow.indexOf('bun install --frozen-lockfile'));
   expect(JSON.parse(readFileSync('package.json','utf8')).scripts.lint).toContain('node scripts/check-lockfiles.mjs');
 });
+
+it('local archive changes cannot silently diverge between npm and Bun',()=>{
+  const state=load();state.npm.packages['node_modules/@bloxwap/icons'].integrity='sha512-different';
+  expect(run(state)).toEqual(['(root) @bloxwap/icons: local archive integrity differs between lockfiles']);
+});

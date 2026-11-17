@@ -1,3 +1,4 @@
+import {iconConsumerPackage} from './icon-consumer.mjs';
 import {packedTarball} from './workspace-version.mjs';
 import {execFileSync} from 'node:child_process';
 import {writeFileSync,existsSync,readFileSync} from 'node:fs';
@@ -7,7 +8,7 @@ import {build} from 'esbuild';
 import {scratchDir} from './scratch.mjs';
 const directory=scratchDir('hig-boundaries-');
 writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module'}));
-execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',packedTarball()],{cwd:directory,stdio:'pipe'});
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',iconConsumerPackage,packedTarball()],{cwd:directory,stdio:'pipe'});
 // Every renderer, device and overlay peer of @bloxwap/hig is optional; only the #96 @bloxwap/chart peer is required.
 for(const peer of ['react','react-dom','react-native','@bloxwap/sfx','@bloxwap/haptic','expo-audio','expo-haptics','@radix-ui/react-dialog','vaul'])assert.equal(existsSync(join(directory,'node_modules',peer)),false,`@bloxwap/hig unexpectedly installs ${peer}`);
 writeFileSync(join(directory,'root.mjs'),"import {FeedbackController} from '@bloxwap/hig/feedback';import {tokens} from '@bloxwap/hig/tokens';new FeedbackController().dispose();if(!tokens.colors.action)throw Error('Missing tokens');");

@@ -1,4 +1,10 @@
 "use client";
+import { CircleCheck } from '@bloxwap/icons/react/circle-check';
+import { CircleX } from '@bloxwap/icons/react/circle-x';
+import { Inbox } from '@bloxwap/icons/react/inbox';
+import { Info } from '@bloxwap/icons/react/info';
+import { TriangleAlert } from '@bloxwap/icons/react/triangle-alert';
+import { X } from '@bloxwap/icons/react/x';
 import React,{useEffect,useRef,useState} from 'react';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -13,9 +19,9 @@ export type AlertSeverity='default'|'info'|'success'|'warning'|'error'|'note'|'t
 export function Alert({title,children,severity='info',action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;action?:React.ReactNode;announce?:boolean}>){return <section className='hig-surface hig-alert' data-severity={severity} role={announce?(severity==='error'?'alert':'status'):undefined}><strong>{title}</strong>{children}{action!=null&&<div className='hig-alert-actions'>{action}</div>}</section>;}
 export const Callout=Alert;
 export interface Notice {id:string;message:string;severity:'info'|'success'|'warning'|'error';action?:React.ReactNode}
-const noticeSymbol={info:<><circle cx='10' cy='10' r='7.25'/><path d='M10 9.25v4.25M10 6.5v.01'/></>,success:<><circle cx='10' cy='10' r='7.25'/><path d='m6.75 10.25 2.25 2.25 4.25-4.5'/></>,warning:<><path d='M10 3.5 17.25 16H2.75Z'/><path d='M10 8.5v3.25M10 14v.01'/></>,error:<><circle cx='10' cy='10' r='7.25'/><path d='m7.5 7.5 5 5m0-5-5 5'/></>};
+const noticeSymbol={info:Info,success:CircleCheck,warning:TriangleAlert,error:CircleX};
 /** One notice as a single capsule row: severity symbol on the leading edge, message, optional action, close on the trailing edge. Shared by `Toast` and the Sonner-backed `toast()`; it announces nothing itself. */
-export function ToastNotice({message,severity='info',action,dismissName,onDismiss}: {message:React.ReactNode;severity?:Notice['severity'];action?:React.ReactNode;/** Accessible name of the close button. */dismissName:string;onDismiss:()=>void}){return <div className='hig-toast-item' data-severity={severity}><svg className='hig-toast-icon' aria-hidden='true' focusable='false' viewBox='0 0 20 20'>{noticeSymbol[severity]??noticeSymbol.info}</svg><span className='hig-toast-message'>{message}</span>{action}<button type='button' className='hig-toast-close' aria-label={dismissName} onClick={onDismiss}><svg aria-hidden='true' focusable='false' viewBox='0 0 20 20'><path d='m5.5 5.5 9 9m0-9-9 9'/></svg></button></div>;}
+export function ToastNotice({message,severity='info',action,dismissName,onDismiss}: {message:React.ReactNode;severity?:Notice['severity'];action?:React.ReactNode;/** Accessible name of the close button. */dismissName:string;onDismiss:()=>void}){const Symbol=noticeSymbol[severity]??Info;return <div className='hig-toast-item' data-severity={severity}><Symbol size={20} className='hig-toast-icon'/><span className='hig-toast-message'>{message}</span>{action}<button type='button' className='hig-toast-close' aria-label={dismissName} onClick={onDismiss}><X size={20}/></button></div>;}
 /** Persistent until dismissed; host deduplicates ids, critical messages remain inline. */
 export function Toast({notices,onDismiss,dismissLabel}: {notices:readonly Notice[];onDismiss:(id:string)=>void;/** Dismiss wording inside the close button's accessible name (`messages.dismissNotice`); the button itself draws a close symbol. Defaults to HIGProvider `messages.dismiss`. */dismissLabel?:string}){
  const {messages}=useHIG();const dismiss=dismissLabel??messages.dismiss??en.dismiss;
@@ -37,7 +43,7 @@ export function Toast({notices,onDismiss,dismissLabel}: {notices:readonly Notice
 export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
 export function Spinner({label}: {label?:string}){const {messages}=useHIG();return <span className='hig-spinner' role='status'><span className='hig-spinner-indicator' aria-hidden='true'/>{label??messages.loading??en.loading}…</span>;}
 export function Skeleton({label}: {label?:string}){const {messages}=useHIG();return <div className='hig-skeleton' aria-label={label??messages.loadingContent??en.loadingContent} role='status'/>;}
-const emptySymbol=<svg aria-hidden='true' focusable='false' viewBox='0 0 32 32'><path d='M5 18.5 8.6 8.9A2 2 0 0 1 10.5 7.5h11a2 2 0 0 1 1.9 1.4L27 18.5v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z'/><path d='M5 18.5h6.5a4.5 4.5 0 0 0 9 0H27'/></svg>;
+const emptySymbol=<Inbox size={48}/>;
 /** Centred stack: symbol, title, optional description, optional action. Decorative `illustration` replaces the default symbol (same prop as native); `null` omits it. */
 export function EmptyState({title,description,action,illustration}: {title:string;description?:string;action?:React.ReactNode;illustration?:React.ReactNode}){return <section className='hig-surface hig-empty-state'>{illustration!==null&&<span className='hig-empty-state-icon' aria-hidden='true'>{illustration??emptySymbol}</span>}<h3>{title}</h3>{description&&<p>{description}</p>}{action}</section>;}
 export function Avatar({name,src}: {name:string;src?:string}){return src?<img className='hig-avatar' alt={name} src={src}/>:<span className='hig-avatar' role='img' aria-label={name}>{name.slice(0,2)}</span>;}

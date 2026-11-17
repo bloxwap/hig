@@ -59,7 +59,7 @@
 textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 /* Text fields are as tall as a button (44 touch, 36 compact). */
 .hig-search-input { position:relative;display:block;width:100%;min-width:0; }
-.hig-search-icon { position:absolute;inset-inline-start:16px;inset-block-start:50%;translate:0 -50%;width:20px;height:20px;color:var(--hig-muted);pointer-events:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
+.hig-search-icon { position:absolute;inset-inline-start:16px;inset-block-start:50%;translate:0 -50%;width:20px;height:20px;color:var(--hig-muted);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
 .hig-search-input > .hig-input { padding-inline-start:42px; }
 .hig-field label,.hig-group legend,.hig-select-option[aria-selected='true'] { font-weight:600; }
 .hig-field p { margin:0;color:var(--hig-muted); }
@@ -132,8 +132,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-select-option[data-active='true'] { background:var(--hig-border); }
 .hig-table-sort { appearance:none;display:inline-flex;align-items:center;justify-content:inherit;gap:6px;max-width:100%;min-height:var(--hig-button);margin:-6px;padding:6px;border:0;border-radius:var(--hig-radius-md,6px);background:transparent;color:inherit;font:inherit;text-align:inherit;cursor:pointer; }
 .hig-table-sort-icon { flex:none; }
-.hig-table [aria-sort='ascending'] .hig-table-sort-up,.hig-table [aria-sort='descending'] .hig-table-sort-down,.hig-segment input:checked + span { color:var(--hig-text); }
-.hig-table [aria-sort='ascending'] .hig-table-sort-down,.hig-table [aria-sort='descending'] .hig-table-sort-up { opacity:.3; }
+.hig-table [aria-sort='ascending'] .hig-table-sort-icon,.hig-table [aria-sort='descending'] .hig-table-sort-icon,.hig-segment input:checked + span { color:var(--hig-text); }
 .hig-table[data-sticky-header='true'] > thead > tr > th { position:sticky;inset-block-start:0;z-index:1;background:var(--hig-surface); }
 .hig-table-state > td { padding-block:24px;color:var(--hig-muted);text-align:center; }
 /* A host-owned command option supplies its own target, keyboard model and compact row height. */
@@ -193,7 +192,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-empty-state > p,.hig-select-chevron,.hig-empty-state-icon { color:var(--hig-muted); }
 .hig-empty-state { align-items:center;text-align:center;padding-block:var(--hig-space-xxxl,32px); }
 .hig-empty-state-icon { display:inline-flex; }
-.hig-empty-state-icon > svg { width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
+.hig-empty-state-icon > svg { width:48px;height:48px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
 .hig-alert-actions { display:flex;flex-wrap:wrap;align-items:center;gap:var(--hig-action-gap);max-width:100%; }
 /* Severity tints the fill and colours the title from a token role: no stroke and no glow, like every other layer. The tint is
    10% so the negative title keeps 4.5:1 on it (12% measured 4.47). The neutral
@@ -206,7 +205,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 :where(.hig-surface)[data-severity='default'] { --hig-alert-tone:var(--hig-text);background:color-mix(in srgb,var(--hig-text) 6%,var(--hig-surface)); }
 /* A notice is one capsule row: severity symbol, message, optional action, close. */
 .hig-toast-item { display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:var(--hig-button,44px);padding-block:5px;padding-inline:16px 5px;border:1px solid transparent;border-radius:9999px;background:var(--hig-nested);color:var(--hig-text);box-shadow:0 8px 24px #0006;font:500 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);overflow-wrap:anywhere; }
-.hig-toast-icon,.hig-toast-close > svg { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
+.hig-toast-icon,.hig-toast-close > svg { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
 .hig-toast-icon { color:var(--hig-info); }
 .hig-toast-item[data-severity='success'] .hig-toast-icon { color:var(--hig-positive); }
 .hig-toast-item[data-severity='warning'] .hig-toast-icon { color:var(--hig-warning); }
@@ -260,7 +259,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-select-trigger {text-align:start;line-height:1.5; }
 .hig-select-trigger[aria-expanded='true'] { border-color:var(--hig-faint); }
 .hig-select-value { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-.hig-select-chevron,.hig-select-check,.hig-accordion-chevron { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round; }
+.hig-select-chevron,.hig-select-check,.hig-accordion-chevron { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
 .hig-select-trigger[aria-expanded='true'] .hig-select-chevron { transform:rotate(180deg); }
 .hig-select-list { position:fixed;inset:auto;margin:0;padding:6px;font:inherit;line-height:1.5;background:var(--hig-nested);box-shadow:0 12px 32px #0006;overflow:auto;overscroll-behavior:contain;z-index:50; }
 /* Floating lists present with a short fade and settle from their anchor edge. */
@@ -400,7 +399,7 @@ button.hig-wallet-address:active { opacity:.8; }
 .hig-wallet-address-qr { flex:none;display:block;width:var(--hig-qr);height:var(--hig-qr); }
 .hig-wallet-address-qr > svg { display:block;width:100%;height:100%; }
 .hig-wallet-address-hint { display:inline-flex;align-items:center;gap:8px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
-.hig-wallet-address-hint > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
+.hig-wallet-address-hint > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
 /* SwapPanelBlock: two cards joined by a flip control. Each card is one target for its token picker; capsules and the
    amount sit on a pass-through layer above that target and take their own presses. */
 .hig-swap-panel { display:flex;flex-direction:column;width:100%;max-width:28rem;min-width:0;color:var(--hig-text);font-family:var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);line-height:1.5;outline:none; }
@@ -875,7 +874,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-search-input[data-trailing] > .hig-input::-webkit-search-cancel-button { display:none;-webkit-appearance:none; }
 .hig-search-trailing { position:absolute;inset-block:0;inset-inline-end:0;display:flex;align-items:center;gap:4px; }
 .hig-search-clear { appearance:none;position:relative;display:grid;place-items:center;min-width:var(--hig-button,44px);height:100%;margin:0;padding:0;border:0;border-radius:9999px;background:transparent;color:var(--hig-muted);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
-.hig-search-clear > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round; }
+.hig-search-clear > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round; }
 .hig-search-clear:active:not(:disabled) { color:var(--hig-text); }
 .hig-search-clear:disabled { opacity:.5;cursor:not-allowed; }
 .hig-bar-pnl { display:flex;flex-direction:column;gap:12px;--hig-bar-pnl-tone:var(--hig-muted); }

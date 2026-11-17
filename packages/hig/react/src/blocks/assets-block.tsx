@@ -1,4 +1,7 @@
 "use client";
+import { Eye } from '@bloxwap/icons/react/eye';
+import { TrendingDown } from '@bloxwap/icons/react/trending-down';
+import { TrendingUp } from '@bloxwap/icons/react/trending-up';
 import React,{useEffect,useId,useMemo,useState} from 'react';
 import {formatCountdown} from '@bloxwap/hig/contracts';
 import {PressDecoration,useHIG,useMessages} from '../provider.js';
@@ -80,11 +83,10 @@ export function filterAssets(assets:readonly AssetItem[],categories:readonly Ass
  const keep=(asset:AssetItem)=>(view==='all'||(view==='positions'?!!asset.position:asset.signal!=null))&&(needle===''||fold(`${asset.name} ${asset.symbol} ${asset.keywords??''}`).includes(needle));
  return categories.filter(entry=>category===''||entry.id===category).map(entry=>({category:entry,assets:assets.filter(asset=>asset.category===entry.id&&keep(asset))})).filter(section=>section.assets.length>0);
 }
-const stroke={fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round' as const,strokeLinejoin:'round' as const};
 const signalIcons:Record<AssetSignal,React.ReactNode>={
- watch:<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' {...stroke}><path d='M1.8 10s3-5.8 8.2-5.8 8.2 5.8 8.2 5.8-3 5.8-8.2 5.8S1.8 10 1.8 10Z'/><circle cx='10' cy='10' r='2.6'/></svg>,
- up:<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' {...stroke}><path d='m2.5 14.5 5-5 3.5 3.5 6.5-6.5M12.5 6.5h5v5'/></svg>,
- down:<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' {...stroke}><path d='m2.5 5.5 5 5 3.5-3.5 6.5 6.5M12.5 13.5h5v-5'/></svg>,
+ watch:<Eye size={20}/>,
+ up:<TrendingUp size={20}/>,
+ down:<TrendingDown size={20}/>,
 };
 /** Controlled when `value` is set, otherwise local. No feedback: the filter and segmented control emit their own, and typing emits none. */
 function useHostState<T>(value:T|undefined,initial:T,onChange?:(value:T)=>void):[T,(next:T)=>void]{

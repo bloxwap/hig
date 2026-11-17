@@ -23,5 +23,5 @@ it('passes the versioned @bloxwap/hig archive path to the boundary smoke install
  const probe=`import childProcess from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';import {rmSync} from 'node:fs';import {build} from 'esbuild';void build;childProcess.execFileSync=(command,args,options)=>{console.log(JSON.stringify(args));rmSync(options.cwd,{recursive:true,force:true});process.exit(0);};syncBuiltinESMExports();await import(${JSON.stringify(script)});`;
  const args=JSON.parse(execFileSync(process.execPath,['--input-type=module','-e',probe],{encoding:'utf8'}));
  const version=JSON.parse(readFileSync('package.json','utf8')).version;
- expect(args.slice(4)).toEqual([join(process.cwd(),'artifacts',`bloxwap-hig-${version}.tgz`)]);
+ expect(args.slice(4)).toEqual([join(process.cwd(),'vendor','bloxwap-icons-0.1.0.tgz'),join(process.cwd(),'artifacts',`bloxwap-hig-${version}.tgz`)]);
 });

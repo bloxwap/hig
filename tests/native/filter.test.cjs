@@ -70,8 +70,8 @@ it('shows the icon or an empty ring in the circle, and fills it with a check whe
  const fill=target=>target.findAll(n=>{const style=StyleSheet.flatten(n.props.style)??{};return style.backgroundColor===colors.background&&style.width===24&&style.opacity!==undefined;})[0];
  const value=animated=>typeof animated==='number'?animated:animated.__getValue();
  expect(value(StyleSheet.flatten(fill(chip(tree,'Base')).props.style).opacity)).toBe(1);expect(value(StyleSheet.flatten(fill(chip(tree,'All')).props.style).opacity)).toBe(0);
- // The check is drawn from views in the unselected label colour, so it reads on the dark fill.
- expect(layers(chip(tree,'Base')).some(style=>style.borderLeftWidth===2&&style.borderBottomWidth===2&&style.borderColor===colors.text)).toBe(true);
+ // The shared check uses the unselected label colour, so it reads on the dark fill.
+ expect(chip(tree,'Base').findByType('ExpoImage').props.tintColor).toBe(colors.text);
  // The circle is decorative.
  expect(chip(tree,'Base').findAll(n=>n.props.importantForAccessibility==='no-hide-descendants').length).toBeGreaterThan(0);
 });

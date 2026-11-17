@@ -1,3 +1,4 @@
+import { Check } from '@bloxwap/icons/native/check';
 import React from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
 import {useColors,useFills,useNumberLocale,usePresentNumber} from './provider.js';
@@ -62,7 +63,7 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
    {tag?<Text testID={testID?`${testID}-tag`:undefined} numberOfLines={1} style={{fontSize:12,lineHeight:18,color:colors.muted}}>{tag}</Text>:null}
   </View>:null}
   {trailing!=null&&trailing!==false?<View {...hidden} testID={testID?`${testID}-trailing`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>:null}
-  {selected?<View {...hidden} testID={testID?`${testID}-check`:undefined} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:strong,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>:null}
+  {selected?<Check size={20} color={strong} testID={testID?`${testID}-check`:undefined}/>:null}
  </>;
  return onSelect?<Pressable testID={testID} accessibilityRole='button' accessibilityLabel={label} accessibilityState={state} disabled={disabled} onPress={onSelect} style={({pressed})=>row(pressed)}>{content}</Pressable>:<View testID={testID} accessible accessibilityLabel={label} accessibilityState={state} style={row(false)}>{content}</View>;
 }

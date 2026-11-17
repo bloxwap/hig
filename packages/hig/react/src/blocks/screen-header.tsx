@@ -1,4 +1,5 @@
 "use client";
+import { QrCode } from '@bloxwap/icons/react/qr-code';
 import React,{useRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from '../provider.js';
@@ -41,4 +42,4 @@ export function ScreenHeader({title,onBack,backDisabled,backProps,action,heading
  </div>;
 }
 /** The QR glyph of a control that shows an address. */
-export const qrIcon=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinejoin='round'><rect x='3' y='3' width='5.5' height='5.5' rx='1'/><rect x='11.5' y='3' width='5.5' height='5.5' rx='1'/><rect x='3' y='11.5' width='5.5' height='5.5' rx='1'/><path d='M11.5 11.5h2v2h-2zM15 15h2v2h-2z' fill='currentColor' stroke='none'/></svg>;
+export const qrIcon=<QrCode size={20}/>;

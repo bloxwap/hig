@@ -27,7 +27,7 @@ describe('MarketRow in action mode is one line (defect fix)',()=>{
   const row=screen.getByTestId('row');
   // The name sits in its own span so it truncates; the detail stays in the button and in its name.
   const button=screen.getByRole('button',{name:'Bitcoin (BTC) 40×'});expect(button.querySelector('.hig-market-label')!.textContent).toBe('Bitcoin (BTC)');
-  expect(row.firstElementChild!.className).toBe('hig-market-identity');expect([...row.children].map(child=>child.getAttribute('class'))).toEqual(['hig-market-identity','hig-market-trailing','hig-market-check']);
+  expect(row.firstElementChild!.className).toBe('hig-market-identity');expect([...row.children].map(child=>[...child.classList].find(name=>name.startsWith('hig-')))).toEqual(['hig-market-identity','hig-market-trailing','hig-market-check']);
   expect(rule(".hig-market-row[data-mode='action']")).toContain('padding-inline-end:20px');
   expect(css).toContain(".hig-market-row[data-mode='action'] { flex-wrap:nowrap;padding-block:6px; }");
   // The identity has a floor (favourite + icon + a 5em name button) instead of collapsing to nothing.
@@ -43,7 +43,7 @@ describe('MarketRow in action mode is one line (defect fix)',()=>{
  it('groups the figures so whole figures drop from the end when the row is narrow, before the trailing content is clipped',()=>{
   render(<MarketRow symbol='BTC' name='Bitcoin' detail='40×' icon={<img alt='' src='/btc.svg'/>} price={64321.12} change={-1.23} volume='$1.2B' trailing={<span>+$12.00</span>} selected data-testid='row' onSelect={()=>{}}/>);
   const row=screen.getByTestId('row');
-  expect([...row.children].map(child=>child.getAttribute('class'))).toEqual(['hig-market-identity','hig-market-figures','hig-market-trailing','hig-market-check']);
+  expect([...row.children].map(child=>[...child.classList].find(name=>name.startsWith('hig-')))).toEqual(['hig-market-identity','hig-market-figures','hig-market-trailing','hig-market-check']);
   expect([...row.querySelector('.hig-market-figures')!.children].map(child=>child.className)).toEqual(['hig-market-price','hig-market-change','hig-market-volume']);
   const figures=rule(".hig-market-row[data-mode='action'] .hig-market-figures");
   for(const part of ['flex-wrap:wrap','flex:0 1000 auto','min-width:0','height:var(--hig-button)','overflow:hidden'])expect(figures).toContain(part);
@@ -51,7 +51,7 @@ describe('MarketRow in action mode is one line (defect fix)',()=>{
   expect(rule(".hig-market-row[data-mode='action'] .hig-market-trailing")).toContain('flex:0 1 auto;justify-content:safe flex-end;min-width:0;');
   // Presentation mode keeps one grid column per figure.
   cleanup();render(<MarketRow mode='presentation' symbol='BTC' name='Bitcoin' price={1} change={1} data-testid='p'/>);
-  expect([...screen.getByTestId('p').children].map(child=>child.getAttribute('class'))).toEqual(['hig-market-identity','hig-market-price','hig-market-change']);
+  expect([...screen.getByTestId('p').children].map(child=>[...child.classList].find(name=>name.startsWith('hig-')))).toEqual(['hig-market-identity','hig-market-price','hig-market-change']);
  });
 });
 

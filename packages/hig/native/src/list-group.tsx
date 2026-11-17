@@ -1,3 +1,5 @@
+import { Check as SharedCheck } from '@bloxwap/icons/native/check';
+import { ArrowUpRight } from '@bloxwap/icons/native/arrow-up-right';
 import React,{forwardRef,useState} from 'react';
 import {ActivityIndicator,Platform,Pressable,View,type PressableProps,type ViewProps,type ViewStyle} from 'react-native';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -94,12 +96,9 @@ export interface ListRowProps extends Omit<PressableProps,'children'|'style'|'on
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** The check of a selected row. It does not mirror in right-to-left layouts. */
-function Check({color,testID}:{color:string;testID?:string}){return <View {...hidden} testID={testID} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:color,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>;}
+function Check({color,testID}:{color:string;testID?:string}){return <SharedCheck size={20} color={color} testID={testID}/>;}
 /** An arrow pointing up and away, for a row that opens something outside the app; it mirrors in right-to-left layouts. */
-function External({color,rtl,testID}:{color:string;rtl:boolean;testID?:string}){return <View {...hidden} testID={testID} style={{width:20,height:20,alignItems:'center',justifyContent:'center',transform:rtl?[{scaleX:-1}]:undefined}}>
- <View style={{position:'absolute',width:12,height:1.75,borderRadius:1,backgroundColor:color,transform:[{rotate:'-45deg'}]}}/>
- <View style={{position:'absolute',top:5,right:5,width:7,height:7,borderTopWidth:1.75,borderRightWidth:1.75,borderColor:color}}/>
-</View>;}
+function External({color,rtl,testID}:{color:string;rtl:boolean;testID?:string}){return <ArrowUpRight size={20} color={color} testID={testID} style={{transform:rtl?[{scaleX:-1}]:undefined}}/>;}
 /** One row of a ListGroup: the label leads; a value, icons, a badge or a control trail. With `onSelect` the whole row is one button and shows a disclosure chevron; with `checked` or `onCheckedChange` the whole row is a switch; otherwise the row is static, so a control in `trailing` is its only target. Other Pressable props, such as `android_disableSound`, `hitSlop` or `onLongPress`, reach the row, and the ref reaches its view. */
 export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,ListRowProps>(function ListRow({label,description,tone,leading,value,valueLabel,valueTone,trailing,onSelect,disabled,selected,busy,busyLabel,disclosure,checked,defaultChecked,onCheckedChange,testID,...rest},ref){
  const colors=useColors(),fills=useFills(),{direction,messages}=useHIG();const [internal,setInternal]=useState(!!defaultChecked);

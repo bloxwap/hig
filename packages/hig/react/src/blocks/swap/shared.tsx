@@ -1,4 +1,21 @@
 "use client";
+import { ArrowDown } from '@bloxwap/icons/react/arrow-down';
+import { ArrowUpDown } from '@bloxwap/icons/react/arrow-up-down';
+import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
+import { ChevronLeft } from '@bloxwap/icons/react/chevron-left';
+import { ChevronRight } from '@bloxwap/icons/react/chevron-right';
+import { Delete } from '@bloxwap/icons/react/delete';
+import { Flame } from '@bloxwap/icons/react/flame';
+import { FlaskConical } from '@bloxwap/icons/react/flask-conical';
+import { Info } from '@bloxwap/icons/react/info';
+import { Lock } from '@bloxwap/icons/react/lock';
+import { LogOut } from '@bloxwap/icons/react/log-out';
+import { Menu } from '@bloxwap/icons/react/menu';
+import { RotateCcw } from '@bloxwap/icons/react/rotate-ccw';
+import { ScanLine } from '@bloxwap/icons/react/scan-line';
+import { SlidersHorizontal } from '@bloxwap/icons/react/sliders-horizontal';
+import { Wallet } from '@bloxwap/icons/react/wallet';
+import { X } from '@bloxwap/icons/react/x';
 import React from 'react';
 import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../animated-number.js';
 import {PressDecoration} from '../../provider.js';
@@ -100,29 +117,10 @@ export function addressGradient(address:string):string{
  let hash=0;for(const character of address)hash=(hash*31+character.charCodeAt(0))>>>0;
  return `linear-gradient(135deg,hsl(${hash%360} 80% 62%),hsl(${(hash>>>8)%360} 75% 42%))`;
 }
-const stroke={fill:'none',stroke:'currentColor',strokeWidth:1.75,strokeLinecap:'round' as const,strokeLinejoin:'round' as const};
-const paths={
- flip:<path d='M6.5 3.5v13m0 0-3-3m3 3 3-3M13.5 16.5v-13m0 0-3 3m3-3 3 3'/>,
- down:<path d='M10 3.5v13m0 0-4.5-4.5M10 16.5l4.5-4.5'/>,
- reset:<path d='M4 10a6 6 0 1 0 2-4.5M4 4v3h3'/>,
- menu:<path d='M4 6h12M4 10h12M4 14h12'/>,
- close:<path d='m5.5 5.5 9 9m0-9-9 9'/>,
- back:<path d='m12 4.5-5.5 5.5 5.5 5.5'/>,
- chevron:<path d='m7.5 4.5 5.5 5.5-5.5 5.5'/>,
- expand:<path d='m5 7.5 5 5 5-5'/>,
- delete:<path d='M7.5 4.5h8a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-8L2.5 10ZM10 8l4 4m0-4-4 4'/>,
- sliders:<path d='M4 6h6m4 0h2M4 14h2m4 0h6M12 4v4M8 12v4'/>,
- flask:<path d='M8 3.5h4M8.75 3.5v4.75L4.5 15.5a1 1 0 0 0 .9 1.5h9.2a1 1 0 0 0 .9-1.5l-4.25-7.25V3.5M6.5 12.5h7'/>,
- scan:<path d='M4 7V5a1 1 0 0 1 1-1h2M13 4h2a1 1 0 0 1 1 1v2M16 13v2a1 1 0 0 1-1 1h-2M7 16H5a1 1 0 0 1-1-1v-2M4 10h12'/>,
- flame:<path d='M10 17a5 5 0 0 0 5-5c0-3-2.5-4.5-3-8-2 1-3.5 3-3.5 5.5C7.5 8.5 7 7.5 7 7c-1.5 1.5-2 3-2 5a5 5 0 0 0 5 5Z'/>,
- logout:<path d='M8 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8M12.5 6.5 16 10l-3.5 3.5M16 10H8'/>,
- wallet:<path d='M3.5 6.5A1.5 1.5 0 0 1 5 5h9.5A1.5 1.5 0 0 1 16 6.5v.75M3.5 6.5v7A1.5 1.5 0 0 0 5 15h10.5a1 1 0 0 0 1-1V8.25a1 1 0 0 0-1-1H5a1.5 1.5 0 0 1-1.5-.75M13.25 11.25v.01'/>,
- info:<path d='M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM10 9.5v4M10 6.5v.01'/>,
- lock:<path d='M5.5 9h9a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1ZM7 9V6.5a3 3 0 0 1 6 0V9'/>,
-};
-export type SwapIconName=keyof typeof paths;
-/** Outline symbol on a 20 unit grid; decorative, so the control that holds it carries the name. */
-export function SwapIcon({name,size=20}:{name:SwapIconName;size?:number}){return <svg className='hig-swap-icon' aria-hidden='true' focusable='false' width={size} height={size} viewBox='0 0 20 20' {...stroke}>{paths[name]}</svg>;}
+const symbols={flip:ArrowUpDown,down:ArrowDown,reset:RotateCcw,menu:Menu,close:X,back:ChevronLeft,chevron:ChevronRight,expand:ChevronDown,delete:Delete,sliders:SlidersHorizontal,flask:FlaskConical,scan:ScanLine,flame:Flame,logout:LogOut,wallet:Wallet,info:Info,lock:Lock};
+export type SwapIconName=keyof typeof symbols;
+/** Shared outline symbol; the containing control carries its accessible name. */
+export function SwapIcon({name,size=20}:{name:SwapIconName;size?:number}){const Symbol=symbols[name];return <Symbol className='hig-swap-icon' size={size}/>;}
 const chainBadge='hig-swap-chain-badge';
 /** Token artwork with its chain badge. */
 export function TokenIcon({token,size=44}:{token:SwapToken;size?:number}){

@@ -1,4 +1,5 @@
 "use client";
+import { Check } from '@bloxwap/icons/react/check';
 import React,{useId,useRef} from 'react';
 import {PressDecoration,useControllable} from './provider.js';
 export interface Choice {value:string;label:string;disabled?:boolean}
@@ -30,7 +31,7 @@ export interface FilterProps {/** Accessible name of the group; not drawn. */lab
 export function Filter({label,options,value,defaultValue='',disabled,onValueChange}:FilterProps){
  const name=useId();const [current,set]=useControllable(value,defaultValue,onValueChange);
  return <div className='hig-filter' role='radiogroup' aria-label={label} aria-disabled={disabled||undefined}>
-  {options.map(o=><label key={o.value} className='hig-filter-chip'><input type='radio' name={name} value={o.value} checked={current===o.value} disabled={disabled||o.disabled} onChange={()=>{if(!disabled&&!o.disabled)set(o.value);}}/><span className='hig-filter-mark' aria-hidden='true'>{o.icon&&<img src={o.icon} alt='' loading='lazy'/>}<svg viewBox='0 0 16 16' focusable='false'><path pathLength='1' d='m3.75 8.5 2.75 2.75 5.75-6.25'/></svg></span><span>{o.label}</span></label>)}
+  {options.map(o=><label key={o.value} className='hig-filter-chip'><input type='radio' name={name} value={o.value} checked={current===o.value} disabled={disabled||o.disabled} onChange={()=>{if(!disabled&&!o.disabled)set(o.value);}}/><span className='hig-filter-mark' aria-hidden='true'>{o.icon&&<img src={o.icon} alt='' loading='lazy'/>}<Check size={16}/></span><span>{o.label}</span></label>)}
  </div>;
 }
 export {Select} from './select.js';

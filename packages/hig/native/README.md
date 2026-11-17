@@ -2,6 +2,11 @@
 
 Version 0.7.0, an entry of `@bloxwap/hig`. Import individual entries; see docs/components for platform and accessibility contracts.
 
+UI symbols come from `@bloxwap/icons` (install `@bloxwap/icons@^0.1.0`). Native symbols also require the `expo-image` version for your Expo SDK.
+Use `npx expo install expo-image`, then rebuild a development client so the native
+module is linked. The adapter uses one image view with a local SVG source and
+native tint; iOS renders the tinted image at the view size.
+
 Set a brand accent with `<HIGProvider primaryColor='#ff0000'>` from
 `@bloxwap/hig/native/provider`. It accepts opaque sRGB hex (`#RGB` or `#RRGGBB`),
 sets action/focus colours, and selects black or white text on primary fills.

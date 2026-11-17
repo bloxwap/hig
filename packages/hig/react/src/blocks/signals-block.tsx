@@ -1,4 +1,5 @@
 "use client";
+import { CircleCheck } from '@bloxwap/icons/react/circle-check';
 import React,{useId} from 'react';
 import {ScreenHeader} from './screen-header.js';
 import {SettingSwitch} from './setting-switch.js';
@@ -46,7 +47,7 @@ export interface SignalsBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  /** Pins the header to the top of the nearest scrolling container, transparent at rest and filled with `--hig-sticky-header-background` once content scrolls under it. */
  stickyHeader?:boolean;
 }
-const verifiedGlyph=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><circle cx='10' cy='10' r='7.5'/><path d='m6.75 10.25 2.25 2.25 4.25-4.75'/></svg>;
+const verifiedGlyph=<CircleCheck size={16}/>;
 function Group({group,verifiedLabel,verifiedMark,verifiedMarkInteractive}:{group:SignalsGroup;verifiedLabel?:string;verifiedMark?:React.ReactNode;verifiedMarkInteractive?:boolean}){
  const id=useId();
  return <section className='hig-signals-group' aria-labelledby={id}>

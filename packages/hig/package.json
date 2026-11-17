@@ -653,7 +653,8 @@
     "@gorhom/bottom-sheet": "^5.2.14",
     "react-native-reanimated": "^4.1.1",
     "react-native-worklets": "^0.5.1 || ^0.7.4 || ^0.13.0",
-    "react-native-gesture-handler": "^2.28.0 || ^3.3.0"
+    "react-native-gesture-handler": "^2.28.0 || ^3.3.0",
+    "@bloxwap/icons": "^0.1.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -717,6 +718,9 @@
       "optional": true
     },
     "react-native-gesture-handler": {
+      "optional": true
+    },
+    "@bloxwap/icons": {
       "optional": true
     }
   },

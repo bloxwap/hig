@@ -80,7 +80,7 @@ describe('DOM behavior contracts',()=>{
   expect(css).toMatch(/\.hig-toast-item\s*\{[^}]*border:1px solid transparent;border-radius:9999px;background:var\(--hig-nested\)/);
   render(<Toast notices={[{id:'n',message:'Copied',severity:'success'}]} onDismiss={()=>{}}/>);
   const capsule=document.querySelector('aside.hig-toast > .hig-toast-item[data-severity=success]')!;
-  expect([...capsule.children].map(node=>node.getAttribute('class'))).toEqual(['hig-toast-icon','hig-toast-message','hig-toast-close']);
+  expect([...capsule.children].map(node=>[...node.classList].find(name=>name.startsWith('hig-')))).toEqual(['hig-toast-icon','hig-toast-message','hig-toast-close']);
   expect(document.querySelector('aside.hig-toast .hig-surface')).toBeNull();
  });
  it('scopes component CSS to HIG classes and keeps every focusable part inside the scoped focus ring (#95)',()=>{
