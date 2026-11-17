@@ -4,27 +4,30 @@ import {readFileSync} from 'node:fs';
 import {registryChecks,selectRegistryChecks} from '../scripts/registry-checks.mjs';
 
 const workflow=readFileSync('.github/workflows/publish.yml','utf8');
+const registryWorkflow=readFileSync('.github/workflows/registry.yml','utf8');
 it('covers every registry consumer once and rejects unknown lanes',()=>{
- const names=workflow.match(/consumer: \[([^\]]+)\]/)![1].split(', ');
+ const names=registryWorkflow.match(/consumer: \[([^\]]+)\]/)![1].split(', ');
  expect(names).toEqual(Object.keys(registryChecks));
  expect(names).toEqual(['web','next','rn-0.81','rn-0.83','rn-0.88']);
  expect(names.flatMap(name=>selectRegistryChecks(name))).toEqual(selectRegistryChecks());
  expect(selectRegistryChecks('rn-0.83')[0].args).toEqual(['--profile','rn-0.83']);
  expect(()=>selectRegistryChecks('typo')).toThrow('Unknown registry check');
 });
-it('gates publication on every validation lane and preserves report and source verification',()=>{
- expect(workflow).toContain('task: [checks, unit-web, unit-native]');
- expect(workflow.match(/fail-fast: false/g)).toHaveLength(2);
- expect(workflow).not.toMatch(/^\s+max-parallel:/m);
- expect(workflow).toContain('needs: [security, prerequisites, validation, prepare]');
- expect(workflow).toContain('needs: [prerequisites, prepare, publish]');
- const publish=workflow.split('  publish:')[1].split('  registry:')[0];
- expect(publish).toContain('REPORT_SHA256: ${{ needs.prepare.outputs.report-sha256 }}');
- expect(publish).toContain('process.env.REPORT_SHA256');
- expect(publish).toContain('test "$(git rev-parse HEAD)" = "$RELEASE_SHA"');
- expect(publish.indexOf('node scripts/verify-release.mjs')).toBeLessThan(publish.indexOf('npm publish'));
- expect(publish).toContain('npm publish "$archive" --access public --provenance');
- expect(publish).not.toContain('continue-on-error');
+it('publishes only artifacts from successful exact-commit tag CI without rebuilding',()=>{
+ expect(workflow).not.toMatch(/npm ci|release:dry-run|ci-quality-tasks|smoke:registry/);
+ expect(workflow).toContain('--commit "$release_sha" --event workflow_dispatch --status success');
+ expect(workflow).toContain('.expired == false');
+ expect(workflow).toContain('artifact-ids: ${{ needs.prerequisites.outputs.artifact-id }}');
+ expect(workflow).toContain('run-id: ${{ needs.prerequisites.outputs.quality-run }}');
+ expect(workflow).toContain('test "$(git rev-parse HEAD)" = "$RELEASE_SHA"');
+ expect(workflow.indexOf('node scripts/verify-release.mjs')).toBeLessThan(workflow.indexOf('npm publish'));
+ expect(workflow).toContain('npm publish "$archive" --access public --provenance');
+ expect(registryWorkflow).toContain('workflow_run:');
+ expect(registryWorkflow).toContain("github.event.workflow_run.conclusion == 'success'");
+ expect(registryWorkflow).toContain('github.event.workflow_run.head_repository.full_name == github.repository');
+ expect(registryWorkflow).not.toContain('id-token: write');
+ expect(registryWorkflow).toContain('fail-fast: false');
+ expect(registryWorkflow).not.toMatch(/^\s+max-parallel:/m);
 });
 it('runs hash and signature verification before every selected registry consumer',()=>{
  const script=readFileSync('scripts/registry-smoke.mjs','utf8');

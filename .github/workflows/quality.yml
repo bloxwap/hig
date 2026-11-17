@@ -20,6 +20,18 @@ defaults:
   run:
     shell: bash
 jobs:
+  release-security:
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/')
+    uses: bloxwap/.github/.github/workflows/security-scan.yml@2a70724cd0d803abef5f5a7c64c46065f4fda19b # v1.1.0
+    permissions:
+      contents: read
+    with:
+      runs-on: '["self-hosted","macOS","ARM64"]'
+      profile: release
+      secrets-days: "7"
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
+
   paths-filter:
     # Security: never run fork PR code on the self-hosted runner.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -87,6 +99,7 @@ jobs:
         task: [checks, unit-web, unit-native, packed, packed-compat, packed-og, packed-boundaries, packed-chart-workspace, packed-fumadocs, packed-examples, packed-next, packed-css, packed-react-css, release]
     env:
       HIG_QUALITY_TASK: ${{ matrix.task }}
+      HIG_RELEASE_CHANNEL: ${{ github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/') && 'stable-simulation' || 'candidate' }}
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -108,6 +121,10 @@ jobs:
       - name: package-lock.json matches package.json and bun.lock
         run: node scripts/check-lockfiles.mjs --npm
       - run: bun install --frozen-lockfile
+        if: matrix.task != 'release' || env.HIG_RELEASE_CHANNEL != 'stable-simulation'
+      - name: Clean install with the release npm version
+        if: matrix.task == 'release' && env.HIG_RELEASE_CHANNEL == 'stable-simulation'
+        run: npx --yes npm@11.6.1 ci
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh
       # Reuse ~/Library/Caches/ms-playwright on disk, never via actions/cache.
@@ -116,8 +133,21 @@ jobs:
         run: bunx playwright install chromium webkit
       - name: Run isolated quality lane
         run: node scripts/ci-quality-tasks.mjs
-      # Dry-run and smoke:release-artifact already ran above. publish.yml rebuilds
-      # rather than downloading these. Upload on failure for review (visuals, tarballs).
+      - name: Verify the stable release input
+        if: matrix.task == 'release' && env.HIG_RELEASE_CHANNEL == 'stable-simulation'
+        run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$GITHUB_REF_NAME"
+      - name: Retain the verified package for publication
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: matrix.task == 'release' && env.HIG_RELEASE_CHANNEL == 'stable-simulation'
+        with:
+          name: hig-stable-release-${{ github.sha }}
+          overwrite: true
+          path: |
+            artifacts/release-stable-simulation/report.json
+            artifacts/release-stable-simulation/*.tgz
+          if-no-files-found: error
+          retention-days: 14
+      # Ordinary PR candidate artifacts are retained only on failure.
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
@@ -268,7 +298,7 @@ jobs:
   # Same job name as the previous single required check. Always reports so
   # docs-only PRs are not stuck on "Waiting for status to be reported."
   candidate:
-    needs: [paths-filter, compiler, quality, native, browser, linux-visual]
+    needs: [paths-filter, compiler, quality, native, browser, linux-visual, release-security]
     # Security: never run fork PR code on the self-hosted runner.
     if: (always() && !cancelled()) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64]
@@ -276,6 +306,8 @@ jobs:
     steps:
       - name: Confirm candidate quality
         env:
+          RELEASE_TAG_RUN: ${{ github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/') }}
+          RELEASE_SECURITY: ${{ needs.release-security.result }}
           COMPILER: ${{ needs.compiler.result }}
           CHANGES: ${{ needs.paths-filter.result }}
           CODE: ${{ needs.paths-filter.outputs.code }}
@@ -285,6 +317,10 @@ jobs:
           LINUX_VISUAL: ${{ needs.linux-visual.result }}
         run: |
           set -euo pipefail
+          if [ "$RELEASE_TAG_RUN" = true ] && [ "$RELEASE_SECURITY" != success ]; then
+            echo "release security: $RELEASE_SECURITY"
+            exit 1
+          fi
           if [ "$CHANGES" != success ]; then
             echo "paths-filter job: $CHANGES"
             exit 1

@@ -22,9 +22,9 @@ it('gates OIDC publishing on environment reviewers and quality for the checked-o
  expect(prerequisites).toContain('test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"');
  expect(prerequisites).toContain('gh api "repos/$GH_REPO/commits/$RELEASE_TAG" --jq .sha');
  expect(prerequisites).toContain('release_sha="$GITHUB_SHA"');
- expect(prerequisites).toContain('--workflow quality.yml --commit "$release_sha" --status success');
- expect(prerequisites).toContain('test "$runs" -gt 0');
- expect(publish).toContain('needs: [security, prerequisites, validation, prepare]');
+ expect(prerequisites).toContain('--workflow quality.yml --commit "$release_sha" --event workflow_dispatch --status success');
+ expect(prerequisites).toContain('[[ "$artifact_id" =~ ^[0-9]+$ ]]');
+ expect(publish).toContain('needs: prerequisites');
  expect(publish).toContain('environment: npm-release');
  expect(publish).toContain('id-token: write');
  expect(publish).toContain('ref: refs/tags/${{ env.RELEASE_TAG }}');
@@ -37,8 +37,8 @@ it('gates OIDC publishing on environment reviewers and quality for the checked-o
  expect(workflow).not.toContain('secrets.NPM_TOKEN');
  expect(publish).toContain('npm publish "$archive" --access public --provenance');
  expect(publish).toContain('echo "$name@$version" >> artifacts/published-packages.txt');
- expect(publish).toContain('HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt');
+ expect(readFileSync('.github/workflows/registry.yml','utf8')).toContain('HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt');
  expect(publish).toContain('Skipping $name@$version: already published');
  expect(publish).toContain('scripts/verify-release.mjs');
- expect(publish).toContain('npm run smoke:registry');
+ expect(publish).not.toContain('npm run smoke:registry');
 });

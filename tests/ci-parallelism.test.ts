@@ -15,7 +15,7 @@ it('schedules every quality and browser lane exactly once, with every result req
  expect(matrix('profile')).toEqual(['rn-0.81', 'rn-0.83', 'rn-0.88']);
  expect(workflow.match(/fail-fast: false/g)).toHaveLength(3);
  expect(workflow).not.toMatch(/^\s+max-parallel:/m);
- expect(workflow).toContain('needs: [paths-filter, compiler, quality, native, browser, linux-visual]');
+ expect(workflow).toContain('needs: [paths-filter, compiler, quality, native, browser, linux-visual, release-security]');
  for (const family of ['QUALITY', 'NATIVE', 'BROWSER']) expect(workflow).toContain(`$${family}`);
  expect(workflow).toContain('if [ "$result" != success ]');
  for (const key of ['task', 'profile', 'gate']) expect(workflow).toMatch(new RegExp(`name: hig-candidate-.*\\$\\{\\{ matrix\\.${key} \\}\\}`));

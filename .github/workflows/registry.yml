@@ -1,0 +1,50 @@
+name: Verify published npm release
+on:
+  workflow_run:
+    workflows: [Maintainer-approved npm release]
+    types: [completed]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hig-registry-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+defaults:
+  run:
+    shell: bash
+jobs:
+  registry:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository && (github.event.workflow_run.event == 'release' || github.event.workflow_run.event == 'workflow_dispatch')
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        consumer: [web, next, rn-0.81, rn-0.83, rn-0.88]
+    env:
+      HIG_REGISTRY_CHECK: ${{ matrix.consumer }}
+      HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-release
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: hig-publish-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          path: artifacts
+      - name: Install browser for the Next consumer
+        if: matrix.consumer == 'next'
+        run: npx playwright install chromium
+      # Every lane verifies registry bytes, signatures and provenance before its consumer.
+      - run: npm run smoke:registry
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: hig-registry-${{ matrix.consumer }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence/
+          retention-days: 14

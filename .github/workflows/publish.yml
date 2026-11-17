@@ -17,18 +17,6 @@ defaults:
   run:
     shell: bash
 jobs:
-  security:
-    # Independent release scan; publication waits for this gate.
-    uses: bloxwap/.github/.github/workflows/security-scan.yml@2a70724cd0d803abef5f5a7c64c46065f4fda19b # v1.1.0
-    permissions:
-      contents: read
-    with:
-      runs-on: '["self-hosted","macOS","ARM64"]'
-      profile: release
-      secrets-days: "7"
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
-
   prerequisites:
     # Only gh/git checks: no OIDC token, so it runs on the minis. publish alone needs a hosted runner.
     runs-on: [self-hosted, macOS, ARM64]
@@ -39,6 +27,8 @@ jobs:
       deployments: read
     outputs:
       release-sha: ${{ steps.gates.outputs.release-sha }}
+      quality-run: ${{ steps.gates.outputs.quality-run }}
+      artifact-id: ${{ steps.gates.outputs.artifact-id }}
     env:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
       GH_TOKEN: ${{ github.token }}
@@ -59,84 +49,30 @@ jobs:
           [[ "$release_sha" =~ ^[0-9a-f]{40}$ ]]
           reviewers=$(gh api "repos/$GH_REPO/environments/npm-release" --jq '[.protection_rules[] | select(.type == "required_reviewers") | .reviewers[]] | length')
           test "$reviewers" -gt 0 || { echo 'Configure required reviewers on the npm-release environment first.' >&2; exit 1; }
-          runs=$(gh run list --workflow quality.yml --commit "$release_sha" --status success --limit 1 --json databaseId --jq length)
-          test "$runs" -gt 0 || { echo 'Run the candidate quality workflow successfully for this exact tag commit first.' >&2; exit 1; }
-          echo "release-sha=$release_sha" >> "$GITHUB_OUTPUT"
-  validation:
-    needs: prerequisites
-    runs-on: [self-hosted, macOS, ARM64]
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        task: [checks, unit-web, unit-native]
-    env:
-      HIG_QUALITY_TASK: ${{ matrix.task }}
-      NEXT_TELEMETRY_DISABLED: '1'
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          ref: ${{ needs.prerequisites.outputs.release-sha }}
-          persist-credentials: false
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-release
-      - run: node scripts/ci-quality-tasks.mjs
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: failure()
-        with:
-          name: hig-release-validation-${{ matrix.task }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: evidence/
-          retention-days: 14
-
-  prepare:
-    needs: prerequisites
-    runs-on: [self-hosted, macOS, ARM64]
-    timeout-minutes: 40
-    outputs:
-      artifact: ${{ steps.bundle.outputs.artifact }}
-      report-sha256: ${{ steps.bundle.outputs.report-sha256 }}
-    env:
-      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
-      NEXT_TELEMETRY_DISABLED: '1'
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          ref: ${{ needs.prerequisites.outputs.release-sha }}
-          persist-credentials: false
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-release
-      - run: npm run release:dry-run -- --channel stable-simulation
-      - name: Verify immutable source, gates and tarball hashes
-        run: node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
-      - name: Bind artifact to this job's verified report
-        id: bundle
-        run: |
-          echo "artifact=hig-release-input-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
-          node --input-type=module -e 'import{readFileSync,appendFileSync}from"node:fs";import{createHash}from"node:crypto";appendFileSync(process.env.GITHUB_OUTPUT,"report-sha256="+createHash("sha256").update(readFileSync("artifacts/release-stable-simulation/report.json")).digest("hex")+"\n");'
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: ${{ steps.bundle.outputs.artifact }}
-          path: |
-            artifacts/release-stable-simulation/report.json
-            artifacts/release-stable-simulation/*.tgz
-          if-no-files-found: error
-          retention-days: 14
-
+          artifact_id=
+          for quality_run in $(gh run list --workflow quality.yml --commit "$release_sha" --event workflow_dispatch --status success --limit 20 --json databaseId --jq '.[].databaseId'); do
+            artifact_id=$(gh api "repos/$GH_REPO/actions/runs/$quality_run/artifacts" --paginate --jq ".artifacts[] | select(.name == \"hig-stable-release-$release_sha\" and .expired == false) | .id")
+            if [ -n "$artifact_id" ]; then break; fi
+          done
+          [[ "$artifact_id" =~ ^[0-9]+$ ]] || { echo 'Run quality.yml successfully on this exact release tag to prepare a fresh stable artifact.' >&2; exit 1; }
+          {
+            echo "quality-run=$quality_run"
+            echo "artifact-id=$artifact_id"
+            echo "release-sha=$release_sha"
+          } >> "$GITHUB_OUTPUT"
   publish:
     # Only the npm OIDC operation requires an ephemeral GitHub-hosted runner.
-    needs: [security, prerequisites, validation, prepare]
+    needs: prerequisites
     environment: npm-release
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    outputs:
-      receipt-id: ${{ steps.receipt.outputs.artifact-id }}
     permissions:
       contents: read
       id-token: write
+      actions: read
     env:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
       RELEASE_SHA: ${{ needs.prerequisites.outputs.release-sha }}
-      REPORT_SHA256: ${{ needs.prepare.outputs.report-sha256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -153,11 +89,13 @@ jobs:
         run: npm install --global npm@11.6.1
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: ${{ needs.prepare.outputs.artifact }}
+          artifact-ids: ${{ needs.prerequisites.outputs.artifact-id }}
+          run-id: ${{ needs.prerequisites.outputs.quality-run }}
+          github-token: ${{ github.token }}
+          merge-multiple: true
           path: artifacts/release-stable-simulation
       - name: Verify downloaded report and every tarball before publication
         run: |
-          node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";import{createHash}from"node:crypto";assert.equal(createHash("sha256").update(readFileSync("artifacts/release-stable-simulation/report.json")).digest("hex"),process.env.REPORT_SHA256);'
           node scripts/verify-release.mjs --report artifacts/release-stable-simulation/report.json --tag "$RELEASE_TAG" --output artifacts/verified-release.txt
       - name: Publish the verified tarballs through npm trusted publishing
         run: |
@@ -181,43 +119,6 @@ jobs:
           path: |
             artifacts/published-packages.txt
             artifacts/verified-release.txt
-          retention-days: 14
-
-  registry:
-    needs: [prerequisites, prepare, publish]
-    runs-on: [self-hosted, macOS, ARM64]
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        consumer: [web, next, rn-0.81, rn-0.83, rn-0.88]
-    env:
-      HIG_REGISTRY_CHECK: ${{ matrix.consumer }}
-      HIG_PROVENANCE_PACKAGES_FILE: artifacts/published-packages.txt
-      NEXT_TELEMETRY_DISABLED: '1'
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          ref: ${{ needs.prerequisites.outputs.release-sha }}
-          persist-credentials: false
-      - uses: ./.github/actions/setup-release
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: ${{ needs.prepare.outputs.artifact }}
-          path: artifacts/release-stable-simulation
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          artifact-ids: ${{ needs.publish.outputs.receipt-id }}
-          merge-multiple: true
-          path: artifacts
-      - name: Install browser for the Next consumer
-        if: matrix.consumer == 'next'
-        run: npx playwright install chromium
-      # Every lane verifies registry bytes, signatures and provenance before its consumer.
-      - run: npm run smoke:registry
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: always()
-        with:
-          name: hig-registry-${{ matrix.consumer }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: evidence/
+            artifacts/release-stable-simulation/report.json
+            artifacts/release-stable-simulation/*.tgz
           retention-days: 14

@@ -16,7 +16,7 @@ it('jobs other than publishing and Linux visuals use self-hosted macOS ARM64',()
    expect(linux).toContain('playwright install --with-deps chromium');
    expect(linux).toContain('node scripts/run-browser-gates.mjs');
    expect(linux).not.toMatch(/self-hosted|webkit|HIG_UPDATE_VISUALS/);
-   expect(workflow).toContain('needs: [paths-filter, compiler, quality, native, browser, linux-visual]');
+   expect(workflow).toContain('needs: [paths-filter, compiler, quality, native, browser, linux-visual, release-security]');
    expect(workflow).toContain('"linux-visual:$LINUX_VISUAL"');
   }
   const text=linux?workflow.replace(linux,''):workflow;
@@ -62,14 +62,14 @@ it('keeps Linux visual baselines under tests/visual-baselines/linux and names Da
 it('uses Ubuntu only for trusted publication and self-hosted runners for release work',()=>{
  const text=readFileSync('.github/workflows/publish.yml','utf8');
  const jobs=text.split('jobs:')[1];
- expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['security','prerequisites','validation','prepare','publish','registry']);
+ expect([...jobs.matchAll(/^ {2}([\w-]+):$/gm)].map(match=>match[1])).toEqual(['prerequisites','publish']);
  expect(text.match(/runs-on: ubuntu-24\.04/g)).toHaveLength(1);
  const publish=text.split('  publish:')[1].split('  registry:')[0];
  expect(publish).toContain('environment: npm-release');
  expect(publish).toContain('id-token: write');
- expect(publish).toContain('needs: [security, prerequisites, validation, prepare]');
+ expect(publish).toContain('needs: prerequisites');
  expect(publish).not.toMatch(/npm ci|npm run check|smoke:registry|playwright/);
- for(const name of ['prerequisites','validation','prepare','registry']){
+ for(const name of ['prerequisites']){
   const section=jobs.split(`  ${name}:`)[1].split(/\n {2}[\w-]+:\n/)[0];
   expect(section).toContain('runs-on: [self-hosted, macOS, ARM64]');
   expect(section).not.toContain('id-token: write');
