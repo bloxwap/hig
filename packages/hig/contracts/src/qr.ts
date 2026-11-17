@@ -167,6 +167,9 @@ export function qrMaskAt(mask:number,column:number,row:number):boolean{
   default:return ((column+row)%2+column*row%3)%2===0;
  }
 }
+// Every mask pattern repeats each 6 columns and 12 rows, so one 12×6 tile a mask answers `qrMaskAt` with a lookup. A ninth, empty tile masks nothing.
+const MASK_TILES=new Uint8Array(9*72),NO_MASK=8;
+for(let mask=0;mask<8;mask++)for(let row=0;row<12;row++)for(let column=0;column<6;column++)MASK_TILES[mask*72+row*6+column]=qrMaskAt(mask,column,row)?1:0;
 /** The function patterns of a version and the cells they reserve: finders, separators, alignment and timing patterns, with the format and version cells left light. */
 function template(version:number):{modules:Uint8Array;reserved:Uint8Array}{
  const size=17+4*version,modules=new Uint8Array(size*size),reserved=new Uint8Array(size*size);
@@ -191,38 +194,45 @@ function template(version:number):{modules:Uint8Array;reserved:Uint8Array}{
 // Rule 3's sequence, 1011101 with four light modules after it or before it, as the last eleven modules of a line.
 const FINDER_LIKE=0b10111010000,FINDER_LIKE_REVERSED=0b00001011101;
 /**
- * The mask penalty of a symbol (ISO/IEC 18004 §7.8.3): runs of five or more, 2×2 blocks, finder-like sequences and the share of
- * dark modules. `encodeQR` scores each candidate with its format and version cells still light, as the `qr` encoder behind Cuer
- * and python-qrcode do, so HIG picks the same mask they pick.
+ * Writes `modules` under a mask pattern to `out` (the mask inverts every cell that is not reserved) and returns its penalty.
+ * No rule takes points away, so a candidate is given up, and `limit` returned, as soon as its score reaches `limit`: it cannot
+ * be lower than a score already found. `out` is then incomplete.
  */
-export function qrPenalty(modules:Uint8Array,size:number):number{
+function maskPenalty(modules:Uint8Array,reserved:Uint8Array,size:number,mask:number,out:Uint8Array,limit:number):number{
  let score=0,dark=0;
  // Along the rows: runs, finder-like sequences (the last eleven modules, kept as bits), 2×2 blocks against the row above, and the dark count.
  for(let row=0,at=0;row<size;row++){
-  let run=0,previous=2,window=0;
-  for(let column=0;column<size;column++,at++){
-   const cell=modules[at]!;dark+=cell;
-   if(cell===previous)run++;else{if(run>=5)score+=run-2;run=1;previous=cell;}
+  const tile=mask*72+row%12*6;let run=0,previous=2,window=0;
+  for(let column=0,phase=0;column<size;column++,at++){
+   const cell=modules[at]!^MASK_TILES[tile+phase]!&(reserved[at]!^1);out[at]=cell;dark+=cell;if(++phase===6)phase=0;
+   if(cell===previous){run++;if(row&&cell===out[at-size]&&cell===out[at-size-1])score+=3;}else{if(run>=5)score+=run-2;run=1;previous=cell;}
    window=(window<<1|cell)&0x7ff;
    if(column>=10&&(window===FINDER_LIKE||window===FINDER_LIKE_REVERSED))score+=40;
-   if(row&&column&&cell===modules[at-1]&&cell===modules[at-size]&&cell===modules[at-size-1])score+=3;
   }
   if(run>=5)score+=run-2;
+  if(score>=limit)return limit;
  }
  // Down the columns: runs and finder-like sequences.
  for(let column=0;column<size;column++){
   let run=0,previous=2,window=0;
   for(let row=0,at=column;row<size;row++,at+=size){
-   const cell=modules[at]!;
+   const cell=out[at]!;
    if(cell===previous)run++;else{if(run>=5)score+=run-2;run=1;previous=cell;}
    window=(window<<1|cell)&0x7ff;
    if(row>=10&&(window===FINDER_LIKE||window===FINDER_LIKE_REVERSED))score+=40;
   }
   if(run>=5)score+=run-2;
+  if(score>=limit)return limit;
  }
  const total=size*size;
  return score+10*Math.ceil(Math.max(0,Math.abs(dark*100-total*50)-total*5)/(total*5));
 }
+/**
+ * The mask penalty of a symbol (ISO/IEC 18004 §7.8.3): runs of five or more, 2×2 blocks, finder-like sequences and the share of
+ * dark modules. `encodeQR` scores each candidate with its format and version cells still light, as the `qr` encoder behind Cuer
+ * and python-qrcode do, so HIG picks the same mask they pick.
+ */
+export function qrPenalty(modules:Uint8Array,size:number):number{return maskPenalty(modules,modules,size,NO_MASK,new Uint8Array(size*size),Infinity);}
 /** Why a value cannot be encoded: it is longer than a version 40 symbol (or the requested version) holds at the level. */
 export class QRCapacityError extends RangeError {constructor(message:string){super(message);this.name='QRCapacityError';}}
 /**
@@ -252,10 +262,13 @@ export function encodeQR(value:string,options:QREncodeOptions={}):QRMatrix{
  }
  // Remainder bits past the last codeword stay light.
  for(let i=0;i<cells.length&&i<stream.length*8;i++)modules[cells[i]!]=stream[i>>>3]!>>>(7-(i&7))&1;
- const masked=(mask:number)=>{const out=modules.slice();for(const at of cells)if(qrMaskAt(mask,at%size,Math.floor(at/size)))out[at]=out[at]!^1;return out;};
- let mask=options.mask,best:Uint8Array|undefined;
- if(mask===undefined){let lowest=Infinity;mask=0;for(let candidate=0;candidate<8;candidate++){const trial=masked(candidate),score=qrPenalty(trial,size);if(score<lowest){lowest=score;mask=candidate;best=trial;}}}
- const result=best??masked(mask),format=qrFormatBits(level,mask);
+ // Each candidate is written to one of two buffers, which swap when it scores lowest: the search allocates nothing a mask.
+ let mask=options.mask,result=new Uint8Array(size*size);
+ if(mask===undefined){
+  let lowest=Infinity,trial=new Uint8Array(size*size);mask=0;
+  for(let candidate=0;candidate<8;candidate++){const score=maskPenalty(modules,reserved,size,candidate,trial,lowest);if(score<lowest){lowest=score;mask=candidate;const swap=result;result=trial;trial=swap;}}
+ }else maskPenalty(modules,reserved,size,mask,result,Infinity);
+ const format=qrFormatBits(level,mask);
  const set=(column:number,row:number,bit:number)=>{result[row*size+column]=bit;};
  for(let i=0;i<15;i++){
   const bit=format>>>i&1;
