@@ -19,27 +19,28 @@
 /* Every rule is scoped to HIG classes so a host that loads this file on some routes only gets no side effects elsewhere (#95).
    Element defaults for the whole page (box-sizing, focus ring, table, range) are opt-in: @bloxwap/hig/react/css/base. */
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-filter-chip :is(input,span,img),.hig-segment :is(input,span),.hig-progress progress,.hig-table > * > tr > :is(th,td)) { box-sizing:border-box; }
-.hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);min-width:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);cursor:pointer;overflow-wrap:anywhere; }
+.hig-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:var(--hig-button);min-width:var(--hig-button);max-width:100%;padding:8px 20px;border:1px solid transparent;border-radius:9999px;font:600 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);background:var(--hig-action);color:var(--hig-onAction);text-decoration:none;cursor:pointer;overflow-wrap:break-word; }
 .hig-button[data-density='compact'] { padding-block:4px; }
 .hig-button[data-intent='secondary'] { background:var(--hig-nested);color:var(--hig-text); }
 .hig-button[data-intent='ghost'] { background:transparent;color:var(--hig-muted); }
 .hig-button > svg,.hig-icon-button > span { display:inline-flex;align-items:center;justify-content:center;flex:none; }
 .hig-icon-button { min-width:var(--hig-button);padding-inline:8px; }
-.hig-button[data-intent='destructive'] { background:var(--hig-negative);color:var(--hig-background); }
+.hig-button[data-intent='destructive'] { --hig-glow:var(--hig-negative);background:var(--hig-negative);color:var(--hig-background); }
 /* Market-direction fills follow HIGProvider marketColors (default buy and sell), with the dark label destructive uses. */
-.hig-button[data-intent='up'] { background:var(--hig-up,var(--hig-buy));color:var(--hig-background); }
-.hig-button[data-intent='down'] { background:var(--hig-down,var(--hig-sell));color:var(--hig-background); }
-.hig-button[data-intent='warning'] { background:var(--hig-warning);color:var(--hig-background); }
+.hig-button[data-intent='up'] { --hig-glow:var(--hig-up,var(--hig-buy));background:var(--hig-up,var(--hig-buy));color:var(--hig-background); }
+.hig-button[data-intent='down'] { --hig-glow:var(--hig-down,var(--hig-sell));background:var(--hig-down,var(--hig-sell));color:var(--hig-background); }
+.hig-button[data-intent='warning'] { --hig-glow:var(--hig-warning);background:var(--hig-warning);color:var(--hig-background); }
 .hig-button[data-full] { width:100%; }
+.hig-button[data-glow]:not([data-intent='secondary'],[data-intent='ghost']) { box-shadow:0 0 60px 8px color-mix(in srgb,var(--hig-glow,var(--hig-action)) 45%,transparent),0 0 120px 20px color-mix(in srgb,var(--hig-glow,var(--hig-action)) 20%,transparent); }
 .hig-button-spinner { flex:none;width:1em;height:1em;border:2px solid color-mix(in srgb,currentColor 30%,transparent);border-top-color:currentColor;border-radius:50%;animation:hig-spin .8s linear infinite; }
 .hig-icon-button[aria-busy='true'] > .hig-button-spinner ~ span[aria-hidden='true'] { display:none; }
-.hig-button:disabled { cursor:default; }
+.hig-button:is(:disabled,[aria-disabled='true']) { cursor:default; }
 /* Unavailable is neutral: a disabled button drops its intent colour for a well fill and muted text, so a dimmed accent never reads
    as a second call to action. Busy keeps the intent colour under its spinner. */
-.hig-button:disabled:not([aria-busy='true']) { background:var(--hig-fill);color:var(--hig-muted); }
-.hig-button[data-intent='ghost']:disabled:not([aria-busy='true']) { background:transparent;color:var(--hig-faint); }
+.hig-button:is(:disabled,[aria-disabled='true']):not([aria-busy='true']) { background:var(--hig-fill);color:var(--hig-muted);box-shadow:none; }
+.hig-button[data-intent='ghost']:is(:disabled,[aria-disabled='true']):not([aria-busy='true']) { background:transparent;color:var(--hig-faint); }
 .hig-button[aria-busy='true'] { opacity:.7; }
-.hig-button:active:not(:disabled) { transform:scale(.98); }
+.hig-button:active:not(:disabled,[aria-disabled='true']) { transform:scale(.98); }
 .hig-button { transition:transform var(--hig-motion-duration-fast) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1)),filter var(--hig-motion-duration-fast) ease; }
 :where([class^='hig-'],[class*=' hig-'],.hig-choice input,.hig-segment input):focus-visible { outline:2px solid var(--hig-focus);outline-offset:3px; }
 .hig-stack,.hig-field,.hig-toast { display:flex;flex-direction:column;gap:var(--hig-gap);min-width:0; }
@@ -206,6 +207,7 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-market-row[data-active] { border-radius:var(--hig-radius-xl,14px);background:var(--hig-fill); }
 .hig-market-row[data-disabled] :is(.hig-market-name,.hig-market-price,.hig-market-change,.hig-market-volume,.hig-market-trailing,.hig-market-icon) { opacity:.5; }
 .hig-badge { display:inline-flex;align-items:center;gap:4px;width:fit-content;max-width:100%;min-width:0;padding:4px 10px;border-radius:9999px;background:var(--hig-fill);color:var(--hig-text);line-height:1.5;vertical-align:middle;overflow-wrap:anywhere; }
+.hig-badge-dot { flex:none;width:6px;height:6px;border-radius:50%;background:currentColor; }
 .hig-badge[data-tone='positive'] { color:var(--hig-positive);background:color-mix(in srgb,var(--hig-positive) 15%,transparent); }
 .hig-badge[data-tone='negative'] { color:var(--hig-negative);background:color-mix(in srgb,var(--hig-negative) 15%,transparent); }
 .hig-badge[data-tone='warning'] { color:var(--hig-warning);background:color-mix(in srgb,var(--hig-warning) 15%,transparent); }
@@ -254,8 +256,8 @@ img.hig-avatar { object-fit:cover; }
 .hig-toast-close::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2);border-radius:50%; }
 .hig-toast-close:active { color:var(--hig-text); }
 .hig-toast-close:active::before { background:var(--hig-border); }
-@media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled) {transform:none;} }
-[data-hig-motion='reduced'] .hig-button:active:not(:disabled) {transform:none;}
+@media(prefers-reduced-motion:reduce) { .hig-button:active:not(:disabled,[aria-disabled='true']) {transform:none;} }
+[data-hig-motion='reduced'] .hig-button:active:not(:disabled,[aria-disabled='true']) {transform:none;}
 .hig-tabs { display:grid;gap:var(--hig-gap);min-width:0; }
 .hig-tab-list,.hig-pagination { gap:var(--hig-action-gap); }
 .hig-tab-list { flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding:4px;margin:-4px; }
@@ -409,8 +411,8 @@ img.hig-avatar { object-fit:cover; }
 @media (pointer:coarse) { :is(input,textarea,select).hig-input { font-size:max(16px,1em); } }
 /* Touch has no hover: browsers latch :hover on the first tap. Hover styles apply only to a precise hovering pointer. */
 @media (hover:hover) and (pointer:fine) {
-  .hig-button:hover:not(:disabled) { filter:brightness(.9); }
-  .hig-button[data-intent='ghost']:hover:not(:disabled) { background:var(--hig-nested);color:var(--hig-text);filter:none; }
+  .hig-button:hover:not(:disabled,[aria-disabled='true']) { filter:brightness(.9); }
+  .hig-button[data-intent='ghost']:hover:not(:disabled,[aria-disabled='true']) { background:var(--hig-nested);color:var(--hig-text);filter:none; }
   .hig-tab[aria-selected='false']:hover:not(:disabled) { color:var(--hig-text);filter:none; }
   .hig-navigation > .hig-link:hover { background:var(--hig-nested);color:var(--hig-text); }
   .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }

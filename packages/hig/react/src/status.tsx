@@ -4,9 +4,9 @@ import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from './provider.js';
 export type BadgeTone='neutral'|'positive'|'negative'|'warning'|'info';
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>{/** Explicit meaning; never inferred from text or a number's sign. */tone?:BadgeTone}
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>{/** Explicit meaning; never inferred from text or a number's sign. */tone?:BadgeTone;/** A 6px status dot in the label colour on the leading edge, hidden from assistive technology. */dot?:boolean}
 /** A quiet status label. The host owns announcements and may supply typography or an accessible name. */
-export const Badge=React.forwardRef<HTMLSpanElement,BadgeProps>(function Badge({children,tone='neutral',className,...props},ref){const accent=['positive','negative','warning','info'].includes(tone)?tone:undefined;return <span {...props} ref={ref} className={['hig-badge',className].filter(Boolean).join(' ')} data-tone={accent}>{children}</span>;});
+export const Badge=React.forwardRef<HTMLSpanElement,BadgeProps>(function Badge({children,tone='neutral',dot,className,...props},ref){const accent=['positive','negative','warning','info'].includes(tone)?tone:undefined;return <span {...props} ref={ref} className={['hig-badge',className].filter(Boolean).join(' ')} data-tone={accent}>{dot&&<span className='hig-badge-dot' aria-hidden='true'/>}{children}</span>;});
 /** `note` and `tip` are documentation callout severities: note uses the `info` token role and tip the `positive` role, like info and success. `default` is the neutral variant: a faint `text` tint with the title in `text`. */
 export type AlertSeverity='default'|'info'|'success'|'warning'|'error'|'note'|'tip';
 /** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning → warning, error → negative; default → 6% of text), with no stroke or glow. The title may be any inline node, such as text with a code span. */

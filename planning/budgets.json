@@ -1,6 +1,6 @@
 {
   "button": {
-    "gzip": 850
+    "gzip": 920
   },
   "field": {
     "gzip": 400
@@ -15,7 +15,7 @@
     "gzip": 700000
   },
   "docsCSS": {
-    "raw": 195000
+    "raw": 197500
   },
   "fonts": {
     "raw": 600000
