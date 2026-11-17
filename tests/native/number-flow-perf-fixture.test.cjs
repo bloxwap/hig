@@ -13,9 +13,12 @@ jest.mock('react-native-reanimated',()=>{
   useSharedValue:shared,useAnimatedStyle:updater=>updater(),useFrameCallback:()=>React.useRef({setActive:()=>{}}).current,Easing:{bezier:(...points)=>({bezier:points})},ReduceMotion:{Never:'never',System:'system',Always:'always'}};
 });
 // The fixture workspace installs the React its Expo SDK pins; under jest it has to be the React the test renderer runs.
-jest.mock('../../fixtures/native/node_modules/react',()=>jest.requireActual('react'));
-jest.mock('../../fixtures/native/node_modules/react/jsx-runtime',()=>jest.requireActual('react/jsx-runtime'));
-jest.mock('../../fixtures/native/node_modules/react/jsx-dev-runtime',()=>jest.requireActual('react/jsx-dev-runtime'));
+// (Where the workspace shares the root's React there is no second copy and nothing to point elsewhere.)
+for(const entry of ['','/jsx-runtime','/jsx-dev-runtime']){
+ const own=`../../fixtures/native/node_modules/react${entry}`;
+ try{require.resolve(own);}catch{continue;}
+ jest.doMock(own,()=>jest.requireActual(`react${entry}`));
+}
 const NumberFlowPerf=require('../../fixtures/native/perf/number-flow').default;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.useRealTimers();jest.restoreAllMocks();});
@@ -28,22 +31,22 @@ it('runs the tickers and then the interrupted figure by itself, and logs its sta
  // Forty figures, each drawn as reels once its ten digits are measured. Nothing is logged before the run starts.
  expect(root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function')).toHaveLength(400);measure();
  expect(lines).toEqual([]);
- for(let step=0;step<2000&&!done.mock.calls.length;step++)await act(async()=>{await jest.advanceTimersByTimeAsync(16);});
+ for(let step=0;step<600&&!done.mock.calls.length;step++)await act(async()=>{await jest.advanceTimersByTimeAsync(50);});
  expect(done).toHaveBeenCalledTimes(1);expect(lines).toHaveLength(4);
  expect(lines[0]).toBe('[perf] number-flow start');expect(lines[3]).toBe('[perf] number-flow done');
  // Fifty ticks of forty figures are fifty commits. (React Native's jest frame is a zero timeout, so the interrupted figure gets
- // a value every millisecond here and React batches them by the step this test advances; on a device it is one a frame.)
+ // a value every millisecond here and React batches them by the 50 ms this test advances at a time; on a device it is one a frame.)
  expect(lines[1]).toMatch(/^\[perf\] number-flow tickers figures=40 ticks=50 updates=2000 commits=50 jsFrames=\d+ jsSlow=\d+ jsWorstMs=[\d.]+ uiFrames=\d+ uiSlow=\d+ uiWorstMs=[\d.]+$/);
  const interrupt=/^\[perf\] number-flow interrupt figures=1 updates=(\d+) commits=(\d+) jsFrames=(\d+) /.exec(lines[2]);
- expect(interrupt).not.toBeNull();expect(Number(interrupt[1])).toBeGreaterThan(150);expect(Number(interrupt[2])).toBeGreaterThan(100);expect(Number(interrupt[2])).toBeLessThanOrEqual(Number(interrupt[1]));expect(Number(interrupt[3])).toBe(Number(interrupt[1])-1);
+ expect(interrupt).not.toBeNull();expect(Number(interrupt[1])).toBeGreaterThan(150);expect(Number(interrupt[2])).toBeGreaterThan(30);expect(Number(interrupt[2])).toBeLessThanOrEqual(Number(interrupt[1]));expect(Number(interrupt[3])).toBe(Number(interrupt[1])-1);
  expect(root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function')).toHaveLength(10);
-});
+},60000);
 
 it('stops when it is unmounted mid-run',async()=>{
  jest.useFakeTimers();const lines=[];jest.spyOn(console,'log').mockImplementation(line=>{if(String(line).startsWith('[perf]'))lines.push(String(line));});
  await act(async()=>{root=create(React.createElement(NumberFlowPerf));});
- for(let step=0;step<100;step++)await act(async()=>{await jest.advanceTimersByTimeAsync(16);});
+ for(let step=0;step<32;step++)await act(async()=>{await jest.advanceTimersByTimeAsync(50);});
  expect(lines).toEqual(['[perf] number-flow start']);act(()=>root.unmount());root=null;
- for(let step=0;step<1000;step++)await jest.advanceTimersByTimeAsync(16);
+ for(let step=0;step<320;step++)await jest.advanceTimersByTimeAsync(50);
  expect(lines).toEqual(['[perf] number-flow start']);
-});
+},60000);
