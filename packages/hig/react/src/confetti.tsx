@@ -12,7 +12,7 @@ export {mirrorConfetti,type ConfettiOptions,type ConfettiShape} from '@bloxwap/h
  * with native.
  */
 interface Host {anchor:()=>Element|null;reducedMotion:()=>boolean}
-interface Run {burst:ConfettiBurst;/** The burst's pieces by colour index, so each colour is filled once a frame. */groups:ConfettiParticle[][];/** Timestamp of the first frame, or -1 before it. */start:number;resolve:()=>void}
+interface Run {burst:ConfettiBurst;/** The burst's pieces by colour index, so the fill colour is set once for each colour a frame. */groups:ConfettiParticle[][];/** Timestamp of the first frame, or -1 before it. */start:number;resolve:()=>void}
 interface Layer {canvas:HTMLCanvasElement;context:CanvasRenderingContext2D;runs:Run[];frame:number;width:number;height:number;/** The viewport changed: measure again on the next frame. */stale:boolean}
 const hosts:Host[]=[];
 let layer:Layer|null=null;
@@ -46,7 +46,8 @@ function measure(current:Layer):void{
 const resized=()=>{if(layer)layer.stale=true;};
 function open(zIndex:number):Layer|null{
  const canvas=document.createElement('canvas'),context=paintContext(canvas);if(!context)return null;
- canvas.setAttribute('aria-hidden','true');canvas.setAttribute('data-hig-confetti','');
+ // Decoration: nothing for assistive technology to read.
+ canvas.ariaHidden='true';canvas.dataset.higConfetti='';
  Object.assign(canvas.style,{position:'fixed',top:'0',left:'0',width:'100%',height:'100%',pointerEvents:'none',zIndex:String(zIndex)});
  const current:Layer={canvas,context,runs:[],frame:0,width:0,height:0,stale:true};
  (document.body??document.documentElement).appendChild(canvas);window.addEventListener('resize',resized);
@@ -62,34 +63,30 @@ const turn=Math.PI*2;
 const starPoints=Array.from({length:10},(_,index)=>{const angle=Math.PI*1.5+index*Math.PI/5,radius=index%2?0.4:0.8;return [Math.cos(angle)*radius,Math.sin(angle)*radius] as const;});
 const flight:ConfettiFlight={x:0,y:0,ux:0,uy:0,vx:0,vy:0,wobble:0};
 /**
- * One burst at tick `t`. Every piece of a burst shares its opacity, and all pieces of one colour go into one path that is
- * filled once. Each outline is wound the same way, so two overlapping pieces of a colour never cut a hole in each other.
+ * One burst at tick `t`. Each piece is its own small convex path, filled on its own as canvas-confetti fills it, which is
+ * the cheap case for a canvas. What canvas-confetti repeats for every piece is done once here: the opacity is set once a
+ * burst and the fill colour once for each of its colours, with no colour string built or parsed per piece.
  */
 function draw(context:CanvasRenderingContext2D,run:Run,t:number,width:number,height:number):void{
  const {burst,groups}=run,{physics,origin,colors}=burst,travel=confettiTravel(physics,t),left=origin.x*width,top=origin.y*height,size=physics.size;
  context.globalAlpha=confettiOpacity(physics,t);
  for(let color=0;color<groups.length;color++){
   const group=groups[color];if(!group.length)continue;
-  context.fillStyle=colors[color];context.beginPath();
+  context.fillStyle=colors[color];
   for(let index=0;index<group.length;index++){
    const particle=group[index];confettiFlight(particle,physics,t,travel,flight);
    const x=left+flight.x,y=top+flight.y;
-   if(particle.shape==='circle'){
-    const angle=Math.PI/10*flight.wobble,rx=Math.abs(flight.ux)*0.6,ry=Math.abs(flight.vy)*0.6;
-    context.moveTo(x+rx*Math.cos(angle),y+rx*Math.sin(angle));context.ellipse(x,y,rx,ry,angle,0,turn);
-   }else if(particle.shape==='star'){
+   context.beginPath();
+   if(particle.shape==='circle')context.ellipse(x,y,Math.abs(flight.ux)*0.6,Math.abs(flight.vy)*0.6,Math.PI/10*flight.wobble,0,turn);
+   else if(particle.shape==='star'){
     context.moveTo(x+starPoints[0][0]*size,y+starPoints[0][1]*size);
     for(let point=1;point<10;point++)context.lineTo(x+starPoints[point][0]*size,y+starPoints[point][1]*size);
-    context.closePath();
    }else{
     const {ux,uy,vx,vy}=flight;
-    context.moveTo(x,y);
-    if(ux*vy-uy*vx<0){context.lineTo(x+vx,y+vy);context.lineTo(x+ux+vx,y+uy+vy);context.lineTo(x+ux,y+uy);}
-    else{context.lineTo(x+ux,y+uy);context.lineTo(x+ux+vx,y+uy+vy);context.lineTo(x+vx,y+vy);}
-    context.closePath();
+    context.moveTo(x,y);context.lineTo(x+ux,y+uy);context.lineTo(x+ux+vx,y+uy+vy);context.lineTo(x+vx,y+vy);
    }
+   context.closePath();context.fill();
   }
-  context.fill();
  }
 }
 function frame(now:number):void{

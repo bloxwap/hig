@@ -7,10 +7,11 @@ import {HIGProvider} from '../packages/hig/react/src/provider';
 import {Confetti,confetti,mirrorConfetti} from '../packages/hig/react/src/confetti';
 /** A stand-in 2D context that records what is painted; jsdom has no canvas. */
 function fakeContext(){
- const calls:[string,...number[]][]=[],fills:{color:string;alpha:number}[]=[];
+ const calls:[string,...number[]][]=[],fills:{color:string;alpha:number}[]=[],colors:string[]=[];let fillStyle='';
  const record=(name:string)=>(...args:number[])=>{calls.push([name,...args]);};
- const context={globalAlpha:1,fillStyle:'',clearRect:record('clearRect'),beginPath:record('beginPath'),moveTo:record('moveTo'),lineTo:record('lineTo'),closePath:record('closePath'),ellipse:record('ellipse'),setTransform:record('setTransform'),fill(){fills.push({color:context.fillStyle,alpha:context.globalAlpha});calls.push(['fill']);}};
- return {context,calls,fills};
+ const context={globalAlpha:1,get fillStyle(){return fillStyle;},set fillStyle(value:string){fillStyle=value;colors.push(value);},clearRect:record('clearRect'),beginPath:record('beginPath'),moveTo:record('moveTo'),lineTo:record('lineTo'),closePath:record('closePath'),ellipse:record('ellipse'),setTransform:record('setTransform'),fill(){fills.push({color:context.fillStyle,alpha:context.globalAlpha});calls.push(['fill']);}};
+ /** `colors` is every fill colour set, in order; `fills` is every piece painted. */
+ return {context,calls,fills,colors};
 }
 let painted=fakeContext(),frames=new Map<number,FrameRequestCallback>(),nextFrame=1,queries:Record<string,boolean>={};
 const getContext=vi.fn<(kind:string,settings?:{colorSpace?:string})=>unknown>(()=>painted.context);
@@ -40,16 +41,16 @@ describe('confetti on web',()=>{
   step(0);
   expect(canvas.width).toBe(window.innerWidth*2);expect(canvas.height).toBe(window.innerHeight*2);
   expect(painted.calls.filter(([name])=>name==='setTransform')).toEqual([['setTransform',2,0,0,2,0,0]]);
-  // Cleared in CSS pixels, then one fill for each colour of each burst, however many pieces it has.
+  // Cleared in CSS pixels, then every piece is one path filled once; the fill colour is set once for each colour of each burst.
   expect(painted.calls[1]).toEqual(['clearRect',0,0,window.innerWidth,window.innerHeight]);
-  expect(painted.fills.map(fill=>fill.color)).toEqual(['red','blue']);expect(frames.size).toBe(1);
+  expect(painted.fills).toHaveLength(15);expect(painted.calls.filter(([name])=>name==='beginPath')).toHaveLength(15);expect(painted.colors).toEqual(['red','blue']);expect(frames.size).toBe(1);
  });
  it('runs on time, resolves when the last piece has gone, then removes the canvas and stops asking for frames',async()=>{
   const remove=vi.spyOn(window,'removeEventListener');
   const promise=confetti({particleCount:4,ticks:60,colors:['red']});
-  step(1000);expect(painted.fills[0].alpha).toBeCloseTo(1-1/60);
+  step(1000);expect(painted.fills.at(-1)!.alpha).toBeCloseTo(1-1/60);
   // Half way: tick 1 + 29.5 of the 59 ticks it is drawn for.
-  step(1000+29.5*1000/60);expect(painted.fills[1].alpha).toBeCloseTo(1-30.5/60);
+  step(1000+29.5*1000/60);expect(painted.fills.at(-1)!.alpha).toBeCloseTo(1-30.5/60);expect(painted.fills).toHaveLength(8);
   expect(await settled(promise)).toBe(false);expect(canvases()).toHaveLength(1);
   // Frames at 120 Hz or a single late one end it at the same moment: 59 ticks after the first frame.
   step(1000+58.9*1000/60);expect(await settled(promise)).toBe(false);
@@ -126,17 +127,19 @@ describe('confetti on web',()=>{
   Object.defineProperty(window,'devicePixelRatio',{value:3,configurable:true});window.dispatchEvent(new Event('resize'));step(48);
   expect(painted.calls.filter(([name])=>name==='setTransform').at(-1)).toEqual(['setTransform',3,0,0,3,0,0]);expect(canvases()[0].width).toBe(window.innerWidth*3);
  });
- it('starts each piece at the origin and winds every outline the same way',()=>{
+ it('starts each piece at the origin and draws a square as canvas-confetti\'s four-point outline',()=>{
   void confetti({particleCount:40,shapes:['square'],colors:['red'],origin:{x:0.25,y:0.5},startVelocity:0,gravity:0,ticks:400});step(0);step(700);
   const moves=painted.calls.map((call,index)=>[call,index] as const).filter(([call])=>call[0]==='moveTo');
   expect(moves).toHaveLength(80);
   for(const [call,index] of moves){
    // No launch speed and no gravity: every square stays on the origin, a quarter of the way across and half way down.
    expect(call[1]).toBeCloseTo(window.innerWidth*0.25);expect(call[2]).toBeCloseTo(window.innerHeight*0.5);
-   const points=[call,...painted.calls.slice(index+1,index+4)].map(([,x,y])=>[x,y]);
-   expect(painted.calls.slice(index+1,index+5).map(([name])=>name)).toEqual(['lineTo','lineTo','lineTo','closePath']);
-   let area=0;points.forEach(([x,y],at)=>{const [nextX,nextY]=points[(at+1)%4];area+=x*nextY-nextX*y;});
-   expect(area).toBeGreaterThanOrEqual(0);
+   expect(painted.calls[index-1][0]).toBe('beginPath');expect(painted.calls.slice(index+1,index+6).map(([name])=>name)).toEqual(['lineTo','lineTo','lineTo','closePath','fill']);
+   // A parallelogram: the third corner is the first plus both edges.
+   const [[,x0,y0],[,x1,y1],[,x2,y2],[,x3,y3]]=painted.calls.slice(index,index+4);
+   expect(x2-x0).toBeCloseTo(x1-x0+(x3-x0));expect(y2-y0).toBeCloseTo(y1-y0+(y3-y0));
+   // Its long edges are at most the piece's 10 pixels and its short ones the flutter, under 3.
+   expect(Math.abs(x1-x0)).toBeLessThanOrEqual(10);expect(Math.abs(y3-y0)).toBeLessThanOrEqual(10);expect(Math.hypot(y1-y0,x3-x0)).toBeLessThan(3);
   }
  });
  it('draws circles as turning ellipses and stars as ten-point outlines',()=>{
@@ -150,15 +153,15 @@ describe('confetti on web',()=>{
   const view=render(<StrictMode><HIGProvider><Confetti trigger={0} options={{particleCount:3,colors:['red']}}/></HIGProvider></StrictMode>);
   expect(canvases()).toHaveLength(0);
   view.rerender(<StrictMode><HIGProvider><Confetti trigger={1} options={[{particleCount:3,colors:['red']},{particleCount:3,colors:['blue']}]}/></HIGProvider></StrictMode>);
-  expect(canvases()).toHaveLength(1);step(0);expect(painted.fills.map(fill=>fill.color)).toEqual(['red','blue']);
+  expect(canvases()).toHaveLength(1);step(0);expect(painted.colors).toEqual(['red','blue']);expect(painted.fills).toHaveLength(6);
   // The same value again fires nothing; a falsy one fires nothing; the next truthy one fires.
-  painted.fills.length=0;view.rerender(<StrictMode><HIGProvider><Confetti trigger={1} options={{particleCount:3,colors:['green']}}/></HIGProvider></StrictMode>);step(16);expect(painted.fills.map(fill=>fill.color)).toEqual(['red','blue']);
-  painted.fills.length=0;view.rerender(<StrictMode><HIGProvider><Confetti trigger={null} options={{particleCount:3,colors:['green']}}/></HIGProvider></StrictMode>);step(32);expect(painted.fills).toHaveLength(2);
-  painted.fills.length=0;view.rerender(<StrictMode><HIGProvider><Confetti trigger={2} options={{particleCount:3,colors:['green']}}/></HIGProvider></StrictMode>);step(48);expect(painted.fills.map(fill=>fill.color)).toEqual(['red','blue','green']);
+  painted.colors.length=0;view.rerender(<StrictMode><HIGProvider><Confetti trigger={1} options={{particleCount:3,colors:['green']}}/></HIGProvider></StrictMode>);step(16);expect(painted.colors).toEqual(['red','blue']);
+  painted.colors.length=0;view.rerender(<StrictMode><HIGProvider><Confetti trigger={null} options={{particleCount:3,colors:['green']}}/></HIGProvider></StrictMode>);step(32);expect(painted.colors).toEqual(['red','blue']);
+  painted.colors.length=0;view.rerender(<StrictMode><HIGProvider><Confetti trigger={2} options={{particleCount:3,colors:['green']}}/></HIGProvider></StrictMode>);step(48);expect(painted.colors).toEqual(['red','blue','green']);
   view.unmount();confetti.reset();painted=fakeContext();
   // A truthy trigger at mount fires once, also under StrictMode's doubled effects.
   render(<StrictMode><HIGProvider><Confetti trigger='order-1' options={{particleCount:3,colors:['red']}}/></HIGProvider></StrictMode>);step(0);
-  expect(painted.fills).toHaveLength(1);
+  expect(painted.colors).toEqual(['red']);expect(painted.fills).toHaveLength(3);
  });
  it('the host renders one hidden anchor and never renders again while a burst flies',()=>{
   let renders=0;function Screen(){renders++;return <Confetti/>;}

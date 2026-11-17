@@ -90,7 +90,7 @@ A colour passed in `colors` is painted as given. On web that is any CSS colour: 
 
 The flight is one set of pure functions in `@bloxwap/hig/contracts/confetti`, used by both platforms. It restates canvas-confetti's frame-by-frame update as a function of time, so a piece is where canvas-confetti puts it at every whole tick, and a burst takes the same time on a 60 Hz and a 120 Hz display and after a dropped frame.
 
-- Web: every burst shares one full-viewport canvas and one `requestAnimationFrame` loop. The canvas is created by the first burst, sized for the device pixel ratio, takes no pointer events, and is removed when the last piece has gone. All pieces of one colour in a burst are one path filled once. React renders nothing while a burst flies.
+- Web: every burst shares one full-viewport canvas and one `requestAnimationFrame` loop. The canvas is created by the first burst, sized for the device pixel ratio, takes no pointer events, and is removed when the last piece has gone. Each piece is one small path, as in canvas-confetti; the opacity is set once a burst and the fill colour once for each of its colours, with no colour string built per piece. React renders nothing while a burst flies.
 - Native: React renders once when a burst starts and once when it ends. In between one Reanimated clock per burst runs on the UI thread, and each piece, a plain view, reads its transform and opacity from it. Nothing is laid out per frame. A burst of about 100 pieces is the intended size; larger bursts mount one view a piece.
 
 ### Confetti accessibility and direction
@@ -108,7 +108,7 @@ Confetti is physical: `origin.x` 0 is the left edge and a positive `drift` goes 
 - The native entry needs the Reanimated and Worklets peers. The web entry needs no peer and no stylesheet.
 - Not supported: canvas-confetti's `useWorker`, `confetti.create`, `shapeFromPath` and `shapeFromText`.
 
-`tests/confetti-model.test.ts` checks the flight against canvas-confetti's update with a seeded random source; `tests/confetti.dom.test.tsx` and `tests/native/confetti.test.cjs` check each renderer against stand-ins for the canvas and for Reanimated. How a burst looks in a browser and its frame rate on iOS and Android devices have not been observed.
+`tests/confetti-model.test.ts` checks the flight against canvas-confetti's update with a seeded random source; `tests/confetti.dom.test.tsx` and `tests/native/confetti.test.cjs` check each renderer against stand-ins for the canvas and for Reanimated. How a burst looks in a browser and its frame rate on iOS and Android devices have not been observed. For a device run, `fixtures/native/confetti-check.tsx` (entry `fixtures/native/index-confetti.js`) fires bursts of 50 to 200 pieces by button or deep link and logs UI-thread frame times as `[confetti-check]`.
 
 ## When to use and examples
 
