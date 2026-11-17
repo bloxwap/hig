@@ -16,7 +16,7 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  symbol:string;
  /** Format of the amount. Defaults to at most six fraction digits. */
  amountOptions?:Intl.NumberFormatOptions;
- /** The destination address, shown in full beside “To”, wrapping where it must, so it can be checked character by character. */
+ /** The destination address, shown in full beside “To”, always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */
  address:string;
  /** The network the send moves on: HyperEVM. */
  network:string;
@@ -50,6 +50,13 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  headingId?:string;
 }
 const amountFormat={maximumFractionDigits:6} as const;
+/** The address as the two rows the block draws: split at the middle, with `anchor` on the characters people compare, the first 4 (6 when it starts with `0x`) and the last 4. An address too short to have a middle is all anchor. */
+export function confirmAddressRows(address:string):{text:string;anchor:boolean}[][]{
+ const characters=Array.from(address),head=address.startsWith('0x')?6:4,tail=characters.length-4,split=Math.ceil(characters.length/2);
+ return [characters.slice(0,split),characters.slice(split)].map((row,rowIndex)=>{const parts:{text:string;anchor:boolean}[]=[];
+  row.forEach((character,index)=>{const position=rowIndex*split+index,anchor=position<head||position>=tail,last=parts[parts.length-1];if(last&&last.anchor===anchor)last.text+=character;else parts.push({text:character,anchor});});
+  return parts;});
+}
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
 export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
  const {messages}=useHIG();
@@ -59,7 +66,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,n
   <ScreenHeader title={heading} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   <p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions}/> <span className='hig-confirm-symbol'>{symbol}</span></p>
   <dl className='hig-confirm-details'>
-   <div><dt>{messages.sendTo??en.sendTo}</dt><dd>{address}</dd></div>
+   <div><dt>{messages.sendTo??en.sendTo}</dt><dd><span className='hig-confirm-address' dir='ltr' translate='no'><span className='hig-sr-only'>{address}</span><span aria-hidden='true'>{confirmAddressRows(address).map((row,index)=><span key={index}>{row.map((part,offset)=><span key={offset} data-anchor={part.anchor||undefined}>{part.text}</span>)}</span>)}</span></span></dd></div>
    <div><dt>{messages.sendNetwork??en.sendNetwork}</dt><dd>{network}</dd></div>
    {details?.map(detail=><div key={detail.label}><dt>{detail.label}</dt><dd>{detail.valueLabel?<><span className='hig-sr-only'>{detail.valueLabel}</span><span aria-hidden='true'>{detail.value}</span></>:detail.value}</dd></div>)}
   </dl>

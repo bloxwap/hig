@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,type ScrollViewProps} from 'react-native';
+import {Platform,View,type ScrollViewProps} from 'react-native';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
@@ -18,7 +18,7 @@ export interface ConfirmBlockProps {
  symbol:string;
  /** Format of the amount; default `{maximumFractionDigits:6}`. */
  amountOptions?:Intl.NumberFormatOptions;
- /** The destination address, shown in full beside "To", wrapping where it must, so it can be checked character by character. */
+ /** The destination address, shown in full beside "To", always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */
  address:string;
  /** The network the send moves on: HyperEVM. */
  network:string;
@@ -58,9 +58,16 @@ export interface ConfirmBlockProps {
  testID?:string;
 }
 const amountFormat:Intl.NumberFormatOptions={maximumFractionDigits:6};
+/** The address as the two rows the block draws: split at the middle, with `anchor` on the characters people compare, the first 4 (6 when it starts with `0x`) and the last 4. An address too short to have a middle is all anchor. */
+export function confirmAddressRows(address:string):{text:string;anchor:boolean}[][]{
+ const characters=Array.from(address),head=address.startsWith('0x')?6:4,tail=characters.length-4,split=Math.ceil(characters.length/2);
+ return [characters.slice(0,split),characters.slice(split)].map((row,rowIndex)=>{const parts:{text:string;anchor:boolean}[]=[];
+  row.forEach((character,index)=>{const position=rowIndex*split+index,anchor=position<head||position>=tail,last=parts[parts.length-1];if(last&&last.anchor===anchor)last.text+=character;else parts.push({text:character,anchor});});
+  return parts;});
+}
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
 export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
- const colors=useColors(),t=useMessages(),{direction}=useHIG();
+ const colors=useColors(),t=useMessages(),{direction,monoFontFamily}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const note=warning===undefined?t.sendWarning(symbol,network):warning;
  // Read-only lines, each read as one: "To, 0x…".
@@ -68,7 +75,9 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,n
   <Text style={{fontSize:16,lineHeight:24,color:colors.muted}}>{label}</Text>
   {typeof value==='string'||typeof value==='number'?<Text testID={id(part)} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',textAlign:'right',color:colors.text}}>{value}</Text>:<View testID={id(part)} style={{flexShrink:1}}>{value}</View>}
  </View>;
- const toPart='to',networkPart='network',lines=[line(toPart,t.sendTo,address),line(networkPart,t.sendNetwork,network),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
+ const toPart='to',networkPart='network',mono=monoFontFamily??Platform.select({ios:'Menlo',default:'monospace'}),type={fontFamily:mono,fontSize:15,lineHeight:22},
+  shown=<Text accessible={false} maxFontSizeMultiplier={1.2} style={{...type,writingDirection:'ltr',textAlign:'left'}}>{confirmAddressRows(address).map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((part,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:part.anchor?colors.text:colors.muted,fontWeight:part.anchor?'700':'500'}}>{part.text}</Text>)}</React.Fragment>)}</Text>,
+  lines=[line(toPart,t.sendTo,shown,address),line(networkPart,t.sendNetwork,network),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
  const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} testID={testID}/>;
  const body=<>
   <View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>

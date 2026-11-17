@@ -4,7 +4,7 @@ import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {ConfirmBlock} from '../packages/hig/react/src/blocks/confirm-block';
+import {ConfirmBlock,confirmAddressRows} from '../packages/hig/react/src/blocks/confirm-block';
 import * as blocks from '../packages/hig/react/src/blocks';
 afterEach(cleanup);
 const address='0x1111111111111111111111111111111111111111';
@@ -18,7 +18,10 @@ describe('ConfirmBlock',()=>{
   expect(screen.getByRole('heading',{name:'Confirm Send'})).toBeTruthy();
   expect(amount().querySelector('.hig-animated-number-visual')!.textContent).toBe('2.5');expect(amount().querySelector('.hig-confirm-symbol')!.textContent).toBe('HYPE');
   expect(rows()).toHaveLength(2);
-  expect(rows()[0].querySelector('dt')!.textContent).toBe('To');expect(rows()[0].querySelector('dd')!.textContent).toBe(address);
+  expect(rows()[0].querySelector('dt')!.textContent).toBe('To');expect(rows()[0].querySelector('dd .hig-sr-only')!.textContent).toBe(address);
+  // The address is always two rows, with the first six (0x and four) and the last four characters marked and the rest muted.
+  const shown=[...rows()[0].querySelectorAll('.hig-confirm-address > [aria-hidden] > span')];expect(shown.map(row=>row.textContent)).toEqual(['0x1111111111111111111','111111111111111111111']);
+  expect([...rows()[0].querySelectorAll('[data-anchor]')].map(part=>part.textContent)).toEqual(['0x1111','1111']);expect(rows()[0].querySelector('.hig-confirm-address')!.getAttribute('dir')).toBe('ltr');
   expect(rows()[1].querySelector('dt')!.textContent).toBe('Network');expect(rows()[1].querySelector('dd')!.textContent).toBe('HyperEVM');
   // The details are read-only text: a description list with no row container and nothing to press.
   expect(document.querySelector('.hig-confirm-details')!.tagName).toBe('DL');expect(document.querySelector('.hig-list-group')).toBeNull();expect(document.querySelector('.hig-confirm-details button')).toBeNull();
@@ -31,6 +34,13 @@ describe('ConfirmBlock',()=>{
   // The rows come before the warning, and the warning before the actions.
   expect(document.querySelector('.hig-confirm-details')!.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   expect(note.compareDocumentPosition(document.querySelector('.hig-confirm-actions')!)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ });
+ it('splits any address into two rows and marks the characters people compare',()=>{
+  expect(confirmAddressRows(address)).toEqual([[{text:'0x1111',anchor:true},{text:'111111111111111',anchor:false}],[{text:'11111111111111111',anchor:false},{text:'1111',anchor:true}]]);
+  // Not EVM: four characters at each end. An odd length puts the extra character on the first row.
+  const solana='7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV';expect(solana).toHaveLength(43);
+  expect(confirmAddressRows(solana)).toEqual([[{text:'7EcD',anchor:true},{text:'hSYGxXyscszYEp35KH',anchor:false}],[{text:'N8vvw3svAuLKTzXwC',anchor:false},{text:'FLtV',anchor:true}]]);
+  expect(confirmAddressRows('0x12345678').flat().every(part=>part.anchor)).toBe(true);expect(confirmAddressRows('0x12345678').flat().map(part=>part.text).join('')).toBe('0x12345678');
  });
  it('draws no Back or Cancel without their handlers, formats the amount, and reads an unknown amount as the dash',()=>{
   const view=render(<ConfirmBlock {...base} amount={1234.5678912}/>);
