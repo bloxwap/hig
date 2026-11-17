@@ -35,6 +35,10 @@ export interface PresetPickerBlockProps<T extends string|number=number> extends 
  valueSuffix?:string;
  /** What the figure is read as before its value: Size. */
  valueLabel?:string;
+ /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn static unless `animateFormatted`; `value` still decides known or unknown and the direction of a move. As `AnimatedNumberReadout` `formattedValue`. */
+ formattedValue?:string;
+ /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `AnimatedNumberReadout` `animateFormatted`. */
+ animateFormatted?:boolean;
  /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. */
  presets:readonly PresetOption<T>[];
  /** The chip shown selected; `null` selects none, such as for a custom value. */
@@ -84,12 +88,12 @@ export interface PresetPickerBlockProps<T extends string|number=number> extends 
  * entry, the choices as chips, then Cancel and the confirming action. Draws a trade sheet's Size and Leverage panes. It reuses
  * TargetBlock's parts (the headline, the Custom row, PresetGroup and the actions row) without its price card and unit control.
  */
-export function PresetPickerBlock<T extends string|number=number>({title,value,valueOptions,valuePrefix,valueSuffix,valueLabel,presets,selected,onPresetChange,presetsLabel,columns,custom,intent='primary',children,onSubmit,submitLabel,submitDisabled,busy,onCancel,cancelLabel,submitTestID,cancelTestID,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,className,...rest}:PresetPickerBlockProps<T>){
+export function PresetPickerBlock<T extends string|number=number>({title,value,valueOptions,valuePrefix,valueSuffix,valueLabel,formattedValue,animateFormatted,presets,selected,onPresetChange,presetsLabel,columns,custom,intent='primary',children,onSubmit,submitLabel,submitDisabled,busy,onCancel,cancelLabel,submitTestID,cancelTestID,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,className,...rest}:PresetPickerBlockProps<T>){
  const {messages}=useHIG();
  const customSelected=custom?(custom.selected??custom.value!==undefined):false;
  return <section {...rest} className={`hig-preset-picker${className?` ${className}`:''}`} data-intent={intent==='destructive'?intent:undefined}>
   {title!==undefined&&<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
-  <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={valueOptions} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel}/></p>
+  <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel}/></p>
   {custom&&<button type='button' className='hig-swap-setting' aria-pressed={customSelected} aria-label={custom.accessibilityLabel} data-testid={custom.testID} onClick={custom.onSelect}><span>{custom.label}</span>{custom.value!==undefined?<span className='hig-swap-setting-value'>{custom.value}<SwapIcon name='chevron' size={16}/></span>:<SwapIcon name='chevron' size={16}/>}<PressDecoration kind='row'/></button>}
   {presets.length>0&&<PresetGroup<T> label={presetsLabel??title} options={presets} value={selected} onValueChange={onPresetChange} columns={columns} selectedIntent={intent} suppressFeedback={suppressFeedback}/>}
   {children}

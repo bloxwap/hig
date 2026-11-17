@@ -33,6 +33,12 @@ export interface PresetPickerAdjustable {
  decrementLabel:string;
  /** The adjustable view's test ID, in place of `<testID>-adjustable`. */
  testID?:string;
+ /** The lowest value the control reaches, reported in `accessibilityValue.min` with `max` and `now`: 1 for leverage. */
+ min?:number;
+ /** The highest value the control reaches, reported in `accessibilityValue.max`: 40 for leverage. */
+ max?:number;
+ /** The current value, reported in `accessibilityValue.now`: 10 for 10×. Defaults to the selected chip's value when it is a number. */
+ now?:number;
 }
 export interface PresetPickerBlockProps<T extends string|number=number> {
  /** Heading of the header. Leave it out for a pane whose host draws its own header: the block then starts at the headline figure. */
@@ -47,6 +53,10 @@ export interface PresetPickerBlockProps<T extends string|number=number> {
  valueSuffix?:string;
  /** What the figure is read as before its value: Size. */
  valueLabel?:string;
+ /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn and read as given, static unless `animateFormatted`; `value` still decides known or unknown. As `AnimatedNumberReadout` `formattedValue`. */
+ formattedValue?:string;
+ /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `AnimatedNumberReadout` `animateFormatted`. */
+ animateFormatted?:boolean;
  /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. A chip without `testID` takes `<testID>-preset-<value>`. */
  presets:readonly PresetOption<T>[];
  /** The chip shown selected; `null` selects none, such as for a custom value. */
@@ -101,7 +111,7 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
  * host's own entry, the choices as chips, then Cancel and the confirming action. Draws a trade sheet's Size and Leverage panes. It reuses
  * TargetBlock's parts (the headline, the Custom row, PresetGroup and the actions row) without its price card and unit control.
  */
-export function PresetPickerBlock<T extends string|number=number>({title,value,valueOptions,valuePrefix,valueSuffix,valueLabel,presets,selected,onPresetChange,presetsLabel,columns,adjustable,custom,intent='primary',children,onSubmit,submitLabel,submitDisabled,busy,onCancel,cancelLabel,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID='preset-picker'}:PresetPickerBlockProps<T>){
+export function PresetPickerBlock<T extends string|number=number>({title,value,valueOptions,valuePrefix,valueSuffix,valueLabel,formattedValue,animateFormatted,presets,selected,onPresetChange,presetsLabel,columns,adjustable,custom,intent='primary',children,onSubmit,submitLabel,submitDisabled,busy,onCancel,cancelLabel,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID='preset-picker'}:PresetPickerBlockProps<T>){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const destructive=intent==='destructive',onFill=destructive?colors.background:colors.onAction;
@@ -113,10 +123,16 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const enabled=presets.filter(option=>!option.disabled),at=enabled.findIndex(option=>selected!==null&&Object.is(option.value,selected));
  const step=(delta:number)=>{const next=enabled[at<0?0:Math.max(0,Math.min(enabled.length-1,at+delta))];if(next&&!Object.is(next.value,selected))onPresetChange(next.value);};
  const current=presets.find(option=>selected!==null&&Object.is(option.value,selected));
- const chips=adjustable&&group?<View testID={adjustable.testID??id('adjustable')} accessible accessibilityRole='adjustable' accessibilityLabel={label} accessibilityValue={current?{text:current.label}:undefined} accessibilityActions={[{name:'increment',label:adjustable.incrementLabel},{name:'decrement',label:adjustable.decrementLabel}]} onAccessibilityAction={event=>step(event.nativeEvent.actionName==='increment'?1:-1)}>{group}</View>:group;
+ // With a range the value is reported as min, max and now beside the chip's label; without one, as the label alone.
+ const range=(chip:PresetOption<T>|undefined)=>{
+  if(!adjustable||(adjustable.min===undefined&&adjustable.max===undefined&&adjustable.now===undefined))return chip?{text:chip.label}:undefined;
+  const now=adjustable.now??(typeof chip?.value==='number'?chip.value:undefined);
+  return {min:adjustable.min,max:adjustable.max,...(now!==undefined?{now}:{}),...(chip?{text:chip.label}:{})};
+ };
+ const chips=adjustable&&group?<View testID={adjustable.testID??id('adjustable')} accessible accessibilityRole='adjustable' accessibilityLabel={label} accessibilityValue={range(current)} accessibilityActions={[{name:'increment',label:adjustable.incrementLabel},{name:'decrement',label:adjustable.decrementLabel}]} onAccessibilityAction={event=>step(event.nativeEvent.actionName==='increment'?1:-1)}>{group}</View>:group;
  const header=title!==undefined?<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
-  <View style={{alignItems:'center'}}><AnimatedNumberReadout testID={id('headline')} value={value} options={valueOptions} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
+  <View style={{alignItems:'center'}}><AnimatedNumberReadout testID={id('headline')} value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {custom?<Pressable {...custom.pressProps} testID={custom.testID??id('custom')} accessibilityRole='button' accessibilityLabel={custom.accessibilityLabel??(custom.value!==undefined?`${custom.label}, ${custom.value}`:undefined)} accessibilityState={{selected:customSelected}} onPress={custom.onSelect} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:customSelected?(destructive?colors.negative:colors.action):pressed?fills.raised:fills.well,opacity:customSelected&&pressed?0.9:1})}>
    <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:customSelected?onFill:colors.text}}>{custom.label}</Text>
    <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>

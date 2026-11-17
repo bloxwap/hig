@@ -47,5 +47,9 @@ describe('PresetPickerBlock',()=>{
   const note=document.querySelector('.note')!;expect(note.previousElementSibling!.className).toContain('hig-preset-group');expect(note.nextElementSibling!.className).toBe('hig-target-actions');
   const actions=[...document.querySelectorAll<HTMLButtonElement>('.hig-target-actions > button')];expect(actions[0].textContent).toBe('Annuler');expect(actions[1].getAttribute('aria-busy')).toBe('true');
  });
+ it('draws the host formattedValue as the headline figure in place of formatting value',()=>{
+  render(<HIGProvider><PresetPickerBlock<number|'max'> value={1250.5} valueOptions={usd0} formattedValue='$1,250.50' valueLabel='Size' presets={sizeOptions(300)} selected={null} onPresetChange={()=>{}} onSubmit={()=>{}} submitLabel='Set Size'/></HIGProvider>);
+  const figure=document.querySelector('.hig-target-amount')!;expect(figure.textContent).toContain('$1,250.50');expect(figure.textContent).not.toContain('$1,251');
+ });
  it('is exported from the blocks aggregate',()=>{expect(blocks.PresetPickerBlock).toBe(PresetPickerBlock);});
 });

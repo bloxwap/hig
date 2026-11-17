@@ -88,3 +88,16 @@ it('draws a header with title, Back and backProps, pins it with stickyHeader, ta
  const plain=mount({stickyHeader:true});expect(has(plain,'preset-picker-sticky-header')).toBe(false);
  expect(blocks.PresetPickerBlock).toBe(PresetPickerBlock);
 });
+
+it('reports min, max and now on the adjustable group with a range, and draws the host formattedValue as the headline',()=>{
+ const presets=[1,5,10,20,40].map(step=>({value:step,label:`${step}×`}));
+ let view=mount({testID:'lev',value:10,valueOptions:undefined,valueSuffix:'×',presets,selected:10,presetsLabel:'Leverage',adjustable:{incrementLabel:'Increase leverage',decrementLabel:'Decrease leverage',min:1,max:40}});
+ expect(host(view,'lev-adjustable').props.accessibilityValue).toEqual({min:1,max:40,now:10,text:'10×'});
+ view=mount({testID:'lev',value:10,valueSuffix:'×',presets,selected:null,adjustable:{incrementLabel:'Up',decrementLabel:'Down',min:1,max:40,now:12}});
+ expect(host(view,'lev-adjustable').props.accessibilityValue).toEqual({min:1,max:40,now:12});
+ // Without a range the value stays the chip's label alone.
+ view=mount({testID:'lev',value:10,presets,selected:10,adjustable:{incrementLabel:'Up',decrementLabel:'Down'}});
+ expect(host(view,'lev-adjustable').props.accessibilityValue).toEqual({text:'10×'});
+ view=mount({testID:'size',value:1250.5,formattedValue:'$1,250.50',valueLabel:'Size'});
+ const readout=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='size-headline');expect(readout.props.formattedValue).toBe('$1,250.50');
+});
