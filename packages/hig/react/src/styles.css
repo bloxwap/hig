@@ -203,6 +203,12 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-badge[data-tone='warning'] { color:var(--hig-warning);background:color-mix(in srgb,var(--hig-warning) 15%,transparent); }
 .hig-badge[data-tone='info'] { color:var(--hig-info);background:color-mix(in srgb,var(--hig-info) 15%,transparent); }
 .hig-avatar { display:inline-grid;place-items:center;width:40px;height:40px;border-radius:9999px;background:var(--hig-fill); }
+.hig-avatar[data-square] { border-radius:0; }
+/* A photo that is not square is cropped to the box, as on native, never stretched. */
+img.hig-avatar { object-fit:cover; }
+/* The generated face fills the box and is clipped to its shape here, so the drawing needs no mask of its own. */
+.hig-avatar[data-variant='beam'] { overflow:hidden;background:none; }
+.hig-avatar > svg { display:block;width:100%;height:100%; }
 .hig-skeleton { width:100%;min-height:48px;background:var(--hig-fill-raised);border-radius:10px;animation:hig-pulse 1.5s ease-in-out infinite; }
 .hig-alert,.hig-empty-state { display:flex;flex-direction:column;align-items:flex-start;gap:var(--hig-gap);overflow-wrap:anywhere;line-height:1.5; }
 .hig-alert > :is(strong,p),.hig-empty-state > :is(h3,p) { margin:0;max-width:100%; }

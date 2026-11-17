@@ -56,6 +56,11 @@
       "import": "./contracts/dist/confetti.js",
       "default": "./contracts/dist/confetti.js"
     },
+    "./contracts/avatar": {
+      "types": "./contracts/dist/avatar.d.ts",
+      "import": "./contracts/dist/avatar.js",
+      "default": "./contracts/dist/avatar.js"
+    },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
       "import": "./native-fonts/dist/index.js",
@@ -154,6 +159,11 @@
       "types": "./react/dist/status.d.ts",
       "import": "./react/dist/status.js",
       "default": "./react/dist/status.js"
+    },
+    "./react/avatar": {
+      "types": "./react/dist/avatar.d.ts",
+      "import": "./react/dist/avatar.js",
+      "default": "./react/dist/avatar.js"
     },
     "./react/toast": {
       "types": "./react/dist/toast.d.ts",
@@ -557,6 +567,11 @@
       "types": "./native/dist/status.d.ts",
       "import": "./native/dist/status.js",
       "default": "./native/dist/status.js"
+    },
+    "./native/avatar": {
+      "types": "./native/dist/avatar.d.ts",
+      "import": "./native/dist/avatar.js",
+      "default": "./native/dist/avatar.js"
     },
     "./native/data": {
       "types": "./native/dist/data.d.ts",

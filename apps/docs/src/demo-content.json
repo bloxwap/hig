@@ -968,7 +968,9 @@
       "family": "status",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ]
     },
     {

@@ -9,7 +9,7 @@ npm install @bloxwap/hig@0.7.0
 | Entry | Use |
 | --- | --- |
 | `@bloxwap/hig/tokens`, `@bloxwap/hig/tokens/css` | Semantic tokens and the role CSS |
-| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements and messages |
+| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements, messages and the generated avatar face |
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
@@ -79,6 +79,10 @@ The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1
 ### Wallet address QR codes
 
 `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address` export `WalletAddress`, which draws its QR code with [Cuer](https://cuer.sh). `cuer` (`>=0.0.3 <0.1.0`) is an optional peer needed only by those two entries; the native entry also needs `react-native-svg`. `VerticalAddress` is in the `data` entries and needs neither. A host without `cuer` (or, on native, without `react-native-svg`) imports the same `WalletAddress` from `@bloxwap/hig/react/wallet-address-core` or `@bloxwap/hig/native/wallet-address-core`, which need neither peer, and passes its own drawing of the code as `qr`.
+
+### Generated avatars
+
+`@bloxwap/hig/react/avatar` and `@bloxwap/hig/native/avatar` export `Avatar`, which can draw a face generated from a seed such as a wallet address. The native entry draws it with `react-native-svg`, an optional peer needed there. A native host without that peer keeps importing `Avatar` from `@bloxwap/hig/native/status`, which shows the image or the initials and loads no SVG. See [Status & feedback](components/status.md#avatar).
 
 ## Brand accent
 

@@ -8,7 +8,10 @@ for(const platform of ['react','native']){
  const namespace=m=>m.replace(/^@bloxwap\/hig\//,'').replace(/(^|[-/])([a-z])/g,(_,prefix,letter)=>letter.toUpperCase());
  const specifier=m=>m.startsWith('@')?m:`@bloxwap/hig/${platform}/${m}`;
  const imports=modules.map(module=>`import * as ${namespace(module)} from '${specifier(module)}';`).join('\n');
- const object=modules.map(m=>`...${namespace(m)}`).join(',');
+ // A component named after its own entry comes from that entry, whichever module is spread last: native `status` also exports an
+ // Avatar, the build without the generated face and without the SVG peer, and it would otherwise replace the one from `avatar`.
+ const own=Object.entries(symbols[platform]).filter(([symbol,module])=>namespace(module.split('/').at(-1))===symbol).map(([symbol,module])=>`${symbol}:${namespace(module)}.${symbol}`);
+ const object=[...modules.map(m=>`...${namespace(m)}`),...own].join(',');
  const side=platform==='react'?'web':'native';
  // A state with its own example (`variants[state]`) renders that; every other state renders the entry's shared body.
  const cases=manifest.examples.map(e=>`case ${JSON.stringify(e.name)}:return ${Object.entries(e.variants??{}).map(([state,variant])=>`state===${JSON.stringify(state)}?${variant[side]}:`).join('')}${e[side]};`).join('\n');

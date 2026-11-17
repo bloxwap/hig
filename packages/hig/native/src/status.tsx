@@ -2,7 +2,8 @@ import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {ActivityIndicator,Animated,Easing,View,Image,ScrollView,useWindowDimensions,Platform,type DimensionValue,type ImageSourcePropType,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
+import {AvatarFrame,type AvatarFrameProps} from './avatar-frame.js';
+import {ActivityIndicator,Animated,Easing,View,ScrollView,useWindowDimensions,Platform,type DimensionValue,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
 import {Button} from './button.js';
@@ -133,8 +134,11 @@ export function EmptyState({title,description,action,illustration,titleStyle,des
  {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
-/** Initials sit on the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
-export function Avatar({name,source}: {name:string;source?:ImageSourcePropType}){const fills=useFills();return source?<Image source={source} accessibilityLabel={name} style={{width:40,height:40,borderRadius:20}}/>:<View accessible accessibilityRole='image' accessibilityLabel={name} style={{width:40,height:40,borderRadius:20,backgroundColor:fills.well,alignItems:'center',justifyContent:'center'}}><Text accessible={false}>{name.slice(0,2)}</Text></View>;}
+/**
+ * A person or account as a 40dp disc: an image, else the first two letters of the name on the well fill (one step lighter inside a Surface, Dialog or sheet).
+ * `size`, `square` and `decorative` are as in `@bloxwap/hig/native/avatar`, whose `Avatar` also draws a face generated from a seed; that entry needs `react-native-svg` and this one does not.
+ */
+export function Avatar(props:AvatarFrameProps){return <AvatarFrame {...props}/>;}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */

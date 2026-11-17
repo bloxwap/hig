@@ -62,7 +62,7 @@ Source: docs/architecture/platform-matrix.md
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: none for chart, whose `@bloxwap/hig/chart` entry relies on the package's one required peer, `@bloxwap/chart` (#96); community Slider for native selection entry; react-native-svg for native brand entry; `cuer` for the web and native `wallet-address` entries, plus react-native-svg on native, while the `wallet-address-core` entries load neither and take the host's own QR drawing. Vaul is isolated behind the web gesture-sheet entry. Gorhom is isolated behind the native gesture-sheet entry, and Gesture Handler behind the native gesture-sheet and toast entries; Reanimated and Worklets are isolated behind the native gesture-sheet, animated-number, toast and confetti entries. Base imports, including ordinary native `data` readouts, do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web blocks have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: none for chart, whose `@bloxwap/hig/chart` entry relies on the package's one required peer, `@bloxwap/chart` (#96); community Slider for native selection entry; react-native-svg for the native brand and avatar entries (the native status entry exports `Avatar` without the generated face and loads no SVG); `cuer` for the web and native `wallet-address` entries, plus react-native-svg on native, while the `wallet-address-core` entries load neither and take the host's own QR drawing. Vaul is isolated behind the web gesture-sheet entry. Gorhom is isolated behind the native gesture-sheet entry, and Gesture Handler behind the native gesture-sheet and toast entries; Reanimated and Worklets are isolated behind the native gesture-sheet, animated-number, toast and confetti entries. Base imports, including ordinary native `data` readouts, do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web blocks have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 RN 0.88 compatibility is verified by independent packed TypeScript and Android/iOS Metro consumers. Existing simulator/emulator interaction reports cover RN 0.81 and 0.83 only; no RN 0.88 physical or simulator interaction result is inferred from a bundle export.
 
@@ -1547,6 +1547,7 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/sta
 | `Toaster`, `toast()` | The transient host, from `@bloxwap/hig/react/toast` and `@bloxwap/hig/native/toast`: mount `Toaster` once, then call `toast(message, options)` from anywhere. Same names, options and stack on both platforms; see [Transient toasts](#transient-toasts-toaster-and-toast). |
 | `Progress` | `label`, `value`, and `max`. Native draws the label with a ` value/max` suffix (`…` while indeterminate); `hideValue` leaves the suffix out for a host that shows the figure itself, and the value is still read. |
 | `EmptyState` | `title`, optional `description`, optional `action`, and decorative `illustration`. A centred stack: symbol, title, description, action. `illustration` replaces the default symbol; `null` omits it. |
+| `Avatar` | `name`, an optional image (`src` on web, `source` on native) and, when the host asks for it, a face generated from a `seed`. `variant`, `size`, `colors`, `faceColor`, `square` and `decorative` are the same on web and native. Its own entries are `@bloxwap/hig/react/avatar` and `@bloxwap/hig/native/avatar`. See [Avatar](#avatar). |
 
 Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy, centred. Its `description` is optional; omitted or empty text leaves no blank description node. Decorative `illustration` content replaces the default symbol above the heading (`null` omits it); HIG hides the whole illustration subtree from VoiceOver/TalkBack navigation while keeping the heading and action accessible. The host controls the illustration's dimensions and spacing. Root `ViewProps`, including `style`, `testID` and layout events, pass to the Surface. `titleStyle` and `descriptionStyle` reach the actual text nodes; `maxFontSizeMultiplier` caps both, or inherits the provider policy when omitted. Text keeps the provider palette and heading semantics unless the host explicitly styles it.
 
@@ -1562,6 +1563,50 @@ Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy
 ```
 
 The mark and clear-filter action remain host-owned. `tests/native/empty-state.test.cjs` verifies default anatomy, omitted descriptions, decorative accessibility metadata, real text/root props and accepted action delivery; these wiring checks are not physical-device accessibility certification.
+
+### Avatar
+
+A person or an account as a 40-unit disc. It shows the first of these that it has:
+
+1. The image, when one is given and it loads.
+2. A generated face, when the host asks for one.
+3. The first two letters of `name` on the well fill.
+
+The generated face is the "beam" face of [Boring Avatars](https://boringavatars.com): a backdrop, a tilted shape, two eyes and a mouth, all decided by a hash of the seed. The same seed and the same colours draw the same face on web and native, on every device, with nothing stored. It is off until the host asks for it, with `variant='beam'` or by passing a `seed`. An `Avatar` with neither looks as it always did.
+
+Import `Avatar` from `@bloxwap/hig/react/avatar` or `@bloxwap/hig/native/avatar`. The native entry draws the face with `react-native-svg`, an optional peer that this entry needs. The status entries keep exporting `Avatar` for the imports that predate these: `@bloxwap/hig/react/status` exports the same component, and `@bloxwap/hig/native/status` exports it without the generated face (no `seed`, `variant`, `colors` or `faceColor`), so that entry still loads no SVG peer.
+
+| Prop | Behaviour |
+| --- | --- |
+| `name` | Required. The accessible name, the letters of the initials, and the seed when `seed` is left out. |
+| `src` (web), `source` (native) | An image to show instead: a URL on web, a React Native image source on native. A photo that is not square is cropped to fill the box. If it fails to load, or it names no image (an empty `src`; on native `{uri: undefined}`, an empty address or an empty list), the face or the initials show in its place. |
+| `seed` | What the face is drawn from, such as a wallet address. Passing it selects the generated face. It is case-sensitive, so pass an address in one casing everywhere. |
+| `variant` | `'initials'` or `'beam'`: what shows without an image. Defaults to `'initials'`, or to `'beam'` when `seed` is given. |
+| `size` | Width and height, in CSS pixels on web and dp on native. Defaults to 40. With `size`, the initials are drawn at 40% of it. A size that is not a finite number of zero or more (`NaN`, a negative, `Infinity`) is ignored. |
+| `colors` | The palette of the face. Defaults to the `action`, `info`, `negative` and `warning` token roles, in that order (exported as `avatarColorRoles`). |
+| `faceColor` | One colour for the eyes and mouth of every face. Left out, each face takes the `background` role on a bright colour and the `text` role on a deep one. |
+| `square` | A square with no rounded corners instead of a disc, for a host that clips the avatar to its own shape. |
+| `decorative` | Hides the avatar from assistive technology, for an avatar beside the name it stands for. |
+
+```tsx
+// A wallet: the address draws the face and the short address names it.
+<Avatar name={shortAddress(address)} seed={address} size={20} />
+// Beside the visible name, so it is not read twice.
+<Avatar name={trader.name} seed={trader.address} decorative />
+// A photo when there is one; the face when there is none or it fails to load.
+<Avatar name={name} seed={address} src={photoUrl} size={64} />   // native: source={{ uri: photoUrl }}
+```
+
+**Colour.** The default palette is token roles, so it is Display P3 wherever HIG is. Web paints the `--hig-action`, `--hig-info`, `--hig-negative` and `--hig-warning` variables, which the tokens stylesheet defines in Display P3 where the browser supports it. Native paints the provider's colour table: the Display P3 table on an iOS host with `HIGProvider colorSpace='display-p3'`, and sRGB everywhere else. `colors` replaces the palette with the host's own: any CSS colour on web, `color(display-p3 …)` included, and any React Native colour on native, where a hex value is painted in the host's colour space like every other HIG colour. A seed picks its colours by position, so the number of colours and their order are part of a face. Change the palette and the same people get other colours; the shapes stay. For a signed-out placeholder, pass one fixed seed and a grey palette.
+
+**Moving from boring-avatars.** For the same seed and the same `colors`, the shapes and the colour of each shape are those of boring-avatars 2.0.4 with `variant="beam"`, so people keep their faces. `<Avatar name={address} variant="beam" size={20} colors={palette} />` becomes `<Avatar name={label} seed={address} size={20} colors={palette} />`: boring-avatars' `name` is HIG's `seed`. These differ:
+
+- The eyes and mouth are black or white in boring-avatars. HIG draws the `background` or the `text` role in their place, chosen by the same brightness rule, and `faceColor` sets one ink for every face.
+- boring-avatars reads only six-digit hex colours when it chooses that ink and draws white for anything else. HIG also reads short hex, `rgb()` and `color()`, and draws the dark ink on a colour it cannot read, such as a CSS variable.
+- The disc is the box's own rounding, not an SVG mask, so the drawing has no mask and no element id. `square` gives the unrounded square.
+- `size` is a number. Only the beam face is drawn; the other boring-avatars variants are not.
+
+The arithmetic is in `@bloxwap/hig/contracts/avatar`, with no React in it: `beamAvatar(seed, colors, inks?)` returns the colours, the two transforms, the mouth path and the eye positions in a 36-unit square, and `beamHash`, `beamInk`, `beamSize` and `beamEye` are exported beside it. The same entry holds what both renderers share outside the face: `avatarColorRoles` (the default palette roles), `avatarSide` (which sizes are drawn) and `avatarInitials` (the letters, never half of a character such as an emoji). A host that draws the same face somewhere else, such as on a canvas or in a share image, calls it directly.
 
 ## Transient toasts: `Toaster` and `toast()`
 
@@ -1738,9 +1783,13 @@ Confetti is physical: `origin.x` 0 is the left edge and a positive `drift` goes 
 
 Do: keep critical failure inline with Retry; use toast for copied acknowledgement; give a toast that carries an action `duration: Infinity`, so it is still there when a screen reader or a slow reader gets to it; keep confetti for a rare, real win and show the result itself in content. Don’t: dismiss critical text on a timer, rely on audio for success, or let confetti be the only sign that something happened.
 
+Do: seed a generated `Avatar` with something that stays the same for a person, such as the wallet address, and use one palette across a product so a person has one face everywhere. Don’t: seed it with a display name that people can change, or treat the face as proof of who someone is; two seeds can draw the same face.
+
 ## States, interaction and accessibility
 
 Notifications deduplicate ids and preserve every message until explicit dismissal, including bursts larger than three. Host delivery queues may limit arrivals, but the renderer never silently removes an undismissed message. A single coalesced announcement reports each changed burst, prioritizing errors; unchanged rerenders do not repeat it. DOM and Expo web use one live region while every notification remains visible. Native Android uses explicit announcement delivery, and inline Android status uses live-region metadata; iOS announces changed inline content explicitly. Actual VoiceOver/TalkBack timing remains unobserved. Skeleton and spinner are static under candidate motion policy.
+
+`Avatar` is a named image: `role='img'` with `name` as its label on web (the image's `alt` when there is one), and an accessibility element with `accessibilityRole='image'` and `accessibilityLabel` on native, for the photo, the face and the initials alike. `decorative` removes it from the accessibility tree on both. The generated face is still: nothing animates, so reduced motion changes nothing. It is an identity picture, so it is not mirrored in right-to-left layouts. The initials are text. On native, without `size` they follow the system text size and the provider's `maxFontSizeMultiplier` as they always have, while the disc keeps its size; with `size` they are 40% of the box and keep that size at every system text size, like the letters in HIG's other fixed discs, so they stay inside it. On web they take the surrounding font size without `size` and 40% of the box in CSS pixels with it.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -1760,9 +1809,11 @@ State review: rest; keyboard focus/hover (DOM); accepted press and release/cance
 />
 ```
 
+`Avatar` takes `src` (a URL) on web and `source` (a React Native image source) on native; every other prop is the same. Web draws the face as inline SVG and native with `react-native-svg`, from one description, so the shapes are the same numbers on both. The face is drawn again only when its seed, colours, ink or (on native) size change: a parent or a provider that renders again with the same face computes nothing and writes nothing. Both platforms crop a photo that is not square to fill the box, and both show the fallback when the image fails. On web that includes an image that failed before a server-rendered page hydrated: when the component mounts, an image that is complete with no width is checked with `decode()`, and a broken one gives way to the fallback. One difference remains. The native face needs the `react-native-svg` peer, so it is in `@bloxwap/hig/native/avatar` only; `Avatar` from `@bloxwap/hig/native/status` draws the image or the initials. How the face and its Display P3 colours look in a browser, on a phone and through VoiceOver or TalkBack has not been observed, and neither has the check for an image that failed before hydration, which is tested against a stubbed image; the tests check the drawn values, roles and names.
+
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Transient toasts: `tests/toast-model.test.ts` (the shared arithmetic and the Sonner figures it mirrors), `tests/toast.dom.test.tsx` and `tests/native/toaster.test.cjs`. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Transient toasts: `tests/toast-model.test.ts` (the shared arithmetic and the Sonner figures it mirrors), `tests/toast.dom.test.tsx` and `tests/native/toaster.test.cjs`. For `Avatar`: `tests/avatar-model.test.ts` holds the model to faces recorded from boring-avatars 2.0.4 (`tests/test-utils/boring-avatars-beam.json`, written by `tests/test-utils/record-boring-avatars.mjs`, which also compares 30,096 faces with that package when run against an install of it), and `tests/avatar.dom.test.tsx` and `tests/native/avatar.test.cjs` hold each renderer to the same recording and to the edge inputs (sizes that cannot be drawn, sources that name no image, an image that failed before hydration, a provider that renders again); the native file also renders the status entry with `react-native-svg` absent, and `tests/avatar-typecheck.tsx` and `tests/native/avatar-typecheck.tsx` hold the prop types. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
 ## Optional adapters and installation
@@ -3031,7 +3082,7 @@ npm install @bloxwap/hig@0.7.0
 | Entry | Use |
 | --- | --- |
 | `@bloxwap/hig/tokens`, `@bloxwap/hig/tokens/css` | Semantic tokens and the role CSS |
-| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements and messages |
+| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements, messages and the generated avatar face |
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
@@ -3101,6 +3152,10 @@ The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1
 ### Wallet address QR codes
 
 `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address` export `WalletAddress`, which draws its QR code with [Cuer](https://cuer.sh). `cuer` (`>=0.0.3 <0.1.0`) is an optional peer needed only by those two entries; the native entry also needs `react-native-svg`. `VerticalAddress` is in the `data` entries and needs neither. A host without `cuer` (or, on native, without `react-native-svg`) imports the same `WalletAddress` from `@bloxwap/hig/react/wallet-address-core` or `@bloxwap/hig/native/wallet-address-core`, which need neither peer, and passes its own drawing of the code as `qr`.
+
+### Generated avatars
+
+`@bloxwap/hig/react/avatar` and `@bloxwap/hig/native/avatar` export `Avatar`, which can draw a face generated from a seed such as a wallet address. The native entry draws it with `react-native-svg`, an optional peer needed there. A native host without that peer keeps importing `Avatar` from `@bloxwap/hig/native/status`, which shows the image or the initials and loads no SVG. See [Status & feedback](https://bloxwap.github.io/hig/docs/guides/components/status/#avatar).
 
 ## Brand accent
 

@@ -747,16 +747,28 @@
     {
       "name": "Avatar",
       "slug": "avatar",
-      "entry": "status",
+      "entry": "avatar",
       "family": "status",
       "web": "<C.Avatar name='Demo account'/>",
       "native": "<C.Avatar name='Demo account'/>",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "variants": {
+        "generated": {
+          "web": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111'/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'/><C.Avatar name='Clara Barton' variant='beam'/><C.Avatar name='Signed out' seed='bloxwap' size={64}/><C.Avatar name='Small' seed='anon' size={24}/><C.Avatar name='Square' seed='sim:k3j9x0aa' square/></C.Inline>",
+          "native": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111'/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'/><C.Avatar name='Clara Barton' variant='beam'/><C.Avatar name='Signed out' seed='bloxwap' size={64}/><C.Avatar name='Small' seed='anon' size={24}/><C.Avatar name='Square' seed='sim:k3j9x0aa' square/></C.Inline>"
+        },
+        "palette": {
+          "web": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Clara Barton' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Sojourner Truth' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']} faceColor='#ffffff'/></C.Inline>",
+          "native": "<C.Inline><C.Avatar name='Joe' seed='0x1111111111111111111111111111111111111111' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Maria Mitchell' seed='0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Clara Barton' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']}/><C.Avatar name='Sojourner Truth' variant='beam' colors={['#7c5cff','#ffb020','#1f2a44']} faceColor='#ffffff'/></C.Inline>"
+        }
+      }
     },
     {
       "name": "StatusIndicator",
