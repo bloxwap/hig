@@ -34,30 +34,31 @@ function useUIFrames(){
 export default function NumberFlowPerf({onDone}:{onDone?:()=>void}){
  const [values,setValues]=useState<readonly number[]>(()=>starts(40)),commits=useRef(0),ui=useUIFrames(),done=useRef(onDone);done.current=onDone;
  useEffect(()=>{
-  let alive=true;
+  // Unmounting stops the run at its next step.
+  const mounted={current:true};
   const run=async()=>{
    // The reels draw once the ten digits are measured; give the first layout time to land.
-   await wait(800);if(!alive)return;
+   await wait(800);if(!mounted.current)return;
    console.log('[perf] number-flow start');
    const next=random(20260117);let board=starts(40),stamps:number[]=[],recording=true;
-   const record=(now:number)=>{if(!alive||!recording)return;stamps.push(now);requestAnimationFrame(record);};
+   const record=(now:number)=>{if(!mounted.current||!recording)return;stamps.push(now);requestAnimationFrame(record);};
    commits.current=0;ui.start();requestAnimationFrame(record);
    const began=Date.now(),ticks=50;
-   for(let tick=0;tick<ticks&&alive;tick++){await wait(Math.max(0,began+tick*100-Date.now()));board=board.map((value,index)=>value+(next()*2-1)*formats[index%formats.length].step);setValues(board);}
-   await wait(Math.max(0,began+ticks*100-Date.now()));if(!alive)return;recording=false;
+   for(let tick=0;tick<ticks&&mounted.current;tick++){await wait(Math.max(0,began+tick*100-Date.now()));board=board.map((value,index)=>value+(next()*2-1)*formats[index%formats.length].step);setValues(board);}
+   await wait(Math.max(0,began+ticks*100-Date.now()));if(!mounted.current)return;recording=false;
    console.log(`[perf] number-flow tickers figures=40 ticks=${ticks} updates=${ticks*40} commits=${commits.current} ${gaps(stamps)} ${ui.stop()}`);
    // Let the last rolls land, then one figure alone.
-   await wait(1500);if(!alive)return;
-   let value=formats[0].start,updates=0;setValues([value]);await wait(500);if(!alive)return;
+   await wait(1500);if(!mounted.current)return;
+   let value=formats[0].start,updates=0;setValues([value]);await wait(500);if(!mounted.current)return;
    stamps=[];commits.current=0;ui.start();
-   for(let now=await frame();alive&&(!stamps.length||now-stamps[0]<3000);now=await frame()){stamps.push(now);value+=(next()*2-1)*7.5;setValues([value]);updates++;}
-   if(!alive)return;
+   for(let now=await frame();mounted.current&&(!stamps.length||now-stamps[0]<3000);now=await frame()){stamps.push(now);value+=(next()*2-1)*7.5;setValues([value]);updates++;}
+   if(!mounted.current)return;
    console.log(`[perf] number-flow interrupt figures=1 updates=${updates} commits=${commits.current} ${gaps(stamps)} ${ui.stop()}`);
-   await wait(1500);if(!alive)return;
+   await wait(1500);if(!mounted.current)return;
    console.log('[perf] number-flow done');done.current?.();
   };
   void run();
-  return()=>{alive=false;};
+  return()=>{mounted.current=false;};
  },[ui]);
  return <HIGProvider reducedMotion={false}><Profiler id='number-flow' onRender={()=>{commits.current+=1;}}>
   <View style={{flexDirection:'row',flexWrap:'wrap',columnGap:16,rowGap:8,padding:16}}>{values.map((value,index)=><View key={index} style={{width:140}}><NumberFlow value={value} options={formats[index%formats.length].options}/></View>)}</View>
