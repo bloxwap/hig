@@ -359,7 +359,9 @@
     {
       "name": "Avatar",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ],
       "support": "renderer"
     },
