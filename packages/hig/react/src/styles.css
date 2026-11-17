@@ -113,6 +113,22 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-animated-number-place { position:relative;display:inline-block; }
 .hig-animated-number-new { display:inline-block; }
 .hig-animated-number-old { position:absolute;inset-inline-start:0;inset-block-start:0;display:inline-block;opacity:0;pointer-events:none; }
+/* NumberFlow. Every part is its own box so it can slide, and nothing changes how the line is laid out: at rest the figure is the
+   same boxes plain text would be. A turning place gets a window one em tall, centred on its digit, with a band above and below
+   where the digits rolling through it fade; the strip inside the window is what moves. Set --hig-number-flow-mask-height to
+   resize the band; 0 cuts hard. Nothing here transitions: the motion is additive Web Animations started by the component,
+   which draws reduced motion at once. */
+.hig-number-flow .hig-animated-number-visual { display:inline-block;position:relative;white-space:nowrap; }
+.hig-number-flow-core { display:inline-block;unicode-bidi:isolate; }
+.hig-number-flow-digits { display:inline-block;position:relative; }
+.hig-number-flow-part,.hig-number-flow-place { display:inline-block;position:relative;white-space:pre; }
+.hig-number-flow-digit { display:inline-block; }
+.hig-number-flow-place[data-spinning]>.hig-number-flow-digit { visibility:hidden; }
+.hig-number-flow-window { --hig-number-flow-edge:var(--hig-number-flow-mask-height,0.15em);position:absolute;inset-inline:0;inset-block-start:50%;height:calc(1em + 2*var(--hig-number-flow-edge));margin-block-start:calc(-0.5em - var(--hig-number-flow-edge));pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent,black var(--hig-number-flow-edge),black calc(100% - var(--hig-number-flow-edge)),transparent);mask-image:linear-gradient(to bottom,transparent,black var(--hig-number-flow-edge),black calc(100% - var(--hig-number-flow-edge)),transparent); }
+.hig-number-flow-strip,.hig-number-flow-ghosts { position:absolute;inset:0;pointer-events:none; }
+.hig-number-flow-glyph { position:absolute;inset-inline:0;inset-block-start:0;height:100%;line-height:calc(1em + 2*var(--hig-number-flow-edge));text-align:center; }
+.hig-number-flow-ghost { position:absolute;margin:0;pointer-events:none; }
+.hig-number-flow [data-will-change] :is(.hig-number-flow-part,.hig-number-flow-place,.hig-number-flow-strip) { will-change:transform; }
 .hig-row { display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-width:0;padding-block:12px; }
 .hig-data-list,.hig-list-error { display:flex;flex-direction:column;align-items:stretch;gap:var(--hig-gap);min-width:0; }
 .hig-data-list > .hig-button,.hig-list-error > .hig-button { align-self:flex-start; }
@@ -187,6 +203,12 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-badge[data-tone='warning'] { color:var(--hig-warning);background:color-mix(in srgb,var(--hig-warning) 15%,transparent); }
 .hig-badge[data-tone='info'] { color:var(--hig-info);background:color-mix(in srgb,var(--hig-info) 15%,transparent); }
 .hig-avatar { display:inline-grid;place-items:center;width:40px;height:40px;border-radius:9999px;background:var(--hig-fill); }
+.hig-avatar[data-square] { border-radius:0; }
+/* A photo that is not square is cropped to the box, as on native, never stretched. */
+img.hig-avatar { object-fit:cover; }
+/* The generated face fills the box and is clipped to its shape here, so the drawing needs no mask of its own. */
+.hig-avatar[data-variant='beam'] { overflow:hidden;background:none; }
+.hig-avatar > svg { display:block;width:100%;height:100%; }
 .hig-skeleton { width:100%;min-height:48px;background:var(--hig-fill-raised);border-radius:10px;animation:hig-pulse 1.5s ease-in-out infinite; }
 .hig-alert,.hig-empty-state { display:flex;flex-direction:column;align-items:flex-start;gap:var(--hig-gap);overflow-wrap:anywhere;line-height:1.5; }
 .hig-alert > :is(strong,p),.hig-empty-state > :is(h3,p) { margin:0;max-width:100%; }
@@ -212,6 +234,9 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-toast-item[data-severity='warning'] .hig-toast-icon { color:var(--hig-warning); }
 .hig-toast-item[data-severity='error'] .hig-toast-icon { color:var(--hig-negative); }
 .hig-toast-message { flex:1;min-width:0; }
+/* A notice with a description is two lines tall, so its corners keep the one-line radius. */
+.hig-toast-item[data-described] { border-radius:22px;padding-block:8px; }
+.hig-toast-description { display:block;font-weight:400; }
 /* Inside Sonner's fixed-width slot the capsule hugs its content and centres. */
 [data-sonner-toast] .hig-toast-item { margin-inline:auto; }
 .hig-toast-item .hig-button { min-height:32px;padding-block:2px; }
@@ -392,13 +417,18 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-vertical-address { display:inline-flex;flex-direction:column;flex:none;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);font-size:calc(var(--hig-address-row,1.5em)*.9);line-height:var(--hig-address-row,1.5em);font-weight:500;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--hig-muted);text-align:start;white-space:pre; }
 .hig-vertical-address > [aria-hidden] { display:flex;flex-direction:column; }
 .hig-vertical-address [data-anchor] { font-weight:700;color:var(--hig-text); }
+/* QRCode: a square holding one inline SVG, with the arena as an HTML box over it. `size` sets the width; host CSS may resize the square and the drawing and the arena's box scale. */
+.hig-qr-code { position:relative;display:block;flex:none;box-sizing:border-box;width:var(--hig-qr-code-size,196px);max-width:100%;aspect-ratio:1; }
+.hig-qr-code > svg { position:absolute;inset:0;display:block;width:100%;height:100%; }
+.hig-qr-code-arena { position:absolute;display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden; }
+.hig-qr-code-image { display:block;width:100%;height:100%;object-fit:cover; }
 /* WalletAddress: the QR code and the address column share one height; the hint sits under both. */
 .hig-wallet-address { appearance:none;display:inline-flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;margin:0;padding:12px;border:0;border-radius:var(--hig-radius-xl,14px);background:transparent;color:var(--hig-text);font:inherit;text-align:start; }
 button.hig-wallet-address,button.hig-trade-row,button.hig-list-row,a.hig-list-row { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 button.hig-wallet-address:active { opacity:.8; }
 .hig-wallet-address-body { display:flex;align-items:center;gap:16px;max-width:100%; }
 .hig-wallet-address-qr { flex:none;display:block;width:var(--hig-qr);height:var(--hig-qr); }
-.hig-wallet-address-qr > svg { display:block;width:100%;height:100%; }
+.hig-wallet-address-qr > svg,.hig-wallet-address-qr > .hig-qr-code { display:block;width:100%;height:100%; }
 .hig-wallet-address-hint { display:inline-flex;align-items:center;gap:8px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
 .hig-wallet-address-hint > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round; }
 /* SwapPanelBlock: two cards joined by a flip control. Each card is one target for its token picker; capsules and the
@@ -950,6 +980,8 @@ span.hig-press-decoration[data-kind] > * { pointer-events:auto; }
 }
 [data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-accordion > .hig-accordion-summary,[data-hig-motion='reduced'] .hig-accordion-chevron,[data-hig-motion='reduced'] .hig-switch input,[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-segment-indicator,[data-hig-motion='reduced'] .hig-filter-chip,[data-hig-motion='reduced'] .hig-filter-mark,[data-hig-motion='reduced'] .hig-filter-mark > img,[data-hig-motion='reduced'] .hig-filter-mark path,[data-hig-motion='reduced'] .hig-swap-card,[data-hig-motion='reduced'] .hig-swap-flip > *,[data-hig-motion='reduced'] .hig-screen-header[data-sticky],[data-hig-motion='reduced'] .hig-profile-bar[data-sticky],[data-hig-motion='reduced'] .hig-setting-meter > span,[data-hig-motion='reduced'] .hig-reward-track > span,[data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-bar-mark-segment,[data-hig-motion='reduced'] .hig-bar-mark-rest,[data-hig-motion='reduced'] .hig-bar-pnl-rest,[data-hig-motion='reduced'] .hig-bar-pnl-move,[data-hig-motion='reduced'] .hig-bar-pnl-liquidation { transition:none; }
 [data-hig-motion='reduced'] .hig-button-spinner,[data-hig-motion='reduced'] .hig-skeleton,[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'] .hig-popover,[data-hig-motion='reduced'].hig-popover,[data-hig-motion='reduced'] .hig-progress progress:not([value]),[data-hig-motion='reduced'] .hig-spinner-indicator,[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before,[data-hig-motion='reduced'] .hig-swap-view,[data-hig-motion='reduced'] .hig-screen-header[data-sticky] { animation:none; }
+/* Sonner honours the OS preference itself; this covers a provider that asks for reduced motion on its own. */
+[data-hig-motion='reduced'] [data-sonner-toast],[data-hig-motion='reduced'] [data-sonner-toast] > * { transition:none!important;animation:none!important; }
 /* Selectors some engines do not parse stay in rules of their own, so they cannot drop the lists above. */
 @media(prefers-reduced-motion:reduce) { .hig-accordion::details-content { transition:none; } .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; } }
 [data-hig-motion='reduced'] .hig-accordion::details-content { transition:none; }

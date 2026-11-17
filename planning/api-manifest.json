@@ -8,11 +8,23 @@
       },
       "AnimatedNumberProps": {
         "entry": "animated-number",
-        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    duration?: number;\n    trend?: AnimatedNumberTrend;\n    /** Host-formatted text for a finite `value`, drawn in place of the Intl reading and read the same way, for a host whose number table the browser's Intl does not match. Never parse it back. Empty text falls back to Intl. Unknown values still read as the dash. */\n    formattedValue?: string;\n    /** With `formattedValue`, moves the host's text place by place: each digit rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static. */\n    animateFormatted?: boolean;\n}"
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 600. Flowing: sets the roll and the sideways slide (900 by default) and fades take half of it; the three timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value, a figure that gains or loses a place slides closed while the place fades, and a new value joins the motion in flight.\n     * `'slide'` is the short settle: the old digit leaves by one line as the new one arrives, and a newer value restarts it.\n     * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading that cannot be laid out place by place\n     * (right-to-left letters or bidi controls in the number itself) slides.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the sideways slide when the figure changes width, and the roll unless `spinTiming` is set. Default 900 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a part that arrives or leaves. Default 450 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Flowing only: keeps the moving parts on their own compositor layers between changes. For a figure that changes many times a second; it costs memory, so leave it off elsewhere. */\n    willChange?: boolean;\n    /** Class names for the readout's root, for the host's type size, weight and colour. */\n    className?: string;\n    /** Host-formatted text for a finite `value`, drawn in place of the Intl reading and read the same way, for a host whose number table the browser's Intl does not match. Never parse it back. Empty text falls back to Intl. Unknown values still read as the dash. */\n    formattedValue?: string;\n    /** With `formattedValue`, moves the host's text place by place: each digit rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static. */\n    animateFormatted?: boolean;\n}"
       },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ duration, trend, options: requested, formattedValue, animateFormatted, ...rest }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "NumberFlow": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlow({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "NumberFlowProps": {
+        "entry": "animated-number",
+        "signature": "export type NumberFlowProps = AnimatedNumberProps;"
+      },
+      "NumberFlowGroup": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlowGroup({ children }: {\n    children?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "AssetArtwork": {
         "entry": "asset-balance-row",
@@ -25,6 +37,18 @@
       "AssetBalanceRow": {
         "entry": "asset-balance-row",
         "signature": "export declare function AssetBalanceRow({ name, symbol, icon, value, balance, balanceOptions, unitsSuffix, headline, amounts, tag, trailing, trailingLabel, selected, disabled, onSelect, className, ...rest }: AssetBalanceRowProps): React.JSX.Element;"
+      },
+      "avatarColorRoles": {
+        "entry": "avatar",
+        "signature": "export declare const avatarColorRoles: readonly [\"action\", \"info\", \"negative\", \"warning\"];"
+      },
+      "AvatarProps": {
+        "entry": "avatar",
+        "signature": "export interface AvatarProps {\n    /** The person or account. It is the accessible name, the first two letters are the initials, and it is the seed of the generated face unless `seed` is given. */\n    name: string;\n    /** An image to show instead, cropped to fill the box. If it fails to load, the initials or the generated face show in its place. */\n    src?: string;\n    /** What the generated face is drawn from, such as a wallet address. The same seed and colours draw the same face on web and native. It is case-sensitive. Passing it selects the generated face. Defaults to `name`. */\n    seed?: string;\n    /** What shows without an image: `initials`, the first two letters of `name` on the well fill, or `beam`, a generated face. Defaults to `initials`, or to `beam` when `seed` is given. */\n    variant?: 'initials' | 'beam';\n    /** Width and height in CSS pixels. Defaults to 40. With it, the initials are drawn at 40% of the size. A size that is not a finite number of zero or more is ignored. */\n    size?: number;\n    /** Palette of the generated face, as CSS colours. Defaults to the `action`, `info`, `negative` and `warning` token roles (`avatarColorRoles`), which are Display P3 where the screen supports it. A seed picks by position, so the same list in the same order keeps the same faces. */\n    colors?: readonly string[];\n    /** One colour for the eyes and mouth of every generated face. Left out, each face takes the `background` role on a bright colour and the `text` role on a deep one. */\n    faceColor?: string;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from assistive technology, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
+      },
+      "Avatar": {
+        "entry": "avatar",
+        "signature": "export declare function Avatar({ name, src, seed, variant, size, colors, faceColor, square, decorative }: AvatarProps): React.JSX.Element;"
       },
       "BarMarkTone": {
         "entry": "bar-mark",
@@ -594,6 +618,22 @@
         "entry": "button",
         "signature": "export declare const Link: React.ForwardRefExoticComponent<React.AnchorHTMLAttributes<HTMLAnchorElement> & React.RefAttributes<HTMLAnchorElement>>;"
       },
+      "ConfettiFire": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiFire {\n    /** Fires one burst and resolves when it has finished, or at once when nothing is drawn: under reduced motion (unless `disableForReducedMotion` is false), with no pieces, or on a server. Colours and reduced motion come from the most recently mounted `Confetti`, else from the document. */\n    (options?: ConfettiOptions): Promise<void>;\n    /** Stops every burst now, also one still waiting for its host, removes the canvas and resolves their promises. */\n    reset(): void;\n}"
+      },
+      "confetti": {
+        "entry": "confetti",
+        "signature": "export declare const confetti: ConfettiFire;"
+      },
+      "ConfettiProps": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiProps {\n    /** Fires `options` whenever it is truthy: on mount, and each time it changes to another truthy value. A win count or an order id works. Leave it out to fire only through `confetti()`. */\n    trigger?: unknown;\n    /** The burst `trigger` fires, or several fired together. Read when `trigger` changes, so it need not be a stable object. */\n    options?: ConfettiOptions | readonly ConfettiOptions[];\n}"
+      },
+      "Confetti": {
+        "entry": "confetti",
+        "signature": "export declare function Confetti({ trigger, options }: ConfettiProps): React.JSX.Element;"
+      },
       "NumberProps": {
         "entry": "data",
         "signature": "export interface NumberProps {\n    value: number | null | undefined;\n    options?: Intl.NumberFormatOptions;\n    stale?: boolean;\n    label?: string;\n    prefix?: string;\n    suffix?: string;\n}"
@@ -862,6 +902,14 @@
         "entry": "provider",
         "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent | null): [T, (next: T) => void];"
       },
+      "QRCodeProps": {
+        "entry": "qr-code",
+        "signature": "export interface QRCodeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'children' | 'color'> {\n    /** The text to encode: an address, a payment URI, a link. Digits pack tightest, then upper-case alphanumerics, then UTF-8. A value too long for a QR code draws an empty square. */\n    value: string;\n    /** Edge of the square in CSS pixels, quiet zone included; default 196. It sets `--hig-qr-code-size`, the element's width, so host CSS may resize the element: the drawing and the arena's box scale with it. */\n    size?: number;\n    /** Drawn over the centre, which is cleared of modules: an image URL, or a node such as a token mark laid out in the arena's box. */\n    arena?: React.ReactNode;\n    /** Error correction level. Defaults to `high` with an arena, which covers part of the code, and `medium` without. With an arena, `low` and `medium` are raised to `quartile` so the code still reads. */\n    errorCorrection?: QRErrorCorrection;\n    /** Colour of the modules. Defaults to the text role, `var(--hig-text)`. */\n    color?: string;\n    /** Colour of the tile behind the code. Defaults to the background role, `var(--hig-background)`; `'none'` draws no tile, for a code that sits on the host's own surface. */\n    background?: string;\n    /** Clear modules kept on every side, inside `size`; default 4, the margin scanners expect. Pass 0 only where the host keeps that margin itself. */\n    quietZone?: number;\n    /** Accessible name. Defaults to the built-in “QR code”. */\n    label?: string;\n    /** Hides the code from assistive technology, for a host that names it on an element of its own. */\n    decorative?: boolean;\n}"
+      },
+      "QRCode": {
+        "entry": "qr-code",
+        "signature": "export declare function QRCode({ value, size, arena, errorCorrection, color, background, quietZone, label, decorative, className, style, ...rest }: QRCodeProps): React.JSX.Element;"
+      },
       "Choice": {
         "entry": "selection",
         "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
@@ -956,7 +1004,7 @@
       },
       "ToastNotice": {
         "entry": "status",
-        "signature": "export declare function ToastNotice({ message, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
+        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode; /** A second line under the message, in regular weight. With one the capsule keeps a fixed corner radius, not a full pill. */\n    description?: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
       },
       "Toast": {
         "entry": "status",
@@ -977,10 +1025,6 @@
       "EmptyState": {
         "entry": "status",
         "signature": "export declare function EmptyState({ title, description, action, illustration }: {\n    title: string;\n    description?: string;\n    action?: React.ReactNode;\n    illustration?: React.ReactNode;\n}): React.JSX.Element;"
-      },
-      "Avatar": {
-        "entry": "status",
-        "signature": "export declare function Avatar({ name, src }: {\n    name: string;\n    src?: string;\n}): React.JSX.Element;"
       },
       "StatusIndicator": {
         "entry": "status",
@@ -1020,27 +1064,27 @@
       },
       "Toaster": {
         "entry": "toast",
-        "signature": "export declare function Toaster(props: ToasterProps): React.JSX.Element;"
+        "signature": "export declare function Toaster({ offset, mobileOffset, ...props }: ToasterProps): React.JSX.Element;"
       },
       "ToastOptions": {
         "entry": "toast",
-        "signature": "export interface ToastOptions {\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button; defaults to the English `dismissNotice`. Pass the provider's translation from a component. */\n    dismissName?: string; /** Milliseconds before auto-dismiss; Sonner's default when omitted. */\n    duration?: number; /** Reuse an id to replace a notice instead of stacking it. */\n    id?: string | number;\n}"
-      },
-      "toast": {
-        "entry": "toast",
-        "signature": "export declare function toast(message: string, { severity, action, dismissName, duration, id }?: ToastOptions): string | number;"
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
       },
       "dismissToast": {
         "entry": "toast",
-        "signature": "export declare function dismissToast(id?: string | number): void;"
+        "signature": "export declare function dismissToast(id?: ToastId): void;"
+      },
+      "toast": {
+        "entry": "toast",
+        "signature": "export declare const toast: ToastCall<ToastOptions>;"
       },
       "WalletAddressCoreProps": {
         "entry": "wallet-address-core",
-        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. */\n    qr: React.ReactNode;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. Omitted or `null`, HIG draws its own `QRCode` of `qrValue`, which needs no package. */\n    qr?: React.ReactNode;\n    /** QR payload of HIG's own code when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. Unused with `qr`. */\n    qrValue?: string;\n    /** Image URL shown in the centre of HIG's own code, which then uses high error correction. Unused with `qr`. */\n    arena?: string;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
       },
       "WalletAddress": {
         "entry": "wallet-address-core",
-        "signature": "export declare function WalletAddress({ address, kind, qr, size, onCopy, announce, className, style }: WalletAddressCoreProps): React.JSX.Element;"
+        "signature": "export declare function WalletAddress({ address, kind, qr, qrValue, arena, size, onCopy, announce, className, style }: WalletAddressCoreProps): React.JSX.Element;"
       },
       "WalletAddressProps": {
         "entry": "wallet-address",
@@ -1130,13 +1174,33 @@
         "entry": "blocks/screen-header",
         "signature": "export declare const qrIcon: React.JSX.Element;"
       },
+      "NumberFlowWebTiming": {
+        "entry": "animated-number-flow",
+        "signature": "export interface NumberFlowWebTiming {\n    duration: number;\n    easing: string;\n    fallback: string;\n}"
+      },
+      "NumberFlowWebMotion": {
+        "entry": "animated-number-flow",
+        "signature": "export interface NumberFlowWebMotion {\n    spin: NumberFlowWebTiming;\n    transform: NumberFlowWebTiming;\n    opacity: NumberFlowWebTiming;\n}"
+      },
+      "NumberFlowSpin": {
+        "entry": "animated-number-flow",
+        "signature": "export interface NumberFlowSpin {\n    delta: number;\n    length: number;\n    from: number;\n}"
+      },
+      "numberFlowWebMotion": {
+        "entry": "animated-number-flow",
+        "signature": "export declare function numberFlowWebMotion(timings: NumberFlowTimings): NumberFlowWebMotion;"
+      },
+      "NumberFlowEngine": {
+        "entry": "animated-number-flow",
+        "signature": "export declare class NumberFlowEngine {\n    private root;\n    private before;\n    private extent;\n    private clip;\n    private readonly reels;\n    private readonly running;\n    private readonly fades;\n    private ghosts;\n    /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */\n    attach(root: HTMLElement | null): void;\n    /** Whether anything is still moving. */\n    get busy(): boolean;\n    /** First: where every part is now, read before the commit that changes them. */\n    measure(): void;\n    /** Last, invert, play: slide every part from where it was, fade in what arrived and fade out a copy of what left. Does nothing without a `measure` since the last call. */\n    flip(motion: NumberFlowWebMotion): void;\n    /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */\n    spin(spins: ReadonlyMap<string, NumberFlowSpin>, glyphs: readonly string[], timing: NumberFlowWebTiming): void;\n    /** Stop everything where it is going: the parts are left exactly as React drew them. */\n    cancel(): void;\n    private stop;\n    private settle;\n    private play;\n}"
+      },
       "AnimatedNumberToken": {
         "entry": "animated-number-model",
         "signature": "export interface AnimatedNumberToken {\n    key: string;\n    text: string;\n    digit: boolean;\n    value?: number;\n    place?: number;\n    section?: 'number' | 'exponent';\n}"
       },
       "AnimatedNumberModel": {
         "entry": "animated-number-model",
-        "signature": "export interface AnimatedNumberModel {\n    reading: string;\n    tokens: readonly AnimatedNumberToken[];\n    animatable: boolean;\n}"
+        "signature": "export interface AnimatedNumberModel {\n    reading: string;\n    tokens: readonly AnimatedNumberToken[];\n    animatable: boolean;\n    /** The ten digit glyphs of the reading's numbering system, zero first, when it moves place by place. A reel rolls through these. */\n    digits?: readonly string[];\n}"
       },
       "AnimatedNumberTransitionToken": {
         "entry": "animated-number-model",
@@ -1153,6 +1217,18 @@
       "createAnimatedNumberTransitions": {
         "entry": "animated-number-model",
         "signature": "export declare function createAnimatedNumberTransitions(previous: AnimatedNumberModel | null, next: AnimatedNumberModel): readonly AnimatedNumberTransitionToken[];"
+      },
+      "numberFlowPlaces": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowPlaces(model: AnimatedNumberModel): NumberFlowPlace[];"
+      },
+      "numberFlowTokenKeys": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowTokenKeys(tokens: readonly AnimatedNumberToken[]): string[];"
+      },
+      "numberFlowAnchorSide": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowAnchorSide(key: string): -1 | 1;"
       },
       "Figure": {
         "entry": "figure",
@@ -1238,11 +1314,23 @@
       },
       "AnimatedNumberProps": {
         "entry": "animated-number",
-        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    duration?: number;\n    trend?: AnimatedNumberTrend;\n    /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */\n    animateFormatted?: boolean;\n}"
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 600. Flowing: sets the roll (900 by default) and fades take half of it; the timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value on NumberFlow's curve, a place the figure gains rolls up from zero as it fades in, and a new value joins the roll in\n     * flight. `'slide'` is the short settle: the reel eases straight to the new digit and a newer value retargets it.\n     * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading native cannot lay out place by\n     * place (right-to-left, unmeasured glyphs) is drawn static either way.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the roll unless `spinTiming` is set. On web it also times the sideways slide when the figure changes width; native changes width at once. Default 900 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a place that arrives. Default 450 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Accepted so one call site serves both platforms. Web keeps the moving parts on their own layers; native reels already are. */\n    willChange?: boolean;\n    /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */\n    animateFormatted?: boolean;\n}"
+      },
+      "NumberFlow": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlow({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+      },
+      "NumberFlowProps": {
+        "entry": "animated-number",
+        "signature": "export type NumberFlowProps = AnimatedNumberProps;"
+      },
+      "NumberFlowGroup": {
+        "entry": "animated-number",
+        "signature": "export declare function NumberFlowGroup({ children }: {\n    children?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "AnimatedNumberReadout": {
         "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ value, options: requested, formattedValue, animateFormatted, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export declare function AnimatedNumberReadout({ value, options: requested, formattedValue, animateFormatted, stale, label, tone, style, testID, maxFontSizeMultiplier, trend, prefix, suffix, duration: requestedDuration, motion, animated, spinTiming, transformTiming, opacityTiming, digits, continuous }: AnimatedNumberProps): React.JSX.Element;"
       },
       "AssetSignal": {
         "entry": "assets-block",
@@ -1271,6 +1359,18 @@
       "AssetsBlock": {
         "entry": "assets-block",
         "signature": "export declare function AssetsBlock({ title, onClose, assets, categories, onSelect, selectedId, view, defaultView, onViewChange, category, defaultCategory, onCategoryChange, query, defaultQuery, onQueryChange, categoryFilter, filterScrollComponent, loading, stickyHeader, stickyHeaderBackground, scrollComponent, headingId, clearable, testID }: AssetsBlockProps): React.JSX.Element;"
+      },
+      "avatarColorRoles": {
+        "entry": "avatar",
+        "signature": "export declare const avatarColorRoles: readonly [\"action\", \"info\", \"negative\", \"warning\"];"
+      },
+      "AvatarProps": {
+        "entry": "avatar",
+        "signature": "export interface AvatarProps extends AvatarFrameProps {\n    /** What the generated face is drawn from, such as a wallet address. The same seed and colours draw the same face on web and native. It is case-sensitive. Passing it selects the generated face. Defaults to `name`. */\n    seed?: string;\n    /** What shows without an image: `initials`, the first two letters of `name` on the well fill, or `beam`, a generated face. Defaults to `initials`, or to `beam` when `seed` is given. */\n    variant?: 'initials' | 'beam';\n    /** Palette of the generated face, as React Native colours. Defaults to the `action`, `info`, `negative` and `warning` roles of the provider's colour table (`avatarColorRoles`), which is Display P3 on an iOS host that paints in it. A seed picks by position, so the same list in the same order keeps the same faces. */\n    colors?: readonly string[];\n    /** One colour for the eyes and mouth of every generated face. Left out, each face takes the `background` role on a bright colour and the `text` role on a deep one. */\n    faceColor?: string;\n}"
+      },
+      "Avatar": {
+        "entry": "avatar",
+        "signature": "export declare function Avatar({ seed, variant, colors, faceColor, ...frame }: AvatarProps): React.JSX.Element;"
       },
       "BarMarkTone": {
         "entry": "bar-mark",
@@ -1828,6 +1928,22 @@
         "entry": "checkbox",
         "signature": "export declare function Checkbox({ label, checked, defaultChecked, disabled, onCheckedChange }: CheckedProps): React.JSX.Element;"
       },
+      "ConfettiFire": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiFire {\n    /** Fires one burst in the most recently mounted `Confetti` and resolves when it has finished, or at once when nothing is drawn: no `Confetti` is mounted, reduced motion is on (unless `disableForReducedMotion` is false) or the burst has no pieces. */\n    (options?: ConfettiOptions): Promise<void>;\n    /** Stops every burst now, also one still waiting for its layer, removes its views and resolves their promises. */\n    reset(): void;\n}"
+      },
+      "confetti": {
+        "entry": "confetti",
+        "signature": "export declare const confetti: ConfettiFire;"
+      },
+      "ConfettiProps": {
+        "entry": "confetti",
+        "signature": "export interface ConfettiProps {\n    /** Fires `options` whenever it is truthy: on mount, and each time it changes to another truthy value. A win count or an order id works. Leave it out to fire only through `confetti()`. */\n    trigger?: unknown;\n    /** The burst `trigger` fires, or several fired together. Read when `trigger` changes, so it need not be a stable object. */\n    options?: ConfettiOptions | readonly ConfettiOptions[];\n    /** Merged over the layer, which fills its parent and takes no touches. */\n    style?: StyleProp<ViewStyle>;\n    /** Test ID of the layer. */\n    testID?: string;\n}"
+      },
+      "Confetti": {
+        "entry": "confetti",
+        "signature": "export declare function Confetti({ trigger, options, style, testID }: ConfettiProps): React.JSX.Element;"
+      },
       "confirmAddressRows": {
         "entry": "confirm-block",
         "signature": "export declare function confirmAddressRows(address: string): {\n    text: string;\n    anchor: boolean;\n}[][];"
@@ -2100,6 +2216,14 @@
         "entry": "provider",
         "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent | null): [T, (next: T) => void];"
       },
+      "QRCodeProps": {
+        "entry": "qr-code",
+        "signature": "export interface QRCodeProps {\n    /** The text to encode: an address, a payment URI, a link. Digits pack tightest, then upper-case alphanumerics, then UTF-8. A value too long for a QR code draws an empty square. */\n    value: string;\n    /** Edge of the square in dp, quiet zone included; default 196. */\n    size?: number;\n    /** Drawn over the centre, which is cleared of modules: an image URL, or a node such as a token mark laid out in the arena's box. */\n    arena?: React.ReactNode;\n    /** Error correction level. Defaults to `high` with an arena, which covers part of the code, and `medium` without. With an arena, `low` and `medium` are raised to `quartile` so the code still reads. */\n    errorCorrection?: QRErrorCorrection;\n    /** Colour of the modules. Defaults to the provider's `text` role. */\n    color?: string;\n    /** Colour of the tile behind the code. Defaults to the provider's `background` role; `'none'` draws no tile, for a code that sits on the host's own surface. */\n    background?: string;\n    /** Clear modules kept on every side, inside `size`; default 4, the margin scanners expect. Pass 0 only where the host keeps that margin itself. */\n    quietZone?: number;\n    /** Accessible name. Defaults to the built-in “QR code”. */\n    label?: string;\n    /** Hides the code from assistive technology, for a host that names it on an element of its own. */\n    decorative?: boolean;\n    /** Also the prefix of `-code` (the drawing) and `-arena` (the image or node in the centre). */\n    testID?: string;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "QRCode": {
+        "entry": "qr-code",
+        "signature": "export declare function QRCode({ value, size, arena, errorCorrection, color, background, quietZone, label, decorative, testID, style }: QRCodeProps): React.JSX.Element;"
+      },
       "RadioGroup": {
         "entry": "radio-group",
         "signature": "export declare function RadioGroup({ label, options, value, defaultValue, disabled, onValueChange }: ChoicesProps): React.JSX.Element;"
@@ -2240,6 +2364,14 @@
         "entry": "status",
         "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss wording inside the close control's accessible name; defaults to HIGProvider messages.dismiss. The control shows an x, not text. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
       },
+      "ToastNoticeProps": {
+        "entry": "status",
+        "signature": "export interface ToastNoticeProps {\n    message: string;\n    /** A second line under the message, in regular weight. */\n    description?: string;\n    severity?: Notice['severity'];\n    action?: React.ReactNode;\n    /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */\n    dismissName?: string;\n    /** Draws the close control and takes its press. Omitted, the notice has none. */\n    onDismiss?: () => void;\n    /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */\n    hug?: boolean;\n    /** Merged over the capsule's fill, radius and shadow. */\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "ToastNotice": {
+        "entry": "status",
+        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss, hug, style }: ToastNoticeProps): React.JSX.Element;"
+      },
       "Toast": {
         "entry": "status",
         "signature": "export declare function Toast({ notices, onDismiss, dismissLabel, maxHeight, testID }: ToastProps): React.JSX.Element;"
@@ -2267,10 +2399,6 @@
       "EmptyState": {
         "entry": "status",
         "signature": "export declare function EmptyState({ title, description, action, illustration, titleStyle, descriptionStyle, maxFontSizeMultiplier, ...props }: EmptyStateProps): React.JSX.Element;"
-      },
-      "Avatar": {
-        "entry": "status",
-        "signature": "export declare function Avatar({ name, source }: {\n    name: string;\n    source?: ImageSourcePropType;\n}): React.JSX.Element;"
       },
       "StatusIndicator": {
         "entry": "status",
@@ -2327,6 +2455,26 @@
       "SwapSheet": {
         "entry": "swap-sheet",
         "signature": "export declare function SwapSheet({ open, onOpenChange, title, view: viewProp, onViewChange, style, ...panel }: SwapSheetProps): React.JSX.Element;"
+      },
+      "ToastOptions": {
+        "entry": "toast",
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
+      },
+      "ToasterProps": {
+        "entry": "toast",
+        "signature": "export interface ToasterProps {\n    /** The corner or edge the stack hangs from. Default `bottom-center`, as on web. `left` and `right` are the physical sides in either direction, as in Sonner; only the capsule's content mirrors under right-to-left. */\n    position?: ToastPosition;\n    /** Draws the visible notices one after another instead of as a collapsed stack. Default `false`. A finger resting on a notice for 200ms expands the stack until it lifts, and a running screen reader keeps it expanded so every notice can be reached. */\n    expand?: boolean;\n    /** Notices drawn at once; older ones wait behind them and their time does not run. Default 3; anything below 1 or not a number shows one. */\n    visibleToasts?: number;\n    /** Points between notices when expanded, and how far each notice behind the front peeks out when collapsed. Default 14. */\n    gap?: number;\n    /** Points between the stack and the screen edges, added to the safe-area insets: one number for every edge, or an object naming edges, the others keeping the default. Default 16 on a window narrower than 600 points and 24 otherwise. `left` and `right` are the physical sides, like `position`. */\n    offset?: number | {\n        top?: number;\n        right?: number;\n        bottom?: number;\n        left?: number;\n    };\n    /** Milliseconds a notice stays when `toast()` names no `duration`. Default 4000, which also stands in for a value that is not a positive number. */\n    duration?: number;\n    /** Directions a swipe dismisses in. Default: towards the edges the stack sits against (`bottom-center` → down; `top-right` → up and right). */\n    swipeDirections?: readonly ToastSwipeDirection[];\n    /** Prefix of the test IDs: `<testID>` on the layer and `<testID>-toast` on each notice. */\n    testID?: string;\n}"
+      },
+      "dismissToast": {
+        "entry": "toast",
+        "signature": "export declare function dismissToast(id?: ToastId): void;"
+      },
+      "toast": {
+        "entry": "toast",
+        "signature": "export declare const toast: ToastCall<ToastOptions>;"
+      },
+      "Toaster": {
+        "entry": "toast",
+        "signature": "export declare function Toaster({ position, expand, visibleToasts, gap, offset, duration, swipeDirections, testID }: ToasterProps): React.JSX.Element | null;"
       },
       "TradeHistoryListRender": {
         "entry": "trade-history-list-block",
@@ -2387,6 +2535,50 @@
       "createNumberReelModel": {
         "entry": "animated-number-model",
         "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string, animateFormatted?: boolean): NumberReelModel | null;"
+      },
+      "numberReelPlace": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberReelPlace(token: Pick<NumberReelToken, 'type' | 'place'>): number | null;"
+      },
+      "numberReelPlaces": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberReelPlaces(model: NumberReelModel): NumberFlowPlace[];"
+      },
+      "numberFlowReelOffset": {
+        "entry": "animated-number-model",
+        "signature": "export declare function numberFlowReelOffset(position: number, length: number, height: number): number;"
+      },
+      "sampleReelEasing": {
+        "entry": "animated-number-model",
+        "signature": "export declare function sampleReelEasing(samples: readonly number[], progress: number): number;"
+      },
+      "NumberFlowTurn": {
+        "entry": "animated-number-model",
+        "signature": "export type NumberFlowTurn = {\n    delta: number;\n    start: number;\n    duration: number;\n};"
+      },
+      "NumberFlowRoll": {
+        "entry": "animated-number-model",
+        "signature": "export type NumberFlowRoll = {\n    type: 'hig-number-flow';\n    current: number;\n    toValue: number;\n    turns: NumberFlowTurn[];\n    reduceMotion: false;\n    onStart: (animation: NumberFlowRoll, value: number, now: number, previous?: {\n        type?: string;\n        toValue?: unknown;\n        turns?: NumberFlowTurn[];\n    } | null) => void;\n    onFrame: (animation: NumberFlowRoll, now: number) => boolean;\n};"
+      },
+      "createNumberFlowRoll": {
+        "entry": "animated-number-model",
+        "signature": "export declare function createNumberFlowRoll(delta: number, duration: number, samples: readonly number[]): NumberFlowRoll;"
+      },
+      "speak": {
+        "entry": "announce",
+        "signature": "export declare function speak(message: string, severity: string): void;"
+      },
+      "avatarSize": {
+        "entry": "avatar-frame",
+        "signature": "export declare const avatarSize = 40;"
+      },
+      "AvatarFrameProps": {
+        "entry": "avatar-frame",
+        "signature": "export interface AvatarFrameProps {\n    /** The person or account. It is the accessible name, and the first two letters are the initials. */\n    name: string;\n    /** An image to show instead, cropped to fill the box. If it fails to load, or it names no image (`{uri: undefined}`, an empty address), the fallback shows in its place. */\n    source?: ImageSourcePropType;\n    /** Width and height in dp. Defaults to 40. With it, the initials are drawn at 40% of the size and keep that size at every system text size, so they stay inside the box. A size that is not a finite number of zero or more is ignored. */\n    size?: number;\n    /** A square with no rounded corners instead of a disc, for a host that clips it to its own shape. */\n    square?: boolean;\n    /** Hides the avatar from VoiceOver and TalkBack, for an avatar beside the name it stands for. */\n    decorative?: boolean;\n}"
+      },
+      "AvatarFrame": {
+        "entry": "avatar-frame",
+        "signature": "export declare function AvatarFrame({ name, source, size, square, decorative, face }: AvatarFrameProps & {\n    face?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "Figure": {
         "entry": "figure",

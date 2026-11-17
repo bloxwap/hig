@@ -62,7 +62,7 @@ Source: docs/architecture/platform-matrix.md
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: none for chart, whose `@bloxwap/hig/chart` entry relies on the package's one required peer, `@bloxwap/chart` (#96); community Slider for native selection entry; react-native-svg for native brand entry; `cuer` for the web and native `wallet-address` entries, plus react-native-svg on native, while the `wallet-address-core` entries load neither and take the host's own QR drawing. Vaul is isolated behind the web gesture-sheet entry. Gorhom and Gesture Handler are isolated behind the native gesture-sheet entry; Reanimated and Worklets are isolated behind the native gesture-sheet and animated-number entries. Base imports, including ordinary native `data` readouts, do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web blocks have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: none for chart, whose `@bloxwap/hig/chart` entry relies on the package's one required peer, `@bloxwap/chart` (#96); community Slider for native selection entry; react-native-svg for the native brand and avatar entries (the native status entry exports `Avatar` without the generated face and loads no SVG); `cuer` for the web and native `wallet-address` entries, plus react-native-svg on native, while the `wallet-address-core` entries load neither and take the host's own QR drawing (the web one draws HIG's `QRCode` when none is passed); react-native-svg alone for the native `qr-code` entry, and no peer for the web one. Vaul is isolated behind the web gesture-sheet entry. Gorhom is isolated behind the native gesture-sheet entry, and Gesture Handler behind the native gesture-sheet and toast entries; Reanimated and Worklets are isolated behind the native gesture-sheet, animated-number, toast and confetti entries. Base imports, including ordinary native `data` readouts, do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web blocks have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 RN 0.88 compatibility is verified by independent packed TypeScript and Android/iOS Metro consumers. Existing simulator/emulator interaction reports cover RN 0.81 and 0.83 only; no RN 0.88 physical or simulator interaction result is inferred from a bundle export.
 
@@ -929,7 +929,7 @@ Source: docs/components/financial-data.md
 
 Readable numbers, metrics, lists, tables, and wallet addresses for host-provided financial data.
 
-Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
+Includes `NumberReadout`, `AnimatedNumberReadout`, `NumberFlow`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `QRCode`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data` or `@bloxwap/hig/native/data` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -939,15 +939,17 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data`
 | --- | --- |
 | Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
 | `VerticalAddress` | `address`, optional `kind` (`'ethereum'` or `'solana'`, inferred from a `0x` prefix) and `rowHeight`. The address in fixed-width monospace rows, always left to right: 6 characters per row for Ethereum-style addresses (42 characters make 7 rows) and 4 for Solana (44 make 11). The leading row and the trailing four characters, the ones people compare, are emphasised; the middle is dimmed. Assistive technology and copying get the plain address. |
-| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”; `announce={false}` leaves the notice to the host. `qr` draws the host's own code in place of Cuer's. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`; without `cuer`, `wallet-address-core`. |
+| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”; `announce={false}` leaves the notice to the host. `qr` draws the host's own code in place of Cuer's. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`; without `cuer`, `wallet-address-core`, which on web draws HIG's own `QRCode`. |
+| `QRCode` | `value`, `size` (default 196), `arena`, `errorCorrection`, `color`, `background`, `quietZone` (default 4), `label` and `decorative`. A QR code in the Cuer style, encoded by HIG with no package, drawn as one path. Separate entry: `@bloxwap/hig/react/qr-code` and `@bloxwap/hig/native/qr-code`. See [QRCode](#qrcode). |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
 | `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
 | `MarketRow` | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. `price` and `change` are optional, and `detail`, `trailing`, `selected`, `disabled` and `active` serve a market picker (below). Web and native. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
 
-`WalletAddress` needs the optional `cuer` peer (`>=0.0.3 <0.1.0`), and on native also `react-native-svg`; `VerticalAddress` needs neither and lives in the `data` entry. HIG never reads or writes the clipboard itself.
+`WalletAddress` from the `wallet-address` entries needs the optional `cuer` peer (`>=0.0.3 <0.1.0`), and on native also `react-native-svg`; `VerticalAddress` needs neither and lives in the `data` entry. `WalletAddress` from `wallet-address-core` needs no peer on either platform. HIG never reads or writes the clipboard itself.
 
 - **Host QR.** `qr` takes the host's own drawing of the code, laid out in the `size` square and named by the built-in “QR code” label (web: inside the `role="img"` wrapper, so keep the drawing `aria-hidden`; native: one image element). `qrValue` and `arena` are then unused and nothing is encoded. On both platforms `qr={null}` is the same as leaving it out: the Cuer code is drawn.
-- **Without `cuer`.** `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` (props `WalletAddressCoreProps`) with `qr` required. They import neither `cuer` nor, on native, `react-native-svg`, so a host that does not install them (a Metro app that cannot reach a root `node_modules`, for example) still gets the address column, the copy button, its hint and the notice.
+- **Without `cuer`.** `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` (props `WalletAddressCoreProps`). They import neither `cuer` nor, on native, `react-native-svg`, so a host that does not install them (a Metro app that cannot reach a root `node_modules`, for example) still gets the address column, the copy button, its hint and the notice.
+- **HIG's own code (Unreleased).** On web the core entry's `qr` is optional: left out or `null`, it draws [`QRCode`](#qrcode) of `qrValue` (the address by default) with `arena` in the centre, with no tile and no quiet zone and in the component's text colour (`currentColor`), as the Cuer code is drawn. It takes `qrValue` and `arena` like the `wallet-address` entry, and the modules are the ones Cuer draws. On native the core entry must not load `react-native-svg`, so `qr` stays required there: pass `<QRCode value={address} size={size} quietZone={0} background='none' decorative/>` from `@bloxwap/hig/native/qr-code`, which needs `react-native-svg` and nothing else. The `wallet-address` entries are unchanged and still draw with `cuer`.
 - **Notice.** `announce={false}` raises no “Address copied” after a copy: no toast or status text on web and no notice on native. Use it when the host confirms the copy with its own toast, so a screen reader does not hear it twice.
 - **Press decoration (web).** The copy button draws the `HIGProvider pressDecoration` layer (`kind: 'row'`), so a host haptic reaches it like the other pressable rows.
 
@@ -956,6 +958,17 @@ import {WalletAddress} from '@bloxwap/hig/react/wallet-address';
 
 <WalletAddress address={account.address} onCopy={() => navigator.clipboard.writeText(account.address)}/>
 <WalletAddress address={solanaAddress} qrValue={`solana:${solanaAddress}`} arena='/sol.png' size={160}/>
+```
+
+```tsx
+// No QR package: HIG's own code on web, and the same code passed as `qr` on native.
+import {WalletAddress} from '@bloxwap/hig/react/wallet-address-core';
+<WalletAddress address={account.address} onCopy={copy}/>
+
+import {WalletAddress} from '@bloxwap/hig/native/wallet-address-core';
+import {QRCode} from '@bloxwap/hig/native/qr-code';
+<WalletAddress address={account.address} onCopy={copy}
+  qr={<QRCode value={account.address} quietZone={0} background='none' decorative/>}/>
 ```
 
 Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
@@ -983,6 +996,30 @@ Web tables keep a visible caption and ordinary headers by default. Set `captionH
 ```
 
 The `state` slot is content for one cell spanning all columns; it can contain an empty explanation, loading skeleton, or error and retry UI. Pass content rather than `tr`/`td` elements. Existing data rows remain visible. Without a custom state, `loading` exposes the provider's `loading` message and `aria-busy`; an empty, idle table shows `noRows`. `state={null}` suppresses that fallback. Give custom errors an alert role and custom loading content a status role when an announcement is appropriate. `rowProps` cannot replace the row's native role or HIG's cells with `children`/HTML. Row callbacks do not add a selection keyboard model; use native controls inside cells for actions.
+
+### QRCode
+
+`QRCode` draws a QR code in the [Cuer](https://cuer.dev) style: a round dot for every dark module, rounded finder patterns in three corners, and an optional arena in the centre. HIG encodes the value itself, so the entry needs no QR package: `@bloxwap/hig/react/qr-code` has no peer beyond React, and `@bloxwap/hig/native/qr-code` needs only `react-native-svg`. The props are the same on both platforms.
+
+```tsx
+import {QRCode} from '@bloxwap/hig/react/qr-code';
+
+<QRCode value={account.address}/>
+<QRCode value={`solana:${address}?amount=1`} arena='/sol.png' size={220} label='Deposit address QR code'/>
+<QRCode value={inviteLink} color='black' background='white'/>
+```
+
+- **Value.** `value` is any text: an address, a payment URI, a link. HIG picks the densest packing the whole value fits (digits, then the 45-character upper-case alphabet, then UTF-8 bytes) and the smallest symbol that holds it, from 21 to 177 modules a side. A value no QR code can hold (more than 2,953 bytes at low error correction, 1,273 at high) draws an empty square of `size` that is hidden from assistive technology; nothing throws while rendering.
+- **Size.** `size` is the edge of the square, quiet zone included: CSS pixels on web, dp on native, default 196. The drawing is in module units, so a new size encodes nothing. On web `size` sets `--hig-qr-code-size`, which the stylesheet reads as the element's width (the height follows, and the element never exceeds its container), so host CSS may resize it by setting `width` on the element: the drawing and the arena's box scale with it.
+- **Arena.** `arena` is drawn over the centre: an image URL (cropped to cover its box, with a one-module corner radius), or a node such as a token mark, centred in the arena's box at its own size in CSS pixels or dp and clipped to the box. The centre square is cleared of modules: a quarter of the side, made odd so it is centred on the centre module, with the arena half a module inside it. Cuer aligns its arena to the module grid half a module off centre; HIG centres it. Keep the mark inside the box: anything drawn outside it would cover modules.
+- **Error correction.** `errorCorrection` is `'low'`, `'medium'`, `'quartile'` or `'high'`. Left out, a code with an arena uses `high`, because the arena covers part of it, and a code without one uses `medium`. A level the host names is used as given, except that under an arena `low` and `medium` are raised to `quartile`: with the centre covered, codes at `quartile` and `high` decoded in every case tested, while some at `medium` and most at `low` did not.
+- **Colour.** The modules take the `text` role and the tile behind them the `background` role: `var(--hig-text)` and `var(--hig-background)` on web, the provider's colour table on native, so both follow Display P3 where the provider paints it. `color` and `background` override them with any colour the platform accepts. `background='none'` draws no tile, for a code that sits on the host's own surface. HIG's theme is light text on a dark page, so the default is a light code on a dark tile. Current phone cameras generally read a reversed code; some older or dedicated scanners read only dark on light, so pass `color='black' background='white'` (or the host's own pair) where any scanner must read the code. Keep an override pair as far apart as the roles are: HIG does not check the contrast of host colours.
+- **Quiet zone.** `quietZone` is the clear margin kept on every side, in modules, inside `size`. The default is 4, the margin the QR standard asks for; the tile covers it and its corners are rounded by half of it. Pass `0` only where the host keeps that margin itself, as `WalletAddress` does with its padding.
+- **Accessibility.** The code is one image named by the built-in “QR code” message (`qrCode`), or by `label`. `decorative` hides it, for a host that names the code on an element of its own, as `WalletAddress` does. A QR code carries no text of its own: put the address or link beside it as text that can be read, selected and copied. Nothing animates, so reduced motion changes nothing; the code is never mirrored in a right-to-left layout, and no text is drawn, so large text changes nothing.
+- **Performance.** The whole code is one path in one SVG: the dots and the three finder patterns (each a ring written as an outline with a hole, around a core). The arena is one more element over it. The value is encoded once per `value`, `errorCorrection` and arena, and the path is kept between renders; a new `size`, colour or quiet zone, or a parent render, recomputes nothing. Encoding a wallet address measured about 0.25 ms in Node on a development laptop; it has not been timed on a phone.
+- **Platforms.** Both draw a square that holds the SVG, with the arena as a box over it. Web's square is a `span` with `role="img"` and the class `hig-qr-code`; it accepts HTML attributes (`className`, `style`, `id`, `data-*`), the arena box is `span.hig-qr-code-arena` placed in percentages of the square, and an image arena is an `img`. The arena is not an SVG `foreignObject`: WebKit paints positioned, transformed or translucent `foreignObject` content at the SVG's corner, over a finder pattern, which made such a code unreadable in Safari. Native's square is a `View` with `accessibilityRole="image"`; it takes `testID` (also the prefix of `-code` for the SVG and `-arena` for the arena) and a view `style`. Web needs the HIG stylesheet (`@bloxwap/hig/react/css`) for the square's size and the arena's position.
+- **Shared model.** `@bloxwap/hig/contracts/qr` is the encoder and the geometry both renderers use: `encodeQR(value, {errorCorrection, version, mask, mode})` returns the modules, `qrGeometry(matrix, {arena})` the path and the cleared square, and `qrFrame(geometry, edge, quietZone)` the view box and the arena's box. It imports nothing, so a host can draw the same code elsewhere, on a server for example. The encoder covers versions 1 to 40 at all four levels and picks the mask as Cuer's encoder does, so the modules are the ones Cuer draws for the same value and level.
+- **Limits.** One segment in one mode a code: no Kanji mode, no ECI header (bytes are UTF-8, which phone scanners assume), no structured append and no Micro QR. The look is fixed; there are no module-shape options.
 
 ### MarketRow
 
@@ -1106,7 +1143,7 @@ Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden pa
 
 ## Validation and citation
 
-See `tests/animated-number-model.test.ts`, `tests/animated-number.dom.test.tsx`, `tests/data.dom.test.tsx`, `tests/native/animated-number.test.cjs`, `tests/native/readout-styles.test.cjs`, and `scripts/pro-data-browser-smoke.mjs`, plus consumer fixtures and milestone evidence. Chromium/WebKit checks cover real per-place motion, interrupted updates, Arabic RTL digits, canonical final output and reduced motion. Android RN 0.83 and iOS RN 0.88 simulator matrices in `evidence/native-number-flow/` verify localized final labels, rapid bursts, large text and static fallbacks. iOS Hermes did not apply `nu-arab` to an English locale tag in the runtime check, so localized reel coverage uses `ar-EG` in LTR instead. VoiceOver/TalkBack speech, physical devices, animation smoothness and exhaustive visual bidi review remain unclaimed. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/qr-model.test.ts`, `tests/qr-code.dom.test.tsx`, `tests/native/qr-code.test.cjs`, `tests/animated-number-model.test.ts`, `tests/animated-number.dom.test.tsx`, `tests/data.dom.test.tsx`, `tests/native/animated-number.test.cjs`, `tests/native/readout-styles.test.cjs`, and `scripts/pro-data-browser-smoke.mjs`, plus consumer fixtures and milestone evidence. Chromium/WebKit checks cover real per-place motion, interrupted updates, Arabic RTL digits, canonical final output and reduced motion. Android RN 0.83 and iOS RN 0.88 simulator matrices in `evidence/native-number-flow/` verify localized final labels, rapid bursts, large text and static fallbacks. iOS Hermes did not apply `nu-arab` to an English locale tag in the runtime check, so localized reel coverage uses `ar-EG` in LTR instead. `QRCode`'s modules are compared with Cuer's encoder for every version, level and mask and decoded by a software reader as drawn (round dots, with and without the arena); the web renderer's SVG is rasterised and decoded in `tests/qr-code.dom.test.tsx`, and `scripts/qr-code-browser-smoke.mjs` decodes screenshots of the web renderer and of the native renderer on react-native-web in Chromium and WebKit, left to right and right to left, with an arena node that is positioned, translucent and rotated. It has not been drawn on iOS or Android, and not scanned from a screen with a phone or a dedicated scanner. VoiceOver/TalkBack speech, physical devices, animation smoothness and exhaustive visual bidi review remain unclaimed. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 ## Optional number motion
 
@@ -1116,11 +1153,79 @@ Number motion is optional for a readout on its own and required inside the swap 
 
 The optional `trend` prop controls directional digit motion: `1` always moves upward, `-1` always moves downward, and `0` follows each changed digit’s own increase or decrease. A callback receives `(previousValue, newValue)` and returns one of those three values. When omitted, a finite numeric increase or decrease supplies the direction. This is a presentation hint, not a price signal or a replacement for an explicit semantic tone.
 
-Updates are latest-value-wins: a newer value supersedes pending motion and settles on the newest final reading, including during rapid updates. Both platforms expose one accessible final reading rather than separate characters, and neither adds a live region or announces every tick. Pending visual motion is canceled on replacement and unmount.
+Updates are latest-value-wins: a newer value supersedes pending motion and settles on the newest final reading, including during rapid updates. Both platforms expose one accessible final reading rather than separate characters, and neither adds a live region or announces every tick. Pending visual motion is canceled on replacement and unmount. (A flowing figure, below, adds the newer value to the motion in flight instead of cancelling it, and lands on the same final reading.)
 
 Reduced motion and unknown/non-finite values use the static final reading. A platform that cannot safely measure or lay out individual places also uses the static result. Opaque `formattedValue` remains static unless `animateFormatted` is set. Unsafe mixed-bidi tokenization and unsupported native text layouts may likewise fall back to the intact static reading; this is not a claim of physical-device or RTL certification.
 
 The native animated entry uses the optional Reanimated and Worklets peers. Install SDK-compatible versions when using that entry; the ordinary native `data` entry and static readouts import no animation engine. Example: `import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number'` (or `hig-native/animated-number`), then `<AnimatedNumberReadout value={price} label="Price" trend={1} prefix="≈ " options={{style:'currency',currency:'USD'}} />`. The gallery manifest contains runnable examples for both renderers.
+
+## NumberFlow
+
+`NumberFlow` is `AnimatedNumberReadout` drawn with NumberFlow's motion: the same component and the same props under the name the product already uses, exported beside it from `@bloxwap/hig/react/animated-number` and `@bloxwap/hig/native/animated-number`. The two names differ in one default. `NumberFlow` flows; `AnimatedNumberReadout` keeps the short slide the blocks use. `motion="flow"` or `motion="slide"` chooses either one explicitly. Use `NumberFlow` for a figure a person watches change: a price, a balance, a countdown.
+
+```tsx
+import {NumberFlow, NumberFlowGroup} from '@bloxwap/hig/react/animated-number'; // or @bloxwap/hig/native/animated-number
+
+<NumberFlow value={price} label="Mark price" options={{style: 'currency', currency: 'USD'}} />
+<NumberFlow value={seconds % 60} trend={-1} digits={{1: {max: 5}}} options={{minimumIntegerDigits: 2}} />
+```
+
+What flowing means, on both platforms:
+
+- **Digits roll through the values between.** A place going from 2 to 7 passes 3, 4, 5 and 6. With a `trend` every place turns that way and wraps (9 to 0 going up is one step); with `trend={0}` each place takes its own short way. `digits` limits a place (`{1:{max:5}}` makes the tens of a seconds counter wrap 5 to 0), and `continuous` turns the places below the highest changed one once all the way round so the figure reads as counting.
+- **A new value joins the motion in flight.** Each change adds its own turn to the turns still running instead of cancelling them, so a figure that updates faster than it settles keeps moving at speed and still lands on the latest value.
+- **NumberFlow's timing.** Movement takes 900 ms on NumberFlow's settle (`'number-flow'`) and fades take 450 ms ease-out. `duration` sets the movement and makes fades half of it; `spinTiming`, `transformTiming` and `opacityTiming` set each part as `{duration, easing}`. `easing` is `'number-flow'`, `'standard'` (HIG's), `'linear'`, `'ease'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'` or four bezier control points. No part runs longer than 3000 ms. The arithmetic for all of this is one module, `@bloxwap/hig/contracts/number-flow`, which both renderers call.
+- **`animated={false}`** draws every new value at once, as reduced motion does. Use it for a typed echo and until the first real value arrives. It works for the sliding readout too.
+- **One reading.** Assistive technology gets the final formatted reading as one static text, with `label` in front when given. The moving copy is hidden from it and nothing is announced per change. Reduced motion (the provider's `reducedMotion`, else the system setting), an unknown value and a change of locale or format all draw the new reading at once and the next value moves from it; so does a hidden page on web.
+
+Platform differences:
+
+| | Web | Native |
+| --- | --- | --- |
+| A figure gains or loses a place | Every part slides to its new position (first, last, invert, play), the new place fades in, a copy of the old one fades out, and the digits are clipped at their moving edge so a place passes under the currency sign instead of over it. | The figure changes width at once. A new place rolls up from zero as it fades in; a place that left is removed at once. |
+| `NumberFlowGroup` | Figures inside it slide together when one of them changes width. Text between them is not moved; put a unit in `suffix` to move it. | Draws its children and nothing else. |
+| At rest | Each part is its own inline box and the figure takes the line height, baseline and (in a monospaced or tabular face) the width the plain reading does; in a proportional face the parts lose the kerning between them, as on native. Nothing is mounted for motion until a value changes. | One glyph per place. A place mounts its strip (eleven glyphs) the first time it turns; the sliding readout mounts twenty glyphs per place up front. |
+| While moving | Additive Web Animations on `transform` and `opacity` (and `clip-path` while the width changes), started in the commit that draws the new value: positions are read once before it and once after it, and nothing is read again. No script, style recalculation or layout per frame, and no React render when it lands. A reel starts and lands on the digit's own pixels, in WebKit too. | One Reanimated animation per turning place on the UI thread, changing `transform` (and `opacity` for a new place) only. The frame callback stops when the last turn lands. |
+| Right to left | The number is drawn left to right inside a right-to-left page, as digits are in every script, with `prefix` and `suffix` on the page's sides. A number that itself contains right-to-left letters or bidi controls (Arabic currency formats, and negative numbers in `ar-EG`) slides instead, so a figure that crosses zero there changes from one motion to the other. | As for the sliding readout: a right-to-left provider or text draws the static reading. |
+| Large text | Sizes with the surrounding font. | Reels are measured at the current font scale and re-measured when it changes; `maxFontSizeMultiplier` caps it. |
+| A limited place given a digit past its limit | The turn that reaches or leaves that digit goes round all ten glyphs; the place takes its short reel again on the next turn. | The same, and the reel always shows the digit the reading has. |
+| Web only | `className` on the root, `willChange` (keeps moving parts on their own layers for a figure that ticks many times a second), and `--hig-number-flow-mask-height` (the fading band above and below a rolling digit, default `0.15em`; `0` cuts hard). | `willChange` is accepted and does nothing. `style`, `tone`, `testID` and `maxFontSizeMultiplier` are native only. |
+| Limits | A browser without additive animations (`composite: 'add'`, in every engine since 2023) draws each value at once; one without `linear()` easing rolls on HIG's standard curve. In a proportional face a digit wider than the place it passes through is cut at the place's sides. Slides are measured in screen pixels, so inside an ancestor scaled by a CSS transform they start short or long by that scale, as in the reference. | Unverified on a device (see below). |
+
+Validation: `tests/number-flow-model.test.ts` (the shared arithmetic and the web model), `tests/number-flow.dom.test.tsx`, `tests/native/number-flow.test.cjs`, and `scripts/number-flow-browser-smoke.mjs`, which runs the web motion in Chromium and WebKit: the flowing figure is laid out as the plain reading is, digits roll through the values between, a value arriving in flight does not restart the roll, a reel's first and last glyph sit within half a pixel of the digit React drew, a figure that changes width slides and clips, everything is removed when it lands, reduced motion moves nothing, and Arabic digits roll in a right-to-left page. No device or simulator run covers the native motion yet: its arithmetic, and what it mounts and starts, are tested against a stand-in for Reanimated that runs the real animation objects, and smoothness on a device is unclaimed.
+
+### Migrating from the product's NumberFlow
+
+Web call sites of the vendored `@number-flow/react`:
+
+| Product prop | HIG |
+| --- | --- |
+| `value` | `value`. `null`, `undefined`, `NaN` and infinities draw the dash; coerce to `0` first where the product wants a zero. |
+| `format` | `options` (any `Intl.NumberFormatOptions`, scientific notation included). |
+| `locales` | The provider: `HIGProvider locale`, or `numberFormat.locale` for numbers alone. For an echo pinned to one locale whatever the app language, format the text yourself and pass `formattedValue` with `animateFormatted`. |
+| `prefix`, `suffix`, `trend`, `digits`, `animated`, `willChange` | The same names and meanings. |
+| `plugins={[continuous]}` | `continuous`. |
+| `spinTiming`, `transformTiming`, `opacityTiming` | The same names. `easing` is a named curve or control points, not a CSS string: `'ease-out'` stays, `cubic-bezier(0.22, 1, 0.36, 1)` becomes `[0.22, 1, 0.36, 1]` or `'standard'`, and NumberFlow's default becomes `'number-flow'` (or is left out). |
+| `className` | `className`. `--number-flow-mask-height` becomes `--hig-number-flow-mask-height`. There is no shadow root, so `::part()` rules have nothing to match and the padding workaround that used them is not needed. |
+| `NumberFlowGroup` | `NumberFlowGroup`. |
+| `isolate`, `respectMotionPreference`, `onAnimationsStart`, `onAnimationsFinish`, `nonce`, the element ref, `data-*` and other HTML attributes | Not provided. Reduced motion always follows the provider. Wrap the figure for a test id. |
+| `role="img"` with the value as its label | One visually hidden reading; `label` names it. |
+
+Native call sites of `FlowUsd`, `FlowNumber`, `FlowPercent` and `FlowFormatted`:
+
+| Product prop | HIG |
+| --- | --- |
+| `FlowUsd` `digits`, `signed`, `compact` | `options={{style:'currency', currency:'USD', minimumFractionDigits, maximumFractionDigits, signDisplay, notation}}`. |
+| `FlowPercent` | `options={{style:'percent', minimumFractionDigits, maximumFractionDigits, signDisplay}}` and `value / 100`: the port takes percent points, `Intl` a fraction. |
+| `FlowNumber` `suffix` | `suffix`. |
+| `FlowFormatted` `text`, `value` | `value` with `formattedValue={text}` and `animateFormatted`. |
+| `animate` | `animated`. |
+| `duration` | `duration` (900 by default, as before; `0` draws at once). |
+| `style` | `style` takes typography only (`fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, `textAlign`); colour is `tone`. There is no `className`. |
+| `textProps.maxFontSizeMultiplier`, `allowFontScaling={false}` | `maxFontSizeMultiplier` (`1` for no scaling). |
+| `textProps.accessibilityLabel` | `label`, read as `label: reading`. |
+| `textProps.accessibilityLiveRegion`, `pulse` | Not provided: live figures stay silent and do not flash. |
+| `FlowLocaleContext` | The provider's `locale` and `numberFormat`, or `formattedValue` with `animateFormatted` for text the host localizes. |
 
 
 ## Navigation
@@ -1464,9 +1569,9 @@ Source: docs/components/status.md
 
 Visible progress, notifications, and recoverable states that keep people informed.
 
-Includes `Badge`, `Alert`, `Callout`, `Toast`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, and `StatusIndicator`.
+Includes `Badge`, `Alert`, `Callout`, `Toast`, `Toaster` with `toast()`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, `StatusIndicator`, and `Confetti`.
 
-Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import. `Confetti` has its own entries, `@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti`; see [Confetti](#confetti).
 
 ## API and anatomy
 
@@ -1475,9 +1580,11 @@ Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/sta
 | `Badge` | Quiet label; web adds explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`), standard span props and a forwarded span ref. The neutral default retains its appearance. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
 | `Alert` | `title`, `severity`, and an optional recovery `action`. Severity tints the fill and colours the title from a token role on web and native, with no stroke or glow: the surface mixed with 10% of the tone, at the Surface radius. `default` → neutral (6% of `text`, title in `text`), info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. `announce` (default `true`) speaks the alert when it appears or its words change: web gives it `role='status'` (`'alert'` for `error`), Android a live region, and iOS an explicit announcement. Pass `announce={false}` for an alert that is part of the screen from the start, such as a standing warning. On native a string or number child is drawn in a HIG `Text`, so a plain sentence needs no wrapper. |
 | `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own callout colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
-| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Each notice is one capsule row with no stroke: a severity symbol on the leading edge, the message, the optional action, and a close symbol on the trailing edge. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides the Dismiss wording inside the close button's accessible name; the button draws a symbol, not text. For transient notices on web, `toast()` and `Toaster` from `@bloxwap/hig/react/toast` raise the same capsule through Sonner. |
+| `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Each notice is one capsule row with no stroke: a severity symbol on the leading edge, the message, the optional action, and a close symbol on the trailing edge. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides the Dismiss wording inside the close button's accessible name; the button draws a symbol, not text. The capsule itself is `ToastNotice` on both platforms. For transient notices use `Toaster` and `toast()`, below. |
+| `Toaster`, `toast()` | The transient host, from `@bloxwap/hig/react/toast` and `@bloxwap/hig/native/toast`: mount `Toaster` once, then call `toast(message, options)` from anywhere. Same names, options and stack on both platforms; see [Transient toasts](#transient-toasts-toaster-and-toast). |
 | `Progress` | `label`, `value`, and `max`. Native draws the label with a ` value/max` suffix (`…` while indeterminate); `hideValue` leaves the suffix out for a host that shows the figure itself, and the value is still read. |
 | `EmptyState` | `title`, optional `description`, optional `action`, and decorative `illustration`. A centred stack: symbol, title, description, action. `illustration` replaces the default symbol; `null` omits it. |
+| `Avatar` | `name`, an optional image (`src` on web, `source` on native) and, when the host asks for it, a face generated from a `seed`. `variant`, `size`, `colors`, `faceColor`, `square` and `decorative` are the same on web and native. Its own entries are `@bloxwap/hig/react/avatar` and `@bloxwap/hig/native/avatar`. See [Avatar](#avatar). |
 
 Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy, centred. Its `description` is optional; omitted or empty text leaves no blank description node. Decorative `illustration` content replaces the default symbol above the heading (`null` omits it); HIG hides the whole illustration subtree from VoiceOver/TalkBack navigation while keeping the heading and action accessible. The host controls the illustration's dimensions and spacing. Root `ViewProps`, including `style`, `testID` and layout events, pass to the Surface. `titleStyle` and `descriptionStyle` reach the actual text nodes; `maxFontSizeMultiplier` caps both, or inherits the provider policy when omitted. Text keeps the provider palette and heading semantics unless the host explicitly styles it.
 
@@ -1494,19 +1601,238 @@ Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy
 
 The mark and clear-filter action remain host-owned. `tests/native/empty-state.test.cjs` verifies default anatomy, omitted descriptions, decorative accessibility metadata, real text/root props and accepted action delivery; these wiring checks are not physical-device accessibility certification.
 
+### Avatar
+
+A person or an account as a 40-unit disc. It shows the first of these that it has:
+
+1. The image, when one is given and it loads.
+2. A generated face, when the host asks for one.
+3. The first two letters of `name` on the well fill.
+
+The generated face is the "beam" face of [Boring Avatars](https://boringavatars.com): a backdrop, a tilted shape, two eyes and a mouth, all decided by a hash of the seed. The same seed and the same colours draw the same face on web and native, on every device, with nothing stored. It is off until the host asks for it, with `variant='beam'` or by passing a `seed`. An `Avatar` with neither looks as it always did.
+
+Import `Avatar` from `@bloxwap/hig/react/avatar` or `@bloxwap/hig/native/avatar`. The native entry draws the face with `react-native-svg`, an optional peer that this entry needs. The status entries keep exporting `Avatar` for the imports that predate these: `@bloxwap/hig/react/status` exports the same component, and `@bloxwap/hig/native/status` exports it without the generated face (no `seed`, `variant`, `colors` or `faceColor`), so that entry still loads no SVG peer.
+
+| Prop | Behaviour |
+| --- | --- |
+| `name` | Required. The accessible name, the letters of the initials, and the seed when `seed` is left out. |
+| `src` (web), `source` (native) | An image to show instead: a URL on web, a React Native image source on native. A photo that is not square is cropped to fill the box. If it fails to load, or it names no image (an empty `src`; on native `{uri: undefined}`, an empty address or an empty list), the face or the initials show in its place. |
+| `seed` | What the face is drawn from, such as a wallet address. Passing it selects the generated face. It is case-sensitive, so pass an address in one casing everywhere. |
+| `variant` | `'initials'` or `'beam'`: what shows without an image. Defaults to `'initials'`, or to `'beam'` when `seed` is given. |
+| `size` | Width and height, in CSS pixels on web and dp on native. Defaults to 40. With `size`, the initials are drawn at 40% of it. A size that is not a finite number of zero or more (`NaN`, a negative, `Infinity`) is ignored. |
+| `colors` | The palette of the face. Defaults to the `action`, `info`, `negative` and `warning` token roles, in that order (exported as `avatarColorRoles`). |
+| `faceColor` | One colour for the eyes and mouth of every face. Left out, each face takes the `background` role on a bright colour and the `text` role on a deep one. |
+| `square` | A square with no rounded corners instead of a disc, for a host that clips the avatar to its own shape. |
+| `decorative` | Hides the avatar from assistive technology, for an avatar beside the name it stands for. |
+
+```tsx
+// A wallet: the address draws the face and the short address names it.
+<Avatar name={shortAddress(address)} seed={address} size={20} />
+// Beside the visible name, so it is not read twice.
+<Avatar name={trader.name} seed={trader.address} decorative />
+// A photo when there is one; the face when there is none or it fails to load.
+<Avatar name={name} seed={address} src={photoUrl} size={64} />   // native: source={{ uri: photoUrl }}
+```
+
+**Colour.** The default palette is token roles, so it is Display P3 wherever HIG is. Web paints the `--hig-action`, `--hig-info`, `--hig-negative` and `--hig-warning` variables, which the tokens stylesheet defines in Display P3 where the browser supports it. Native paints the provider's colour table: the Display P3 table on an iOS host with `HIGProvider colorSpace='display-p3'`, and sRGB everywhere else. `colors` replaces the palette with the host's own: any CSS colour on web, `color(display-p3 …)` included, and any React Native colour on native, where a hex value is painted in the host's colour space like every other HIG colour. A seed picks its colours by position, so the number of colours and their order are part of a face. Change the palette and the same people get other colours; the shapes stay. For a signed-out placeholder, pass one fixed seed and a grey palette.
+
+**Moving from boring-avatars.** For the same seed and the same `colors`, the shapes and the colour of each shape are those of boring-avatars 2.0.4 with `variant="beam"`, so people keep their faces. `<Avatar name={address} variant="beam" size={20} colors={palette} />` becomes `<Avatar name={label} seed={address} size={20} colors={palette} />`: boring-avatars' `name` is HIG's `seed`. These differ:
+
+- The eyes and mouth are black or white in boring-avatars. HIG draws the `background` or the `text` role in their place, chosen by the same brightness rule, and `faceColor` sets one ink for every face.
+- boring-avatars reads only six-digit hex colours when it chooses that ink and draws white for anything else. HIG also reads short hex, `rgb()` and `color()`, and draws the dark ink on a colour it cannot read, such as a CSS variable.
+- The disc is the box's own rounding, not an SVG mask, so the drawing has no mask and no element id. `square` gives the unrounded square.
+- `size` is a number. Only the beam face is drawn; the other boring-avatars variants are not.
+
+The arithmetic is in `@bloxwap/hig/contracts/avatar`, with no React in it: `beamAvatar(seed, colors, inks?)` returns the colours, the two transforms, the mouth path and the eye positions in a 36-unit square, and `beamHash`, `beamInk`, `beamSize` and `beamEye` are exported beside it. The same entry holds what both renderers share outside the face: `avatarColorRoles` (the default palette roles), `avatarSide` (which sizes are drawn) and `avatarInitials` (the letters, never half of a character such as an emoji). A host that draws the same face somewhere else, such as on a canvas or in a share image, calls it directly.
+
+## Transient toasts: `Toaster` and `toast()`
+
+One API raises a notice that leaves by itself, on web and on native. Mount `Toaster` once; call `toast()` from anywhere, in or out of a component. Both draw the `ToastNotice` capsule and stack it the way [Sonner](https://sonner.emilkowal.ski/) does: the newest in front, three visible, the older ones collapsed behind it.
+
+```tsx
+// Web: Sonner is the engine (optional peer `sonner ^2.0.0`).
+import {Toaster, toast, dismissToast} from '@bloxwap/hig/react/toast';
+
+<HIGProvider>
+  <App/>
+  <Toaster position="top-center"/>
+</HIGProvider>
+```
+
+```tsx
+// Native: HIG's own host on Reanimated and Gesture Handler. Mount it last, so it draws over the screens.
+import {Toaster, toast, dismissToast} from '@bloxwap/hig/native/toast';
+
+<GestureHandlerRootView style={{flex: 1}}>
+  <SafeAreaProvider>
+    <HIGProvider>
+      <App/>
+      <Toaster position="top-center"/>
+    </HIGProvider>
+  </SafeAreaProvider>
+</GestureHandlerRootView>
+```
+
+```tsx
+// Either platform.
+toast('Address copied');
+toast.success('Withdrawal sent', {description: 'It arrives in about a minute.'});
+toast.error('Transfer failed', {
+  id: 'transfer',                 // raising 'transfer' again replaces this notice where it stands
+  duration: Infinity,             // stays until dismissed
+  action: <Button intent="ghost" onPress={retry}>Retry</Button>, // onClick on web
+  onDismiss: () => log('closed by the person or by dismissToast'),
+});
+dismissToast('transfer');         // or dismissToast() for every notice
+```
+
+| `toast(message, options)` | Behavior |
+| --- | --- |
+| `severity` | `info` (default), `success`, `warning` or `error`. Picks the symbol and its token role. `toast.success`, `toast.error`, `toast.warning` and `toast.info` set it. |
+| `description` | A second line under the message, in regular weight. With one the capsule keeps a 22-point corner radius instead of a full pill. |
+| `action` | A control drawn before the close control, such as a `Button`. It does not dismiss by itself; call `dismissToast(id)` in its handler. |
+| `duration` | Milliseconds before the notice leaves; the Toaster's `duration` (4000) when omitted. `Infinity` keeps it. Only a positive number is a time: zero, a negative number or `NaN` takes the default, and a time longer than a timer can count (2^31 − 1 ms, about 24 days) keeps the notice instead of ending it at once. |
+| `id` | Raising a notice with the id of one that is showing replaces it in place and starts its time over. `toast()` returns the id. An empty string is not an id: the notice gets the next number. |
+| `dismissName` | Accessible name of the close control. Defaults to the provider's `dismissNotice` wording around the message, so it is translated. |
+| `onDismiss`, `onAutoClose` | Called once: `onDismiss` when the close control, a swipe or `dismissToast` ends the notice, `onAutoClose` when its time runs out. |
+
+| `Toaster` prop | Behavior |
+| --- | --- |
+| `position` | `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center` (default) or `bottom-right`. Notices enter from that edge and leave towards it. `left` and `right` are the physical sides on both platforms, as in Sonner: under right-to-left the capsule's content mirrors and the stack stays where it is. To mirror the stack, choose the position by direction. |
+| `expand` | Lists the visible notices one after another instead of collapsing them behind the front. Default `false`. |
+| `visibleToasts`, `gap`, `duration` | 3 notices, 14 points, 4000ms. At least one notice is always shown. |
+| `offset` | Distance from the screen edges, added to the safe-area inset: one number for every edge, or `{top, right, bottom, left}` with the other edges keeping the default (24 points; 16 under a 600-point window). `left` and `right` are physical, like `position`. `offset` places the stack at every window width on both platforms; on web, Sonner's `mobileOffset` replaces it under 600px when it is given. The app's top placement is `offset={{top: nativeMetrics.safeArea.toastOffset}}`; see [safe area](https://bloxwap.github.io/hig/docs/guides/foundations/safe-area/). |
+| `swipeDirections` | `top`, `right`, `bottom`, `left`. Default: towards the edges the stack sits against, so `bottom-center` swipes down and `top-right` up or right. |
+
+The web `Toaster` also takes every other Sonner prop. The native one takes the props above and `testID`.
+
+### How the native host moves
+
+- **Nothing is laid out per frame.** A notice is rendered when it is raised, replaced or dismissed, and never while it moves. Entering, leaving, restacking and the swipe change only `transform` and `opacity`, in Reanimated worklets on the UI thread. Each notice reads its place from one shared stack, so an arrival, a departure or a notice that changed height moves every notice in the same frame. With no notice showing the host renders nothing and runs no timer.
+- **Stack.** 400ms on the CSS `ease` curve, Sonner's values. A new notice joins the stack once it has been measured, then slides in from its own height while the others make room. Behind the front of a collapsed stack each notice is 5% smaller, one gap further out and drawn at the front's height with its content hidden, so only its edge shows. One notice past the visible ones stays mounted and transparent, so the notice that is pushed out fades where it is.
+- **Leaving.** 200ms on `ease-out`: the front goes back out by its own height while it fades, and the others close the gap in the same frame.
+- **Swipe.** The notice follows the finger 1:1 towards an allowed edge and resists the other way, never passing 20 points. A release 45 points out, or faster than 500 points per second that way, dismisses: the notice goes on by its own size and fades, in 200ms or less so it leaves at the finger's speed. Anything else, and any swipe the system takes away before the finger lifts, returns on a critically damped spring that carries the release velocity. The swipe is recognised after 8 points, so a press on the action or the close control stays a press.
+- **Time.** A finger on any notice holds every notice's time at once, and after 200ms expands the stack until it lifts, so a tap or a quick swipe does not stir the stack. The time also stops while the app is not in front. A notice behind the visible ones does not count down until it is shown. Only a notice that can be touched holds the time, so one that is pushed out of reach under the finger lets it run again.
+- **Reduced motion.** Nothing slides or scales: notices take their place at once and fade over 150ms, and a swipe out fades where it was released. The provider's `reducedMotion` decides, which follows the OS setting by default.
+- **Limits.** The store keeps 16 notices; past that the oldest timed ones are dropped, without `onDismiss` or `onAutoClose`. The last `Toaster` mounted draws. The host is an ordinary view, so a React Native `Modal` (the native `Dialog`, `Sheet`, `Menu` and `Select`) draws above it; a bottom stack does not move for the keyboard.
+
+### Where the platforms differ
+
+| | Web (Sonner) | Native |
+| --- | --- | --- |
+| Expanding a collapsed stack | Pointer over the stack, or a tap | A finger resting on a notice for 200ms; always expanded while a screen reader runs |
+| Time of a notice behind the visible ones | Runs | Waits until it is shown |
+| Fast swipe | Distance over the time since the pointer went down, above 0.11px/ms | Release velocity above 500 points/s, so a hold before the flick still dismisses |
+| Reduced motion | Cuts to the end state | Fades over 150ms |
+| Announcement | Sonner's polite live region for every severity | One announcement per burst: an error if there is one, otherwise the newest notice, the one in front. On iOS an error interrupts and anything else queues. Android's announcement cannot interrupt |
+| `offset` as a string | CSS, passed to Sonner | Not accepted |
+| Store limit | None | 16 notices |
+| `toast.loading`, `toast.promise` | Not wrapped; raise a persistent notice and replace it by `id` | Same |
+
+Severity colours come from the provider on both platforms: `--hig-info`, `--hig-positive`, `--hig-warning` and `--hig-negative` on web, which are Display P3 where the browser supports it, and the `useColors()` roles on native, which are the Display P3 table on an iOS host with `colorSpace="display-p3"`.
+
+The host emits no sound or haptic. Play the outcome's feedback where the notice is raised.
+
+## Confetti
+
+A burst of confetti for a result worth celebrating, such as a winning close. It is HIG's own on both platforms, with no third-party confetti package, and has its own entries: `@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti`. Both export the same two things: `confetti(options)`, which fires one burst and returns a promise that resolves when it has finished, and `Confetti`, the host mounted once. The options are those of [canvas-confetti](https://www.kirilv.com/canvas-confetti/), so a call written for it maps over.
+
+```tsx
+import {Confetti, confetti} from '@bloxwap/hig/react/confetti'; // native: '@bloxwap/hig/native/confetti'
+
+// Once, inside HIGProvider. On native this is the layer the pieces fly in: mount it last in the screen root.
+<Confetti />
+
+// From an event handler or an effect.
+await confetti({particleCount: 100, spread: 70, origin: {y: 0.7}});
+
+// Or declaratively: fires when `trigger` is truthy, on mount and on each change to another truthy value.
+<Confetti trigger={winCount} options={{particleCount: 100, spread: 70, origin: {y: 0.7}}} />
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `particleCount` | `50` | How many pieces the burst launches. |
+| `angle` | `90` | Launch direction in degrees: 90 is straight up, 0 towards the right edge, 180 towards the left. |
+| `spread` | `45` | How far, in degrees, pieces may stray from `angle` in total. |
+| `startVelocity` | `45` | Launch speed in pixels per tick. Each piece starts between half and one and a half times this. |
+| `decay` | `0.9` | The share of its launch speed a piece keeps each tick, from 0 to 1; above 1 a piece gains speed. |
+| `gravity` | `1` | Pull downwards: 1 falls at full speed, 0 floats, a negative value rises. |
+| `drift` | `0` | Sideways push in pixels per tick; positive is towards the right edge. |
+| `ticks` | `200` | How long the burst lasts, in ticks of 1/60 s (200 is about 3.3 seconds). Pieces fade out over it. |
+| `origin` | `{x: 0.5, y: 0.5}` | Where the burst starts, as a share of the viewport (web) or of the `Confetti` layer (native). |
+| `colors` | token roles | Colours dealt to the pieces in turn. See Colour below. |
+| `shapes` | `['square', 'circle']` | Shapes picked at random for each piece: `'square'`, `'circle'` or `'star'`. |
+| `scalar` | `1` | Scales every piece; below 0 reads as 0. |
+| `flat` | `false` | Pieces neither tumble nor wobble. |
+| `disableForReducedMotion` | `true` | Draws nothing when reduced motion is on. |
+| `zIndex` | `100` | Web only: stacking order of the canvas, read from the burst that creates it. |
+
+`Confetti` takes `trigger` and `options` (one burst, or an array fired together); native adds `style` and `testID` for the layer. `confetti.reset()` stops every burst at once and resolves their promises. `mirrorConfetti(options)` returns the same burst seen in a mirror.
+
+A number that is not finite reads as the default, and `startVelocity`, `gravity`, `drift`, `scalar` and `ticks` are kept within a million either way, so no input places a piece at infinity. Nothing caps `particleCount`.
+
+Several calls in a row make one celebration. A fireworks call written for canvas-confetti maps over call for call:
+
+```tsx
+const base = {origin: {y: 0.7}};
+confetti({...base, particleCount: 50, spread: 26, startVelocity: 55});
+confetti({...base, particleCount: 40, spread: 60});
+confetti({...base, particleCount: 70, spread: 100, decay: 0.91, scalar: 0.8});
+confetti({...base, particleCount: 20, spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2});
+confetti({...base, particleCount: 20, spread: 120, startVelocity: 45});
+```
+
+### Confetti colour
+
+Without `colors`, pieces take the provider's `action`, `info`, `down`, `warning` and `up` roles in turn, so a custom `primaryColor` or `marketColors` shows in the burst. On web these are read from the `--hig-*` variables at the host, which hold `color(display-p3 …)` values where the browser supports them, and the canvas itself is a Display P3 canvas on a screen that can show it; elsewhere both fall back to sRGB. On native they come from `useColors()`: the Display P3 table on an iOS host that paints P3 (`HIGProvider colorSpace='display-p3'`), sRGB otherwise, as for every native component.
+
+A colour passed in `colors` is painted as given. On web that is any CSS colour: a hex colour is sRGB and stays inside sRGB on a P3 screen, so pass `color(display-p3 …)` for a colour outside it. On native it is any React Native colour, read in the host's colour space.
+
+### Confetti motion and performance
+
+The flight is one set of pure functions in `@bloxwap/hig/contracts/confetti`, used by both platforms. It restates canvas-confetti's frame-by-frame update as a function of time, so a piece is where canvas-confetti puts it at every whole tick, and a burst takes the same time on a 60 Hz and a 120 Hz display and after a dropped frame.
+
+- Web: every burst shares one full-viewport canvas and one `requestAnimationFrame` loop. The canvas is created by the first burst, sized for the device pixel ratio, takes no pointer events, and is removed when the last piece has gone. Each piece is one small path, as in canvas-confetti; the opacity is set once a burst and the fill colour once for each of its colours, with no colour string built per piece. React renders nothing while a burst flies.
+- Native: React renders once when a burst starts and once when it ends. In between one Reanimated clock per burst runs on the UI thread, and each piece, a plain view, reads its transform and opacity from it. Nothing is laid out per frame. A burst of about 100 pieces is the intended size; larger bursts mount one view a piece. A star is that one moving view holding five triangles that never change, so it mounts six views.
+
+### Confetti accessibility and direction
+
+Confetti is decoration. The canvas (`aria-hidden`) and the native layer are hidden from assistive technology and take no pointer events or touches; show and announce the result itself with the content it belongs to. Under reduced motion (`HIGProvider reducedMotion`, else the system setting) a call draws nothing and resolves at once, unless it passes `disableForReducedMotion: false`. canvas-confetti defaults the other way.
+
+`HIGProvider` learns the system setting just after it mounts: in an effect on web, from an asynchronous question on native. A burst asked for in that moment, by a `trigger` that is truthy when `Confetti` mounts or by `confetti()` in a mount effect, is therefore held by the host until the provider can answer, and is then drawn or dropped like any other. On web the wait is one render and happens only where the system asks for reduced motion; on native it is the one question `Confetti` asks the system when it mounts. A held burst resolves without being drawn if the host unmounts or `confetti.reset()` is called first.
+
+Confetti is physical: `origin.x` 0 is the left edge and a positive `drift` goes right in both text directions, on both platforms. For a cannon that should fire from the leading edge, pass the options through `mirrorConfetti` when the direction is right-to-left. No text is drawn, so large text does not apply.
+
+### Confetti platform differences
+
+- Web needs no host: without a mounted `Confetti`, `confetti()` reads colours from the document root and reduced motion from the system. Native needs one: without it a call resolves and draws nothing.
+- The web canvas covers the viewport and sits in the document body. The native layer fills the parent of `Confetti`, and `origin` is a share of that layer.
+- Web draws canvas-confetti's shapes exactly: a square is a slanted, fluttering parallelogram. React Native cannot slant a view on Android, so native draws the rectangle with the same centre, area and long and short axes; circles are exact. A `'star'` is the same ten-point star on both: web fills its outline, and native, which has no paths without an SVG package, covers exactly that outline with five triangles made of view borders.
+- Before the native layer has been laid out, `origin` is a share of the window.
+- A burst left running when its web host unmounts finishes; on native it stops with the layer and its promise resolves.
+- The native entry needs the Reanimated and Worklets peers. The web entry needs no peer and no stylesheet.
+- Not supported: canvas-confetti's `useWorker`, `confetti.create`, `shapeFromPath` and `shapeFromText`.
+
+`tests/confetti-model.test.ts` checks the flight against canvas-confetti's update with a seeded random source, that the five triangles cover the star's outline and nothing else, and that extreme options still give finite places; `tests/confetti.dom.test.tsx` and `tests/native/confetti.test.cjs` check each renderer against stand-ins for the canvas and for Reanimated. `scripts/confetti-browser-smoke.mjs` runs the web renderer in headless Chromium and WebKit: one canvas over the viewport at the device pixel ratio, painted pixels in each default colour, a Display P3 canvas with the P3 green on a wide-gamut screen, the length of a burst, presses passing through, a resize in flight, reduced motion, `reset`, and a burst asked for as the page mounts, which adds no canvas under the system's reduced motion setting and one canvas of stars without it. In the browser gates the same script runs the native renderer through react-native-web and Reanimated's web implementation (the native fixture's Expo web export): one view a piece, the table's colours, transform and opacity only, presses passing through the layer, and the views removed at the end. Neither run is a device: the web renderer has not been watched on a display with a GPU, and the native renderer's look and frame rate on iOS and Android have not been observed, the border-built star included (it was looked at once through react-native-web, which the gate does not repeat). For a device run, `fixtures/native/confetti-check.tsx` (entry `fixtures/native/index-confetti.js`) fires bursts of 50 to 200 pieces, and one of stars, by button or deep link and logs UI-thread frame times as `[confetti-check]`.
+
 ## When to use and examples
 
-Do: keep critical failure inline with Retry; use toast for copied acknowledgement. Don’t: dismiss critical text on a timer or rely on audio for success.
+Do: keep critical failure inline with Retry; use toast for copied acknowledgement; give a toast that carries an action `duration: Infinity`, so it is still there when a screen reader or a slow reader gets to it; keep confetti for a rare, real win and show the result itself in content. Don’t: dismiss critical text on a timer, rely on audio for success, or let confetti be the only sign that something happened.
+
+Do: seed a generated `Avatar` with something that stays the same for a person, such as the wallet address, and use one palette across a product so a person has one face everywhere. Don’t: seed it with a display name that people can change, or treat the face as proof of who someone is; two seeds can draw the same face.
 
 ## States, interaction and accessibility
 
 Notifications deduplicate ids and preserve every message until explicit dismissal, including bursts larger than three. Host delivery queues may limit arrivals, but the renderer never silently removes an undismissed message. A single coalesced announcement reports each changed burst, prioritizing errors; unchanged rerenders do not repeat it. DOM and Expo web use one live region while every notification remains visible. Native Android uses explicit announcement delivery, and inline Android status uses live-region metadata; iOS announces changed inline content explicitly. Actual VoiceOver/TalkBack timing remains unobserved. Skeleton and spinner are static under candidate motion policy.
 
+`Avatar` is a named image: `role='img'` with `name` as its label on web (the image's `alt` when there is one), and an accessibility element with `accessibilityRole='image'` and `accessibilityLabel` on native, for the photo, the face and the initials alike. `decorative` removes it from the accessibility tree on both. The generated face is still: nothing animates, so reduced motion changes nothing. It is an identity picture, so it is not mirrored in right-to-left layouts. The initials are text. On native, without `size` they follow the system text size and the provider's `maxFontSizeMultiplier` as they always have, while the disc keeps its size; with `size` they are 40% of the box and keep that size at every system text size, like the letters in HIG's other fixed discs, so they stay inside it. On web they take the surrounding font size without `size` and 40% of the box in CSS pixels with it.
+
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
 ## Platform mapping and limits
 
-Toast is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. On native, messages use body-size semibold text and descriptions use a separate body-size line; neither truncates or disables text scaling. The stack scrolls within `maxHeight`, including nested host scroll views. A notice with `closable={false}` has no Dismiss action; host recovery actions remain available. Without `onDismiss`, notices have no Dismiss buttons. No notice expires automatically: remove it from the controlled `notices` array when its host lifetime ends; keep failures with recovery actions until explicitly resolved. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.
+`Toast` is an inline notification stack, no mandatory portal/timer backend. Host owns delivery ordering/persistence. `Toaster` is the transient host: Sonner on web and HIG's own on native, which needs `react-native-reanimated`, `react-native-gesture-handler` and `react-native-safe-area-context`. The native host's arithmetic, lifecycle and gesture wiring are tested, but it has not run on a device. On native, messages use body-size semibold text and descriptions use a separate body-size line; neither truncates or disables text scaling. The stack scrolls within `maxHeight`, including nested host scroll views. A notice with `closable={false}` has no Dismiss action; host recovery actions remain available. Without `onDismiss`, notices have no Dismiss buttons. No notice expires automatically: remove it from the controlled `notices` array when its host lifetime ends; keep failures with recovery actions until explicitly resolved. VoiceOver/TalkBack observations are pending, automated role/state tests are not device evidence.
 
 ```tsx
 // Native: compact notices with large-text scrolling and a persistent failure.
@@ -1520,9 +1846,11 @@ Toast is an inline notification stack, no mandatory portal/timer backend. Host o
 />
 ```
 
+`Avatar` takes `src` (a URL) on web and `source` (a React Native image source) on native; every other prop is the same. Web draws the face as inline SVG and native with `react-native-svg`, from one description, so the shapes are the same numbers on both. The face is drawn again only when its seed, colours, ink or (on native) size change: a parent or a provider that renders again with the same face computes nothing and writes nothing. Both platforms crop a photo that is not square to fill the box, and both show the fallback when the image fails. On web that includes an image that failed before a server-rendered page hydrated: when the component mounts, an image that is complete with no width is checked with `decode()`, and a broken one gives way to the fallback. One difference remains. The native face needs the `react-native-svg` peer, so it is in `@bloxwap/hig/native/avatar` only; `Avatar` from `@bloxwap/hig/native/status` draws the image or the initials. How the face and its Display P3 colours look in a browser, on a phone and through VoiceOver or TalkBack has not been observed, and neither has the check for an image that failed before hydration, which is tested against a stubbed image; the tests check the drawn values, roles and names.
+
 ## Validation and citation
 
-See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Transient toasts: `tests/toast-model.test.ts` (the shared arithmetic and the Sonner figures it mirrors), `tests/toast.dom.test.tsx` and `tests/native/toaster.test.cjs`. For `Avatar`: `tests/avatar-model.test.ts` holds the model to faces recorded from boring-avatars 2.0.4 (`tests/test-utils/boring-avatars-beam.json`, written by `tests/test-utils/record-boring-avatars.mjs`, which also compares 30,096 faces with that package when run against an install of it), and `tests/avatar.dom.test.tsx` and `tests/native/avatar.test.cjs` hold each renderer to the same recording and to the edge inputs (sizes that cannot be drawn, sources that name no image, an image that failed before hydration, a provider that renders again); the native file also renders the status entry with `react-native-svg` absent, and `tests/avatar-typecheck.tsx` and `tests/native/avatar-typecheck.tsx` hold the prop types. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
 ## Optional adapters and installation
@@ -2076,7 +2404,7 @@ Rules:
 | `copyAddress` | Copy address | WalletAddress and the SwapPanelBlock receive view: accessible name of an address that copies on press; the address follows it | — |
 | `addressCopied` | Address copied | WalletAddress and the SwapPanelBlock receive view: notice after the address is copied | — |
 | `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
-| `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
+| `qrCode` | QR code | WalletAddress and QRCode: accessible name of the QR code | — |
 | `swapControlKey` | Ctrl | SwapPanelBlock: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
 | `swapKeypad` | Keypad | SwapPanelBlock: accessible name of the swap panel keypad | — |
 | `swapDelete` | Delete | SwapPanelBlock: accessible name of the keypad delete key | — |
@@ -2791,7 +3119,7 @@ npm install @bloxwap/hig@0.7.0
 | Entry | Use |
 | --- | --- |
 | `@bloxwap/hig/tokens`, `@bloxwap/hig/tokens/css` | Semantic tokens and the role CSS |
-| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements and messages |
+| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements, messages and the generated avatar face |
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
@@ -2852,11 +3180,21 @@ The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1
 
 ### Sonner toasts
 
-`@bloxwap/hig/react/toast` exports `Toaster`, `toast()` and `dismissToast()`, which raise the HIG toast capsule through [Sonner](https://sonner.emilkowal.ski/). `sonner ^2.0.0` is an optional peer needed only by `@bloxwap/hig/react/toast`; no other entry loads it. Mount `<Toaster/>` once inside `HIGProvider`: while it is mounted, `InstallCommand` raises its copy result as a toast. Without a mounted toaster `InstallCommand` shows the result inline, as before. The controlled `Toast` in `@bloxwap/hig/react/status` needs no backend.
+`@bloxwap/hig/react/toast` exports `Toaster`, `toast()` and `dismissToast()`, which raise the HIG toast capsule through [Sonner](https://sonner.emilkowal.ski/). `@bloxwap/hig/native/toast` exports the same names for React Native, on HIG's own host; see [Status & feedback](https://bloxwap.github.io/hig/docs/guides/components/status/#transient-toasts-toaster-and-toast). `sonner ^2.0.0` is an optional peer needed only by `@bloxwap/hig/react/toast`; no other entry loads it. Mount `<Toaster/>` once inside `HIGProvider`: while it is mounted, `InstallCommand` raises its copy result as a toast. Without a mounted toaster `InstallCommand` shows the result inline, as before. The controlled `Toast` in `@bloxwap/hig/react/status` needs no backend.
+
+### Confetti
+
+`@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti` export `confetti()` and `Confetti`, HIG's own confetti with canvas-confetti's options and no third-party package. The web entry needs no peer and no stylesheet. The native entry uses the optional Reanimated and Worklets peers, like `animated-number`. Both read the flight from `@bloxwap/hig/contracts/confetti`. See [Confetti](https://bloxwap.github.io/hig/docs/guides/components/status/#confetti).
 
 ### Wallet address QR codes
 
 `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address` export `WalletAddress`, which draws its QR code with [Cuer](https://cuer.sh). `cuer` (`>=0.0.3 <0.1.0`) is an optional peer needed only by those two entries; the native entry also needs `react-native-svg`. `VerticalAddress` is in the `data` entries and needs neither. A host without `cuer` (or, on native, without `react-native-svg`) imports the same `WalletAddress` from `@bloxwap/hig/react/wallet-address-core` or `@bloxwap/hig/native/wallet-address-core`, which need neither peer, and passes its own drawing of the code as `qr`.
+
+`@bloxwap/hig/react/qr-code` and `@bloxwap/hig/native/qr-code` export `QRCode`, a QR code in the same style that HIG encodes itself: no `cuer`, and on native only `react-native-svg`. On web the `wallet-address-core` entry draws it when no `qr` is passed; on native pass it as `qr`. See the [financial data chapter](https://bloxwap.github.io/hig/docs/guides/components/financial-data/#qrcode).
+
+### Generated avatars
+
+`@bloxwap/hig/react/avatar` and `@bloxwap/hig/native/avatar` export `Avatar`, which can draw a face generated from a seed such as a wallet address. The native entry draws it with `react-native-svg`, an optional peer needed there. A native host without that peer keeps importing `Avatar` from `@bloxwap/hig/native/status`, which shows the image or the initials and loads no SVG. See [Status & feedback](https://bloxwap.github.io/hig/docs/guides/components/status/#avatar).
 
 ## Brand accent
 
@@ -2897,7 +3235,7 @@ Pass a subset if you need fewer faces: `loadOgFonts(ogFonts.filter(f => f.weight
 
 Run `npm run smoke:packed-native` after packed artifacts are built, or `npm run start -w hig-native-fixture` for the device gallery. Matrix: RN 0.81.5 with Expo SDK 54 and React 19.1.0, and RN 0.83.10 with Expo SDK 55 and React 19.2.0 (#68), Metro as locked. `npm run smoke:packed-native -- --profile rn-0.83` installs the same fixture with the SDK 55 versions from `fixtures/native/profiles.json`; CI exports both consumers for Android and iOS. `@bloxwap/hig/native` declares `react-native` `^0.81.5 || ^0.83.10`, so RN 0.82 and 0.84+ are outside the tested range. Native consumers install the tokens/contracts/native packages; optional feedback installs its package and explicit Expo backend peers. Slider and SVG peers are only needed by their family entries. Import `@bloxwap/hig/native/button`, not the DOM renderer. Dynamic Type remains enabled; native targets stay 48. Keyboard/safe-area/back behavior belongs to the native host and its supported OS.
 
-The optional `gesture-sheet` entry uses Gorhom Bottom Sheet, Gesture Handler, Safe Area Context, Reanimated and Worklets, with `GestureHandlerRootView`, `SafeAreaProvider` and `BottomSheetModalProvider` supplied by the host. The optional `animated-number` entry uses Reanimated and Worklets for per-place motion; ordinary `data` readouts remain engine-free. Install only the peers for the entries used, at versions compatible with the host's Expo/RN SDK.
+The optional `gesture-sheet` entry uses Gorhom Bottom Sheet, Gesture Handler, Safe Area Context, Reanimated and Worklets, with `GestureHandlerRootView`, `SafeAreaProvider` and `BottomSheetModalProvider` supplied by the host. The optional `animated-number` entry uses Reanimated and Worklets for per-place motion; ordinary `data` readouts remain engine-free. The optional `toast` entry uses Reanimated, Worklets, Gesture Handler and Safe Area Context, with `GestureHandlerRootView` and `SafeAreaProvider` supplied by the host. The optional `confetti` entry uses Reanimated and Worklets too. Install only the peers for the entries used, at versions compatible with the host's Expo/RN SDK.
 
 Install Expo native peers with `npx expo install` (for example, on SDK 54, `expo-asset ~12.0.13` and `expo-constants ~18.0.14` alongside `expo-font`/`expo-audio`; on SDK 55, `expo-asset ~55.0.20` and `expo-constants ~55.0.17`). Expo 54 autolinking links the copy resolved from the app root; a hoisted SDK 57 `expo-asset` pulled by `expo-audio`'s `*` peer compiles away and the app fails at launch with `Cannot find native module 'ExpoAsset'` (observed on the iOS Simulator). `verifyExpoNativeModules` in `scripts/native-compatibility.mjs` guards the fixture and packed consumer. `HIGProvider` follows the OS layout direction (`I18nManager.isRTL`) unless `direction` is passed. On RN 0.83 Android, a per-app RTL locale (for example Arabic set in the system's app language settings) does not set `I18nManager.isRTL`, so pass `direction` explicitly there (#86).
 

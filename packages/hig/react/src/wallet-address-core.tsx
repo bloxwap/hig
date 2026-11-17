@@ -4,13 +4,18 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from './provider.js';
 import {VerticalAddress,addressKind,addressRows,type AddressKind} from './data.js';
 import {notify} from './notify.js';
+import {QRCode} from './qr-code.js';
 export {VerticalAddress,addressKind,type AddressKind} from './data.js';
 export interface WalletAddressCoreProps {
  address:string;
  /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */
  kind?:AddressKind;
- /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. */
- qr:React.ReactNode;
+ /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. Omitted or `null`, HIG draws its own `QRCode` of `qrValue`, which needs no package. */
+ qr?:React.ReactNode;
+ /** QR payload of HIG's own code when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. Unused with `qr`. */
+ qrValue?:string;
+ /** Image URL shown in the centre of HIG's own code, which then uses high error correction. Unused with `qr`. */
+ arena?:string;
  /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */
  size?:number;
  /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */
@@ -20,16 +25,16 @@ export interface WalletAddressCoreProps {
  className?:string;style?:React.CSSProperties;
 }
 /**
- * `WalletAddress` without the QR encoder: the host passes the code as `qr`, so the optional `cuer` peer is not needed.
+ * `WalletAddress` without the optional `cuer` peer: the code is HIG's own `QRCode`, or the host's drawing passed as `qr`.
  * The address column, the copy button, its hint and the notice are the same as `WalletAddress` from `wallet-address`.
  */
-export function WalletAddress({address,kind,qr,size=196,onCopy,announce=true,className,style}:WalletAddressCoreProps){
+export function WalletAddress({address,kind,qr,qrValue,arena,size=196,onCopy,announce=true,className,style}:WalletAddressCoreProps){
  const {messages}=useHIG();const [status,setStatus]=useState('');
  const rows=addressRows(address,kind??addressKind(address)).length;
  const copy=()=>{Promise.resolve().then(onCopy).then(()=>{if(!announce)return;const text=messages.addressCopied??en.addressCopied;setStatus(notify(text,{severity:'success',id:'hig-wallet-address',dismissName:(messages.dismissNotice??en.dismissNotice)(text,messages.dismiss??en.dismiss)})?'':text);}).catch(()=>setStatus(''));};
  const body=<>
   <span className='hig-wallet-address-body'>
-   <span className='hig-wallet-address-qr' role='img' aria-label={messages.qrCode??en.qrCode}>{qr}</span>
+   <span className='hig-wallet-address-qr' role='img' aria-label={messages.qrCode??en.qrCode}>{qr??<QRCode value={qrValue??address} arena={arena} size={size} quietZone={0} background='none' color='currentColor' decorative/>}</span>
    <VerticalAddress address={address} kind={kind} rowHeight={size/rows}/>
   </span>
   {onCopy&&<span className='hig-wallet-address-hint'><svg aria-hidden='true' focusable='false' viewBox='0 0 20 20'><rect x='7' y='7' width='9.5' height='9.5' rx='2'/><path d='M4.5 13H4a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 4 3.5h6.5A1.5 1.5 0 0 1 12 5v.5'/></svg>{messages.tapToCopy??en.tapToCopy}</span>}

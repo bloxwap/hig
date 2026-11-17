@@ -328,6 +328,13 @@
       "support": "renderer"
     },
     {
+      "name": "Toaster",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Progress",
       "states": [
         "default",
@@ -359,7 +366,9 @@
     {
       "name": "Avatar",
       "states": [
-        "default"
+        "default",
+        "generated",
+        "palette"
       ],
       "support": "renderer"
     },
@@ -368,6 +377,13 @@
       "states": [
         "default",
         "error"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "Confetti",
+      "states": [
+        "default"
       ],
       "support": "renderer"
     },
@@ -386,6 +402,17 @@
         "default",
         "error",
         "empty"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "NumberFlow",
+      "states": [
+        "default",
+        "error",
+        "empty",
+        "countdown",
+        "continuous"
       ],
       "support": "renderer"
     },
@@ -448,6 +475,15 @@
       "states": [
         "default",
         "host-qr"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "QRCode",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
       ],
       "support": "renderer"
     },
