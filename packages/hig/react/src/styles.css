@@ -84,9 +84,14 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-gesture-sheet[data-hig-content-mode='default'] { overflow:auto;overscroll-behavior:contain;gap:12px;padding:24px; }
 .hig-gesture-sheet[data-hig-content-mode='custom'] { padding:0; }
 .hig-gesture-sheet[data-hig-dynamic='true'] { overflow:hidden;gap:0;padding:0; }
+.hig-gesture-views { position:relative;min-width:0; }
+.hig-gesture-view[data-leaving] { position:absolute;inset-block-start:0;inset-inline:0;pointer-events:none; }
 .hig-gesture-dynamic { display:flex;flex-direction:column;flex:none;min-height:0;max-height:inherit; }
 .hig-gesture-dynamic[data-hig-content-mode='default'] { overflow:auto;overscroll-behavior:contain;gap:12px;padding:24px; }
 .hig-gesture-dynamic[data-hig-content-mode='custom'] { padding:0; }
+/* A leaving view is out of flow and can be taller than the view replacing it. It must not make the sheet scrollable for the length of the swap: the content-sized sheet lets it show through to its own animating edge, and no scrollbar is drawn. */
+.hig-gesture-dynamic:has(.hig-gesture-view[data-leaving]) { overflow:visible; }
+:is(.hig-gesture-sheet,.hig-gesture-dynamic):has(.hig-gesture-view[data-leaving]) { scrollbar-width:none; }
 /* Edge sheets pad default content past the notch and home indicator; dynamic sheets pad the inner wrapper instead.
    Vaul directions are physical, so side insets are too. env() is 0px unless the host sets viewport-fit=cover. */
 .hig-gesture-sheet[data-vaul-drawer-direction='bottom'][data-hig-content-mode='default']:not([data-hig-dynamic]),.hig-gesture-sheet[data-vaul-drawer-direction='bottom'] > .hig-gesture-dynamic[data-hig-content-mode='default'] { padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }

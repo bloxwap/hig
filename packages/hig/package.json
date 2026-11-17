@@ -588,6 +588,11 @@
       "import": "./native/dist/gesture-sheet.js",
       "default": "./native/dist/gesture-sheet.js"
     },
+    "./native/gesture-sheet-next": {
+      "types": "./native/dist/gesture-sheet-next.d.ts",
+      "import": "./native/dist/gesture-sheet-next.js",
+      "default": "./native/dist/gesture-sheet-next.js"
+    },
     "./native/animated-number": {
       "types": "./native/dist/animated-number.d.ts",
       "import": "./native/dist/animated-number.js",

@@ -65,6 +65,7 @@
     "Dialog": "overlay",
     "Sheet": "overlay",
     "GestureSheet": "gesture-sheet",
+    "GestureSheetView": "gesture-sheet",
     "AlertDialog": "overlay",
     "Menu": "overlay",
     "Popover": "overlay",

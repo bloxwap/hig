@@ -718,6 +718,14 @@
         "entry": "gesture-sheet",
         "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps, enableDynamicSizing, maxDynamicContentSize, labelledBy }: GestureSheetProps): React.JSX.Element;"
       },
+      "GestureSheetViewProps": {
+        "entry": "gesture-sheet",
+        "signature": "export interface GestureSheetViewProps extends React.HTMLAttributes<HTMLDivElement> {\n    /** Names the view. A change swaps the content with the transition. */\n    viewKey: string | number;\n}"
+      },
+      "GestureSheetView": {
+        "entry": "gesture-sheet",
+        "signature": "export declare function GestureSheetView({ viewKey, children, className, ...rest }: GestureSheetViewProps): React.JSX.Element;"
+      },
       "ListGroupAction": {
         "entry": "list-group",
         "signature": "export interface ListGroupAction {\n    /** Host text drawn as the action and naming it. */\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
@@ -1912,13 +1920,25 @@
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<SearchInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
+      "SheetSnapPoint": {
+        "entry": "gesture-sheet-next",
+        "signature": "export type SheetSnapPoint = number | `${number}%`;"
+      },
       "GestureSheetProps": {
-        "entry": "gesture-sheet",
-        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Modal is the default. Inline retains the screen-level backend and its child state while closed. */\n{\n    presentation?: 'modal';\n    modalRef?: React.Ref<BottomSheetModal>;\n    sheetRef?: never;\n} | {\n    presentation: 'inline';\n    sheetRef?: React.Ref<BottomSheet>;\n    modalRef?: never;\n}) & (\n/** Fixed sizing keeps sorted increasing detents. Changes retain the current index or clamp a removed detent. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly (number | `${number}%`)[];\n    initialIndex?: number;\n    maxDynamicContentSize?: never;\n}\n/** Content sizing uses one backend-measured detent and an optional finite positive point ceiling (default: container height), without fixed snap points or an initial detent index. */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n    initialIndex?: never;\n    maxDynamicContentSize?: BottomSheetModalProps['maxDynamicContentSize'];\n});"
+        "entry": "gesture-sheet-next",
+        "signature": "export type GestureSheetProps = SheetCommonProps & (\n/** Fixed detents, as points or a percentage of the room under `topInset`. Sorted for you; `initialIndex` counts from the lowest. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly SheetSnapPoint[];\n    initialIndex?: number;\n    maxDynamicContentSize?: never;\n}\n/** One detent as tall as the content, up to `maxDynamicContentSize` points (default: all the room). */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n    initialIndex?: never;\n    maxDynamicContentSize?: number;\n});"
+      },
+      "GestureSheetHost": {
+        "entry": "gesture-sheet-next",
+        "signature": "export declare function GestureSheetHost({ children, style }: {\n    children: React.ReactNode;\n    style?: StyleProp<ViewStyle>;\n}): React.JSX.Element;"
+      },
+      "GestureSheetScrollView": {
+        "entry": "gesture-sheet-next",
+        "signature": "export declare const GestureSheetScrollView: React.ForwardRefExoticComponent<Omit<import(\"react-native-reanimated\").AnimatedScrollViewProps, \"ref\"> & React.RefAttributes<Reanimated.ScrollView>>;"
       },
       "GestureSheet": {
-        "entry": "gesture-sheet",
-        "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, children, contentMode, raised, titleRef, presentation, sheetRef, snapPoints, enableDynamicSizing, maxDynamicContentSize, enableContentPanningGesture, keyboardBehavior, keyboardBlurBehavior, android_keyboardInputMode, initialIndex, dismissible, returnFocusRef, closeLabel, onDismiss, onChange, onHardwareBackPress, topInset, bottomInset, modalRef, handleComponent, handleStyle, handleIndicatorStyle, backgroundComponent, backgroundStyle, containerStyle, animateOnMount, animationConfigs, backdropComponent, labelledBy }: GestureSheetProps): React.JSX.Element;"
+        "entry": "gesture-sheet-next",
+        "signature": "export declare function GestureSheet(props: GestureSheetProps): React.JSX.Element | null;"
       },
       "ListGroupAction": {
         "entry": "list-group",
@@ -2375,6 +2395,46 @@
       "figureReading": {
         "entry": "figure",
         "signature": "export declare function figureReading(figure: Figure, locale: string, options?: Intl.NumberFormatOptions): string;"
+      },
+      "detentHeight": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function detentHeight(point: SheetSnapPoint, room: number): number;"
+      },
+      "detentHeights": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function detentHeights(points: readonly SheetSnapPoint[], room: number): number[];"
+      },
+      "rubberBand": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function rubberBand(overshoot: number, limit: number): number;"
+      },
+      "dragPosition": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function dragPosition(raw: number, top: number, lowest: number, closed: number, dismissible: boolean): number;"
+      },
+      "SHEET_PROJECTION": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_PROJECTION = 0.18;"
+      },
+      "SHEET_FLICK": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_FLICK = 500;"
+      },
+      "releaseTarget": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function releaseTarget(position: number, velocity: number, positions: readonly number[], closed: number, dismissible: boolean): number;"
+      },
+      "SHEET_SPRING": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_SPRING: {\n    readonly damping: 36;\n    readonly stiffness: 320;\n    readonly mass: 1;\n    readonly overshootClamping: true;\n};"
+      },
+      "backdropProgress": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function backdropProgress(position: number, lowest: number, closed: number): number;"
+      },
+      "SHEET_RESIZE": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_RESIZE: {\n    readonly duration: 270;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n};"
       },
       "SearchIcon": {
         "entry": "icons",
