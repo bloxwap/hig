@@ -185,6 +185,8 @@ test('draws emptyAction under the empty text only while the list is empty and no
  let view=mount({view:'positions',category:'commodities',emptyAction:action});
  const button=all(view,'assets-empty-action').find(n=>n.props.accessibilityRole==='button');
  expect(button.props.accessibilityState.disabled).toBe(false);expect(text(host(view,'assets-empty-action'))).toBe('Browse all markets');
+ // Centred under the centred empty text, as on web (`.hig-assets-list > .hig-button { align-self:center }`), not on the leading edge.
+ expect(flat(button).alignSelf).toBe('center');expect(flat(host(view,'assets-empty')).textAlign).toBe('center');
  act(()=>button.props.onPress({stopPropagation(){},isDefaultPrevented:()=>false}));expect(press).toHaveBeenCalledTimes(1);
  view=mount({view:'positions',category:'commodities',emptyAction:{...action,testID:'browse-all'}});expect(has(view,'browse-all')).toBe(true);
  view=mount({assets:[],loading:true,emptyAction:action});expect(has(view,'assets-empty-action')).toBe(false);

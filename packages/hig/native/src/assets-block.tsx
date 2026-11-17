@@ -161,7 +161,8 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   {sections.length===0?<View style={{gap:16,alignItems:'center'}}>
    <Text testID={id('empty')} accessibilityLiveRegion='polite' style={{alignSelf:'stretch',paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{empty}</Text>
-   {!loading&&emptyAction?<Button intent='secondary' testID={emptyAction.testID??id('empty-action')} onPress={emptyAction.onPress}>{emptyAction.label}</Button>:null}
+   {/* Centred under the empty text, as on web: Button's own alignSelf (flex-start) would otherwise win over the column's alignItems. */}
+   {!loading&&emptyAction?<Button intent='secondary' testID={emptyAction.testID??id('empty-action')} onPress={emptyAction.onPress} style={{alignSelf:'center'}}>{emptyAction.label}</Button>:null}
   </View>:
   <View testID={id('list')} style={{gap:16}}>
    {sections.map(section=>{const at=opensAtTime(section.category);const remaining=now!=null&&at!=null&&at>now?at-now:null,countdown=remaining!=null?formatCountdown(remaining,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
