@@ -62,6 +62,60 @@ describe('NumberFlow under load on web',()=>{
  });
 });
 
+describe('a turn alone on its strip',()=>{
+ // An engine whose animations have a clock that can be set, as every browser's do; the stand-in above has none.
+ class Clocked {started:number|null=null;currentTime:number|null=0;onfinish:(()=>void)|null=null;cancel=vi.fn();
+  constructor(readonly target:HTMLElement,readonly keyframes:Record<string,unknown[]>,readonly options:KeyframeAnimationOptions){}
+  get startTime(){return this.started;}set startTime(time:number|null){this.started=time;}}
+ let turns:Clocked[]=[];
+ const spins=()=>turns.filter(turn=>turn.target.classList.contains('hig-number-flow-strip')&&turn.cancel.mock.calls.length===0);
+ const one=(value:number)=><HIGProvider><NumberFlow value={value}/></HIGProvider>;
+ beforeEach(()=>{turns=[];vi.stubGlobal('Animation',Clocked);Object.defineProperty(HTMLElement.prototype,'animate',{configurable:true,value(this:HTMLElement,keyframes:Record<string,unknown[]>,options:KeyframeAnimationOptions){const turn=new Clocked(this,keyframes,options);turns.push(turn);return turn as unknown as Animation;}});});
+ afterEach(()=>{vi.unstubAllGlobals();});
+ it('is a plain animation from where the strip is to where it rests, which a compositor can run',()=>{
+  const {rerender}=render(one(2));rerender(one(7));
+  // The same motion as an additive 500% to 0% over a strip resting at -500%, written without the addition.
+  expect(spins()).toHaveLength(1);expect(spins()[0].keyframes).toEqual({transform:['translateY(0%)','translateY(-500%)']});expect(spins()[0].options.composite).toBeUndefined();expect(spins()[0].options.duration).toBe(900);
+  expect((document.querySelector('.hig-number-flow-strip') as HTMLElement).style.transform).toBe('translateY(-500%)');
+  act(()=>{spins()[0].onfinish?.();});expect(document.querySelector('.hig-number-flow-window')).toBeNull();
+ });
+ it('is swapped for its additive twin on the same clock when another turn joins it, and later turns only add',()=>{
+  const {rerender}=render(one(2));rerender(one(7));const first=spins()[0];first.startTime=1234;first.currentTime=300;
+  rerender(one(9));
+  expect(first.cancel).toHaveBeenCalledTimes(1);expect(spins()).toHaveLength(2);const [twin,second]=spins();
+  expect(twin.keyframes).toEqual({transform:['translateY(500%)','translateY(0%)']});expect(twin.options.composite).toBe('add');expect(twin.startTime).toBe(1234);
+  expect(second.keyframes).toEqual({transform:['translateY(200%)','translateY(0%)']});expect(second.options.composite).toBe('add');expect(second.startTime).toBeNull();
+  expect((document.querySelector('.hig-number-flow-strip') as HTMLElement).style.transform).toBe('translateY(-700%)');
+  rerender(one(8));expect(spins()).toHaveLength(3);expect(twin.cancel).not.toHaveBeenCalled();const third=spins()[2];expect(third.options.composite).toBe('add');
+  // The reel is taken away when the last of them lands, the twin included.
+  act(()=>{twin.onfinish?.();second.onfinish?.();});expect(document.querySelector('.hig-number-flow-window')).not.toBeNull();
+  act(()=>{third.onfinish?.();});expect(document.querySelector('.hig-number-flow-window')).toBeNull();
+  // With the reel gone the next turn is alone again.
+  rerender(one(3));expect(turns[turns.length-1].options.composite).toBeUndefined();expect(turns[turns.length-1].keyframes).toEqual({transform:['translateY(0%)','translateY(500%)']});
+ });
+ it('slides a part alone as a plain animation too, and adds once another slide joins it',()=>{
+  const slides=()=>turns.filter(turn=>String(turn.keyframes.transform?.[0]).startsWith('translateX')&&turn.cancel.mock.calls.length===0);
+  // 999 to 1,000: the three digits make room for a place and its separator, twenty pixels in the stand-in layout.
+  const {rerender}=render(one(999));rerender(one(1000));const first=slides();
+  expect(first).toHaveLength(5);expect(first.every(turn=>turn.options.composite===undefined&&turn.keyframes.transform[1]==='translateX(0px)')).toBe(true);
+  expect(first.filter(turn=>turn.target.dataset.higFlowKey==='digit:number:0').map(turn=>turn.keyframes.transform[0])).toEqual(['translateX(-20px)']);
+  for(const turn of first)turn.startTime=500;
+  // 10,000 while they slide: every part moves again, so each first slide hands over to its additive twin.
+  rerender(one(10000));
+  expect(first.every(turn=>turn.cancel.mock.calls.length===1)).toBe(true);
+  const ones=slides().filter(turn=>turn.target.dataset.higFlowKey==='digit:number:0');
+  expect(ones.map(turn=>[turn.keyframes.transform[0],turn.options.composite,turn.startTime])).toEqual([['translateX(-20px)','add',500],['translateX(-10px)','add',null]]);
+  // Landed, the part is alone again.
+  act(()=>{for(const turn of turns)turn.onfinish?.();});const landed=turns.length;rerender(one(100000));
+  expect(turns.slice(landed).filter(turn=>turn.target.dataset.higFlowKey==='digit:number:0').map(turn=>[turn.keyframes.transform[0],turn.options.composite])).toEqual([['translateX(-10px)',undefined]]);
+ });
+ it('joins a turn that has not started yet at the same point, so both start together',()=>{
+  const {rerender}=render(one(2));rerender(one(7));const first=spins()[0];
+  rerender(one(9));const [twin]=spins();
+  expect(first.cancel).toHaveBeenCalledTimes(1);expect(twin.startTime).toBeNull();expect(twin.currentTime).toBe(0);expect(twin.options.composite).toBe('add');
+ });
+});
+
 describe('formatting under load on web',()=>{
  it('builds one formatter and one set of digit glyphs for each locale and set of options, whatever the values',()=>{
   const {rerender}=render(board([1,2,3]));

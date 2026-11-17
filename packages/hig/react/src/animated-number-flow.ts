@@ -13,7 +13,11 @@ export function numberFlowWebMotion(timings:NumberFlowTimings):NumberFlowWebMoti
 
 interface Before {element:HTMLElement;left:number;top:number;opacity:number;text:string}
 interface Extent {left:number;right:number}
-interface Turn {delta:number;animation:Animation}
+/**
+ * A movement in flight on one element: a strip's turn or a part's slide. `frames` are its keyframes as an additive animation;
+ * `alone` is one that runs with nothing else on its element, as a plain animation between two positions.
+ */
+interface Turn {delta:number;frames:[string,string];animation:Animation;timing:NumberFlowWebTiming;alone:boolean;landed:()=>void}
 interface Reel {frame:HTMLElement;strip:HTMLElement;origin:number;target:number;length:number;glyphs:Map<number,HTMLElement>;active:Turn[]}
 const part='[data-hig-flow-key]',drawnDigit='.hig-number-flow-digit';
 // A browser without `linear()` throws on the first animation that asks for it; from then on every animation takes the fallback.
@@ -22,6 +26,12 @@ let sampledEasing=true;
 // `composite: 'add'` and would replace that transform, rolling the wrong glyphs through the window, so there nothing moves and
 // every value is drawn at once. (No `KeyframeEffect` at all is a test double for `animate`, which is taken at its word.)
 const additive=()=>typeof KeyframeEffect==='undefined'||'composite' in KeyframeEffect.prototype;
+// A turn or a slide that is alone on its element does not need to be added to anything: it is the same motion written as a
+// plain animation from where the element is to where it rests. That matters in Chromium, which keeps additive animations on
+// the main thread (a style recalculation every frame) and hands plain ones to the compositor, where a busy page cannot make
+// them stutter. When a second movement joins it, the first is swapped for its additive twin on the same clock, which takes a
+// start time that can be set; where an animation has none (a test double), every movement is additive from the start.
+const retimable=()=>typeof Animation!=='undefined'&&'startTime' in Animation.prototype;
 // One commit can change many figures, and each reads where its parts are before it moves them. Taken figure by figure, every
 // read that follows another figure's writes lays the page out again: forty figures, forty layouts. So a figure that is about to
 // change says so before the commit (`expect`), what it would write is held, and when the last of them has read (`done`)
@@ -44,13 +54,16 @@ export const numberFlowCommit={
  * - a fade for parts that arrive, and a fading copy of each part that left;
  * - a clip on the digits (first digit to last, with the separators between) that travels from their old edges to their new
  *   ones, so a place arriving or leaving passes under the edge rather than over the sign or the text beside it.
- * Every roll and slide is an additive animation on `transform`, so a new value joins the motion in flight instead of restarting
- * it, and the compositor runs it: after the commit that starts it there is no script, no style recalculation and no layout
- * per frame. Fades animate `opacity`, and the clip animates `clip-path` only while the figure changes width.
+ * A roll or a slide that joins another in flight on the same element is an additive animation on `transform`, so a new value
+ * joins the motion instead of restarting it. After the commit that starts it there is no script and no layout per frame.
+ * Chromium does not hand an additive animation to its compositor, though: it runs on the main thread, one style recalculation
+ * a frame for the parts that move (55 for one 900 ms roll against 6 for a plain one), so a movement that is alone on its
+ * element, which is most of them, is written as a plain animation instead (see `retimable`). Fades animate `opacity`, and
+ * the clip animates `clip-path` only while the figure changes width.
  */
 export class NumberFlowEngine {
  private root:HTMLElement|null=null;private before:Map<string,Before>|null=null;private extent:Extent|null=null;private clip:Animation|null=null;
- private readonly reels=new Map<HTMLElement,Reel>();private readonly running=new Set<Animation>();private readonly fades=new Map<Element,Animation>();private ghosts=0;private epoch=0;
+ private readonly reels=new Map<HTMLElement,Reel>();private readonly slides=new Map<HTMLElement,Turn[]>();private readonly running=new Set<Animation>();private readonly fades=new Map<Element,Animation>();private ghosts=0;private epoch=0;
  /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */
  attach(root:HTMLElement|null){this.root=root;}
  /** Whether anything is still moving. */
@@ -75,7 +88,14 @@ export class NumberFlowEngine {
   this.write(()=>{
   // A part with no place of its own in both readings travels with its nearest neighbour that has one, on the side it is anchored to.
   const travel=(order:readonly string[],index:number,side:-1|1)=>{for(const direction of [side,-side])for(let at=index+direction;at>=0&&at<order.length;at+=direction){const dx=shift.get(order[at]);if(dx!==undefined)return dx;}return 0;};
-  const slide=(element:HTMLElement,dx:number)=>{if(Math.abs(dx)>0.01)this.play(element,{transform:[`translateX(${dx}px)`,'translateX(0px)']},motion.transform,{composite:'add'});};
+  const slide=(element:HTMLElement,dx:number)=>{if(Math.abs(dx)<=0.01)return;
+   const frames:[string,string]=[`translateX(${dx}px)`,'translateX(0px)'],flight=this.join(element,this.slides.get(element)??[]),alone=!flight.length&&retimable();
+   const move:Omit<Turn,'animation'>&{animation:Animation|null}={delta:dx,frames,animation:null,timing:motion.transform,alone,landed:()=>{const rest=(this.slides.get(element)??[]).filter(other=>other!==move);if(rest.length)this.slides.set(element,rest);else this.slides.delete(element);}};
+   // A part rests where the layout puts it, so alone its slide is these same keyframes without the addition.
+   move.animation=this.play(element,{transform:frames},motion.transform,alone?{}:{composite:'add'},move.landed);
+   if(move.animation)flight.push(move as Turn);
+   if(flight.length)this.slides.set(element,flight);else this.slides.delete(element);
+  };
   now.forEach((element,index)=>{const key=keys[index],prior=before.get(key);
    if(prior){slide(element,prior.left-rects[index].left);return;}
    slide(element,travel(keys,index,numberFlowAnchorSide(key)));
@@ -118,14 +138,17 @@ export class NumberFlowEngine {
    for(const [position,glyph] of turning.glyphs)if(position<low||position>high){glyph.remove();turning.glyphs.delete(position);}
    for(let position=low;position<=high;position++)if(!turning.glyphs.has(position)){const glyph=document.createElement('span');glyph.className='hig-number-flow-glyph';glyph.textContent=glyphs[numberFlowGlyph(position,turning.length)]??'';glyph.style.transform=`translateY(${(position-turning.origin)*100}%)`;turning.strip.appendChild(glyph);turning.glyphs.set(position,glyph);}
    turning.target=target;turning.strip.style.transform=`translateY(${-(target-turning.origin)*100}%)`;
-   const turn:{delta:number;animation:Animation|null}={delta:spin.delta,animation:null};
-   turn.animation=this.play(turning.strip,{transform:[`translateY(${spin.delta*100}%)`,'translateY(0%)']},timing,{composite:'add'},()=>{turning.active=turning.active.filter(other=>other!==turn);if(!turning.active.length&&this.reels.get(place)===turning)this.settle(place,turning);});
+   turning.active=this.join(turning.strip,turning.active);
+   const rest=-(target-turning.origin)*100,frames:[string,string]=[`translateY(${spin.delta*100}%)`,'translateY(0%)'],alone=!turning.active.length&&retimable();
+   const turn:Omit<Turn,'animation'>&{animation:Animation|null}={delta:spin.delta,frames,animation:null,timing,alone,landed:()=>{turning.active=turning.active.filter(other=>other!==turn);if(!turning.active.length&&this.reels.get(place)===turning)this.settle(place,turning);}};
+   // Alone, the turn is written from where the strip is to where it rests; in company it is added to the strip's resting place.
+   turn.animation=alone?this.play(turning.strip,{transform:[`translateY(${rest+spin.delta*100}%)`,`translateY(${rest}%)`]},timing,{},turn.landed):this.play(turning.strip,{transform:frames},timing,{composite:'add'},turn.landed);
    if(turn.animation)turning.active.push(turn as Turn);else if(!turning.active.length)this.settle(place,turning);
   }});
  }
  /** Stop everything where it is going: the parts are left exactly as React drew them. */
  cancel(){
-  this.before=null;this.extent=null;this.clip=null;this.epoch++;
+  this.before=null;this.extent=null;this.clip=null;this.epoch++;this.slides.clear();
   for(const [place,reel] of Array.from(this.reels))this.settle(place,reel);
   for(const animation of Array.from(this.running))this.stop(animation);
   this.fades.clear();for(const layer of this.root?.querySelectorAll('.hig-number-flow-ghosts')??[])layer.replaceChildren();
@@ -135,6 +158,16 @@ export class NumberFlowEngine {
   if(expected<=0){change();return;}
   const epoch=this.epoch;held.push(()=>{if(this.epoch===epoch)change();});
   if(!scheduled){scheduled=true;void Promise.resolve().then(release);}
+ }
+ /** Makes room on an element for another movement: one in flight alone becomes its additive twin, where it is and on the same clock. Returns what is still in flight. */
+ private join(element:HTMLElement,flight:Turn[]):Turn[]{
+  return flight.filter(first=>{
+   if(!first.alone)return true;
+   const twin=this.play(element,{transform:first.frames},first.timing,{composite:'add'},first.landed);
+   if(twin){const started=first.animation.startTime,elapsed=first.animation.currentTime;if(started!==null)twin.startTime=started;else if(elapsed!==null)twin.currentTime=elapsed;}
+   this.stop(first.animation);first.alone=false;if(twin)first.animation=twin;
+   return !!twin;
+  });
  }
  private stop(animation:Animation){this.running.delete(animation);animation.onfinish=null;animation.cancel();}
  private settle(place:HTMLElement,reel:Reel){for(const turn of reel.active)this.stop(turn.animation);reel.active=[];reel.frame.remove();delete place.dataset.spinning;this.reels.delete(place);}

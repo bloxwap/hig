@@ -5,6 +5,13 @@
 //
 //   node scripts/perf/number-flow-web.mjs                    every scenario, both motions, unthrottled and at 4x CPU throttle
 //   node scripts/perf/number-flow-web.mjs --runs=5           the median of five runs of each (default 3)
+//   node scripts/perf/number-flow-web.mjs --motion=flow      one motion (flow, slide)
+//   node scripts/perf/number-flow-web.mjs --quiet-page       tickers, unchanged and roll without the frame recorder. Its
+//                                                            requestAnimationFrame loop makes the page draw a main-thread frame at
+//                                                            every refresh, as a busy page does; without it the main thread only
+//                                                            does what the figures ask of it, and no frames are reported
+//   node scripts/perf/number-flow-web.mjs --warm             runs each scenario once before the run that is measured, so heap
+//                                                            growth is what a second run keeps, not what the first one compiled
 //   node scripts/perf/number-flow-web.mjs --only=tickers     chosen scenarios (tickers, interrupt, mount, unchanged, roll)
 //   node scripts/perf/number-flow-web.mjs --stat=min         the fastest run of each instead of the median: on a busy machine
 //                                                            other work only ever adds time, so the least is the truest
@@ -33,7 +40,7 @@ const root=fileURLToPath(new URL('../..',import.meta.url));
 const require=createRequire(`${root}/package.json`);
 const {build}=require('esbuild');const {chromium}=require('@playwright/test');
 const flag=name=>process.argv.find(argument=>argument.startsWith(`--${name}=`))?.slice(name.length+3);
-const runs=Math.max(1,Number(flag('runs'))||3),only=flag('only')?.split(','),profile=flag('profile')?.split(':'),trace=flag('trace')?.split(':'),least=flag('stat')==='min',against=flag('against');
+const runs=Math.max(1,Number(flag('runs'))||3),only=flag('only')?.split(','),profile=flag('profile')?.split(':'),trace=flag('trace')?.split(':'),least=flag('stat')==='min',against=flag('against'),motions=flag('motion')?.split(',')??['flow','slide'],quiet=process.argv.includes('--quiet-page'),warm=process.argv.includes('--warm');
 const pageSource=sources=>`import React,{Profiler,useState} from 'react';import {createRoot} from 'react-dom/profiling';import {flushSync} from 'react-dom';
 import {HIGProvider} from './${sources}/provider';import {AnimatedNumberReadout} from './${sources}/animated-number';
 const usd={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2};
@@ -51,12 +58,12 @@ const median=list=>{const sorted=[...list].sort((a,b)=>a-b);return sorted.length
 const frames=stamps=>{const gaps=stamps.slice(1).map((stamp,index)=>stamp-stamps[index]);return {frames:gaps.length,framesOver16_7ms:gaps.filter(gap=>gap>17.7).length,framesOver33ms:gaps.filter(gap=>gap>34.4).length,worstFrameMs:Math.max(0,...gaps),medianFrameMs:median(gaps)};};
 const starts=count=>Array.from({length:count},(_,index)=>formats[index%formats.length].start*(1+Math.floor(index/formats.length)*0.01));
 const leftovers=()=>({animations:document.getAnimations().length,nodes:document.querySelectorAll('.hig-number-flow-window,.hig-number-flow-ghost,[data-spinning],.hig-animated-number-old').length});
-let job={scenario:'',motion:'flow',values:[],next:random(1)};
+let job={scenario:'',motion:'flow',values:[],next:random(1),quiet:false};
 const walk=()=>{job.values=job.values.map((value,index)=>value+(job.next()*2-1)*formats[index%formats.length].step);return job.values;};
 window.higPerf={
  started:'hig-perf-run',
- async prepare(scenario,motion){
-  job={scenario,motion,values:scenario==='mount'?[]:starts(scenario==='interrupt'?1:40),next:random(20260117)};
+ async prepare(scenario,motion,quiet=false){
+  job={scenario,motion,quiet,values:scenario==='mount'?[]:starts(scenario==='interrupt'?1:40),next:random(20260117)};
   flushSync(()=>setBoard({motion,values:job.values}));await wait(300);return true;
  },
  async run(){
@@ -64,7 +71,7 @@ window.higPerf={
   console.timeStamp(window.higPerf.started);
   const {scenario,motion}=job,instances=job.values.length,rest=instances?nodes()/instances:0,first=commits,began=performance.now();
   if(scenario==='tickers'||scenario==='unchanged'||scenario==='roll'){
-   const stamps=[];let recording=true;const loop=now=>{if(!recording)return;stamps.push(now);requestAnimationFrame(loop);};requestAnimationFrame(loop);
+   const stamps=[];let recording=true;const loop=now=>{if(!recording)return;stamps.push(now);requestAnimationFrame(loop);};if(!job.quiet)requestAnimationFrame(loop);
    let peak=0,total=0;const ticks=scenario==='roll'?1:50;
    for(let tick=0;tick<ticks;tick++){await until(began+tick*100);setBoard({motion,values:scenario==='unchanged'?[...job.values]:walk()});await until(began+tick*100+50);const count=nodes();peak=Math.max(peak,count);total+=count;}
    // Let what is in flight land, so its clean-up (and any commit it makes) is inside the measurement. A single roll is watched until it lands.
@@ -106,8 +113,9 @@ async function measure(browser,bundle,scenario,motion,rate,inspect=''){
   await page.setContent(html);await page.addScriptTag({content:bundle});
   const cdp=await page.context().newCDPSession(page);await cdp.send('Performance.enable');await cdp.send('HeapProfiler.enable');
   if(rate>1)await cdp.send('Emulation.setCPUThrottlingRate',{rate});
-  await page.evaluate(([scenario,motion])=>window.higPerf.prepare(scenario,motion),[scenario,motion]);
+  await page.evaluate(([scenario,motion,quiet])=>window.higPerf.prepare(scenario,motion,quiet),[scenario,motion,quiet]);
   if(traced)await browser.startTracing(page,{categories:['devtools.timeline','disabled-by-default-devtools.timeline']});
+  if(warm){await page.evaluate(()=>window.higPerf.run());await page.evaluate(([scenario,motion,quiet])=>window.higPerf.prepare(scenario,motion,quiet),[scenario,motion,quiet]);await page.waitForTimeout(1500);}
   if(profiled){await cdp.send('Profiler.enable');await cdp.send('Profiler.setSamplingInterval',{interval:100});await cdp.send('Profiler.start');}
   await cdp.send('HeapProfiler.collectGarbage');const before=await counters(cdp);
   const ran=await page.evaluate(()=>window.higPerf.run());
@@ -150,8 +158,8 @@ const browser=await launchBrowser(chromium,{headless:true});
 try{
  if(profile||trace){const [scenario,motion='flow',rate='1']=profile??trace;console.log(JSON.stringify({scenario,motion,cpuThrottle:Number(rate),...(await measure(browser,bundles.current,scenario,motion,Number(rate),profile?'profile':'trace'))},null,1));}
  else{
-  const result={checkedAt:new Date().toISOString(),chromium:browser.version(),runs,note:`${least?'least':'median'} of runs; an update is one value handed to one figure, a tick one state change of the parent`,cpuThrottle1x:{},cpuThrottle4x:{},...(against?{against:{sources:against,cpuThrottle1x:{},cpuThrottle4x:{}}}:null)};
-  for(const [name,rate] of [['cpuThrottle1x',1],['cpuThrottle4x',4]])for(const motion of ['flow','slide']){
+  const result={checkedAt:new Date().toISOString(),chromium:browser.version(),runs,quietPage:quiet,note:`${least?'least':'median'} of runs; an update is one value handed to one figure, a tick one state change of the parent`,cpuThrottle1x:{},cpuThrottle4x:{},...(against?{against:{sources:against,cpuThrottle1x:{},cpuThrottle4x:{}}}:null)};
+  for(const [name,rate] of [['cpuThrottle1x',1],['cpuThrottle4x',4]])for(const motion of motions){
    result[name][motion]={};if(against)result.against[name][motion]={};
    for(const scenario of ['tickers','interrupt','mount','unchanged','roll']){
     if(only&&!only.includes(scenario))continue;
