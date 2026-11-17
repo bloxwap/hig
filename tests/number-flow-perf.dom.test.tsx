@@ -61,3 +61,24 @@ describe('NumberFlow under load on web',()=>{
   expect(commits).toBe(1);expect(log).toEqual([]);expect(formatters).not.toHaveBeenCalled();expect(document.querySelector('.hig-number-flow-window')).toBeNull();
  });
 });
+
+describe('formatting under load on web',()=>{
+ it('builds one formatter and one set of digit glyphs for each locale and set of options, whatever the values',()=>{
+  const {rerender}=render(board([1,2,3]));
+  // A fresh double clears what was kept, as a polyfill installed later would.
+  const Original=Intl.NumberFormat,formatters=vi.spyOn(Intl,'NumberFormat').mockImplementation(function(locale?:string|string[],options?:Intl.NumberFormatOptions){return new Original(locale,options);} as unknown as typeof Intl.NumberFormat);
+  for(let step=1;step<=20;step++)rerender(board([1+step*1.25,2+step*7.5,3+step*0.01]));
+  // Sixty new values in one format: the formatter, and the one that names its digits. It was two of each for every value.
+  expect(formatters).toHaveBeenCalledTimes(2);
+  // The same options written out again are the same format; other options are another.
+  rerender(<HIGProvider><NumberFlow value={5} options={{style:'currency',currency:'USD'}}/><AnimatedNumberReadout value={6} options={{...usd}}/></HIGProvider>);expect(formatters).toHaveBeenCalledTimes(2);
+  rerender(<HIGProvider><NumberFlow value={5} options={{style:'percent'}}/></HIGProvider>);expect(formatters).toHaveBeenCalledTimes(4);
+ });
+ it('formats with whatever Intl.NumberFormat is installed now, not one it kept from before',()=>{
+  const {rerender,container}=render(<HIGProvider><NumberFlow value={12}/></HIGProvider>);expect(container.querySelector('.hig-sr-only')?.textContent).toBe('12');
+  const Original=Intl.NumberFormat,spy=vi.spyOn(Intl,'NumberFormat').mockImplementation(function(locale?:string|string[],options?:Intl.NumberFormatOptions){const formatter=new Original(locale,options);return {format:(value:number)=>`~${formatter.format(value)}`,formatToParts:(value:number)=>formatter.formatToParts(value),resolvedOptions:()=>formatter.resolvedOptions()};} as unknown as typeof Intl.NumberFormat);
+  rerender(<HIGProvider><NumberFlow value={13}/></HIGProvider>);expect(container.querySelector('.hig-sr-only')?.textContent).toBe('~13');
+  spy.mockRestore();
+  rerender(<HIGProvider><NumberFlow value={14}/></HIGProvider>);expect(container.querySelector('.hig-sr-only')?.textContent).toBe('14');
+ });
+});
