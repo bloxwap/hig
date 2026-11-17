@@ -130,3 +130,17 @@ it('backWhileBusy frees Back alone while busy',()=>{
  expect(all(view,'confirm-back').some(node=>node.props.disabled===false)).toBe(true);
  expect(button(view,'confirm-cancel').props.disabled).toBe(true);expect(button(view,'confirm-tertiary').props.disabled).toBe(true);expect(button(view,'confirm-confirm').props.busy).toBe(true);
 });
+
+it('takes a test ID per action, Pressable props for Back, and cancelDisabled holds Cancel without busy',()=>{
+ const exported=jest.fn(),withdraw=jest.fn(),anyway=jest.fn(),back=jest.fn(),pressIn=jest.fn();
+ // The delete-account funds refusal: Export account beside Withdraw first, then Delete anyway, under the host's own prefix.
+ const props={amount:undefined,symbol:undefined,address:undefined,network:undefined,testID:'delete-account',title:'Move your funds first',confirmLabel:'Withdraw first',cancelLabel:'Export account',onConfirm:withdraw,onCancel:exported,confirmTestID:'delete-account-withdraw',cancelTestID:'delete-account-export',tertiaryAction:{label:'Delete anyway',onSelect:anyway,testID:'delete-account-anyway'},onBack:back,backProps:{android_disableSound:true,onPressIn:pressIn}};
+ const view=mount(props);
+ expect(has(view,'delete-account-confirm')).toBe(false);expect(has(view,'delete-account-cancel')).toBe(false);expect(has(view,'delete-account-tertiary')).toBe(false);
+ act(()=>button(view,'delete-account-withdraw').props.onPress());act(()=>button(view,'delete-account-export').props.onPress());act(()=>button(view,'delete-account-anyway').props.onPress());
+ const backButton=all(view,'delete-account-back').find(node=>typeof node.props.onPressIn==='function'&&node.props.android_disableSound===true);
+ expect(backButton).toBeTruthy();act(()=>backButton.props.onPressIn());act(()=>backButton.props.onPress());
+ expect([withdraw,exported,anyway,back,pressIn].map(fn=>fn.mock.calls.length)).toEqual([1,1,1,1,1]);
+ const held=mount({...props,cancelDisabled:true});
+ expect(button(held,'delete-account-export').props.disabled).toBe(true);expect(button(held,'delete-account-withdraw').props.disabled).toBeFalsy();expect(button(held,'delete-account-anyway').props.disabled).toBe(false);
+});

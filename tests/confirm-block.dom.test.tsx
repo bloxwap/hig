@@ -122,4 +122,16 @@ describe('ConfirmBlock',()=>{
   rerender(<HIGProvider><ConfirmBlock title='Close all' amount={12.5} onConfirm={confirm}/></HIGProvider>);
   expect(document.querySelector('.hig-confirm-amount .hig-animated-number-visual')!.textContent).toBe('12.5');expect(document.querySelector('.hig-confirm-symbol')).toBeNull();expect(screen.queryByRole('note')).toBeNull();
  });
+ it('takes a data-testid per action, attributes for Back, and cancelDisabled holds Cancel without busy',async()=>{
+  const exported=vi.fn(),withdraw=vi.fn(),anyway=vi.fn(),back=vi.fn();
+  const props={title:'Move your funds first',confirmLabel:'Withdraw first',cancelLabel:'Export account',onConfirm:withdraw,onCancel:exported,confirmTestID:'delete-account-withdraw',cancelTestID:'delete-account-export',tertiaryAction:{label:'Delete anyway',onSelect:anyway,testID:'delete-account-anyway'},onBack:back,backProps:{'data-testid':'delete-account-back'} as React.ButtonHTMLAttributes<HTMLButtonElement>};
+  const {rerender}=render(<ConfirmBlock {...props}/>);
+  await userEvent.click(screen.getByTestId('delete-account-withdraw'));await userEvent.click(screen.getByTestId('delete-account-export'));await userEvent.click(screen.getByTestId('delete-account-anyway'));await userEvent.click(screen.getByTestId('delete-account-back'));
+  expect([withdraw,exported,anyway,back].map(fn=>fn.mock.calls.length)).toEqual([1,1,1,1]);
+  expect(screen.getByTestId('delete-account-withdraw').textContent).toBe('Withdraw first');expect(screen.getByTestId('delete-account-back').getAttribute('aria-label')).toBe('Back');
+  rerender(<ConfirmBlock {...props} cancelDisabled confirmDisabled/>);
+  expect((screen.getByTestId('delete-account-export') as HTMLButtonElement).disabled).toBe(true);expect((screen.getByTestId('delete-account-anyway') as HTMLButtonElement).disabled).toBe(false);
+  // Without them nothing carries a test ID.
+  rerender(<ConfirmBlock title='Sign out' onConfirm={()=>{}} onCancel={()=>{}}/>);expect(document.querySelector('[data-testid]')).toBeNull();
+ });
 });

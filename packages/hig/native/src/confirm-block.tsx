@@ -5,14 +5,16 @@ import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
 import {AnimatedNumberReadout} from './animated-number.js';
-import {ScreenHeader} from './screen-header.js';
+import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 /** One more line under Network, such as a fee: host text on both edges. */
 export interface ConfirmDetail {label:string;value:React.ReactNode;
  /** What a `value` that is not text reads as. */
  valueLabel?:string}
 /** A full-width action under Cancel and Confirm, such as "Delete anyway": a ghost button, in the negative colour with `tone='destructive'`. */
-export interface ConfirmTertiaryAction {label:string;onSelect:()=>void;tone?:'destructive';disabled?:boolean}
+export interface ConfirmTertiaryAction {label:string;onSelect:()=>void;tone?:'destructive';disabled?:boolean;
+ /** The button's test ID, in place of `<testID>-tertiary`. */
+ testID?:string}
 export interface ConfirmBlockProps {
  /** The amount being sent, in token units. `null` reads as unknown. Leave it out, with `symbol`, `address` and `network`, for a confirmation that is not a send, such as signing out: the block then draws only the header, `children`, the notice and the actions. */
  amount?:number|null;
@@ -62,8 +64,16 @@ export interface ConfirmBlockProps {
  onCancel?:()=>void;
  /** Text of Cancel. Defaults to the built-in "Cancel". */
  cancelLabel?:string;
+ /** Draws Cancel unavailable without `busy`, for example while the host's own work runs and the confirming action is a step that does not show a spinner. */
+ cancelDisabled?:boolean;
+ /** The confirming action's test ID, in place of `<testID>-confirm`. */
+ confirmTestID?:string;
+ /** Cancel's test ID, in place of `<testID>-cancel`. */
+ cancelTestID?:string;
  /** Shows Back on the leading edge of the header. */
  onBack?:()=>void;
+ /** Pressable props for the header's Back, such as `{android_disableSound: true}` when the host plays its own sound, as `ScreenHeader` takes them. */
+ backProps?:ScreenHeaderControlProps;
  /** A control on the trailing edge of the header, usually an IconButton. */
  headerAction?:React.ReactNode;
  /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */
@@ -74,7 +84,7 @@ export interface ConfirmBlockProps {
  scrollComponent?:React.ComponentType<ScrollViewProps>;
  /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */
  headingId?:string;
- /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-body`, `-point-<index>`, `-warning`, `-confirm`, `-cancel` and `-tertiary`. Defaults to `confirm`. */
+ /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-body`, `-point-<index>`, `-warning`, `-confirm`, `-cancel` and `-tertiary`. Defaults to `confirm`. `confirmTestID`, `cancelTestID` and `tertiaryAction.testID` replace the last three one by one. */
  testID?:string;
 }
 const amountFormat:Intl.NumberFormatOptions={maximumFractionDigits:6};
@@ -86,7 +96,7 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. Without an amount, address or network it confirms anything else, such as signing out or deleting an account: the header, `children`, then the actions. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,cancelWhileBusy,backWhileBusy,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,cancelWhileBusy,backWhileBusy,onCancel,cancelLabel,cancelDisabled,confirmTestID,cancelTestID,onBack,backProps,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
  // What busy holds besides the confirming action: Back, Cancel and the tertiary action, unless the host lets them leave the wait (Back alone with backWhileBusy).
  const held=!!busy&&!cancelWhileBusy;
  const backHeld=held&&!backWhileBusy;
@@ -103,7 +113,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
  const toPart='to',networkPart='network',mono=monoFontFamily??Platform.select({ios:'Menlo',default:'monospace'}),type={fontFamily:mono,fontSize:15,lineHeight:22},
   shown=address===undefined?null:<Text accessible={false} maxFontSizeMultiplier={1.2} style={{...type,writingDirection:'ltr',textAlign:'left'}}>{confirmAddressRows(address).map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((part,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:part.anchor?colors.text:colors.muted,fontWeight:part.anchor?'700':'500'}}>{part.text}</Text>)}</React.Fragment>)}</Text>,
   lines=[...(address!==undefined?[line(toPart,t.sendTo,shown,address)]:[]),...(network!==undefined?[line(networkPart,t.sendNetwork,network)]:[]),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
- const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={backHeld} action={headerAction} headingId={headingId} testID={testID}/>;
+ const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={backHeld} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>;
  const hasBody=(children!=null&&children!==false)||!!points?.length;
  const tertiaryInert=held||!!tertiaryAction?.disabled;
  const body=<>
@@ -127,10 +137,10 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
   </View>:null}
   {notice}
   <View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
-   {onCancel?<Button testID={id('cancel')} intent='secondary' disabled={held} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
-   <Button testID={id('confirm')} intent={confirmIntent} busy={busy} disabled={confirmDisabled} onPress={onConfirm} style={{flex:1,alignSelf:'auto'}}>{confirmLabel??t.confirmSend}</Button>
+   {onCancel?<Button testID={cancelTestID??id('cancel')} intent='secondary' disabled={held||!!cancelDisabled} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
+   <Button testID={confirmTestID??id('confirm')} intent={confirmIntent} busy={busy} disabled={confirmDisabled} onPress={onConfirm} style={{flex:1,alignSelf:'auto'}}>{confirmLabel??t.confirmSend}</Button>
   </View>
-  {tertiaryAction?<Button testID={id('tertiary')} intent='ghost' fullWidth disabled={tertiaryInert} onPress={tertiaryAction.onSelect} accessibilityLabel={tertiaryAction.label} contentMode='custom' style={{marginTop:-8}}>
+  {tertiaryAction?<Button testID={tertiaryAction.testID??id('tertiary')} intent='ghost' fullWidth disabled={tertiaryInert} onPress={tertiaryAction.onSelect} accessibilityLabel={tertiaryAction.label} contentMode='custom' style={{marginTop:-8}}>
    <Text style={{fontSize:16,fontWeight:'600',textAlign:'center',color:tertiaryInert?colors.faint:tertiaryAction.tone==='destructive'?colors.negative:colors.muted}}>{tertiaryAction.label}</Text>
   </Button>:null}
  </>;

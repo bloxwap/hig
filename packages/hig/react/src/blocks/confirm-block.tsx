@@ -4,13 +4,15 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
-import {ScreenHeader} from './screen-header.js';
+import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 /** One more line under Network, such as a fee: host text on both edges. */
 export interface ConfirmDetail {label:string;value:React.ReactNode;
  /** What a `value` that is not text reads as. */
  valueLabel?:string}
 /** A full-width action under Cancel and Confirm, such as “Delete anyway”: a ghost button, in the negative colour with `tone='destructive'`. */
-export interface ConfirmTertiaryAction {label:string;onSelect:()=>void;tone?:'destructive';disabled?:boolean}
+export interface ConfirmTertiaryAction {label:string;onSelect:()=>void;tone?:'destructive';disabled?:boolean;
+ /** The button's `data-testid`. */
+ testID?:string}
 export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement>,'title'> {
  /** The amount being sent, in token units. `null` reads as unknown. Leave it out, with `symbol`, `address` and `network`, for a confirmation that is not a send, such as signing out: the block then draws only the header, `children`, the notice and the actions. */
  amount?:number|null;
@@ -60,8 +62,16 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  onCancel?:()=>void;
  /** Text of Cancel. Defaults to the built-in “Cancel”. */
  cancelLabel?:string;
+ /** Draws Cancel unavailable without `busy`, for example while the host's own work runs and the confirming action is a step that does not show a spinner. */
+ cancelDisabled?:boolean;
+ /** The confirming action's `data-testid`. */
+ confirmTestID?:string;
+ /** Cancel's `data-testid`. */
+ cancelTestID?:string;
  /** Shows Back on the leading edge of the header. */
  onBack?:()=>void;
+ /** Attributes for the header's Back `<button>`, such as a `data-testid`, as `ScreenHeader` takes them. */
+ backProps?:ScreenHeaderControlProps;
  /** A control on the trailing edge of the header, usually an `IconButton`. */
  headerAction?:React.ReactNode;
  /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */
@@ -78,7 +88,7 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. Without an amount, address or network it confirms anything else, such as signing out or deleting an account: the header, `children`, then the actions. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,cancelWhileBusy,backWhileBusy,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,cancelWhileBusy,backWhileBusy,onCancel,cancelLabel,cancelDisabled,confirmTestID,cancelTestID,onBack,backProps,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
  const {messages}=useHIG();
  // What busy holds besides the confirming action: Back, Cancel and the tertiary action, unless the host lets them leave the wait (Back alone with backWhileBusy).
  const held=!!busy&&!cancelWhileBusy;
@@ -87,7 +97,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
  const body=warning===undefined?(address!==undefined?(messages.sendWarning??en.sendWarning)(symbol??'',network??''):null):warning;
  const hasLines=address!==undefined||network!==undefined||!!details?.length;
  return <section {...rest} className={`hig-confirm${className?` ${className}`:''}`}>
-  <ScreenHeader title={heading} onBack={onBack} backDisabled={backHeld} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={heading} onBack={onBack} backDisabled={backHeld} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {amount!==undefined&&<p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions} label={amountLabel}/>{symbol?<> <span className='hig-confirm-symbol'>{symbol}</span></>:null}</p>}
   {hasLines&&<dl className='hig-confirm-details' data-one-line={oneLineDetails||undefined}>
    {address!==undefined&&<div><dt>{messages.sendTo??en.sendTo}</dt><dd><span className='hig-confirm-address' dir='ltr' translate='no'><span className='hig-sr-only'>{address}</span><span aria-hidden='true'>{confirmAddressRows(address).map((row,index)=><span key={index}>{row.map((part,offset)=><span key={offset} data-anchor={part.anchor||undefined}>{part.text}</span>)}</span>)}</span></span></dd></div>}
@@ -98,9 +108,9 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
   {body!=null&&body!==false&&<div className='hig-confirm-warning' role='note'><strong>{warningTitle??messages.sendWarningTitle??en.sendWarningTitle}</strong><p>{body}</p></div>}
   {notice}
   <div className='hig-confirm-actions'>
-   {onCancel&&<Button intent='secondary' disabled={held} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}
-   <Button intent={confirmIntent} busy={busy} disabled={confirmDisabled} onClick={onConfirm}>{confirmLabel??messages.confirmSend??en.confirmSend}</Button>
+   {onCancel&&<Button intent='secondary' disabled={held||cancelDisabled} data-testid={cancelTestID} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}
+   <Button intent={confirmIntent} busy={busy} disabled={confirmDisabled} data-testid={confirmTestID} onClick={onConfirm}>{confirmLabel??messages.confirmSend??en.confirmSend}</Button>
   </div>
-  {tertiaryAction&&<Button className='hig-confirm-tertiary' data-tone={tertiaryAction.tone} intent='ghost' fullWidth disabled={held||tertiaryAction.disabled} onClick={tertiaryAction.onSelect}>{tertiaryAction.label}</Button>}
+  {tertiaryAction&&<Button className='hig-confirm-tertiary' data-tone={tertiaryAction.tone} data-testid={tertiaryAction.testID} intent='ghost' fullWidth disabled={held||tertiaryAction.disabled} onClick={tertiaryAction.onSelect}>{tertiaryAction.label}</Button>}
  </section>;
 }
