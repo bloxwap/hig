@@ -1254,9 +1254,13 @@
         "entry": "animated-number-flow",
         "signature": "export declare function numberFlowWebMotion(timings: NumberFlowTimings): NumberFlowWebMotion;"
       },
+      "numberFlowCommit": {
+        "entry": "animated-number-flow",
+        "signature": "export declare const numberFlowCommit: {\n    /** A figure will read and write in the commit that is starting. */\n    expect(): void;\n    /** That figure has read all it needs: the last one to say so writes for all of them. */\n    done(): void;\n};"
+      },
       "NumberFlowEngine": {
         "entry": "animated-number-flow",
-        "signature": "export declare class NumberFlowEngine {\n    private root;\n    private before;\n    private extent;\n    private clip;\n    private readonly reels;\n    private readonly running;\n    private readonly fades;\n    private ghosts;\n    /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */\n    attach(root: HTMLElement | null): void;\n    /** Whether anything is still moving. */\n    get busy(): boolean;\n    /** First: where every part is now, read before the commit that changes them. */\n    measure(): void;\n    /** Last, invert, play: slide every part from where it was, fade in what arrived and fade out a copy of what left. Does nothing without a `measure` since the last call. */\n    flip(motion: NumberFlowWebMotion): void;\n    /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */\n    spin(spins: ReadonlyMap<string, NumberFlowSpin>, glyphs: readonly string[], timing: NumberFlowWebTiming): void;\n    /** Stop everything where it is going: the parts are left exactly as React drew them. */\n    cancel(): void;\n    private stop;\n    private settle;\n    private play;\n}"
+        "signature": "export declare class NumberFlowEngine {\n    private root;\n    private before;\n    private extent;\n    private clip;\n    private readonly reels;\n    private readonly slides;\n    private readonly running;\n    private readonly fades;\n    private ghosts;\n    private epoch;\n    /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */\n    attach(root: HTMLElement | null): void;\n    /** Whether anything is still moving. */\n    get busy(): boolean;\n    /** First: where every part is now, read before the commit that changes them. */\n    measure(): void;\n    /** Last, invert, play: slide every part from where it was, fade in what arrived and fade out a copy of what left. Does nothing without a `measure` since the last call. */\n    flip(motion: NumberFlowWebMotion): void;\n    /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */\n    spin(spins: ReadonlyMap<string, NumberFlowSpin>, glyphs: readonly string[], timing: NumberFlowWebTiming): void;\n    /** Stop everything where it is going: the parts are left exactly as React drew them. */\n    cancel(): void;\n    /** Writes now, or with the rest of the commit when other figures are still to read. A `cancel` in between drops it. */\n    private write;\n    /** Makes room on an element for another movement: one in flight alone becomes its additive twin, where it is and on the same clock. Returns what is still in flight. */\n    private join;\n    private stop;\n    private settle;\n    private play;\n}"
       },
       "AnimatedNumberToken": {
         "entry": "animated-number-model",
@@ -2674,7 +2678,7 @@
       },
       "createNumberReelModel": {
         "entry": "animated-number-model",
-        "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string, animateFormatted?: boolean): NumberReelModel | null;"
+        "signature": "export declare function createNumberReelModel(value: number | null | undefined, locale: string, options: Intl.NumberFormatOptions | undefined, formattedValue: string | undefined, direction: string, animateFormatted?: boolean, reading?: string): NumberReelModel | null;"
       },
       "numberReelPlace": {
         "entry": "animated-number-model",
