@@ -212,6 +212,9 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-toast-item[data-severity='warning'] .hig-toast-icon { color:var(--hig-warning); }
 .hig-toast-item[data-severity='error'] .hig-toast-icon { color:var(--hig-negative); }
 .hig-toast-message { flex:1;min-width:0; }
+/* A notice with a description is two lines tall, so its corners keep the one-line radius. */
+.hig-toast-item[data-described] { border-radius:22px;padding-block:8px; }
+.hig-toast-description { display:block;font-weight:400; }
 /* Inside Sonner's fixed-width slot the capsule hugs its content and centres. */
 [data-sonner-toast] .hig-toast-item { margin-inline:auto; }
 .hig-toast-item .hig-button { min-height:32px;padding-block:2px; }
@@ -950,6 +953,8 @@ span.hig-press-decoration[data-kind] > * { pointer-events:auto; }
 }
 [data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-accordion > .hig-accordion-summary,[data-hig-motion='reduced'] .hig-accordion-chevron,[data-hig-motion='reduced'] .hig-switch input,[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-segment-indicator,[data-hig-motion='reduced'] .hig-filter-chip,[data-hig-motion='reduced'] .hig-filter-mark,[data-hig-motion='reduced'] .hig-filter-mark > img,[data-hig-motion='reduced'] .hig-filter-mark path,[data-hig-motion='reduced'] .hig-swap-card,[data-hig-motion='reduced'] .hig-swap-flip > *,[data-hig-motion='reduced'] .hig-screen-header[data-sticky],[data-hig-motion='reduced'] .hig-profile-bar[data-sticky],[data-hig-motion='reduced'] .hig-setting-meter > span,[data-hig-motion='reduced'] .hig-reward-track > span,[data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-bar-mark-segment,[data-hig-motion='reduced'] .hig-bar-mark-rest,[data-hig-motion='reduced'] .hig-bar-pnl-rest,[data-hig-motion='reduced'] .hig-bar-pnl-move,[data-hig-motion='reduced'] .hig-bar-pnl-liquidation { transition:none; }
 [data-hig-motion='reduced'] .hig-button-spinner,[data-hig-motion='reduced'] .hig-skeleton,[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'] .hig-popover,[data-hig-motion='reduced'].hig-popover,[data-hig-motion='reduced'] .hig-progress progress:not([value]),[data-hig-motion='reduced'] .hig-spinner-indicator,[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before,[data-hig-motion='reduced'] .hig-swap-view,[data-hig-motion='reduced'] .hig-screen-header[data-sticky] { animation:none; }
+/* Sonner honours the OS preference itself; this covers a provider that asks for reduced motion on its own. */
+[data-hig-motion='reduced'] [data-sonner-toast],[data-hig-motion='reduced'] [data-sonner-toast] > * { transition:none!important;animation:none!important; }
 /* Selectors some engines do not parse stay in rules of their own, so they cannot drop the lists above. */
 @media(prefers-reduced-motion:reduce) { .hig-accordion::details-content { transition:none; } .hig-progress progress:not([value])::-webkit-progress-bar { animation:none; } }
 [data-hig-motion='reduced'] .hig-accordion::details-content { transition:none; }

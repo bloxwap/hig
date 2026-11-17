@@ -41,6 +41,11 @@
       "import": "./contracts/dist/messages.js",
       "default": "./contracts/dist/messages.js"
     },
+    "./contracts/toast": {
+      "types": "./contracts/dist/toast.d.ts",
+      "import": "./contracts/dist/toast.js",
+      "default": "./contracts/dist/toast.js"
+    },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
       "import": "./native-fonts/dist/index.js",
@@ -597,6 +602,11 @@
       "types": "./native/dist/animated-number.d.ts",
       "import": "./native/dist/animated-number.js",
       "default": "./native/dist/animated-number.js"
+    },
+    "./native/toast": {
+      "types": "./native/dist/toast.d.ts",
+      "import": "./native/dist/toast.js",
+      "default": "./native/dist/toast.js"
     },
     "./package.json": "./package.json"
   },

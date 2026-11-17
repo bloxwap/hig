@@ -2,7 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {ActivityIndicator,Animated,Easing,View,Image,ScrollView,useWindowDimensions,AccessibilityInfo,Platform,type DimensionValue,type ImageSourcePropType,type ViewProps,type TextProps} from 'react-native';
+import {ActivityIndicator,Animated,Easing,View,Image,ScrollView,useWindowDimensions,Platform,type DimensionValue,type ImageSourcePropType,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
 import {Button} from './button.js';
@@ -10,11 +10,11 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useFills,useHIG} from './provider.js';
 import {blockText,plainText} from './text-content.js';
 import {roleColor,type AccentRole} from './roles.js';
+import {speak} from './announce.js';
 export type {AccentRole} from './roles.js';
 const severityRole={info:'info',note:'info',success:'positive',tip:'positive',warning:'warning',error:'negative'} as const;
 /** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (a faint `text` tint, title in `text`). */
 export type AlertSeverity=keyof typeof severityRole|'default';
-function speak(message:string,severity:string){if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}
 /** Neutral chip in the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
 export function Badge({children}:React.PropsWithChildren){const fills=useFills();return <Text style={{alignSelf:'flex-start',maxWidth:'100%',backgroundColor:fills.well,overflow:'hidden',borderRadius:9999,paddingVertical:4,paddingHorizontal:10}}>{children}</Text>;}
 /** Opaque sRGB blend of `tone` into `base` (both `#rrggbb`): the native counterpart of CSS `color-mix`. */
@@ -42,9 +42,33 @@ export interface ToastProps {
 }
 /** Loops a 0→1 value while `active`; rests at 0 otherwise (reduced motion, or nothing to show). */
 function useLoop(active:boolean,duration:number,easing:(value:number)=>number=Easing.linear){const value=useRef(new Animated.Value(0)).current;useEffect(()=>{if(!active){value.stopAnimation();value.setValue(0);return;}const loop=Animated.loop(Animated.timing(value,{toValue:1,duration,easing,useNativeDriver:Platform.OS!=='web',isInteraction:false}));loop.start();return()=>loop.stop();},[active,duration,easing,value]);return value;}
+export interface ToastNoticeProps {
+ message:string;
+ /** A second line under the message, in regular weight. */
+ description?:string;
+ severity?:Notice['severity'];
+ action?:React.ReactNode;
+ /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */
+ dismissName?:string;
+ /** Draws the close control and takes its press. Omitted, the notice has none. */
+ onDismiss?:()=>void;
+ /** Merged over the capsule's fill, radius and shadow. */
+ style?:StyleProp<ViewStyle>;
+}
+/** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the transient `Toaster` of `@bloxwap/hig/native/toast`; it announces nothing itself. It is as wide as its content when its parent does not stretch it. */
+export function ToastNotice({message,description,severity='info',action,dismissName,onDismiss,style}:ToastNoticeProps){
+ const {messages,direction}=useHIG();const colors=useColors();
+ const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null;
+ return <View accessibilityLiveRegion='none' style={[{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'},style]}>
+  <SeverityIcon kind={severity} color={colors[severityRole[severity]]}/>
+  <View style={{flexShrink:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{message}</Text>{description?<Text>{description}</Text>:null}</View>
+  {/* The trailing group takes the free space as its margin, so nothing in the row grows and a capsule that is not stretched stays as wide as its content. */}
+  {action!=null||close?<View style={{flexDirection:'row',alignItems:'center',gap:10,marginStart:'auto'}}>{action}{close}</View>:null}
+ </View>;
+}
 /** Each notice is one capsule row: severity symbol, message, optional action, then a close control. Compact, scrollable notices remain visible until their host removes them. */
 export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastProps){
- const {messages,direction}=useHIG();const colors=useColors();
+ const {messages}=useHIG();
  const {height}=useWindowDimensions();
  const dismiss=dismissLabel??messages.dismiss??en.dismiss;
  const unique=[...new Map(notices.map(n=>[n.id,n])).values()];
@@ -63,12 +87,7 @@ export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastPro
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <View testID={testID} style={{maxHeight:maxHeight??height*.6,flexShrink:1}}>
   <ScrollView style={{flexGrow:0,flexShrink:1}} nestedScrollEnabled keyboardShouldPersistTaps='handled' accessibilityLabel={messages.notifications??en.notifications}>
-   <Stack style={{gap:8}}>{unique.map(n=><View key={n.id} accessibilityLiveRegion='none' style={{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'}}>
-    <SeverityIcon kind={n.severity} color={colors[severityRole[n.severity]]}/>
-    <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{n.message}</Text>{n.description?<Text>{n.description}</Text>:null}</View>
-    {n.action}
-    {n.closable!==false&&onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} hitSlop={8} onPress={()=>onDismiss(n.id)} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null}
-   </View>)}</Stack>
+   <Stack style={{gap:8}}>{unique.map(n=><ToastNotice key={n.id} message={n.message} description={n.description} severity={n.severity} action={n.action} dismissName={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onDismiss={n.closable!==false&&onDismiss?()=>onDismiss(n.id):undefined}/>)}</Stack>
   </ScrollView>
   {Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}
  </View>;
