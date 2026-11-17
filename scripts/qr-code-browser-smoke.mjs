@@ -59,7 +59,7 @@ const sources={
 };
 const scale=2;
 for(const [renderer,source] of Object.entries(sources).filter(([renderer])=>!process.env.HIG_QR_RENDERER||process.env.HIG_QR_RENDERER===renderer)){
- const bundle=await build({stdin:{contents:source,resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json'],alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"',__DEV__:'false',global:'globalThis'}});
+ const bundle=await build({stdin:{contents:source,resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json'],alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"','process.env.EXPO_OS':'"web"',__DEV__:'false',global:'globalThis'}});
  for(const [engine,type] of Object.entries({chromium,webkit})){
   const browser=await launchBrowser(type,{headless:true});
   try{for(const direction of ['ltr','rtl']){

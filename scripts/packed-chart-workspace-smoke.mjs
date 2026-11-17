@@ -61,7 +61,7 @@ function host(name,{higTarball=tarball}={}){
  writeFileSync(join(chart,'package.json'),JSON.stringify(chartManifest,null,2));
  mkdirSync(join(root,'vendor'));
  const vendored={'@bloxwap/hig':higTarball};
- const dependencies={'@bloxwap/chart':chartVersion,react:'19.2.0','react-dom':'19.2.0'};
+ const dependencies={'@bloxwap/chart':chartVersion,'@bloxwap/icons':'^0.1.0',react:'19.2.0','react-dom':'19.2.0'};
  for(const [pkg,file] of Object.entries(vendored)){const target=join(root,'vendor',`${pkg.slice(1).replace('/','-')}.tgz`);cpSync(file,target);dependencies[pkg]=`file:../../${relative(root,target)}`;}
  mkdirSync(join(root,'apps/docs'),{recursive:true});
  writeFileSync(join(root,'apps/docs/package.json'),JSON.stringify({name:'@bloxwap/chart-docs',version:chartVersion,private:true,type:'module',dependencies},null,2));

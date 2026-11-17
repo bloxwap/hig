@@ -84,7 +84,7 @@ const sources={
 };
 /** The page for one copy of the packages: its stylesheet and its bundle. */
 async function document(root){
- const bundle=await build({stdin:{contents:sources[renderer],resolveDir:resolve(root),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',plugins:[counted(root)],resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json'],alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"',__DEV__:'false',global:'globalThis'}});
+ const bundle=await build({stdin:{contents:sources[renderer],resolveDir:resolve(root),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',plugins:[counted(root)],resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json'],alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"','process.env.EXPO_OS':'"web"',__DEV__:'false',global:'globalThis'}});
  return `<!doctype html><html lang="en"><head><style>${tokens}${readFileSync(`${root}/packages/hig/react/src/styles.css`,'utf8')}body{margin:24px;background:var(--hig-background);color:var(--hig-text)}#root>div>div{display:flex;flex-wrap:wrap;gap:8px}</style></head><body><main id="root"></main><script>${bundle.outputFiles[0].text.replaceAll('</script','<\\/script')}</script></body></html>`;
 }
 const pages=await Promise.all(roots.map(document));
