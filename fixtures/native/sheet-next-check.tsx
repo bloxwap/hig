@@ -55,7 +55,7 @@ function Check(){
   timers.current.push(setTimeout(()=>{setOpen(null);setStatus('done');},600+9*900+600));
  },[]);
  useEffect(()=>{
-  const run=(url:string|null)=>{if(!url)return;const match=/engine=(next|gorhom).*case=(list|content)/.exec(url);if(match)start(match[1] as Engine,match[2] as Case,/manual=1/.test(url));};
+  const run=(url:string|null|undefined)=>{if(!url)return;const match=/engine=(next|gorhom).*case=(list|content)/.exec(url);if(match)start(match[1] as Engine,match[2] as Case,/manual=1/.test(url));};
   void Linking.getInitialURL().then(run);const subscription=Linking.addEventListener('url',event=>run(event.url));
   return()=>{subscription.remove();clear();};
  },[start]);
