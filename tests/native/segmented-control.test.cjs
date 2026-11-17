@@ -78,3 +78,13 @@ it('reaches a 48dp touch target at either density, with vertical slop only so se
   act(()=>root.unmount());root=null;
  }
 });
+
+it('takes a group testID, gives each segment <testID>-<value>, and lets an option set its own test ID',()=>{
+ mount({testID:'mode',options:[{value:'all',label:'All'},{value:'open',label:'Open',testID:'mode-open-custom'},{value:'trend',label:'Trend'}]});
+ expect(root.root.findAll(node=>node.props.testID==='mode'&&typeof node.type==='string')).toHaveLength(1);
+ expect(radios().map(node=>node.props.testID)).toEqual(['mode-all','mode-open-custom','mode-trend']);
+ act(()=>root.unmount());
+ // Without a group testID only the option that sets one has a test ID.
+ mount({options:[{value:'all',label:'All'},{value:'open',label:'Open',testID:'open-only'}]});
+ expect(radios().map(node=>node.props.testID)).toEqual([undefined,'open-only']);
+});
