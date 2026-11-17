@@ -468,6 +468,15 @@
       ]
     },
     {
+      "name": "Confetti",
+      "route": "components/confetti",
+      "entry": "confetti",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "NumberReadout",
       "route": "components/number-readout",
       "entry": "data",

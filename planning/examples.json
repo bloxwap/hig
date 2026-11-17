@@ -760,6 +760,20 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "Confetti",
+      "slug": "confetti",
+      "entry": "confetti",
+      "family": "status",
+      "web": "<><C.Button onClick={()=>setRange(range+1)}>Celebrate</C.Button><C.Confetti trigger={range-25} options={{particleCount:80,spread:70,origin:{y:0.7}}}/></>",
+      "native": "<><C.Button onPress={()=>setRange(range+1)}>Celebrate</C.Button><C.Confetti trigger={range-25} options={{particleCount:80,spread:70,origin:{y:0.7}}}/></>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Decoration only: the canvas (web) and the layer (native) are hidden from assistive technology and take no pointer events or touches; no burst is drawn under reduced motion unless the call opts out; the host shows and announces the result being celebrated",
+      "feedback": "none; the host owns the outcome it celebrates"
+    },
+    {
       "name": "NumberReadout",
       "slug": "number-readout",
       "entry": "data",

@@ -41,6 +41,11 @@
       "import": "./contracts/dist/messages.js",
       "default": "./contracts/dist/messages.js"
     },
+    "./contracts/confetti": {
+      "types": "./contracts/dist/confetti.d.ts",
+      "import": "./contracts/dist/confetti.js",
+      "default": "./contracts/dist/confetti.js"
+    },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
       "import": "./native-fonts/dist/index.js",
@@ -342,6 +347,16 @@
       "types": "./native/dist/confirm-block.d.ts",
       "import": "./native/dist/confirm-block.js",
       "default": "./native/dist/confirm-block.js"
+    },
+    "./react/confetti": {
+      "types": "./react/dist/confetti.d.ts",
+      "import": "./react/dist/confetti.js",
+      "default": "./react/dist/confetti.js"
+    },
+    "./native/confetti": {
+      "types": "./native/dist/confetti.d.ts",
+      "import": "./native/dist/confetti.js",
+      "default": "./native/dist/confetti.js"
     },
     "./react/blocks/assets-block": {
       "types": "./react/dist/blocks/assets-block.d.ts",

@@ -2,9 +2,9 @@
 
 Visible progress, notifications, and recoverable states that keep people informed.
 
-Includes `Badge`, `Alert`, `Callout`, `Toast`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, and `StatusIndicator`.
+Includes `Badge`, `Alert`, `Callout`, `Toast`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, `StatusIndicator`, and `Confetti`.
 
-Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import. `Confetti` has its own entries, `@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti`; see [Confetti](#confetti).
 
 ## API and anatomy
 
@@ -32,9 +32,87 @@ Native `EmptyState` keeps the default `Surface`, `Heading` and body-text anatomy
 
 The mark and clear-filter action remain host-owned. `tests/native/empty-state.test.cjs` verifies default anatomy, omitted descriptions, decorative accessibility metadata, real text/root props and accepted action delivery; these wiring checks are not physical-device accessibility certification.
 
+## Confetti
+
+A burst of confetti for a result worth celebrating, such as a winning close. It is HIG's own on both platforms, with no third-party confetti package, and has its own entries: `@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti`. Both export the same two things: `confetti(options)`, which fires one burst and returns a promise that resolves when it has finished, and `Confetti`, the host mounted once. The options are those of [canvas-confetti](https://www.kirilv.com/canvas-confetti/), so a call written for it maps over.
+
+```tsx
+import {Confetti, confetti} from '@bloxwap/hig/react/confetti'; // native: '@bloxwap/hig/native/confetti'
+
+// Once, inside HIGProvider. On native this is the layer the pieces fly in: mount it last in the screen root.
+<Confetti />
+
+// From an event handler or an effect.
+await confetti({particleCount: 100, spread: 70, origin: {y: 0.7}});
+
+// Or declaratively: fires when `trigger` is truthy, on mount and on each change to another truthy value.
+<Confetti trigger={winCount} options={{particleCount: 100, spread: 70, origin: {y: 0.7}}} />
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `particleCount` | `50` | How many pieces the burst launches. |
+| `angle` | `90` | Launch direction in degrees: 90 is straight up, 0 towards the right edge, 180 towards the left. |
+| `spread` | `45` | How far, in degrees, pieces may stray from `angle` in total. |
+| `startVelocity` | `45` | Launch speed in pixels per tick. Each piece starts between half and one and a half times this. |
+| `decay` | `0.9` | The share of its launch speed a piece keeps each tick. |
+| `gravity` | `1` | Pull downwards: 1 falls at full speed, 0 floats, a negative value rises. |
+| `drift` | `0` | Sideways push in pixels per tick; positive is towards the right edge. |
+| `ticks` | `200` | How long the burst lasts, in ticks of 1/60 s (200 is about 3.3 seconds). Pieces fade out over it. |
+| `origin` | `{x: 0.5, y: 0.5}` | Where the burst starts, as a share of the viewport (web) or of the `Confetti` layer (native). |
+| `colors` | token roles | Colours dealt to the pieces in turn. See Colour below. |
+| `shapes` | `['square', 'circle']` | Shapes picked at random for each piece: `'square'`, `'circle'` or `'star'`. |
+| `scalar` | `1` | Scales every piece. |
+| `flat` | `false` | Pieces neither tumble nor wobble. |
+| `disableForReducedMotion` | `true` | Draws nothing when reduced motion is on. |
+| `zIndex` | `100` | Web only: stacking order of the canvas, read from the burst that creates it. |
+
+`Confetti` takes `trigger` and `options` (one burst, or an array fired together); native adds `style` and `testID` for the layer. `confetti.reset()` stops every burst at once and resolves their promises. `mirrorConfetti(options)` returns the same burst seen in a mirror.
+
+Several calls in a row make one celebration. A fireworks call written for canvas-confetti maps over call for call:
+
+```tsx
+const base = {origin: {y: 0.7}};
+confetti({...base, particleCount: 50, spread: 26, startVelocity: 55});
+confetti({...base, particleCount: 40, spread: 60});
+confetti({...base, particleCount: 70, spread: 100, decay: 0.91, scalar: 0.8});
+confetti({...base, particleCount: 20, spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2});
+confetti({...base, particleCount: 20, spread: 120, startVelocity: 45});
+```
+
+### Confetti colour
+
+Without `colors`, pieces take the provider's `action`, `info`, `down`, `warning` and `up` roles in turn, so a custom `primaryColor` or `marketColors` shows in the burst. On web these are read from the `--hig-*` variables at the host, which hold `color(display-p3 …)` values where the browser supports them, and the canvas itself is a Display P3 canvas on a screen that can show it; elsewhere both fall back to sRGB. On native they come from `useColors()`: the Display P3 table on an iOS host that paints P3 (`HIGProvider colorSpace='display-p3'`), sRGB otherwise, as for every native component.
+
+A colour passed in `colors` is painted as given. On web that is any CSS colour: a hex colour is sRGB and stays inside sRGB on a P3 screen, so pass `color(display-p3 …)` for a colour outside it. On native it is any React Native colour, read in the host's colour space.
+
+### Confetti motion and performance
+
+The flight is one set of pure functions in `@bloxwap/hig/contracts/confetti`, used by both platforms. It restates canvas-confetti's frame-by-frame update as a function of time, so a piece is where canvas-confetti puts it at every whole tick, and a burst takes the same time on a 60 Hz and a 120 Hz display and after a dropped frame.
+
+- Web: every burst shares one full-viewport canvas and one `requestAnimationFrame` loop. The canvas is created by the first burst, sized for the device pixel ratio, takes no pointer events, and is removed when the last piece has gone. All pieces of one colour in a burst are one path filled once. React renders nothing while a burst flies.
+- Native: React renders once when a burst starts and once when it ends. In between one Reanimated clock per burst runs on the UI thread, and each piece, a plain view, reads its transform and opacity from it. Nothing is laid out per frame. A burst of about 100 pieces is the intended size; larger bursts mount one view a piece.
+
+### Confetti accessibility and direction
+
+Confetti is decoration. The canvas (`aria-hidden`) and the native layer are hidden from assistive technology and take no pointer events or touches; show and announce the result itself with the content it belongs to. Under reduced motion (`HIGProvider reducedMotion`, else the system setting) a call draws nothing and resolves at once, unless it passes `disableForReducedMotion: false`. canvas-confetti defaults the other way.
+
+Confetti is physical: `origin.x` 0 is the left edge and a positive `drift` goes right in both text directions, on both platforms. For a cannon that should fire from the leading edge, pass the options through `mirrorConfetti` when the direction is right-to-left. No text is drawn, so large text does not apply.
+
+### Confetti platform differences
+
+- Web needs no host: without a mounted `Confetti`, `confetti()` reads colours from the document root and reduced motion from the system. Native needs one: without it a call resolves and draws nothing.
+- The web canvas covers the viewport and sits in the document body. The native layer fills the parent of `Confetti`, and `origin` is a share of that layer.
+- Web draws canvas-confetti's shapes exactly: a square is a slanted, fluttering parallelogram. React Native cannot slant a view on Android, so native draws the rectangle with the same centre, area and long and short axes; circles are exact. Native draws a `'star'` as a square.
+- A burst left running when its web host unmounts finishes; on native it stops with the layer and its promise resolves.
+- The native entry needs the Reanimated and Worklets peers. The web entry needs no peer and no stylesheet.
+- Not supported: canvas-confetti's `useWorker`, `confetti.create`, `shapeFromPath` and `shapeFromText`.
+
+`tests/confetti-model.test.ts` checks the flight against canvas-confetti's update with a seeded random source; `tests/confetti.dom.test.tsx` and `tests/native/confetti.test.cjs` check each renderer against stand-ins for the canvas and for Reanimated. How a burst looks in a browser and its frame rate on iOS and Android devices have not been observed.
+
 ## When to use and examples
 
-Do: keep critical failure inline with Retry; use toast for copied acknowledgement. Don’t: dismiss critical text on a timer or rely on audio for success.
+Do: keep critical failure inline with Retry; use toast for copied acknowledgement; keep confetti for a rare, real win and show the result itself in content. Don’t: dismiss critical text on a timer, rely on audio for success, or let confetti be the only sign that something happened.
 
 ## States, interaction and accessibility
 

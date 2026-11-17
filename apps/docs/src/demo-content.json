@@ -325,6 +325,10 @@
       "title": "StatusIndicator"
     },
     {
+      "route": "components/confetti",
+      "title": "Confetti"
+    },
+    {
       "route": "components/number-readout",
       "title": "NumberReadout"
     },
@@ -958,6 +962,15 @@
       "states": [
         "default",
         "error"
+      ]
+    },
+    {
+      "name": "Confetti",
+      "route": "components/confetti",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
       ]
     },
     {
