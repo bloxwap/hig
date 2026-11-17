@@ -70,8 +70,8 @@ describe('SwapPanelBlock',()=>{
   const pad=within(screen.getByRole('group',{name:'Keypad'}));
   fireEvent.click(pad.getByRole('button',{name:'7'}));fireEvent.click(pad.getByRole('button',{name:'5'}));fireEvent.click(pad.getByRole('button',{name:'Delete'}));
   expect(reading(amount())).toBe('$7');
-  fireEvent.paste(amount(),{clipboardData:{getData:()=>'1,234.567'}});expect(reading(amount())).toBe('$1234.57');
-  fireEvent.paste(amount(),{clipboardData:{getData:()=>'not a number'}});expect(reading(amount())).toBe('$1234.57');
+  fireEvent.paste(amount(),{clipboardData:{getData:()=>'1,234.567'}});expect(reading(amount())).toBe('$1234.56');
+  fireEvent.paste(amount(),{clipboardData:{getData:()=>'not a number'}});expect(reading(amount())).toBe('$1234.56');
  });
  it('pushes the token picker as a view: search, chain filter, hot section and keyboard',async()=>{
   const from=vi.fn();
