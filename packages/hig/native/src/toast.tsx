@@ -82,6 +82,8 @@ const EXIT={duration:TOAST_EXIT.duration,easing:Easing.bezier(...TOAST_EXIT.curv
 const FADE={duration:TOAST_REDUCED_FADE,easing:Easing.bezier(...TOAST_EXIT.curve),reduceMotion:ReduceMotion.Never};
 const NO_INSETS={top:0,right:0,bottom:0,left:0} as const;
 interface Stack {keys:number[];heights:number[]}
+// A card renders again when its place in the stack changes how it takes touches; what it shows has not changed then, so the capsule is skipped.
+const Capsule=memo(ToastNotice);
 interface CardProps {
  entry:Entry;front:boolean;hidden:boolean;interactive:boolean;lift:1|-1;gap:number;visible:number;reduce:boolean;
  left:boolean;right:boolean;up:boolean;down:boolean;narrow:boolean;testID?:string;
@@ -180,7 +182,7 @@ const Card=memo(function Card({entry,front,hidden,interactive,lift,gap,visible,r
  // A notice behind a collapsed stack, or past the visible ones, shows no content: it takes no touches and assistive technology skips it.
  return <GestureDetector gesture={pan}>
   <Reanimated.View testID={name} onLayout={onLayout} pointerEvents={interactive?'auto':'none'} accessibilityElementsHidden={hidden||(!front&&!interactive)} importantForAccessibility={hidden||(!front&&!interactive)?'no-hide-descendants':'auto'} style={[styles.card,lift===1?styles.top:styles.bottom,narrow?styles.narrow:styles.wide,{backgroundColor:colors.nested},cardStyle]}>
-   <Reanimated.View style={contentStyle}><ToastNotice message={value.message} description={value.description} severity={value.severity} action={value.action} dismissName={value.dismissName} onDismiss={dismiss} hug style={styles.bare}/></Reanimated.View>
+   <Reanimated.View style={contentStyle}><Capsule message={value.message} description={value.description} severity={value.severity} action={value.action} dismissName={value.dismissName} onDismiss={dismiss} hug style={styles.bare}/></Reanimated.View>
   </Reanimated.View>
  </GestureDetector>;
 });
@@ -209,7 +211,12 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
  const heights=useRef(new Map<number,number>()).current,published=useRef<Stack>({keys:[],heights:[]});
  const clocks=useRef(new Map<number,{clock:ToastClock;revision:number;timer:ReturnType<typeof setTimeout>|null}>()).current;
  const holds=useRef(new Set<number>()).current,awake=useRef(AppState.currentState!=='background'&&AppState.currentState!=='inactive');
- const latest=useRef({order,visible,duration});latest.current={order,visible,duration};
+ // The notices the last commit drew. One that leaves stays for its exit only if it is among them: a notice waiting behind the stack has nothing on screen to take away, so no card is mounted to play its exit.
+ const drawn=useRef<ReadonlySet<number>>(new Set());
+ const rank=new Map(order.map((entry,index)=>[entry.key,index]));
+ // One notice past the visible ones stays mounted and transparent, so the notice the stack pushes out fades where it is and the one it uncovers is ready.
+ const mounted=active?list.filter(entry=>entry.leaving?drawn.current.has(entry.key)&&heights.has(entry.key):rank.get(entry.key)!<=visible):[];
+ const latest=useRef({order,visible,duration,mounted});latest.current={order,visible,duration,mounted};
  // The stack the UI thread lays out: live notices that have been measured, front first. A new notice joins when its height is known, so nothing moves for it before it can be placed.
  const publish=useCallback(()=>{
   const keys:number[]=[],sizes:number[]=[];
@@ -251,8 +258,9 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
   const touchable=new Set<number>();latest.current.order.forEach((entry,index)=>{if(index<visible&&(index===0||open))touchable.add(entry.key);});
   reach.current=touchable;
   for(const key of [...holds])if(!touchable.has(key))holds.delete(key);
-  // A notice dismissed before it was ever drawn has no exit to play.
-  if(active)for(const entry of list)if(entry.leaving&&!heights.has(entry.key))forget(entry.key);
+  drawn.current=new Set(latest.current.mounted.map(entry=>entry.key));
+  // A notice dismissed while it is not drawn, or before it was laid out, has no exit to play.
+  if(active)for(const entry of list)if(entry.leaving&&!drawn.current.has(entry.key))forget(entry.key);
   publish();settle();
  },[active,list,visible,duration,open,heights,holds,publish,settle]);
  useEffect(()=>{const subscription=AppState.addEventListener('change',state=>{awake.current=state==='active';sync();});return()=>subscription.remove();},[sync]);
@@ -266,9 +274,6 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
  },[active,order]);
  const edge=toastEdge(position);
  const directions=useMemo(()=>swipeDirections??toastSwipeDirections(position),[swipeDirections,position]);
- const rank=new Map(order.map((entry,index)=>[entry.key,index]));
- // One notice past the visible ones stays mounted and transparent, so the notice the stack pushes out fades where it is and the one it uncovers is ready.
- const mounted=active?list.filter(entry=>entry.leaving?heights.has(entry.key):rank.get(entry.key)!<=visible):[];
  if(mounted.length===0)return null;
  const narrow=width<TOAST_NARROW,fallback=narrow?TOAST_NARROW_OFFSET:TOAST_OFFSET;
  const distance=(side:'top'|'right'|'bottom'|'left')=>(typeof offset==='object'?offset[side]:offset)??fallback;
