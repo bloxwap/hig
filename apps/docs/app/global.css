@@ -4,6 +4,7 @@
 @source '../components';
 @source '../lib';
 @source '../src/*.tsx';
+@source '../src/toast-alternatives';
 @source '../content';
 @source '../mdx-components.tsx';
 @import 'fumadocs-ui/css/neutral.css';
@@ -31,3 +32,26 @@
 .brand-name small{font-size:.7rem;font-weight:400;color:var(--hig-muted)}
 .docs-version{padding-top:.75rem;font-size:.7rem;color:var(--hig-muted)}
 
+
+@theme inline {
+ --color-bloxwap-green: var(--bloxwap-green);
+ --color-bloxwap-pink: var(--bloxwap-pink);
+ --color-bloxwap-yellow: var(--bloxwap-yellow);
+ --color-bloxwap-blue: var(--bloxwap-blue);
+ --color-background: var(--color-fd-background);
+ --color-foreground: var(--color-fd-foreground);
+ --color-muted: var(--color-fd-muted);
+ --color-muted-foreground: var(--color-fd-muted-foreground);
+ --color-border: var(--color-fd-border);
+ --color-on-brand: #111;
+}
+[aria-label="Monorepo toast alternatives"] {
+ --bloxwap-green: #00ff3f;
+ --bloxwap-pink: #ff479c;
+ --bloxwap-yellow: #fffb38;
+ --bloxwap-blue: #35b5ff;
+}
+
+[aria-label="Monorepo toast alternatives"] { --hig-up: #00ff3f; --hig-down: #ff479c; --dir-up: #00ff3f; --dir-down: #ff479c; }
+
+.feedback-block-modal { --bloxwap-pink: #ff479c; --bloxwap-yellow: #fffb38; }

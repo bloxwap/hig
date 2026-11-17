@@ -2,7 +2,7 @@ import React from 'react';
 import {afterEach,beforeEach,it,expect,vi} from 'vitest';
 import {render,screen,cleanup,act} from '@testing-library/react';
 import {HIGProvider} from '@bloxwap/hig/react/provider';
-import {AltimeterChart,bitcoinPrice,type AltimeterFeed} from '../packages/hig/chart/src/index';
+import {AltimeterChart,bitcoinPrice,type AltimeterFeed,type AltimeterTarget} from '../packages/hig/chart/src/index';
 import {drawAltimeter} from '../packages/hig/chart/src/altimeter-chart';
 
 // jsdom has no canvas. A recording context stands in, and frames are stepped by hand.
@@ -64,6 +64,19 @@ it('the price eases over 300ms, and snaps with reduced motion',()=>{
  const reduced=render(view(100,true));frame(1000);reduced.rerender(view(100.01,true));frame(1016);expect(centerLabelY()).toBeCloseTo(144,5);
 });
 
+it('does not teleport the target lines when a feed update interrupts an unfinished move',()=>{
+ let push:(price:number)=>void=()=>{};
+ const feed:AltimeterFeed=listener=>{push=listener;listener(100);return()=>{};};
+ render(<HIGProvider><AltimeterChart summary='Streaming' feed={feed} height={800} targets={[{id:'entry',price:100,label:'Entry'}]}/></HIGProvider>);
+ frame(1000);push(100.04);frame(1400);frame(1550);
+ const line=document.querySelector<HTMLElement>('[data-hig-altimeter-target="entry"]')!;
+ const before=line.style.transform;
+ push(99.98);frame(1550);
+ expect(line.style.transform).toBe(before);
+ frame(1566);
+ expect(Math.abs(parseFloat(line.style.transform.slice(11))-parseFloat(before.slice(11)))).toBeLessThan(2);
+});
+
 it('without a price it subscribes to the feed, draws from it, and stops it on unmount',()=>{
  let push:(price:number)=>void=()=>{};const stop=vi.fn();const feed:AltimeterFeed=vi.fn(onPrice=>{push=onPrice;return stop;});
  const {unmount}=render(<HIGProvider><AltimeterChart summary='Feed' feed={feed}/></HIGProvider>);
@@ -82,6 +95,134 @@ it('a host price never opens the feed',()=>{
  expect(feed).not.toHaveBeenCalled();
 });
 
+it('positions colored dotted targets on the eased price scale and exposes localized values as text',()=>{
+ const targets:AltimeterTarget[]=[{id:'tp',price:100.01,label:'Take profit',color:'var(--profit)'},{id:'entry',price:100},{id:'offscreen',price:101,label:'Far target'},{id:'invalid',price:NaN}];
+ const view=(price:number|null)=><HIGProvider locale='de-DE'><AltimeterChart summary='Targets' price={price} targets={targets} height={200} priceOptions={{currency:'EUR'}}/></HIGProvider>;
+ const {rerender}=render(view(100));frame(1000);
+ const row=()=>document.querySelector<HTMLElement>('[data-hig-altimeter-target="tp"]')!;
+ const label=()=>document.querySelector<HTMLElement>('[data-hig-altimeter-target-label="tp"]')!;
+ expect(row().style.transform).toMatch(/translateY\(55\.99/);
+ expect(row().style.borderTopStyle).toBe('dotted');expect(row().style.color).toBe('var(--profit)');
+ expect(label().textContent?.replace(/\s/g,' ')).toBe('Take profit 100,01 €');
+ expect(screen.getByRole('list').textContent?.replace(/\s/g,' ')).toContain('Take profit: 100,01 €');
+ const pinned=document.querySelector<HTMLElement>('[data-hig-altimeter-target="offscreen"]')!;
+ const pinnedLabel=document.querySelector<HTMLElement>('[data-hig-altimeter-target-label="offscreen"]')!;
+ expect(pinned.style.visibility).toBe('hidden');expect(pinnedLabel.style.visibility).toBe('visible');expect(pinned.style.borderTopColor).toBe('transparent');
+ expect(pinned.dataset.higAltimeterPinned).toBe('top');
+ expect(pinnedLabel.textContent?.replace(/\s/g,' ')).toBe('Far target 101,00 €');
+ expect(document.querySelector('[data-hig-altimeter-target="entry"]')!.children).toHaveLength(0);
+ expect(document.querySelector('[data-hig-altimeter-target="invalid"]')).toBeNull();
+ rerender(view(100.02));frame(1400);frame(1550);
+ expect(parseFloat(row().style.transform.slice(11))).toBeCloseTo(100,5);
+ rerender(view(null));frame(1800);expect(row().style.visibility).toBe('hidden');expect(pinnedLabel.style.visibility).toBe('hidden');expect(label().style.visibility).toBe('hidden');
+});
+
+it('pins and unpins labels without a delayed CSS transition, including reduced motion',()=>{
+ const view=(price:number,reducedMotion=false)=><HIGProvider reducedMotion={reducedMotion}><AltimeterChart summary='Pinning' price={price} targets={[{id:'entry',price:100,label:'Entry'}]} height={200}/></HIGProvider>;
+ const {rerender}=render(view(100));frame(1000);frame(1016);
+ const label=document.querySelector<HTMLElement>('[data-hig-altimeter-target-label="entry"]')!;
+ const line=document.querySelector<HTMLElement>('[data-hig-altimeter-target="entry"]')!;
+ expect(label.style.transition).toBe('');
+ rerender(view(100.04));frame(1400);frame(1700);
+ expect(line.dataset.higAltimeterPinned).toBe('bottom');expect(label.style.visibility).toBe('visible');expect(label.style.transform).toBe('translateY(174px)');
+ rerender(view(100));frame(1800);frame(2100);
+ expect(line.dataset.higAltimeterPinned).toBeUndefined();expect(label.style.transform).toBe('translateY(78px)');
+ rerender(view(100.04,true));frame(2200);
+ expect(line.dataset.higAltimeterPinned).toBe('bottom');expect(label.style.transform).toBe('translateY(174px)');
+});
+
+it('keeps unobstructed labels attached to their lines during price changes and reversals',()=>{
+ const view=(price:number)=><HIGProvider><AltimeterChart summary='Attached labels' price={price} targets={[{id:'tp',price:100.02,label:'Take Profit'},{id:'sl',price:99.98,label:'Stop Loss'}]} height={400}/></HIGProvider>;
+ const {rerender}=render(view(100));frame(1000);
+ rerender(view(100.008));
+ for(let now=1400;now<=1800;now+=16){
+  if(now===1560)rerender(view(100.002));
+  frame(now);
+  for(const [id,offset] of [['tp',8],['sl',-22]] as const){
+   const line=document.querySelector<HTMLElement>(`[data-hig-altimeter-target="${id}"]`)!;
+   const label=document.querySelector<HTMLElement>(`[data-hig-altimeter-target-label="${id}"]`)!;
+   expect(parseFloat(label.style.transform.slice(11))-parseFloat(line.style.transform.slice(11))).toBeCloseTo(offset,8);
+   expect(label.style.transition).toBe('');
+  }
+ }
+});
+
+function recordAnimations(){
+ const animations:{element:HTMLElement;cancel:ReturnType<typeof vi.fn>;finish:()=>void}[]=[];
+ const animate=vi.fn();
+ const implementation=function(this:HTMLElement){
+  let finish=()=>{};
+  const finished=new Promise<void>(resolve=>{finish=resolve;});
+  const animation={element:this,cancel:vi.fn(),finish};
+  // The price's existing digit reels also use WAAPI; record only the crossing effect.
+  if(this.hasAttribute('data-hig-altimeter-price')||this.closest('[data-hig-altimeter-burst]')){animate();animations.push(animation);}
+  return {cancel:animation.cancel,finished} as unknown as Animation;
+ };
+ // jsdom does not implement Web Animations.
+ const original=HTMLElement.prototype.animate;
+ HTMLElement.prototype.animate=implementation;
+ return {animate,animations,restore:()=>{HTMLElement.prototype.animate=original;}};
+}
+
+it('DGEN is opt-in, fires at the visual crossing, coalesces nearby crossings, and can be stopped immediately',()=>{
+ const motion=recordAnimations(),targets=[{id:'tp',price:100.01,label:'Take profit',color:'#00ff00'}];
+ const view=(price:number,dgen=false,reducedMotion=false)=><HIGProvider reducedMotion={reducedMotion}><AltimeterChart summary='DGEN' price={price} targets={targets} dgen={dgen}/></HIGProvider>;
+ try{
+  const {rerender,unmount}=render(view(100));frame(1000);
+  rerender(view(100.02));frame(1400);frame(1700);expect(motion.animate).not.toHaveBeenCalled();
+  rerender(view(100.02,true));frame(1800);expect(motion.animate).not.toHaveBeenCalled();
+  rerender(view(100,true));frame(2000);frame(2100);expect(motion.animate).not.toHaveBeenCalled();
+  frame(2300);
+  expect(motion.animations.filter(a=>a.element.hasAttribute('data-hig-altimeter-price'))).toHaveLength(1);
+  expect(document.querySelector<HTMLElement>('[data-hig-altimeter-burst]')?.style.color).toBe('rgb(0, 255, 0)');
+  expect(document.querySelector('[data-hig-altimeter-burst]')!.children).toHaveLength(25);
+  const count=motion.animate.mock.calls.length;
+  rerender(view(100.02,true));frame(2350);frame(2650);expect(motion.animate).toHaveBeenCalledTimes(count);
+  rerender(view(100.02,true,true));expect(document.querySelector('[data-hig-altimeter-burst]')).toBeNull();
+  expect(motion.animations.every(a=>a.cancel.mock.calls.length>0)).toBe(true);
+  rerender(view(100,true,true));frame(3000);expect(motion.animate).toHaveBeenCalledTimes(count);
+  rerender(view(100,true));frame(3100);
+  rerender(view(100.02,true));frame(3500);frame(3800);expect(motion.animate).toHaveBeenCalledTimes(count*2);
+  rerender(view(100.02));expect(document.querySelector('[data-hig-altimeter-burst]')).toBeNull();
+  unmount();expect(frames).toHaveLength(0);
+ }finally{motion.restore();}
+});
+
+it('DGEN does not replay after missing data, a hidden-tab gap, edited levels, or a feed replacement',()=>{
+ const motion=recordAnimations();let push:(price:number)=>void=()=>{};
+ const feed:AltimeterFeed=listener=>{push=listener;listener(100);return ()=>{};};
+ const view=(price:number|null|undefined,target=100.01,source=feed)=><HIGProvider><AltimeterChart summary='DGEN' price={price} feed={source} targets={[{id:'tp',price:target}]} dgen/></HIGProvider>;
+ try{
+  const {rerender}=render(view(100));frame(1000);
+  rerender(view(100.02));frame(5000);frame(5400);
+  rerender(view(null));frame(5600);
+  rerender(view(100));frame(5800);
+  expect(motion.animate).not.toHaveBeenCalled();
+  rerender(view(100.04,100.03));frame(6200);frame(6500);
+  // A newly placed line can cross later; editing it alone never fires.
+  expect(motion.animate).toHaveBeenCalled();
+  const count=motion.animate.mock.calls.length;
+  rerender(view(undefined));frame(7000);
+  push(100.02);frame(10000);frame(10400);
+  rerender(view(undefined,100.01,listener=>{listener(100);return ()=>{};}));frame(11000);
+  expect(motion.animate).toHaveBeenCalledTimes(count);
+ }finally{motion.restore();}
+});
+
+it('DGEN animations release their particles when finished and cancel on unmount',async()=>{
+ const motion=recordAnimations();
+ const view=(price:number)=><HIGProvider><AltimeterChart summary='DGEN' price={price} targets={[{id:'entry',price:100.01}]} dgen/></HIGProvider>;
+ try{
+  const {rerender,unmount}=render(view(100));frame(1000);
+  rerender(view(100.02));frame(1400);frame(1700);
+  await act(async()=>{for(const animation of motion.animations)animation.finish();});
+  expect(document.querySelector('[data-hig-altimeter-burst]')).toBeNull();
+  rerender(view(100));frame(2100);frame(2400);
+  expect(document.querySelector('[data-hig-altimeter-burst]')).not.toBeNull();
+  unmount();expect(motion.animations.every(a=>a.cancel.mock.calls.length>0)).toBe(true);
+ }finally{motion.restore();}
+});
+
 it('drawAltimeter strokes a trail that fades in from the left and ends at the centered live price',()=>{
  const trailEnd=drawAltimeter(context,{width:600,height:200,now:10_000,phase:0,ticks:[{t:0,p:100},{t:9000,p:100},{t:9800,p:100.01}],display:100.01,anchor:100,spacing:.01,colors:{grid:'#262626',ladder:'#a1a1a1',line:'#00ff3f'},label:price=>`$${price.toFixed(2)}`});
  expect(trailEnd).toBe(482);
@@ -91,6 +232,13 @@ it('drawAltimeter strokes a trail that fades in from the left and ends at the ce
  expect(context.calls).toContainEqual(['bezierCurveTo',expect.any(Number),expect.any(Number),expect.any(Number),expect.any(Number),432,expect.closeTo(144,5)]);
  // The live tail leaves the newest sample level and arrives level at the tip.
  expect(context.calls.at(-2)).toEqual(['bezierCurveTo',expect.closeTo(472+10/3,5),100,expect.closeTo(482-10/3,5),100,482,100]);
+});
+
+it('ladder numbers yield to target labels while their tick marks remain',()=>{
+ drawAltimeter(context,{width:600,height:200,now:0,phase:0,ticks:[],display:100,anchor:100,spacing:.01,targetLabelBounds:[[90,110]],colors:{grid:'#262626',ladder:'#a1a1a1',line:'#00ff3f'},label:price=>`$${price.toFixed(2)}`});
+ expect(context.calls.some(call=>call[0]==='fillText'&&call[1]==='$100.00')).toBe(false);
+ expect(context.calls.some(call=>call[0]==='fillText'&&call[1]==='$100.01')).toBe(true);
+ expect(context.calls).toContainEqual(['moveTo',582,100]);expect(context.calls).toContainEqual(['lineTo',590,100]);
 });
 
 it('bitcoinPrice subscribes to the Hyperliquid BTC best bid and offer, reports the mid, and closes',()=>{

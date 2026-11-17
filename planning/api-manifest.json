@@ -2996,11 +2996,15 @@
       },
       "AltimeterChart": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, style, ...props }: AltimeterChartProps): React.JSX.Element;"
+        "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, targets, dgen, style, ...props }: AltimeterChartProps): React.JSX.Element;"
       },
       "AltimeterChartProps": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n}"
+        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Horizontal dotted levels with optional right-aligned labels and CSS colors. Offscreen labels pin and stack at the edges. Use stable, unique IDs. */\n    targets?: readonly AltimeterTarget[];\n    /** DGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */\n    dgen?: boolean;\n}"
+      },
+      "AltimeterTarget": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface AltimeterTarget {\n    /** Stable, unique identity. Changing the price re-arms this target without firing an effect. */\n    id: string;\n    price: number;\n    /** Title shown before the formatted target price, with capitalized words. Omit for a line without text. */\n    label?: string;\n    /** Defaults to the chart's primary accent. */\n    color?: string;\n}"
       },
       "bitcoinPrice": {
         "entry": "@bloxwap/hig/chart",
@@ -3034,9 +3038,17 @@
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare const championsLeagueWinner: OutcomeFeed;"
       },
+      "ALTIMETER_BURST_COOLDOWN_MS": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_BURST_COOLDOWN_MS = 600;"
+      },
+      "burstAtPill": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function burstAtPill(pill: HTMLElement, layer: HTMLElement, color: string): () => void;"
+      },
       "AltimeterFrame": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export interface AltimeterFrame {\n    width: number;\n    height: number;\n    now: number;\n    /** Grid offset in (-50, 0]. */\n    phase: number;\n    ticks: readonly AltimeterTick[];\n    /** Eased price held at the vertical center; `NaN` while waiting. */\n    display: number;\n    anchor: number;\n    spacing: number;\n    colors: {\n        grid: string;\n        ladder: string;\n        line: string;\n    };\n    label: (price: number) => string;\n    /** Resolved font stack for the ladder labels. Defaults to the mono family by name. */\n    font?: string;\n}"
+        "signature": "export interface AltimeterFrame {\n    width: number;\n    height: number;\n    now: number;\n    /** Grid offset in (-50, 0]. */\n    phase: number;\n    ticks: readonly AltimeterTick[];\n    /** Eased price held at the vertical center; `NaN` while waiting. */\n    display: number;\n    anchor: number;\n    spacing: number;\n    colors: {\n        grid: string;\n        ladder: string;\n        line: string;\n    };\n    label: (price: number) => string;\n    /** Resolved font stack for the ladder labels. Defaults to the mono family by name. */\n    font?: string;\n    /** Optional text-width cache for a live renderer; invalidated when the resolved font changes. */\n    labelWidth?: (text: string) => number;\n    /** Vertical text bounds of target labels; colliding ladder numbers yield to them. */\n    targetLabelBounds?: readonly (readonly [number, number])[];\n}"
       },
       "drawAltimeter": {
         "entry": "@bloxwap/hig/chart",
@@ -3082,6 +3094,10 @@
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function easeInOut(t: number): number;"
       },
+      "priceTween": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function priceTween(): {\n    reset(): void;\n    update(target: number, now: number, snap?: boolean): number;\n};"
+      },
       "AltimeterPoint": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export type AltimeterPoint = readonly [number, number];"
@@ -3101,6 +3117,26 @@
       "ladderPrices": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function ladderPrices(anchor: number, spacing: number, low: number, high: number): number[];"
+      },
+      "validTargets": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function validTargets(targets: readonly AltimeterTarget[]): AltimeterTarget[];"
+      },
+      "AltimeterTargetPosition": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface AltimeterTargetPosition {\n    /** Actual line position, which may be outside the chart. */\n    y: number;\n    /** Row position clamped to the chart so pinned labels never inherit a huge offscreen transform. */\n    anchor: number;\n    /** Label's top in chart coordinates, after stacking. */\n    labelTop?: number;\n    pinned: 'top' | 'bottom' | null;\n}"
+      },
+      "placeTargets": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function placeTargets(targets: readonly AltimeterTarget[], display: number, spacing: number, height: number, sideOffsets?: ReadonlyMap<string, number>): Map<string, AltimeterTargetPosition>;"
+      },
+      "targetLayout": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function targetLayout(): {\n    reset(): void;\n    update(targets: readonly AltimeterTarget[], display: number, spacing: number, height: number, now: number, snap?: boolean): Map<string, AltimeterTargetPosition>;\n};"
+      },
+      "targetCrossings": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function targetCrossings(): {\n    reset(): void;\n    update(price: number, targets: readonly AltimeterTarget[]): AltimeterTarget[];\n};"
       },
       "nextChampionsLeagueQuestion": {
         "entry": "@bloxwap/hig/chart",
@@ -3148,7 +3184,7 @@
       },
       "capsuleCenters": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function capsuleCenters(wanted: readonly number[], height: number, size?: number, gap?: number): number[];"
+        "signature": "export declare function capsuleCenters(wanted: readonly number[], height: number, size?: number, gap?: number, preserveOrder?: boolean): number[];"
       },
       "monoFont": {
         "entry": "@bloxwap/hig/chart",

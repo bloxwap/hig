@@ -48,6 +48,27 @@ export function easeInOut(t:number):number{
  return 3*(1-u)*u*u+u*u*u;
 }
 
+/** A 300ms monotone Hermite tween: retarget from the current position and retain forward velocity without overshoot. */
+export function priceTween(){
+ let from=NaN,to=NaN,start=0,tangent=0;
+ return {
+  reset(){from=to=NaN;tangent=0;},
+  update(target:number,now:number,snap=false):number{
+   if(snap||!Number.isFinite(to)){from=to=target;start=now;tangent=0;return target;}
+   const t=Math.max(0,Math.min(1,(now-start)/ALTIMETER_EASE_MS)),delta=to-from;
+   const value=from+delta*t*t*(3-2*t)+tangent*t*(1-t)*(1-t);
+   if(target!==to){
+    const velocity=(delta*6*t*(1-t)+tangent*(1-t)*(1-3*t))/ALTIMETER_EASE_MS;
+    from=value;to=target;start=now;
+    const next=to-from,direction=Math.sign(next);
+    // A reversal starts from rest. A nearer endpoint limits the tangent so it cannot overshoot a target.
+    tangent=direction*Math.min(3*Math.abs(next),Math.max(0,direction*velocity*ALTIMETER_EASE_MS));
+   }
+   return value;
+  },
+ };
+}
+
 export type AltimeterPoint=readonly [number,number];
 export interface AltimeterPathSink{moveTo(x:number,y:number):void;lineTo(x:number,y:number):void;bezierCurveTo(c1x:number,c1y:number,c2x:number,c2y:number,x:number,y:number):void}
 const slope=(points:readonly AltimeterPoint[],i:number)=>{const dx=points[i+1][0]-points[i][0];return dx===0?0:(points[i+1][1]-points[i][1])/dx;};

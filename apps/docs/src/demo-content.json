@@ -461,6 +461,10 @@
       "title": "SoundHapticsBlock"
     },
     {
+      "route": "components/feedback-block",
+      "title": "FeedbackBlock"
+    },
+    {
       "route": "components/signals-block",
       "title": "SignalsBlock"
     },
@@ -934,7 +938,13 @@
       "family": "status",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
       ]
     },
     {
@@ -1353,6 +1363,16 @@
       ]
     },
     {
+      "name": "FeedbackBlock",
+      "route": "components/feedback-block",
+      "family": "blocks",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "return"
+      ]
+    },
+    {
       "name": "SignalsBlock",
       "route": "components/signals-block",
       "family": "blocks",
@@ -1500,7 +1520,8 @@
       "nativeSupport": "alternative",
       "states": [
         "default",
-        "empty"
+        "empty",
+        "targets"
       ]
     },
     {
