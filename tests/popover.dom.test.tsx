@@ -55,3 +55,13 @@ it('opens on a mouse hover with openOnHover, without moving focus, and closes af
  render(<Popover label='Help'><p>Hover text</p></Popover>);
  fireEvent.pointerEnter(screen.getByRole('button',{name:'Help'}),{pointerType:'mouse'});expect(screen.queryByText('Hover text')).toBeNull();
 });
+
+it('tints its surface with tone, and takes the host className and style after its own class and theme',async()=>{
+ render(<Popover label='About Genesis' defaultOpen tone='warning' className='genesis-glow' style={{'--hig-popover-tone':'#d4a017',borderWidth:2} as React.CSSProperties} testID='tinted'><p>Gold.</p></Popover>);
+ const content=screen.getByTestId('tinted');
+ expect(content.className).toBe('hig-popover genesis-glow');expect(content.getAttribute('data-tone')).toBe('warning');
+ expect(content.style.getPropertyValue('--hig-popover-tone')).toBe('#d4a017');expect(content.style.borderWidth).toBe('2px');
+ cleanup();
+ render(<Popover label='Plain' defaultOpen testID='plain'><p>Neutral.</p></Popover>);
+ const plain=screen.getByTestId('plain');expect(plain.className).toBe('hig-popover');expect(plain.hasAttribute('data-tone')).toBe(false);
+});
