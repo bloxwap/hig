@@ -34,9 +34,17 @@ for(const [entry,[name,props]] of Object.entries(overlayFree)){
 }
 // #95: the component CSS is scoped to HIG classes; page-wide element defaults are the opt-in ./css/base entry.
 // Both resolve through package exports in a bundler, and the scoped file carries no bare element rule.
-const cssBundle=async contents=>{const out=await build({stdin:{contents,resolveDir:directory,sourcefile:'styles.js'},absWorkingDir:directory,bundle:true,write:false,outdir:join(directory,'css-out'),logLevel:'silent'});return out.outputFiles.find(f=>f.path.endsWith('.css'))?.text??'';};
+async function cssBundle(entry, expectedIcons) {
+ const result = await build({
+  stdin: {contents: `import '${entry}';`, resolveDir: directory, sourcefile: 'styles.js'},
+  absWorkingDir: directory, loader: {'.svg': 'file'}, bundle: true, write: false,
+  outdir: join(directory, 'css-out'), logLevel: 'silent',
+ });
+ assert.equal(result.outputFiles.filter(file => file.path.endsWith('.svg')).length, expectedIcons, `${entry} artwork count`);
+ return result.outputFiles.find(file => file.path.endsWith('.css'))?.text ?? '';
+}
 const rulesOf=css=>[...css.replace(/\/\*[\s\S]*?\*\//g,'').matchAll(/([^{}@]+)\{[^{}]*\}/g)].flatMap(m=>{const parts=[];let depth=0,part='';for(const c of m[1]){if(c==='('||c==='[')depth++;if(c===')'||c===']')depth--;if(c===','&&!depth){parts.push(part);part='';}else part+=c;}return [...parts,part].map(s=>s.trim());}).filter(Boolean);
-const scoped=await cssBundle("import '@bloxwap/hig/react/css';"),base=await cssBundle("import '@bloxwap/hig/react/css/base';");
+const scoped=await cssBundle('@bloxwap/hig/react/css', 6),base=await cssBundle('@bloxwap/hig/react/css/base', 0);
 assert.ok(scoped.includes('.hig-button'),'@bloxwap/hig/react/css bundles the component rules');
 const unscoped=rulesOf(scoped).filter(selector=>!/hig-|^(?:from|to|\d+%)$|^:root$/.test(selector));
 assert.deepEqual(unscoped,[],`@bloxwap/hig/react/css has selectors outside HIG classes: ${unscoped.join(' | ')}`);
