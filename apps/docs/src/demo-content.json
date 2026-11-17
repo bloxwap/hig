@@ -377,6 +377,10 @@
       "title": "WalletAddress"
     },
     {
+      "route": "components/qr-code",
+      "title": "QRCode"
+    },
+    {
       "route": "components/bar-mark",
       "title": "BarMark"
     },
@@ -1103,6 +1107,17 @@
       "states": [
         "default",
         "host-qr"
+      ]
+    },
+    {
+      "name": "QRCode",
+      "route": "components/qr-code",
+      "family": "financial-data",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
       ]
     },
     {

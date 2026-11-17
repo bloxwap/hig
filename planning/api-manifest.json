@@ -902,6 +902,14 @@
         "entry": "provider",
         "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent | null): [T, (next: T) => void];"
       },
+      "QRCodeProps": {
+        "entry": "qr-code",
+        "signature": "export interface QRCodeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'children' | 'color'> {\n    /** The text to encode: an address, a payment URI, a link. Digits pack tightest, then upper-case alphanumerics, then UTF-8. A value too long for a QR code draws an empty square. */\n    value: string;\n    /** Edge of the square in CSS pixels, quiet zone included; default 196. It sets `--hig-qr-code-size`, the element's width, so host CSS may resize the element: the drawing and the arena's box scale with it. */\n    size?: number;\n    /** Drawn over the centre, which is cleared of modules: an image URL, or a node such as a token mark laid out in the arena's box. */\n    arena?: React.ReactNode;\n    /** Error correction level. Defaults to `high` with an arena, which covers part of the code, and `medium` without. With an arena, `low` and `medium` are raised to `quartile` so the code still reads. */\n    errorCorrection?: QRErrorCorrection;\n    /** Colour of the modules. Defaults to the text role, `var(--hig-text)`. */\n    color?: string;\n    /** Colour of the tile behind the code. Defaults to the background role, `var(--hig-background)`; `'none'` draws no tile, for a code that sits on the host's own surface. */\n    background?: string;\n    /** Clear modules kept on every side, inside `size`; default 4, the margin scanners expect. Pass 0 only where the host keeps that margin itself. */\n    quietZone?: number;\n    /** Accessible name. Defaults to the built-in “QR code”. */\n    label?: string;\n    /** Hides the code from assistive technology, for a host that names it on an element of its own. */\n    decorative?: boolean;\n}"
+      },
+      "QRCode": {
+        "entry": "qr-code",
+        "signature": "export declare function QRCode({ value, size, arena, errorCorrection, color, background, quietZone, label, decorative, className, style, ...rest }: QRCodeProps): React.JSX.Element;"
+      },
       "Choice": {
         "entry": "selection",
         "signature": "export interface Choice {\n    value: string;\n    label: string;\n    disabled?: boolean;\n}"
@@ -1072,11 +1080,11 @@
       },
       "WalletAddressCoreProps": {
         "entry": "wallet-address-core",
-        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. */\n    qr: React.ReactNode;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. Omitted or `null`, HIG draws its own `QRCode` of `qrValue`, which needs no package. */\n    qr?: React.ReactNode;\n    /** QR payload of HIG's own code when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. Unused with `qr`. */\n    qrValue?: string;\n    /** Image URL shown in the centre of HIG's own code, which then uses high error correction. Unused with `qr`. */\n    arena?: string;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
       },
       "WalletAddress": {
         "entry": "wallet-address-core",
-        "signature": "export declare function WalletAddress({ address, kind, qr, size, onCopy, announce, className, style }: WalletAddressCoreProps): React.JSX.Element;"
+        "signature": "export declare function WalletAddress({ address, kind, qr, qrValue, arena, size, onCopy, announce, className, style }: WalletAddressCoreProps): React.JSX.Element;"
       },
       "WalletAddressProps": {
         "entry": "wallet-address",
@@ -2207,6 +2215,14 @@
       "useControllable": {
         "entry": "provider",
         "signature": "export declare function useControllable<T>(value: T | undefined, initial: T, onChange?: (value: T) => void, intent?: FeedbackIntent | null): [T, (next: T) => void];"
+      },
+      "QRCodeProps": {
+        "entry": "qr-code",
+        "signature": "export interface QRCodeProps {\n    /** The text to encode: an address, a payment URI, a link. Digits pack tightest, then upper-case alphanumerics, then UTF-8. A value too long for a QR code draws an empty square. */\n    value: string;\n    /** Edge of the square in dp, quiet zone included; default 196. */\n    size?: number;\n    /** Drawn over the centre, which is cleared of modules: an image URL, or a node such as a token mark laid out in the arena's box. */\n    arena?: React.ReactNode;\n    /** Error correction level. Defaults to `high` with an arena, which covers part of the code, and `medium` without. With an arena, `low` and `medium` are raised to `quartile` so the code still reads. */\n    errorCorrection?: QRErrorCorrection;\n    /** Colour of the modules. Defaults to the provider's `text` role. */\n    color?: string;\n    /** Colour of the tile behind the code. Defaults to the provider's `background` role; `'none'` draws no tile, for a code that sits on the host's own surface. */\n    background?: string;\n    /** Clear modules kept on every side, inside `size`; default 4, the margin scanners expect. Pass 0 only where the host keeps that margin itself. */\n    quietZone?: number;\n    /** Accessible name. Defaults to the built-in “QR code”. */\n    label?: string;\n    /** Hides the code from assistive technology, for a host that names it on an element of its own. */\n    decorative?: boolean;\n    /** Also the prefix of `-code` (the drawing) and `-arena` (the image or node in the centre). */\n    testID?: string;\n    style?: StyleProp<ViewStyle>;\n}"
+      },
+      "QRCode": {
+        "entry": "qr-code",
+        "signature": "export declare function QRCode({ value, size, arena, errorCorrection, color, background, quietZone, label, decorative, testID, style }: QRCodeProps): React.JSX.Element;"
       },
       "RadioGroup": {
         "entry": "radio-group",

@@ -184,7 +184,7 @@ export interface HIGMessages {
  addressCopied: string;
  /** Visible hint under a wallet address that copies on press. */
  tapToCopy: string;
- /** Accessible name of a wallet address QR code. */
+ /** Accessible name of a QR code (WalletAddress, QRCode). */
  qrCode: string;
  /** Control key legend in the swap panel's shortcut hint on non-Apple keyboards (`Ctrl K`). Apple keyboards show ⌘. */
  swapControlKey: string;

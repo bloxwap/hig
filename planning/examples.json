@@ -984,6 +984,32 @@
       }
     },
     {
+      "name": "QRCode",
+      "slug": "qr-code",
+      "entry": "qr-code",
+      "family": "financial-data",
+      "web": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688'/>",
+      "native": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
+      ],
+      "a11y": "One image named by the built-in “QR code” message or the host label, or hidden when the host names it; no text, no motion; never mirrored; device observations pending",
+      "feedback": "none; the code is not interactive",
+      "variants": {
+        "arena": {
+          "web": "<C.QRCode value='ethereum:0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688@8453' arena={<C.BrandMark size={32}/>} label='Deposit address QR code'/>",
+          "native": "<C.QRCode value='ethereum:0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688@8453' arena={<C.BrandMark size={32}/>} label='Deposit address QR code'/>"
+        },
+        "dark-on-light": {
+          "web": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={160} color='black' background='white'/>",
+          "native": "<C.QRCode value='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={160} color='black' background='white'/>"
+        }
+      }
+    },
+    {
       "name": "BarMark",
       "slug": "bar-mark",
       "entry": "bar-mark",

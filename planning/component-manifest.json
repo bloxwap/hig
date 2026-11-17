@@ -129,6 +129,7 @@
         "Row",
         "VerticalAddress",
         "WalletAddress",
+        "QRCode",
         "BarMark",
         "BarPnl",
         "AssetBalanceRow",

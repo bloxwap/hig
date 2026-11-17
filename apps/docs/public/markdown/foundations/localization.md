@@ -212,7 +212,7 @@ Rules:
 | `copyAddress` | Copy address | WalletAddress and the SwapPanelBlock receive view: accessible name of an address that copies on press; the address follows it | — |
 | `addressCopied` | Address copied | WalletAddress and the SwapPanelBlock receive view: notice after the address is copied | — |
 | `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
-| `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
+| `qrCode` | QR code | WalletAddress and QRCode: accessible name of the QR code | — |
 | `swapControlKey` | Ctrl | SwapPanelBlock: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
 | `swapKeypad` | Keypad | SwapPanelBlock: accessible name of the swap panel keypad | — |
 | `swapDelete` | Delete | SwapPanelBlock: accessible name of the keypad delete key | — |
