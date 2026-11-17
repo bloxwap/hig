@@ -1,12 +1,16 @@
 {
   "renamedAnchors": {
+    "/docs/guides/components/blocks/#swappanelblock": {
+      "to": "/docs/guides/components/blocks/#swapblock",
+      "note": "SwapPanelBlock was renamed to SwapBlock."
+    },
     "/docs/guides/components/recipes/#api-and-anatomy": {
       "to": "/docs/guides/components/blocks/#api-and-anatomy",
       "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
     },
     "/docs/guides/components/recipes/#swappanel": {
-      "to": "/docs/guides/components/blocks/#swappanelblock",
-      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings. SwapPanel is now SwapPanelBlock."
+      "to": "/docs/guides/components/blocks/#swapblock",
+      "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings. SwapPanel is now SwapBlock."
     },
     "/docs/guides/components/recipes/#frompicker-and-topicker": {
       "to": "/docs/guides/components/blocks/#frompickerblock-and-topickerblock",

@@ -98,10 +98,12 @@ it('FromPicker and ToPicker keep working as deprecated aliases of the picker blo
  expect(web.FromPicker).toBe(web.FromPickerBlock);expect(web.ToPicker).toBe(web.ToPickerBlock);expect(aggregate.FromPicker).toBe(aggregate.FromPickerBlock);expect(aggregate.ToPicker).toBe(aggregate.ToPickerBlock);
  for(const file of ['packages/hig/react/src/blocks/pickers.tsx','packages/hig/native/src/pickers.tsx']){const source=readFileSync(file,'utf8');expect(source).toMatch(/@deprecated Renamed `FromPickerBlock`[\s\S]*export const FromPicker=FromPickerBlock;/);expect(source).toMatch(/@deprecated Renamed `ToPickerBlock`[\s\S]*export const ToPicker=ToPickerBlock;/);}
 });
-it('SwapPanel keeps working as a deprecated alias of SwapPanelBlock, by name and by path',async()=>{
+it('keeps the previous swap block names and entry points compatible',async()=>{
  const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
- for(const key of ['./react/blocks/swap-panel','./react/recipes/swap-panel'])expect(exportsMap[key],key).toEqual(exportsMap['./react/blocks/swap-panel-block']);
- const web=await import('../packages/hig/react/src/blocks/swap-panel-block'),aggregate=await import('../packages/hig/react/src/blocks');
- expect(web.SwapPanel).toBe(web.SwapPanelBlock);expect(aggregate.SwapPanel).toBe(aggregate.SwapPanelBlock);
- for(const file of ['packages/hig/react/src/blocks/swap-panel-block.tsx','packages/hig/native/src/swap-panel-block.tsx'])expect(readFileSync(file,'utf8')).toMatch(/@deprecated Renamed `SwapPanelBlock`[\s\S]*export const SwapPanel=SwapPanelBlock;/);
+ for(const key of ['./react/blocks/swap-panel-block','./react/blocks/swap-panel','./react/recipes/swap-panel'])expect(exportsMap[key],key).toEqual(exportsMap['./react/blocks/swap-block']);
+ const web=await import('../packages/hig/react/src/blocks/swap-block'),aggregate=await import('../packages/hig/react/src/blocks');
+ for(const entry of [web,aggregate]){
+  expect(entry.SwapPanelBlock).toBe(entry.SwapBlock);
+  expect(entry.SwapPanel).toBe(entry.SwapBlock);
+ }
 });

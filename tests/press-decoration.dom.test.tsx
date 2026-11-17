@@ -118,7 +118,7 @@ describe('HIGProvider pressDecoration',()=>{
   const {container}=render(<HIGProvider pressDecoration={haptic}><SwapKeypad label='Keypad' deleteLabel='Delete' onKey={()=>{}}/><SwapAmountCard name='Solana' symbol='SOL' value={1} amountLabel='Amount' onSelect={()=>{}} selectLabel='Choose asset'/></HIGProvider>);
   expect([...container.querySelectorAll('.hig-swap-key')].every(key=>(key.lastElementChild as HTMLElement).dataset.kind==='button')).toBe(true);
   expect((screen.getByRole('button',{name:'Choose asset'}).lastElementChild as HTMLElement).dataset.kind).toBe('row');
-  const source=readFileSync('packages/hig/react/src/blocks/swap-panel-block.tsx','utf8');
+  const source=readFileSync('packages/hig/react/src/blocks/swap-block.tsx','utf8');
   expect(source.match(/className='hig-swap-hit'.*?<PressDecoration kind='row'\/><\/button>/g)).toHaveLength(3);
   expect(source).toContain("<SwapIcon name='flip' size={16}/><PressDecoration kind='icon-button' disabled={submitting||!from||!to}/>");
   expect(source).toContain("onClick={copyAddress}>{content}<PressDecoration kind='row'/>");

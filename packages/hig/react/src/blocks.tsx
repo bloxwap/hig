@@ -5,6 +5,8 @@ export {TradeEntry} from './blocks/trade-entry.js';
 export {InstallCommand} from './blocks/install-command.js';
 export {MarketingHero} from './blocks/marketing-hero.js';
 export {AccountBlock,AssetBalanceRow,accountRows,accountSectionRows,accountSectionTotal,assetValue,type AccountBlockProps,type AccountAsset,type AccountSection,type AccountOrder,type AccountRowsOptions,type AssetArtwork,type AssetBalanceRowProps} from './blocks/account-block.js';
+export {LoginBlock,type LoginBlockProps,type LoginProvider} from './blocks/login-block.js';
+export {DepositBlock,type DepositBlockProps,type DepositMethod} from './blocks/deposit-block.js';
 export {LanguageBlock,filterLanguages,type LanguageBlockProps,type LanguageOption} from './blocks/language-block.js';
 export {TokenActionBlock,tokenActionLabel,type TokenActionBlockProps,type TokenAction,type TokenActionId} from './blocks/token-action-block.js';
 export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type ManagePositionBlockLabels,type ManagePositionBlockAction,type ManagePositionBlockSummary,type ManagePositionBlockFigure,type ManagePositionIcon} from './blocks/manage-position-block.js';
@@ -19,7 +21,7 @@ export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} 
 export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './blocks/trade-history-list-block.js';
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './blocks/trade-history-detail-block.js';
 export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps,type PickerInputProps,type PickerRowProps} from './blocks/pickers.js';
-export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-panel-block.js';
+export {SwapBlock,SwapPanelBlock,SwapPanel,swapAction,type SwapBlockProps,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-block.js';
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './blocks/confirm-block.js';
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom} from './blocks/preset-picker-block.js';
 export {ExplainerBlock,type ExplainerBlockProps,type ExplainerSection,type ExplainerAction,type ExplainerTone} from './blocks/explainer-block.js';

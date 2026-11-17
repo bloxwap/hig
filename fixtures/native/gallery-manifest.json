@@ -733,6 +733,20 @@
       "support": "renderer"
     },
     {
+      "name": "LoginBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "DepositBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "LanguageBlock",
       "states": [
         "default",
@@ -751,7 +765,7 @@
       "support": "renderer"
     },
     {
-      "name": "SwapPanelBlock",
+      "name": "SwapBlock",
       "states": [
         "default",
         "swap",

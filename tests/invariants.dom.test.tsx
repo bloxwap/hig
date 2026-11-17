@@ -1,7 +1,7 @@
 import React from 'react';
 import {afterEach,beforeEach,it,expect,vi} from 'vitest';
 import {act,cleanup,fireEvent,render,screen} from '@testing-library/react';
-import {SwapPanelBlock} from '../packages/hig/react/src/blocks/swap-panel-block';
+import {SwapPanelBlock} from '../packages/hig/react/src/blocks/swap-block';
 import {swapAction,type SwapToken} from '../packages/hig/react/src/blocks/swap/shared';
 import {TargetBlock} from '../packages/hig/react/src/blocks/target-block';
 import {HIGProvider,useHIG,useControllable} from '../packages/hig/react/src/provider';

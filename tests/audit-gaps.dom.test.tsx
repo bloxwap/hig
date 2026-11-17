@@ -13,7 +13,7 @@ import {Button} from '../packages/hig/react/src/button';
 import {Usd} from '../packages/hig/react/src/data';
 import {GestureSheet} from '../packages/hig/react/src/gesture-sheet';
 import {FromPickerBlock} from '../packages/hig/react/src/blocks/pickers';
-import type {SwapToken} from '../packages/hig/react/src/blocks/swap-panel-block';
+import type {SwapToken} from '../packages/hig/react/src/blocks/swap-block';
 beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventListener:vi.fn(),removeEventListener:vi.fn()})));});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks();});
 const css=readFileSync('packages/hig/react/src/styles.css','utf8');

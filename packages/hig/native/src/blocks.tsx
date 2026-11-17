@@ -20,6 +20,8 @@ export function InstallCommand({command,onCopy}: {command:string;onCopy:()=>Prom
  return <Surface style={{gap:12}}><Text selectable style={code}>{command}</Text><Button intent='secondary' onPress={()=>{Promise.resolve().then(onCopy).then(()=>show(messages.copied??en.copied,'success')).catch(()=>show(messages.copyFailed??en.copyFailed,'error'));}}>{messages.copyInstallCommand??en.copyInstallCommand}</Button>{notice&&<Toast notices={[notice]} onDismiss={dismiss}/>}</Surface>;}
 export function MarketingHero({title,description,href,cta}: {title:string;description:string;href:string;cta:string}){return <Stack><Heading>{title}</Heading><Text>{description}</Text><Link href={href}>{cta}</Link></Stack>;}
 export {AccountBlock,accountRows,accountSectionRows,accountSectionTotal,assetValue,AssetBalanceRow,type AccountBlockProps,type AccountAsset,type AccountSection,type AccountOrder,type AccountRowsOptions,type AssetArtwork,type AssetBalanceRowProps} from './account-block.js';
+export {LoginBlock,type LoginBlockProps,type LoginProvider} from './login-block.js';
+export {DepositBlock,type DepositBlockProps,type DepositMethod} from './deposit-block.js';
 export {LanguageBlock,filterLanguages,type LanguageBlockProps,type LanguageOption} from './language-block.js';
 export {TokenActionBlock,tokenActionLabel,type TokenActionBlockProps,type TokenAction,type TokenActionId} from './token-action-block.js';
 export {ManagePositionBlock,positionCorridor,type ManagePositionBlockProps,type ManagePositionBlockLabels,type ManagePositionBlockAction,type ManagePositionBlockSummary,type ManagePositionBlockFigure,type ManagePositionIcon} from './manage-position-block.js';
@@ -36,7 +38,7 @@ export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} 
 export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps,type PickerInputProps,type PickerRowProps,SwapHostContext} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapAmountCard,SwapPill,type SwapAmountCardProps,type SwapPillProps} from './swap-amount-card.js';
-export {SwapPanelBlock,SwapPanel,swapAction,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-panel-block.js';
+export {SwapBlock,SwapPanelBlock,SwapPanel,swapAction,type SwapBlockProps,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-block.js';
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './confirm-block.js';
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom,type PresetPickerAdjustable} from './preset-picker-block.js';
 export {ExplainerBlock,type ExplainerBlockProps,type ExplainerSection,type ExplainerAction,type ExplainerTone} from './explainer-block.js';

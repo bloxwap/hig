@@ -12,7 +12,7 @@ export function exampleCode(name,platform='react',density='comfortable',state='d
  const grouped={};for(const symbol of needed){const entry=mapping[symbol];if(!entry)throw Error(`Missing ${platform} export ${symbol}`);(grouped[entry]??=[]).push(symbol);}
  // An entry is either a subpath of @bloxwap/hig/<platform> or a full package name (AltimeterChart lives in @bloxwap/hig/chart, #96).
  const imports=Object.entries(grouped).map(([entry,symbols])=>`import {${symbols.join(',')}} from '${entry.startsWith('@')?entry:`@bloxwap/hig/${platform}/${entry}`}';`).join('\n');
- const gesture=platform==='native'&&name==='GestureSheet';
+ const gesture=platform==='native'&&['GestureSheet','LoginBlock'].includes(name);
  const toastPosition=name==='Toaster'&&["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"].includes(state)?state:'bottom-center';
  const content=`<HIGProvider density=${JSON.stringify(platform==='native'?'comfortable':density)}><Stack>${body.replaceAll('C.','')}<Text>{message}</Text></Stack>${toaster?`<Toaster position="${toastPosition}"/>`:''}</HIGProvider>`;
  // The native Toaster reads the finger and the safe area, so its sample shows the two roots it needs.

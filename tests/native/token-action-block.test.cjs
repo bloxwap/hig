@@ -43,7 +43,7 @@ it('draws the assets bar under the token name with the total, from the prop, the
 it('draws a chains bar the same size as the assets bar, titled Chains with the number of chains that hold the token',()=>{
  let view=mount();
  expect(bars(view)[1].props).toMatchObject({title:'Chains',elements:chains,description:'2'});expect(bars(view)[1].props.size).toBeUndefined();
- view=mount({chainsTitle:'Networks',chains:[]});expect(bars(view)[1].props).toMatchObject({title:'Networks',description:'0'});
+ for(const singleOrEmpty of [[chains[0]],[]]){view=mount({chains:singleOrEmpty});expect(bars(view).map(bar=>bar.props.testID)).toEqual(['token-assets']);}
  view=mount({},{messages:{swapChains:'Chaînes'}});expect(bars(view)[1].props.title).toBe('Chaînes');
 });
 it('names the built-in actions, takes a host label, and falls back to the id',()=>{

@@ -4,7 +4,7 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {SwapPanelBlock,swapAction,type SwapPanelBlockProps,type SwapToken} from '../packages/hig/react/src/blocks/swap-panel-block';
+import {SwapPanelBlock,swapAction,type SwapPanelBlockProps,type SwapToken} from '../packages/hig/react/src/blocks/swap-block';
 import {SwapSheet} from '../packages/hig/react/src/blocks/swap-sheet';
 import {readFileSync} from 'node:fs';
 import {applyAmountKey,fuzzyMatch,sanitizeAmount,testAmount,unitsToEntry} from '../packages/hig/react/src/blocks/swap/shared';
@@ -349,14 +349,14 @@ describe('SwapSheet',()=>{
   expect(screen.queryByRole('group',{name:'Settings'})).toBeNull();expect(screen.getByRole('button',{name:'Select From token'})).toBeTruthy();
  });
  it('keeps the gesture backend and overlays out of the panel and the blocks aggregate',()=>{
-  for(const file of ['blocks/swap-panel-block.tsx','blocks/swap/picker.tsx','blocks/swap/settings.tsx','blocks/swap/shared.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/gesture-sheet|dialog\.js|radix|vaul/);
+  for(const file of ['blocks/swap-block.tsx','blocks/swap/picker.tsx','blocks/swap/settings.tsx','blocks/swap/shared.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/gesture-sheet|dialog\.js|radix|vaul/);
   expect(readFileSync('packages/hig/react/src/blocks.tsx','utf8')).not.toMatch(/from '\.\/blocks\/swap-sheet/);
  });
 });
 
 describe('SwapAmountCard',()=>{
  it('draws the From card anatomy on its own: asset, actions, balance and the entered amount',async()=>{
-  const {SwapAmountCard,SwapPill}=await import('../packages/hig/react/src/blocks/swap-panel-block');const onMax=vi.fn();
+  const {SwapAmountCard,SwapPill}=await import('../packages/hig/react/src/blocks/swap-block');const onMax=vi.fn();
   const {container}=render(<SwapAmountCard name='USD Coin' symbol='USDC' context='Demo' actions={<SwapPill onClick={onMax}>Max</SwapPill>} meta='1,000 USDC' value={12.5} prefix='$' fractionDigits={2} amountLabel='Size'/>);
   const card=container.querySelector('.hig-swap-card')!;expect(card.getAttribute('data-side')).toBe('from');
   expect(card.querySelector('.hig-swap-identity')?.textContent).toBe('DemoUSD Coin');expect(card.querySelector('.hig-swap-initials')?.textContent).toBe('USD');
@@ -366,7 +366,7 @@ describe('SwapAmountCard',()=>{
   expect(card.querySelector('.hig-swap-hit')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Max'}));expect(onMax).toHaveBeenCalledTimes(1);
  });
  it('takes host-drawn artwork, keeps a typed trailing point and can choose the asset',async()=>{
-  const {SwapAmountCard}=await import('../packages/hig/react/src/blocks/swap-panel-block');const onSelect=vi.fn();
+  const {SwapAmountCard}=await import('../packages/hig/react/src/blocks/swap-block');const onSelect=vi.fn();
   const {container}=render(<SwapAmountCard name='USD Coin' symbol='USDC' icon={<svg data-testid='art'/>} value={3} trailingDot amountLabel='Size' onSelect={onSelect} selectLabel='Choose asset'/>);
   expect(screen.getByTestId('art')).toBeTruthy();expect(container.querySelector('.hig-swap-initials')).toBeNull();expect(container.querySelector('.hig-swap-meta')).toBeNull();
   expect(screen.getByRole('textbox',{name:'Size'}).textContent).toContain('3.');

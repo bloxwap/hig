@@ -49,3 +49,5 @@
 .configuration .hig-segment span { min-height:36px; font-size:.8125rem; }
 .configuration .hig-switch { flex-direction:row-reverse; justify-content:space-between; gap:1rem; }
 .sample-balance { display:flex;flex-direction:column;gap:8px; }.sample-balance > .hig-text { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }.sample-balance > .hig-number { font-size:1.5rem;line-height:1.25;font-weight:600; }
+
+.token-flow-account .hig-account-summary > .hig-button { min-height:48px; min-width:108px; font-size:1rem; }

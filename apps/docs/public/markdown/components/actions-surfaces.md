@@ -19,9 +19,9 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 ## When to use and examples
 
-Actions that sit side by side are 8 units apart at every density: buttons in an Alert, tabs, Pagination, Filter capsules and the SwapPanelBlock action row. On web that is the `--hig-action-gap` variable (the `sm` space token); set it on a container to change it. Content inside `Stack` and `Inline` keeps the density gap (12 on touch, 8 compact), so put a row of buttons in a container that uses `--hig-action-gap`, not a bare `Inline`.
+Actions that sit side by side are 8 units apart at every density: buttons in an Alert, tabs, Pagination, Filter capsules and the SwapBlock action row. On web that is the `--hig-action-gap` variable (the `sm` space token); set it on a container to change it. Content inside `Stack` and `Inline` keeps the density gap (12 on touch, 8 compact), so put a row of buttons in a container that uses `--hig-action-gap`, not a bare `Inline`.
 
-The primary and secondary call-to-action buttons that close a form sit a double step below the rest of it: 16 units (`--hig-action-offset`, twice the action gap), and 8 units from each other. TradeEntry, the SwapPanelBlock action row, and the buttons that end a Dialog or a default sheet follow this already. In a host form laid out with `Stack`, add `className='hig-form-action'` to each closing button on web, or a 4dp top margin on native, where the `Stack` gap is 12.
+The primary and secondary call-to-action buttons that close a form sit a double step below the rest of it: 16 units (`--hig-action-offset`, twice the action gap), and 8 units from each other. TradeEntry, the SwapBlock action row, and the buttons that end a Dialog or a default sheet follow this already. In a host form laid out with `Stack`, add `className='hig-form-action'` to each closing button on web, or a 4dp top margin on native, where the `Stack` gap is 12.
 
 Use one primary review action. Do: busy protects host requests, shows the leading spinner and announces the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 

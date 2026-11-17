@@ -65,6 +65,10 @@
       "title": "Preferences, preview and device review"
     },
     {
+      "route": "flow/token-action-flow",
+      "title": "TokenActionFlow"
+    },
+    {
       "route": "guides/foundations/glossary",
       "title": "Trading glossary"
     },
@@ -485,6 +489,14 @@
       "title": "TokenActionBlock"
     },
     {
+      "route": "components/login-block",
+      "title": "LoginBlock"
+    },
+    {
+      "route": "components/deposit-block",
+      "title": "DepositBlock"
+    },
+    {
       "route": "components/language-block",
       "title": "LanguageBlock"
     },
@@ -493,8 +505,8 @@
       "title": "TradeEntry"
     },
     {
-      "route": "components/swap-panel-block",
-      "title": "SwapPanelBlock"
+      "route": "components/swap-block",
+      "title": "SwapBlock"
     },
     {
       "route": "components/from-picker-block",
@@ -1430,6 +1442,24 @@
       ]
     },
     {
+      "name": "LoginBlock",
+      "route": "components/login-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "DepositBlock",
+      "route": "components/deposit-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "LanguageBlock",
       "route": "components/language-block",
       "family": "blocks",
@@ -1452,8 +1482,8 @@
       ]
     },
     {
-      "name": "SwapPanelBlock",
-      "route": "components/swap-panel-block",
+      "name": "SwapBlock",
+      "route": "components/swap-block",
       "family": "blocks",
       "nativeSupport": "renderer",
       "states": [

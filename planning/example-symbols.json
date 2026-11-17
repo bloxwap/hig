@@ -21,7 +21,7 @@
     "SignalsBlock": "blocks",
     "NotificationsBlock": "blocks",
     "TradeEntry": "blocks",
-    "SwapPanelBlock": "blocks",
+    "SwapBlock": "blocks",
     "FromPickerBlock": "blocks",
     "ToPickerBlock": "blocks",
     "InstallCommand": "blocks",
@@ -99,6 +99,8 @@
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
     "ListRow": "list-group",
+    "LoginBlock": "blocks",
+    "DepositBlock": "blocks",
     "LanguageBlock": "blocks"
   },
   "native": {
@@ -121,7 +123,7 @@
     "SignalsBlock": "blocks",
     "NotificationsBlock": "blocks",
     "TradeEntry": "blocks",
-    "SwapPanelBlock": "blocks",
+    "SwapBlock": "blocks",
     "FromPickerBlock": "blocks",
     "ToPickerBlock": "blocks",
     "InstallCommand": "blocks",
@@ -197,6 +199,8 @@
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
     "ListRow": "list-group",
+    "LoginBlock": "blocks",
+    "DepositBlock": "blocks",
     "LanguageBlock": "blocks"
   }
 }

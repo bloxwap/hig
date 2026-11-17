@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",
@@ -9,6 +9,11 @@
       "types": "./tokens/dist/index.d.ts",
       "import": "./tokens/dist/index.js",
       "default": "./tokens/dist/index.js"
+    },
+    "./tokens/deposit-icons": {
+      "types": "./tokens/dist/deposit-icons.d.ts",
+      "import": "./tokens/dist/deposit-icons.js",
+      "default": "./tokens/dist/deposit-icons.js"
     },
     "./tokens/brand": {
       "types": "./tokens/dist/brand.d.ts",
@@ -40,6 +45,11 @@
       "types": "./contracts/dist/number-flow.d.ts",
       "import": "./contracts/dist/number-flow.js",
       "default": "./contracts/dist/number-flow.js"
+    },
+    "./contracts/login": {
+      "types": "./contracts/dist/login.d.ts",
+      "import": "./contracts/dist/login.js",
+      "default": "./contracts/dist/login.js"
     },
     "./contracts/messages": {
       "types": "./contracts/dist/messages.d.ts",
@@ -215,20 +225,25 @@
       "import": "./react/dist/blocks/trade-entry.js",
       "default": "./react/dist/blocks/trade-entry.js"
     },
+    "./react/blocks/swap-block": {
+      "types": "./react/dist/blocks/swap-block.d.ts",
+      "import": "./react/dist/blocks/swap-block.js",
+      "default": "./react/dist/blocks/swap-block.js"
+    },
     "./react/blocks/swap-panel-block": {
-      "types": "./react/dist/blocks/swap-panel-block.d.ts",
-      "import": "./react/dist/blocks/swap-panel-block.js",
-      "default": "./react/dist/blocks/swap-panel-block.js"
+      "types": "./react/dist/blocks/swap-block.d.ts",
+      "import": "./react/dist/blocks/swap-block.js",
+      "default": "./react/dist/blocks/swap-block.js"
     },
     "./react/blocks/swap-panel": {
-      "types": "./react/dist/blocks/swap-panel-block.d.ts",
-      "import": "./react/dist/blocks/swap-panel-block.js",
-      "default": "./react/dist/blocks/swap-panel-block.js"
+      "types": "./react/dist/blocks/swap-block.d.ts",
+      "import": "./react/dist/blocks/swap-block.js",
+      "default": "./react/dist/blocks/swap-block.js"
     },
     "./react/recipes/swap-panel": {
-      "types": "./react/dist/blocks/swap-panel-block.d.ts",
-      "import": "./react/dist/blocks/swap-panel-block.js",
-      "default": "./react/dist/blocks/swap-panel-block.js"
+      "types": "./react/dist/blocks/swap-block.d.ts",
+      "import": "./react/dist/blocks/swap-block.js",
+      "default": "./react/dist/blocks/swap-block.js"
     },
     "./react/blocks/pickers": {
       "types": "./react/dist/blocks/pickers.d.ts",
@@ -317,6 +332,16 @@
       "types": "./react/dist/blocks/token-action-block.d.ts",
       "import": "./react/dist/blocks/token-action-block.js",
       "default": "./react/dist/blocks/token-action-block.js"
+    },
+    "./react/blocks/login-block": {
+      "types": "./react/dist/blocks/login-block.d.ts",
+      "import": "./react/dist/blocks/login-block.js",
+      "default": "./react/dist/blocks/login-block.js"
+    },
+    "./react/blocks/deposit-block": {
+      "types": "./react/dist/blocks/deposit-block.d.ts",
+      "import": "./react/dist/blocks/deposit-block.js",
+      "default": "./react/dist/blocks/deposit-block.js"
     },
     "./react/blocks/language-block": {
       "types": "./react/dist/blocks/language-block.d.ts",
@@ -472,6 +497,16 @@
       "types": "./native/dist/token-action-block.d.ts",
       "import": "./native/dist/token-action-block.js",
       "default": "./native/dist/token-action-block.js"
+    },
+    "./native/login-block": {
+      "types": "./native/dist/login-block.d.ts",
+      "import": "./native/dist/login-block.js",
+      "default": "./native/dist/login-block.js"
+    },
+    "./native/deposit-block": {
+      "types": "./native/dist/deposit-block.d.ts",
+      "import": "./native/dist/deposit-block.js",
+      "default": "./native/dist/deposit-block.js"
     },
     "./native/language-block": {
       "types": "./native/dist/language-block.d.ts",

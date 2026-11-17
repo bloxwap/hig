@@ -46,7 +46,7 @@ export interface TokenActionBlockProps {
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. */
  headerAction?:React.ReactNode;
- /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapPanelBlock. */
+ /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapBlock. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
  /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */
  stickyHeader?:boolean;
@@ -70,6 +70,7 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
  const colors=useColors(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
+ const showChains=chains!==undefined&&chains.length>1;
  const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix} tone='muted' testID='token-units' style={{fontSize:14,lineHeight:21}}/>:<AnimatedNumberReadout key='value' value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>;
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
  const header=<View testID='token-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
@@ -78,9 +79,9 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
   <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
  </View>;
  const body=<>
-  {assets||chains?<BarMarkFigureContext.Provider value={animatedFigure}><View testID='token-bars' style={{gap:20,marginTop:16,paddingHorizontal:4}}>
+  {assets||showChains?<BarMarkFigureContext.Provider value={animatedFigure}><View testID='token-bars' style={{gap:20,marginTop:16,paddingHorizontal:4}}>
    {assets?<BarMark testID='token-assets' surface={false} title={name??symbol} elements={assets} description={headline}/>:null}
-   {chains?<BarMark testID='token-chains' surface={false} title={chainsTitle??t.swapChains} elements={chains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)}/>:null}
+   {showChains?<BarMark testID='token-chains' surface={false} title={chainsTitle??t.swapChains} elements={chains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)}/>:null}
   </View></BarMarkFigureContext.Provider>:null}
   {actions.length>0?<View testID='token-actions' style={{gap:8,marginTop:16}}>
    {actions.map(action=><Button key={action.id} testID={`token-action-${action.id}`} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onPress={action.onSelect}>{tokenActionLabel(action,t)}</Button>)}

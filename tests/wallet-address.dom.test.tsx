@@ -74,7 +74,7 @@ describe('WalletAddress',()=>{
   expect(screen.getByRole('button',{name:`Copier l’adresse: ${eth}`}).textContent).toContain('Toucher pour copier');expect(screen.getByRole('img',{name:'Code QR'})).toBeTruthy();
  });
  it('keeps the QR dependency in its own entry',()=>{
-  for(const file of ['data.tsx','blocks/swap-panel-block.tsx','blocks.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/from 'cuer/);
+  for(const file of ['data.tsx','blocks/swap-block.tsx','blocks.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/from 'cuer/);
   expect(readFileSync('packages/hig/react/src/wallet-address.tsx','utf8')).toContain("from 'cuer'");
  });
 });

@@ -165,6 +165,8 @@
       "components": [
         "AccountBlock",
         "TokenActionBlock",
+        "LoginBlock",
+        "DepositBlock",
         "LanguageBlock",
         "ManagePositionBlock",
         "TradeHistoryListBlock",
@@ -181,7 +183,7 @@
         "SoundHapticsBlock",
         "SignalsBlock",
         "NotificationsBlock",
-        "SwapPanelBlock",
+        "SwapBlock",
         "FromPickerBlock",
         "ToPickerBlock"
       ],
