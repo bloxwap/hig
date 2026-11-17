@@ -373,13 +373,17 @@ function roundedSquare(x:number,y:number,edge:number,radius:number,clockwise:boo
 export function qrGeometry(matrix:Pick<QRMatrix,'size'|'modules'>,options:QRGeometryOptions={}):QRGeometry{
  const {size,modules}=matrix,far=size-QR_FINDER,cleared=options.arena?qrArenaSize(size):0,origin=(size-cleared)/2,diameter=QR_DOT_RADIUS*2;
  const arc=`a${QR_DOT_RADIUS} ${QR_DOT_RADIUS} 0 1 0 `;
+ // One circle is two half arcs. Every dot of a column starts with the same text and every dot of a row ends with the same text, so each
+ // is written once: no number is formatted a dot. Tenths of a module are exact enough in a double to print without rounding noise.
+ const starts:string[]=[];for(let column=0;column<size;column++)starts.push(`M${(column*10+1)/10} `);
  let path='',dots=0;
- for(let row=0;row<size;row++)for(let column=0;column<size;column++){
-  if(!modules[row*size+column])continue;
-  if((row<QR_FINDER&&(column<QR_FINDER||column>=far))||(row>=far&&column<QR_FINDER))continue;
-  if(cleared&&row>=origin&&row<origin+cleared&&column>=origin&&column<origin+cleared)continue;
-  // One circle as two half arcs. Tenths of a module are exact enough in a double to print without rounding noise.
-  path+=`M${(column*10+1)/10} ${row+0.5}${arc}${diameter} 0${arc}${-diameter} 0`;dots++;
+ for(let row=0;row<size;row++){
+  const tail=`${row+0.5}${arc}${diameter} 0${arc}${-diameter} 0`,hole=cleared>0&&row>=origin&&row<origin+cleared;
+  // The columns of a finder pattern are skipped in the rows it spans, and the arena's in the rows it clears.
+  for(let column=row<QR_FINDER||row>=far?QR_FINDER:0,end=row<QR_FINDER?far:size,at=row*size;column<end;column++){
+   if(hole&&column===origin)column+=cleared;
+   if(modules[at+column]){path+=starts[column]!+tail;dots++;}
+  }
  }
  const finders=[{x:0,y:0},{x:far,y:0},{x:0,y:far}];
  for(const {x,y} of finders)path+=roundedSquare(x,y,7,1.75,true)+roundedSquare(x+1,y+1,5,0.75,false)+roundedSquare(x+2,y+2,3,0.5,true);
