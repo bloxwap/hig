@@ -13,6 +13,8 @@ const {decodeQR}=await import(pathToFileURL(fromCuer.resolve('qr/decode.js')).hr
 /** The reference matrix without its one-module border (`qr` refuses a border of zero). */
 const referenceRows=(value:string,options:{ecc?:QRErrorCorrection;version?:number;mask?:number;encoding?:'numeric'|'alphanumeric'|'byte'}={})=>reference(value,'raw',{...options,border:1,scale:1}).slice(1,-1).map(row=>row.slice(1,-1));
 const levels:readonly QRErrorCorrection[]=['low','medium','quartile','high'];
+/** Timeout for the cases that encode or decode in bulk: they take a second or two alone and longer when the whole suite shares the machine. */
+const slow=30000;
 const eth='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688',sol='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ';
 /** A deterministic generator, so a failure names a reproducible payload. */
 function random(seed:number){let state=seed;return ()=>{state=(state*1103515245+12345)&0x7fffffff;return state/0x7fffffff;};}
@@ -23,15 +25,20 @@ function bitmap(size:number,scale:number,dark:(x:number,y:number)=>boolean){
  for(let py=0;py<edge;py++)for(let px=0;px<edge;px++)if(dark((px+0.5)/scale-quiet,(py+0.5)/scale-quiet)){const at=(py*edge+px)*4;data[at]=data[at+1]=data[at+2]=0;}
  return {width:edge,height:edge,data};
 }
+/** What an arena can put over the centre: a solid dark mark, or a busy pattern. */
+const arenaFills:Record<string,(x:number,y:number)=>boolean>={dark:()=>true,checker:(x,y)=>(Math.floor(x*2)+Math.floor(y*2))%2===0,stripes:x=>Math.floor(x)%2===0};
 const squares=(matrix:QRMatrix)=>bitmap(matrix.size,6,(x,y)=>x>=0&&y>=0&&x<matrix.size&&y<matrix.size&&matrix.modules[Math.floor(y)*matrix.size+Math.floor(x)]===1);
 /** The Cuer drawing as pixels: the dots read back from the path, the finder patterns as a rounded ring and core. */
-function dots(geometry:NonNullable<ReturnType<typeof qrCodeGeometry>>){
+function dots(geometry:NonNullable<ReturnType<typeof qrCodeGeometry>>,arenaFill:((x:number,y:number)=>boolean)|null=null){
  const centres=[...geometry.path.matchAll(/M([\d.]+) ([\d.]+)a0\.4 0\.4 0 1 0 0\.8 0a0\.4 0\.4 0 1 0 -0\.8 0/g)].map(match=>[Number(match[1])+0.4,Number(match[2])] as const);
  expect(centres).toHaveLength(geometry.dots);
  const lit=new Map<number,(readonly [number,number])[]>();
  for(const centre of centres){const key=Math.floor(centre[1])*geometry.size+Math.floor(centre[0]);lit.set(key,[...(lit.get(key)??[]),centre]);}
  const rounded=(x:number,y:number,left:number,top:number,edge:number,radius:number)=>{const dx=Math.max(left+radius-x,0,x-(left+edge-radius)),dy=Math.max(top+radius-y,0,y-(top+edge-radius));return x>=left&&y>=top&&x<=left+edge&&y<=top+edge&&dx*dx+dy*dy<=radius*radius;};
+ const arena=geometry.arena;
  return bitmap(geometry.size,10,(x,y)=>{
+  // The arena's box, half a module inside the cleared square, covers whatever is under it.
+  if(arena&&arenaFill&&rounded(x,y,arena.origin+0.5,arena.origin+0.5,arena.size-1,1))return arenaFill(x,y);
   for(const finder of geometry.finders){if(rounded(x,y,finder.x+2,finder.y+2,3,0.5))return true;if(rounded(x,y,finder.x,finder.y,7,1.75))return !rounded(x,y,finder.x+1,finder.y+1,5,0.75);}
   return (lit.get(Math.floor(y)*geometry.size+Math.floor(x))??[]).some(([cx,cy])=>(x-cx)**2+(y-cy)**2<=0.16);
  });
@@ -122,7 +129,7 @@ describe('QR matrix against the installed encoders',()=>{
    expect(matrix.size,`${JSON.stringify(value.slice(0,24))} ${errorCorrection}`).toBe(theirs.edgeLength);
    expect(qrRows(matrix),`${JSON.stringify(value.slice(0,24))} ${errorCorrection}`).toEqual(theirs.grid);
   }
- });
+ },slow);
  it('matches Cuer for 600 generated payloads of every mode and many lengths, choosing the same version and mask',()=>{
   const next=random(20261116);
   const alphabets=['0123456789','0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:','abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:/?&=._-','héllo wörld ✓ 日本語 🚀 ك'].map(text=>[...text]);
@@ -135,13 +142,13 @@ describe('QR matrix against the installed encoders',()=>{
    expect(qrRows(matrix),`payload ${index} (${length} characters, ${errorCorrection})`).toEqual(cuer(value,{errorCorrection}).grid);
   }
   expect([...seen.masks].sort()).toEqual([0,1,2,3,4,5,6,7]);expect([...seen.modes].sort()).toEqual(['alphanumeric','byte','numeric']);expect(seen.versions.size).toBeGreaterThan(20);
- });
+ },slow);
  it('matches the reference at every version from 1 to 40 and every level: function patterns, block layout and version words',()=>{
   for(let version=1;version<=40;version++)for(const errorCorrection of levels){
    const value=`v${version}`;
    expect(qrRows(encodeQR(value,{version,errorCorrection})),`version ${version} ${errorCorrection}`).toEqual(referenceRows(value,{version,ecc:errorCorrection}));
   }
- });
+ },slow);
  it('matches the reference at every version filled to capacity, where every block carries data',()=>{
   const next=random(7);
   for(let version=1;version<=40;version+=3)for(const errorCorrection of levels){
@@ -151,7 +158,7 @@ describe('QR matrix against the installed encoders',()=>{
    let value='';for(let k=0;k<length;k++)value+=String.fromCharCode(33+Math.floor(next()*90));
    expect(qrRows(encodeQR(value,{version,errorCorrection,mode:'byte'})),`version ${version} ${errorCorrection} at ${length} bytes`).toEqual(referenceRows(value,{version,ecc:errorCorrection,encoding:'byte'}));
   }
- });
+ },slow);
  it('matches the reference for each forced mask and each forced mode',()=>{
   for(let mask=0;mask<8;mask++)for(const errorCorrection of levels)expect(qrRows(encodeQR(eth,{mask,errorCorrection})),`mask ${mask} ${errorCorrection}`).toEqual(referenceRows(eth,{mask,ecc:errorCorrection}));
   for(const mode of ['numeric','alphanumeric','byte'] as const)expect(qrRows(encodeQR('20261116',{mode})),mode).toEqual(referenceRows('20261116',{encoding:mode}));
@@ -172,22 +179,28 @@ describe('QR matrix against the installed encoders',()=>{
     expect(qrRows(encodeQR(value,{errorCorrection,mode:'byte',version,mask})),`${value} ${errorCorrection} mask ${mask}`).toEqual(theirs.modules.map(row=>row.map(Boolean)));
    }
   }
- });
+ },slow);
 });
 describe('QR codes read back',()=>{
  it('decodes as square modules: every mode, level and a range of versions',()=>{
   for(const value of [eth,sol,`ethereum:${eth}@8453`,'0123456789','HELLO WORLD','Zażółć 日本語 🚀','x'.repeat(400)])for(const errorCorrection of levels)expect(decodeQR(squares(encodeQR(value,{errorCorrection}))),`${value.slice(0,24)} ${errorCorrection}`).toBe(value);
   for(const version of [1,2,6,7,10,14,20,27])expect(decodeQR(squares(encodeQR('hig',{version}))),`version ${version}`).toBe('hig');
- });
+ },slow);
  it('decodes as drawn, in round dots with rounded finder patterns',()=>{
   for(const value of [eth,sol,`solana:${sol}?amount=1`,'https://bloxwap.com/invite/9e0fD0622874'])expect(decodeQR(dots(qrCodeGeometry(value)!)),value).toBe(value);
- });
+ },slow);
+ it('decodes with the arena covered by a dark mark or a busy pattern, at the levels an arena is drawn with',()=>{
+  const next=random(5),payloads=[eth,sol,`ethereum:${eth}@8453`,`solana:${sol}?amount=1&label=Bloxwap`,'hig','0x1'];
+  for(let index=0;index<8;index++){let value='';const length=1+Math.floor(next()*200);for(let k=0;k<length;k++)value+=String.fromCharCode(33+Math.floor(next()*90));payloads.push(value);}
+  for(const errorCorrection of ['high','quartile'] as const)for(const [name,fill] of Object.entries(arenaFills))for(const value of payloads)
+   expect(decodeQR(dots(qrCodeGeometry(value,{arena:true,errorCorrection})!,fill)),`${errorCorrection} ${name} ${value}`).toBe(value);
+ },slow);
  it('decodes with the centre cleared for an arena at high error correction, for the payloads a wallet shows',()=>{
   const payloads=[eth,sol,`ethereum:${eth}@8453`,`solana:${sol}?amount=1&label=Bloxwap`,'bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq','https://bloxwap.com/invite/9e0fD0622874ca1cBf79DA087BaF4622Faf77688','0x1','hig'];
   for(const value of payloads){const geometry=qrCodeGeometry(value,{arena:true})!;expect(geometry.arena,value).not.toBeNull();expect(decodeQR(dots(geometry)),value).toBe(value);}
   const next=random(99);
   for(let index=0;index<40;index++){let value='';const length=1+Math.floor(next()*120);for(let k=0;k<length;k++)value+=String.fromCharCode(33+Math.floor(next()*90));expect(decodeQR(dots(qrCodeGeometry(value,{arena:true})!)),`generated ${index}: ${value}`).toBe(value);}
- });
+ },slow);
 });
 describe('QR drawing geometry',()=>{
  const matrix=encodeQR(eth),geometry=qrGeometry(matrix);
@@ -219,8 +232,10 @@ describe('QR drawing geometry',()=>{
   for(const match of cleared.path.matchAll(/M([\d.]+) ([\d.]+)a0\.4/g)){const column=Math.floor(Number(match[1])),row=Math.floor(Number(match[2]));expect(column>=11&&column<18&&row>=11&&row<18,`${column},${row}`).toBe(false);}
  });
  it('uses high error correction under an arena unless the host names a level',()=>{
-  expect(qrErrorCorrection(undefined,false)).toBe('medium');expect(qrErrorCorrection(undefined,true)).toBe('high');expect(qrErrorCorrection('quartile',true)).toBe('quartile');expect(qrErrorCorrection('low',false)).toBe('low');
-  expect(qrCodeGeometry(eth)!.size).toBe(29);expect(qrCodeGeometry(eth,{arena:true})!.size).toBe(37);expect(qrCodeGeometry(eth,{arena:true,errorCorrection:'medium'})!.size).toBe(29);
+  expect(qrErrorCorrection(undefined,false)).toBe('medium');expect(qrErrorCorrection(undefined,true)).toBe('high');expect(qrErrorCorrection('quartile',true)).toBe('quartile');expect(qrErrorCorrection('high',true)).toBe('high');expect(qrErrorCorrection('low',false)).toBe('low');
+  // A level too weak for a covered centre is raised, not honoured.
+  expect(qrErrorCorrection('low',true)).toBe('quartile');expect(qrErrorCorrection('medium',true)).toBe('quartile');
+  expect(qrCodeGeometry(eth)!.size).toBe(29);expect(qrCodeGeometry(eth,{arena:true})!.size).toBe(37);expect(qrCodeGeometry(eth,{arena:true,errorCorrection:'medium'})!.size).toBe(33);expect(qrCodeGeometry(eth,{errorCorrection:'low'})!.size).toBe(29);
   expect(qrCodeGeometry(eth,{errorCorrection:'high'})!.path).toBe(qrGeometry(encodeQR(eth,{errorCorrection:'high'})).path);
  });
  it('returns null for a value no QR code holds, and still throws for a programming error',()=>{

@@ -318,13 +318,20 @@ export function qrGeometry(matrix:Pick<QRMatrix,'size'|'modules'>,options:QRGeom
  return {size,path,dots,finders,arena:cleared?{origin,size:cleared}:null};
 }
 export interface QRCodeOptions {
- /** Error correction level. Omitted, `high` with an arena and `medium` without. */
+ /** Error correction level. Omitted, `high` with an arena and `medium` without; under an arena `low` and `medium` are raised to `quartile`. */
  errorCorrection?:QRErrorCorrection;
  /** Clears the centre for an arena. */
  arena?:boolean;
 }
-/** The error correction a code is drawn with: the host's level when it names one, otherwise `high` under an arena and `medium` without. */
-export function qrErrorCorrection(errorCorrection:QRErrorCorrection|undefined,arena:boolean):QRErrorCorrection{return errorCorrection??(arena?'high':'medium');}
+/**
+ * The error correction a code is drawn with. Without an arena it is the host's level, or `medium`. An arena covers the centre
+ * of the code, so there the default is `high` and a host's `low` or `medium` is raised to `quartile`: with the centre covered,
+ * `quartile` and `high` codes decoded in every case tested (tests/qr-model.test.ts), while some `medium` and most `low` ones did not.
+ */
+export function qrErrorCorrection(errorCorrection:QRErrorCorrection|undefined,arena:boolean):QRErrorCorrection{
+ if(!arena)return errorCorrection??'medium';
+ return errorCorrection===undefined?'high':errorCorrection==='low'||errorCorrection==='medium'?'quartile':errorCorrection;
+}
 /**
  * Encodes a value and lays it out, for a renderer: `null` when the value does not fit a QR code, so a component can draw
  * nothing instead of throwing while it renders.

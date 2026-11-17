@@ -452,6 +452,15 @@
       "support": "renderer"
     },
     {
+      "name": "QRCode",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "BarMark",
       "states": [
         "default",

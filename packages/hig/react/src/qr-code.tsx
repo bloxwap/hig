@@ -11,7 +11,7 @@ export interface QRCodeProps extends Omit<React.SVGAttributes<SVGSVGElement>,'ch
  size?:number;
  /** Drawn over the centre, which is cleared of modules: an image URL, or a node such as a token mark laid out in the arena's box. */
  arena?:React.ReactNode;
- /** Error correction level. Defaults to `high` with an arena, which covers part of the code, and `medium` without. */
+ /** Error correction level. Defaults to `high` with an arena, which covers part of the code, and `medium` without. With an arena, `low` and `medium` are raised to `quartile` so the code still reads. */
  errorCorrection?:QRErrorCorrection;
  /** Colour of the modules. Defaults to the text role, `var(--hig-text)`. */
  color?:string;

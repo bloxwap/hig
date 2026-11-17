@@ -50,8 +50,10 @@ describe('QRCode',()=>{
   const clip=svg.querySelector('clipPath')!;expect(image.getAttribute('clip-path')).toBe(`url(#${clip.id})`);expect(clip.id).toMatch(/^hig-qr-[A-Za-z0-9_-]+$/);
   expect(['x','y','width','height','rx'].map(name=>clip.querySelector('rect')!.getAttribute(name))).toEqual(['14.5','14.5','8','8','1']);
   expect(svg.querySelectorAll('path')).toHaveLength(1);
-  // The host's level wins when it names one.
+  // The host's level is used when it is strong enough for a covered centre; a weaker one is raised to quartile.
   view.rerender(<QRCode value={eth} arena='/eth.png' errorCorrection='quartile' quietZone={0}/>);expect(svg.getAttribute('viewBox')).toBe('0 0 33 33');
+  view.rerender(<QRCode value={eth} arena='/eth.png' errorCorrection='low' quietZone={0}/>);expect(svg.getAttribute('viewBox')).toBe('0 0 33 33');
+  view.rerender(<QRCode value={eth} errorCorrection='low' quietZone={0}/>);expect(svg.getAttribute('viewBox')).toBe('0 0 29 29');
   // No arena: nothing is cleared and the level returns to medium.
   view.rerender(<QRCode value={eth} arena='' quietZone={0}/>);expect(svg.getAttribute('viewBox')).toBe('0 0 29 29');expect(svg.querySelector('image')).toBeNull();
  });
@@ -101,6 +103,11 @@ describe('QRCode',()=>{
   const source=readFileSync('packages/hig/react/src/qr-code.tsx','utf8');
   expect([...source.matchAll(/from '([^']+)'/g)].map(match=>match[1]).sort()).toEqual(['./provider.js','@bloxwap/hig/contracts/messages','@bloxwap/hig/contracts/qr','@bloxwap/hig/contracts/qr','react']);
   expect(readFileSync('packages/hig/contracts/src/qr.ts','utf8')).not.toMatch(/\bimport\b|\brequire\(/);
+  // Published as its own entries on both platforms, over one shared model.
+  const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,{types:string;import:string}>;
+  expect(exportsMap['./react/qr-code']).toMatchObject({types:'./react/dist/qr-code.d.ts',import:'./react/dist/qr-code.js'});
+  expect(exportsMap['./native/qr-code']).toMatchObject({types:'./native/dist/qr-code.d.ts',import:'./native/dist/qr-code.js'});
+  expect(exportsMap['./contracts/qr']).toMatchObject({types:'./contracts/dist/qr.d.ts',import:'./contracts/dist/qr.js'});
  });
 });
 describe('WalletAddress from wallet-address-core',()=>{

@@ -20,7 +20,7 @@ import {Button} from '@bloxwap/hig/react/button';
 | Entry | Contents |
 | --- | --- |
 | `@bloxwap/hig/tokens` | Tokens, `resolvePrimaryColor`, `./tokens/css`, `./tokens/manifest` ([README](tokens/README.md)) |
-| `@bloxwap/hig/contracts` | Types, formatting, feedback, announcements and messages ([README](contracts/README.md)) |
+| `@bloxwap/hig/contracts` | Types, formatting, feedback, announcements, messages and the QR encoder ([README](contracts/README.md)) |
 | `@bloxwap/hig/react/*` | Web components, blocks, `./react/css` and `./react/css/base` ([README](react/README.md)) |
 | `@bloxwap/hig/native/*` | React Native components ([README](native/README.md)) |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` ([README](chart/README.md)) |

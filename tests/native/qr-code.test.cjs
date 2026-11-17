@@ -69,8 +69,10 @@ it('uses high error correction and clears the centre under an arena image, centr
  expect(flat(layer)).toEqual({position:'absolute',top:0,right:0,bottom:0,left:0,alignItems:'center',justifyContent:'center'});
  expect(layer.props.importantForAccessibility).toBe('no-hide-descendants');
  expect(tree.findAllByType(Path)).toHaveLength(1);
- // The host's level wins when it names one; without an arena nothing is cleared.
+ // The host's level is used when it is strong enough for a covered centre; a weaker one is raised to quartile. Without an arena nothing is cleared.
  tree=mount(h(QRCode,{value:ethereum,arena:'https://example.test/eth.png',errorCorrection:'quartile',quietZone:0}));expect(tree.findByType(Svg).props.viewBox).toBe('0 0 33 33');
+ tree=mount(h(QRCode,{value:ethereum,arena:'https://example.test/eth.png',errorCorrection:'low',quietZone:0}));expect(tree.findByType(Svg).props.viewBox).toBe('0 0 33 33');
+ tree=mount(h(QRCode,{value:ethereum,errorCorrection:'low',quietZone:0}));expect(tree.findByType(Svg).props.viewBox).toBe('0 0 29 29');
  tree=mount(h(QRCode,{value:ethereum,arena:'',quietZone:0}));expect(tree.findByType(Svg).props.viewBox).toBe('0 0 29 29');expect(tree.findAllByType(Image)).toHaveLength(0);
 });
 it('lays a host node out in the arena box',()=>{

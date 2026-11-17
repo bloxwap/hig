@@ -568,6 +568,17 @@
       ]
     },
     {
+      "name": "QRCode",
+      "route": "components/qr-code",
+      "entry": "qr-code",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "arena",
+        "dark-on-light"
+      ]
+    },
+    {
       "name": "BarMark",
       "route": "components/bar-mark",
       "entry": "bar-mark",

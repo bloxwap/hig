@@ -76,6 +76,8 @@ The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1
 
 `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address` export `WalletAddress`, which draws its QR code with [Cuer](https://cuer.sh). `cuer` (`>=0.0.3 <0.1.0`) is an optional peer needed only by those two entries; the native entry also needs `react-native-svg`. `VerticalAddress` is in the `data` entries and needs neither. A host without `cuer` (or, on native, without `react-native-svg`) imports the same `WalletAddress` from `@bloxwap/hig/react/wallet-address-core` or `@bloxwap/hig/native/wallet-address-core`, which need neither peer, and passes its own drawing of the code as `qr`.
 
+`@bloxwap/hig/react/qr-code` and `@bloxwap/hig/native/qr-code` export `QRCode`, a QR code in the same style that HIG encodes itself: no `cuer`, and on native only `react-native-svg`. On web the `wallet-address-core` entry draws it when no `qr` is passed; on native pass it as `qr`. See the [financial data chapter](https://bloxwap.github.io/hig/docs/guides/components/financial-data/#qrcode).
+
 ## Brand accent
 
 Pass `primaryColor` to the web or native `HIGProvider` to theme primary actions

@@ -62,7 +62,7 @@ Source: docs/architecture/platform-matrix.md
 
 SSR: client components retain use-client boundaries in emitted JS. Importing a button needs React/tokens/contracts only at runtime. CSS is explicitly imported. Native API never imports DOM, Web Audio or chart. Native target size remains comfortable even when host density is compact; Pro density is a DOM exception, not a reason to shrink phone targets.
 
-Optional peer packages: none for chart, whose `@bloxwap/hig/chart` entry relies on the package's one required peer, `@bloxwap/chart` (#96); community Slider for native selection entry; react-native-svg for native brand entry; `cuer` for the web and native `wallet-address` entries, plus react-native-svg on native, while the `wallet-address-core` entries load neither and take the host's own QR drawing. Vaul is isolated behind the web gesture-sheet entry. Gorhom and Gesture Handler are isolated behind the native gesture-sheet entry; Reanimated and Worklets are isolated behind the native gesture-sheet and animated-number entries. Base imports, including ordinary native `data` readouts, do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web blocks have their own entries. ESM is supported; CommonJS consumer support is not claimed.
+Optional peer packages: none for chart, whose `@bloxwap/hig/chart` entry relies on the package's one required peer, `@bloxwap/chart` (#96); community Slider for native selection entry; react-native-svg for native brand entry; `cuer` for the web and native `wallet-address` entries, plus react-native-svg on native, while the `wallet-address-core` entries load neither and take the host's own QR drawing (the web one draws HIG's `QRCode` when none is passed); react-native-svg alone for the native `qr-code` entry, and no peer for the web one. Vaul is isolated behind the web gesture-sheet entry. Gorhom and Gesture Handler are isolated behind the native gesture-sheet entry; Reanimated and Worklets are isolated behind the native gesture-sheet and animated-number entries. Base imports, including ordinary native `data` readouts, do not load them. No root barrel loads every component. DOM overlays are one scoped family entry and carry Radix MIT attribution; Radix peers are optional caret ranges and overlay-free web blocks have their own entries. ESM is supported; CommonJS consumer support is not claimed.
 
 RN 0.88 compatibility is verified by independent packed TypeScript and Android/iOS Metro consumers. Existing simulator/emulator interaction reports cover RN 0.81 and 0.83 only; no RN 0.88 physical or simulator interaction result is inferred from a bundle export.
 
@@ -929,7 +929,7 @@ Source: docs/components/financial-data.md
 
 Readable numbers, metrics, lists, tables, and wallet addresses for host-provided financial data.
 
-Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
+Includes `NumberReadout`, `AnimatedNumberReadout`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `QRCode`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data` or `@bloxwap/hig/native/data` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -939,15 +939,17 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data`
 | --- | --- |
 | Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
 | `VerticalAddress` | `address`, optional `kind` (`'ethereum'` or `'solana'`, inferred from a `0x` prefix) and `rowHeight`. The address in fixed-width monospace rows, always left to right: 6 characters per row for Ethereum-style addresses (42 characters make 7 rows) and 4 for Solana (44 make 11). The leading row and the trailing four characters, the ones people compare, are emphasised; the middle is dimmed. Assistive technology and copying get the plain address. |
-| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”; `announce={false}` leaves the notice to the host. `qr` draws the host's own code in place of Cuer's. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`; without `cuer`, `wallet-address-core`. |
+| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. A [Cuer](https://cuer.sh) QR code beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”; `announce={false}` leaves the notice to the host. `qr` draws the host's own code in place of Cuer's. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`; without `cuer`, `wallet-address-core`, which on web draws HIG's own `QRCode`. |
+| `QRCode` | `value`, `size` (default 196), `arena`, `errorCorrection`, `color`, `background`, `quietZone` (default 4), `label` and `decorative`. A QR code in the Cuer style, encoded by HIG with no package, drawn as one path. Separate entry: `@bloxwap/hig/react/qr-code` and `@bloxwap/hig/native/qr-code`. See [QRCode](#qrcode). |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
 | `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
 | `MarketRow` | `symbol`, `name`, `price`, `change`, and `onSelect`; `priceOptions` controls Intl precision and currency/decimal presentation; `changeOptions` controls percent-point precision/signs. `mode='presentation'` lets a host option own selection, with optional `identity`, `icon`, `favorite`, and formatted `volume` slots. `price` and `change` are optional, and `detail`, `trailing`, `selected`, `disabled` and `active` serve a market picker (below). Web and native. Imported from the blocks entry (`@bloxwap/hig/react/blocks`, `@bloxwap/hig/native/blocks`). |
 
-`WalletAddress` needs the optional `cuer` peer (`>=0.0.3 <0.1.0`), and on native also `react-native-svg`; `VerticalAddress` needs neither and lives in the `data` entry. HIG never reads or writes the clipboard itself.
+`WalletAddress` from the `wallet-address` entries needs the optional `cuer` peer (`>=0.0.3 <0.1.0`), and on native also `react-native-svg`; `VerticalAddress` needs neither and lives in the `data` entry. `WalletAddress` from `wallet-address-core` needs no peer on either platform. HIG never reads or writes the clipboard itself.
 
 - **Host QR.** `qr` takes the host's own drawing of the code, laid out in the `size` square and named by the built-in “QR code” label (web: inside the `role="img"` wrapper, so keep the drawing `aria-hidden`; native: one image element). `qrValue` and `arena` are then unused and nothing is encoded. On both platforms `qr={null}` is the same as leaving it out: the Cuer code is drawn.
-- **Without `cuer`.** `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` (props `WalletAddressCoreProps`) with `qr` required. They import neither `cuer` nor, on native, `react-native-svg`, so a host that does not install them (a Metro app that cannot reach a root `node_modules`, for example) still gets the address column, the copy button, its hint and the notice.
+- **Without `cuer`.** `@bloxwap/hig/react/wallet-address-core` and `@bloxwap/hig/native/wallet-address-core` export the same `WalletAddress` (props `WalletAddressCoreProps`). They import neither `cuer` nor, on native, `react-native-svg`, so a host that does not install them (a Metro app that cannot reach a root `node_modules`, for example) still gets the address column, the copy button, its hint and the notice.
+- **HIG's own code (Unreleased).** On web the core entry's `qr` is optional: left out or `null`, it draws [`QRCode`](#qrcode) of `qrValue` (the address by default) with `arena` in the centre, with no tile and no quiet zone, as the Cuer code is drawn. It takes `qrValue` and `arena` like the `wallet-address` entry, and the modules are the ones Cuer draws. On native the core entry must not load `react-native-svg`, so `qr` stays required there: pass `<QRCode value={address} size={size} quietZone={0} background='none' decorative/>` from `@bloxwap/hig/native/qr-code`, which needs `react-native-svg` and nothing else. The `wallet-address` entries are unchanged and still draw with `cuer`.
 - **Notice.** `announce={false}` raises no “Address copied” after a copy: no toast or status text on web and no notice on native. Use it when the host confirms the copy with its own toast, so a screen reader does not hear it twice.
 - **Press decoration (web).** The copy button draws the `HIGProvider pressDecoration` layer (`kind: 'row'`), so a host haptic reaches it like the other pressable rows.
 
@@ -956,6 +958,17 @@ import {WalletAddress} from '@bloxwap/hig/react/wallet-address';
 
 <WalletAddress address={account.address} onCopy={() => navigator.clipboard.writeText(account.address)}/>
 <WalletAddress address={solanaAddress} qrValue={`solana:${solanaAddress}`} arena='/sol.png' size={160}/>
+```
+
+```tsx
+// No QR package: HIG's own code on web, and the same code passed as `qr` on native.
+import {WalletAddress} from '@bloxwap/hig/react/wallet-address-core';
+<WalletAddress address={account.address} onCopy={copy}/>
+
+import {WalletAddress} from '@bloxwap/hig/native/wallet-address-core';
+import {QRCode} from '@bloxwap/hig/native/qr-code';
+<WalletAddress address={account.address} onCopy={copy}
+  qr={<QRCode value={account.address} quietZone={0} background='none' decorative/>}/>
 ```
 
 Loading keeps existing rows visible, suppresses a misleading empty message, and disables pagination and retry until ready. Error text remains visible with an optional host retry action. Native lists use FlatList virtualization; stable host keys preserve identity during live updates.
@@ -983,6 +996,30 @@ Web tables keep a visible caption and ordinary headers by default. Set `captionH
 ```
 
 The `state` slot is content for one cell spanning all columns; it can contain an empty explanation, loading skeleton, or error and retry UI. Pass content rather than `tr`/`td` elements. Existing data rows remain visible. Without a custom state, `loading` exposes the provider's `loading` message and `aria-busy`; an empty, idle table shows `noRows`. `state={null}` suppresses that fallback. Give custom errors an alert role and custom loading content a status role when an announcement is appropriate. `rowProps` cannot replace the row's native role or HIG's cells with `children`/HTML. Row callbacks do not add a selection keyboard model; use native controls inside cells for actions.
+
+### QRCode
+
+`QRCode` draws a QR code in the [Cuer](https://cuer.dev) style: a round dot for every dark module, rounded finder patterns in three corners, and an optional arena in the centre. HIG encodes the value itself, so the entry needs no QR package: `@bloxwap/hig/react/qr-code` has no peer beyond React, and `@bloxwap/hig/native/qr-code` needs only `react-native-svg`. The props are the same on both platforms.
+
+```tsx
+import {QRCode} from '@bloxwap/hig/react/qr-code';
+
+<QRCode value={account.address}/>
+<QRCode value={`solana:${address}?amount=1`} arena='/sol.png' size={220} label='Deposit address QR code'/>
+<QRCode value={inviteLink} color='black' background='white'/>
+```
+
+- **Value.** `value` is any text: an address, a payment URI, a link. HIG picks the densest packing the whole value fits (digits, then the 45-character upper-case alphabet, then UTF-8 bytes) and the smallest symbol that holds it, from 21 to 177 modules a side. A value no QR code can hold (more than 2,953 bytes at low error correction, 1,273 at high) draws an empty square of `size` that is hidden from assistive technology; nothing throws while rendering.
+- **Size.** `size` is the edge of the square, quiet zone included: CSS pixels on web, dp on native, default 196. The drawing is in module units, so a new size changes two attributes and encodes nothing. On web, host CSS on the element may resize it and the code scales.
+- **Arena.** `arena` is drawn over the centre: an image URL (cropped to cover its box, with a one-module corner radius), or a node such as a token mark, laid out in the arena's box in CSS pixels or dp. The centre square is cleared of modules: a quarter of the side, made odd so it is centred on the centre module, with the arena half a module inside it. Cuer aligns its arena to the module grid half a module off centre; HIG centres it.
+- **Error correction.** `errorCorrection` is `'low'`, `'medium'`, `'quartile'` or `'high'`. Left out, a code with an arena uses `high`, because the arena covers part of it, and a code without one uses `medium`. A level the host names is used as given, except that under an arena `low` and `medium` are raised to `quartile`: with the centre covered, codes at `quartile` and `high` decoded in every case tested, while some at `medium` and most at `low` did not.
+- **Colour.** The modules take the `text` role and the tile behind them the `background` role: `var(--hig-text)` and `var(--hig-background)` on web, the provider's colour table on native, so both follow Display P3 where the provider paints it. `color` and `background` override them with any colour the platform accepts. `background='none'` draws no tile, for a code that sits on the host's own surface. HIG's theme is light text on a dark page, so the default is a light code on a dark tile. Current phone cameras generally read a reversed code; some older or dedicated scanners read only dark on light, so pass `color='black' background='white'` (or the host's own pair) where any scanner must read the code. Keep an override pair as far apart as the roles are: HIG does not check the contrast of host colours.
+- **Quiet zone.** `quietZone` is the clear margin kept on every side, in modules, inside `size`. The default is 4, the margin the QR standard asks for; the tile covers it and its corners are rounded by half of it. Pass `0` only where the host keeps that margin itself, as `WalletAddress` does with its padding.
+- **Accessibility.** The code is one image named by the built-in “QR code” message (`qrCode`), or by `label`. `decorative` hides it, for a host that names the code on an element of its own, as `WalletAddress` does. A QR code carries no text of its own: put the address or link beside it as text that can be read, selected and copied. Nothing animates, so reduced motion changes nothing; the code is never mirrored in a right-to-left layout, and no text is drawn, so large text changes nothing.
+- **Performance.** The whole code is one path in one SVG: the dots and the three finder patterns (each a ring written as an outline with a hole, around a core). The value is encoded once per `value`, `errorCorrection` and arena, and the path is kept between renders; a new `size`, colour or quiet zone, or a parent render, recomputes nothing. Encoding a wallet address measured about 0.25 ms in Node on a development laptop; it has not been timed on a phone.
+- **Platforms.** Web draws the image arena as an SVG `image` and a node arena in a `foreignObject`, and accepts SVG attributes (`className`, `style`, `data-*`). Native draws either arena as a view over the SVG, centred, and takes `testID` (also the prefix of `-code` and `-arena`) and a view `style`.
+- **Shared model.** `@bloxwap/hig/contracts/qr` is the encoder and the geometry both renderers use: `encodeQR(value, {errorCorrection, version, mask, mode})` returns the modules, `qrGeometry(matrix, {arena})` the path and the cleared square, and `qrFrame(geometry, edge, quietZone)` the view box and the arena's box. It imports nothing, so a host can draw the same code elsewhere, on a server for example. The encoder covers versions 1 to 40 at all four levels and picks the mask as Cuer's encoder does, so the modules are the ones Cuer draws for the same value and level.
+- **Limits.** One segment in one mode a code: no Kanji mode, no ECI header (bytes are UTF-8, which phone scanners assume), no structured append and no Micro QR. The look is fixed; there are no module-shape options.
 
 ### MarketRow
 
@@ -1106,7 +1143,7 @@ Numbers are display-only IEEE numeric inputs, no decimal arithmetic or hidden pa
 
 ## Validation and citation
 
-See `tests/animated-number-model.test.ts`, `tests/animated-number.dom.test.tsx`, `tests/data.dom.test.tsx`, `tests/native/animated-number.test.cjs`, `tests/native/readout-styles.test.cjs`, and `scripts/pro-data-browser-smoke.mjs`, plus consumer fixtures and milestone evidence. Chromium/WebKit checks cover real per-place motion, interrupted updates, Arabic RTL digits, canonical final output and reduced motion. Android RN 0.83 and iOS RN 0.88 simulator matrices in `evidence/native-number-flow/` verify localized final labels, rapid bursts, large text and static fallbacks. iOS Hermes did not apply `nu-arab` to an English locale tag in the runtime check, so localized reel coverage uses `ar-EG` in LTR instead. VoiceOver/TalkBack speech, physical devices, animation smoothness and exhaustive visual bidi review remain unclaimed. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/qr-model.test.ts`, `tests/qr-code.dom.test.tsx`, `tests/native/qr-code.test.cjs`, `tests/animated-number-model.test.ts`, `tests/animated-number.dom.test.tsx`, `tests/data.dom.test.tsx`, `tests/native/animated-number.test.cjs`, `tests/native/readout-styles.test.cjs`, and `scripts/pro-data-browser-smoke.mjs`, plus consumer fixtures and milestone evidence. Chromium/WebKit checks cover real per-place motion, interrupted updates, Arabic RTL digits, canonical final output and reduced motion. Android RN 0.83 and iOS RN 0.88 simulator matrices in `evidence/native-number-flow/` verify localized final labels, rapid bursts, large text and static fallbacks. iOS Hermes did not apply `nu-arab` to an English locale tag in the runtime check, so localized reel coverage uses `ar-EG` in LTR instead. `QRCode`'s modules are compared with Cuer's encoder for every version, level and mask and decoded by a software reader as drawn (round dots, with and without the arena); it has not been scanned from a screen with a phone or a dedicated scanner. VoiceOver/TalkBack speech, physical devices, animation smoothness and exhaustive visual bidi review remain unclaimed. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 ## Optional number motion
 
@@ -2076,7 +2113,7 @@ Rules:
 | `copyAddress` | Copy address | WalletAddress and the SwapPanelBlock receive view: accessible name of an address that copies on press; the address follows it | — |
 | `addressCopied` | Address copied | WalletAddress and the SwapPanelBlock receive view: notice after the address is copied | — |
 | `tapToCopy` | Tap to copy | WalletAddress: visible hint under an address that copies on press | — |
-| `qrCode` | QR code | WalletAddress: accessible name of the QR code | — |
+| `qrCode` | QR code | WalletAddress and QRCode: accessible name of the QR code | — |
 | `swapControlKey` | Ctrl | SwapPanelBlock: control key legend in the shortcut hint on non-Apple keyboards (`Ctrl K`); Apple keyboards show ⌘ | — |
 | `swapKeypad` | Keypad | SwapPanelBlock: accessible name of the swap panel keypad | — |
 | `swapDelete` | Delete | SwapPanelBlock: accessible name of the keypad delete key | — |
@@ -2857,6 +2894,8 @@ The separate optional `@bloxwap/hig/react/gesture-sheet` entry requires `vaul ^1
 ### Wallet address QR codes
 
 `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address` export `WalletAddress`, which draws its QR code with [Cuer](https://cuer.sh). `cuer` (`>=0.0.3 <0.1.0`) is an optional peer needed only by those two entries; the native entry also needs `react-native-svg`. `VerticalAddress` is in the `data` entries and needs neither. A host without `cuer` (or, on native, without `react-native-svg`) imports the same `WalletAddress` from `@bloxwap/hig/react/wallet-address-core` or `@bloxwap/hig/native/wallet-address-core`, which need neither peer, and passes its own drawing of the code as `qr`.
+
+`@bloxwap/hig/react/qr-code` and `@bloxwap/hig/native/qr-code` export `QRCode`, a QR code in the same style that HIG encodes itself: no `cuer`, and on native only `react-native-svg`. On web the `wallet-address-core` entry draws it when no `qr` is passed; on native pass it as `qr`. See the [financial data chapter](https://bloxwap.github.io/hig/docs/guides/components/financial-data/#qrcode).
 
 ## Brand accent
 
