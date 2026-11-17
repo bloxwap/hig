@@ -129,3 +129,19 @@ it('outcomes wait stacked at the bottom, then glide into place when their prices
  unmount();
  const reduced=render(view(waiting,true));frame(0);reduced.rerender(view(sample,true));frame(16);expect(capsules().map(center)).toEqual([309,345,expect.closeTo(39.6,5)]);
 });
+
+it('uses one track per outcome id',()=>{
+ render(<OutcomeChart summary='Duplicates' outcomes={[sample[0],{...sample[0],label:'Duplicate'},sample[1]]}/>);
+ expect(capsules()).toHaveLength(2);
+});
+it('expires silent feeds and ignores late data after replacing the feed',()=>{
+ vi.useFakeTimers();
+ try{
+  let send!:(values:readonly Outcome[])=>void;const first:OutcomeFeed=callback=>{send=callback;return()=>{};};
+  const view=render(<OutcomeChart summary='Freshness' feed={first}/>);
+  act(()=>send(sample));expect(capsules()).toHaveLength(3);
+  act(()=>vi.advanceTimersByTime(30_000));expect(capsules()).toHaveLength(0);expect(screen.getByRole('status').textContent).toContain('stale');
+  view.rerender(<OutcomeChart summary='Freshness' feed={()=>()=>{}}/>);
+  act(()=>send(sample));expect(capsules()).toHaveLength(0);
+ }finally{vi.useRealTimers();}
+});

@@ -1,3 +1,4 @@
+import {decimal,decimalMultiply,decimalDivide} from '@bloxwap/hig/contracts';
 import type React from 'react';
 // Pure helpers for the SwapPanelBlock block. Same behaviour as the web block's helpers; kept separate so native never imports the react entry.
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
@@ -12,7 +13,7 @@ export interface SwapToken {
  chain:string;chainId:string|number;
  /** Artwork: an image URL, or the host's own element (an SVG component, say), which fills the disc. A missing token icon falls back to the symbol's first letters. */
  icon?:SwapArtwork;chainIcon?:SwapArtwork;
- /** Most decimal places a token amount may be typed with, for example 6 for USDC. Unlimited when omitted. Dollars always stop at two. */
+ /** Most decimal places a token amount may be typed with, for example 6 for USDC. Up to 100 when omitted; explicit precision must be an integer from 0 to 100. Dollars always stop at two. */
  decimals?:number;
  /** Holdings in token units, when the host knows them. Enables Max, Test and the balance check. */
  balance?:number|null;
@@ -41,8 +42,9 @@ export interface SwapWallet {connected:boolean;address?:string|null}
 export interface SwapFee {label:string;usd:number}
 export const slippagePresets=[0.001,0.005,0.01] as const;
 export function swapAction(from:SwapToken|null,to:SwapToken|null):SwapAction{
- if(!from||!to||from.symbol===to.symbol)return 'send';
- return from.chainId===to.chainId?'swap':'bridge';
+ if(!from||!to)return 'send';
+ if(String(from.chainId)!==String(to.chainId))return 'bridge';
+ return from.id===to.id?'send':'swap';
 }
 /** A clean numeric string: no trailing zeros, at most `digits` decimals. */
 export const trimNumber=(value:number,digits=8):string=>String(Number((Number.isFinite(value)?value:0).toFixed(digits)));
@@ -54,9 +56,9 @@ export function sanitizeAmount(raw:string):string{
  return value===''||value==='.'?'0':value;
 }
 /** Token units shown in the active denomination. Dollars floor to the cent so Max never resolves to more than the balance. */
-export function unitsToEntry(units:number,mode:SwapDenomination,price:number):string{
- if(mode==='token')return trimNumber(units);
- return price>0?String(Math.floor(units*price*100)/100):'0';
+export function unitsToEntry(units:number|string,mode:SwapDenomination,price:number):string{
+ if(mode==='token')return decimal(units);
+ return price>0?decimalMultiply(units,price,2):'0';
 }
 /** Applies one keypad key (`0`–`9`, `.`, `back`) to an amount string. Dollars stop at two decimals. */
 export function applyAmountKey(current:string,key:string,mode:SwapDenomination,decimals?:number):string{
@@ -79,8 +81,8 @@ export const formatPercent=(fraction:number):string=>`${Number((fraction*100).to
 /** A small trial amount: 1% of holdings, capped at about one dollar's worth. */
 export function testAmount(token:SwapToken):number{
  const balance=token.balance??0,price=token.price??0;
- if(!(balance>0))return 0;
- return Number(Math.min(balance*0.01,price>0?1/price:balance*0.01).toFixed(8));
+ if(!(balance>0)||!Number.isFinite(balance))return 0;
+ const fraction=decimalDivide(balance,100,token.decimals??18);return Number(decimal(price>0?Math.min(Number(fraction),Number(decimalDivide(1,price,token.decimals??18))):fraction,token.decimals??18));
 }
 export const shortAddress=(address:string):string=>address.length<=12?address:`${address.slice(0,6)}…${address.slice(-4)}`;
 /** A stable flat colour for a wallet address, so the same wallet always looks the same. */

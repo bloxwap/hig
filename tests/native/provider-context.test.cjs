@@ -17,3 +17,10 @@ it('a provider that renders again with the same props re-renders no reader of th
  expect(reads).toBe(settled);expect(new Set(seen.slice(settled-1)).size).toBe(1);
  act(()=>setLocale('fr-FR'));expect(reads).toBe(settled+1);expect(seen.at(-1).locale).toBe('fr-FR');
 });
+
+it('inherits omitted environment and font settings through a nested provider',()=>{
+ let seen;
+ function Reader(){seen=useHIG();return null;}
+ act(()=>{root=create(h(HIGProvider,{locale:'ar-EG',direction:'rtl',reducedMotion:true,fontFamily:'Custom',maxFontSizeMultiplier:2},h(HIGProvider,{primaryColor:'#ffffff'},h(Reader))));});
+ expect(seen).toMatchObject({locale:'ar-EG',direction:'rtl',reducedMotion:true,fontFamily:'Custom',maxFontSizeMultiplier:2});
+});

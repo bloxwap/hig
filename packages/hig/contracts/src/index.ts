@@ -57,7 +57,7 @@ export function presentNumberFormat<T extends Intl.NumberFormatOptions | undefin
 export function formatNumber(value: number | null | undefined, locale = 'en-US', options: Intl.NumberFormatOptions = {}): string {
  if (value == null || !Number.isFinite(value)) return '—';
  const sign = options.signDisplay as SignDisplay | undefined;
- return sign !== undefined && sign !== 'auto' && !intlSignDisplaySupported(sign) ? formatSignedNumber(value, locale, options) : new Intl.NumberFormat(locale, options).format(value);
+ try { return sign !== undefined && sign !== 'auto' && !intlSignDisplaySupported(sign) ? formatSignedNumber(value, locale, options) : new Intl.NumberFormat(locale, options).format(value); } catch { return '—'; }
 }
 /** `Intl.NumberFormatOptions['signDisplay']`, with ES2023's `negative`, which the TypeScript lib in use may not list. */
 export type SignDisplay = NonNullable<Intl.NumberFormatOptions['signDisplay']> | 'negative';
@@ -96,7 +96,7 @@ const minusSign = /[-−‐-―﹣－]/u;
 export function formatSignedNumber(value: number | null | undefined, locale = 'en-US', options: Intl.NumberFormatOptions = {}): string {
  if (value == null || !Number.isFinite(value)) return '—';
  const {signDisplay: requested, ...rest} = options, signDisplay = requested as SignDisplay | undefined;
- const formatter = new Intl.NumberFormat(locale, rest);
+ let formatter:Intl.NumberFormat;try{formatter=new Intl.NumberFormat(locale,rest);}catch{return '—';}
  if (signDisplay === undefined || signDisplay === 'auto') return formatter.format(value);
  const magnitude = Math.abs(value), negative = value < 0 || Object.is(value, -0), absolute = formatter.format(magnitude), zero = absolute === formatter.format(0);
  const plus = () => {
@@ -126,8 +126,8 @@ export function formatTicker(value: number | null | undefined, ticker: string, l
 /** Clock display for funding and other protocol instants. The host must name the zone; the zone name is always shown. Unknown → `—`. */
 export function formatZonedTime(value: Date | number | null | undefined, locale: string, timeZone: string, options: Intl.DateTimeFormatOptions = {hour: 'numeric', minute: '2-digit'}): string {
  const time = value instanceof Date ? value.getTime() : value;
- if (time == null || !Number.isFinite(time)) return '—';
- return new Intl.DateTimeFormat(locale, {timeZoneName: 'short', ...options, timeZone}).format(time);
+ if (time == null || !Number.isFinite(time) || Math.abs(time)>8640000000000000) return '—';
+ try { return new Intl.DateTimeFormat(locale, {timeZoneName: 'short', ...options, timeZone}).format(time); } catch { return '—'; }
 }
 /** Font 0.1.2 publishes CSS/Next loaders, native faces are derived by the optional pinned HIG font generator. */
 /** Formats one unit with Intl (`2 hours`, `1d`), falling back to plain digits and the unit name where the runtime lacks unit formatting. */
@@ -141,6 +141,7 @@ function formatUnit(value: number, unit: 'day' | 'hour' | 'minute' | 'second', l
  * calm in an accessible name; under a minute it reads the seconds. Negative time reads as zero.
  */
 export function formatCountdown(remainingMs: number, locale = 'en-US'): {visible: string; spoken: string} {
+ if(!Number.isFinite(remainingMs))return {visible:'—',spoken:'—'};
  const total = Math.max(0, Math.ceil(remainingMs / 1000));
  const days = Math.floor(total / 86400), hours = Math.floor(total % 86400 / 3600), minutes = Math.floor(total % 3600 / 60), seconds = total % 60;
  const pad = (n: number) => String(n).padStart(2, '0');
@@ -156,3 +157,6 @@ export function nativeFont(manifest: FontManifest, family: string, weight: numbe
  if (!face) throw new Error(`Register a pinned ${family} ${weight} ${script} native face`);
  return face.registration??face.family;
 }
+
+export {assertUniqueKeys,numericRange,progressValue,paginationValue} from './invariants.js';
+export {decimal,decimalMultiply,decimalDivide,decimalCompare,localizeDecimal} from './decimal.js';

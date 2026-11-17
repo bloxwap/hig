@@ -186,7 +186,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
   {info&&open?<View testID='target-popover' accessibilityLiveRegion='polite' style={{position:'absolute',top:sticky?4:64,...(direction==='rtl'?{left:16}:{right:16}),maxWidth:280,zIndex:2,padding:12,borderRadius:14,backgroundColor:colors.nested}}><Text testID='target-note' style={{color:colors.text,fontSize:14,lineHeight:21}}>{note}</Text></View>:null}
   <View testID='target-actions' style={{direction,flexDirection:'row',gap:8,marginTop:16}}>
    {onCancel?<Button testID='target-cancel' intent='secondary' onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{labels.cancel??t.cancel}</Button>:null}
-   <Button testID='target-submit' intent={intent} disabled={submitDisabled??value===null} busy={busy} onPress={onSubmit} style={{flex:1,alignSelf:'auto'}}>{labels.submit}</Button>
+   <Button testID='target-submit' intent={intent} disabled={!!submitDisabled||!known(value)||(unit==='price'&&value<=0)} busy={busy} onPress={onSubmit} style={{flex:1,alignSelf:'auto'}}>{labels.submit}</Button>
   </View>
  </>;
  if(sticky)return <StickyHeaderLayout testID={testID} headerTestID='target-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;

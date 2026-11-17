@@ -101,6 +101,7 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
  const targetRows=useRef(new Map<string,HTMLDivElement>()),targetLabels=useRef(new Map<string,HTMLSpanElement>()),effects=useRef<HTMLDivElement>(null);
  const levels=useMemo(()=>validTargets(targets),[targets]);
  const crossings=useRef(targetCrossings()),cancelBurst=useRef<(()=>void)|undefined>(undefined);
+ const [stale,setStale]=useState(false);
  const controlled=price!==undefined;
  const latest=useRef<number|null>(usable(price)?price:null);
  const [reading,setReading]=useState<number|null>(()=>usable(price)?price:null);
@@ -111,7 +112,14 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
  const settings=useRef({colors,locale,priceOptions,optionsKey:'',reducedMotion,levels,dgen});
  useEffect(()=>{settings.current={colors,locale,priceOptions,optionsKey:JSON.stringify(priceOptions??{}),reducedMotion,levels,dgen};if(controlled)latest.current=usable(price)?price:null;});
  useEffect(()=>{if(!dgen||reducedMotion){cancelBurst.current?.();cancelBurst.current=undefined;}},[dgen,reducedMotion]);
- useEffect(()=>{if(controlled)return;latest.current=null;return feed(next=>{if(usable(next))latest.current=next;});},[controlled,feed]);
+ useEffect(()=>{
+  if(controlled){setStale(false);return;}let alive=true;let deadline:ReturnType<typeof setTimeout>|undefined;
+  latest.current=null;setStale(false);
+  const expire=()=>{if(alive){latest.current=null;setStale(true);}};
+  deadline=setTimeout(expire,30_000);
+  const stop=feed(next=>{if(alive&&usable(next)){latest.current=next;setStale(false);clearTimeout(deadline);deadline=setTimeout(expire,30_000);}},expire);
+  return()=>{alive=false;clearTimeout(deadline);stop();};
+ },[controlled,feed]);
  useEffect(()=>{
   const surface=canvas.current,container=box.current;if(!surface||!container)return;
   let context:CanvasRenderingContext2D|null=null;
@@ -205,7 +213,7 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
     </React.Fragment>)}
    </div>
    {reading==null
-    ?<p role='status' style={{position:'absolute',inset:0,margin:0,display:'grid',placeItems:'center',color:colors.muted,fontFamily:'var(--hig-font-sans, inherit)'}}>{messages.loadingChart??en.loadingChart}</p>
+    ?<p role='status' style={{position:'absolute',inset:0,margin:0,display:'grid',placeItems:'center',color:colors.muted,fontFamily:'var(--hig-font-sans, inherit)'}}>{stale?(messages.stale??en.stale):(messages.loadingChart??en.loadingChart)}</p>
     :<span ref={pill} data-hig-altimeter-price style={{position:'absolute',right:EDGE,top:height/2-18,height:36,minWidth:110,boxSizing:'border-box',display:'flex',alignItems:'center',justifyContent:'center',paddingInline:10,border:`1px solid ${colors.action}`,borderRadius:tokens.radius.pill,background:colors.background,color:colors.action,fontSize:16,fontWeight:600,lineHeight:1,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}><AnimatedNumberReadout value={reading} options={readingOptions}/></span>}
    <div ref={effects} aria-hidden style={{position:'absolute',inset:0,pointerEvents:'none'}}/>
   </div>

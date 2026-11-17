@@ -110,7 +110,8 @@ function frame(now:number):void{
 function fire(options:ConfettiOptions|undefined,host:Host|undefined):Promise<void>{
  if(typeof window==='undefined'||typeof document==='undefined')return Promise.resolve();
  // The host cannot answer for reduced motion yet: the burst waits for it, a moment at most.
- if(host&&!host.ready)return new Promise<void>(resolve=>{host.waiting.push({options,resolve});});
+ if(host&&!host.ready)return new Promise<void>(resolve=>{if(host.waiting.length>=8){resolve();return;}host.waiting.push({options,resolve});});
+ if(layer&&layer.runs.length>=8)return Promise.resolve();
  const reduced=host?host.reducedMotion():systemReducedMotion();
  if(confettiSkipped(options,reduced))return Promise.resolve();
  const burst=createConfettiBurst(options,()=>themeColors(host?.anchor()??document.documentElement));

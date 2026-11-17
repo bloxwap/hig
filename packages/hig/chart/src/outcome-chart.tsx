@@ -75,10 +75,18 @@ export function drawOutcomes(ctx:CanvasRenderingContext2D,frame:{width:number;he
 export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height=360,style,...props}:OutcomeChartProps){
  const {locale,messages,reducedMotion}=useHIG();const colors=useColors();
  const box=useRef<HTMLDivElement>(null),canvas=useRef<HTMLCanvasElement>(null),list=useRef<HTMLUListElement>(null);
+ const [stale,setStale]=useState(false);
  const controlled=outcomes!==undefined;
  const [fed,setFed]=useState<readonly Outcome[]|null>(null);
- useEffect(()=>{if(controlled)return;setFed(null);return feed(setFed);},[controlled,feed]);
- const shown=useMemo(()=>((controlled?outcomes:fed)??[]).slice(0,OUTCOME_LIMIT),[controlled,outcomes,fed]);
+ useEffect(()=>{
+  if(controlled){setStale(false);return;}let alive=true;let deadline:ReturnType<typeof setTimeout>|undefined;
+  setFed(null);setStale(false);
+  const expire=()=>{if(alive){setFed(null);setStale(true);}};
+  deadline=setTimeout(expire,30_000);
+  const stop=feed(next=>{if(!alive)return;setFed(next);setStale(false);clearTimeout(deadline);deadline=setTimeout(expire,30_000);},expire);
+  return()=>{alive=false;clearTimeout(deadline);stop();};
+ },[controlled,feed]);
+ const shown=useMemo(()=>((controlled?outcomes:fed)??[]).filter((item,index,all)=>item.id!==''&&all.findIndex(candidate=>candidate.id===item.id)===index).slice(0,OUTCOME_LIMIT),[controlled,outcomes,fed]);
  const paint=(outcome:Outcome,index:number)=>outcome.color??outcomeColors[index%outcomeColors.length];
  const percent=useMemo(()=>new Intl.NumberFormat(locale,{style:'percent',maximumFractionDigits:0}),[locale]);
  // Where each capsule rests: at its outcome's chance, moved apart from close neighbors.
@@ -158,7 +166,7 @@ export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height
   <div ref={box} dir='ltr' style={{position:'relative',height,overflow:'hidden',borderRadius:tokens.radius.xl,background:colors.background,fontFamily:monoFont}}>
    <canvas ref={canvas} aria-hidden style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/>
    {shown.length===0
-    ?<p role='status' style={{position:'absolute',inset:0,margin:0,display:'grid',placeItems:'center',color:colors.muted,fontFamily:'var(--hig-font-sans, inherit)'}}>{messages.loadingChart??en.loadingChart}</p>
+    ?<p role='status' style={{position:'absolute',inset:0,margin:0,display:'grid',placeItems:'center',color:colors.muted,fontFamily:'var(--hig-font-sans, inherit)'}}>{stale?(messages.stale??en.stale):(messages.loadingChart??en.loadingChart)}</p>
     :<>
      <svg aria-hidden width={PAD} height={height} viewBox={`0 0 ${PAD} ${height}`} style={{position:'absolute',left:0,top:0}}>
       {ticks.map(tick=>{const y=outcomeY(tick,height,INSET,scale);return <line key={tick} x1={PAD-8} x2={PAD} y1={y} y2={y} stroke={colors.muted} strokeWidth={1} strokeLinecap='round' opacity={.75}/>;})}

@@ -11,7 +11,7 @@ export interface Outcome {
  color?:string;
 }
 /** A live source of outcomes: call `onOutcomes` with each new snapshot, and return a function that stops it. */
-export type OutcomeFeed=(onOutcomes:(outcomes:readonly Outcome[])=>void)=>()=>void;
+export type OutcomeFeed=(onOutcomes:(outcomes:readonly Outcome[])=>void,onStale?:()=>void)=>()=>void;
 /** The most outcomes drawn; later ones are dropped. */
 export const OUTCOME_LIMIT=10;
 /** Default line and capsule colors, in order. Each reads on the dark chart background (4.5:1 or better on #0a0a0a). */

@@ -1,3 +1,4 @@
+import {progressValue} from '@bloxwap/hig/contracts';
 import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
@@ -16,8 +17,14 @@ export type {AccentRole} from './roles.js';
 const severityRole={info:'info',note:'info',success:'positive',tip:'positive',warning:'warning',error:'negative'} as const;
 /** `note` and `tip` are documentation callout severities that reuse the info and positive token roles; `default` is the neutral variant (a faint `text` tint, title in `text`). */
 export type AlertSeverity=keyof typeof severityRole|'default';
+/** A badge's meaning, as on web: explicit, never inferred from text or a number's sign. */
+export type BadgeTone='neutral'|'positive'|'negative'|'warning'|'info';
+export interface BadgeProps {children?:React.ReactNode;/** `positive`, `negative`, `warning` or `info` draws the label in that token role over a 15% wash of it, like web `.hig-badge[data-tone]`; `neutral` (default) keeps the well fill. */tone?:BadgeTone;/** A 6dp status dot in the label colour on the leading edge, hidden from assistive technology. */dot?:boolean;testID?:string}
 /** Neutral chip in the dark well fill (one step lighter inside a Surface, Dialog or sheet). */
-export function Badge({children}:React.PropsWithChildren){const fills=useFills();return <Text style={{alignSelf:'flex-start',maxWidth:'100%',backgroundColor:fills.well,overflow:'hidden',borderRadius:9999,paddingVertical:4,paddingHorizontal:10}}>{children}</Text>;}
+export function Badge({children,tone='neutral',dot,testID}:BadgeProps){const fills=useFills();const colors=useColors();const accent=tone==='positive'||tone==='negative'||tone==='warning'||tone==='info'?colors[tone]:undefined;
+ /* 15% of the role over whatever is behind, as web color-mix with transparent; a colour that is not #rrggbb blends into the well instead. */
+ const fill=accent?(/^#[0-9a-f]{6}$/i.test(accent)?`${accent}26`:tint(accent,fills.well,0.15)):fills.well;const chip={alignSelf:'flex-start' as const,maxWidth:'100%' as const,backgroundColor:fill,overflow:'hidden' as const,borderRadius:9999,paddingVertical:4,paddingHorizontal:10};const label=accent?{color:accent}:null;
+ return dot?<View testID={testID} style={[chip,{flexDirection:'row',alignItems:'center',gap:6}]}><View accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{width:6,height:6,borderRadius:3,backgroundColor:accent??colors.text}}/><Text style={[label,{flexShrink:1}]}>{children}</Text></View>:<Text testID={testID} style={label?[chip,label]:chip}>{children}</Text>;}
 /** Opaque sRGB blend of `tone` into `base` (both `#rrggbb`): the native counterpart of CSS `color-mix`. */
 const tint=(tone:string,base:string,amount:number)=>'#'+[1,3,5].map(i=>Math.round(parseInt(base.slice(i,i+2),16)*(1-amount)+parseInt(tone.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
 /** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning, error → negative; default → 6% of `text`), with no stroke or glow; `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. A string or number child is drawn in a HIG `Text`. `announce` (default true) speaks the title and body when they appear or change; pass `false` for guidance that is present from the start. */
@@ -111,7 +118,7 @@ export interface SpinnerProps {
  testID?:string;
 }
 export function Spinner({label,hideLabel,testID}:SpinnerProps){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View testID={testID} accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/>{hideLabel?null:<Text>{text}</Text>}</View>;}
-export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){
+export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){({value,max}=progressValue(value,max));
  const {locale,messages,direction}=useHIG();const colors=useColors();const fills=useFills();
  const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));
  return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}>

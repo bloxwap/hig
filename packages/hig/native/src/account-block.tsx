@@ -86,7 +86,7 @@ export interface AccountBlockProps {
 const usdc='USDC',usdCoin='USD Coin';
 const usd:Intl.NumberFormatOptions={style:'currency',currency:'USD'};
 /** An asset's dollar value: its own `value`, else balance × price, else unknown. */
-export const assetValue=(asset:AccountAsset):number|null=>asset.value!==undefined?asset.value:asset.balance!=null&&asset.price!=null?asset.balance*asset.price:null;
+export const assetValue=(asset:AccountAsset):number|null=>{const value=asset.value!==undefined?asset.value:asset.balance!=null&&asset.price!=null?asset.balance*asset.price:null;return value!=null&&Number.isFinite(value)?value:null;};
 /** The pinned asset (the one with `options.pinnedId`, else the first with `pinnedSymbol`, else a zero placeholder) and the rest by dollar value, largest first, unknown values last, ties by name, or with `options.order` `given` in the order passed. */
 export function accountRows(assets:readonly AccountAsset[],pinnedSymbol:string=usdc,options:AccountRowsOptions={}):{pinned:AccountAsset;rest:AccountAsset[]}{
  const wanted=pinnedSymbol.toLowerCase();
@@ -96,11 +96,11 @@ export function accountRows(assets:readonly AccountAsset[],pinnedSymbol:string=u
  const rest=options.order==='given'?others:others.sort((a,b)=>{const x=assetValue(a),y=assetValue(b);return x===y?a.name.localeCompare(b.name):x===null?1:y===null?-1:y-x||a.name.localeCompare(b.name);});
  return {pinned,rest};
 }
-const sum=(assets:readonly AccountAsset[])=>assets.reduce((total,asset)=>total+(assetValue(asset)??0),0);
+const sum=(assets:readonly AccountAsset[]):number|null=>{let total=0;for(const asset of assets){const value=assetValue(asset);if(value==null||!Number.isFinite(value))return null;total+=value;}return Number.isFinite(total)?total:null;};
 /** A section's total: its own `total`, or the sum of its asset values. */
-export const accountSectionTotal=(section:AccountSection):number|null=>section.total!==undefined?section.total:sum(section.assets);
+export const accountSectionTotal=(section:AccountSection):number|null=>section.total!==undefined?(section.total!=null&&Number.isFinite(section.total)?section.total:null):sum(section.assets);
 /** The block total for `sections`: the sum of the section totals, or unknown (`null`) when any of them is unknown. Pass only the sections that are drawn. */
-const accountSectionsTotal=(sections:readonly AccountSection[]):number|null=>{let all=0;for(const section of sections){const total=accountSectionTotal(section);if(total===null)return null;all+=total;}return all;};
+const accountSectionsTotal=(sections:readonly AccountSection[]):number|null=>{let all=0;for(const section of sections){const total=accountSectionTotal(section);if(total===null)return null;all+=total;}return Number.isFinite(all)?all:null;};
 /** A section's rows in display order: the pinned asset first when the section holds it (no placeholder), then the rest by value as in `accountRows`. */
 export function accountSectionRows(assets:readonly AccountAsset[],pinnedSymbol:string=usdc,options:AccountRowsOptions={}):{pinned:AccountAsset|null;rest:AccountAsset[]}{
  const {pinned,rest}=accountRows(assets,pinnedSymbol,options);return {pinned:assets.includes(pinned)?pinned:null,rest};

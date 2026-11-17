@@ -46,14 +46,16 @@ function useDynamicHeight(open:boolean,enabled:boolean,reducedMotion:boolean,pan
   const card=panel.current;if(!card)return;
   let previous:number|null=null;
   const cancel=()=>{const current=animation.current;animation.current=null;current?.cancel();};
-  const measure=()=>{
-   const next=content.getBoundingClientRect().height,from=animation.current?card.getBoundingClientRect().height:previous;previous=next;
+  const measure=(entries?:ResizeObserverEntry[])=>{
+   const next=entries?.[0]?.borderBoxSize?.[0]?.blockSize??content.getBoundingClientRect().height;
+   if(previous!==null&&Math.abs(previous-next)<.5)return;
+   const from=animation.current?card.getBoundingClientRect().height:previous;previous=next;
    if(from===null||Math.abs(from-next)<.5)return;
    if(reducedMotion||card.style.height||typeof card.animate!=='function'){cancel();return;}
    cancel();const current=card.animate([{height:`${from}px`},{height:`${next}px`}],{duration:270,easing:'cubic-bezier(.26,.08,.25,1)'});animation.current=current;
    current.onfinish=current.oncancel=()=>{if(animation.current===current)animation.current=null;};
   };
-  const resize=typeof ResizeObserver==='undefined'?null:new ResizeObserver(measure);resize?.observe(content);measure();
+  const resize=typeof ResizeObserver==='undefined'?null:new ResizeObserver(measure);resize?.observe(content,{box:'border-box'});measure();
   const inline=typeof MutationObserver==='undefined'?null:new MutationObserver(()=>{if(card.style.height)cancel();});inline?.observe(card,{attributes:true,attributeFilter:['style']});
   return()=>{resize?.disconnect();inline?.disconnect();cancel();};
  },[open,enabled,reducedMotion,panel,content]);
@@ -150,13 +152,13 @@ export function GestureSheetView({viewKey,children,className,...rest}:GestureShe
  useCommitEffect(()=>{
   if(!mounted.current){mounted.current=true;return;}
   if(reducedMotion){setLeaving(null);return;}
-  enter.current?.animate?.([{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'scale(1)'}],{...VIEW_SWAP,duration:220});
+  const incoming=enter.current?.animate?.([{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'scale(1)'}],{...VIEW_SWAP,duration:220});
   const out=exit.current?.animate?.([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.96)'}],{...VIEW_SWAP,fill:'forwards'});
-  if(!out){setLeaving(null);return;}
+  if(!out){setLeaving(null);return()=>incoming?.cancel();}
   const done=()=>setLeaving(current=>current&&current.key!==viewKey?null:current);
   out.onfinish=done;out.oncancel=done;
-  return()=>{out.onfinish=null;out.oncancel=null;};
- },[viewKey]);
+  return()=>{out.onfinish=null;out.oncancel=null;incoming?.cancel();out.cancel();};
+ },[viewKey,reducedMotion]);
  return <div {...rest} className={['hig-gesture-views',className].filter(Boolean).join(' ')}>
   {leaving&&<div key={leaving.key} ref={exit} className='hig-gesture-view' data-leaving='' aria-hidden='true' inert>{leaving.node}</div>}
   <div key={viewKey} ref={enter} className='hig-gesture-view'>{children}</div>

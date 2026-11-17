@@ -1,4 +1,4 @@
-import React,{createContext,useContext,forwardRef,useEffect,useId,useRef,useState} from 'react';
+import React,{createContext,useContext,forwardRef,useEffect,useId,useRef,useCallback,useState} from 'react';
 import {AccessibilityInfo,Platform,Pressable,TextInput,type TextInputProps,View} from 'react-native';
 import {CloseIcon,SearchIcon} from './icons.js';
 import {Text} from './surface.js';
@@ -45,7 +45,7 @@ export const SearchInput:React.ForwardRefExoticComponent<SearchInputProps&React.
  const rtl=direction==='rtl',web=Platform.OS==='web';const edge=web?(rtl?{right:18}:{left:18}):{start:18};const inset=web?(rtl?{paddingRight:46}:{paddingLeft:46}):{paddingStart:46};
  const extra=trailing!=null&&trailing!==false,reserve=extra||onClear!=null;
  const end=web?(rtl?{left:0}:{right:0}):{end:0};const endInset=reserve?(web?(rtl?{paddingLeft:48}:{paddingRight:48}):{paddingEnd:48}):null;
- const attach=(node:React.ComponentRef<typeof TextInput>|null)=>{inner.current=node;if(typeof ref==='function')ref(node);else if(ref)ref.current=node;};
+ const attach=useCallback((node:React.ComponentRef<typeof TextInput>|null)=>{inner.current=node;const cleanup:unknown=typeof ref==='function'?ref(node):undefined;if(ref&&typeof ref!=='function')ref.current=node;return()=>{inner.current=null;if(typeof cleanup==='function')cleanup();else if(typeof ref==='function')ref(null);else if(ref)ref.current=null;};},[ref]);
  const off=props.editable===false||!!useContext(Context).disabled;
  const clear=onClear&&props.value!=null&&props.value!==''?<Pressable testID={props.testID?`${props.testID}-clear`:undefined} accessibilityRole='button' accessibilityLabel={clearLabel??messages.clearSearch??en.clearSearch} accessibilityState={off?{disabled:true}:undefined} disabled={off} hitSlop={2} onPress={()=>{onClear();inner.current?.focus();}} style={({pressed})=>({width:44,height:44,borderRadius:22,alignItems:'center',justifyContent:'center',opacity:off?0.5:pressed?0.6:1})}><CloseIcon color={colors.muted}/></Pressable>:null;
  return <View style={{direction,justifyContent:'center'}}><Input {...props} ref={onClear?attach:ref} returnKeyType={props.returnKeyType??'search'} style={[searchSize,inset,endInset,style]}/><View pointerEvents='none' style={{position:'absolute',...edge}}><SearchIcon color={colors.muted}/></View>{extra||clear?<View style={{position:'absolute',top:0,bottom:0,...end,flexDirection:'row',alignItems:'center',gap:4}}>{trailing}{clear}</View>:null}</View>;});

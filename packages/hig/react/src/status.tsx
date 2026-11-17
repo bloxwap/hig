@@ -1,12 +1,13 @@
 "use client";
+import {progressValue} from '@bloxwap/hig/contracts';
 import React,{useEffect,useRef,useState} from 'react';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from './provider.js';
 export type BadgeTone='neutral'|'positive'|'negative'|'warning'|'info';
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>{/** Explicit meaning; never inferred from text or a number's sign. */tone?:BadgeTone}
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>{/** Explicit meaning; never inferred from text or a number's sign. */tone?:BadgeTone;/** A 6px status dot in the label colour on the leading edge, hidden from assistive technology. */dot?:boolean}
 /** A quiet status label. The host owns announcements and may supply typography or an accessible name. */
-export const Badge=React.forwardRef<HTMLSpanElement,BadgeProps>(function Badge({children,tone='neutral',className,...props},ref){const accent=['positive','negative','warning','info'].includes(tone)?tone:undefined;return <span {...props} ref={ref} className={['hig-badge',className].filter(Boolean).join(' ')} data-tone={accent}>{children}</span>;});
+export const Badge=React.forwardRef<HTMLSpanElement,BadgeProps>(function Badge({children,tone='neutral',dot,className,...props},ref){const accent=['positive','negative','warning','info'].includes(tone)?tone:undefined;return <span {...props} ref={ref} className={['hig-badge',className].filter(Boolean).join(' ')} data-tone={accent}>{dot&&<span className='hig-badge-dot' aria-hidden='true'/>}{children}</span>;});
 /** `note` and `tip` are documentation callout severities: note uses the `info` token role and tip the `positive` role, like info and success. `default` is the neutral variant: a faint `text` tint with the title in `text`. */
 export type AlertSeverity='default'|'info'|'success'|'warning'|'error'|'note'|'tip';
 /** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning → warning, error → negative; default → 6% of text), with no stroke or glow. The title may be any inline node, such as text with a code span. */
@@ -34,7 +35,7 @@ export function Toast({notices,onDismiss,dismissLabel}: {notices:readonly Notice
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <aside className='hig-toast' aria-label={messages.notifications??en.notifications}>{unique.map(n=><ToastNotice key={n.id} message={n.message} severity={n.severity} action={n.action} dismissName={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onDismiss={()=>onDismiss(n.id)}/>)}<span className='hig-sr-only' role={announcement.severity==='error'?'alert':'status'} aria-atomic='true'>{announcement.message}</span></aside>;
 }
-export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
+export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){({value,max}=progressValue(value,max));return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
 export interface SpinnerProps {
  /** What is loading; defaults to HIGProvider `messages.loading`. */
  label?:string;

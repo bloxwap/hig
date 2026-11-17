@@ -22,7 +22,7 @@ describe('touch-safe component CSS',()=>{
  });
  it('gates the hover states hosts used to override (button, ghost button, table sort)',()=>{
   const gated=styleRules(read('styles.css')).filter(rule=>rule.at.some(at=>hoverGate.test(at))).map(rule=>rule.selector);
-  for(const selector of ['.hig-button:hover:not(:disabled)',".hig-button[data-intent='ghost']:hover:not(:disabled)",'.hig-table-sort:hover'])expect(gated).toContain(selector);
+  for(const selector of [".hig-button:hover:not(:disabled,[aria-disabled='true'])",".hig-button[data-intent='ghost']:hover:not(:disabled,[aria-disabled='true'])",'.hig-table-sort:hover'])expect(gated).toContain(selector);
  });
  it('gives HIG controls touch behaviour without styling the page',()=>{
   const rules=styleRules(read('styles.css'));

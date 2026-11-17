@@ -6,6 +6,8 @@ Includes `Field`, `Label`, `Input`, `TextArea`, `SearchInput`, and `TradeEntry`.
 
 Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/field` or `@bloxwap/hig/native/field` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
+Field owns its control ID, required state, and error associations; put one Input or TextArea in each Field. Child descriptions are merged with the Field description. SearchInput forwards callback-ref cleanup on detach.
+
 ## API and anatomy
 
 | Component | Key props and behavior |

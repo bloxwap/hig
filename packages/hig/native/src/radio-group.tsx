@@ -1,3 +1,4 @@
+import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {Animated,Easing,Image,Platform,Pressable,ScrollView,View,type LayoutChangeEvent,type ScrollViewProps} from 'react-native';
 import {tokens} from '@bloxwap/hig/tokens';
@@ -5,7 +6,7 @@ import {useControllable,useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
 import type {Choice,ChoicesProps} from './selection-types.js';
 import type {ScreenHeaderControlProps} from './screen-header.js';
-export function RadioGroup({label,options,value,defaultValue='',disabled,onValueChange}:ChoicesProps){
+export function RadioGroup({label,options,value,defaultValue='',disabled,onValueChange}:ChoicesProps){assertUniqueKeys(options,option=>option.value,'Choices');
  const [current,set]=useControllable(value,defaultValue,onValueChange);const {direction,locale}=useHIG();const colors=useColors();
  return <View accessibilityRole='radiogroup' accessibilityLabel={label} style={{direction}}><Text>{label}</Text>{options.map(o=>{
   const blocked=!!disabled||!!o.disabled;const activate=()=>{if(!blocked)set(o.value);};
@@ -18,7 +19,7 @@ const segmentSlop={top:6,bottom:6},compactSegmentSlop={top:10,bottom:10};
 /** One segment. `testID` is the segment's test ID, in place of `<group testID>-<value>`. */
 export interface SegmentedControlOption extends Choice {testID?:string}
 export interface SegmentedControlProps extends Omit<ChoicesProps,'options'> {options:readonly SegmentedControlOption[];/** Keeps `label` as the group's accessible name but does not draw it, for a control whose heading or row already names it. */hideLabel?:boolean;/** Test ID of the group; each segment takes `<testID>-<value>`, such as `trade-share-mode-video`, unless the option sets its own `testID`. */testID?:string;/** Pressable props for every segment, such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state, target and press. */segmentProps?:ScreenHeaderControlProps}
-export function SegmentedControl({label,options,value,defaultValue='',disabled,hideLabel,testID,segmentProps,onValueChange}:SegmentedControlProps){
+export function SegmentedControl({label,options,value,defaultValue='',disabled,hideLabel,testID,segmentProps,onValueChange}:SegmentedControlProps){assertUniqueKeys(options,option=>option.value,'Choices');
  const [current,set]=useControllable(value,defaultValue,onValueChange);
  const {direction,locale,reducedMotion,density}=useHIG();const colors=useColors();const fills=useFills();const compact=density==='compact';
  const [width,setWidth]=useState(0);const translateX=useRef(new Animated.Value(0)).current;
@@ -87,7 +88,7 @@ function FilterChip({option,checked,blocked,reducedMotion,onSelect,onLayout}: {o
  * The row scrolls the selected chip fully into view on mount and whenever the selection changes, through the scroll view's
  * `scrollTo` (a host `scrollComponent` receives the ref and `onLayout`/`onScroll`; one without `scrollTo` simply does not scroll).
  */
-export function Filter({label,options,value,defaultValue='',disabled,onValueChange,scrollComponent=ScrollView,bleed=0}:FilterProps){
+export function Filter({label,options,value,defaultValue='',disabled,onValueChange,scrollComponent=ScrollView,bleed=0}:FilterProps){assertUniqueKeys(options,option=>option.value,'Choices');
  const [current,set]=useControllable(value,defaultValue,onValueChange);const {direction,reducedMotion}=useHIG();
  const Scroll=scrollComponent as React.ComponentType<ScrollViewProps&{ref?:React.Ref<ScrollView>}>;
  const scroller=useRef<ScrollView|null>(null),chips=useRef(new Map<string,{x:number;width:number}>()),viewport=useRef({width:0,offset:0}),mounted=useRef(false);

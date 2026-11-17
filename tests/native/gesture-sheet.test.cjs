@@ -37,3 +37,15 @@ it('sheet background and handle paint from the provider colour table (#93)',()=>
   expect(paint({colorSpace:'display-p3'})).toEqual([nativeColors.iosDisplayP3.overlay,nativeColors.iosDisplayP3.action]);
  }finally{Object.defineProperty(RN.Platform,'OS',descriptor);}
 });
+
+it('reuses equivalent backend geometry and styles across parent renders, then updates changed detents',()=>{
+ const onOpenChange=jest.fn();
+ const render=points=>React.createElement(HIGProvider,{reducedMotion:true},React.createElement(GestureSheet,{title:'Review',snapPoints:points,open:true,onOpenChange},null));
+ act(()=>{root=create(render(['50%','90%']));});
+ const before=root.root.findAll(n=>n.props.testID==='backend')[0].props;
+ act(()=>root.update(render(['50%','90%'])));
+ const after=root.root.findAll(n=>n.props.testID==='backend')[0].props;
+ for(const key of ['snapPoints','backgroundStyle','handleIndicatorStyle'])expect(after[key]).toBe(before[key]);
+ act(()=>root.update(render(['60%','90%'])));
+ expect(root.root.findAll(n=>n.props.testID==='backend')[0].props.snapPoints).toEqual(['60%','90%']);
+});

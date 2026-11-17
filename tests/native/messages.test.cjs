@@ -61,7 +61,7 @@ it('native nested providers, markers, value text and menus use the catalog',()=>
   h(Probe),h(Field,{label:'المبلغ',required:true},h(Input)),h(NumberReadout,{label:'الرصيد',value:5,stale:true}),h(Progress,{label:'تحميل'}),h(Progress,{label:'تحميل',value:3,max:10}),h(StatusIndicator,{label:'الشبكة',state:'online'}),
   h(Search,{query:'',onQueryChange:()=>{},results:[{id:'a',label:'BTC',onSelect:()=>{}}]}),h(BackButton,{onBack:()=>{}}),h(Menu,{label:'المزيد',items:[]}),h(Select,{label:'الجانب',options:[{value:'buy',label:'شراء'}]}))));
  const all=texts(tree);
- expect(all).toEqual(expect.arrayContaining(['اغلق','المبلغ (مطلوب)','٥ (قديم)','الشبكة: متصل','١ نتيجة','رجوع','الجانب: اختر']));
+ expect(all).toEqual(expect.arrayContaining(['اغلق','المبلغ (مطلوب)','٥ (قديم)','الشبكة: متصل','١ نتيجة','رجوع','الجانب: شراء']));
  expect(tree.findAllByType(TextInput).map(n=>n.props.accessibilityLabel)).toEqual(['المبلغ (مطلوب)','بحث']);
  expect(tree.findAll(n=>n.props.accessibilityLabel==='الرصيد: ٥ (قديم)').length).toBeGreaterThan(0);
  const values=tree.findAll(n=>n.props.accessibilityRole==='progressbar').map(n=>n.props.accessibilityValue.text);

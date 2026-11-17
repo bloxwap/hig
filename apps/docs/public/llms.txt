@@ -1,4 +1,4 @@
-# Bloxwap HIG 0.7.0
+# Bloxwap HIG 0.8.0
 
 ## ADR 001: platform renderers, shared contracts
 Source: docs/architecture/001-packages.md
@@ -146,7 +146,7 @@ Issue #13. Entry: `button / surface`. Import platform entries from `@bloxwap/hig
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. A busy Button shows a spinner on the leading side of its label; a busy IconButton shows the spinner in place of its icon. The busy text (` · Working`) is not drawn: it is appended to the accessible name from HIGProvider `messages.busy` or `busyLabel`; `''` omits it while busy state stays exposed. Native: the label renders through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](https://bloxwap.github.io/hig/docs/guides/foundations/localization/#built-in-component-strings)); an explicit `accessibilityLabel` wins. On web, HIGProvider `pressDecoration` draws a host element inside every Button (`kind: 'button'`) and IconButton (`'icon-button'`) without changing its layout, for example the native switch input iOS Safari needs for a haptic ([blocks](https://bloxwap.github.io/hig/docs/guides/components/blocks/#shared-host-hooks)). A native IconButton is drawn at 44dp and reaches 48dp on every side through `hitSlop`; a host `hitSlop` wins. `intent` also takes the market-direction fills `up` (buy, long) and `down` (sell, short), on both platforms (Unreleased): the fill follows HIGProvider `marketColors` (web `--hig-up`/`--hig-down`, native `useColors().up`/`.down`), which default to the buy and sell colours, with the dark label `destructive` uses, so a host's Long/Short or confirm-close actions keep the market convention (red for up in KRX or A-share hosts) without drawing their own button. `intent='warning'` fills with the warning role (web `--hig-warning`, native `useColors().warning`) with the same dark label, for an action that goes ahead despite a caution, such as `ConfirmBlock confirmIntent='warning'`. Unavailable stays neutral like every intent. Type `ButtonIntent`. |
+| `Button`, `IconButton` | `children`, `intent`, `busy`, `busyLabel`, `disabled`, `fullWidth`, `suppressFeedback`, and forwarded ref. Web uses `onClick`; native uses `onPress`. A busy Button shows a spinner on the leading side of its label; a busy IconButton shows the spinner in place of its icon. The busy text (` · Working`) is not drawn: it is appended to the accessible name from HIGProvider `messages.busy` or `busyLabel`; `''` omits it while busy state stays exposed. Native: the label renders through HIG `Text` (HIGProvider or `maxFontSizeMultiplier` prop font-scale cap, registered family for the weight, per-script letter spacing), and a busy Button with text children sets its accessible name ([localization rule](https://bloxwap.github.io/hig/docs/guides/foundations/localization/#built-in-component-strings)); an explicit `accessibilityLabel` wins. On web, HIGProvider `pressDecoration` draws a host element inside every Button (`kind: 'button'`) and IconButton (`'icon-button'`) without changing its layout, for example the native switch input iOS Safari needs for a haptic ([blocks](https://bloxwap.github.io/hig/docs/guides/components/blocks/#shared-host-hooks)). A native IconButton is drawn at 44dp and reaches 48dp on every side through `hitSlop`; a host `hitSlop` wins. `intent` also takes the market-direction fills `up` (buy, long) and `down` (sell, short), on both platforms (Unreleased): the fill follows HIGProvider `marketColors` (web `--hig-up`/`--hig-down`, native `useColors().up`/`.down`), which default to the buy and sell colours, with the dark label `destructive` uses, so a host's Long/Short or confirm-close actions keep the market convention (red for up in KRX or A-share hosts) without drawing their own button. `intent='warning'` fills with the warning role (web `--hig-warning`, native `useColors().warning`) with the same dark label, for an action that goes ahead despite a caution, such as `ConfirmBlock confirmIntent='warning'`. Unavailable stays neutral like every intent. Type `ButtonIntent`. `href` (Button, web and native, Unreleased) makes a filled pill a real link, described [below](#button-as-a-link). `glow` (Button, web and native, Unreleased) draws a soft halo in the fill colour around a filled intent (`primary`, `destructive`, `up`, `down`, `warning`): two spread shadows at 45% and 20% of the fill (web `.hig-button[data-glow]`, the colour from `--hig-glow`; native `boxShadow`, which needs React Native's new architecture). Use it for the one hero action of a brand or marketing surface, such as a 404 page's Trade BTC; `secondary` and `ghost` ignore it, and an unavailable button has no halo. |
 | `Link` | Platform link behavior; host applications own routing. |
 | `Text`, `Heading` | Platform text props. `Text` takes `tone='muted'` (secondary text, such as a note under a group, in the muted role) and `size='caption'` (12/18 instead of the 16/24 body), on both platforms; a native `style` colour or size still wins. Native adds `maxFontSizeMultiplier` (font-scale cap for dense numeric readouts, also on `NumberReadout`; HIGProvider sets a default) and `script` (`latin`, `ko`, `zh`; detected from string children). Korean and Chinese runs use the companion face's own spacing (`scriptLetterSpacing`, 0em) instead of Latin tracking; HIGProvider `letterSpacingByScript` overrides it per script in em. |
 | `Stack`, `Inline`, `Surface`, `Card` | Platform layout props. |
@@ -161,9 +161,18 @@ The primary and secondary call-to-action buttons that close a form sit a double 
 
 Use one primary review action. Do: busy protects host requests, shows the leading spinner and announces the translated busy label (`Working` in English). Don’t: use destructive red for every sell button.
 
+### Button as a link
+
+Give `Button` an `href` when the action goes somewhere instead of doing something, such as a pill that opens docs or a route, so it keeps the button's look and gets link behaviour (open in a new tab, copy link, the link role).
+
+- **Web** renders `<a class="hig-button" href>` with the same `data-intent`, `data-full`, density, `glow`, busy spinner and busy text, and the same `onClick` and accepted feedback (a host `preventDefault()` cancels both the navigation and the feedback). `target` and `rel` pass through as given (browsers already treat `target="_blank"` as `noopener`; pass `rel` for `noreferrer`). Disabled or busy, the anchor drops its `href`, so it leaves the tab order like a disabled button, and keeps `role="link"` with `aria-disabled="true"` (and `aria-busy` while busy); a click does nothing. The forwarded ref then holds the `HTMLAnchorElement` (the ref type stays `HTMLButtonElement` so existing refs keep compiling). `IconButton` takes no `href`.
+- **Native** sets `accessibilityRole="link"`. Without `onPress`, a press opens `href` through `Linking.openURL` and a failure goes to `onError`, as `Link` does; a host `onPress` (an Expo Router push or an in-app browser) replaces that navigation, so one press never opens both. Disabled or busy blocks both. On React Native Web the root renders the `href` and the press stops the anchor navigating on its own.
+
+Label wrapping (web): a label breaks between words first. `.hig-button` uses `overflow-wrap: break-word`, so a word that is a little wider than the space beside a trailing icon in a narrow two-button row (`ExplainerBlock`, `ConfirmBlock` and `TargetBlock` action rows at 320px) runs into the button's own padding instead of splitting mid-word (“Get my disco/unt” before). A single word wider than the whole button still overflows it, so keep action labels, and their translations, short.
+
 ## States, interaction and accessibility
 
-DOM semantic button/anchor, forwarded focus, target minimum width and height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap; RN custom children render in a View with text nodes styled individually.
+DOM semantic button/anchor, forwarded focus, target minimum width and height tied to density (web: 44px comfortable, 36px compact); RN target always at least 48. Multiline labels wrap at word boundaries; RN custom children render in a View with text nodes styled individually.
 
 State review: rest; keyboard focus/hover (DOM); accepted press and release/cancel; selected/checked where applicable; disabled; busy; inline error/recovery; empty/loading; long translations/large text; reduced motion; sound and haptics disabled. No host action occurs on mere focus. Disabled/busy targets suppress accepted activation. Core has no required feedback backend; the optional provider callback follows the action, honors cancellation and isolates errors.
 
@@ -258,7 +267,7 @@ One panel covers each flow with the same cards; the catalog page shows every one
 Stake and unstake are one example each: the asset changes only the token data, not the layout.
 
 - **Tokens.** A `SwapToken` is `{id, symbol, name, chain, chainId}` plus optional `icon`, `chainIcon`, `balance` (token units), `price` (USD per unit) and `keywords` (extra search text such as the contract address). `balance` enables Max, Test and the balance check; `price` enables the dollar and unit conversion and the estimate shown before `received` arrives.
-- **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
+- **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units as canonical decimal text, preserving up to 100 fractional places (18 for dollar-to-token conversion when token precision is omitted). Estimates use floating point; transaction callbacks do not. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
 - **Pushed views.** The token pickers and settings are views pushed inside the panel's own bounds, replacing the cards, each with a Back control; Escape pops one level on web and choosing a token pops to the cards. `view` / `onViewChange` (`'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees'`) control the stack when the host needs to.
 - **Pickers.** Pressing a card pushes its picker: search, chain filter chips, an optional Hot section from `hotTokenIds`, and the token list with arrow-key and Enter selection on web. The From picker shows the connected wallet with a disconnect control, or Connect wallet and the receive toggle; the To picker shows the recipient field when `onRecipientChange` is set, with a scan button when `onScanRecipient` is set. On web ⌘F / Ctrl+F and ⌘K / Ctrl+K open the From and To pickers while the panel is mounted; pass `shortcuts={false}` to leave the browser's own shortcuts alone.
 - **Settings.** The menu button pushes the settings view: the default denomination, slippage (presets plus a custom percent) and the fee breakdown one level deeper, then any host rows passed as `settings`.
@@ -273,7 +282,8 @@ Stake and unstake are one example each: the asset changes only the token data, n
 - **Locked sides.** `lockFrom` / `lockTo` keep that side's token fixed: its card looks the same but does not open the picker, has no shortcut, and reset leaves the token in place.
 - **Action label.** `actionLabel` names the action once it is ready, in place of Send, Swap or Bridge: Stake, Deposit, Unstake. The host supplies the translated text. The prompts before it is ready (select a token, enter an amount, insufficient balance) do not change.
 - **Host-held action.** `actionDisabled` holds the action for a reason only the host knows (below a minimum, no quote yet, a closed market), and `actionStatus` is what it then says. The panel's own prompts still come first. `actionIntent='destructive'` is for an action that cannot be undone, such as a burn.
-- **Amount limits.** A token's `decimals` caps how many decimal places can be typed in token units (dollars always stop at two). `limitToBalance` refuses a key that would take the amount past the From balance, where the default lets it through and says Insufficient.
+- **Submission.** While `submitting` is true, operation-changing controls stop accepting edits. The host must still capture the exact amount, asset identities, destination, quote and expiry before awaiting execution, revalidate them in its transaction layer, and provide idempotency. An enabled button is not transaction authorization. Web global input belongs to one visible panel; set `active={false}` for a retained inactive screen.
+- **Amount limits.** A token's `decimals` must be an integer from 0 to 100. It caps keypad, pasted and externally supplied token amounts; dollars stop at two places. `limitToBalance` rejects edits above any known balance, including zero, and clamps external resync to that balance. Without the cap, insufficient amounts remain visible but cannot submit. Unknown balances are distinct from zero.
 - **Artwork.** A token's `icon` and `chainIcon` and a destination's `icon` take an image URL or the host's own element, which fills the disc.
 - **Host content.** `banner` sits above the From card (a pending transfer) and `footer` under the action (recent activity).
 - **Starting amount.** A mounted `amount` (token units) seeds the entry in the default denomination.
@@ -360,7 +370,7 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Assets.** An `AccountAsset` is `{id, name, symbol}` plus optional `icon` (an image URL or a host element), `balance` (token units), `price` (USD per unit) and `value` (dollars). The value shown is `value`, or `balance × price` when both are known, or the unknown dash.
 - **Pinned dollar balance.** The asset whose symbol is `pinnedSymbol` (default `USDC`) is always the first row and is always shown: when the account does not hold it, the row reads $0.00. It shows its dollar value alone, because its units are the same figure.
 - **Order.** Every other asset follows by dollar value, largest first. Unknown values come last and ties sort by name. The host does not sort. `accountRows(assets, pinnedSymbol)` returns the same order for a host-drawn list.
-- **Total.** `balance` is the total in dollars. Without it the card sums the asset values; `null` reads as unknown.
+- **Total.** `balance` is the total in dollars. Without it the card sums the asset values; any unknown or nonfinite constituent makes the total unknown. `null` reads as unknown.
 - **Deposit.** `onDeposit` shows the primary action beside the total. `depositLabel` replaces the built-in text, for example with Add funds.
 - **Header.** `title` replaces the built-in “Account”. `onBack` shows Back; `headerAction` is the trailing control. The title stays centred with either, both or neither. `stickyHeader` pins it (see [pinned headers](#pinned-headers); native also takes `stickyHeaderBackground` and `scrollComponent`), and `headingId` names its heading.
 - **Rows.** `onAssetSelect` makes each row a button that reports its asset. Without it the rows are plain. `selectable: false` on an asset keeps that one row plain.
@@ -395,7 +405,7 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Bars.** `assets` and `chains` are `BarMark` elements: `{label, value}` plus optional `tone`, `color`, `detail` and `id`. Use one unit for both, usually dollars. `chainsTitle` replaces the built-in “Chains”. A `detail` can be a live figure (`{value, options, prefix, suffix}`), which moves place by place on both platforms, like the total.
 - **Actions only.** Both bars are optional: leave out `chains` to draw the assets bar alone, `assets` to draw the chains bar alone, or both for a card of commands with no breakdown. `name` is needed only with `assets`; the ticker stands in without it.
 - **Note.** `note` is a line under the actions, for example why some are missing on a view-only account; `noteTone='warning'` or `'negative'` makes it a tinted capsule, as in `SwapPanelBlock`. It sits 8 units under the actions, or 16 under the bars when there are no actions.
-- **Total.** `value` is the holding in dollars. Without it the card sums the asset values; `null` reads as unknown. It updates place by place.
+- **Total.** `value` is the holding in dollars. Without it the card sums the asset values; any unknown or nonfinite constituent makes the total unknown. `null` reads as unknown. It updates place by place.
 - **Units headline.** For a token with no dollar value, `units` (token units) with `value` left out or `null` takes the total's place on the assets bar, followed by `unitsSuffix` (` BLOX`) and formatted with `unitsOptions` (at most six fraction digits by default). It updates place by place, and an unknown `units` (`null`) reads as the dash. With a dollar `value` the total is shown as before.
 - **Chain count.** The chains bar shows the number of chains with a balance above zero.
 - **Actions.** Each action is `{id, onSelect}` plus optional `label`, `disabled` and `intent`. The ids `send`, `receive`, `stake` and `unstake` take a built-in translated label; any other id needs `label`. They render in the order given, full width, 8 units apart and 16 below the bars. Leave out the actions a token does not support.
@@ -862,6 +872,8 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 
 `@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
 
+Uncontrolled AltimeterChart and OutcomeChart expire data after 30 seconds without a valid update and display the localized stale marker until the next update. Built-in feeds reconnect after 30 seconds of silence and report connection loss through the optional second callback, onStale. Cleanup invalidates late callbacks from replaced feeds. Controlled data freshness remains the host's responsibility. Outcome IDs are deduplicated in first-seen order.
+
 ## API and anatomy
 
 | Component | Key props and behavior |
@@ -989,6 +1001,8 @@ Labeled inputs for text, search, and amounts, with visible help and validation.
 Includes `Field`, `Label`, `Input`, `TextArea`, `SearchInput`, and `TradeEntry`.
 
 Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/field` or `@bloxwap/hig/native/field` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+
+Field owns its control ID, required state, and error associations; put one Input or TextArea in each Field. Child descriptions are merged with the Field description. SearchInput forwards callback-ref cleanup on detach.
 
 ## API and anatomy
 
@@ -1337,6 +1351,8 @@ Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, `Search`, `ListGroup`,
 
 Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react/navigation` or `@bloxwap/hig/native/navigation` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
+Uncontrolled Tabs and Select reconcile removed or disabled selections to the first enabled item. Controlled invalid selections stay empty until the host supplies a valid value. Tabs require unique values. Pagination normalizes page and total to positive integers and clamps page to total.
+
 ## API and anatomy
 
 | Component | Key props and behavior |
@@ -1606,6 +1622,8 @@ Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Filter`, `Pres
 
 Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig/react/selection` or `@bloxwap/hig/native/selection` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
+Slider requires finite ordered bounds and a positive finite step. Displayed values and callbacks are clamped to the range. Choice keys must be unique. Controlled components retain their ownership for their mounted lifetime; remount to change ownership.
+
 ## API and anatomy
 
 | Control | Key props and behavior |
@@ -1673,11 +1691,13 @@ Includes `Badge`, `Alert`, `Callout`, `Toast`, `Toaster` with `toast()`, `Progre
 
 Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import. `Confetti` has its own entries, `@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti`; see [Confetti](#confetti).
 
+Progress normalizes its value and maximum consistently for drawing and accessibility. Confetti is bounded to 500 particles per burst and eight simultaneous bursts per renderer (4,000 active particles); at most eight pre-mount requests wait. Overflow requests resolve immediately without drawing.
+
 ## API and anatomy
 
 | Component | Key props and behavior |
 | --- | --- |
-| `Badge` | Quiet label; web adds explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`), standard span props and a forwarded span ref. The neutral default retains its appearance. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
+| `Badge` | Quiet label with an explicit `tone` (`neutral`, `positive`, `negative`, `warning`, or `info`; type `BadgeTone`) on both platforms (native since Unreleased): the label in that token role over a 15% wash of it (web `.hig-badge[data-tone]`, native the role colour with a `26` alpha byte). Web adds standard span props and a forwarded span ref; native takes `testID`. The neutral default retains its appearance. `dot` (web and native, Unreleased) draws a 6px status dot in the label colour on the leading edge (web `span.hig-badge-dot`, native a 6dp `View`), hidden from assistive technology, for a live or status pill such as “Off the tape”. Tone uses provider token roles and never infers meaning from text or a number's sign. Badge adds no live region; the host owns announcements. |
 | `Alert` | `title`, `severity`, and an optional recovery `action`. Severity tints the fill and colours the title from a token role on web and native, with no stroke or glow: the surface mixed with 10% of the tone, at the Surface radius. `default` → neutral (6% of `text`, title in `text`), info → `info`, success → `positive`, warning → `warning`, error → `negative`. On native, `tone` swaps in another token role for an approved product accent, never a raw colour. `announce` (default `true`) speaks the alert when it appears or its words change: web gives it `role='status'` (`'alert'` for `error`), Android a live region, and iOS an explicit announcement. Pass `announce={false}` for an alert that is part of the screen from the start, such as a standing warning. On native a string or number child is drawn in a HIG `Text`, so a plain sentence needs no wrapper. |
 | `Callout` | Same API as `Alert`, for static guidance. It adds the documentation severities `note` (`info` role) and `tip` (`positive` role), so SDK docs do not need their own callout colours. Pass `announce={false}` for callouts present at page load. `title` accepts a ReactNode, such as text with a `<code>` span; on web it renders inside `<strong>` and should stay inline. On native it renders inside the `Heading`, so pass a string or inline `Text`; its visible text is announced. |
 | `Toast` | `notices` with stable `id`, `message`, `severity`, and optional `action`; `onDismiss` handles dismissal. Each notice is one capsule row with no stroke: a severity symbol on the leading edge, the message, the optional action, and a close symbol on the trailing edge. Native notices also accept `description` and `closable` (default true when `onDismiss` is supplied). Native `maxHeight` bounds a scrolling viewport; it defaults to 60% of the window height and accepts dp or a parent percentage. `dismissLabel` overrides the Dismiss wording inside the close button's accessible name; the button draws a symbol, not text. The capsule itself is `ToastNotice` on both platforms. For transient notices use `Toaster` and `toast()`, below. |
@@ -2594,6 +2614,8 @@ Source: docs/foundations/platform.md
 
 # Foundation and platform rules
 
+Nested HIGProvider instances inherit omitted environment, feedback and native font settings. Explicit false values, including reducedMotion, override their parent.
+
 ## Color (#6)
 
 Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](https://bloxwap.github.io/hig/docs/guides/foundations/source-reconciliation/). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
@@ -3112,9 +3134,9 @@ Budgets are regression limits from the initial candidate measurements, not claim
 
 | Metric | Measured initial | Limit | Reason |
 | --- | --- | --- | --- |
-| Individual DOM Button gzip (React external) | 706 B | 850 B | ~20% API/behavior fix headroom, overlay/audio/chart excluded |
-| Individual Input gzip | 292 B | 400 B | Small labelled primitive, ~27% headroom |
-| Native Switch gzip (React/RN external) | 1,383 B; 1,870 B after #67; 2,329 B with the web-drawn capsule | 2,400 B | Raised for #67: the shared Text now carries the font-scale cap and Korean/Chinese script tracking, Switch the token-role track and the Android thumb token. ~18% headroom; verifies no Slider/SVG/overlay/feedback imports Raised again for the design review pass: on Expo web the Switch draws the HIG capsule with Space handling instead of react-native-web's Material switch. |
+| Individual DOM Button gzip (React external) | 706 B | 920 B | ~20% API/behavior fix headroom, overlay/audio/chart excluded; raised from 850 B for `href` and `glow` (903 B) |
+| Individual Input gzip | 426 B | 440 B | Includes Field ownership validation and merged accessible descriptions; 55 B above the previous 371 B build. |
+| Native Switch gzip (React/RN external) | 2,668 B | 2,750 B | Includes fixed controlled ownership and the transition diagnostic. Verifies no Slider/SVG/overlay/feedback imports. |
 | Platform-neutral feedback contract gzip | 962 B | 1,200 B | ~25% headroom without device engines |
 | Docs JS gzip, all lazy chunks | 204,877 B | 240,000 B | ~17% headroom; includes chart/code examples, not initial-load-only |
 | Docs CSS | 124,111 B (with resizable drawer and per-place number motion); 139,812 B with SwapPanelBlock, Filter and the review-pass styles; 150,567 B with BarMark, AssetBalanceRow and AccountBlock ; 167,406 B with the blocks added after 0.5.2 (account, token action, manage position, target, position, language, reward and trade history) | 185,000 B | Tight headroom against the current Next CSS output; the gesture example remains lazy-loaded and Vaul injects its own runtime CSS rather than adding a second bundled stylesheet Raised for SwapPanelBlock, Filter and WalletAddress, with about 10 KB of headroom for further components. |
@@ -3218,7 +3240,7 @@ Source: docs/installation.md
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig@0.7.0
+npm install @bloxwap/hig@0.8.0
 ```
 
 | Entry | Use |
