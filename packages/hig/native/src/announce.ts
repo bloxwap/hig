@@ -1,0 +1,3 @@
+import {AccessibilityInfo,Platform} from 'react-native';
+/** Speaks a message to VoiceOver or TalkBack. On iOS an error interrupts what is being read and anything else queues behind it; Android's announcement has no interrupting mode. A failure is swallowed: the visible text remains. */
+export function speak(message:string,severity:string):void{if(Platform.OS==='web'||!message)return;try{if(Platform.OS==='ios'&&typeof AccessibilityInfo.announceForAccessibilityWithOptions==='function')AccessibilityInfo.announceForAccessibilityWithOptions(message,{queue:severity!=='error'});else AccessibilityInfo.announceForAccessibility(message);}catch{/* The visible message and navigable text remain available. */}}

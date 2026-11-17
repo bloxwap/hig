@@ -328,6 +328,13 @@
       "support": "renderer"
     },
     {
+      "name": "Toaster",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Progress",
       "states": [
         "default",
