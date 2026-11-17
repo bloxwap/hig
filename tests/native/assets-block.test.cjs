@@ -93,10 +93,10 @@ test('counts down to a legacy market reopening, reads it in words, then falls ba
  jest.useFakeTimers();jest.setSystemTime(new Date('2026-11-16T12:00:00Z'));
  const opensAt=Date.now()+((2*60+14)*60+33)*1000;
  const view=mount({categories:[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]});
- expect(text(host(view,'assets-status-commodities'))).toBe('Opens in 2:14:33');
+ expect(text(host(view,'assets-countdown-commodities'))).toBe('Opens in 2:14:33');
  expect(view.findAll(n=>n.props.accessibilityRole==='header'&&n.props.accessibilityLabel==='Commodities, Opens in 2 hours 14 minutes').length).toBeGreaterThan(0);
  act(()=>{jest.advanceTimersByTime(1000);});
- expect(text(host(root.root,'assets-status-commodities'))).toBe('Opens in 2:14:32');
+ expect(text(host(root.root,'assets-countdown-commodities'))).toBe('Opens in 2:14:32');
  act(()=>{jest.setSystemTime(opensAt+1);jest.advanceTimersByTime(1000);});
  expect(text(host(root.root,'assets-status-commodities'))).toBe('OPEN');
  jest.useRealTimers();
@@ -138,7 +138,7 @@ test('reads the host clock, freezes while paused, and runs no timer while no cou
  act(()=>{root=render(tree({category:'crypto'}));});
  expect(spy).not.toHaveBeenCalled();
  act(()=>root.update(tree({category:''})));
- const badge=()=>text(host(root.root,'assets-status-commodities'));
+ const badge=()=>{const countdown=host(root.root,'assets-countdown-commodities');return text(countdown??host(root.root,'assets-status-commodities'));};
  expect(badge()).toBe('Opens in 0:01:05');expect(spy).toHaveBeenCalledTimes(1);
  act(()=>{clock+=1000;jest.advanceTimersByTime(1000);});expect(badge()).toBe('Opens in 0:01:04');
  act(()=>root.update(tree({paused:true})));
@@ -148,6 +148,35 @@ test('reads the host clock, freezes while paused, and runs no timer while no cou
  act(()=>root.update(tree({paused:true})));clock+=120_000;
  act(()=>root.update(tree({paused:true,assets:[...assets]})));expect(badge()).toBe('Opens in 0:00:59');
  act(()=>root.update(tree({})));expect(badge()).toBe('OPEN');
+ spy.mockRestore();jest.useRealTimers();
+});
+
+test('rolls the countdown digits each tick, and while paused neither ticks nor rolls, even when the opening moves',()=>{
+ const {PixelRatio}=require('react-native');jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
+ const motion=global.__numberReanimated;motion.animations.length=0;motion.timing.mockClear();
+ jest.useFakeTimers();const spy=jest.spyOn(global,'setInterval');
+ let clock=1_000_000;const now=()=>clock;
+ const cats=at=>[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt:at}];
+ const opensAt=clock+65_000;
+ const tree=props=>h(HIGProvider,{reducedMotion:false},h(AssetsBlock,{testID:'assets',assets,onSelect:()=>{},now,...props}));
+ act(()=>{root=render(tree({categories:cats(opensAt)}));});
+ // Measure the readout's glyph probes so its reels draw.
+ const probes=host(root.root,'assets-status-commodities').findAll(node=>typeof node.props.onLayout==='function'&&typeof node.type==='string');
+ act(()=>{for(const probe of probes)probe.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:8,height:16}}});});
+ const reading=()=>text(host(root.root,'assets-countdown-commodities'));
+ expect(reading()).toBe('Opens in 0:01:05');expect(motion.animations).toHaveLength(0);
+ act(()=>{clock+=1000;jest.advanceTimersByTime(1000);});
+ expect(reading()).toBe('Opens in 0:01:04');expect(motion.animations.length).toBeGreaterThan(0);
+ const rolled=motion.animations.length;
+ act(()=>root.update(tree({categories:cats(opensAt),paused:true})));
+ act(()=>{clock+=5000;jest.advanceTimersByTime(5000);});
+ expect(reading()).toBe('Opens in 0:01:04');expect(motion.animations).toHaveLength(rolled);
+ // The host moves the opening while paused: the text follows against the frozen clock, and its digits snap rather than roll.
+ act(()=>root.update(tree({categories:cats(opensAt+10_000),paused:true})));
+ expect(reading()).toBe('Opens in 0:01:14');expect(motion.animations).toHaveLength(rolled);expect(spy).toHaveBeenCalledTimes(1);
+ // Unpaused, the clock is read again and the timer resumes.
+ act(()=>root.update(tree({categories:cats(opensAt+10_000)})));
+ expect(reading()).toBe('Opens in 0:01:09');expect(spy).toHaveBeenCalledTimes(2);
  spy.mockRestore();jest.useRealTimers();
 });
 

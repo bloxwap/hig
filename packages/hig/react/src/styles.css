@@ -710,7 +710,7 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 /* TargetBlock: header, the target as the headline figure, the price card, then the unit, the custom row, the quick choices and the
    actions 16px below each other. The bar is a price axis: the tinted stretch is what the price still has to travel to the trigger. */
 .hig-target-block { display:flex;flex-direction:column;gap:16px;min-width:0;--hig-target-tone:var(--hig-positive); }
-.hig-target-block[data-kind='stop-loss'] { --hig-target-tone:var(--hig-negative); }
+.hig-target-block[data-kind='stop-loss'] { --hig-target-tone:var(--hig-negative);--hig-target-fill:var(--hig-negative);--hig-target-on-fill:var(--hig-background); }
 /* The headline figure matches the SwapPanel amount: the same size and the interface face, not the mono face. */
 .hig-target-amount { margin:0;font-size:clamp(2rem,10vw,3rem);line-height:1.15;font-weight:700;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere; }
 .hig-target-bar,.hig-bar-pnl-bar { position:relative;display:flex;height:24px;border-radius:var(--hig-radius-md,8px);overflow:hidden; }
@@ -724,9 +724,12 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
 .hig-target-popover { position:absolute;inset-block-start:calc(100% + 4px);inset-inline-end:0;width:max-content;max-width:min(280px,calc(100vw - 48px));font-size:.875rem;font-weight:400;text-align:start; }
 .hig-target-note { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5;text-align:center; }
 .hig-target-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
-/* The Custom row holding the host's value reads as the selected choice: the value on its trailing edge and a ring in the kind's colour. */
-.hig-target-block .hig-swap-setting[aria-pressed='true'] { box-shadow:inset 0 0 0 2px var(--hig-target-tone); }
-.hig-target-block .hig-swap-setting[aria-pressed='true'] > .hig-swap-setting-value { color:var(--hig-target-tone); }
+/* The Custom row holding the host's value reads as the selected choice: filled like a selected quick choice, the value on its trailing
+   edge. Its (0,3,0) selector outranks the base `.hig-swap-setting:hover` and `:active` fills (0,2,0), so press and hover only darken it. */
+.hig-target-block .hig-swap-setting[aria-pressed='true'] { background:var(--hig-target-fill,var(--hig-action));color:var(--hig-target-on-fill,var(--hig-onAction)); }
+.hig-target-block .hig-swap-setting[aria-pressed='true'] > .hig-swap-setting-value { color:inherit; }
+.hig-target-block .hig-swap-setting[aria-pressed='true']:active { filter:brightness(.9); }
+@media(hover:hover) and (pointer:fine) { .hig-target-block .hig-swap-setting[aria-pressed='true']:hover { filter:brightness(.9); } }
 /* The info button beside a host header control: both sides of the header widen together so the title stays centred. */
 .hig-target-header-actions { display:inline-flex;align-items:center;gap:4px; }
 .hig-target-block > .hig-screen-header:has(.hig-target-header-actions) { grid-template-columns:92px minmax(0,1fr) 92px; }
@@ -911,6 +914,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-assets-section-header > h3 { margin:0;min-width:0;color:var(--hig-muted);font-size:.875rem;line-height:1.43;font-weight:500;overflow-wrap:anywhere; }
 .hig-assets-status { flex:none;padding:2px 10px;font:600 .75rem/1.33 var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);letter-spacing:.08em; }
 .hig-assets-status[data-countdown] { color:var(--hig-muted);letter-spacing:.02em;font-variant-numeric:tabular-nums; }
+.hig-assets-status .hig-number { font-family:inherit; }
 .hig-assets-icon,.hig-assets-signal { width:44px;height:44px; }
 .hig-assets-signal { flex:none;display:grid;place-items:center;border-radius:9999px;background:var(--hig-fill); }
 .hig-assets-trailing { flex:none;display:flex;align-items:center; }

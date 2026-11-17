@@ -3,6 +3,7 @@ import {formatCountdown} from '@bloxwap/hig/contracts';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
+import {AnimatedNumberReadout} from './animated-number.js';
 import {SearchInput} from './field.js';
 import {Filter,SegmentedControl} from './radio-group.js';
 import {ScreenHeader,HeaderClose} from './screen-header.js';
@@ -80,7 +81,7 @@ export interface AssetsBlockProps {
  scrollComponent?:React.ComponentType<ScrollViewProps>;
  /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android), as `GestureSheet labelledBy` does. */
  headingId?:string;
- /** Freezes the opening countdown at the text it last showed and stops its timer, for example while the sheet is closed or the app is in the background. */
+ /** Freezes the opening countdown at the text it last showed, stops its timer and its digits rolling, for example while the sheet is closed or the app is in the background. */
  paused?:boolean;
  /** The host's clock in epoch milliseconds, read for the opening countdown. Defaults to `Date.now`. */
  now?:()=>number;
@@ -163,11 +164,11 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
    {!loading&&emptyAction?<Button intent='secondary' testID={emptyAction.testID??id('empty-action')} onPress={emptyAction.onPress}>{emptyAction.label}</Button>:null}
   </View>:
   <View testID={id('list')} style={{gap:16}}>
-   {sections.map(section=>{const at=opensAtTime(section.category);const countdown=now!=null&&at!=null&&at>now?formatCountdown(at-now,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
+   {sections.map(section=>{const at=opensAtTime(section.category);const remaining=now!=null&&at!=null&&at>now?at-now:null,countdown=remaining!=null?formatCountdown(remaining,locale):null;const status=countdown?{label:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,color:colors.muted,fill:fills.well}:section.category.status?{label:section.category.status.label,spoken:section.category.status.label,color:toneColor[section.category.status.tone??'positive'],fill:`${toneColor[section.category.status.tone??'positive']}26`}:null;return <View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
     {/* The heading and its badge line up with the row content (the icon's leading edge, the disc's trailing edge), as the token pickers' sections do. */}
     <View testID={id(`section-${section.category.id}-header`)} style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:32,paddingHorizontal:8}}>
      <Text accessibilityRole='header' accessibilityLabel={status?`${section.category.label}, ${status.spoken}`:undefined} style={{flexShrink:1,fontSize:14,lineHeight:20,fontWeight:'500',color:colors.muted}}>{section.category.label}</Text>
-     {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:status.fill}}><Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:countdown?0.25:1,fontVariant:['tabular-nums'],color:status.color}}>{status.label}</Text></View>:null}
+     {status?<View {...hidden} testID={id(`status-${section.category.id}`)} style={{borderRadius:9999,paddingVertical:2,paddingHorizontal:10,backgroundColor:status.fill}}>{countdown&&remaining!=null?<AnimatedNumberReadout value={Math.ceil(remaining/1000)} formattedValue={countdown.visible} animateFormatted duration={paused?0:undefined} prefix={`${t.opensIn} `} testID={id(`countdown-${section.category.id}`)} tone='muted' maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:0.25}}/>:<Text maxFontSizeMultiplier={1.4} style={{fontSize:12,lineHeight:16,fontWeight:'600',letterSpacing:1,fontVariant:['tabular-nums'],color:status.color}}>{status.label}</Text>}</View>:null}
     </View>
     <View style={{gap:4}}>{section.assets.map(row)}</View>
    </View>;})}

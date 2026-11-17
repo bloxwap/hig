@@ -6,6 +6,7 @@ import {SearchInput} from '../field.js';
 import {Filter,SegmentedControl} from '../selection.js';
 import {Badge} from '../status.js';
 import {Button} from '../button.js';
+import {AnimatedNumberReadout} from '../animated-number.js';
 import {ScreenHeader,HeaderClose} from './screen-header.js';
 /** A market's live heat signal: `watch` while it is being watched, `up` or `down` once it trends. */
 export type AssetSignal='watch'|'up'|'down';
@@ -72,7 +73,7 @@ export interface AssetsBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  stickyHeader?:boolean;
  /** `id` of the heading, so a dialog or sheet around the block can name itself by it (`aria-labelledby`, `GestureSheet labelledBy`). */
  headingId?:string;
- /** Freezes the opening countdown at the text it last showed and stops its timer, for example while the block is off screen. */
+ /** Freezes the opening countdown at the text it last showed, stops its timer and its digits rolling, for example while the block is off screen. */
  paused?:boolean;
  /** The host's clock in epoch milliseconds, read for the opening countdown. Defaults to `Date.now`. */
  now?:()=>number;
@@ -164,9 +165,9 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  };
  const showFilter=(categoryFilter??true)&&categories.length>1;
  const sectionHeader=(entry:AssetCategory)=>{
-  const at=opensAtTime(entry);const countdown=now!=null&&at!=null&&at>now?formatCountdown(at-now,locale):null;
+  const at=opensAtTime(entry);const remaining=now!=null&&at!=null&&at>now?at-now:null,countdown=remaining!=null?formatCountdown(remaining,locale):null;
   const badge=countdown?{visible:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,tone:'neutral' as const}:entry.status?{visible:entry.status.label,spoken:entry.status.label,tone:entry.status.tone??'positive'}:null;
-  return <div className='hig-assets-section-header'><h3 id={`${id}-${entry.id}`} aria-label={badge?`${entry.label}, ${badge.spoken}`:undefined}>{entry.label}</h3>{badge&&<Badge aria-hidden='true' className='hig-assets-status' data-countdown={countdown?'':undefined} tone={badge.tone}>{badge.visible}</Badge>}</div>;
+  return <div className='hig-assets-section-header'><h3 id={`${id}-${entry.id}`} aria-label={badge?`${entry.label}, ${badge.spoken}`:undefined}>{entry.label}</h3>{badge&&<Badge aria-hidden='true' className='hig-assets-status' data-countdown={countdown?'':undefined} tone={badge.tone}>{countdown&&remaining!=null?<AnimatedNumberReadout value={Math.ceil(remaining/1000)} formattedValue={countdown.visible} animateFormatted duration={paused?0:undefined} prefix={`${t.opensIn} `}/>:badge.visible}</Badge>}</div>;
  };
  return <section {...rest} className={`hig-assets-block${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} headingId={headingId} stickyHeader={stickyHeader} action={onClose?<HeaderClose onClose={onClose} label={t.close}/>:undefined}/>

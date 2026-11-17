@@ -90,11 +90,11 @@ describe('AssetsBlock opening countdown',()=>{
   vi.setSystemTime(new Date('2026-11-16T12:00:00Z'));
   const opensAt=Date.now()+((2*60+14)*60+33)*1000;
   render(<HIGProvider><AssetsBlock assets={assets} categories={[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]} onSelect={()=>{}}/></HIGProvider>);
-  const badge=()=>document.querySelector('[data-countdown]');
-  expect(badge()?.textContent).toBe('Opens in 2:14:33');
+  const badge=()=>document.querySelector('[data-countdown]');const shown=()=>badge()?.querySelector('.hig-animated-number-visual')?.textContent;
+  expect(shown()).toBe('Opens in 2:14:33');
   expect(screen.getByRole('heading',{level:3,name:'Commodities, Opens in 2 hours 14 minutes'})).toBeTruthy();
   act(()=>{vi.advanceTimersByTime(1000);});
-  expect(badge()?.textContent).toBe('Opens in 2:14:32');
+  expect(shown()).toBe('Opens in 2:14:32');
   act(()=>{vi.setSystemTime(opensAt+1);vi.advanceTimersByTime(1000);});
   expect(badge()).toBeNull();
   expect(screen.getByRole('heading',{level:3,name:'Commodities, OPEN'})).toBeTruthy();
@@ -126,7 +126,7 @@ describe('AssetsBlock opening countdown',()=>{
   const {rerender}=render(<HIGProvider><AssetsBlock {...props} category='crypto'/></HIGProvider>);
   expect(spy).not.toHaveBeenCalled();
   rerender(<HIGProvider><AssetsBlock {...props} category=''/></HIGProvider>);
-  const badge=()=>document.querySelector('[data-countdown]')?.textContent;
+  const badge=()=>document.querySelector('[data-countdown] .hig-animated-number-visual')?.textContent;
   expect(badge()).toBe('Opens in 0:01:05');expect(spy).toHaveBeenCalledTimes(1);
   act(()=>{clock+=1000;vi.advanceTimersByTime(1000);});expect(badge()).toBe('Opens in 0:01:04');
   rerender(<HIGProvider><AssetsBlock {...props} paused/></HIGProvider>);
@@ -138,6 +138,35 @@ describe('AssetsBlock opening countdown',()=>{
   rerender(<HIGProvider><AssetsBlock {...props}/></HIGProvider>);expect(badge()).toBeUndefined();
   expect(screen.getByRole('heading',{name:/^Commodities/}).getAttribute('aria-label')).toBe('Commodities, OPEN');
   spy.mockRestore();vi.useRealTimers();
+ });
+ it('rolls the countdown digits each tick, and while paused neither ticks nor rolls, even when the opening moves',async()=>{
+  vi.useFakeTimers({toFake:['setInterval','clearInterval']});
+  const {act}=await import('@testing-library/react');
+  // jsdom has no Web Animations; a stub that never finishes leaves each roll observable.
+  const original=Element.prototype.animate;const animate=vi.fn(()=>({cancel:vi.fn(),onfinish:null}) as unknown as Animation);Element.prototype.animate=animate;
+  try{
+   let clock=1_000_000;const now=()=>clock;const opensAt=clock+65_000;
+   const spy=vi.spyOn(globalThis,'setInterval');
+   const cats=(at:number)=>[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt:at}];
+   const tree=(props:Partial<React.ComponentProps<typeof AssetsBlock>>)=><HIGProvider reducedMotion={false}><AssetsBlock assets={assets} categories={cats(opensAt)} onSelect={()=>{}} now={now} {...props}/></HIGProvider>;
+   const {rerender}=render(tree({}));
+   const reading=()=>document.querySelector('[data-countdown] .hig-sr-only')?.textContent;
+   expect(reading()).toBe('Opens in 0:01:05');expect(animate).not.toHaveBeenCalled();
+   act(()=>{clock+=1000;vi.advanceTimersByTime(1000);});
+   expect(reading()).toBe('Opens in 0:01:04');expect(animate).toHaveBeenCalled();
+   const rolled=animate.mock.calls.length;
+   rerender(tree({paused:true}));
+   act(()=>{clock+=5000;vi.advanceTimersByTime(5000);});
+   expect(reading()).toBe('Opens in 0:01:04');expect(animate).toHaveBeenCalledTimes(rolled);
+   // The host moves the opening while paused: the text follows against the frozen clock, settled at once with no roll.
+   rerender(tree({paused:true,categories:cats(opensAt+10_000)}));
+   expect(reading()).toBe('Opens in 0:01:14');expect(animate).toHaveBeenCalledTimes(rolled);expect(spy).toHaveBeenCalledTimes(1);
+   expect(document.querySelector('[data-countdown] [data-hig-animated-number-change]')).toBeNull();
+   // Unpaused, the clock is read again and the timer resumes.
+   rerender(tree({categories:cats(opensAt+10_000)}));
+   expect(reading()).toBe('Opens in 0:01:09');expect(spy).toHaveBeenCalledTimes(2);
+   spy.mockRestore();
+  }finally{Element.prototype.animate=original;vi.useRealTimers();}
  });
 });
 describe('AssetsBlock empty action, selected disc and keyboard',()=>{
