@@ -85,7 +85,8 @@ assert.equal(await activeGuide.innerText(),'Financial data');
 assert.equal(await activeGuide.evaluate(link=>link.getBoundingClientRect().height<48),true,'Component guide labels fit on one line');
 await page.screenshot({path:`evidence/${stage}-component-guide-desktop.png`,fullPage:true});
 await page.setViewportSize({width:390,height:844});
-const guideTable=page.getByRole('region',{name:'Scrollable table',exact:true});
+// The chapter holds several tables; the first is the API table, which is wider than a phone.
+const guideTable=page.getByRole('region',{name:'Scrollable table',exact:true}).first();
 await guideTable.focus();
 await page.keyboard.press('ArrowRight');
 await page.waitForFunction(()=>document.querySelector('.docs-table-scroll')?.scrollLeft>0);
