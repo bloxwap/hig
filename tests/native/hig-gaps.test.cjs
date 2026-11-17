@@ -112,3 +112,13 @@ describe('AssetBalanceRow trailingInteractive',()=>{
   const row=view.findAll(node=>node.props.testID==='u'&&typeof node.props.onPress==='function'&&typeof node.type!=='string')[0];expect(row.props.accessibilityLabel).toBe('USD Coin, USDC, $12.00, Main');expect(all(view,'u-main')).toHaveLength(0);
  });
 });
+
+describe('Spinner hideLabel',()=>{
+ const {Spinner}=require('../../packages/hig/native/src/status');
+ it('draws the indicator alone and keeps the label as the accessibility label',()=>{
+  let view=mount(h(Spinner,{label:'Loading quote',hideLabel:true,testID:'spin'}));
+  const spin=host(view,'spin');expect(spin.props.accessible).toBe(true);expect(spin.props.accessibilityLabel).toBe('Loading quote');
+  expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('Loading quote'))).toHaveLength(0);
+  view=mount(h(Spinner,{label:'Loading quote',testID:'spin'}));expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('Loading quote')).length).toBeGreaterThan(0);
+ });
+});

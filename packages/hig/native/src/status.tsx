@@ -80,7 +80,14 @@ export function useTransientNotice(duration=4000):{notice:Notice|null;show:(mess
  const stop=()=>{if(timer.current!==null){clearTimeout(timer.current);timer.current=null;}};
  return {notice,dismiss:()=>{stop();setNotice(null);},show:(message,severity='success')=>{if(!alive.current)return;stop();setNotice({id:`notice-${++sequence.current}`,message,severity});timer.current=setTimeout(()=>{timer.current=null;setNotice(null);},duration);}};
 }
-export function Spinner({label}: {label?:string}){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/><Text>{text}</Text></View>;}
+export interface SpinnerProps {
+ /** What is loading; defaults to HIGProvider `messages.loading`. */
+ label?:string;
+ /** Draws the indicator alone, for a tight spot such as a row or a button-sized slot: the label is not drawn but stays the element's accessibility label. */
+ hideLabel?:boolean;
+ testID?:string;
+}
+export function Spinner({label,hideLabel,testID}:SpinnerProps){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View testID={testID} accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/>{hideLabel?null:<Text>{text}</Text>}</View>;}
 export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){
  const {locale,messages,direction}=useHIG();const colors=useColors();const fills=useFills();
  const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));

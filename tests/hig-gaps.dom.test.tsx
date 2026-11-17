@@ -49,3 +49,14 @@ describe('AssetBalanceRow trailingInteractive (web parity)',()=>{
   expect(screen.getByTestId('plain').tagName).toBe('BUTTON');
  });
 });
+
+describe('Spinner hideLabel',()=>{
+ it('draws the ring alone while the label stays the status text',async()=>{
+  const {Spinner}=await import('../packages/hig/react/src/status');
+  const {rerender}=render(<HIGProvider><Spinner label='Loading quote' hideLabel/></HIGProvider>);
+  const status=screen.getByRole('status');expect(status.className).toBe('hig-spinner');
+  const hidden=status.querySelector('.hig-sr-only')!;expect(hidden.textContent).toBe('Loading quote…');expect(status.textContent).toBe('Loading quote…');
+  rerender(<HIGProvider><Spinner label='Loading quote'/></HIGProvider>);
+  expect(screen.getByRole('status').querySelector('.hig-sr-only')).toBeNull();expect(screen.getByRole('status').textContent).toBe('Loading quote…');
+ });
+});

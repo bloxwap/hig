@@ -1022,9 +1022,13 @@
         "entry": "status",
         "signature": "export declare function Progress({ label, value, max }: {\n    label: string;\n    value?: number;\n    max?: number;\n}): React.JSX.Element;"
       },
+      "SpinnerProps": {
+        "entry": "status",
+        "signature": "export interface SpinnerProps {\n    /** What is loading; defaults to HIGProvider `messages.loading`. */\n    label?: string;\n    /** Draws the ring alone, for a tight spot such as a row or a button-sized slot: the label is not drawn but stays the status's accessible text. */\n    hideLabel?: boolean;\n}"
+      },
       "Spinner": {
         "entry": "status",
-        "signature": "export declare function Spinner({ label }: {\n    label?: string;\n}): React.JSX.Element;"
+        "signature": "export declare function Spinner({ label, hideLabel }: SpinnerProps): React.JSX.Element;"
       },
       "Skeleton": {
         "entry": "status",
@@ -2380,9 +2384,13 @@
         "entry": "status",
         "signature": "export declare function useTransientNotice(duration?: number): {\n    notice: Notice | null;\n    show: (message: string, severity?: Notice['severity']) => void;\n    dismiss: () => void;\n};"
       },
+      "SpinnerProps": {
+        "entry": "status",
+        "signature": "export interface SpinnerProps {\n    /** What is loading; defaults to HIGProvider `messages.loading`. */\n    label?: string;\n    /** Draws the indicator alone, for a tight spot such as a row or a button-sized slot: the label is not drawn but stays the element's accessibility label. */\n    hideLabel?: boolean;\n    testID?: string;\n}"
+      },
       "Spinner": {
         "entry": "status",
-        "signature": "export declare function Spinner({ label }: {\n    label?: string;\n}): React.JSX.Element;"
+        "signature": "export declare function Spinner({ label, hideLabel, testID }: SpinnerProps): React.JSX.Element;"
       },
       "Progress": {
         "entry": "status",
