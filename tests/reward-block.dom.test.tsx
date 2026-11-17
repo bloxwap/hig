@@ -132,3 +132,18 @@ describe('RewardBlock host slots (Unreleased)',()=>{
   expect(q('.hig-reward-identity .hig-sr-only')!.textContent).toBe('1.090.779 vol');
  });
 });
+describe('RewardBlock promo text, slots and a promotion-only pane',()=>{
+ it('draws a host-text amount, a node caption and no list without entries',()=>{
+  render(<HIGProvider><RewardBlock title='Rewards' promo={{eyebrow:'Sweepstakes',amount:'$500',caption:<span data-testid='countdown'>Draw in 2:14:33</span>,headline:'Trade to enter.'}}/></HIGProvider>);
+  const amount=q('.hig-reward-amount')!;expect(amount.tagName).toBe('P');expect(amount.textContent).toBe('$500');expect(amount.querySelector('.hig-animated-number')).toBeNull();
+  const caption=screen.getByTestId('countdown').parentElement!;expect(caption.tagName).toBe('DIV');expect(caption.className).toBe('hig-reward-caption hig-number');expect(caption.previousElementSibling).toBe(amount);
+  expect(q('.hig-reward-list')).toBeNull();expect(q('.hig-reward-rows')).toBeNull();expect(q('.hig-reward-track')).toBeNull();
+ });
+ it('draws a host figure in the figure slot, a caption function with a node, and no figure line without amount or figure',()=>{
+  const {unmount}=render(<HIGProvider><RewardBlock title='Rewards' entries={[]} promo={{eyebrow:'Pool',figure:<strong data-testid='live'>$4,037</strong>,goal:250000,caption:goal=><em>of {goal}</em>}}/></HIGProvider>);
+  const slot=screen.getByTestId('live').parentElement!;expect(slot.tagName).toBe('DIV');expect(slot.className).toBe('hig-reward-amount');
+  expect(q('.hig-reward-caption')!.textContent).toBe('of $250,000');expect(q<HTMLElement>('.hig-reward-track > span')!.style.width).toBe('0%');
+  unmount();render(<HIGProvider><RewardBlock title='Rewards' promo={{eyebrow:'Soon',headline:'Draws open Monday.'}}/></HIGProvider>);
+  expect(q('.hig-reward-amount')).toBeNull();expect(q('.hig-reward-summary')!.textContent).toBe('Draws open Monday.');
+ });
+});

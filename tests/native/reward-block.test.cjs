@@ -151,3 +151,16 @@ describe('host slots (Unreleased)',()=>{
   const view=mount({promo:{...pool,headline:h(Text,{testID:'accent'},'Top 100')}});expect(has(view,'accent')).toBe(true);
  });
 });
+
+it('draws a host-text amount read with a text caption, a node caption that reads itself, a host figure, and no list without entries',()=>{
+ let view=mount({entries:undefined,promo:{eyebrow:'Sweepstakes',amount:'$500',caption:'top prize'}});
+ const amount=host(view,'reward-amount');expect(amount.props.accessibilityLabel).toBe('$500 top prize');expect(view.findAllByType(AnimatedNumberReadout)).toHaveLength(0);
+ expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('$500')).map(node=>flat(node).color)).toContain(nativeSrgb.positive);
+ expect(has(view,'reward-list')).toBe(false);expect(has(view,'reward-rows')).toBe(false);
+ view=mount({promo:{eyebrow:'Sweepstakes',amount:500,caption:h(View,{testID:'countdown'})}});
+ expect(host(view,'reward-amount').props.accessibilityLabel).toBe('$500');
+ const caption=host(view,'reward-caption');expect(caption.props.accessibilityElementsHidden).toBeUndefined();expect(has(caption,'countdown')).toBe(true);
+ view=mount({promo:{eyebrow:'Pool',figure:h(View,{testID:'live'}),caption:'so far'}});
+ const slot=host(view,'reward-amount');expect(slot.props.accessible).toBeUndefined();expect(has(host(view,'reward-figure'),'live')).toBe(true);expect(text(host(view,'reward-caption'))).toBe('so far');
+ view=mount({promo:{eyebrow:'Soon',headline:'Draws open Monday.'}});expect(has(view,'reward-amount')).toBe(false);
+});
