@@ -570,6 +570,15 @@
       "support": "renderer"
     },
     {
+      "name": "ConfirmBlock",
+      "states": [
+        "default",
+        "busy",
+        "fee"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "ProfileBlock",
       "states": [
         "default",
