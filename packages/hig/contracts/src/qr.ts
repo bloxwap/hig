@@ -187,18 +187,25 @@ for(let mask=0;mask<8;mask++){
  for(let row=0;row<12;row++)for(let phase=0;phase<2;phase++){let six=0;for(let bit=0;bit<6;bit++)six|=MASK_TILES[tile+row*6+(bit+5+3*phase)%6]!<<bit;MASK_ROWS[(mask*12+row)*2+phase]=Math.imul(six,0x41041041);}
  for(let column=0;column<6;column++)for(let phase=0;phase<4;phase++){let twelve=0;for(let bit=0;bit<12;bit++)twelve|=MASK_TILES[tile+(bit+11+9*phase)%12*6+column]!<<bit;MASK_COLUMNS[(mask*6+column)*4+phase]=Math.imul(twelve,0x1001001);}
 }
-/** A square of cells as words: its rows, then its columns. `flip` 1 packs the inverse, so reserved cells give the cells a mask may invert. */
-function pack(cells:Uint8Array,size:number,flip:number):Int32Array{
- const words=Math.ceil(size/SPAN),out=new Int32Array(2*size*words);
+/** A symbol as words, its rows and then its columns: `lines` holds the modules and `free` the cells that are not reserved, which a mask may invert. */
+function pack(modules:Uint8Array,reserved:Uint8Array,size:number):{lines:Int32Array;free:Int32Array}{
+ const words=Math.ceil(size/SPAN),lines=new Int32Array(2*size*words),free=new Int32Array(2*size*words);
  for(let pass=0,at=0;pass<2;pass++){
   const step=pass?size:1,stride=pass?1:size;
-  for(let line=0;line<size;line++)for(let word=0;word<words;word++,at++){
-   const first=word*SPAN-1,last=Math.min(first+32,size);let packed=0;
-   for(let cell=word?first:0,index=line*stride+cell*step;cell<last;cell++,index+=step)packed|=(cells[index]!^flip)<<cell-first;
-   out[at]=packed;
+  for(let line=0;line<size;line++,at+=words){
+   // Each cell is read once, into its word's own bits; a word then takes the cell before them and the ten after from its neighbours.
+   for(let word=0,cell=0,index=line*stride;word<words;word++){
+    let dark=0,open=0;
+    for(let bit=1,end=Math.min(cell+SPAN,size);cell<end;cell++,bit++,index+=step){dark|=modules[index]!<<bit;open|=(reserved[index]!^1)<<bit;}
+    lines[at+word]=dark;free[at+word]=open;
+   }
+   for(let word=at,last=at+words-1;word<=last;word++){
+    if(word>at){lines[word]=lines[word]!|lines[word-1]!>>>SPAN&1;free[word]=free[word]!|free[word-1]!>>>SPAN&1;}
+    if(word<last){lines[word]=lines[word]!|(lines[word+1]!&0x7fe)<<SPAN;free[word]=free[word]!|(free[word+1]!&0x7fe)<<SPAN;}
+   }
   }
  }
- return out;
+ return {lines,free};
 }
 /** How many bits of a word are set. */
 function count(word:number):number{word-=word>>>1&0x55555555;word=(word&0x33333333)+(word>>>2&0x33333333);return Math.imul(word+(word>>>4)&0x0f0f0f0f,0x01010101)>>>24;}
@@ -271,7 +278,7 @@ function maskPenalty(lines:Int32Array,free:Int32Array,size:number,mask:number,li
  * dark modules. `encodeQR` scores each candidate with its format and version cells still light, as the `qr` encoder behind Cuer
  * and python-qrcode do, so HIG picks the same mask they pick.
  */
-export function qrPenalty(modules:Uint8Array,size:number):number{const lines=pack(modules,size,0);return maskPenalty(lines,new Int32Array(lines.length),size,0,Infinity);}
+export function qrPenalty(modules:Uint8Array,size:number):number{const {lines,free}=pack(modules,new Uint8Array(size*size).fill(1),size);return maskPenalty(lines,free,size,0,Infinity);}
 /** Why a value cannot be encoded: it is longer than a version 40 symbol (or the requested version) holds at the level. */
 export class QRCapacityError extends RangeError {constructor(message:string){super(message);this.name='QRCapacityError';}}
 /**
@@ -304,7 +311,7 @@ export function encodeQR(value:string,options:QREncodeOptions={}):QRMatrix{
  // The candidates are scored from the symbol as bits; only the mask that wins is applied to the modules.
  let mask=options.mask;
  if(mask===undefined){
-  const lines=pack(modules,size,0),free=pack(reserved,size,1);let lowest=Infinity;mask=0;
+  const {lines,free}=pack(modules,reserved,size);let lowest=Infinity;mask=0;
   for(let candidate=0;candidate<8;candidate++){const score=maskPenalty(lines,free,size,candidate,lowest);if(score<lowest){lowest=score;mask=candidate;}}
  }
  for(let row=0,at=0;row<size;row++){
