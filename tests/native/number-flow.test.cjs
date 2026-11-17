@@ -12,13 +12,13 @@ jest.mock('react-native-reanimated',()=>{
  const shared=initial=>{
   const ref=React.useRef(null);
   if(ref.current===null){
-   let current=initial,animation=null;
+   let current=initial,animation=null,fading=false;
    ref.current={get value(){return current;},set value(next){
     // As Reanimated's valueSetter does: an animation already "at" the value is dropped before it starts, and one that starts gets its first frame at once.
     if(next&&next.__mockDefined){const created=next.factory(),previous=animation;animation=null;if(current===created.current)return;created.onStart(created,current,mockClock.now,previous);animation=created;this.frame(mockClock.now);return;}
-    if(next&&next.__mockTiming){mockClock.fades.push({value:this,toValue:next.toValue,config:next.config});current=next.toValue;animation=null;return;}
-    current=next;animation=null;
-   },get animating(){return animation!==null;},stop(){animation=null;},frame(now){if(!animation)return;const finished=animation.onFrame(animation,now);current=animation.current;if(finished)animation=null;}};
+    if(next&&next.__mockTiming){mockClock.fades.push({value:this,toValue:next.toValue,config:next.config});current=next.toValue;animation=null;fading=true;return;}
+    current=next;animation=null;fading=false;
+   },get animating(){return animation!==null;},get fading(){return fading;},stop(){animation=null;fading=false;},frame(now){if(!animation)return;const finished=animation.onFrame(animation,now);current=animation.current;if(finished)animation=null;}};
    mockClock.values.push(ref.current);
   }
   return ref.current;
@@ -159,6 +159,33 @@ describe('NumberFlow on native',()=>{
   mount(flow({value:12}));measure();update(flow({value:null}));expect(cells()).toHaveLength(0);expect(reading().props.accessibilityLabel).toBe('Price: —');
   update(flow({value:34}));expect(positions()).toHaveLength(0);expect(cells().map(rows)).toEqual(['3','4']);
   act(()=>root.unmount());mount(flow({value:12},{direction:'rtl'}));expect(root.root.findAllByType(RNText)).toHaveLength(1);
+ });
+ it('shows the digit it reads after a limited place held a digit past its limit',()=>{
+  const seconds=value=>flow({value,trend:1,digits:{1:{max:5}},options:{minimumIntegerDigits:2}});
+  /** The glyph the tens reel shows: the row its position puts in the window. */
+  const tensShows=()=>{const [tens]=positions(),glyphs=rows(cells()[0]);return glyphs[Math.round(-numberFlowReelOffset(tens.value,glyphs.length-1,24)/24)];};
+  mount(seconds(30));measure();update(seconds(75));
+  // 7 does not fit a reel of six, so the tens turn on all ten glyphs, there and back.
+  expect(rows(cells()[0])).toBe('01234567890');advance(900);expect(tensShows()).toBe('7');
+  update(seconds(12));expect(rows(cells()[0])).toBe('01234567890');expect(tensShows()).toBe('7');advance(900);expect(tensShows()).toBe('1');
+  // Back inside its limit the place takes its short reel again, starting from the digit it shows.
+  update(seconds(23));expect(rows(cells()[0])).toBe('0123450');expect(tensShows()).toBe('1');advance(900);expect(tensShows()).toBe('2');
+  // With motion off the reel still fits whatever digit it is given.
+  update(flow({value:81,trend:1,digits:{1:{max:5}},options:{minimumIntegerDigits:2}},{reducedMotion:true}));expect(rows(cells()[0])).toBe('01234567890');expect(tensShows()).toBe('8');
+ });
+ it('treats a new locale or format as a new reading, not a change to roll',()=>{
+  mount(flow({value:1234}));measure();update(flow({value:1234,options:{style:'percent'}}));
+  expect(positions()).toHaveLength(0);expect(reading().props.accessibilityLabel).toBe('Price: 123,400%');
+  update(flow({value:2345,options:{style:'percent'}},{locale:'de-DE'}));expect(positions()).toHaveLength(0);
+  // The next change of value in the same format rolls as usual.
+  update(flow({value:2346,options:{style:'percent'}},{locale:'de-DE'}));expect(positions().filter(position=>position.animating)).toHaveLength(1);
+  // A reel already turning lands when the format changes under it.
+  update(flow({value:2346,options:{style:'percent',minimumFractionDigits:1}},{locale:'de-DE'}));expect(positions().some(position=>position.animating)).toBe(false);
+ });
+ it('lands a place that is still fading in when motion is turned off',()=>{
+  mount(flow({value:9,trend:1}));measure();update(flow({value:10,trend:1}));
+  const opacity=mockClock.fades[0].value;expect(opacity.fading).toBe(true);
+  update(flow({value:10,trend:1},{reducedMotion:true}));expect(opacity.fading).toBe(false);expect(opacity.value).toBe(1);
  });
  it('keeps one accessible reading and hides the moving copy',()=>{
   mount(flow({value:1234.5,prefix:'$',suffix:' USD',stale:true}));measure();update(flow({value:1234.6,prefix:'$',suffix:' USD',stale:true}));

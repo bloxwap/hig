@@ -55,7 +55,7 @@ const clampedDuration=(duration:number)=>Number.isFinite(duration)&&duration>0?M
 interface DigitReelProps {digits:readonly string[];digit:number;trend:-1|0|1;duration:number;reducedMotion:boolean;width:number;height:number;style:StyleProp<TextStyle>;script:TextScript;maxFontSizeMultiplier?:number}
 function DigitReel({digits,digit,trend,duration,reducedMotion,width,height,style,script,maxFontSizeMultiplier}:DigitReelProps){
  const position=useSharedValue(digit),previousDigit=useRef(digit);
- const animatedStyle=useAnimatedStyle(()=>({transform:[{translateY:-position.value*height}]}),[height]);
+ const animatedStyle=useAnimatedStyle(()=>{'worklet';return {transform:[{translateY:-position.value*height}]};},[height]);
  useEffect(()=>{
   const motionDuration=clampedDuration(duration);
   if(previousDigit.current===digit){
@@ -80,23 +80,33 @@ function DigitReel({digits,digit,trend,duration,reducedMotion,width,height,style
 interface FlowStripProps {glyphs:readonly string[];length:number;from:number;digit:number;delta:number;step:number;enter:boolean;duration:number;samples:readonly number[];fade:number;fadeSamples:readonly number[];width:number;height:number;style:StyleProp<TextStyle>;script:TextScript;maxFontSizeMultiplier?:number}
 /**
  * The moving part of a flowing place: `length + 1` glyphs in a column, translated on the UI thread. It mounts on the place's
- * first turn, already showing the digit it replaces, and stays for the turns after it.
+ * first turn, already showing the digit it replaces, and stays for the turns after it. Its position counts glyphs on a reel of
+ * `length`, so a turn on a reel of another length (a limited place given a digit past its limit, or back) starts from the
+ * digit it replaces rather than from a position counted on the old reel.
  */
 function FlowStrip({glyphs,length,from,digit,delta,step,enter,duration,samples,fade,fadeSamples,width,height,style,script,maxFontSizeMultiplier}:FlowStripProps){
- const position=useSharedValue(from),opacity=useSharedValue(enter&&fade>0?0:1),applied=useRef<{step:number;digit:number}|null>(null);
- const animatedStyle=useAnimatedStyle(()=>({opacity:opacity.value,transform:[{translateY:numberFlowReelOffset(position.value,length,height)}]}),[length,height]);
+ const position=useSharedValue(from),opacity=useSharedValue(enter&&fade>0?0:1),applied=useRef<{step:number;digit:number;length:number}|null>(null);
+ const animatedStyle=useAnimatedStyle(()=>{'worklet';return {opacity:opacity.value,transform:[{translateY:numberFlowReelOffset(position.value,length,height)}]};},[length,height]);
  useEffect(()=>{
-  const last=applied.current;applied.current={step,digit};
+  const last=applied.current;applied.current={step,digit,length};
   if(!last||last.step!==step){
-   // A new turn joins whatever is still in flight; the roll works out where it ends from where the reel was going.
-   if(duration>0&&delta)position.value=defineAnimation(digit,()=>{'worklet';return createNumberFlowRoll(delta,duration,samples);}) as unknown as number;
-   else{cancelAnimation(position);position.value=digit;}
+   if(duration>0&&delta){
+    // A reel of another length: what is in flight was counted on the old one, so this turn starts from the digit it replaces.
+    if(last&&last.length!==length){cancelAnimation(position);position.value=digit-delta;}
+    // A new turn joins whatever is still in flight; the roll works out where it ends from where the reel was going.
+    position.value=defineAnimation(digit,()=>{'worklet';return createNumberFlowRoll(delta,duration,samples);}) as unknown as number;
+   }else{cancelAnimation(position);position.value=digit;}
    return;
   }
-  // Motion was turned off, with or without a new digit: land on the digit, cutting short whatever was in flight.
-  if(last.digit!==digit||duration<=0){cancelAnimation(position);position.value=digit;}
- },[step,digit,delta,duration,samples,position]);
- useEffect(()=>{if(enter&&fade>0)opacity.value=withTiming(1,{duration:fade,easing:(progress:number)=>{'worklet';return sampleReelEasing(fadeSamples,progress);},reduceMotion:ReduceMotion.Never});},[enter,fade,fadeSamples,opacity]);
+  // Motion was turned off, the digit changed without a turn or the reel changed length: land on the digit, cutting short whatever was in flight.
+  if(last.digit!==digit||last.length!==length||duration<=0){cancelAnimation(position);position.value=digit;}
+ },[step,digit,delta,length,duration,samples,position]);
+ useEffect(()=>{
+  if(!enter)return;
+  if(fade>0)opacity.value=withTiming(1,{duration:fade,easing:(progress:number)=>{'worklet';return sampleReelEasing(fadeSamples,progress);},reduceMotion:ReduceMotion.Never});
+  // Motion was turned off while the place was still arriving: it is simply there.
+  else{cancelAnimation(opacity);opacity.value=1;}
+ },[enter,fade,fadeSamples,opacity]);
  // Forgetting the applied turn lets an effect that runs again after this cleanup (React's development double mount) start it again rather than leave the reel where the cancel stopped it.
  useEffect(()=>()=>{cancelAnimation(position);cancelAnimation(opacity);applied.current=null;},[position,opacity]);
  const rows=Array.from({length:length+1},(_,index)=>glyphs[index%length]);
@@ -116,9 +126,11 @@ const FlowDigit=memo(function FlowDigit({styleKey:_styleKey,...props}:FlowDigitP
  if(!strip&&step>0&&delta!==0)setStrip({from:digit-delta,enter:false});
  return <View collapsable={false} style={{width,height,overflow:'hidden'}}>{strip?<FlowStrip {...props} from={strip.from} enter={strip.enter}/>:<Text accessible={false} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[style,{width,height,textAlign:'center'}]}>{glyphs[digit]}</Text>}</View>;
 },(previous,next)=>previous.digit===next.digit&&previous.step===next.step&&previous.delta===next.delta&&previous.length===next.length&&sameGlyphs(previous.glyphs,next.glyphs)&&previous.width===next.width&&previous.height===next.height&&previous.duration===next.duration&&previous.samples===next.samples&&previous.fade===next.fade&&previous.fadeSamples===next.fadeSamples&&previous.styleKey===next.styleKey&&previous.script===next.script&&previous.maxFontSizeMultiplier===next.maxFontSizeMultiplier);
-/** What a flowing figure last drew, and each place's turn: `step` counts the turns a place has taken, `delta` is how far the latest one goes. */
-interface FlowStep {key:string;canonical:string;value:number|null|undefined;places:ReturnType<typeof numberReelPlaces>;turns:ReadonlyMap<string,{step:number;delta:number}>}
-const noTurns:ReadonlyMap<string,{step:number;delta:number}>=new Map();
+/** A place's turn: `step` counts the turns it has taken, `delta` is how far the latest one goes, and `length` is the reel it goes round (long enough for the digit it leaves and the one it reaches). */
+interface FlowTurn {step:number;delta:number;length:number}
+/** What a flowing figure last drew, how it was measured (`key`) and formatted (`signature`), and each place's turn. */
+interface FlowStep {key:string;signature:string;canonical:string;value:number|null|undefined;places:ReturnType<typeof numberReelPlaces>;turns:ReadonlyMap<string,FlowTurn>}
+const noTurns:ReadonlyMap<string,FlowTurn>=new Map();
 
 function recordGlyph(measurements:React.MutableRefObject<{key:string;values:Map<number,{width:number;height:number}>}>,key:string,index:number,event:LayoutChangeEvent,setMetrics:React.Dispatch<React.SetStateAction<{key:string;width:number;height:number}|null>>){
  const {width,height}=event.nativeEvent.layout;if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)return;
@@ -166,11 +178,19 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  const timings=resolveNumberFlowTimings({duration:requestedDuration,spinTiming,transformTiming,opacityTiming}),spinSamples=numberFlowEasingSamples(timings.spin.easing),fadeSamples=numberFlowEasingSamples(timings.opacity.easing);
  const [flowStep,setFlowStep]=useState<FlowStep|null>(null);let turns=noTurns;
  if(flow&&activeModel){
-  if(!flowStep||flowStep.key!==measurementKey)setFlowStep({key:measurementKey,canonical:activeModel.canonical,value,places:numberReelPlaces(activeModel),turns:noTurns});
+  // A new locale or format is a different reading rather than a new value, as on web: it is drawn at once and the next value rolls from it.
+  const signature=JSON.stringify([locale,options??{},!!formattedValue]);
+  if(!flowStep||flowStep.key!==measurementKey||flowStep.signature!==signature)setFlowStep({key:measurementKey,signature,canonical:activeModel.canonical,value,places:numberReelPlaces(activeModel),turns:noTurns});
   else if(flowStep.canonical!==activeModel.canonical){
-   const places=numberReelPlaces(activeModel),moving=!reducedMotion&&timings.spin.duration>0,deltas=moving?numberFlowDeltas(flowStep.places,places,{trend:numberTrendDirection(trend,flowStep.value,value),digits,continuous}):null,next=new Map<string,{step:number;delta:number}>();
-   for(const place of places){const delta=deltas?.get(place.key)??0,old=flowStep.turns.get(place.key);if(delta)next.set(place.key,{step:(old?.step??0)+1,delta});else if(old)next.set(place.key,old);}
-   setFlowStep({key:measurementKey,canonical:activeModel.canonical,value,places,turns:next});turns=next;
+   const places=numberReelPlaces(activeModel),moving=!reducedMotion&&timings.spin.duration>0,deltas=moving?numberFlowDeltas(flowStep.places,places,{trend:numberTrendDirection(trend,flowStep.value,value),digits,continuous}):null,before=new Map(flowStep.places.map(place=>[place.key,place.digit])),next=new Map<string,FlowTurn>();
+   for(const place of places){
+    const delta=deltas?.get(place.key)??0,old=flowStep.turns.get(place.key);
+    // The same reel the shared model counted the turn on: long enough for both ends of it.
+    if(delta)next.set(place.key,{step:(old?.step??0)+1,delta,length:numberFlowDigitLength(digits,place.place,Math.max(place.digit,before.get(place.key)??0))});
+    // No turn: the place keeps its reel while its digit still fits it.
+    else if(old)next.set(place.key,place.digit<old.length?old:{...old,length:numberFlowDigitLength(digits,place.place,place.digit)});
+   }
+   setFlowStep({key:measurementKey,signature,canonical:activeModel.canonical,value,places,turns:next});turns=next;
   }else turns=flowStep.turns;
  }else if(flowStep)setFlowStep(null);
  const styleKey=flow?JSON.stringify([typography,color]):'';
@@ -187,7 +207,7 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
   {safeModel&&<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={{position:'absolute',opacity:0,flexDirection:'row'}}>{safeModel.digits.map((glyph,index)=><Text {...visualProps} key={`${measurementKey}:${index}`} onLayout={event=>recordGlyph(measurements,measurementKey,index,event,setMetrics)} style={textStyle}>{glyph}</Text>)}</View>}
   {activeModel&&activeMetrics&&<View collapsable={false} accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={reelRowStyle}>
    {prefix&&<Text {...visualProps} style={textStyle}>{prefix}</Text>}
-   {activeModel.tokens.map(token=>token.kind==='static'?<Text {...visualProps} key={token.key} style={textStyle}>{token.value}</Text>:flow?<FlowDigit key={token.key} glyphs={activeModel.digits} length={numberFlowDigitLength(digits,numberReelPlace(token),token.digit??0)} digit={token.digit??0} delta={turns.get(token.key)?.delta??0} step={turns.get(token.key)?.step??0} duration={reducedMotion?0:timings.spin.duration} samples={spinSamples} fade={reducedMotion?0:timings.opacity.duration} fadeSamples={fadeSamples} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} styleKey={styleKey} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>:<DigitReel key={token.key} digits={activeModel.digits} digit={token.digit??0} trend={directionTrend} duration={duration} reducedMotion={reducedMotion} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>)}
+   {activeModel.tokens.map(token=>token.kind==='static'?<Text {...visualProps} key={token.key} style={textStyle}>{token.value}</Text>:flow?<FlowDigit key={token.key} glyphs={activeModel.digits} length={turns.get(token.key)?.length??numberFlowDigitLength(digits,numberReelPlace(token),token.digit??0)} digit={token.digit??0} delta={turns.get(token.key)?.delta??0} step={turns.get(token.key)?.step??0} duration={reducedMotion?0:timings.spin.duration} samples={spinSamples} fade={reducedMotion?0:timings.opacity.duration} fadeSamples={fadeSamples} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} styleKey={styleKey} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>:<DigitReel key={token.key} digits={activeModel.digits} digit={token.digit??0} trend={directionTrend} duration={duration} reducedMotion={reducedMotion} width={activeMetrics.width} height={activeMetrics.height} style={textStyle} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier}/>)}
    {(suffix||staleSuffix)&&<Text {...visualProps} style={textStyle}>{`${suffix??''}${staleSuffix}`}</Text>}
   </View>}
  </View>;

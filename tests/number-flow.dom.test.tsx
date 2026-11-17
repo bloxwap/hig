@@ -38,7 +38,8 @@ const finishAll=()=>act(()=>{for(const animation of animations.splice(0))animati
 const of=(kind:'spin'|'slide'|'fade'|'clip')=>animations.filter(animation=>kind==='spin'?animation.target.classList.contains('hig-number-flow-strip'):kind==='slide'?typeof animation.keyframes.transform?.[0]==='string'&&(animation.keyframes.transform[0] as string).startsWith('translateX'):kind==='fade'?'opacity' in animation.keyframes:'clipPath' in animation.keyframes);
 const place=(key:string)=>document.querySelector<HTMLElement>(`[data-hig-flow-key="${key}"]`) as HTMLElement;
 /** The glyphs of a place's strip from top to bottom, which is the order they pass through the window going up. */
-const strip=(key:string)=>Array.from(place(key).querySelectorAll<HTMLElement>('.hig-number-flow-glyph')).sort((first,second)=>parseFloat(first.style.top)-parseFloat(second.style.top)).map(glyph=>glyph.textContent).join('');
+const row=(glyph:HTMLElement)=>parseFloat(glyph.style.transform.slice('translateY('.length));
+const strip=(key:string)=>Array.from(place(key).querySelectorAll<HTMLElement>('.hig-number-flow-glyph')).sort((first,second)=>row(first)-row(second)).map(glyph=>glyph.textContent).join('');
 /** What the figure reads once everything that is only passing through is taken away. */
 const drawn=(root:ParentNode=document)=>{const copy=(root.querySelector('.hig-animated-number-visual') as HTMLElement).cloneNode(true) as HTMLElement;copy.querySelectorAll('.hig-number-flow-window,.hig-number-flow-ghosts').forEach(node=>node.remove());return copy.textContent;};
 const flow=(props:Partial<AnimatedNumberProps>&{value:AnimatedNumberProps['value']},provider:React.ComponentProps<typeof HIGProvider>={})=><HIGProvider {...provider}><NumberFlow label='Price' {...props}/></HIGProvider>;
@@ -58,6 +59,8 @@ describe('NumberFlow on web',()=>{
   expect(of('spin')).toHaveLength(1);expect(of('spin')[0].keyframes).toEqual({transform:['translateY(500%)','translateY(0%)']});
   expect(of('spin')[0].options).toEqual({composite:'add',duration:900,easing:`linear(${numberFlowCurve.join(',')})`});
   expect((place('digit:number:0').querySelector('.hig-number-flow-strip') as HTMLElement).style.transform).toBe('translateY(-500%)');
+  // Each glyph sits on its row by a transform, the unit the strip travels in, so the last one lands exactly where the digit is drawn.
+  expect(Array.from(place('digit:number:0').querySelectorAll<HTMLElement>('.hig-number-flow-glyph')).map(glyph=>[glyph.textContent,glyph.style.transform,glyph.style.top])).toEqual([['2','translateY(0%)',''],['3','translateY(100%)',''],['4','translateY(200%)',''],['5','translateY(300%)',''],['6','translateY(400%)',''],['7','translateY(500%)','']]);
   // The reading is already final for assistive technology and for the layout.
   expect(screen.getByLabelText('Price: 7')).toBeTruthy();expect(drawn()).toBe('7');
   finishAll();expect(document.querySelector('.hig-number-flow-window')).toBeNull();expect(place('digit:number:0').hasAttribute('data-spinning')).toBe(false);expect(document.querySelector('.hig-animated-number-visual')?.textContent).toBe('7');
@@ -152,6 +155,13 @@ describe('NumberFlow on web',()=>{
   const next=render(flow({value:120,trend:1,continuous:true}));next.rerender(flow({value:130,trend:1,continuous:true}));
   expect(strip('digit:number:1')).toBe('23');expect(strip('digit:number:0')).toBe('01234567890');expect(place('digit:number:2').querySelector('.hig-number-flow-window')).toBeNull();
  });
+ it('turns a limited place on all ten glyphs to reach or leave a digit past its limit',()=>{
+  const seconds=(value:number)=>flow({value,trend:1,digits:{1:{max:5}},options:{minimumIntegerDigits:2}});
+  const {rerender}=render(seconds(30));rerender(seconds(75));expect(strip('digit:number:1')).toBe('34567');
+  finishAll();rerender(seconds(12));expect(strip('digit:number:1')).toBe('78901');
+  // Back inside its limit the place wraps at 5 again.
+  finishAll();rerender(seconds(53));finishAll();rerender(seconds(4));expect(strip('digit:number:1')).toBe('50');expect(drawn()).toBe('04');
+ });
  it('rolls the reading’s own digits and keeps the number left to right inside a right-to-left page',()=>{
   const {rerender}=render(flow({value:12,prefix:'≈ '},{locale:'ar-EG',direction:'rtl'}));rerender(flow({value:15,prefix:'≈ '},{locale:'ar-EG',direction:'rtl'}));
   expect(strip('digit:number:0')).toBe('٢٣٤٥');expect(document.querySelector('.hig-animated-number-visual')?.getAttribute('dir')).toBe('rtl');expect(document.querySelector('.hig-number-flow-core')?.getAttribute('dir')).toBe('ltr');
@@ -169,6 +179,15 @@ describe('NumberFlow on web',()=>{
  it('passes class names to the root and marks the moving parts for their own layers on request',()=>{
   render(flow({value:1,className:'host-size',willChange:true}));
   expect(document.querySelector('.hig-number')?.className).toBe('hig-number hig-number-flow host-size');expect(document.querySelector('.hig-animated-number-visual')?.hasAttribute('data-will-change')).toBe(true);
+ });
+ it('draws each value at once in a browser without additive animations, where a roll would show the wrong glyphs',()=>{
+  // Before 2023 `composite: 'add'` was ignored: a turn would replace the strip's resting transform instead of adding to it.
+  vi.stubGlobal('KeyframeEffect',{prototype:{}});
+  const {rerender}=render(flow({value:999,prefix:'$'}));rerender(flow({value:1000,prefix:'$'}));
+  expect(animations).toHaveLength(0);expect(document.querySelector('.hig-number-flow-window,.hig-number-flow-ghost')).toBeNull();expect(drawn()).toBe('$1,000');
+  rerender(flow({value:9,prefix:'$'}));expect(animations).toHaveLength(0);expect(document.querySelector('.hig-number-flow-ghost')).toBeNull();
+  vi.unstubAllGlobals();vi.stubGlobal('KeyframeEffect',{prototype:{composite:'replace'}});
+  rerender(flow({value:10,prefix:'$'}));expect(of('spin').length).toBeGreaterThan(0);vi.unstubAllGlobals();
  });
  it('falls back to the plain curve in a browser without `linear()`',()=>{
   const {rerender}=render(flow({value:1}));
