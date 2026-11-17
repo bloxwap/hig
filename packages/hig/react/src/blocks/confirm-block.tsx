@@ -16,6 +16,8 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  symbol:string;
  /** Format of the amount. Defaults to at most six fraction digits. */
  amountOptions?:Intl.NumberFormatOptions;
+ /** What the amount is read as before the figure, such as “Amount” (“Amount: 2.5”, then the ticker). Without it the figure is read alone. */
+ amountLabel?:string;
  /** The destination address, shown in full beside “To”, always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */
  address:string;
  /** The network the send moves on: HyperEVM. */
@@ -30,6 +32,8 @@ export interface ConfirmBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  warningTitle?:string;
  /** Body of the warning. Defaults to the built-in sentence naming the token and network; `null` or `false` draws no warning. */
  warning?:React.ReactNode;
+ /** A notice between the warning and the actions, drawn as given, such as an error `Alert` when a fee cannot be read or the send failed. Nothing by default. */
+ notice?:React.ReactNode;
  /** Called when the user confirms. The host signs and sends. */
  onConfirm:()=>void;
  /** Text of the confirming action. Defaults to the built-in “Confirm Send”. */
@@ -60,19 +64,20 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,oneLineDetails,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,headingId,className,...rest}:ConfirmBlockProps){
  const {messages}=useHIG();
  const heading=title??messages.confirmSend??en.confirmSend;
  const body=warning===undefined?(messages.sendWarning??en.sendWarning)(symbol,network):warning;
  return <section {...rest} className={`hig-confirm${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
-  <p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions}/> <span className='hig-confirm-symbol'>{symbol}</span></p>
+  <p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions} label={amountLabel}/> <span className='hig-confirm-symbol'>{symbol}</span></p>
   <dl className='hig-confirm-details' data-one-line={oneLineDetails||undefined}>
    <div><dt>{messages.sendTo??en.sendTo}</dt><dd><span className='hig-confirm-address' dir='ltr' translate='no'><span className='hig-sr-only'>{address}</span><span aria-hidden='true'>{confirmAddressRows(address).map((row,index)=><span key={index}>{row.map((part,offset)=><span key={offset} data-anchor={part.anchor||undefined}>{part.text}</span>)}</span>)}</span></span></dd></div>
    <div><dt>{messages.sendNetwork??en.sendNetwork}</dt><dd>{network}</dd></div>
    {details?.map(detail=><div key={detail.label}><dt>{detail.label}</dt><dd>{detail.valueLabel?<><span className='hig-sr-only'>{detail.valueLabel}</span><span aria-hidden='true'>{detail.value}</span></>:detail.value}</dd></div>)}
   </dl>
   {body!=null&&body!==false&&<div className='hig-confirm-warning' role='note'><strong>{warningTitle??messages.sendWarningTitle??en.sendWarningTitle}</strong><p>{body}</p></div>}
+  {notice}
   <div className='hig-confirm-actions'>
    {onCancel&&<Button intent='secondary' disabled={busy} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}
    <Button busy={busy} disabled={confirmDisabled} onClick={onConfirm}>{confirmLabel??messages.confirmSend??en.confirmSend}</Button>

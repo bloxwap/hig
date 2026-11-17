@@ -81,6 +81,16 @@ it('draws the lines after the address on one line with oneLineDetails, and wraps
  expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM','Network fee, 0.0001 HYPE']);
 });
 
+it('reads the amount with amountLabel and draws a notice between the warning and the actions',()=>{
+ const {View,Text}=require('react-native');
+ let view=mount();
+ expect(host(view,'confirm-amount').props.accessibilityLabel).toBeUndefined();expect(has(view,'fee-error')).toBe(false);
+ view=mount({amountLabel:'Amount',notice:h(View,{testID:'fee-error',accessibilityRole:'alert'},h(Text,null,'Fee unavailable'))});
+ expect(host(view,'confirm-amount').props.accessibilityLabel).toBe('Amount: 2.5');
+ const order=host(view,'confirm').children.map(child=>child.props.testID);
+ expect(order.slice(order.indexOf('confirm-warning'),order.indexOf('confirm-warning')+3)).toEqual(['confirm-warning','fee-error','confirm-actions']);
+});
+
 it('truncates a value that is not text with an ellipsis under oneLineDetails, and reads its valueLabel',()=>{
  const {Text}=require('react-native');
  const details=[{label:'Network fee',value:h(Text,{style:{color:'#0a0'}},'0.0001 HYPE ($0.01)'),valueLabel:'0.0001 HYPE'}];

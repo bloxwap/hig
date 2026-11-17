@@ -79,6 +79,14 @@ describe('ConfirmBlock',()=>{
   expect(document.querySelector('.hig-confirm-details')!.hasAttribute('data-one-line')).toBe(true);expect(rows()).toHaveLength(3);
   expect(rows()[0].querySelector('dd .hig-sr-only')!.textContent).toBe(address);expect(rows()[2].querySelector('dd')!.textContent).toBe('0.0001 HYPE');
  });
+ it('reads the amount with amountLabel and draws a notice between the warning and the actions',()=>{
+  const view=render(<ConfirmBlock {...base}/>);
+  expect(document.querySelector('.hig-confirm-amount [aria-label]')).toBeNull();expect(screen.queryByRole('alert')).toBeNull();
+  view.rerender(<ConfirmBlock {...base} amountLabel='Amount' notice={<div role='alert'>Fee unavailable</div>}/>);
+  expect(document.querySelector('.hig-confirm-amount [aria-label]')!.getAttribute('aria-label')).toBe('Amount: 2.5');
+  const order=Array.from(document.querySelector('.hig-confirm')!.children);
+  expect(order.indexOf(screen.getByRole('alert'))).toBe(order.indexOf(screen.getByRole('note'))+1);expect(order[order.indexOf(screen.getByRole('alert'))+1].className).toBe('hig-confirm-actions');
+ });
  it('keeps a node value inline under oneLineDetails and reads its valueLabel',()=>{
   render(<ConfirmBlock {...base} details={[{label:'Network fee',value:<b>0.0001 HYPE ($0.01)</b>,valueLabel:'0.0001 HYPE'}]} oneLineDetails/>);
   const dd=rows()[2].querySelector('dd')!;

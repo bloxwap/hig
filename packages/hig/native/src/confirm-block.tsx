@@ -18,6 +18,8 @@ export interface ConfirmBlockProps {
  symbol:string;
  /** Format of the amount; default `{maximumFractionDigits:6}`. */
  amountOptions?:Intl.NumberFormatOptions;
+ /** What the amount is read as before the figure, such as "Amount" ("Amount: 2.5", then the ticker). Without it the figure is read alone. */
+ amountLabel?:string;
  /** The destination address, shown in full beside "To", always as two rows, with the first 4 characters (6 with a `0x` prefix) and the last 4 emphasised and the rest muted. */
  address:string;
  /** The network the send moves on: HyperEVM. */
@@ -32,6 +34,8 @@ export interface ConfirmBlockProps {
  warningTitle?:string;
  /** Body of the warning. Defaults to the built-in sentence naming the token and network; `null` or `false` draws no warning. */
  warning?:React.ReactNode;
+ /** A notice between the warning and the actions, drawn as given, such as an error `Alert` when a fee cannot be read or the send failed. Nothing by default. */
+ notice?:React.ReactNode;
  /** Called when the user confirms. The host signs and sends. */
  onConfirm:()=>void;
  /** Text of the confirming action. Defaults to the built-in "Confirm Send". */
@@ -68,7 +72,7 @@ export function confirmAddressRows(address:string):{text:string;anchor:boolean}[
   return parts;});
 }
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. */
-export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,network,details,oneLineDetails,title,warningTitle,warning,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
+export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,onCancel,cancelLabel,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
  const colors=useColors(),t=useMessages(),{direction,monoFontFamily}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const note=warning===undefined?t.sendWarning(symbol,network):warning;
@@ -85,7 +89,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,n
  const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={busy} action={headerAction} headingId={headingId} testID={testID}/>;
  const body=<>
   <View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>
-   <AnimatedNumberReadout testID={id('amount')} value={amount} options={amountOptions} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+   <AnimatedNumberReadout testID={id('amount')} value={amount} options={amountOptions} label={amountLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
    <Text testID={id('symbol')} style={{fontSize:24,lineHeight:32,fontWeight:'600',color:colors.muted}}>{symbol}</Text>
   </View>
   <View testID={id('details')} style={{gap:12,paddingHorizontal:4}}>
@@ -95,6 +99,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,address,n
    <Text testID={id('warning-title')} style={{fontSize:24,lineHeight:30,fontWeight:'700',color:colors.warning}}>{warningTitle??t.sendWarningTitle}</Text>
    <Text testID={id('warning-body')} style={{fontSize:16,lineHeight:24,color:colors.text}}>{note}</Text>
   </View>:null}
+  {notice}
   <View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
    {onCancel?<Button testID={id('cancel')} intent='secondary' disabled={busy} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
    <Button testID={id('confirm')} busy={busy} disabled={confirmDisabled} onPress={onConfirm} style={{flex:1,alignSelf:'auto'}}>{confirmLabel??t.confirmSend}</Button>
