@@ -1,10 +1,11 @@
 'use client';
 import React from 'react';
-import {depositIcon} from '@bloxwap/hig/tokens/deposit-icons';
 import {deposit} from '@bloxwap/hig/contracts/messages';
 import {useHIG} from '../provider.js';
 import {ListGroup, ListRow} from '../list-group.js';
 import {ScreenHeader} from './screen-header.js';
+
+const builtInMethods = new Set(['apple-pay', 'cash-app', 'exchange', 'crypto', 'bank', 'blink']);
 
 export interface DepositMethod {
   id: string;
@@ -30,8 +31,8 @@ export function DepositBlock({title, description, methods, onSelect, onBack, hea
     <ScreenHeader title={title ?? messages.deposit ?? deposit} onBack={onBack} action={headerAction} headingId={headingId}/>
     {description && <p className="hig-settings-description">{description}</p>}
     <ListGroup>{methods.map(method => {
-      const svg = depositIcon(method.id);
-      const leading = method.icon ?? (svg && <img src={`data:image/svg+xml,${encodeURIComponent(svg)}`} width={44} height={44} alt="" draggable={false}/>);
+      const leading = method.icon ?? (builtInMethods.has(method.id) &&
+        <span aria-hidden="true" className="hig-deposit-icon" data-method={method.id}/>);
       return <ListRow key={method.id} leading={leading} label={method.label} description={method.description}
         disabled={method.disabled} onSelect={() => onSelect(method)}/>;
     })}</ListGroup>

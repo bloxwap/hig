@@ -683,6 +683,13 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 }
 .hig-login-block > footer { display:flex;flex-wrap:wrap;justify-content:center;gap:16px; }
 .hig-login-block > footer a { color:var(--hig-muted);font-size:.875rem;text-decoration:underline; }
+.hig-deposit-icon { display:block;width:44px;height:44px;background:center / contain no-repeat; }
+.hig-deposit-icon[data-method="apple-pay"] { background-image:url("../../tokens/assets/onramps/apple-pay.svg"); }
+.hig-deposit-icon[data-method="cash-app"] { background-image:url("../../tokens/assets/onramps/cashapp.svg"); }
+.hig-deposit-icon[data-method="exchange"] { background-image:url("../../tokens/assets/onramps/exchange.svg"); }
+.hig-deposit-icon[data-method="crypto"] { background-image:url("../../tokens/assets/onramps/crypto.svg"); }
+.hig-deposit-icon[data-method="bank"] { background-image:url("../../tokens/assets/onramps/bank.svg"); }
+.hig-deposit-icon[data-method="blink"] { background-image:url("../../tokens/assets/onramps/blink.svg"); }
 .hig-deposit-block { display:grid;gap:12px; }
 .hig-deposit-block .hig-settings-description { text-align:center; }
 .hig-settings-description,.hig-reward-status { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
